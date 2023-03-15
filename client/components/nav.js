@@ -12,6 +12,8 @@
   }
   
 */
+import React, { useState } from "react";
+import loginModal from "../modals/loginModal";
 import { Fragment } from "react";
 import { Menu, Popover, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
@@ -40,6 +42,7 @@ function classNames(...classes) {
 }
 
 export default function Navbar() {
+  const [modalIsOpen, setmodalIsOpen] = useState(false);
   return (
     <>
       {/* When the mobile menu is open, add `overflow-hidden` to the `body` element to prevent double scrollbars */}
@@ -54,6 +57,7 @@ export default function Navbar() {
       >
         {({ open }) => (
           <>
+            {loginModal(modalIsOpen, setmodalIsOpen)}
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="relative flex justify-between lg:gap-8 xl:grid xl:grid-cols-12">
                 <div className="flex md:absolute md:inset-y-0 md:left-0 lg:static xl:col-span-2">
@@ -95,13 +99,14 @@ export default function Navbar() {
                     Pricing
                   </a>
 
-                  <a
-                    href="#"
+                  <button
+                    onClick={() => {
+                      setmodalIsOpen(true);
+                    }}
                     className="ml-5 flex-shrink-0 rounded-full bg-white p-1  hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                   >
                     Login
-                  </a>
-
+                  </button>
                   <a
                     href="#"
                     className="ml-6 inline-flex items-center rounded-md bg-[#4A3AFE] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
