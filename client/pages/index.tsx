@@ -1,7 +1,21 @@
-import React, { useState } from "react";
-import Navbar from "../components/nav";
+import Head from 'next/head'
+import Image from 'next/image'
+import { Inter } from 'next/font/google'
+import styles from '@/styles/Home.module.css'
+import { gql, useSubscription } from '@apollo/client'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+  const COMMENTS_SUBSCRIPTION = gql`
+    subscription Subscription {
+      newLink
+    }
+  `;
+  const { data, loading } = useSubscription(
+    COMMENTS_SUBSCRIPTION
+  );
+  console.log(data, "subdata")
   return (
     <>
       <Navbar />
