@@ -1,0 +1,17 @@
+type Query {
+  increment: String!
+}
+# type Mutation {
+#  test(url: String!): String!    
+# }
+
+type Subscription {
+ newLink: String!
+}
+
+
+type Mutation {
+  test(url: String!): String!
+}
+
+
