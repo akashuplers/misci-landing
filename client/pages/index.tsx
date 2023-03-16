@@ -1,21 +1,16 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
-import { gql, useSubscription } from '@apollo/client'
-
-const inter = Inter({ subsets: ['latin'] })
-
+import React from "react";
+import { gql, useQuery } from "@apollo/client";
+import Navbar from "../components/nav";
+import { ArrowDownRightIcon } from "@heroicons/react/24/outline";
 export default function Home() {
-  const COMMENTS_SUBSCRIPTION = gql`
-    subscription Subscription {
-      newLink
+  const keywords = gql`
+    query keywords {
+      trendingTopics
     }
   `;
-  const { data, loading } = useSubscription(
-    COMMENTS_SUBSCRIPTION
-  );
-  console.log(data, "subdata")
+  const { data, loading } = useQuery(keywords);
+
+  console.log(data, "keywords");
   return (
     <>
       <Navbar />
@@ -55,6 +50,15 @@ export default function Home() {
               generates blog posts from URLs or uploaded files, providing
               concise and informative content in no time
             </p>
+            <div className="p-4">Try some of our trending topics</div>
+            <div className="grid grid-cols-3 gap-4 p-4">
+              <div className="bg-gray-300 p-2">Cryptocurrency trend</div>
+              <div className="bg-gray-300 p-2">Fitness Inspirations</div>
+              <div className="bg-gray-300 p-2">5G networks</div>
+              <div className="bg-gray-300 p-2">Cryptocurrency trend</div>
+              <div className="bg-gray-300 p-2">Fitness Inspirations</div>
+              <div className="bg-gray-300 p-2">5G networks</div>
+            </div>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <input
                 id="search"
