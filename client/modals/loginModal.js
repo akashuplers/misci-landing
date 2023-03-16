@@ -23,13 +23,12 @@ export default function loginModal(modalIsOpen, setModalIsOpen) {
       isOpen={modalIsOpen}
       onRequestClose={closeModal}
       ariaHideApp={false}
-      class="w-[95%] sm:w-[38%] "
+      class="w-[100%] sm:w-[38%] h-[90%]"
       style={{
         overlay: {
           backgroundColor: "rgba(0,0,0,0.5)",
           zIndex: "9999",
         },
-
         content: {
           top: "50%",
           left: "50%",
@@ -38,7 +37,8 @@ export default function loginModal(modalIsOpen, setModalIsOpen) {
           background: "white",
           boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
           borderRadius: "8px",
-          height: "auto",
+          height: "75%",
+          width: "30%",
           bottom: "",
           zIndex: "999",
           marginRight: "-50%",
@@ -49,44 +49,46 @@ export default function loginModal(modalIsOpen, setModalIsOpen) {
       }}
     >
       <div className="max-w-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300">
-        <h1 className="text-4xl font-medium">Login</h1>
-        <p className="text-slate-500">Hi, Welcome back 👋</p>
+        <h1 className="text-4xl font-medium p-2">Login</h1>
+        <p className="text-slate-500 p-2">Hi, Welcome back 👋</p>
 
         <div className="my-5">
-          <button className="w-full text-center py-3 my-3 border flex space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150">
+          <button className="p-2 w-full text-center py-3 my-3 border flex space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150">
             <img
               src="https://www.svgrepo.com/show/355037/google.svg"
-              className="w-6 h-6"
+              className="w-6 h-6 pl-2"
               alt=""
             />{" "}
-            <span>Login with Google</span>
+            <span className="p-4">Login with Google</span>
           </button>
         </div>
-        <form action="" className="my-10">
+        <form action="" className="my-10 p-2">
           <div className="flex flex-col space-y-5">
             <label for="email">
-              <p className="font-medium text-slate-700 pb-2">Email address</p>
+              <p className="font-medium text-slate-700 pb-2 p-2">
+                Email address
+              </p>
               <input
                 id="email"
                 name="email"
                 type="email"
-                className="w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                className="p-2 w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
                 placeholder="Enter email address"
               />
             </label>
             <label for="password">
-              <p className="font-medium text-slate-700 pb-2">Password</p>
+              <p className="p-2 font-medium text-slate-700 pb-2">Password</p>
               <input
                 id="password"
                 name="password"
                 type="password"
-                className="w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                className="p-2 w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
                 placeholder="Enter your password"
               />
             </label>
-            <div className="flex flex-row justify-between">
+            <div className="flex flex-row justify-between p-4">
               <div>
-                <label for="remember" className="">
+                <label for="remember" className="pr-4">
                   <input
                     type="checkbox"
                     id="remember"
@@ -96,12 +98,12 @@ export default function loginModal(modalIsOpen, setModalIsOpen) {
                 </label>
               </div>
               <div>
-                <a href="#" className="font-medium text-indigo-600">
+                <a href="#" className="p-2 font-medium text-indigo-600">
                   Forgot Password?
                 </a>
               </div>
             </div>
-            <button className="w-full py-3 font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center">
+            <button className="p-2 w-full py-3 font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
@@ -118,11 +120,11 @@ export default function loginModal(modalIsOpen, setModalIsOpen) {
               </svg>
               <span>Login</span>
             </button>
-            <p className="text-center">
+            <p className="text-center p-4">
               Not registered yet?{" "}
               <a
                 href="#"
-                className="text-indigo-600 font-medium inline-flex space-x-1 items-center"
+                className="p-4 text-indigo-600 font-medium inline-flex space-x-1 items-center"
               >
                 <span>Register now </span>
                 <span>
