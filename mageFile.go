@@ -205,13 +205,13 @@ func CheckNVM() error {
 	input := string(out[1:])                // remove the v
 	input = strings.TrimSuffix(input, "\n") // remove the \n so the bytes are a match further down
 
-	// b, err := ioutil.ReadFile(".nvmrc")
+	b, err := ioutil.ReadFile(".nvmrc")
 	if err != nil {
-		// fmt.Println("err reading .nvmrc", err)
+		fmt.Println("err reading .nvmrc", err)
 		return err
 	}
-	// str := string(b)
-	// fmt.Println("Checking Node Version for match with .nvmrc", str+"=="+input+"?")
+	str := string(b)
+	fmt.Println("Checking Node Version for match with .nvmrc", str+"=="+input+"?")
 
 	if str != input {
 		fmt.Println("You need to change your node version before continuing...")
