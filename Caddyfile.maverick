@@ -1,11 +1,11 @@
-maverick.lille.ai {
+maverick.nowigence.ai {
   
   handle /graphql {
      reverse_proxy /graphql localhost:5000
   }
 
   handle * {
-     root * /root/pluaris-prod/client/_static
+     root * /root/lille/client/_static
      encode zstd gzip
      try_files {path} {path}/ /index.html
 
