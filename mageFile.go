@@ -245,7 +245,7 @@ func BuildClient() error {
 	fmt.Println("running npm run build for client...")
 	os.Chdir("./client")
 	defer os.Chdir("..")
-	err := sh.Run("npm", "run", "build")
+	err := sh.Run("npm", "run", "export")
 	return err
 }
 
