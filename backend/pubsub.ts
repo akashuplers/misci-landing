@@ -12,6 +12,6 @@ const redisOptions = {
     },
 };
 export const pubsub = new RedisPubSub({
-    publisher: new Redis(),
-    subscriber: new Redis(),
+    publisher: new Redis(redisOptions as any),
+    subscriber: new Redis(redisOptions as any),
 });
