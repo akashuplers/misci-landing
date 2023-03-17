@@ -1,6 +1,6 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
-import Navbar from "../components/Nav";
+import Navbar from "../components/nav";
 import { ArrowDownRightIcon } from "@heroicons/react/24/outline";
 export default function Home() {
   const keywords = gql`
