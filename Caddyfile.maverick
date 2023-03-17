@@ -1,4 +1,4 @@
-maverick.lille.ai {
+maverick.nowigence.ai {
   
   handle /graphql {
      reverse_proxy /graphql localhost:5000
