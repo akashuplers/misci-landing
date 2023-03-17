@@ -131,7 +131,7 @@ func ServerStart(server string) error {
 	specialFmt := fmt.Sprintf("'" + server + "'")
 	err = sh.Run("pm2", "start", "npm", "--name", specialFmt, "--", "run", "start")
 	fmt.Println("Reloading Caddy...")
-	fileName := fmt.Sprintf("./Caddyfile.%v", server)
+	fileName := fmt.Sprintf("../Caddyfile.%v", server)
 	// err = sh.Run("caddy", "run", "--config", "./Caddyfile.merlin")
 	err = sh.Run("caddy", "run", "--config", fileName)
 	defer os.Chdir("..")
