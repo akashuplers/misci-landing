@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Layout from "../components/Layout";
 import { Editor } from "@tinymce/tinymce-react";
-import DragNdrop from "../components/dragNdrop";
-import Dashboard_insights from "../components/dashboard_insights";
+import DragNdrop from "../components/DragNdrop";
+import DashboardInsights from "../components/DashboardInsights";
 
 export default function Home() {
   return (
@@ -13,7 +13,7 @@ export default function Home() {
           <DragNdrop />
           <Editor apiKey="qagffr3pkuv17a8on1afax661irst1hbr4e6tbv888sz91jc" />
         </div>
-        <Dashboard_insights />
+        <DashboardInsights />
       </div>
     </>
   );
