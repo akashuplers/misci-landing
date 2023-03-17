@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Switch } from "@headlessui/react";
 
-export default function dashboard_insights() {
+export default function DashboardInsights() {
   const [enabled, setEnabled] = useState(false);
   const [valid, setValid] = useState(false);
   const [urlInput, setUrlInput] = useState("");

@@ -28,7 +28,7 @@ const rejectStyle = {
   borderColor: "#ff1744",
 };
 
-export default function dragNdrop() {
+export default function DragNdrop() {
   const { getRootProps, getInputProps, isFocused, isDragAccept, isDragReject } =
     useDropzone({ accept: { "image/*": [] } });
 
@@ -47,7 +47,9 @@ export default function dragNdrop() {
       <div className="container">
         <div {...getRootProps({ style })}>
           <input {...getInputProps()} />
-          <p>Drag 'n' drop some files here, or click to select files</p>
+          <p>
+            Drag &apos;n&apos; drop some files here, or click to select files
+          </p>
         </div>
       </div>
     </>
