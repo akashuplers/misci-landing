@@ -1,2 +1,2 @@
-export const WEBSOCKET_URL = "ws://localhost:8083/graphql"
-export const GRAPHQL_URL = "http://localhost:8083/graphql"
+export const WEBSOCKET_URL = "ws://maverick.nowigence.ai/graphql"
+export const GRAPHQL_URL = "https://maverick.nowigence.ai/graphql"
