@@ -130,6 +130,9 @@ func ServerStart(server string) error {
 	// err = sh.Run("pm2", "start", "npm", "--name", "'Merlin'", "--", "run", "start")
 	specialFmt := fmt.Sprintf("'" + server + "'")
 	err = sh.Run("pm2", "start", "npm", "--name", specialFmt, "--", "run", "start")
+	specialFmtForFrontend := fmt.Sprintf("frontend")
+	os.Chdir("../client")
+	err = sh.Run("pm2", "start", "npm", "--name", specialFmtForFrontend, "--", "run", "start")
 	fmt.Println("Reloading Caddy...")
 	fileName := fmt.Sprintf("../Caddyfile.%v", server)
 	// err = sh.Run("caddy", "run", "--config", "./Caddyfile.merlin")
@@ -245,7 +248,7 @@ func BuildClient() error {
 	fmt.Println("running npm run build for client...")
 	os.Chdir("./client")
 	defer os.Chdir("..")
-	err := sh.Run("npm", "run", "export")
+	err := sh.Run("npm", "run", "build")
 	return err
 }
 
