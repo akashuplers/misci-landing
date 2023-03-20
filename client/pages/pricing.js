@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Dialog, RadioGroup } from "@headlessui/react";
+import Navbar from "../components/Navbar"
 import {
   Bars3Icon,
   XMarkIcon as XMarkIconOutline,
@@ -251,6 +252,8 @@ export default function Pricing() {
   const [frequency, setFrequency] = useState(pricing.frequencies[0]);
 
   return (
+<>
+<Navbar />
     <div className="bg-white">
       {/* Header */}
       <header className="bg-gray-900">
@@ -919,5 +922,6 @@ export default function Pricing() {
       </footer>
           
     </div>
+</>
   );
 }

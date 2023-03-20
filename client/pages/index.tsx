@@ -1,6 +1,6 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
-import Navbar from "../components/Nav";
+import Navbar from "../components/Navbar";
 import { ArrowDownRightIcon } from "@heroicons/react/24/outline";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
 export default function Home() {

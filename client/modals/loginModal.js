@@ -1,7 +1,7 @@
 import React from "react";
 import Modal from "react-modal";
 
-export default function loginModal(modalIsOpen, setModalIsOpen) {
+export default function LoginModal(modalIsOpen, setModalIsOpen) {
   const openModal = (url) => {
     setModalIsOpen(true);
   };
