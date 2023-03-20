@@ -18,6 +18,7 @@ import bodyParser from 'body-parser';
 import db from "./plugins/db/dbConnection";
 import { pubsub } from "./pubsub";
 const express = require('express');
+const authRoutes = require('./routes/authRoutes')
 
 const PORT = process.env.PORT || 5000
 
@@ -33,8 +34,15 @@ const startServer = async () => {
   const schema = makeExecutableSchema({ typeDefs, resolvers });
   const app = express()
   app.use(cors());
+  // parse various different custom JSON types as JSON
+  app.use(bodyParser.json())
+
+  // parse some custom thing into a Buffer
+  app.use(bodyParser.raw())
+  app.use('/auth', authRoutes)
   const httpServer = createServer(app);
   const database = await db()
+  app.set('db', database)
   // Creating the WebSocket server
   const wsServer = new Server({
     // This is the `httpServer` we created in a previous step.
@@ -69,7 +77,6 @@ const startServer = async () => {
       ],
   });
   await server.start()
-  console.log(wsServer.options)
   app.use('/graphql', cors<cors.CorsRequest>(), bodyParser.json(), expressMiddleware(server, {
     context: async ({req, res}) => ({
       db: database,
