@@ -2,12 +2,7 @@ import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
-  CalendarIcon,
-  ChartBarIcon,
   FolderIcon,
-  HomeIcon,
-  InboxIcon,
-  UsersIcon,
   PlusCircleIcon,
   XMarkIcon,
   PaperAirplaneIcon,
