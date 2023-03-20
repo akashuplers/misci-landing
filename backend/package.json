@@ -21,6 +21,7 @@
         "async": "^3.2.0",
         "aws-sdk": "^2.996.0",
         "axios": "^0.21.1",
+        "bcrypt": "^5.1.0",
         "bcryptjs": "^2.4.3",
         "body-parser": "^1.20.2",
         "connect-redis": "^6.0.0",
