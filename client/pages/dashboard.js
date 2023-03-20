@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Layout from "../components/Layout";
-import { Editor } from "@tinymce/tinymce-react";
 import DragNdrop from "../components/DragAndDrop";
 import DashboardInsights from "../components/DashboardInsights";
 
