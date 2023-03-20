@@ -5,7 +5,7 @@
                 }
 
                 handle /auth/* {
-                    reverse_proxy /auth localhost:5000
+                    reverse_proxy /auth/* localhost:5000
                 }
                 # Resolve the root directory for the app
                 reverse_proxy localhost:{args.1}
