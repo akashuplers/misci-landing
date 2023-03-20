@@ -1,19 +1,2 @@
-maverick.nowigence.ai {
-  
-  handle /graphql {
-     reverse_proxy /graphql localhost:5000
-  }
-
-  handle * {
-     root * /root/lille/client/_static
-     encode zstd gzip
-     try_files {path} {path}/ /index.html
-
-     file_server
-  }
-
-  handle_errors {
-     respond "{http.error.status_code} {http.error.status_text}"
-  }
-
-}
+import mainCaddySnippets/*
+import caddy maverick.nowigence.ai 3000

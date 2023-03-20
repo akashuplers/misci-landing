@@ -1,0 +1,26 @@
+(caddy) {
+        {args.0} {
+                 handle /graphql {
+                    reverse_proxy /graphql localhost:5000
+                }
+
+                handle /auth/* {
+                    reverse_proxy /graphql localhost:5000
+                }
+                # Resolve the root directory for the app
+                reverse_proxy localhost:{args.1}
+                log {
+                output file /var/log/caddy/{args.0}.access.log {
+                        roll_size 100mb
+                        roll_keep 30
+                        roll_keep_for 720h
+                }
+                format console
+                level DEBUG
+        }
+        # Provide Zstd and Gzip compression
+        encode zstd gzip
+
+        file_server
+    }
+}
