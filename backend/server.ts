@@ -13,6 +13,7 @@ import { createServer } from 'http';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import cors from 'cors'
+import GraphQLJSON from 'graphql-type-json';
 import bodyParser from 'body-parser';
 // import {fastify, log} from './fastifyConfig'
 import db from "./plugins/db/dbConnection";
@@ -80,7 +81,8 @@ const startServer = async () => {
   app.use('/graphql', cors<cors.CorsRequest>(), bodyParser.json(), expressMiddleware(server, {
     context: async ({req, res}) => ({
       db: database,
-      pubsub: pubsub
+      pubsub: pubsub,
+      req, res
     })
   }));
   httpServer.listen(PORT, async () => {
