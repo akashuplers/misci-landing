@@ -1,7 +1,12 @@
-import React from "react";
+import React, {useState} from "react";
 import Modal from "react-modal";
 
 export default function LoginModal(modalIsOpen, setModalIsOpen) {
+  const [formData, setFormData] = useState({
+    "email" : "",
+    "password" : ""
+  })
+  
   const openModal = (url) => {
     setModalIsOpen(true);
   };
@@ -12,12 +17,23 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
 
   const handleSubmit = () => {
     setModalIsOpen(false);
+    console.log(formData);
+    setFormData({
+      "email" : "",
+      "password" : ""
+    });
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData(prev => {
+      return {
+        ...prev,
+        [name] : value
+      }
+    })
   };
+
   return (
     <Modal
       isOpen={modalIsOpen}
@@ -38,7 +54,8 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
           boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
           borderRadius: "8px",
           height: "75%",
-          width: "30%",
+          width: "50%",
+          maxWidth : "450px" ,
           bottom: "",
           zIndex: "999",
           marginRight: "-50%",
@@ -62,7 +79,12 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
             <span className="p-4">Login with Google</span>
           </button>
         </div>
-        <form action="" className="my-10 p-2">
+        <form 
+          action="" 
+          method="post" 
+          className="my-10 p-2"
+          onSubmit={handleSubmit}
+          >
           <div className="flex flex-col space-y-5">
             <label for="email">
               <p className="font-medium text-slate-700 pb-2 p-2">
@@ -72,6 +94,8 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
                 id="email"
                 name="email"
                 type="email"
+                value={formData.email}
+                onChange={handleChange}
                 className="p-2 w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
                 placeholder="Enter email address"
               />
@@ -82,11 +106,13 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
                 id="password"
                 name="password"
                 type="password"
+                value={formData.password}
+                onChange={handleChange}
                 className="p-2 w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
                 placeholder="Enter your password"
               />
             </label>
-            <div className="flex flex-row justify-between p-4">
+            <div className="flex flex-row justify-between py-4">
               <div>
                 <label for="remember" className="pr-4">
                   <input
@@ -94,7 +120,7 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
                     id="remember"
                     className="w-4 h-4 border-slate-200 focus:bg-indigo-600"
                   />
-                  Remember me
+                  <p className="pl-1 inline-block">Remember me</p>
                 </label>
               </div>
               <div>
@@ -103,7 +129,9 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
                 </a>
               </div>
             </div>
-            <button className="p-2 w-full py-3 font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center">
+            <button 
+              className="p-2 w-full py-3 font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center"
+              type="submit">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
@@ -120,11 +148,11 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
               </svg>
               <span>Login</span>
             </button>
-            <p className="text-center p-4">
-              Not registered yet?{" "}
+            <p className="my-auto text-center py-4 text-sm">
+              <p>Not registered yet?{" "}</p>
               <a
                 href="#"
-                className="p-4 text-indigo-600 font-medium inline-flex space-x-1 items-center"
+                className="text-indigo-600 font-medium inline-flex space-x-1 items-center"
               >
                 <span>Register now </span>
                 <span>
