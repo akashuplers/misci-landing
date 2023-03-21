@@ -1,4 +1,4 @@
-import { sendEmails } from "../utils/mailjetConfig";
+import { sendEmails } from "../utils/mailJetConfig";
 
 export const sendMail = async (user: any, subject: string, body: string) => {
     return await sendEmails({
