@@ -17,6 +17,8 @@ import bodyParser from 'body-parser';
 // import {fastify, log} from './fastifyConfig'
 import db from "./plugins/db/dbConnection";
 import { pubsub } from "./pubsub";
+import { User } from "./interfaces";
+import { verify } from "jsonwebtoken";
 const express = require('express');
 const authRoutes = require('./routes/authRoutes')
 
@@ -78,10 +80,45 @@ const startServer = async () => {
   });
   await server.start()
   app.use('/graphql', cors<cors.CorsRequest>(), bodyParser.json(), expressMiddleware(server, {
-    context: async ({req, res}) => ({
-      db: database,
-      pubsub: pubsub
-    })
+    context: async ({req, res}: any) => {
+        const authHeaders = req?.headers?.authorization || "";
+        const accessToken = authHeaders.split(" ")[1];
+        const temp1 = req?.headers?.[process.env.PYKEY1!];
+        const temp2 = req?.headers?.[process.env.PYKEY2!];
+        if (temp1 && temp2) {
+          if (process.env.PYVAL1 !== temp1 || process.env.PYVAL2 !== temp2) {
+            res.status(403).send({ error: true, message: "FORBIDDEN" });
+          }
+        } else {
+          // if (!accessToken) {
+          //   res
+          //     .status(401)
+          //     .send({ error: true, message: "Please Register or Login" });
+          // }
+          let verAcc = {};
+          if (accessToken) {
+            try {
+              verAcc = verify(accessToken, process.env.JWT_SECRET_KEY!);
+              req.verAcc = verAcc;
+            } catch (err) {
+              res.status(401).send({ error: true, message: "Not Authorized" });
+            }
+          }
+        }
+        const token = req?.headers?.authorization
+          ? req?.headers?.authorization?.split(" ")?.[1]
+          : "";
+        let user = <User>{};
+        try {
+          user = <User>verify(token, process.env.JWT_SECRET_KEY!);
+        } catch (err) {}
+        return {
+          db: database,
+          pubsub: pubsub,
+          req, res,
+          user
+        }
+      }
   }));
   httpServer.listen(PORT, async () => {
     console.log(`🚀 Query endpoint ready at https://${process.env.BASE_URL}:${PORT}/graphql`);
