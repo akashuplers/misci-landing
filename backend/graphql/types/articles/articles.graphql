@@ -1,3 +1,48 @@
+scalar JSON
 type Query {
     trendingTopics: [String]
+}
+
+type Blog {
+    _id: ID!
+    article_id: String! 
+    publish_data: [PublishData]
+    ideas: BlogIdeas
+}
+
+type PublishData {
+    published_date: Int
+    published: Boolean
+    platform: String!
+    creation_date: Int!
+    tiny_mce_data: TinyMceObj!
+}
+
+type BlogIdeas {
+    blog_id: String!
+    ideas: [IdeasArr]
+}
+
+type IdeasArr {
+    idea: String
+    article_id: String
+}
+
+type TinyMceObj {
+  tag: String,
+  children: [JSON]
+}
+
+input GenerateBlogOptions {
+    keyword: String
+    user_id: String
+}
+
+type Ideas {
+    text: String!
+    article_id: String!
+}
+
+type Mutation {
+    generate(options: GenerateBlogOptions!): Blog
 }
