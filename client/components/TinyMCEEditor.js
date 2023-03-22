@@ -2,12 +2,18 @@ import React, { useState, useEffect } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { htmlToJson, jsonToHtml } from "../helpers/helper";
 import { generateBlog } from "../graphql/mutations/generateBlog";
+import { updateBlog } from "../graphql/mutations/updateBlog";
 import { useMutation } from "@apollo/client";
 
 export default function TinyMCEEditor(topic) {
   const [editorText, setEditorText] = useState("");
+  const [blog_id, setblog_id] = useState("");
 
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
+  const [
+    UpdateBlog,
+    { data: updateData, loading: updateLoading, error: updateError },
+  ] = useMutation(updateBlog);
 
   useEffect(() => {
     GenerateBlog({
@@ -15,6 +21,32 @@ export default function TinyMCEEditor(topic) {
         options: {
           user_id: "640ece0e2369c047dbe0b8fb",
           keyword: topic.topic,
+        },
+      },
+      onCompleted: (data) => {
+        const aa = data.generate.publish_data[2].tiny_mce_data;
+        setblog_id(data.generate._id);
+        console.log("+++", aa);
+        const htmlDoc = jsonToHtml(aa);
+        setEditorText(htmlDoc);
+        console.log("Sucessfully generated the article");
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+    }).catch((err) => {
+      console.log(err);
+    });
+  }, []);
+
+  const handleSave = () => {
+    const jsonDoc = htmlToJson(editorText);
+    UpdateBlog({
+      variables: {
+        options: {
+          tinymce_json: jsonDoc,
+          blog_id: blog_id,
+          platform: "wordpress",
         },
       },
       onCompleted: (data) => {
@@ -30,11 +62,6 @@ export default function TinyMCEEditor(topic) {
     }).catch((err) => {
       console.log(err);
     });
-  }, []);
-
-  const handleSave = () => {
-    // generateData = htmlToJson(editorText);
-    // console.log(data);
   };
 
   if (loading) return <p>loading..</p>;
