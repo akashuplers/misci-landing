@@ -3,6 +3,12 @@ export interface GenerateBlogMutationArg {
     user_id: String;
 }
 
+export interface UpdateBlogMutationArg {
+    tinymce_json: String;
+    blog_id: string;
+    platform: String;
+}
+
 export interface User {
     id: string;
     email: string;

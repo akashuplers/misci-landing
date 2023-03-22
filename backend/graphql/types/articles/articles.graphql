@@ -34,6 +34,11 @@ type TinyMceObj {
   children: [JSON]
 }
 
+input TinyMceObjInput {
+  tag: String,
+  children: [JSON]
+}
+
 input GenerateBlogOptions {
     keyword: String
     user_id: String
@@ -44,6 +49,13 @@ type Ideas {
     article_id: String!
 }
 
+input UpdateBlogOptions {
+    platform: String
+    blog_id: String
+    tinymce_json: TinyMceObjInput
+}
+
 type Mutation {
     generate(options: GenerateBlogOptions!): Blog
+    updateBlog(options: UpdateBlogOptions!): Blog!
 }
