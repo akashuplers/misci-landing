@@ -44,12 +44,12 @@ export const blogResolvers = {
             return currentNumber
         },
         generate: async (
-            parent: unknown, args: GenerateBlogMutationArg, {req, res, db, pubsub}: any
+            parent: unknown, args:{options: GenerateBlogMutationArg}, {req, res, db, pubsub}: any
         ) => {
-            const keyword = args.keyword
-            const userId = args.user_id
+            const keyword = args.options.keyword
+            const userId = args.options.user_id
             const chatgptApis = await db.db('admin').collection('chatGPT').findOne()
-            console.log(chatgptApis)
+            console.log(args)
             let availableApi: any = null
             if(chatgptApis) {
                 availableApi = chatgptApis.apis?.find((api: any) => !api.quotaFull)
