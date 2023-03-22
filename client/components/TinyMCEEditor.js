@@ -1,52 +1,43 @@
 import React, { useState, useEffect } from "react";
 import { Editor } from "@tinymce/tinymce-react";
-import { htmlToJson, jsonToHtml } from "./helpers/helper";
+import { htmlToJson, jsonToHtml } from "../helpers/helper";
+import { generateBlog } from "../graphql/mutations/generateBlog";
+import { useMutation } from "@apollo/client";
 
-let data = {
-  tag: "BODY",
-  attributes: {},
-  children: [
-    {
-      tag: "P",
-      attributes: {},
-      children: ["dsds"],
-    },
-    {
-      tag: "P",
-      attributes: {},
-      children: ["sdos"],
-    },
-    {
-      tag: "P",
-      attributes: {},
-      children: ["ldnds"],
-    },
-    {
-      tag: "P",
-      attributes: {},
-      children: ["SDodd"],
-    },
-    {
-      tag: "P",
-      attributes: {},
-      children: ["sDodnoid"],
-    },
-  ],
-};
-
-export default function TinyMCEEditor() {
+export default function TinyMCEEditor(topic) {
   const [editorText, setEditorText] = useState("");
 
+  const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
+
   useEffect(() => {
-    const htmlDoc = jsonToHtml(data);
-    setEditorText(htmlDoc);
+    GenerateBlog({
+      variables: {
+        options: {
+          user_id: "640ece0e2369c047dbe0b8fb",
+          keyword: topic.topic,
+        },
+      },
+      onCompleted: (data) => {
+        const aa = data.generate.publish_data[2].tiny_mce_data;
+        console.log("+++", aa);
+        const htmlDoc = jsonToHtml(aa);
+        setEditorText(htmlDoc);
+        console.log("Sucessfully generated the article");
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+    }).catch((err) => {
+      console.log(err);
+    });
   }, []);
 
   const handleSave = () => {
-    data = htmlToJson(editorText);
-    console.log(data);
+    // generateData = htmlToJson(editorText);
+    // console.log(data);
   };
 
+  if (loading) return <p>loading..</p>;
   return (
     <>
       <Editor

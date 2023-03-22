@@ -28,22 +28,25 @@ export const htmlToJson = (htmlString) => {
   return nodeToJson(htmlDoc.body);
 };
 
-export const jsonToHtml = (jsonObj, counter) => {
-  const tag = jsonObj.tag;
+export const jsonToHtml = (jsonObj) => {
+  if (!jsonObj || jsonObj.length == 0) return;
+  console.log("===", jsonObj);
+  const tag = jsonObj?.tag;
 
-  const children = jsonObj.children || [];
+  const children = jsonObj?.children || [];
 
   const childrenStr = children
-    .map((child) =>
-      typeof child === "string" ? child : jsonToHtml(child, ++counter)
-    )
+    .map((child) => (typeof child === "string" ? child : jsonToHtml(child)))
     .join("");
 
-  const attributes = jsonObj.attributes;
+  const attributes = jsonObj?.attributes;
 
-  const attrsStr = Object?.entries(attributes)
-    .map(([k, v]) => `${k}="${v}"`)
-    .join(" ");
+  let attrsStr;
+  if (attributes) {
+    attrsStr = Object?.entries(attributes)
+      .map(([k, v]) => `${k}="${v}"`)
+      .join(" ");
+  }
 
   if (tag === "HEAD") {
     return `<${tag} ${attrsStr}>${childrenStr}</${tag}>`;
