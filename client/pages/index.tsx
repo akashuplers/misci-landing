@@ -3,6 +3,7 @@ import { gql, useQuery } from "@apollo/client";
 import Navbar from "../components/Navbar";
 import { ArrowDownRightIcon } from "@heroicons/react/24/outline";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
+import Link from "next/link";
 export default function Home() {
   const keywords = gql`
     query keywords {
@@ -13,14 +14,24 @@ export default function Home() {
 
   console.log(data, "keywords");
   const updatedArr = data?.trendingTopics?.map((topic: any, i: any) => (
-    <div  
-      key={i} 
-      className="flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-white shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer"
-    > 
-      <span className="text-sm font-medium text-gray-900 cursor-auto">{topic}</span>  
-      <ArrowRightCircleIcon className="w-5 h-5 text-gray-400" />  
-    </div>  
-  )); 
+    <Link
+      legacyBehavior
+      href={{
+        pathname: "/dashboard",
+        query: { topic: topic },
+      }}
+    >
+      <div
+        key={i}
+        className="flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-white shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer"
+      >
+        <button className="text-sm font-medium text-gray-900 cursor-auto">
+          <a>{topic}</a>
+        </button>
+        <ArrowRightCircleIcon className="w-5 h-5 text-gray-400" />
+      </div>
+    </Link>
+  ));
   return (
     <>
       <Navbar />
@@ -62,11 +73,7 @@ export default function Home() {
             </p>
             <div className="p-4">Try some of our trending topics</div>
             <div className="grid grid-cols-3 gap-4 p-4">
-{!loading ? (<>
-             {updatedArr}</>) : (
-                    <div>Loading...</div> 
-                  )}  
-
+              {!loading ? <>{updatedArr}</> : <div>Loading...</div>}
             </div>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <input
