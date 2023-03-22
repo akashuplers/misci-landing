@@ -1,7 +1,6 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
 import Navbar from "../components/Navbar";
-import { ArrowDownRightIcon } from "@heroicons/react/24/outline";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 export default function Home() {
@@ -17,6 +16,7 @@ export default function Home() {
     <Link
       key={i}
       legacyBehavior
+      as={'/dashboard'}
       href={{
         pathname: "/dashboard",
         query: { topic: topic },
