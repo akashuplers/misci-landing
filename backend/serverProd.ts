@@ -23,6 +23,7 @@ import { verify } from "jsonwebtoken";
 const express = require('express');
 const authRoutes = require('./routes/authRoutes')
 const waitlist = require('./routes/waitlistRoutes')
+const upload = require('./routes/uploadRoutes')
 
 const PORT = process.env.PORT || 5000
 
@@ -43,8 +44,10 @@ const startServer = async () => {
 
   // parse some custom thing into a Buffer
   app.use(bodyParser.raw())
+  app.use(bodyParser.urlencoded({ extended: false }));
   app.use('/auth', authRoutes)
   app.use('/waitlist', waitlist)
+  app.use('/upload', upload)
   const httpServer = createServer(app);
   const database = await db()
   app.set('db', database)

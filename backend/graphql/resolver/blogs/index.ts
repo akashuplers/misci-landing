@@ -1,10 +1,11 @@
 import { withFilter } from 'graphql-subscriptions';
-import { GenerateBlogMutationArg } from 'interfaces';
+import { GenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
 import { ChatGPT } from '../../../services/chatGPT';
 import { pubsub } from '../../../pubsub';
 import { getBase64Image } from '../../../utils/image';
 import { ObjectID } from 'bson';
 import { randomUUID } from 'crypto';
+import { fetchBlog } from './blogsRepo';
 // import currentNumber from '../../../server';
 const SOMETHING_CHANGED_TOPIC = 'new_link';
 // const newLinkSubscribe = (parent: any, args: any, context: any) => {
@@ -87,6 +88,7 @@ export const blogResolvers = {
                 const chatGPTImage = await new ChatGPT({apiKey: availableApi.key, text, db}).fetchImage()
                 newsLetter = {...newsLetter, image: chatGPTImage}
                 const base64 = await getBase64Image(newsLetter.image)
+                console.log(newsLetter)
                 delete newsLetter.image
                 let usedIdeasArr: any = []
                 const updated = await (
@@ -262,6 +264,41 @@ export const blogResolvers = {
                 throw e
             }
             
+        },
+        updateBlog: async (
+            parent: unknown, args: {options: UpdateBlogMutationArg}, {req, res, db, pubsub}: any
+        ) => {
+            const blogId = args.options.blog_id
+            const tinymce_json = args.options.tinymce_json
+            const platform = args.options.platform
+            const blogDetails = await fetchBlog({id: blogId, db})
+            let updatedPublisData = blogDetails.publish_data.map((data: any) => {
+                if(platform === data.platform) {
+                    if(!data.published) {
+                        return {
+                            ...data,
+                            tiny_mce_data: tinymce_json
+                        }
+                    } else {
+                        return {
+                            tiny_mce_data: tinymce_json,
+                            published: false,
+                            platform,
+                            published_date: false,
+                            creation_date: Math.round(new Date().getTime() / 1000) ,
+                        }
+                    }
+                } else {
+                    return {...data}
+                }
+            })
+            await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(blogId)}, {
+                $set: {
+                    publish_data: updatedPublisData
+                }
+            })
+            const updatedBlog = await fetchBlog({id: blogId, db})
+            return updatedBlog
         }
     },
     Subscription: {
@@ -276,7 +313,6 @@ export const blogResolvers = {
                 return true
               }
             ),
-            
         },
     },
 }
