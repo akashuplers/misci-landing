@@ -10,6 +10,9 @@
                 handle /waitlist/* {
                     reverse_proxy /waitlist/* localhost:5000
                 }
+                handle /upload/* {
+                    reverse_proxy /upload/* localhost:5000
+                }
                 # Resolve the root directory for the app
                 reverse_proxy localhost:{args.1}
                 log {
