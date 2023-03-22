@@ -13,7 +13,7 @@ const getBlobName = (originalName: any) => {
 };
 
 
-router.post('/', uploadStrategy, async (req: any, res: any) => {
+router.post('/image', uploadStrategy, async (req: any, res: any) => {
     const
           blobName = getBlobName(req.file.originalname)
         , blobService = new BlockBlobClient(process.env.AZURE_STORAGE_CONNECTION_STRING,containerName,blobName)
