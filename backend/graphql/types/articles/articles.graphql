@@ -26,6 +26,7 @@ type BlogIdeas {
 type IdeasArr {
     idea: String
     article_id: String
+    used: Int
 }
 
 type TinyMceObj {
