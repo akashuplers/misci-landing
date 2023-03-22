@@ -15,6 +15,7 @@ export default function Home() {
   console.log(data, "keywords");
   const updatedArr = data?.trendingTopics?.map((topic: any, i: any) => (
     <Link
+      key={i}
       legacyBehavior
       href={{
         pathname: "/dashboard",
@@ -22,7 +23,7 @@ export default function Home() {
       }}
     >
       <div
-        key={i}
+      
         className="flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-white shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer"
       >
         <button className="text-sm font-medium text-gray-900 cursor-auto">
