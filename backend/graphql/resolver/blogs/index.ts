@@ -169,7 +169,7 @@ export const blogResolvers = {
                                                             "tag": "P",
                                                             "attributes": {},
                                                             "children": [
-                                                                newsLetter[key].split(' post\n')[1]
+                                                                newsLetter[key]
                                                             ]
                                                         },
                                                         {
@@ -209,7 +209,7 @@ export const blogResolvers = {
                                                         "tag": "P",
                                                         "attributes": {},
                                                         "children": [
-                                                            newsLetter[key].split(' account\n')[1]
+                                                            newsLetter[key]
                                                         ]
                                                     },
                                                     {
