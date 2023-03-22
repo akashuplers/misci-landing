@@ -238,7 +238,8 @@ export const blogResolvers = {
                     return {
                         idea,
                         article_id: finalBlogObj.article_id,
-                        reference: null
+                        reference: null,
+                        used: 1,
                     }
                 })
                 const insertBlog = await db.db('lilleBlogs').collection('blogs').insertOne(finalBlogObj)
