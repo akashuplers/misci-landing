@@ -1,17 +1,15 @@
 import { withFilter } from 'graphql-subscriptions';
-import { GenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
+import { FetchBlog, GenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
 import { ChatGPT } from '../../../services/chatGPT';
 import { pubsub } from '../../../pubsub';
 import { getBase64Image } from '../../../utils/image';
 import { ObjectID } from 'bson';
 import { randomUUID } from 'crypto';
-import { fetchBlog } from './blogsRepo';
-// import currentNumber from '../../../server';
+import { fetchBlog, fetchBlogIdeas } from './blogsRepo';
+import { Azure } from '../../../services/azure';
+
 const SOMETHING_CHANGED_TOPIC = 'new_link';
-// const newLinkSubscribe = (parent: any, args: any, context: any) => {
-//     console.log("akash")
-//     return pubsub.asyncIterator([SOMETHING_CHANGED_TOPIC])
-// }
+
 let currentNumber = 0
 export const blogResolvers = {
     Query: {
@@ -34,6 +32,12 @@ export const blogResolvers = {
                 [topics[i], topics[j]] = [topics[j], topics[i]];
             }
             return topics.slice(0, 6);
+        },
+        fetchBlog: async (parent: unknown, args: { id: string }, {db, pubsub}: any) => {
+            const id = args.id
+            const blogDetails = await fetchBlog({id, db})
+            const blogIdeas = await fetchBlogIdeas({id, db})
+            return {...blogDetails, ideas: blogIdeas}
         }
     },
     Mutation: {
@@ -88,7 +92,16 @@ export const blogResolvers = {
                 const chatGPTImage = await new ChatGPT({apiKey: availableApi.key, text, db}).fetchImage()
                 newsLetter = {...newsLetter, image: chatGPTImage}
                 const base64 = await getBase64Image(newsLetter.image)
-                console.log(newsLetter)
+                let imageUrl: string | null = null
+                try {
+                    const blobName = `blogs/${new Date().getTime()}.jpeg`;
+                    const {url} = await new Azure({
+                        blobName
+                    }).getBlogUrlFromBase(base64)
+                    imageUrl = url
+                }catch(e){
+                    console.log(e, "error from azure")
+                }
                 delete newsLetter.image
                 let usedIdeasArr: any = []
                 const updated = await (
@@ -135,7 +148,7 @@ export const blogResolvers = {
                                                                 "tag": "IMG",
                                                                 "attributes": {
                                                                     "style": "display: block; margin-left: auto; margin-right: auto;",
-                                                                    "src": base64,
+                                                                    "src": imageUrl,
                                                                     "width": "441",
                                                                     "height": "305"
                                                                 },
@@ -187,7 +200,7 @@ export const blogResolvers = {
                                                                     "tag": "IMG",
                                                                     "attributes": {
                                                                         "style": "display: block; margin-left: auto; margin-right: auto;",
-                                                                        "src": base64,
+                                                                        "src": imageUrl,
                                                                         "width": "441",
                                                                         "height": "305"
                                                                     },
@@ -234,7 +247,7 @@ export const blogResolvers = {
                 const finalBlogObj = {
                     article_id: randomUUID(),
                     publish_data: updated,
-                    userId
+                    userId: new ObjectID(userId)
                 }
                 const updatedIdeas = usedIdeasArr.map((idea: string) => {
                     return {

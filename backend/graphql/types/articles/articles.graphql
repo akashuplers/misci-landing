@@ -1,6 +1,7 @@
 scalar JSON
 type Query {
     trendingTopics: [String]
+    fetchBlog(id: String!): Blog!
 }
 
 type Blog {
@@ -40,8 +41,8 @@ input TinyMceObjInput {
 }
 
 input GenerateBlogOptions {
-    keyword: String
-    user_id: String
+    keyword: String!
+    user_id: String!
 }
 
 type Ideas {

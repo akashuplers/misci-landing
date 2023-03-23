@@ -1,4 +1,5 @@
 import axios from "axios";
+import GPT3Tokenizer from 'gpt3-tokenizer';
 
 export class ChatGPT {
     text: string = "";
@@ -10,6 +11,8 @@ export class ChatGPT {
         this.db = data.db
     }
     async textCompletion () {
+        const tokenizer = new GPT3Tokenizer({ type: 'gpt3' }); // or 'codex'
+        const encoded: { bpe: number[]; text: string[] } = tokenizer.encode(this.text);
         var config: any = {
             method: 'post',
             url: 'https://api.openai.com/v1/completions',
@@ -22,7 +25,7 @@ export class ChatGPT {
               "model": "text-davinci-003",
               "prompt": `${this.text}`,
               "temperature": 0,
-              "max_tokens": 4000
+              "max_tokens": 4096 - encoded.text?.length
             }
         };
         try {
