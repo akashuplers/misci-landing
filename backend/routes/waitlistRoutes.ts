@@ -36,7 +36,7 @@ router.post('/send/verify-email', async (req: any, res: any) => {
             <p>
                 ${
                     process.env.NODE_ENV === "production" ? 
-                    `<a href="https://${process.env.BASE_URL}/waitlist/verify-email?token=${token}">Verify Mail</a>`
+                    `<a href="https://${process.env.WAITLIST_BASE_URL}/waitlist/verify-email?token=${token}">Verify Mail</a>`
                     :
                     `<a href="http://${process.env.BASE_URL}:${process.env.PORT}/waitlist/verify-email?token=${token}">Verify Mail</a>`
                 }
