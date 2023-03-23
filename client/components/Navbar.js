@@ -13,8 +13,7 @@
   
 */
 import React, { useState } from "react";
-import loginModal from "../modals/LoginModalPopup";
-import SignUpModalPopup from "../modals/SignUpModalPopup"
+import AuthenticationModal from "../components/AuthenticationModal.js";
 import { Popover } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
@@ -41,8 +40,9 @@ function classNames(...classes) {
 }
 
 export default function Navbar() {
-  const [loginModalIsOpen, setloginModalIsOpen] = useState(false);
-  const [signUpModalIsOpen, setSignUpModalIsOpen] = useState(false);
+  const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
+  const [authenticationModalType, setAuthneticationModalType] = useState("login");
+
   return (
     <>
       {/* When the mobile menu is open, add `overflow-hidden` to the `body` element to prevent double scrollbars */}
@@ -57,8 +57,7 @@ export default function Navbar() {
       >
         {({ open }) => (
           <>
-            {loginModal(loginModalIsOpen, setloginModalIsOpen)}
-            {SignUpModalPopup(signUpModalIsOpen, setSignUpModalIsOpen)}
+            <AuthenticationModal type={authenticationModalType} setType={setAuthneticationModalType} modalIsOpen={authenticationModalOpen} setModalIsOpen={setAuthenticationModalOpen}/>
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="relative flex justify-between lg:gap-8 xl:grid xl:grid-cols-12">
                 <div className="flex md:absolute md:inset-y-0 md:left-0 lg:static xl:col-span-2">
@@ -102,7 +101,8 @@ export default function Navbar() {
 
                   <button
                     onClick={() => {
-                      setloginModalIsOpen(true);
+                      setAuthenticationModalOpen(true)
+                      setAuthneticationModalType("login")
                     }}
                     className="ml-5 flex-shrink-0 rounded-full bg-white p-1  hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                   >
@@ -110,7 +110,8 @@ export default function Navbar() {
                   </button>
                   <button
                     onClick={() => {
-                      setSignUpModalIsOpen(true)
+                      setAuthenticationModalOpen(true)
+                      setAuthneticationModalType("signup")
                     }}
                     className="ml-6 inline-flex items-center rounded-md bg-[#4A3AFE] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   >
