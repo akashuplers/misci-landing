@@ -1,6 +1,6 @@
 export interface GenerateBlogMutationArg {
     keyword: String;
-    user_id: String;
+    user_id: string;
 }
 
 export interface UpdateBlogMutationArg {
@@ -15,4 +15,8 @@ export interface User {
     company: string;
     iat: number;
     exp: number;
+}
+
+export interface FetchBlog {
+    id: string
 }

@@ -39,6 +39,7 @@
         "fastify-jwt": "^4.2.0",
         "fastify-log": "^1.2.1",
         "fastify-mongodb": "^2.0.1",
+        "gpt3-tokenizer": "^1.1.5",
         "graphql": "^16.6.0",
         "graphql-redis-subscriptions": "^2.6.0",
         "graphql-tools": "^8.3.19",

@@ -1,3 +1,5 @@
+import { Azure } from "../services/azure";
+
 const getStream = require('into-stream')
 const express = require("express");
 const multer = require("multer");
@@ -40,6 +42,24 @@ router.post('/image', uploadStrategy, async (req: any, res: any) => {
             });
         }
     })    
+})
+router.post('/image/base64', async (req: any, res: any) => {
+    const rawdata = req.body.base64;
+    const blobName = `blogs/${new Date().getTime()}.jpeg`;
+    try {
+        const {url} = await new Azure({
+            blobName
+        }).getBlogUrlFromBase(rawdata)
+        res.status(200).send({
+            type: "SUCCESS",
+            url
+        })
+    } catch (e) {
+        res.status(400).send({
+            type: "ERROR",
+            message: e
+        })
+    }
 })
 
 module.exports = router
