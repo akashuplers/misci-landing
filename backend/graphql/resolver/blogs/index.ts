@@ -53,6 +53,42 @@ export const blogResolvers = {
         ) => {
             const keyword = args.options.keyword
             const userId = args.options.user_id
+            const chatgptApis = await db.db('admin').collection('chatGPT').findOne()
+            console.log(args)
+            let availableApi: any = null
+            if(chatgptApis) {
+                availableApi = chatgptApis.apis?.find((api: any) => !api.quotaFull)
+            } else {
+                throw "Something went wrong! Please connect with support team";
+            }
+            if(!availableApi) {
+                throw "Something went wrong! Please connect with support team";
+            }
+            
+            let newsLetter: any = {
+                linkedin: null,
+                twitter: null,
+                wordpress: null,
+                image: null
+            }
+            const text = keyword
+            await (
+                Promise.all(
+                    Object.keys(newsLetter).map(async (key: string) => {
+                        try {
+                            if(key === "wordpress") {
+                                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `write a large blog for ${key} on  "${text}" with title and content`, db}).textCompletion()
+                                newsLetter = {...newsLetter, [key]: chatGPTText}
+                            } else {
+                                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `write a blog on "${text}" for a ${key === "medium" ? "medium" : `${key}`}`, db}).textCompletion()
+                                newsLetter = {...newsLetter, [key]: chatGPTText}
+                            }
+                        } catch(e: any) {
+                            throw e
+                        }
+                    })
+                )
+            )
             try {
                 const {usedIdeasArr, updatedBlog}: any = await blogGeneration({
                     db,
