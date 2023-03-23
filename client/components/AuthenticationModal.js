@@ -47,7 +47,8 @@ export default function AuthenticationModal({type, setType, modalIsOpen, setModa
   };
 
   const handleSignUpSubmit = async (event) => {
-    setSubmitting(true);
+    console.log("sign up submit");
+    /*setSubmitting(true);
     event.preventDefault();
     fetch(API_BASE_PATH + API_ROUTES.CREATE_USER,{
       method : "POST",
@@ -87,10 +88,11 @@ export default function AuthenticationModal({type, setType, modalIsOpen, setModa
           })
         })
       return console.log("Success: ", res);
-    }
+    }*/
   };
 
   const handleSignUpChange = (event) => {
+    console.log("sign up change");
     const { name, value } = event.target;
     setSignUpFormData(prev => {
       return {
@@ -236,7 +238,7 @@ export default function AuthenticationModal({type, setType, modalIsOpen, setModa
               </div>
             </div>
             <button 
-              className=" w-full py-3 font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center !mt-4"
+              className=" w-full py-3 font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center !mt-3"
               type="submit">
               {!submitting ? 
               <>
@@ -259,7 +261,7 @@ export default function AuthenticationModal({type, setType, modalIsOpen, setModa
                 <p>Loading...</p>
               }
             </button>
-            <p className="!mt-4 text-center text-sm">
+            <p className="!mt-3 text-center text-sm">
               {type === "login" ? "Not registered yet ?  " : "Already Registered ?   "}
               
               <a
