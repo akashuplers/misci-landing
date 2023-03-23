@@ -1,7 +1,7 @@
 import { PlayPauseIcon } from "@heroicons/react/24/outline";
 import React, { useDebugValue, useState } from "react";
 import Modal from "react-modal";
-import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import { API_BASE_PATH, API_ROUTES } from "../Constants/apiEndpoints";
 
 export default function AuthenticationModal({
   type,
