@@ -11,7 +11,6 @@ import { ApolloProvider } from "@apollo/client";
 import { GRAPHQL_URL, WEBSOCKET_URL } from '@/constants';
 
 export default function App({ Component, pageProps }: AppProps) {
-  console.log("here")
   const httpLink = new HttpLink({
     // You should use an absolute URL here
     uri: GRAPHQL_URL,
