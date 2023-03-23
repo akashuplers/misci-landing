@@ -8,6 +8,7 @@ import {
   PaperAirplaneIcon,
   Cog6ToothIcon,
 } from "@heroicons/react/24/outline";
+import { logout } from "../helpers/helper";
 
 const navigation = [
   { name: "Generate New", href: "#", icon: PlusCircleIcon, current: true },
@@ -224,6 +225,7 @@ export default function Sidebar() {
             <nav className="mt-5 space-y-1 bg-white px-2 pb-8">
               {navigation_bottom.map((item) => (
                 <a
+                  onClick={()=>{logout(item);}}
                   key={item.name}
                   href={item.href}
                   className={classNames(
@@ -291,3 +293,4 @@ export default function Sidebar() {
     </>
   );
 }
+

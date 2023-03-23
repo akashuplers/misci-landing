@@ -56,3 +56,11 @@ export const jsonToHtml = (jsonObj) => {
     return `<${tag} ${attrsStr}>${childrenStr}</${tag}>`;
   }
 };
+
+export function logout(item) {
+  if (item.name === "Logout") {
+    localStorage.clear();
+    window.location.href = "/";
+  }
+}
+
