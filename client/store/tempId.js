@@ -1,7 +1,7 @@
 import axios from "axios";
 import { create } from "zustand";
 
-import { API_BASE_PATH, API_ROUTES } from "@/Constants/apiEndpoints";
+import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 
 const useTempId = create((set) => ({
   tempId: {},
