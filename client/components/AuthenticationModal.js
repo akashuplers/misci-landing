@@ -47,8 +47,7 @@ export default function AuthenticationModal({type, setType, modalIsOpen, setModa
   };
 
   const handleSignUpSubmit = async (event) => {
-    console.log("sign up submit");
-    /*setSubmitting(true);
+    setSubmitting(true);
     event.preventDefault();
     fetch(API_BASE_PATH + API_ROUTES.CREATE_USER,{
       method : "POST",
@@ -88,11 +87,10 @@ export default function AuthenticationModal({type, setType, modalIsOpen, setModa
           })
         })
       return console.log("Success: ", res);
-    }*/
+    }
   };
 
   const handleSignUpChange = (event) => {
-    console.log("sign up change");
     const { name, value } = event.target;
     setSignUpFormData(prev => {
       return {
