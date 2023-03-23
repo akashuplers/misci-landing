@@ -4,10 +4,13 @@ import { htmlToJson, jsonToHtml } from "../helpers/helper";
 import { generateBlog } from "../graphql/mutations/generateBlog";
 import { updateBlog } from "../graphql/mutations/updateBlog";
 import { useMutation } from "@apollo/client";
+import AuthenticationModal from "../components/AuthenticationModal";
 
-export default function TinyMCEEditor(topic) {
+export default function TinyMCEEditor({ topic, isAuthenticated }) {
   const [editorText, setEditorText] = useState("");
   const [blog_id, setblog_id] = useState("");
+  const [authenticationModalType, setAuthneticationModalType] = useState("");
+  const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
 
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
   const [
@@ -20,7 +23,7 @@ export default function TinyMCEEditor(topic) {
       variables: {
         options: {
           user_id: "640ece0e2369c047dbe0b8fb",
-          keyword: topic.topic,
+          keyword: topic,
         },
       },
       onCompleted: (data) => {
@@ -40,33 +43,46 @@ export default function TinyMCEEditor(topic) {
   }, []);
 
   const handleSave = () => {
-    const jsonDoc = htmlToJson(editorText);
-    UpdateBlog({
-      variables: {
-        options: {
-          tinymce_json: jsonDoc,
-          blog_id: blog_id,
-          platform: "wordpress",
+    console.log(isAuthenticated);
+    if (isAuthenticated) {
+      const jsonDoc = htmlToJson(editorText).children;
+      const formatedJSON = { children: [...jsonDoc] };
+      UpdateBlog({
+        variables: {
+          options: {
+            tinymce_json: formatedJSON,
+            blog_id: blog_id,
+            platform: "wordpress",
+          },
         },
-      },
-      onCompleted: (data) => {
-        const aa = data.generate.publish_data[2].tiny_mce_data;
-        console.log("+++", aa);
-        const htmlDoc = jsonToHtml(aa);
-        setEditorText(htmlDoc);
-        console.log("Sucessfully generated the article");
-      },
-      onError: (error) => {
-        console.log(error);
-      },
-    }).catch((err) => {
-      console.log(err);
-    });
+        onCompleted: (data) => {
+          const aa = data.generate.publish_data[2].tiny_mce_data;
+          console.log("+++", aa);
+          const htmlDoc = jsonToHtml(aa);
+          setEditorText(htmlDoc);
+          console.log("Sucessfully generated the article");
+        },
+        onError: (error) => {
+          console.log(error);
+        },
+      }).catch((err) => {
+        console.log(err);
+      });
+    } else {
+      setAuthneticationModalType("signup");
+      setAuthenticationModalOpen(true);
+    }
   };
 
   if (loading) return <p>loading..</p>;
   return (
     <>
+      <AuthenticationModal
+        type={authenticationModalType}
+        setType={setAuthneticationModalType}
+        modalIsOpen={authenticationModalOpen}
+        setModalIsOpen={setAuthenticationModalOpen}
+      />
       <Editor
         value={editorText}
         apiKey="ensd3fyudvpis4e3nzpnns1vxdtoexc363h3yww4iepx6vis"

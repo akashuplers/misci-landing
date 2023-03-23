@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import Navbar from "../components/Navbar";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
@@ -10,22 +10,21 @@ export default function Home() {
     }
   `;
   const { data, loading } = useQuery(keywords);
+  const [keyword, setkeyword] = useState("");
 
   console.log(data, "keywords");
+
   const updatedArr = data?.trendingTopics?.map((topic: any, i: any) => (
     <Link
       key={i}
       legacyBehavior
-      as={'/dashboard'}
+      as={"/dashboard"}
       href={{
         pathname: "/dashboard",
         query: { topic: topic },
       }}
     >
-      <div
-      
-        className="flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-white shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer"
-      >
+      <div className="flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-white shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer">
         <button className="text-sm font-medium text-gray-900 cursor-auto">
           <a>{topic}</a>
         </button>
@@ -33,6 +32,7 @@ export default function Home() {
       </div>
     </Link>
   ));
+
   return (
     <>
       <Navbar />
@@ -83,14 +83,22 @@ export default function Home() {
                 className="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                 placeholder="Search"
                 type="search"
+                onChange={(e) => {
+                  setkeyword(e.target.value);
+                }}
               />
-
-              <a
-                href="#"
-                className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              <Link
+                legacyBehavior
+                as={"/dashboard"}
+                href={{
+                  pathname: "/dashboard",
+                  query: { topic: keyword },
+                }}
               >
-                Generate
-              </a>
+                <a className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                  Generate
+                </a>
+              </Link>
             </div>
           </div>
         </div>

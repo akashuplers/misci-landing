@@ -1,24 +1,29 @@
 import { PlayPauseIcon } from "@heroicons/react/24/outline";
 import React, { useDebugValue, useState } from "react";
 import Modal from "react-modal";
-import {API_BASE_PATH, API_ROUTES}  from "../constants/apiEndpoints";
+import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 
-export default function AuthenticationModal({type, setType, modalIsOpen, setModalIsOpen}) {
+export default function AuthenticationModal({
+  type,
+  setType,
+  modalIsOpen,
+  setModalIsOpen,
+}) {
   const [submitting, setSubmitting] = useState(false);
 
   const [signUpFormData, setSignUpFormData] = useState({
-    "firstName" : "",
-    "lastName" : "",
-    "email" : "",
-    "password" : "",
-    "tempUserId" : ""
-  })
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    tempUserId: "",
+  });
 
   const [loginFormData, setLoginFormData] = useState({
-    "email" : "",
-    "password" : ""
-  })
-  
+    email: "",
+    password: "",
+  });
+
   const openModal = (url) => {
     setModalIsOpen(true);
   };
@@ -31,73 +36,76 @@ export default function AuthenticationModal({type, setType, modalIsOpen, setModa
     setModalIsOpen(false);
     console.log(formData);
     setFormData({
-      "email" : "",
-      "password" : ""
+      email: "",
+      password: "",
     });
   };
 
   const handleLoginChange = (event) => {
     const { name, value } = event.target;
-    setFormData(prev => {
+    setFormData((prev) => {
       return {
         ...prev,
-        [name] : value
-      }
-    })
+        [name]: value,
+      };
+    });
   };
 
   const handleSignUpSubmit = async (event) => {
     setSubmitting(true);
     event.preventDefault();
-    fetch(API_BASE_PATH + API_ROUTES.CREATE_USER,{
-      method : "POST",
-      headers : {
-        "Content-type" : "application/json",
+    fetch(API_BASE_PATH + API_ROUTES.CREATE_USER, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
       },
-      body : JSON.stringify(signUpFormData)
+      body: JSON.stringify(signUpFormData),
     })
-      .then(res => res.json())
-      .then(res => afterCreateUser(res))
-      .catch(err => console.error("Error: ", err))
+      .then((res) => res.json())
+      .then((res) => afterCreateUser(res))
+      .catch((err) => console.error("Error: ", err))
       .finally(() => {
-        setSubmitting(false)
-        setModalIsOpen(false)
-      })
+        setSubmitting(false);
+        setModalIsOpen(false);
+      });
 
     function afterCreateUser(res) {
-      fetch(API_BASE_PATH + API_ROUTES.LOGIN_ENDPOINT,{
-        method : "POST",
-        headers : {
-          "Content-type" : "application/json",
+      fetch(API_BASE_PATH + API_ROUTES.LOGIN_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
         },
-        body : JSON.stringify({
-          "email" : signUpFormData.email,
-          "password" : signUpFormData.password
-        })
-      }).then(res => res.json())
-        .then(data => localStorage.setItem("data", JSON.stringify(data)))
-        .catch(err => console.error("Error: ", err))
+        body: JSON.stringify({
+          email: signUpFormData.email,
+          password: signUpFormData.password,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) =>
+          localStorage.setItem("token", JSON.stringify(data.data))
+        )
+        .catch((err) => console.error("Error: ", err))
         .finally(() => {
           setSignUpFormData({
-            "firstName" : "",
-            "lastName" : "",
-            "email" : "",
-            "password" : "",
-            "tempUserId" : ""
-          })
-        })
+            firstName: "",
+            lastName: "",
+            email: "",
+            password: "",
+            tempUserId: "",
+          });
+        });
       return console.log("Success: ", res);
     }
   };
 
   const handleSignUpChange = (event) => {
     const { name, value } = event.target;
-    setSignUpFormData(prev => {
+    setSignUpFormData((prev) => {
       return {
         ...prev,
-        [name] : value
-      }
-    })
+        [name]: value,
+      };
+    });
   };
 
   return (
@@ -112,7 +120,7 @@ export default function AuthenticationModal({type, setType, modalIsOpen, setModa
           zIndex: "9999",
         },
         content: {
-          position : "absolute",
+          position: "absolute",
           top: "50%",
           left: "50%",
           right: "auto",
@@ -122,7 +130,7 @@ export default function AuthenticationModal({type, setType, modalIsOpen, setModa
           borderRadius: "8px",
           // height: "75%",
           width: "50%",
-          maxWidth : "450px" ,
+          maxWidth: "450px",
           bottom: "",
           zIndex: "999",
           marginRight: "-50%",
@@ -132,10 +140,14 @@ export default function AuthenticationModal({type, setType, modalIsOpen, setModa
         },
       }}
     >
-      <div className="max-w-lg mx-auto bg-white p-8 py-2 rounded-xl 
-      ">
-      {/* shadow shadow-slate-300 */}
-        <h1 className="text-4xl font-medium ">{type === "login" ? "Login" : "Sign Up"}</h1>
+      <div
+        className="max-w-lg mx-auto bg-white p-8 py-2 rounded-xl 
+      "
+      >
+        {/* shadow shadow-slate-300 */}
+        <h1 className="text-4xl font-medium ">
+          {type === "login" ? "Login" : "Sign Up"}
+        </h1>
         <p className="text-slate-500 ">Hi, Welcome back 👋</p>
 
         <div className="mt-5">
@@ -145,24 +157,27 @@ export default function AuthenticationModal({type, setType, modalIsOpen, setModa
               className="w-6 h-6 pl-2"
               alt=""
             />{" "}
-            <span className="p-4 py-2">{type === "login" ? "Login with Google" : "Sign Up with Google"}</span>
+            <span className="p-4 py-2">
+              {type === "login" ? "Login with Google" : "Sign Up with Google"}
+            </span>
           </button>
         </div>
-        <form 
-          action="" 
-          method="post" 
+        <form
+          action=""
+          method="post"
           className="my-10 mt-0  "
           onSubmit={handleSignUpSubmit}
         >
           <div className="flex flex-col space-y-5">
-            {type === "login" ?
-                <div></div> : 
-                <div className="flex gap-4 mt-5">
+            {type === "login" ? (
+              <div></div>
+            ) : (
+              <div className="flex gap-4 mt-5">
                 <label htmlFor="firstName">
-                    <p className="font-small text-sm text-slate-700  ">
+                  <p className="font-small text-sm text-slate-700  ">
                     First Name
-                    </p>
-                    <input
+                  </p>
+                  <input
                     type="text"
                     id="firstName"
                     name="firstName"
@@ -171,13 +186,13 @@ export default function AuthenticationModal({type, setType, modalIsOpen, setModa
                     className="border-black  w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
                     placeholder="Enter First Name"
                     required
-                    />
+                  />
                 </label>
                 <label htmlFor="lastName">
-                    <p className="font-small text-sm text-slate-700  ">
+                  <p className="font-small text-sm text-slate-700  ">
                     Last Name
-                    </p>
-                    <input
+                  </p>
+                  <input
                     type="text"
                     id="lastName"
                     name="lastName"
@@ -186,10 +201,10 @@ export default function AuthenticationModal({type, setType, modalIsOpen, setModa
                     className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
                     placeholder="Enter Last Name"
                     required
-                    />
+                  />
                 </label>
-                </div>
-            }
+              </div>
+            )}
             <label htmlFor="email">
               <p className="font-small text-sm text-slate-700  ">
                 Email address
@@ -205,9 +220,7 @@ export default function AuthenticationModal({type, setType, modalIsOpen, setModa
               />
             </label>
             <label htmlFor="password">
-              <p className="font-small  text-sm text-slate-700">
-                Password
-            </p>
+              <p className="font-small  text-sm text-slate-700">Password</p>
               <input
                 id="password"
                 name="password"
@@ -235,37 +248,43 @@ export default function AuthenticationModal({type, setType, modalIsOpen, setModa
                 </a>
               </div>
             </div>
-            <button 
+            <button
               className=" w-full py-3 font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center !mt-3"
-              type="submit">
-              {!submitting ? 
-              <>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-                  />
-                </svg>
-                <span>{type === "login" ? "Login" : "Sign Up"}</span> 
-              </>:
+              type="submit"
+            >
+              {!submitting ? (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                    />
+                  </svg>
+                  <span>{type === "login" ? "Login" : "Sign Up"}</span>
+                </>
+              ) : (
                 <p>Loading...</p>
-              }
+              )}
             </button>
             <p className="!mt-3 text-center text-sm">
-              {type === "login" ? "Not registered yet ?  " : "Already Registered ?   "}
-              
+              {type === "login"
+                ? "Not registered yet ?  "
+                : "Already Registered ?   "}
+
               <a
                 href="#"
                 className="text-indigo-600 font-medium inline-flex space-x-1 items-center"
-                onClick={() => type === "login" ? setType("signup") : setType("login")}
+                onClick={() =>
+                  type === "login" ? setType("signup") : setType("login")
+                }
               >
                 <span>{type === "login" ? "Register Now!" : "Sign In"}</span>
                 <span>
