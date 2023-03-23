@@ -91,9 +91,9 @@ router.get('/verify-email', async(req: any, res: any) => {
                 isVerified: 1
             }
         })
-        return res.state(301).redirect(`${process.env.WAITLIST_BASE_URL}/verify?token=${token}`)
+        return res.redirect(301, `${process.env.WAITLIST_BASE_URL}/verify?token=${token}`)
     } else {
-        return res.redirect(`${process.env.WAITLIST_BASE_URL}`)
+        return res.redirect(301, `${process.env.WAITLIST_BASE_URL}`)
     }
 })
 router.post('/add-urls', async(req: any, res: any) => {
