@@ -41,7 +41,7 @@ const startServer = async () => {
   const app = express()
   app.use(cors());
   // parse various different custom JSON types as JSON
-  app.use(bodyParser.json())
+  app.use(bodyParser.json({limit: '50mb'}))
 
   // parse some custom thing into a Buffer
   app.use(bodyParser.raw())
