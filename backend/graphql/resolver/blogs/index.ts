@@ -64,6 +64,7 @@ export const blogResolvers = {
             if(!availableApi) {
                 throw "Something went wrong! Please connect with support team";
             }
+            
             let newsLetter: any = {
                 linkedin: null,
                 twitter: null,
