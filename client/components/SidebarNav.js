@@ -40,14 +40,6 @@ export default function Sidebar() {
 
   return (
     <>
-      {/*
-        This example requires updating your template:
-
-        
-        <html class="h-full">
-        <body class="h-full">
-        
-      */}
       <div>
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
