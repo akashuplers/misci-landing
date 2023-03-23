@@ -9,7 +9,7 @@ import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { getMainDefinition } from "apollo-utilities";
 import { ApolloProvider } from "@apollo/client";
 import { GRAPHQL_URL, WEBSOCKET_URL } from "@/constants";
-import useTempId from "@/Store/tempId";
+import useTempId from "@/store/tempId";
 import { useRouter } from "next/router";
 
 export default function App({ Component, pageProps }: AppProps) {
