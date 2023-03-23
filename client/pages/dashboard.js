@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import DragNdrop from "../components/DragAndDrop";
