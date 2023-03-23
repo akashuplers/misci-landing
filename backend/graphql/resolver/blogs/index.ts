@@ -1,5 +1,5 @@
 import { withFilter } from 'graphql-subscriptions';
-import { FetchBlog, GenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
+import { FetchBlog, GenerateBlogMutationArg, ReGenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
 import { ChatGPT } from '../../../services/chatGPT';
 import { pubsub } from '../../../pubsub';
 import { getBase64Image } from '../../../utils/image';
@@ -277,6 +277,13 @@ export const blogResolvers = {
                 throw e
             }
             
+        },
+        regenerate: async (
+            parent: unknown, args: {options: ReGenerateBlogMutationArg}, {req, res, db, pubsub}: any
+        ) => {
+            const id = args.options.blog_id
+            const blogDetails = await db.db('lilleBlogs').collection('blogs').findOne({id})
+            const keyword = args.options.blog_id
         },
         updateBlog: async (
             parent: unknown, args: {options: UpdateBlogMutationArg}, {req, res, db, pubsub}: any
