@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import DragNdrop from "../components/DragAndDrop";
 import DashboardInsights from "../components/DashboardInsights";
-import NavBar from "../components/NavBar";
+import Navbar from "../components/Navbar";
 
 import TinyMCEEditor from "../components/TinyMCEEditor";
 
@@ -40,7 +40,7 @@ export default function dashboard({ query }) {
         </>
       ) : (
         <>
-          <NavBar />
+          <Navbar />
           <div className="flex divide-x">
             <div className="h-[100%] w-[65%] pl-[2%] pr-9">
               <TinyMCEEditor topic={topic} isAuthenticated={isAuthenticated} />
