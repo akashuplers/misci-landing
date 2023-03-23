@@ -82,7 +82,7 @@ export default function AuthenticationModal({
       })
         .then((res) => res.json())
         .then((data) =>
-          localStorage.setItem("token", JSON.stringify(data.data))
+          redirectPageAfterLogin(data)
         )
         .catch((err) => console.error("Error: ", err))
         .finally(() => {
@@ -311,3 +311,14 @@ export default function AuthenticationModal({
     </Modal>
   );
 }
+function redirectPageAfterLogin(data) {
+  localStorage.setItem("token", JSON.stringify(data.data));
+  console.log(window.location.pathname)
+  if(window.location.pathname === "/"){
+   return window.location.href === "/dashboard"
+  }
+  else {
+  return window.location.reload();
+  }
+}
+
