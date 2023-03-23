@@ -3,6 +3,7 @@ import { Editor } from "@tinymce/tinymce-react";
 import { htmlToJson, jsonToHtml } from "../helpers/helper";
 import { generateBlog } from "../graphql/mutations/generateBlog";
 import { updateBlog } from "../graphql/mutations/updateBlog";
+import LoaderPlane from "./LoaderPlane"
 import { useMutation } from "@apollo/client";
 import AuthenticationModal from "../components/AuthenticationModal";
 
@@ -74,7 +75,7 @@ export default function TinyMCEEditor({ topic, isAuthenticated }) {
     }
   };
 
-  if (loading) return <p>loading..</p>;
+  if (loading) return <LoaderPlane />;
   return (
     <>
       <AuthenticationModal

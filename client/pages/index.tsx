@@ -3,6 +3,8 @@ import { gql, useQuery } from "@apollo/client";
 import Navbar from "../components/Navbar";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
+import LoaderPlane from "../components/LoaderPlane"
+
 export default function Home() {
   const keywords = gql`
     query keywords {
@@ -64,7 +66,7 @@ export default function Home() {
         </div>
         <div className="mx-auto max-w-2xl py-32 sm:py-30 lg:py-20">
           <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
               Generate Newsletter with Lille
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-600">
@@ -72,10 +74,11 @@ export default function Home() {
               generates blog posts from URLs or uploaded files, providing
               concise and informative content in no time
             </p>
-            <div className="p-4">Try some of our trending topics</div>
-            <div className="grid grid-cols-3 gap-4 p-4">
-              {!loading ? <>{updatedArr}</> : <div>Loading...</div>}
-            </div>
+            <div className="p-4 mt-4">Try some of our trending topics</div>
+            {!loading ? (
+              <div className="grid grid-cols-3 gap-4 p-4">
+                {updatedArr}
+              </div>) : <LoaderPlane />}
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <input
                 id="search"
@@ -128,7 +131,6 @@ export default function Home() {
           </svg>
         </div>
       </div>
-      ;
     </>
   );
 }
