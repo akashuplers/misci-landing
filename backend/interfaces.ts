@@ -3,6 +3,16 @@ export interface GenerateBlogMutationArg {
     user_id: string;
 }
 
+export interface ReGenerateBlogMutationArg {
+    ideas: [Ideas];
+    blog_id: string;
+}
+
+export interface Ideas {
+    idea: String;
+    article_id: number;
+}
+
 export interface UpdateBlogMutationArg {
     tinymce_json: String;
     blog_id: string;
