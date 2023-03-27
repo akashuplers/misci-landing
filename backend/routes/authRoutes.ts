@@ -180,10 +180,30 @@ router.post("/user/create", async (req: any, res: any) => {
       delete data.tempUserId;
       delete data.firstName;
       console.log(data, "data")
-      // insert user into mongodb
-      const user = await db.db("lilleAdmin").collection("users").insertOne(data);
+      delete data.paymentMethodId;
+      console.log(data, "data")
+      let user = null
+      if(data.paid) {
+        delete data._id;
+        await db.db("lilleAdmin").collection("users").updateOne({
+          email: data.email
+        }, {
+          $set: data
+        });
+        user = await db.db('lilleAdmin').collection('users').findOne({email: data.email})
+      } else {
+        // insert user into mongodb
+        user = await db.db("lilleAdmin").collection("users").insertOne(data);
+        if (!user?.insertedId)
+          return res.status(500).send({
+            error: true,
+            message:
+              "User not added to database, likely database connection issue.",
+          });
+      }
+      const userId = user?.insertedId || user._id
 
-      if (!user?.insertedId)
+      if (!userId)
         return res.status(500).send({
           error: true,
           message:

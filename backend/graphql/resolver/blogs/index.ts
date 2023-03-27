@@ -160,8 +160,7 @@ export const blogResolvers = {
                         return newData.push({...platformUpdatedData})
                     }
                 })
-                if(newData.length)
-                blog.publish_data = [...blog.publish_data, newData]
+                if(newData.length) blog.publish_data = [...blog.publish_data, ...newData]
                 let newIdeas: any = []
                 ideas.forEach((newIdea: any) => {
                     const filteredIdea = blogIdeas.ideas.find((oldidea: any) => newIdea.text.trim() === oldidea.idea.trim())
@@ -173,7 +172,7 @@ export const blogResolvers = {
                     } else {
                         return newIdeas.push(
                             {
-                                ideas: newIdea.text,
+                                idea: newIdea.text,
                                 article_id: blog.article_id,
                                 reference: null,
                                 used: 1,
@@ -183,14 +182,14 @@ export const blogResolvers = {
                 })
                 if(newIdeas.length) blogIdeas.ideas = [...blogIdeas.ideas, ...newIdeas]
                 
-                const updateBlog = await db.db('lilleBlogs').collection('blogs').updateOne({
+                await db.db('lilleBlogs').collection('blogs').updateOne({
                     _id: new ObjectID(blog._id)
                 }, {
                     $set: {
                         publish_data: blog.publish_data
                     }
                 })
-                const insertBlogIdeas = await db.db('lilleBlogs').collection('blogIdeas').updateOne({
+                await db.db('lilleBlogs').collection('blogIdeas').updateOne({
                     _id: new ObjectID(blogIdeas._id)
                 }, {
                     $set: {
@@ -203,9 +202,9 @@ export const blogResolvers = {
                     const id: any = blog._id
                     blogDetails = await db.db('lilleBlogs').collection('blogs').findOne({_id: new ObjectID(id)})
                 }
-                if(insertBlogIdeas.insertedId){
-                    const id: any = blogIdeas._id
-                    blogIdeasDetails = await db.db('lilleBlogs').collection('blogIdeas').findOne({_id: new ObjectID(id)})
+                if(blogIdeas._id){
+                    blogIdeasDetails = await fetchBlogIdeas({id: blogId, db})
+                    console.log(blogIdeasDetails)
                 }
                 return {...blogDetails, ideas: blogIdeasDetails}
             } catch(e: any) {

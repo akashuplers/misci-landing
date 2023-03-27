@@ -2,9 +2,9 @@ import { Azure } from "../services/azure";
 
 const getStream = require('into-stream')
 const express = require("express");
+const router = express.Router();
 const multer = require("multer");
 const { BlockBlobClient } = require('@azure/storage-blob');
-const router = express.Router();
 const inMemoryStorage = multer.memoryStorage();
 const uploadStrategy = multer({ storage: inMemoryStorage }).single('file');
 
