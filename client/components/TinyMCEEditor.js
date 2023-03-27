@@ -7,41 +7,16 @@ import LoaderPlane from "./LoaderPlane"
 import { useMutation } from "@apollo/client";
 import AuthenticationModal from "../components/AuthenticationModal";
 
-export default function TinyMCEEditor({ topic, isAuthenticated }) {
-  const [editorText, setEditorText] = useState("");
+export default function TinyMCEEditor({ topic, isAuthenticated, editorText, loading }) {
+
   const [blog_id, setblog_id] = useState("");
+  const [updatedText, setEditorText] = useState();
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
-
-  const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
   const [
     UpdateBlog,
     { data: updateData, loading: updateLoading, error: updateError },
   ] = useMutation(updateBlog);
-
-  useEffect(() => {
-    GenerateBlog({
-      variables: {
-        options: {
-          user_id: "640ece0e2369c047dbe0b8fb",
-          keyword: topic,
-        },
-      },
-      onCompleted: (data) => {
-        const aa = data.generate.publish_data[2].tiny_mce_data;
-        setblog_id(data.generate._id);
-        console.log("+++", aa);
-        const htmlDoc = jsonToHtml(aa);
-        setEditorText(htmlDoc);
-        console.log("Sucessfully generated the article");
-      },
-      onError: (error) => {
-        console.log(error);
-      },
-    }).catch((err) => {
-      console.log(err);
-    });
-  }, []);
 
   const handleSave = () => {
     console.log(isAuthenticated);
@@ -60,7 +35,9 @@ export default function TinyMCEEditor({ topic, isAuthenticated }) {
           const aa = data.generate.publish_data[2].tiny_mce_data;
           console.log("+++", aa);
           const htmlDoc = jsonToHtml(aa);
+          console.log(updatedText)
           setEditorText(htmlDoc);
+          console.log(updatedText)
           console.log("Sucessfully generated the article");
         },
         onError: (error) => {
@@ -75,7 +52,9 @@ export default function TinyMCEEditor({ topic, isAuthenticated }) {
     }
   };
 
+  
   if (loading) return <LoaderPlane />;
+if(editorText){console.log(editorText)}
   return (
     <>
       <AuthenticationModal
@@ -85,7 +64,7 @@ export default function TinyMCEEditor({ topic, isAuthenticated }) {
         setModalIsOpen={setAuthenticationModalOpen}
       />
       <Editor
-        value={editorText}
+        value={updatedText ? updatedText : editorText}
         apiKey="ensd3fyudvpis4e3nzpnns1vxdtoexc363h3yww4iepx6vis"
         init={{
           skin: "naked",
