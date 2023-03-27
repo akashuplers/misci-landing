@@ -54,6 +54,8 @@ export default function AuthenticationModal({
   const handleSignUpSubmit = async (event) => {
     setSubmitting(true);
     event.preventDefault();
+
+    alert("sign up")
     fetch(API_BASE_PATH + API_ROUTES.CREATE_USER, {
       method: "POST",
       headers: {
@@ -217,6 +219,7 @@ export default function AuthenticationModal({
                 onChange={handleSignUpChange}
                 className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
                 placeholder="Enter email address"
+                required
               />
             </label>
             <label htmlFor="password">
@@ -225,10 +228,14 @@ export default function AuthenticationModal({
                 id="password"
                 name="password"
                 type="password"
+                onInvalid={() => console.log("wrong validation")}
+                title="Password should contain alphabet and number and should be between 8 to 20 characters"
+                pattern='^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{8,20}$'
                 value={signUpFormData.password}
                 onChange={handleSignUpChange}
                 className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
                 placeholder="Enter your password"
+                required
               />
             </label>
             <div className="flex flex-row justify-between !mt-4">
@@ -243,7 +250,9 @@ export default function AuthenticationModal({
                 </label>
               </div>
               <div>
-                <a href="#" className="text-sm  font-medium text-indigo-600">
+                <a 
+                  href="#" 
+                  className="text-sm  font-medium text-indigo-600">
                   Forgot Password?
                 </a>
               </div>

@@ -14,6 +14,7 @@
 */
 import React, { useState } from "react";
 import AuthenticationModal from "../components/AuthenticationModal.js";
+import Pricing from "../pages/pricing"
 import { Popover } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
@@ -95,6 +96,7 @@ export default function Navbar() {
                   <a
                     href="#"
                     className="ml-5 flex-shrink-0 rounded-full bg-white p-1  hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    
                   >
                     Pricing
                   </a>
