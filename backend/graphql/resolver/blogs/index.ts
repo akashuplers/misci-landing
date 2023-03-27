@@ -90,7 +90,7 @@ export const blogResolvers = {
                 )
             )
             try {
-                const {usedIdeasArr, updatedBlog}: any = await blogGeneration({
+                const {usedIdeasArr, updatedBlogs}: any = await blogGeneration({
                     db,
                     args: args.options,
                     text: keyword,
@@ -98,7 +98,7 @@ export const blogResolvers = {
                 })
                 const finalBlogObj = {
                     article_id: randomUUID(),
-                    publish_data: updatedBlog,
+                    publish_data: updatedBlogs,
                     userId: new ObjectID(userId),
                     keyword
                 }
