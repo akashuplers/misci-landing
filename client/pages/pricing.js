@@ -1,14 +1,8 @@
 import { useState } from "react";
 import { Dialog, RadioGroup } from "@headlessui/react";
 import Navbar from "../components/Navbar"
-import {
-  Bars3Icon,
-  XMarkIcon as XMarkIconOutline,
-} from "@heroicons/react/24/outline";
-import {
-  CheckIcon,
-  XMarkIcon as XMarkIconMini,
-} from "@heroicons/react/20/solid";
+import { Bars3Icon, XMarkIcon as XMarkIconOutline } from "@heroicons/react/24/outline";
+import { CheckIcon, XMarkIcon as XMarkIconMini } from "@heroicons/react/20/solid";
 
 const navigation = [
   { name: "Product", href: "#" },
@@ -16,6 +10,7 @@ const navigation = [
   { name: "Marketplace", href: "#" },
   { name: "Company", href: "#" },
 ];
+
 const pricing = {
   frequencies: [
     { value: "monthly", label: "Monthly" },
@@ -144,6 +139,7 @@ const pricing = {
     },
   ],
 };
+
 const faqs = [
   {
     id: 1,
@@ -153,6 +149,7 @@ const faqs = [
   },
   // More questions...
 ];
+
 const footerNavigation = {
   solutions: [
     { name: "Marketing", href: "#" },
