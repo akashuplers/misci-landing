@@ -56,6 +56,7 @@
         "node-mailjet": "^3.3.4",
         "pdf-creator-node": "^2.3.4",
         "querystring": "^0.2.0",
+        "stripe": "^11.16.0",
         "urllib": "^2.37.3",
         "uuid": "^8.3.2",
         "validator": "^13.6.0",
