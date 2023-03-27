@@ -9,28 +9,28 @@ export default function DashboardInsights({editorText, loading, ideas}) {
   const [urlInput, setUrlInput] = useState("");
 
   const [regenSelected, setRegenSelected] = useState([]);
-  const [inputDisabled, setInputDisabled] = useState(false);
+  // const [inputDisabled, setInputDisabled] = useState(false);
 
   function handleInputClick({target}){
     const idea = target.previousElementSibling.innerHTML;
-    checkInputDisable(idea)
-    if(regenSelected.length >= 3) return
+
+    if(regenSelected.includes(idea)) {
+      setRegenSelected(prev => prev.filter(el => el !== idea))
+      return
+    }
+
+    if(regenSelected.length >= 3){
+      target.checked = false;
+      return
+    }
 
     setRegenSelected(prev => [...prev, idea]);
   }
 
-  function checkInputDisable(idea){
-    console.log("here");
-    if(regenSelected.includes(idea)) {
-      console.log("here");
-      setInputDisabled(false)
-      setRegenSelected(prev => prev.filter(el => el !== idea))
-    }
-  }
 
   useEffect(()=>{
     console.log(regenSelected)
-    if(regenSelected.length === 3) setInputDisabled(true)
+    // if(regenSelected.length === 3) setInputDisabled(true)
   },[regenSelected])
 
   function urlHandler(e) {
@@ -189,7 +189,6 @@ export default function DashboardInsights({editorText, loading, ideas}) {
                 type="checkbox"
                 className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                 onClick={handleInputClick}
-                disabled={checkEnable ? false : inputDisabled} 
               />
             </div>
           </div>)
