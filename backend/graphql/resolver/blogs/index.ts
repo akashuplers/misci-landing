@@ -182,14 +182,14 @@ export const blogResolvers = {
                 })
                 if(newIdeas.length) blogIdeas.ideas = [...blogIdeas.ideas, ...newIdeas]
                 
-                const updateBlog = await db.db('lilleBlogs').collection('blogs').updateOne({
+                await db.db('lilleBlogs').collection('blogs').updateOne({
                     _id: new ObjectID(blog._id)
                 }, {
                     $set: {
                         publish_data: blog.publish_data
                     }
                 })
-                const insertBlogIdeas = await db.db('lilleBlogs').collection('blogIdeas').updateOne({
+                await db.db('lilleBlogs').collection('blogIdeas').updateOne({
                     _id: new ObjectID(blogIdeas._id)
                 }, {
                     $set: {
@@ -202,9 +202,9 @@ export const blogResolvers = {
                     const id: any = blog._id
                     blogDetails = await db.db('lilleBlogs').collection('blogs').findOne({_id: new ObjectID(id)})
                 }
-                if(insertBlogIdeas.insertedId){
-                    const id: any = blogIdeas._id
-                    blogIdeasDetails = await db.db('lilleBlogs').collection('blogIdeas').findOne({_id: new ObjectID(id)})
+                if(blogIdeas._id){
+                    blogIdeasDetails = await fetchBlogIdeas({id: blogId, db})
+                    console.log(blogIdeasDetails)
                 }
                 return {...blogDetails, ideas: blogIdeasDetails}
             } catch(e: any) {
