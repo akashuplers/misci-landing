@@ -19,7 +19,7 @@ export default function TinyMCEEditor({ topic, isAuthenticated, editorText, load
   ] = useMutation(updateBlog);
 
   const handleSave = () => {
-    console.log(isAuthenticated);
+    //console.log(isAuthenticated);
     if (isAuthenticated) {
       const jsonDoc = htmlToJson(editorText).children;
       const formatedJSON = { children: [...jsonDoc] };
@@ -33,18 +33,18 @@ export default function TinyMCEEditor({ topic, isAuthenticated, editorText, load
         },
         onCompleted: (data) => {
           const aa = data.generate.publish_data[2].tiny_mce_data;
-          console.log("+++", aa);
+          //console.log("+++", aa);
           const htmlDoc = jsonToHtml(aa);
-          console.log(updatedText)
+          //console.log(updatedText)
           setEditorText(htmlDoc);
-          console.log(updatedText)
-          console.log("Sucessfully generated the article");
+          //console.log(updatedText)
+          //console.log("Sucessfully generated the article");
         },
         onError: (error) => {
-          console.log(error);
+          //console.log(error);
         },
       }).catch((err) => {
-        console.log(err);
+        //console.log(err);
       });
     } else {
       setAuthneticationModalType("signup");
@@ -54,7 +54,7 @@ export default function TinyMCEEditor({ topic, isAuthenticated, editorText, load
 
   
   if (loading) return <LoaderPlane />;
-if(editorText){console.log(editorText)}
+  //if(editorText){console.log(editorText)}
   return (
     <>
       <AuthenticationModal
