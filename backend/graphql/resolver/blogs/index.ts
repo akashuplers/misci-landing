@@ -163,17 +163,17 @@ export const blogResolvers = {
                 if(newData.length)
                 blog.publish_data = [...blog.publish_data, newData]
                 let newIdeas: any = []
-                blogIdeas.ideas.map((oldidea: any) => {
-                    const filteredIdea = ideas.find((idea: any) => idea.text.trim() === oldidea.idea.trim())
-                    if(!filteredIdea) {
+                ideas.forEach((newIdea: any) => {
+                    const filteredIdea = blogIdeas.ideas.find((oldidea: any) => newIdea.text.trim() === oldidea.idea.trim())
+                    if(filteredIdea) {
                         return {
-                            ...oldidea,
+                            ...filteredIdea,
                             used: 1
                         }
                     } else {
                         return newIdeas.push(
                             {
-                                ideas: filteredIdea.text,
+                                ideas: newIdea.text,
                                 article_id: blog.article_id,
                                 reference: null,
                                 used: 1,
@@ -181,8 +181,7 @@ export const blogResolvers = {
                         )
                     }
                 })
-                if(newIdeas.length) 
-                    blogIdeas.ideas = [...blogIdeas.ideas, newIdeas]
+                if(newIdeas.length) blogIdeas.ideas = [...blogIdeas.ideas, ...newIdeas]
                 
                 const updateBlog = await db.db('lilleBlogs').collection('blogs').updateOne({
                     _id: new ObjectID(blog._id)
