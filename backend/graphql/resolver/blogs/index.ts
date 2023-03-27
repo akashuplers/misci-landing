@@ -160,8 +160,7 @@ export const blogResolvers = {
                         return newData.push({...platformUpdatedData})
                     }
                 })
-                if(newData.length)
-                blog.publish_data = [...blog.publish_data, newData]
+                if(newData.length) blog.publish_data = [...blog.publish_data, ...newData]
                 let newIdeas: any = []
                 ideas.forEach((newIdea: any) => {
                     const filteredIdea = blogIdeas.ideas.find((oldidea: any) => newIdea.text.trim() === oldidea.idea.trim())
@@ -173,7 +172,7 @@ export const blogResolvers = {
                     } else {
                         return newIdeas.push(
                             {
-                                ideas: newIdea.text,
+                                idea: newIdea.text,
                                 article_id: blog.article_id,
                                 reference: null,
                                 used: 1,
