@@ -19,11 +19,6 @@ export interface UpdateBlogMutationArg {
     platform: String;
 }
 
-export interface Ideas {
-    text: String;
-    article_id: String;
-}
-
 export interface ReGenerateBlogMutationArg {
     ideas: [Ideas];
     blog_id: string
