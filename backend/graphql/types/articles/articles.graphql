@@ -56,7 +56,18 @@ input UpdateBlogOptions {
     tinymce_json: TinyMceObjInput
 }
 
+input RegenerateBlogOptions {
+    ideas: [IdeasInput]!
+    blog_id: String!
+}
+
+input IdeasInput {
+    text: String!
+    article_id: String!
+}
+
 type Mutation {
     generate(options: GenerateBlogOptions!): Blog
     updateBlog(options: UpdateBlogOptions!): Blog!
+    regenerateBlog(options: RegenerateBlogOptions!): Blog!
 }

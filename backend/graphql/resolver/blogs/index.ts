@@ -1,11 +1,11 @@
 import { withFilter } from 'graphql-subscriptions';
-import { FetchBlog, GenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
+import { FetchBlog, GenerateBlogMutationArg, ReGenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
 import { ChatGPT } from '../../../services/chatGPT';
 import { pubsub } from '../../../pubsub';
 import { getBase64Image } from '../../../utils/image';
 import { ObjectID } from 'bson';
 import { randomUUID } from 'crypto';
-import { fetchBlog, fetchBlogIdeas } from './blogsRepo';
+import { blogGeneration, fetchBlog, fetchBlogIdeas } from './blogsRepo';
 import { Azure } from '../../../services/azure';
 
 const SOMETHING_CHANGED_TOPIC = 'new_link';
@@ -53,201 +53,18 @@ export const blogResolvers = {
         ) => {
             const keyword = args.options.keyword
             const userId = args.options.user_id
-            const chatgptApis = await db.db('admin').collection('chatGPT').findOne()
-            console.log(args)
-            let availableApi: any = null
-            if(chatgptApis) {
-                availableApi = chatgptApis.apis?.find((api: any) => !api.quotaFull)
-            } else {
-                throw "Something went wrong! Please connect with support team";
-            }
-            if(!availableApi) {
-                throw "Something went wrong! Please connect with support team";
-            }
-            let newsLetter: any = {
-                linkedin: null,
-                twitter: null,
-                wordpress: null,
-                image: null
-            }
-            const text = keyword
-            await (
-                Promise.all(
-                    Object.keys(newsLetter).map(async (key: string) => {
-                        try {
-                            if(key === "wordpress") {
-                                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `write a large blog for ${key} on  "${text}" with title and content`, db}).textCompletion()
-                                newsLetter = {...newsLetter, [key]: chatGPTText}
-                            } else {
-                                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `write a blog on "${text}" for a ${key === "medium" ? "medium" : `${key}`}`, db}).textCompletion()
-                                newsLetter = {...newsLetter, [key]: chatGPTText}
-                            }
-                        } catch(e: any) {
-                            throw e
-                        }
-                    })
-                )
-            )
             try {
-                const chatGPTImage = await new ChatGPT({apiKey: availableApi.key, text, db}).fetchImage()
-                newsLetter = {...newsLetter, image: chatGPTImage}
-                const base64 = await getBase64Image(newsLetter.image)
-                let imageUrl: string | null = null
-                try {
-                    const blobName = `blogs/${new Date().getTime()}.jpeg`;
-                    const {url} = await new Azure({
-                        blobName
-                    }).getBlogUrlFromBase(base64)
-                    imageUrl = url
-                }catch(e){
-                    console.log(e, "error from azure")
-                }
-                delete newsLetter.image
-                let usedIdeasArr: any = []
-                const updated = await (
-                    Promise.all(
-                        Object.keys(newsLetter).map(async (key: string) => {
-                            try {
-                                switch(key) {
-                                    case "image":
-                                        break;
-                                    case "wordpress":
-                                        const title = newsLetter[key].slice(newsLetter[key].indexOf("Title:"), newsLetter[key].indexOf("Content:")).trim()
-                                        const content = newsLetter[key].slice(newsLetter[key].indexOf("Content:"), newsLetter[key].length).trim()
-                                        console.log(content)
-                                        console.log(content.split('Content:')[1])
-                                        usedIdeasArr = (content.split('Content:')[1]).split('.')
-                                        return {
-                                            published: false,
-                                            published_date: false,
-                                            platform: "wordpress",
-                                            creation_date: Math.round(new Date().getTime() / 1000) ,
-                                            tiny_mce_data: {
-                                                "tag": "BODY",
-                                                children: [
-                                                    {
-                                                        "tag": "H3",
-                                                        "attributes": {
-                                                            "style": "text-align: center;"
-                                                        },
-                                                        "children": [
-                                                            {
-                                                                "tag": "STRONG",
-                                                                "attributes": {},
-                                                                "children": [
-                                                                    title.split("Title: ")[1]
-                                                                ]
-                                                            }
-                                                        ]
-                                                    },
-                                                    {
-                                                        "tag": "P",
-                                                        "attributes": {},
-                                                        "children": [
-                                                            {
-                                                                "tag": "IMG",
-                                                                "attributes": {
-                                                                    "style": "display: block; margin-left: auto; margin-right: auto;",
-                                                                    "src": imageUrl,
-                                                                    "width": "441",
-                                                                    "height": "305"
-                                                                },
-                                                                "children": []
-                                                            }
-                                                        ]
-                                                    },
-                                                    {
-                                                        "tag": "P",
-                                                        "attributes": {},
-                                                        "children": []
-                                                    },
-                                                    {
-                                                        "tag": "P",
-                                                        "attributes": {},
-                                                        "children": [
-                                                            content.split('Content:')[1]
-                                                        ]
-                                                    }
-                                                ]
-                                            }  
-                                        }   
-                                    case "linkedin":
-                                        return {
-                                            published: false,
-                                                published_date: false,
-                                                platform: "linkedin",
-                                                creation_date: Math.round(new Date().getTime() / 1000) ,
-                                                tiny_mce_data: {
-                                                    "tag": "BODY",
-                                                    children: [
-                                                        {
-                                                            "tag": "P",
-                                                            "attributes": {},
-                                                            "children": [
-                                                                newsLetter[key]
-                                                            ]
-                                                        },
-                                                        {
-                                                            "tag": "P",
-                                                            "attributes": {},
-                                                            "children": []
-                                                        },
-                                                        {
-                                                            "tag": "P",
-                                                            "attributes": {},
-                                                            "children": [
-                                                                {
-                                                                    "tag": "IMG",
-                                                                    "attributes": {
-                                                                        "style": "display: block; margin-left: auto; margin-right: auto;",
-                                                                        "src": imageUrl,
-                                                                        "width": "441",
-                                                                        "height": "305"
-                                                                    },
-                                                                    "children": []
-                                                                }
-                                                            ]
-                                                        },
-                                                    ]
-                                                }
-                                        }
-                                    case "twitter":
-                                        return {
-                                            published: false,
-                                            published_date: false,
-                                            platform: "twitter",
-                                            creation_date: Math.round(new Date().getTime() / 1000) ,
-                                            tiny_mce_data: {
-                                                "tag": "BODY",
-                                                children: [
-                                                    {
-                                                        "tag": "P",
-                                                        "attributes": {},
-                                                        "children": [
-                                                            newsLetter[key]
-                                                        ]
-                                                    },
-                                                    {
-                                                        "tag": "P",
-                                                        "attributes": {},
-                                                        "children": []
-                                                    }
-                                                ]
-                                            }
-                                        }      
-                                    default:
-                                        return newsLetter[key]    
-                                }
-                            } catch(e: any) {
-                                throw e
-                            }
-                        })
-                    )
-                )
+                const {usedIdeasArr, updatedBlog}: any = await blogGeneration({
+                    db,
+                    args: args.options,
+                    text: keyword,
+                    regenerate: false
+                })
                 const finalBlogObj = {
                     article_id: randomUUID(),
-                    publish_data: updated,
-                    userId: new ObjectID(userId)
+                    publish_data: updatedBlog,
+                    userId: new ObjectID(userId),
+                    keyword
                 }
                 const updatedIdeas = usedIdeasArr.map((idea: string) => {
                     return {
@@ -277,6 +94,88 @@ export const blogResolvers = {
                 throw e
             }
             
+        },
+        regenerateBlog: async (
+            parent: unknown, args: {options: ReGenerateBlogMutationArg}, {req, res, db, pubsub}: any
+        ) => {
+            console.log(args.options)
+            const ideas = args.options.ideas, blogId = args.options.blog_id;
+            const blog = await fetchBlog({db, id: blogId})
+            const blogIdeas = await fetchBlogIdeas({db, id: blogId})
+            let texts = ""
+            ideas.forEach((idea, index) => {
+                return texts += `${index+1} - ${idea.text} \n`
+            })
+            console.log(texts)
+            try {
+                const {usedIdeasArr, updatedBlogs}: any = await blogGeneration({
+                    db,
+                    args: args.options,
+                    text: texts,
+                    regenerate: true,
+                    title: blog.keyword
+                })
+                let newData: any = []
+                blog.publish_data.forEach((data: any, index: any) => {
+                    const platformUpdatedData = updatedBlogs.find((pd: any) => pd.platform === data.platform)
+                    if(!data.published) {
+                        return blog.publish_data[index] = platformUpdatedData
+                    } else {
+                        return newData.push({...platformUpdatedData})
+                    }
+                })
+                if(newData.length)
+                blog.publish_data = [...blog.publish_data, newData]
+                let newIdeas: any = []
+                blogIdeas.ideas.map((oldidea: any) => {
+                    const filteredIdea = ideas.find((idea: any) => idea.text.trim() === oldidea.idea.trim())
+                    if(!filteredIdea) {
+                        return {
+                            ...oldidea,
+                            used: 1
+                        }
+                    } else {
+                        return newIdeas.push(
+                            {
+                                ideas: filteredIdea.text,
+                                article_id: blog.article_id,
+                                reference: null,
+                                used: 1,
+                            }
+                        )
+                    }
+                })
+                if(newIdeas.length) 
+                    blogIdeas.ideas = [...blogIdeas.ideas, newIdeas]
+                
+                const updateBlog = await db.db('lilleBlogs').collection('blogs').updateOne({
+                    _id: new ObjectID(blog._id)
+                }, {
+                    $set: {
+                        publish_data: blog.publish_data
+                    }
+                })
+                const insertBlogIdeas = await db.db('lilleBlogs').collection('blogIdeas').updateOne({
+                    _id: new ObjectID(blogIdeas._id)
+                }, {
+                    $set: {
+                        ideas: blogIdeas.ideas
+                    }
+                })
+                let blogDetails = null
+                let blogIdeasDetails = null
+                if(blog){
+                    const id: any = blog._id
+                    blogDetails = await db.db('lilleBlogs').collection('blogs').findOne({_id: new ObjectID(id)})
+                }
+                if(insertBlogIdeas.insertedId){
+                    const id: any = blogIdeas._id
+                    blogIdeasDetails = await db.db('lilleBlogs').collection('blogIdeas').findOne({_id: new ObjectID(id)})
+                }
+                return {...blogDetails, ideas: blogIdeasDetails}
+            } catch(e: any) {
+                throw e
+            }
         },
         updateBlog: async (
             parent: unknown, args: {options: UpdateBlogMutationArg}, {req, res, db, pubsub}: any
