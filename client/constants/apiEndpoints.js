@@ -1,4 +1,4 @@
-export const API_BASE_PATH = "https://maverick.nowigence.ai";
+export const API_BASE_PATH = "https://maverick.lille.ai";
 
 export const API_ROUTES = {
   TEMP_ID: "/auth/tempId",

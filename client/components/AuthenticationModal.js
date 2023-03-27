@@ -55,7 +55,6 @@ export default function AuthenticationModal({
     setSubmitting(true);
     event.preventDefault();
 
-    alert("sign up")
     fetch(API_BASE_PATH + API_ROUTES.CREATE_USER, {
       method: "POST",
       headers: {
@@ -228,7 +227,6 @@ export default function AuthenticationModal({
                 id="password"
                 name="password"
                 type="password"
-                onInvalid={() => console.log("wrong validation")}
                 title="Password should contain alphabet and number and should be between 8 to 20 characters"
                 pattern='^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{8,20}$'
                 value={signUpFormData.password}
@@ -321,13 +319,15 @@ export default function AuthenticationModal({
   );
 }
 function redirectPageAfterLogin(data) {
+  // console.log(data);
+  // console.log(data.data.accessToken);
   localStorage.setItem("token", JSON.stringify(data.data));
-  console.log(window.location.pathname)
+  // console.log(window.location.pathname)
   if(window.location.pathname === "/"){
-   return window.location.href === "/dashboard"
+    window.location.href = "/dashboard"
+  }else {
+    window.location.reload();
   }
-  else {
-  return window.location.reload();
-  }
+  return
 }
 
