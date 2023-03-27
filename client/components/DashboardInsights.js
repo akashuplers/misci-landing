@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Switch } from "@headlessui/react";
 
-export default function DashboardInsights() {
+export default function DashboardInsights({ideas}) {
   const [enabled, setEnabled] = useState(false);
   const [valid, setValid] = useState(false);
   const [urlInput, setUrlInput] = useState("");
-
+  console.log("ideas", ideas)
   function urlHandler(e) {
     const value = e.target.value;
     setUrlInput(value);
@@ -149,6 +149,7 @@ export default function DashboardInsights() {
           </div>
         </div>
         <div className="flex pb-10">
+
           <div className="w-[95%] pr-5">
             I’m an expert on how technology hijacks our psychological
             vulnerabilities. That’s why I spent the last three years as a Design

@@ -9,4 +9,4 @@ export const API_ROUTES = {
   LOGIN_ENDPOINT: "/auth/user/login",
 };
 
-export const GQL_SUBSCRIPTION_ENDPOINT = "wss://hydra.nowigence.ai/graphql";
+export const GQL_SUBSCRIPTION_ENDPOINT = "wss://maverick.lille.ai/graphql";
