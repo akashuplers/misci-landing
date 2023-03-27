@@ -14,7 +14,8 @@
 */
 import React, { useState } from "react";
 import AuthenticationModal from "../components/AuthenticationModal.js";
-import Pricing from "../pages/pricing"
+// import Pricing from "../pages/pricing"
+import Link from "next/link";
 import { Popover } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
@@ -93,13 +94,23 @@ export default function Navbar() {
                   </Popover.Button>
                 </div>
                 <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-4">
-                  <a
+                  {/* <a
                     href="#"
                     className="ml-5 flex-shrink-0 rounded-full bg-white p-1  hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     
                   >
                     Pricing
-                  </a>
+                  </a> */}
+                  <Link
+                    legacyBehavior
+                    as={"/pricing"}
+                    href={{
+                      pathname: "/pricing"
+                    }}
+                  >
+                    <p className="ml-5 flex-shrink-0 rounded-full bg-white p-1  hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        style={{cursor:"pointer"}}>Pricing</p>
+                  </Link>
 
                   <button
                     onClick={() => {
