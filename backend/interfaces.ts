@@ -8,15 +8,15 @@ export interface ReGenerateBlogMutationArg {
     blog_id: string;
 }
 
-export interface Ideas {
-    idea: String;
-    article_id: number;
-}
-
 export interface UpdateBlogMutationArg {
     tinymce_json: String;
     blog_id: string;
     platform: String;
+}
+
+export interface Ideas {
+    text: String;
+    article_id: String;
 }
 
 export interface ReGenerateBlogMutationArg {
