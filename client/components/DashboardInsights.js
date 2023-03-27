@@ -1,15 +1,43 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Switch } from "@headlessui/react";
+import LoaderPlane from "./LoaderPlane";
+import { jsonToHtml } from "../helpers/helper";
 
-export default function DashboardInsights({ideas}) {
+export default function DashboardInsights({editorText, loading, ideas}) {
   const [enabled, setEnabled] = useState(false);
   const [valid, setValid] = useState(false);
   const [urlInput, setUrlInput] = useState("");
-  console.log("ideas", ideas)
+
+  const [regenSelected, setRegenSelected] = useState([]);
+  const [inputDisabled, setInputDisabled] = useState(false);
+
+  function handleInputClick({target}){
+    const idea = target.previousElementSibling.innerHTML;
+    checkInputDisable(idea)
+    if(regenSelected.length >= 3) return
+
+    setRegenSelected(prev => [...prev, idea]);
+  }
+
+  function checkInputDisable(idea){
+    console.log("here");
+    if(regenSelected.includes(idea)) {
+      console.log("here");
+      setInputDisabled(false)
+      setRegenSelected(prev => prev.filter(el => el !== idea))
+    }
+  }
+
+  useEffect(()=>{
+    console.log(regenSelected)
+    if(regenSelected.length === 3) setInputDisabled(true)
+  },[regenSelected])
+
   function urlHandler(e) {
     const value = e.target.value;
     setUrlInput(value);
   }
+
   function postFormData(e) {
     e.preventDefault();
     var expression =
@@ -30,6 +58,9 @@ export default function DashboardInsights({ideas}) {
     ); // fragment locator
     setValid(pattern.test(urlInput));
   }
+
+  if (loading) return <LoaderPlane />;
+
   return (
     <>
       <div className="w-[40%] pl-9 pr-2">
@@ -148,8 +179,25 @@ export default function DashboardInsights({ideas}) {
             Fresh Idea
           </div>
         </div>
-        <div className="flex pb-10">
-
+        {ideas.map(idea =>  {
+          const checkEnable = regenSelected.includes(idea)
+          return ( <div className="flex pb-10">
+            <div className="flex justify-between gap-5 w-[95%] pr-5">
+              <p>{idea.idea}</p>
+              <input
+                id="default-checkbox"
+                type="checkbox"
+                className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                onClick={handleInputClick}
+                disabled={checkEnable ? false : inputDisabled} 
+              />
+            </div>
+          </div>)
+        })}
+       {/* <div className="ideas-result">
+        {ideas.map(idea => <p style={{marginTop:"0.5em"}}>{idea.idea}</p>)}
+       </div>
+      <div className="flex pb-10">
           <div className="w-[95%] pr-5">
             I’m an expert on how technology hijacks our psychological
             vulnerabilities. That’s why I spent the last three years as a Design
@@ -193,7 +241,7 @@ export default function DashboardInsights({ideas}) {
               className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
             />
           </div>
-        </div>
+        </div>*/}
       </div>
     </>
   );

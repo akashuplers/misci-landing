@@ -19,6 +19,8 @@ export default function dashboard({ query }) {
   const [blog_id, setblog_id] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [editorText, setEditorText] = useState("");
+
+  const [ideas, setIdeas] = useState([]);
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
   const [
     UpdateBlog,
@@ -38,17 +40,18 @@ export default function dashboard({ query }) {
       },
       onCompleted: (data) => {
         const aa = data.generate.publish_data[2].tiny_mce_data;
+        setIdeas(data.generate.ideas.ideas)
         setblog_id(data.generate._id);
-        console.log("+++", aa);
+        //console.log("+++", aa);
         const htmlDoc = jsonToHtml(aa);
         setEditorText(htmlDoc);
-        console.log("Sucessfully generated the article");
+        //console.log("Sucessfully generated the article");
       },
       onError: (error) => {
-        console.log(error);
+        //console.log(error);
       },
     }).catch((err) => {
-      console.log(err);
+      //console.log(err);
     });
 
     if (
@@ -71,7 +74,7 @@ export default function dashboard({ query }) {
             <div className="h-[100%] w-[65%] pl-[20%] pr-9">
               <TinyMCEEditor topic={topic} isAuthenticated={isAuthenticated}  editorText={editorText} loading={loading}/>
             </div>
-            <DashboardInsights ideas={editorText.data?.generate?.ideas} />
+            <DashboardInsights editorText={editorText} loading={loading} ideas={ideas}/>
           </div>
         </>
       ) : (
@@ -81,7 +84,7 @@ export default function dashboard({ query }) {
             <div className="h-[100%] w-[65%] pl-[2%] pr-9">
               <TinyMCEEditor topic={topic} isAuthenticated={isAuthenticated} editorText={editorText} loading={loading} />
             </div>
-            <DashboardInsights ideas={editorText.data?.generate?.ideas} />
+            <DashboardInsights editorText={editorText} loading={loading} ideas={ideas}/>
           </div>
         </>
       )}
