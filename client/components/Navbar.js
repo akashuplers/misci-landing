@@ -1,20 +1,5 @@
-/*
-  This example requires some changes to your config:
-  
-  
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  
-*/
 import React, { useState } from "react";
 import AuthenticationModal from "../components/AuthenticationModal.js";
-// import Pricing from "../pages/pricing"
 import Link from "next/link";
 import { Popover } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -26,7 +11,6 @@ const user = {
     "https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 };
 const navigation = [
-  { name: "Dashboard", href: "#", current: true },
   { name: "Calendar", href: "#", current: false },
   { name: "Teams", href: "#", current: false },
   { name: "Directory", href: "#", current: false },
@@ -53,7 +37,7 @@ export default function Navbar() {
         className={({ open }) =>
           classNames(
             open ? "fixed inset-0 z-40 overflow-y-auto" : "",
-            "bg-white shadow-sm lg:static lg:overflow-y-visible"
+            "bg-white shadow-sm lg:static lg:overflow-y-visible fixed top-0"
           )
         }
       >
