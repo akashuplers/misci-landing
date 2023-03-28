@@ -65,27 +65,14 @@ export default function dashboard({ query }) {
 
   return (
     <>
-      {isAuthenticated ? (
-        <>
-          <Layout />
+          <Layout>
           <div className="flex divide-x">
             <div className="h-[100%] w-[65%] pl-[20%] pr-9">
               <TinyMCEEditor topic={topic} isAuthenticated={isAuthenticated}  editorText={editorText} loading={loading}/>
             </div>
             <DashboardInsights editorText={editorText} loading={loading} ideas={ideas}/>
           </div>
-        </>
-      ) : (
-        <>
-          <Navbar />
-          <div className="flex divide-x">
-            <div className="h-[100%] w-[65%] pl-[2%] pr-9">
-              <TinyMCEEditor topic={topic} isAuthenticated={isAuthenticated} editorText={editorText} loading={loading} />
-            </div>
-            <DashboardInsights editorText={editorText} loading={loading} ideas={ideas}/>
-          </div>
-        </>
-      )}
+          </Layout>
     </>
   );
 }
