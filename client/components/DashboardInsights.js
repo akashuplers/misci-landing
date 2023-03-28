@@ -180,9 +180,11 @@ export default function DashboardInsights({editorText, loading, ideas}) {
             Fresh Idea
           </div>
         </div>
+        <div className="h-1/5 overflow-y-scroll" >
         {ideas.map(idea =>  {
           const checkEnable = regenSelected.includes(idea)
-          return ( <div className="flex pb-10">
+          return ( 
+          <div className="flex pb-10">
             <div className="flex justify-between gap-5 w-[95%] pr-5">
               <p>{idea.idea}</p>
               <input
@@ -194,54 +196,7 @@ export default function DashboardInsights({editorText, loading, ideas}) {
             </div>
           </div>)
         })}
-       {/* <div className="ideas-result">
-        {ideas.map(idea => <p style={{marginTop:"0.5em"}}>{idea.idea}</p>)}
-       </div>
-      <div className="flex pb-10">
-          <div className="w-[95%] pr-5">
-            I’m an expert on how technology hijacks our psychological
-            vulnerabilities. That’s why I spent the last three years as a Design
-            Ethicist at Google caring about how to design things in a way that
-            defends a billion people’s minds from getting hijacked.
-          </div>
-          <div className="flex mb-4">
-            <input
-              id="default-checkbox"
-              type="checkbox"
-              value=""
-              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-            />
-          </div>
         </div>
-        <div className="flex pb-10">
-          <div className="w-[95%] pr-5">
-            Generative Pre-trained Transformer (GPT) models by OpenAI have taken
-            natural language processing (NLP) community by storm by introducing
-            very powerful language models.
-          </div>
-          <div className="flex mb-4">
-            <input
-              id="default-checkbox"
-              type="checkbox"
-              value=""
-              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-            />
-          </div>
-        </div>
-        <div className="flex pb-10">
-          <div className="w-[95%] pr-5">
-            Nobody knew this better than the kings of the ancient world. That’s
-            why tey gave themselves an absolute monopoly on minting moolah.
-          </div>
-          <div className="flex mb-4">
-            <input
-              id="default-checkbox"
-              type="checkbox"
-              value=""
-              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-            />
-          </div>
-        </div>*/}
       </div>
     </>
   );
