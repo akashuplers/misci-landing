@@ -192,7 +192,7 @@ router.post("/user/create", async (req: any, res: any) => {
         });
         user = await db.db('lilleAdmin').collection('users').findOne({email: data.email})
       } else {
-        data.credit = process.env.CREDIT_COUNT
+        data.credits = process.env.CREDIT_COUNT
         // insert user into mongodb
         user = await db.db("lilleAdmin").collection("users").insertOne(data);
         if (!user?.insertedId)
