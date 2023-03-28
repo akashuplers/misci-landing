@@ -612,7 +612,7 @@ router.post('/twitter/me', async (request: any, reply: any) => {
   }
 })
 
-router.post("/user/social/login", {}, async (req: any, res: any) => {
+router.post("/user/social/login", async (req: any, res: any) => {
   try {
     const db = req.app.get('db')
     // const { errors, isValid } = validateLoginInput(req.body);
