@@ -15,11 +15,10 @@ export class ChatGPT {
         const encoded: { bpe: number[]; text: string[] } = tokenizer.encode(this.text);
         var config: any = {
             method: 'post',
-            url: 'https://api.openai.com/v1/completions',
+            url: 'https://nowigencegpt3.openai.azure.com/openai/deployments/text_completion/completions?api-version=2022-12-01',
             headers: { 
               'Content-Type': 'application/json', 
-              'Authorization': `Bearer ${this.apiKey}`,
-              "Access-Control-Allow-Headers": "X-Requested-With, privatekey"
+              'api-key': `${this.apiKey}`,
             },
             data : {
               "model": "text-davinci-003",
