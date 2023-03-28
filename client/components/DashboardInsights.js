@@ -2,37 +2,70 @@
 import React, { useEffect, useState } from "react";
 import { Switch } from "@headlessui/react";
 import LoaderPlane from "./LoaderPlane";
-import { jsonToHtml } from "../helpers/helper";
 
-export default function DashboardInsights({editorText, loading, ideas}) {
+import { useMutation } from "@apollo/client";
+import { regenerateBlog } from "../graphql/mutations/regenerateBlog"
+
+export default function DashboardInsights({loading, ideas, blog_id}) {
   const [enabled, setEnabled] = useState(false);
   const [valid, setValid] = useState(false);
   const [urlInput, setUrlInput] = useState("");
 
   const [regenSelected, setRegenSelected] = useState([]);
-  // const [inputDisabled, setInputDisabled] = useState(false);
 
-  function handleInputClick({target}){
-    const idea = target.previousElementSibling.innerHTML;
+  const [RegenerateBlog, { data, loading: setLoading, error }] = useMutation(regenerateBlog);
 
-    if(regenSelected.includes(idea)) {
-      setRegenSelected(prev => prev.filter(el => el !== idea))
-      return
+  function handleInputClick(idea, article_id, e){
+    const ideaObject = {
+      idea,
+      article_id
     }
 
+    let check = false;
+    regenSelected.find(el => {
+      if(el.idea === idea){
+        check = true
+        setRegenSelected(prev => prev.filter(el => el.idea !== idea))
+        return
+      }
+    })
+    if(check) return
+    
     if(regenSelected.length >= 3){
-      target.checked = false;
+      e.target.checked = false;
       return
     }
 
-    setRegenSelected(prev => [...prev, idea]);
+    setRegenSelected(prev => [...prev, ideaObject]);
+  }
+
+  function handleRegenerate(){
+    console.log(regenSelected)
+    RegenerateBlog({
+      variables: {
+        options: {
+          ideas: regenSelected,
+          blog_id: blog_id,
+        },
+      },
+      onCompleted: (data) => {
+        const aa = data.generate.publish_data[2].tiny_mce_data;
+        setIdeas(data.generate.ideas.ideas)
+        setblog_id(data.generate._id);
+        console.log("+++", aa);
+        const htmlDoc = jsonToHtml(aa);
+        setEditorText(htmlDoc);
+        console.log("Sucessfully generated the article");
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+    }).catch((err) => {
+      console.log(err);
+    });
   }
 
 
-  useEffect(()=>{
-    console.log(regenSelected)
-    // if(regenSelected.length === 3) setInputDisabled(true)
-  },[regenSelected])
 
   function urlHandler(e) {
     const value = e.target.value;
@@ -70,7 +103,9 @@ export default function DashboardInsights({editorText, loading, ideas}) {
             Regenerate your article on the basis of selected keyword, URL or
             uploaded document
           </p>
-          <button className="h-10 pl-5 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+          <button 
+            className="h-10 pl-5 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+            onClick={handleRegenerate}>
             Regenerate
           </button>
         </div>
@@ -182,7 +217,7 @@ export default function DashboardInsights({editorText, loading, ideas}) {
         </div>
         <div className="h-1/5 overflow-y-scroll" >
         {ideas.map(idea =>  {
-          const checkEnable = regenSelected.includes(idea)
+          if(idea.idea.length <=0 ) return;
           return ( 
           <div className="flex pb-10">
             <div className="flex justify-between gap-5 w-[95%] pr-5">
@@ -191,7 +226,7 @@ export default function DashboardInsights({editorText, loading, ideas}) {
                 id="default-checkbox"
                 type="checkbox"
                 className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                onClick={handleInputClick}
+                onClick={(e) => handleInputClick(idea.idea, idea.article_id, e)}
               />
             </div>
           </div>)
