@@ -1,7 +1,9 @@
+import { ObjectID } from "bson";
 import { User } from "interfaces";
 import { verify } from "jsonwebtoken";
 
 export const authMiddleware = async (req: any, res: any, next: any) => {
+    const db = req.app.get('db')
     const authHeaders = req?.headers?.authorization || "";
     const accessToken = authHeaders.split(" ")[1];
     const temp1 = req?.headers?.[process.env.PYKEY1!];
@@ -31,7 +33,8 @@ export const authMiddleware = async (req: any, res: any, next: any) => {
         let user = <User>{};
         try {
             user = <User>verify(token, process.env.JWT_SECRET_KEY!);
-            req.user = user
+            const userDetails = await db.db("lilleAdmin").collection('users').findOne({_id: new ObjectID(user.id)})
+            req.user = {...user, ...userDetails}
         } catch (err) {
             console.log(err)
             req.user = undefined
