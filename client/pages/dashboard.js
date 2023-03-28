@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
-import DragNdrop from "../components/DragAndDrop";
 import DashboardInsights from "../components/DashboardInsights";
 import Navbar from "../components/Navbar";
 import { useMutation } from "@apollo/client";
@@ -19,7 +18,6 @@ export default function dashboard({ query }) {
   const [blog_id, setblog_id] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [editorText, setEditorText] = useState("");
-
   const [ideas, setIdeas] = useState([]);
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
   const [
