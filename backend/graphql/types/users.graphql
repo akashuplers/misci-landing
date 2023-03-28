@@ -1,0 +1,22 @@
+type User {
+    _id: ID!
+    email: String!
+    name: String!
+    lastName: String!
+    admin: String!
+    date: String!
+    isSubscribed: Boolean
+    interval: String
+    paid: Boolean
+    lastInvoicedDate: Int
+    upcomingInvoicedDate: Int
+    subscribeStatus: String
+    freeTrial: Boolean
+    freeTrailEndsDate: String
+    freeTrialDays: Int!
+    subscriptionId: String
+    credits: Int
+}
+type Query {
+    me: User!
+}
