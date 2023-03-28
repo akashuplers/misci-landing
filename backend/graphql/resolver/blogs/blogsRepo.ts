@@ -64,19 +64,19 @@ export const blogGeneration = async ({db, args, text, regenerate = false, title}
         )
     )
     try {
-        const chatGPTImage = await new ChatGPT({apiKey: availableApi.key, text, db}).fetchImage()
-        newsLetter = {...newsLetter, image: chatGPTImage}
-        const base64 = await getBase64Image(newsLetter.image)
+        // const chatGPTImage = await new ChatGPT({apiKey: availableApi.key, text, db}).fetchImage()
+        // newsLetter = {...newsLetter, image: chatGPTImage}
+        // const base64 = await getBase64Image(newsLetter.image)
         let imageUrl: string | null = null
-        try {
-            const blobName = `blogs/${new Date().getTime()}.jpeg`;
-            const {url} = await new Azure({
-                blobName
-            }).getBlogUrlFromBase(base64)
-            imageUrl = url
-        }catch(e){
-            console.log(e, "error from azure")
-        }
+        // try {
+        //     const blobName = `blogs/${new Date().getTime()}.jpeg`;
+        //     const {url} = await new Azure({
+        //         blobName
+        //     }).getBlogUrlFromBase(base64)
+        //     imageUrl = url
+        // }catch(e){
+        //     console.log(e, "error from azure")
+        // }
         delete newsLetter.image
         let usedIdeasArr: any = []
         const updated = await (
