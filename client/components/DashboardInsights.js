@@ -2,30 +2,30 @@
 import React, { useEffect, useState } from "react";
 import { Switch } from "@headlessui/react";
 import LoaderPlane from "./LoaderPlane";
-import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
 import { useMutation, gql } from "@apollo/client";
+import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
+import { jsonToHtml } from "../helpers/helper";
 
-export default function DashboardInsights({ loading, ideas, blog_id }) {
+export default function DashboardInsights({loading, ideas, setEditorText, blog_id }) {
   const [enabled, setEnabled] = useState(false);
   const [valid, setValid] = useState(false);
   const [urlInput, setUrlInput] = useState("");
 
   const [regenSelected, setRegenSelected] = useState([]);
+  const [RegenerateBlog, { data, loading: regenLoading, error }] = useMutation(regenerateBlog);
 
-  const [RegenerateBlog, { data, loading: setLoading, error }] =
-    useMutation(regenerateBlog);
 
   function handleInputClick(idea, article_id, e) {
     const ideaObject = {
-      idea,
+      "text" : idea,
       article_id,
     };
 
     let check = false;
     regenSelected.find((el) => {
-      if (el.idea === idea) {
+      if (el.text === idea) {
         check = true;
-        setRegenSelected((prev) => prev.filter((el) => el.idea !== idea));
+        setRegenSelected((prev) => prev.filter((el) => el.text !== idea));
         return;
       }
     });
@@ -40,29 +40,30 @@ export default function DashboardInsights({ loading, ideas, blog_id }) {
   }
 
   function handleRegenerate() {
-    console.log(regenSelected);
-    RegenerateBlog({
-      variables: {
-        options: {
-          ideas: regenSelected,
-          blog_id: blog_id,
+      console.log(regenSelected)
+      RegenerateBlog({
+        variables: {
+          options: {
+            ideas: regenSelected,
+            blog_id: blog_id,
+          },
         },
-      },
-      onCompleted: (data) => {
-        const aa = data.generate.publish_data[2].tiny_mce_data;
-        // setIdeas(data.generate.ideas.ideas)
-        // setblog_id(data.generate._id);
+        onCompleted: (data) => {
+          console.log(data);
+          const regenData = data.regenerateBlog.publish_data[2].tiny_mce_data;
+          const htmlDocRegen = jsonToHtml(regenData);
+          console.log(htmlDocRegen)
+          setEditorText(htmlDocRegen);
+          console.log("Sucessfully re-generated the article");
+          setRegenSelected([]);
 
-        const htmlDoc = jsonToHtml(aa);
-        setEditorText(htmlDoc);
-        console.log("Sucessfully generated the article");
-      },
-      onError: (error) => {
-        console.log(error);
-      },
-    }).catch((err) => {
-      console.log(err);
-    });
+        },
+        onError: (error) => {
+          console.error(error);
+        },
+      }).catch((error) => {
+        console.error(error);
+      });
   }
 
   function urlHandler(e) {
@@ -91,7 +92,7 @@ export default function DashboardInsights({ loading, ideas, blog_id }) {
     setValid(pattern.test(urlInput));
   }
 
-  if (loading) return <LoaderPlane />;
+  if (loading || regenLoading) return <LoaderPlane />;
 
   return (
     <>
@@ -103,13 +104,17 @@ export default function DashboardInsights({ loading, ideas, blog_id }) {
           </p>
           <button
             className="h-10 pl-5 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
-            onClick={handleRegenerate}
+            onClick={()=>{
+              if(regenSelected.length >=1 ){
+                handleRegenerate()
+              }
+            }}
           >
             Regenerate
           </button>
         </div>
         <form className="flex items-center" onSubmit={postFormData}>
-          <label for="simple-search" className="sr-only">
+          <label htmlfor="simple-search" className="sr-only">
             Search
           </label>
           <div className="relative w-full">
@@ -122,9 +127,9 @@ export default function DashboardInsights({ loading, ideas, blog_id }) {
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
+                  fillRule="evenodd"
                   d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                  clip-rule="evenodd"
+                  clipRule="evenodd"
                 ></path>
               </svg>
             </div>
@@ -215,10 +220,10 @@ export default function DashboardInsights({ loading, ideas, blog_id }) {
           </div>
         </div>
         <div className="h-1/5 overflow-y-scroll">
-          {ideas.map((idea) => {
+          {ideas.map((idea, count) => {
             if (idea.idea.length <= 0) return;
             return (
-              <div className="flex pb-10">
+              <div key={count} className="flex pb-10">
                 <div className="flex justify-between gap-5 w-[95%] pr-5">
                   <p>{idea.idea}</p>
                   <input

@@ -37,19 +37,20 @@ export default function dashboard({ query }) {
         },
       },
       onCompleted: (data) => {
+        console.log(data)
         const aa = data.generate.publish_data[2].tiny_mce_data;
         setIdeas(data.generate.ideas.ideas)
         setblog_id(data.generate._id);
-        console.log("+++", aa);
+        // console.log("+++", aa);
         const htmlDoc = jsonToHtml(aa);
         setEditorText(htmlDoc);
         console.log("Sucessfully generated the article");
       },
       onError: (error) => {
-        console.log(error);
+        console.error(error);
       },
     }).catch((err) => {
-      console.log(err);
+      console.error(err);
     });
 
     if (
@@ -70,7 +71,7 @@ export default function dashboard({ query }) {
               <div className="h-[100%] w-[65%] pl-[20%] pr-9">
                 <TinyMCEEditor topic={topic} isAuthenticated={isAuthenticated}  editorText={editorText} loading={loading}/>
               </div>
-              <DashboardInsights loading={loading} ideas={ideas} blog_id={blog_id}/>
+              <DashboardInsights loading={loading} ideas={ideas} setEditorText={setEditorText} blog_id={blog_id}/>
             </div>
           </Layout>
     </>
