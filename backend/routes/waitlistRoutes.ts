@@ -30,7 +30,7 @@ router.post('/send/verify-email', async (req: any, res: any) => {
             htmlMsg: `
             <p>Dear User,</p>
             <br/><br/>
-            <p>Thank you taking the action to have your email verified with Pluaris Platform.
+            <p>Thank you taking the action to have your email verified with Lille Platform.
             </p><br/><br/>
             <p>Please verify your email by clicking below button</p><br/><br/>
             <p>
@@ -44,8 +44,8 @@ router.post('/send/verify-email', async (req: any, res: any) => {
             <p>Please contact us at <a href="mailto:cs@nowigence.com">cs@nowigence.com</a> if you face any issue.</p>
             <br/><br/>
             <p>Cheers.</p>
-            <p>Pluaris Support Team</p>
-            <p>www.pluaris.com</p>
+            <p>Lille Support Team</p>
+            <p>www.lille.com</p>
             <br/><br/>
             <p style="font-size: 6px">This is system generated email. Do not reply to this email. </p>
             `,
