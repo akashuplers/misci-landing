@@ -162,17 +162,6 @@ router.post("/user/create", async (req: any, res: any) => {
           .status(400)
           .send({ error: true, errors, message: "input errors" });
 
-      // check if user is duplicatez
-      const dupCheck = await db
-        .db("lilleAdmin")
-        .collection("users")
-        .findOne({ email: data.email });
-      // if dup, throw error "user exists"
-      if (dupCheck)
-        return res
-          .status(400)
-          .send({ error: true, message: "User already exists" });
-
       if(data.password){
         hashedPW = await bcrypt.hash(data.password, 12);
         data.password = hashedPW;
@@ -201,6 +190,16 @@ router.post("/user/create", async (req: any, res: any) => {
         user = await db.db('lilleAdmin').collection('users').findOne({email: data.email})
       } else {
         data.credits = process.env.CREDIT_COUNT
+        // check if user is duplicatez
+        const dupCheck = await db
+        .db("lilleAdmin")
+        .collection("users")
+        .findOne({ email: data.email });
+        // if dup, throw error "user exists"
+        if (dupCheck)
+          return res
+            .status(400)
+            .send({ error: true, message: "User already exists" });
         // insert user into mongodb
         user = await db.db("lilleAdmin").collection("users").insertOne(data);
         if (!user?.insertedId)
