@@ -18,11 +18,12 @@ export const fetchBlogIdeas = async ({id, db}: {
    return await db.db('lilleBlogs').collection('blogIdeas').findOne({blog_id: new ObjectID(id)})
 }
 
-export const blogGeneration = async ({db, text, regenerate = false, title}: {
+export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null}: {
     db: any;
     text: String;
     regenerate: Boolean;
-    title?: String | null
+    title?: String | null;
+    imageUrl?: String | null
 }) => {
     const chatgptApis = await db.db('admin').collection('chatGPT').findOne()
     let availableApi: any = null
@@ -66,7 +67,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title}: {
         // const chatGPTImage = await new ChatGPT({apiKey: availableApi.key, text, db}).fetchImage()
         // newsLetter = {...newsLetter, image: chatGPTImage}
         // const base64 = await getBase64Image(newsLetter.image)
-        let imageUrl: string | null = null
+        // let imageUrl: string | null = null
         // try {
         //     const blobName = `blogs/${new Date().getTime()}.jpeg`;
         //     const {url} = await new Azure({

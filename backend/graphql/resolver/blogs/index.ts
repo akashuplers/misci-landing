@@ -247,14 +247,22 @@ export const blogResolvers = {
         irNotify: async (
             parent: unknown, args: {options: IRNotifiyArgs}, {db, pubsub}: any
         ) => {
+            console.log(`Running IR Blog generation =====`)
             const userId = args.options.userId
             const articles = args.options.articles
             let texts = ""
             let keyword = null
+            let imageUrl: String | null = null
+            let article_ids: String[] = []
             const articlesData = await (
                 Promise.all(
-                    articles.map(async (id) => {
+                    articles.map(async (id, index) => {
                         const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
+                        if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
+                            imageUrl = article.proImageLink
+                        } else {
+                            if(index === (articles.length - 1) && !imageUrl) imageUrl = article.proImageLink
+                        }
                         keyword = article.keyword
                         return {
                             used_summaries: article._source.summary.slice(0, 5),
@@ -269,6 +277,7 @@ export const blogResolvers = {
                 data.used_summaries.forEach((summary: string, index: number) => {
                     texts += `- ${summary}\n`
                 })
+                article_ids.push(data.id)
             })
             try {
                 const {updatedBlogs}: any = await blogGeneration({
@@ -276,9 +285,10 @@ export const blogResolvers = {
                     text: texts,
                     regenerate: true,
                     title: articlesData[0]?.keyword,
+                    imageUrl
                 })
                 const finalBlogObj = {
-                    article_id: randomUUID(),
+                    article_id: article_ids,
                     publish_data: updatedBlogs,
                     userId: new ObjectID(userId),
                     keyword
@@ -313,8 +323,10 @@ export const blogResolvers = {
                     const id: any = insertBlogIdeas.insertedId
                     blogIdeasDetails = await db.db('lilleBlogs').collection('blogIdeas').findOne({_id: new ObjectID(id)})
                 }
+                console.log(`Ending IR Blog generation =====`)
                 return true
             } catch(e: any) {
+                console.log(`Ending IR Blog generation with error ===== ${e}`)
                 throw e
             }
         }
