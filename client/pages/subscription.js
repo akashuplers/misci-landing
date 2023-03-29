@@ -92,9 +92,10 @@ const Subscription = () => {
                 </div>
                 <div className="flex bg-[#ECECF4] items-center rounded-[59px] h-[63px] w-[350px] md:w-[370px] p-[10px] mb-[4%] space-x-[10px]">
                   {plans.length > 0 &&
-                    plans.map((item) => {
+                    plans.map((item, i) => {
                       return (
                         <div
+                          key={i}
                           onClick={() => subscriptionPlan(item)}
                           className={`w-[33%]  text-[18px] font-medium cursor-pointer rounded-[55px] px-[19px] py-[8px] ${
                             currentPlan?.subscriptionType ===
