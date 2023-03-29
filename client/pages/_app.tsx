@@ -11,6 +11,7 @@ import { ApolloProvider } from "@apollo/client";
 import { GRAPHQL_URL, WEBSOCKET_URL } from "@/constants";
 import useTempId from "@/store/tempId";
 import { useRouter } from "next/router";
+import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 
 export default function App({ Component, pageProps }: AppProps) {
   const changeTempId = useTempId((state) => state.changeTempId);
@@ -19,8 +20,27 @@ export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const pathName = router.pathname;
   const notAllowedRoutes = [""];
-  const allowedRoutes = ["/", "/login", "/signUp", "/dashboard", "/pricing"];
+  const allowedRoutes = [
+    "/",
+    "/login",
+    "/signUp",
+    "/dashboard",
+    "/pricing",
+    "/subscription",
+  ];
   useEffect(() => {
+    fetch(API_BASE_PATH + API_ROUTES.TEMP_ID, {
+      method: "GET",
+      headers: {
+        "Content-type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => localStorage.setItem("tempId", data.data.userId))
+      .catch((err) => console.error("Error: ", err));
+
+    console.log("===", tempId);
+
     const getToken = localStorage.getItem("token");
     if (
       getToken === "undefined" ||
