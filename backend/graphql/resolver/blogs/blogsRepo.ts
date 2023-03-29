@@ -18,9 +18,8 @@ export const fetchBlogIdeas = async ({id, db}: {
    return await db.db('lilleBlogs').collection('blogIdeas').findOne({blog_id: new ObjectID(id)})
 }
 
-export const blogGeneration = async ({db, args, text, regenerate = false, title}: {
+export const blogGeneration = async ({db, text, regenerate = false, title}: {
     db: any;
-    args: GenerateBlogMutationArg | ReGenerateBlogMutationArg;
     text: String;
     regenerate: Boolean;
     title?: String | null
@@ -47,7 +46,7 @@ export const blogGeneration = async ({db, args, text, regenerate = false, title}
                 try {
                     if(key === "wordpress") {
                         const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `
-                            ${regenerate ? `write a large blog for ${key} on topic ${title} using points: "${text}" with title and content` : `write a large blog for ${key} on  "${text}" with title and content`}
+                            ${regenerate ? `write a large blog for ${key} on topic ${title} using below points: \n "${text}" with title and content` : `write a large blog for ${key} on  "${text}" with title and content`}
                         `, db}).textCompletion()
                         newsLetter = {...newsLetter, [key]: chatGPTText}
                     } else {
