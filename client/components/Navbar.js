@@ -1,20 +1,6 @@
-/*
-  This example requires some changes to your config:
-  
-  
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  
-*/
-import React, { useState } from "react";
-import loginModal from "../modals/LoginModalPopup";
-import SignUpModalPopup from "../modals/SignUpModalPopup"
+import React, { useState, useEffect } from "react";
+import AuthenticationModal from "../components/AuthenticationModal.js";
+import Link from "next/link";
 import { Popover } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
@@ -25,7 +11,6 @@ const user = {
     "https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 };
 const navigation = [
-  { name: "Dashboard", href: "#", current: true },
   { name: "Calendar", href: "#", current: false },
   { name: "Teams", href: "#", current: false },
   { name: "Directory", href: "#", current: false },
@@ -40,9 +25,11 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Navbar() {
-  const [loginModalIsOpen, setloginModalIsOpen] = useState(false);
-  const [signUpModalIsOpen, setSignUpModalIsOpen] = useState(false);
+export default function Navbar({ isOpen }) {
+  const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
+  const [authenticationModalType, setAuthneticationModalType] =
+    useState("signup");
+
   return (
     <>
       {/* When the mobile menu is open, add `overflow-hidden` to the `body` element to prevent double scrollbars */}
@@ -51,14 +38,18 @@ export default function Navbar() {
         className={({ open }) =>
           classNames(
             open ? "fixed inset-0 z-40 overflow-y-auto" : "",
-            "bg-white shadow-sm lg:static lg:overflow-y-visible"
+            "bg-white shadow-sm lg:static lg:overflow-y-visible fixed top-0"
           )
         }
       >
         {({ open }) => (
           <>
-            {loginModal(loginModalIsOpen, setloginModalIsOpen)}
-            {SignUpModalPopup(signUpModalIsOpen, setSignUpModalIsOpen)}
+            <AuthenticationModal
+              type={authenticationModalType}
+              setType={setAuthneticationModalType}
+              modalIsOpen={authenticationModalOpen || isOpen}
+              setModalIsOpen={setAuthenticationModalOpen}
+            />
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="relative flex justify-between lg:gap-8 xl:grid xl:grid-cols-12">
                 <div className="flex md:absolute md:inset-y-0 md:left-0 lg:static xl:col-span-2">
@@ -93,16 +84,32 @@ export default function Navbar() {
                   </Popover.Button>
                 </div>
                 <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-4">
-                  <a
+                  {/* <a
                     href="#"
                     className="ml-5 flex-shrink-0 rounded-full bg-white p-1  hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    
                   >
                     Pricing
-                  </a>
+                  </a> */}
+                  <Link
+                    legacyBehavior
+                    as={"/pricing"}
+                    href={{
+                      pathname: "/pricing",
+                    }}
+                  >
+                    <p
+                      className="ml-5 flex-shrink-0 rounded-full bg-white p-1  hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                      style={{ cursor: "pointer" }}
+                    >
+                      Pricing
+                    </p>
+                  </Link>
 
                   <button
                     onClick={() => {
-                      setloginModalIsOpen(true);
+                      setAuthenticationModalOpen(true);
+                      setAuthneticationModalType("login");
                     }}
                     className="ml-5 flex-shrink-0 rounded-full bg-white p-1  hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                   >
@@ -110,7 +117,8 @@ export default function Navbar() {
                   </button>
                   <button
                     onClick={() => {
-                      setSignUpModalIsOpen(true)
+                      setAuthenticationModalOpen(true);
+                      setAuthneticationModalType("signup");
                     }}
                     className="ml-6 inline-flex items-center rounded-md bg-[#4A3AFE] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   >

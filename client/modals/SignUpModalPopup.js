@@ -1,12 +1,16 @@
+import { PlayPauseIcon } from "@heroicons/react/24/outline";
 import React, { useDebugValue, useState } from "react";
 import Modal from "react-modal";
+import {API_BASE_PATH, API_ROUTES}  from "../constants/apiEndpoints";
 
 export default function SignUpModalPopup(modalIsOpen, setModalIsOpen) {
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    "first-name" : "",
-    "last-name" : "",
+    "firstName" : "",
+    "lastName" : "",
     "email" : "",
-    "password" : ""
+    "password" : "",
+    "tempUserId" : ""
   })
   
   const openModal = (url) => {
@@ -17,15 +21,48 @@ export default function SignUpModalPopup(modalIsOpen, setModalIsOpen) {
     setModalIsOpen(false);
   };
 
-  const handleSubmit = () => {
-    setModalIsOpen(false);
-    console.log(formData);
-    setFormData({
-      "first-name" : "",
-      "last-name" : "",
-      "email" : "",
-      "password" : ""
+  const handleSubmit = async (event) => {
+    setSubmitting(true);
+    event.preventDefault();
+    fetch(API_BASE_PATH + API_ROUTES.CREATE_USER,{
+      method : "POST",
+      headers : {
+        "Content-type" : "application/json",
+      },
+      body : JSON.stringify(formData)
     })
+      .then(res => res.json())
+      .then(res => afterCreateUser(res))
+      .catch(err => console.error("Error: ", err))
+      .finally(() => {
+        setSubmitting(false)
+        setModalIsOpen(false)
+      })
+
+    function afterCreateUser(res) {
+      fetch(API_BASE_PATH + API_ROUTES.LOGIN_ENDPOINT,{
+        method : "POST",
+        headers : {
+          "Content-type" : "application/json",
+        },
+        body : JSON.stringify({
+          "email" : formData.email,
+          "password" : formData.password
+        })
+      }).then(res => res.json())
+        .then(data => localStorage.setItem("data", JSON.stringify(data)))
+        .catch(err => console.error("Error: ", err))
+        .finally(() => {
+          setFormData({
+            "firstName" : "",
+            "lastName" : "",
+            "email" : "",
+            "password" : "",
+            "tempUserId" : ""
+          })
+        })
+      return console.log("Success: ", res);
+    }
   };
 
   const handleChange = (event) => {
@@ -43,13 +80,14 @@ export default function SignUpModalPopup(modalIsOpen, setModalIsOpen) {
       isOpen={modalIsOpen}
       onRequestClose={closeModal}
       ariaHideApp={false}
-      class="w-[100%] sm:w-[38%] h-[90%]"
+      className="w-[100%] sm:w-[38%] h-[90%]"
       style={{
         overlay: {
           backgroundColor: "rgba(0,0,0,0.5)",
           zIndex: "9999",
         },
         content: {
+          position : "absolute",
           top: "50%",
           left: "50%",
           right: "auto",
@@ -57,7 +95,7 @@ export default function SignUpModalPopup(modalIsOpen, setModalIsOpen) {
           background: "white",
           boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
           borderRadius: "8px",
-          height: "75%",
+          // height: "75%",
           width: "50%",
           maxWidth : "450px" ,
           bottom: "",
@@ -69,7 +107,9 @@ export default function SignUpModalPopup(modalIsOpen, setModalIsOpen) {
         },
       }}
     >
-      <div className="max-w-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300">
+      <div className="max-w-lg mx-auto my-10 bg-white p-8 py-2 rounded-xl 
+      ">
+      {/* shadow shadow-slate-300 */}
         <h1 className="text-4xl font-medium p-2">Sign Up</h1>
         <p className="text-slate-500 p-2">Hi, Welcome back 👋</p>
 
@@ -80,7 +120,7 @@ export default function SignUpModalPopup(modalIsOpen, setModalIsOpen) {
               className="w-6 h-6 pl-2"
               alt=""
             />{" "}
-            <span className="p-4">Sign Up with Google</span>
+            <span className="p-4 py-2">Sign Up with Google</span>
           </button>
         </div>
         <form 
@@ -90,37 +130,39 @@ export default function SignUpModalPopup(modalIsOpen, setModalIsOpen) {
           onSubmit={handleSubmit}
         >
           <div className="flex flex-col space-y-5">
-            <div class="flex gap-4">
-              <label for="first-name">
+            <div className="flex gap-4">
+              <label htmlFor="firstName">
                 <p className="font-medium text-slate-700 pb-2 p-2">
                   First Name
                 </p>
                 <input
                   type="text"
-                  id="first-name"
-                  name="first-name"
+                  id="firstName"
+                  name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
                   className="border-black p-2 w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
                   placeholder="Enter First Name"
+                  required
                 />
               </label>
-              <label for="last-name">
+              <label htmlFor="lastName">
                 <p className="font-medium text-slate-700 pb-2 p-2">
                   Last Name
                 </p>
                 <input
                   type="text"
-                  id="last-name"
-                  name="last-name"
+                  id="lastName"
+                  name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
                   className="p-2 w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
                   placeholder="Enter Last Name"
+                  required
                 />
               </label>
             </div>
-            <label for="email">
+            <label htmlFor="email">
               <p className="font-medium text-slate-700 pb-2 p-2">
                 Email address
               </p>
@@ -134,7 +176,7 @@ export default function SignUpModalPopup(modalIsOpen, setModalIsOpen) {
                 placeholder="Enter email address"
               />
             </label>
-            <label for="password">
+            <label htmlFor="password">
               <p className="p-2 font-medium text-slate-700 pb-2">Password</p>
               <input
                 id="password"
@@ -148,7 +190,7 @@ export default function SignUpModalPopup(modalIsOpen, setModalIsOpen) {
             </label>
             <div className="flex flex-row justify-between py-4">
               <div>
-                <label for="remember" className="pr-4">
+                <label htmlFor="remember" className="pr-4">
                   <input
                     type="checkbox"
                     id="remember"
@@ -163,7 +205,7 @@ export default function SignUpModalPopup(modalIsOpen, setModalIsOpen) {
                 </a>
               </div>
             </div>
-            <button 
+            {/* <button 
               className="p-2 w-full py-3 font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center"
               type="submit">
               <svg
@@ -181,14 +223,38 @@ export default function SignUpModalPopup(modalIsOpen, setModalIsOpen) {
                 />
               </svg>
               <span>Sign Up</span>
+            </button> */}
+            <button 
+              className="p-2 w-full py-3 font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center"
+              type="submit">
+              {!submitting ? 
+              <>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                  />
+                </svg>
+                <span>Login</span> 
+              </>:
+                <p>Loading...</p>
+              }
             </button>
             <p className="my-auto text-center py-4 text-sm">
-              <p>Already Registered ?{" "}</p>
+              Already Registered ?{" "}
               <a
                 href="#"
                 className="text-indigo-600 font-medium inline-flex space-x-1 items-center"
               >
-                <span>Login Now </span>
+                <span>Sign Up</span>
                 <span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -196,11 +262,11 @@ export default function SignUpModalPopup(modalIsOpen, setModalIsOpen) {
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
-                    stroke-width="2"
+                    strokeWidth="2"
                   >
                     <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                     />
                   </svg>

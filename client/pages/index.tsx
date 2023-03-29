@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import Navbar from "../components/Navbar";
-import { ArrowDownRightIcon } from "@heroicons/react/24/outline";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
+import Link from "next/link";
+import LoaderPlane from "../components/LoaderPlane"
+
 export default function Home() {
   const keywords = gql`
     query keywords {
@@ -10,17 +12,29 @@ export default function Home() {
     }
   `;
   const { data, loading } = useQuery(keywords);
+  const [keyword, setkeyword] = useState("");
 
   console.log(data, "keywords");
+
   const updatedArr = data?.trendingTopics?.map((topic: any, i: any) => (
-    <div  
-      key={i} 
-      className="flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-white shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer"
-    > 
-      <span className="text-sm font-medium text-gray-900 cursor-auto">{topic}</span>  
-      <ArrowRightCircleIcon className="w-5 h-5 text-gray-400" />  
-    </div>  
-  )); 
+    <Link
+      key={i}
+      legacyBehavior
+      as={"/dashboard"}
+      href={{
+        pathname: "/dashboard",
+        query: { topic: topic },
+      }}
+    >
+      <div className="flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-white shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer">
+        <button className="text-sm font-medium text-gray-900 cursor-auto">
+          <a>{topic}</a>
+        </button>
+        <ArrowRightCircleIcon className="w-5 h-5 text-gray-400" />
+      </div>
+    </Link>
+  ));
+
   return (
     <>
       <Navbar />
@@ -52,7 +66,7 @@ export default function Home() {
         </div>
         <div className="mx-auto max-w-2xl py-32 sm:py-30 lg:py-20">
           <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
               Generate Newsletter with Lille
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-600">
@@ -60,14 +74,11 @@ export default function Home() {
               generates blog posts from URLs or uploaded files, providing
               concise and informative content in no time
             </p>
-            <div className="p-4">Try some of our trending topics</div>
-            <div className="grid grid-cols-3 gap-4 p-4">
-{!loading ? (<>
-             {updatedArr}</>) : (
-                    <div>Loading...</div> 
-                  )}  
-
-            </div>
+            <div className="p-4 mt-4">Try some of our trending topics</div>
+            {!loading ? (
+              <div className="grid grid-cols-3 gap-4 p-4">
+                {updatedArr}
+              </div>) : <LoaderPlane />}
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <input
                 id="search"
@@ -75,14 +86,22 @@ export default function Home() {
                 className="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                 placeholder="Search"
                 type="search"
+                onChange={(e) => {
+                  setkeyword(e.target.value);
+                }}
               />
-
-              <a
-                href="#"
-                className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              <Link
+                legacyBehavior
+                as={"/dashboard"}
+                href={{
+                  pathname: "/dashboard",
+                  query: { topic: keyword },
+                }}
               >
-                Generate
-              </a>
+                <a className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                  Generate
+                </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -112,7 +131,6 @@ export default function Home() {
           </svg>
         </div>
       </div>
-      ;
     </>
   );
 }

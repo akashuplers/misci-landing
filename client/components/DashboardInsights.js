@@ -1,15 +1,79 @@
-import React, { useState } from "react";
+/* eslint-disable react/jsx-key */
+import React, { useEffect, useState } from "react";
 import { Switch } from "@headlessui/react";
+import LoaderPlane from "./LoaderPlane";
+import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
+import { jsonToHtml } from "../helpers/helper";
+import { useMutation, gql } from "@apollo/client";
 
-export default function DashboardInsights() {
+export default function DashboardInsights({ loading, ideas, blog_id, setEditorText }) {
   const [enabled, setEnabled] = useState(false);
   const [valid, setValid] = useState(false);
   const [urlInput, setUrlInput] = useState("");
+
+  const [regenSelected, setRegenSelected] = useState([]);
+
+  const [RegenerateBlog, { data, loading: regenLoading, error }] =
+    useMutation(regenerateBlog);
+
+  function handleInputClick(idea, article_id, e) {
+    const ideaObject = {
+      "text" : idea,
+      article_id,
+    };
+
+    let check = false;
+    regenSelected.find((el) => {
+      if (el.text === idea) {
+        check = true;
+        setRegenSelected((prev) => prev.filter((el) => el.text !== idea));
+        return;
+      }
+    });
+    if (check) return;
+
+    if (regenSelected.length >= 3) {
+      e.target.checked = false;
+      return;
+    }
+
+    setRegenSelected((prev) => [...prev, ideaObject]);
+  }
+
+  function handleRegenerate() {
+    if(regenSelected.length < 1) return
+
+    console.log(regenSelected);
+    RegenerateBlog({
+      variables: {
+        options: {
+          ideas: regenSelected,
+          blog_id: blog_id,
+        },
+      },
+      onCompleted: (data) => {
+        console.log(data);
+        const regenDoc = data.regenerate.publish_data[2].tiny_mce_data;
+        const htmlDoc = jsonToHtml(regenDoc);
+        setEditorText(htmlDoc);
+        console.log("Sucessfully re-generated the article");
+        setRegenSelected([])
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    }).catch((err) => {
+      console.error(err);
+    }).finally(()=>{
+      setRegenSelected([])
+    });
+  }
 
   function urlHandler(e) {
     const value = e.target.value;
     setUrlInput(value);
   }
+
   function postFormData(e) {
     e.preventDefault();
     var expression =
@@ -30,6 +94,9 @@ export default function DashboardInsights() {
     ); // fragment locator
     setValid(pattern.test(urlInput));
   }
+
+  if (loading || regenLoading) return <LoaderPlane />;
+
   return (
     <>
       <div className="w-[40%] pl-9 pr-2">
@@ -38,7 +105,10 @@ export default function DashboardInsights() {
             Regenerate your article on the basis of selected keyword, URL or
             uploaded document
           </p>
-          <button className="h-10 pl-5 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+          <button
+            className="h-10 pl-5 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+            onClick={handleRegenerate}
+          >
             Regenerate
           </button>
         </div>
@@ -148,50 +218,25 @@ export default function DashboardInsights() {
             Fresh Idea
           </div>
         </div>
-        <div className="flex pb-10">
-          <div className="w-[95%] pr-5">
-            I’m an expert on how technology hijacks our psychological
-            vulnerabilities. That’s why I spent the last three years as a Design
-            Ethicist at Google caring about how to design things in a way that
-            defends a billion people’s minds from getting hijacked.
-          </div>
-          <div className="flex mb-4">
-            <input
-              id="default-checkbox"
-              type="checkbox"
-              value=""
-              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-            />
-          </div>
-        </div>
-        <div className="flex pb-10">
-          <div className="w-[95%] pr-5">
-            Generative Pre-trained Transformer (GPT) models by OpenAI have taken
-            natural language processing (NLP) community by storm by introducing
-            very powerful language models.
-          </div>
-          <div className="flex mb-4">
-            <input
-              id="default-checkbox"
-              type="checkbox"
-              value=""
-              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-            />
-          </div>
-        </div>
-        <div className="flex pb-10">
-          <div className="w-[95%] pr-5">
-            Nobody knew this better than the kings of the ancient world. That’s
-            why tey gave themselves an absolute monopoly on minting moolah.
-          </div>
-          <div className="flex mb-4">
-            <input
-              id="default-checkbox"
-              type="checkbox"
-              value=""
-              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-            />
-          </div>
+        <div className="h-1/5 overflow-y-scroll">
+          {ideas.map((idea) => {
+            if (idea.idea.length <= 0) return;
+            return (
+              <div className="flex pb-10">
+                <div className="flex justify-between gap-5 w-[95%] pr-5">
+                  <p>{idea.idea}</p>
+                  <input
+                    id="default-checkbox"
+                    type="checkbox"
+                    className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                    onClick={(e) =>
+                      handleInputClick(idea.idea, idea.article_id, e)
+                    }
+                  />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </>
