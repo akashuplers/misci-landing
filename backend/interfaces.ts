@@ -35,3 +35,8 @@ export interface User {
 export interface FetchBlog {
     id: string
 }
+
+export interface IRNotifiyArgs {
+    userId: string;
+    articles: [String];
+}

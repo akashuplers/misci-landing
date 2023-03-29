@@ -1,5 +1,5 @@
 import { withFilter } from 'graphql-subscriptions';
-import { FetchBlog, GenerateBlogMutationArg, ReGenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
+import { FetchBlog, GenerateBlogMutationArg, IRNotifiyArgs, ReGenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
 import { ChatGPT } from '../../../services/chatGPT';
 import { pubsub } from '../../../pubsub';
 import { getBase64Image } from '../../../utils/image';
@@ -92,7 +92,6 @@ export const blogResolvers = {
             try {
                 const {usedIdeasArr, updatedBlogs}: any = await blogGeneration({
                     db,
-                    args: args.options,
                     text: keyword,
                     regenerate: false
                 })
@@ -146,7 +145,6 @@ export const blogResolvers = {
             try {
                 const {usedIdeasArr, updatedBlogs}: any = await blogGeneration({
                     db,
-                    args: args.options,
                     text: texts,
                     regenerate: true,
                     title: blog.keyword
@@ -245,6 +243,80 @@ export const blogResolvers = {
             })
             const updatedBlog = await fetchBlog({id: blogId, db})
             return updatedBlog
+        },
+        irNotify: async (
+            parent: unknown, args: {options: IRNotifiyArgs}, {db, pubsub}: any
+        ) => {
+            const userId = args.options.userId
+            const articles = args.options.articles
+            let texts = ""
+            let keyword = null
+            const articlesData = await (
+                Promise.all(
+                    articles.map(async (id) => {
+                        const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
+                        keyword = article.keyword
+                        return {
+                            used_summaries: article._source.summary.slice(0, 5),
+                            unused_summaries: article._source.summary.slice(5),
+                            keyword: article.keyword,
+                            id
+                        }
+                    })
+                )
+            )
+            articlesData.forEach((data) => {
+                data.used_summaries.forEach((summary: string, index: number) => {
+                    texts += `- ${summary}\n`
+                })
+            })
+            try {
+                const {updatedBlogs}: any = await blogGeneration({
+                    db,
+                    text: texts,
+                    regenerate: true,
+                    title: articlesData[0]?.keyword,
+                })
+                const finalBlogObj = {
+                    article_id: randomUUID(),
+                    publish_data: updatedBlogs,
+                    userId: new ObjectID(userId),
+                    keyword
+                }
+                let updatedIdeas: any = []
+                articlesData.forEach((data) => {
+                    data.used_summaries.forEach((summary: string) => updatedIdeas.push({
+                        summary,
+                        article_id: data.id,
+                        reference: null,
+                        used: 1,
+                    }))
+                    data.unused_summaries.forEach((summary: string) => updatedIdeas.push({
+                        summary,
+                        article_id: data.id,
+                        reference: null,
+                        used: 0,
+                    }))
+                })
+                const insertBlog = await db.db('lilleBlogs').collection('blogs').insertOne(finalBlogObj)
+                const insertBlogIdeas = await db.db('lilleBlogs').collection('blogIdeas').insertOne({
+                    blog_id: insertBlog.insertedId,
+                    ideas: updatedIdeas
+                })
+                let blogDetails = null
+                let blogIdeasDetails = null
+                if(insertBlog.insertedId){
+                    const id: any = insertBlog.insertedId
+                    blogDetails = await db.db('lilleBlogs').collection('blogs').findOne({_id: new ObjectID(id)})
+                }
+                if(insertBlogIdeas.insertedId){
+                    const id: any = insertBlogIdeas.insertedId
+                    blogIdeasDetails = await db.db('lilleBlogs').collection('blogIdeas').findOne({_id: new ObjectID(id)})
+                }
+                return true
+            } catch(e: any) {
+                throw e
+            }
         }
     },
     Subscription: {
