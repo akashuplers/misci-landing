@@ -3,7 +3,7 @@ import { gql, useQuery } from "@apollo/client";
 import Navbar from "../components/Navbar";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
-import LoaderPlane from "../components/LoaderPlane"
+import LoaderPlane from "../components/LoaderPlane";
 
 export default function Home() {
   const keywords = gql`
@@ -37,7 +37,7 @@ export default function Home() {
 
   return (
     <>
-      <Navbar />
+      <Navbar isOpen={false} />
       <div className="relative  px-6 pt-5 lg:px-8">
         <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
           <svg
@@ -76,9 +76,10 @@ export default function Home() {
             </p>
             <div className="p-4 mt-4">Try some of our trending topics</div>
             {!loading ? (
-              <div className="grid grid-cols-3 gap-4 p-4">
-                {updatedArr}
-              </div>) : <LoaderPlane />}
+              <div className="grid grid-cols-3 gap-4 p-4">{updatedArr}</div>
+            ) : (
+              <LoaderPlane />
+            )}
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <input
                 id="search"

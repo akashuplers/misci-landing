@@ -188,9 +188,10 @@ export default function Pricing() {
                   <div className=" mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px]"></div>
                   <div className="flex bg-[#2d4051] items-center rounded-[59px] h-[55px] w-full justify-between px-2">
                     {plans.length > 0 &&
-                      plans.map((item) => {
+                      plans.map((item, i) => {
                         return (
                           <div
+                            key={i}
                             onClick={() => subscriptionPlan(item)}
                             className={`cursor-pointer rounded-[55px] px-[7.5px] md:px-[19px] py-[8px] ${
                               currentPlan?.subscriptionType ===
@@ -297,8 +298,8 @@ export default function Pricing() {
               <div className="text-[#4e475f] leading-[26px] w-[100%] text-left py-3 items-start text-[16px] ">
                 Monitor over 170k web news sources with automated retrieval and
                 analysis of relevant news articles. Pluaris will create a
-                personalized, annotated news feed in the Reader's page on your
-                topics of interest.
+                personalized, annotated news feed in the Reader &#39;s page on
+                your topics of interest.
               </div>
             </div>
             <div className="mx-[10%] mt-3">
@@ -355,8 +356,8 @@ export default function Pricing() {
                 <div className="text-[#484F5F] leading-[26px] opacity-[0.7] w-[50%] text-left py-3 items-start text-[16px] ">
                   Monitor over 170k web news sources with automated retrieval
                   and analysis of relevant news articles. Pluaris will create a
-                  personalized, annotated news feed in the Reader's page on your
-                  topics of interest.
+                  personalized, annotated news feed in the Reader&#39;s page on
+                  your topics of interest.
                 </div>
               </div>
               <div className="w-[30%]">

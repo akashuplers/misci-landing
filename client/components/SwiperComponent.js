@@ -16,9 +16,9 @@ export default function SwiperComponent({ data }) {
         modules={[Pagination]}
         className="mySwiper"
       >
-        {data.map((item) => {
+        {data.map((item, i) => {
           return (
-            <SwiperSlide>
+            <SwiperSlide key={i}>
               <div
                 style={{
                   // background: "rgba(255, 255, 255, 0.06)",
