@@ -3,29 +3,30 @@ import React, { useEffect, useState } from "react";
 import { Switch } from "@headlessui/react";
 import LoaderPlane from "./LoaderPlane";
 import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
+import { jsonToHtml } from "../helpers/helper";
 import { useMutation, gql } from "@apollo/client";
 
-export default function DashboardInsights({ loading, ideas, blog_id }) {
+export default function DashboardInsights({ loading, ideas, blog_id, setEditorText }) {
   const [enabled, setEnabled] = useState(false);
   const [valid, setValid] = useState(false);
   const [urlInput, setUrlInput] = useState("");
 
   const [regenSelected, setRegenSelected] = useState([]);
 
-  const [RegenerateBlog, { data, loading: setLoading, error }] =
+  const [RegenerateBlog, { data, loading: regenLoading, error }] =
     useMutation(regenerateBlog);
 
   function handleInputClick(idea, article_id, e) {
     const ideaObject = {
-      idea,
+      "text" : idea,
       article_id,
     };
 
     let check = false;
     regenSelected.find((el) => {
-      if (el.idea === idea) {
+      if (el.text === idea) {
         check = true;
-        setRegenSelected((prev) => prev.filter((el) => el.idea !== idea));
+        setRegenSelected((prev) => prev.filter((el) => el.text !== idea));
         return;
       }
     });
@@ -40,6 +41,8 @@ export default function DashboardInsights({ loading, ideas, blog_id }) {
   }
 
   function handleRegenerate() {
+    if(regenSelected.length < 1) return
+
     console.log(regenSelected);
     RegenerateBlog({
       variables: {
@@ -49,19 +52,20 @@ export default function DashboardInsights({ loading, ideas, blog_id }) {
         },
       },
       onCompleted: (data) => {
-        const aa = data.generate.publish_data[2].tiny_mce_data;
-        // setIdeas(data.generate.ideas.ideas)
-        // setblog_id(data.generate._id);
-
-        const htmlDoc = jsonToHtml(aa);
+        console.log(data);
+        const regenDoc = data.regenerate.publish_data[2].tiny_mce_data;
+        const htmlDoc = jsonToHtml(regenDoc);
         setEditorText(htmlDoc);
-        console.log("Sucessfully generated the article");
+        console.log("Sucessfully re-generated the article");
+        setRegenSelected([])
       },
       onError: (error) => {
-        console.log(error);
+        console.error(error);
       },
     }).catch((err) => {
-      console.log(err);
+      console.error(err);
+    }).finally(()=>{
+      setRegenSelected([])
     });
   }
 
@@ -91,7 +95,7 @@ export default function DashboardInsights({ loading, ideas, blog_id }) {
     setValid(pattern.test(urlInput));
   }
 
-  if (loading) return <LoaderPlane />;
+  if (loading || regenLoading) return <LoaderPlane />;
 
   return (
     <>

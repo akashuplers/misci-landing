@@ -70,7 +70,7 @@ export default function dashboard({ query }) {
               <div className="h-[100%] w-[65%] pl-[20%] pr-9">
                 <TinyMCEEditor topic={topic} isAuthenticated={isAuthenticated}  editorText={editorText} loading={loading}/>
               </div>
-              <DashboardInsights loading={loading} ideas={ideas} blog_id={blog_id}/>
+              <DashboardInsights loading={loading} ideas={ideas} blog_id={blog_id} setEditorText={setEditorText}/>
             </div>
           </Layout>
     </>
