@@ -121,7 +121,8 @@ router.post('/add-urls', async(req: any, res: any) => {
     }
     await db.db('lilleAdmin').collection('waitLists').updateOne({email: tokenVerification.email}, {
         $set: {
-            urls: data.urls
+            urls: data.urls,
+            keywords: data.keywords || [],
         }
     })
     return res.status(200).send({
