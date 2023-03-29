@@ -6,7 +6,10 @@ import Footer from "./Footer";
 export default function Layout({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   useEffect(() => {
-    const getToken = localStorage.getItem("token");
+    var getToken;
+    if (typeof window !== "undefined") {
+      getToken = localStorage.getItem("token");
+    }
     if (
       getToken === "undefined" ||
       getToken === null ||
@@ -27,7 +30,7 @@ export default function Layout({ children }) {
         </>
       ) : (
         <>
-          <Navbar />
+          <Navbar isOpen={false} />
           {children}
           <Footer />
         </>

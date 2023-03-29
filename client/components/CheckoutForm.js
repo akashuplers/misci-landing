@@ -15,8 +15,14 @@ const CheckoutForm = ({ priceId, currentPlan, setClickOnSubscibe }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [btnClicked, setBtnClicked] = useState(false);
-  const tempUserId = localStorage.getItem("tempId");
-  const tempCompanyId = localStorage.getItem("companyId");
+  var tempUserId;
+  if (typeof window !== "undefined") {
+    tempUserId = localStorage.getItem("tempId");
+  }
+  var tempCompanyId;
+  if (typeof window !== "undefined") {
+    tempCompanyId = localStorage.getItem("companyId");
+  }
   const [error, setError] = useState(null);
   const [processing, setProcessing] = useState("");
   const [disabled, setDisabled] = useState(true);
