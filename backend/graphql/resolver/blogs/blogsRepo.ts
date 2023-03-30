@@ -46,12 +46,12 @@ export const blogGeneration = async ({db, text, regenerate = false, title}: {
                 try {
                     if(key === "wordpress") {
                         const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `
-                            ${regenerate ? `write a large blog for ${key} on topic ${title} using below points: \n "${text}" with title and content` : `write a large blog for ${key} on  "${text}" with title and content`}
+                            ${regenerate ? `write a large blog for ${key} on topic ${title} with title and content using below points: \n "${text}"` : `write a large blog for ${key} on  "${text}" with title and content`}
                         `, db}).textCompletion()
                         newsLetter = {...newsLetter, [key]: chatGPTText}
                     } else {
                         const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `
-                        ${regenerate ? `write a blog using points: "${text}" on topic ${title} for a ${key}` : `write a blog on "${text}" for a ${key}`}
+                        ${regenerate ? `write a blog on topic ${title} for a ${key} using below points: "${text}"` : `write a blog on "${text}" for a ${key}`}
                         `, db}).textCompletion()
                         newsLetter = {...newsLetter, [key]: chatGPTText}
                     }
@@ -78,6 +78,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title}: {
         // }
         delete newsLetter.image
         let usedIdeasArr: any = []
+        let description = ""
         const updated = await (
             Promise.all(
                 Object.keys(newsLetter).map(async (key: string) => {
@@ -88,8 +89,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title}: {
                             case "wordpress":
                                 const title = newsLetter[key].slice(newsLetter[key].indexOf("Title:"), newsLetter[key].indexOf("Content:")).trim()
                                 const content = newsLetter[key].slice(newsLetter[key].indexOf("Content:"), newsLetter[key].length).trim()
-                                console.log(content)
-                                console.log(content.split('Content:')[1])
+                                description = ((content.split('Content:')?.[1]).replace("\n", "")).trimStart()
                                 usedIdeasArr = (content.split('Content:')[1]).split('.')
                                 return {
                                     published: false,
@@ -139,7 +139,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title}: {
                                                 "tag": "P",
                                                 "attributes": {},
                                                 "children": [
-                                                    content.split('Content:')[1]
+                                                    content.split('Content:')?.[1]
                                                 ]
                                             }
                                         ]
@@ -220,7 +220,8 @@ export const blogGeneration = async ({db, text, regenerate = false, title}: {
         )
         return {
             updatedBlogs: updated,
-            usedIdeasArr
+            usedIdeasArr,
+            description
         }
     }catch(e){
         throw e
