@@ -19,7 +19,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const pathName = router.pathname;
   const notAllowedRoutes = [""];
-  const allowedRoutes = ["/", "/login", "/signUp", "/dashboard", "/pricing"];
+  const allowedRoutes = ["/", "/login", "/signUp", "/dashboard", "/pricing", "/saved"];
   useEffect(() => {
     const getToken = localStorage.getItem("token");
     if (
