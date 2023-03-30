@@ -170,7 +170,7 @@ export const blogResolvers = {
                     imageUrl
                 })
                 const finalBlogObj = {
-                    article_id: article_ids,
+                    article_id: articleIds,
                     publish_data: updatedBlogs,
                     userId: new ObjectID(userId),
                     keyword,
