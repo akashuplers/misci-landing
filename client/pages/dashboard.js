@@ -25,20 +25,21 @@ export default function dashboard({ query }) {
     { data: updateData, loading: updateLoading, error: updateError },
   ] = useMutation(updateBlog);
 
-
   useEffect(() => {
     const getToken = localStorage.getItem("token");
+    const tempId = localStorage.getItem("tempId");
 
-     GenerateBlog({
+    GenerateBlog({
       variables: {
         options: {
-          user_id: "640ece0e2369c047dbe0b8fb",
+          user_id: tempId,
           keyword: topic,
         },
       },
       onCompleted: (data) => {
+        console.log("692", data);
         const aa = data.generate.publish_data[2].tiny_mce_data;
-        setIdeas(data.generate.ideas.ideas)
+        setIdeas(data.generate.ideas.ideas);
         setblog_id(data.generate._id);
         console.log("+++", aa);
         const htmlDoc = jsonToHtml(aa);
@@ -65,14 +66,25 @@ export default function dashboard({ query }) {
 
   return (
     <>
-          <Layout>
-            <div className="flex divide-x">
-              <div className="h-[100%] w-[65%] pl-[20%] pr-9">
-                <TinyMCEEditor topic={topic} isAuthenticated={isAuthenticated}  editorText={editorText} loading={loading}/>
-              </div>
-              <DashboardInsights loading={loading} ideas={ideas} blog_id={blog_id} setEditorText={setEditorText}/>
-            </div>
-          </Layout>
+      <Layout>
+        <div className="flex divide-x">
+          <div className="h-[100%] w-[65%] pl-[20%] pr-9">
+            <TinyMCEEditor
+              topic={topic}
+              isAuthenticated={isAuthenticated}
+              editorText={editorText}
+              loading={loading}
+              blog_id={blog_id}
+            />
+          </div>
+          <DashboardInsights
+            loading={loading}
+            ideas={ideas}
+            blog_id={blog_id}
+            setEditorText={setEditorText}
+          />
+        </div>
+      </Layout>
     </>
   );
 }
