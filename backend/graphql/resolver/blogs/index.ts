@@ -7,6 +7,7 @@ import { ObjectID } from 'bson';
 import { randomUUID } from 'crypto';
 import { blogGeneration, fetchBlog, fetchBlogIdeas } from './blogsRepo';
 import { Azure } from '../../../services/azure';
+import axios from 'axios';
 
 const SOMETHING_CHANGED_TOPIC = 'new_link';
 
@@ -66,7 +67,7 @@ export const blogResolvers = {
         generate: async (
             parent: unknown, args:{options: GenerateBlogMutationArg}, {req, res, db, pubsub}: any
         ) => {
-            const keyword = args.options.keyword
+            let keyword = args.options.keyword
             const userId = args.options.user_id
             const chatgptApis = await db.db('admin').collection('chatGPT').findOne()
             console.log(args)
@@ -79,53 +80,127 @@ export const blogResolvers = {
             if(!availableApi) {
                 throw "Something went wrong! Please connect with support team";
             }
-            
-            let newsLetter: any = {
-                linkedin: null,
-                twitter: null,
-                wordpress: null,
-                image: null
+            let pythonRes: any = null
+            try {
+                const data = JSON.stringify({
+                    "userId": userId,
+                    "comp": "nowigence",
+                    "topic": keyword,
+                    "topicType": "other",
+                    "subscriptionReason": "Select how this topic relates to you",
+                    "excludedTopicKeywords": [],
+                    "marketCode": [
+                      "en-US"
+                    ]
+                });
+                  
+                const config: any = {
+                    method: 'post',
+                    url: `${process.env.PYTHON_REST_BASE_ENDPOINT}/topics_check`,
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    data : data
+                };
+                pythonRes = await axios(config)
+            }catch(e){
+                console.log(e, "error from python")
             }
-            const text = keyword
-            await (
+            // console.log(pythonRes.data, "pythonRes")
+            const articleIds = pythonRes.data
+            let texts = ""
+            let imageUrl: string | null = null
+            let article_ids: String[] = []
+            const articlesData = await (
                 Promise.all(
-                    Object.keys(newsLetter).map(async (key: string) => {
-                        try {
-                            if(key === "wordpress") {
-                                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `write a large blog for ${key} on  "${text}" with title and content`, db}).textCompletion()
-                                newsLetter = {...newsLetter, [key]: chatGPTText}
-                            } else {
-                                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `write a blog on "${text}" for a ${key === "medium" ? "medium" : `${key}`}`, db}).textCompletion()
-                                newsLetter = {...newsLetter, [key]: chatGPTText}
-                            }
-                        } catch(e: any) {
-                            throw e
+                    articleIds.map(async (id: string, index: number) => {
+                        const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
+                        if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
+                            imageUrl = article.proImageLink
+                        } else {
+                            if(index === (articleIds.length - 1) && !imageUrl) imageUrl = article.proImageLink
+                        }
+                        keyword = article.keyword
+                        return {
+                            used_summaries: article._source.summary.slice(0, 5),
+                            unused_summaries: article._source.summary.slice(5),
+                            keyword: article.keyword,
+                            id
                         }
                     })
                 )
             )
+            articlesData.forEach((data) => {
+                data.used_summaries.forEach((summary: string, index: number) => {
+                    texts += `- ${summary}\n`
+                })
+                article_ids.push(data.id)
+            })
+            console.log(articlesData)
+            console.log(article_ids)
+            console.log(texts)
+            // let newsLetter: any = {
+            //     linkedin: null,
+            //     twitter: null,
+            //     wordpress: null,
+            //     image: null
+            // }
+            // await (
+            //     Promise.all(
+            //         Object.keys(newsLetter).map(async (key: string) => {
+            //             try {
+            //                 if(key === "wordpress") {
+            //                     const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `write a large blog for ${key} on  "${text}" with title and content`, db}).textCompletion()
+            //                     newsLetter = {...newsLetter, [key]: chatGPTText}
+            //                 } else {
+            //                     const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `write a blog on "${text}" for a ${key === "medium" ? "medium" : `${key}`}`, db}).textCompletion()
+            //                     newsLetter = {...newsLetter, [key]: chatGPTText}
+            //                 }
+            //             } catch(e: any) {
+            //                 throw e
+            //             }
+            //         })
+            //     )
+            // )
             try {
                 const {usedIdeasArr, updatedBlogs, description}: any = await blogGeneration({
                     db,
                     text: keyword,
-                    regenerate: false
+                    regenerate: false,
+                    imageUrl
                 })
                 const finalBlogObj = {
-                    article_id: null,
+                    article_id: article_ids,
                     publish_data: updatedBlogs,
                     userId: new ObjectID(userId),
                     keyword,
                     status: "draft",
                     description
                 }
-                const updatedIdeas = usedIdeasArr.map((idea: string) => {
-                    return {
-                        idea,
-                        article_id: finalBlogObj.article_id,
+                let updatedIdeas: any = []
+                articlesData.forEach((data) => {
+                    data.used_summaries.forEach((summary: string) => updatedIdeas.push({
+                        summary,
+                        article_id: data.id,
                         reference: null,
                         used: 1,
-                    }
+                    }))
+                    data.unused_summaries.forEach((summary: string) => updatedIdeas.push({
+                        summary,
+                        article_id: data.id,
+                        reference: null,
+                        used: 0,
+                    }))
                 })
+                console.log(updatedIdeas)
+                // const updatedIdeas = usedIdeasArr.map((idea: string) => {
+                //     return {
+                //         idea,
+                //         article_id: finalBlogObj.article_id,
+                //         reference: null,
+                //         used: 1,
+                //     }
+                // })
                 const insertBlog = await db.db('lilleBlogs').collection('blogs').insertOne(finalBlogObj)
                 const insertBlogIdeas = await db.db('lilleBlogs').collection('blogIdeas').insertOne({
                     blog_id: insertBlog.insertedId,
