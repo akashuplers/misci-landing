@@ -7,28 +7,28 @@ import Layout from "../components/Layout";
 export default function saved() {
     const [allBlogs, setAllBlogs] = useState([
         {
-            description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea, aliquam ipsam cumque ab asperiores harum rerum consequuntur deserunt blanditiis esse.',
+            description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
             image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
             tags: ["label1","label2"],
             title: "this a filler title",
             _id: "6423f2a5df61bee260863244"
         },
         {
-            description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea, aliquam ipsam cumque ab asperiores harum rerum consequuntur deserunt blanditiis esse.',
+            description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
             image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
             tags: ["label1","label2"],
             title: "this a filler title",
             _id: "6423f2a5df61bee260863244"
         },
         {
-            description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea, aliquam ipsam cumque ab asperiores harum rerum consequuntur deserunt blanditiis esse.',
+            description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
             image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
             tags: ["label1","label2"],
             title: "this a filler title",
             _id: "6423f2a5df61bee260863244"
         },
         {
-            description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea, aliquam ipsam cumque ab asperiores harum rerum consequuntur deserunt blanditiis esse.',
+            description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
             image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
             tags: ["label1","label2"],
             title: "this a filler title",
@@ -99,6 +99,7 @@ export default function saved() {
                                             </h3>
                                             <p>{blog.description}</p>
                                             <div style={{
+                                                    marginTop: "0.5em",
                                                     display: "flex",
                                                     gap: "0.25em"
                                             }}>
