@@ -82,9 +82,7 @@ export default function AuthenticationModal({
         }),
       })
         .then((res) => res.json())
-        .then((data) =>
-          redirectPageAfterLogin(data)
-        )
+        .then((data) => redirectPageAfterLogin(data))
         .catch((err) => console.error("Error: ", err))
         .finally(() => {
           setSignUpFormData({
@@ -228,7 +226,7 @@ export default function AuthenticationModal({
                 name="password"
                 type="password"
                 title="Password should contain alphabet and number and should be between 8 to 20 characters"
-                pattern='^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{8,20}$'
+                pattern="^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{8,20}$"
                 value={signUpFormData.password}
                 onChange={handleSignUpChange}
                 className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
@@ -248,9 +246,7 @@ export default function AuthenticationModal({
                 </label>
               </div>
               <div>
-                <a 
-                  href="#" 
-                  className="text-sm  font-medium text-indigo-600">
+                <a href="#" className="text-sm  font-medium text-indigo-600">
                   Forgot Password?
                 </a>
               </div>
@@ -321,13 +317,33 @@ export default function AuthenticationModal({
 function redirectPageAfterLogin(data) {
   // console.log(data);
   // console.log(data.data.accessToken);
-  localStorage.setItem("token", JSON.stringify(data.data));
-  // console.log(window.location.pathname)
-  if(window.location.pathname === "/"){
-    window.location.href = "/dashboard"
-  }else {
+  var getToken;
+  if (typeof window !== "undefined") {
+    getToken = localStorage.getItem("token");
+  }
+  const {
+    data: meeData,
+    loading,
+    error,
+  } = useQuery(meeAPI, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken,
+      },
+    },
+  }).then((res) => {
+    console.log("res", res);
+  });
+
+  localStorage.setItem(
+    "token",
+    JSON.stringify(data.data.accessToken).replace(/['"]+/g, "")
+  );
+  if (window.location.pathname === "/") {
+    window.location.href = "/dashboard";
+  } else {
     window.location.reload();
   }
-  return
+  return;
 }
-
