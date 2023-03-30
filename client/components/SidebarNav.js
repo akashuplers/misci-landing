@@ -18,7 +18,7 @@ const navigation = [
     icon: PaperAirplaneIcon,
     current: false,
   },
-  { name: "Saved Blogs", href: "#", icon: FolderIcon, current: false },
+  { name: "Saved Blogs", href: "/saved", icon: FolderIcon, current: false },
 ];
 
 const navigation_bottom = [
