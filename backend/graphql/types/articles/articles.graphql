@@ -14,7 +14,7 @@ type BlogList {
 }
 type Blog {
     _id: ID!
-    article_id: String! 
+    article_id: [String] 
     publish_data: [PublishData]
     ideas: BlogIdeas
 }
