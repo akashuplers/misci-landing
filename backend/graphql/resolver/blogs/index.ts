@@ -38,6 +38,21 @@ export const blogResolvers = {
             const blogDetails = await fetchBlog({id, db})
             const blogIdeas = await fetchBlogIdeas({id, db})
             return {...blogDetails, ideas: blogIdeas}
+        },
+        getAllBlogs: async (
+            parent: unknown, args: any, {db, pubsub, user}: any
+        ) => {
+            const blogLists = await db.db('lilleBlogs').collection('blogs').find({userId: new ObjectID(user.id)}).toArray()    
+            const updatedList = blogLists.map((blog: any) => {
+                return {
+                    _id: blog._id,
+                    title: blog.keyword,
+                    description: blog.description,
+                    tags: [],
+                    image: ""
+                }
+            })
+            return updatedList
         }
     },
     Mutation: {
@@ -90,16 +105,18 @@ export const blogResolvers = {
                 )
             )
             try {
-                const {usedIdeasArr, updatedBlogs}: any = await blogGeneration({
+                const {usedIdeasArr, updatedBlogs, description}: any = await blogGeneration({
                     db,
                     text: keyword,
                     regenerate: false
                 })
                 const finalBlogObj = {
-                    article_id: randomUUID(),
+                    article_id: null,
                     publish_data: updatedBlogs,
                     userId: new ObjectID(userId),
-                    keyword
+                    keyword,
+                    status: "draft",
+                    description
                 }
                 const updatedIdeas = usedIdeasArr.map((idea: string) => {
                     return {
@@ -143,7 +160,7 @@ export const blogResolvers = {
             })
             console.log(texts)
             try {
-                const {usedIdeasArr, updatedBlogs}: any = await blogGeneration({
+                const {usedIdeasArr, updatedBlogs, description}: any = await blogGeneration({
                     db,
                     text: texts,
                     regenerate: true,
@@ -184,7 +201,9 @@ export const blogResolvers = {
                     _id: new ObjectID(blog._id)
                 }, {
                     $set: {
-                        publish_data: blog.publish_data
+                        publish_data: blog.publish_data,
+                        status: "draft",
+                        description
                     }
                 })
                 await db.db('lilleBlogs').collection('blogIdeas').updateOne({
@@ -202,7 +221,6 @@ export const blogResolvers = {
                 }
                 if(blogIdeas._id){
                     blogIdeasDetails = await fetchBlogIdeas({id: blogId, db})
-                    console.log(blogIdeasDetails)
                 }
                 return {...blogDetails, ideas: blogIdeasDetails}
             } catch(e: any) {
@@ -238,7 +256,8 @@ export const blogResolvers = {
             })
             await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(blogId)}, {
                 $set: {
-                    publish_data: updatedPublisData
+                    publish_data: updatedPublisData,
+                    status: "draft"
                 }
             })
             const updatedBlog = await fetchBlog({id: blogId, db})
@@ -271,7 +290,7 @@ export const blogResolvers = {
                 })
             })
             try {
-                const {updatedBlogs}: any = await blogGeneration({
+                const {updatedBlogs, description}: any = await blogGeneration({
                     db,
                     text: texts,
                     regenerate: true,
@@ -281,7 +300,10 @@ export const blogResolvers = {
                     article_id: randomUUID(),
                     publish_data: updatedBlogs,
                     userId: new ObjectID(userId),
-                    keyword
+                    keyword,
+                    status: "ir_generated",
+                    description,
+                    imageUrl
                 }
                 let updatedIdeas: any = []
                 articlesData.forEach((data) => {
