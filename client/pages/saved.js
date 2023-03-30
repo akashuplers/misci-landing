@@ -1,55 +1,53 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { all } from "axios";
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 // import { getAllBlogs } from "../graphql/queries/getAllBlogs";
 
 export default function saved() {
-    const [allBlogs, setAllBlogs] = useState([
-        {
-            description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
-            image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-            tags: ["label1","label2"],
-            title: "this a filler title",
-            _id: "6423f2a5df61bee260863244"
-        },
-        {
-            description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
-            image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-            tags: ["label1","label2"],
-            title: "this a filler title",
-            _id: "6423f2a5df61bee260863244"
-        },
-        {
-            description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
-            image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-            tags: ["label1","label2"],
-            title: "this a filler title",
-            _id: "6423f2a5df61bee260863244"
-        },
-        {
-            description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
-            image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-            tags: ["label1","label2"],
-            title: "this a filler title",
-            _id: "6423f2a5df61bee260863244"
-        },
-        {
-            description: null,
-            image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-            tags: ["label1","label2"],
-            title: "this a filler title",
-            _id: "6423f2a5df61bee260863244"
-        }
-    ]);
+        // {
+        //     description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
+        //     image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+        //     tags: ["label1","label2"],
+        //     title: "this a filler title",
+        //     _id: "6423f2a5df61bee260863244"
+        // },
+        // {
+        //     description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
+        //     image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+        //     tags: ["label1","label2"],
+        //     title: "this a filler title",
+        //     _id: "6423f2a5df61bee260863244"
+        // },
+        // {
+        //     description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
+        //     image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+        //     tags: ["label1","label2"],
+        //     title: "this a filler title",
+        //     _id: "6423f2a5df61bee260863244"
+        // },
+        // {
+        //     description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
+        //     image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+        //     tags: ["label1","label2"],
+        //     title: "this a filler title",
+        //     _id: "6423f2a5df61bee260863244"
+        // },
+        // {
+        //     description: null,
+        //     image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+        //     tags: ["label1","label2"],
+        //     title: "this a filler title",
+        //     _id: "6423f2a5df61bee260863244"
+        // }
+    const [allBlogs, setAllBlogs] = useState([]);
 
-    /*useEffect(() => {
+    useEffect(() => {
         function fetchAllBlogs(){
             const accessToken = JSON.parse(localStorage.getItem("token")).accessToken
 
             var myHeaders = new Headers();
             myHeaders.append("content-type", "application/json");
-            myHeaders.append("Authorization", `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFrYXNoLnNoYXJtYUBub3dpZ2VuY2UuY29tIiwiaWQiOiI2NDBlY2VjZjIzNjljMDQ3ZGJlMGI4ZmYiLCJjb21wYW55Ijoibm93aWdlbmNlIiwiaWF0IjoxNjgwMDkzNzA0LCJleHAiOjE2ODAxODAxMDR9.B16uuyMYswzJxukm0LfAtZj0AvkGyk3oF_SEPK4oGCQ`);
+            myHeaders.append("Authorization", `Bearer ${accessToken}`);
 
             var raw = JSON.stringify({
             "query": "query GetAllBlogs {\n  getAllBlogs {\n    _id\n    title\n  description\n   tags\n   image\n }\n}"
@@ -73,7 +71,7 @@ export default function saved() {
         fetchAllBlogs()
     },[])
 
-    if(allBlogs == null) return*/
+    if(allBlogs == null) return
 
     console.log(allBlogs)
     return (
