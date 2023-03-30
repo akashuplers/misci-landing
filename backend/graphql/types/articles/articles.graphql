@@ -71,7 +71,7 @@ input RegenerateBlogOptions {
 
 input IdeasInput {
     text: String!
-    article_id: String!
+    article_id: String
 }
 
 input IRNotifiyOptions {
