@@ -180,13 +180,13 @@ export const blogResolvers = {
                 let updatedIdeas: any = []
                 articlesData.forEach((data) => {
                     data.used_summaries.forEach((summary: string) => updatedIdeas.push({
-                        summary,
+                        idea: summary,
                         article_id: data.id,
                         reference: null,
                         used: 1,
                     }))
                     data.unused_summaries.forEach((summary: string) => updatedIdeas.push({
-                        summary,
+                        idea: summary,
                         article_id: data.id,
                         reference: null,
                         used: 0,
