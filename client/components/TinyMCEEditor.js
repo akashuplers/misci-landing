@@ -3,20 +3,35 @@ import { Editor } from "@tinymce/tinymce-react";
 import { htmlToJson, jsonToHtml } from "../helpers/helper";
 import { generateBlog } from "../graphql/mutations/generateBlog";
 import { updateBlog } from "../graphql/mutations/updateBlog";
-import LoaderPlane from "./LoaderPlane"
+import LoaderPlane from "./LoaderPlane";
 import { useMutation } from "@apollo/client";
 import AuthenticationModal from "../components/AuthenticationModal";
 
-export default function TinyMCEEditor({ topic, isAuthenticated, editorText, loading }) {
-
-  const [blog_id, setblog_id] = useState("");
+export default function TinyMCEEditor({
+  topic,
+  isAuthenticated,
+  editorText,
+  loading,
+  blog_id,
+}) {
   const [updatedText, setEditorText] = useState();
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
+  var getToken;
+  if (typeof window !== "undefined") {
+    getToken = localStorage.getItem("token");
+  }
   const [
     UpdateBlog,
     { data: updateData, loading: updateLoading, error: updateError },
-  ] = useMutation(updateBlog);
+  ] = useMutation(updateBlog, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken,
+      },
+    },
+  });
 
   const handleSave = () => {
     //console.log(isAuthenticated);
@@ -52,7 +67,6 @@ export default function TinyMCEEditor({ topic, isAuthenticated, editorText, load
     }
   };
 
-  
   if (loading) return <LoaderPlane />;
   //if(editorText){console.log(editorText)}
   return (
@@ -64,7 +78,7 @@ export default function TinyMCEEditor({ topic, isAuthenticated, editorText, load
         setModalIsOpen={setAuthenticationModalOpen}
       />
       <Editor
-        value={updatedText ? updatedText : editorText}
+        value={editorText ? editorText : updatedText}
         apiKey="ensd3fyudvpis4e3nzpnns1vxdtoexc363h3yww4iepx6vis"
         init={{
           skin: "naked",
