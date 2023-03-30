@@ -14,7 +14,7 @@ import { useRouter } from "next/router";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 
 export default function App({ Component, pageProps }: AppProps) {
-  const changeTempId = useTempId((state) => state.changeTempId);
+  // const changeTempId = useTempId((state) => state.changeTempId);
   const tempId = useTempId((state) => state.tempId);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
