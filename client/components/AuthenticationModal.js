@@ -321,20 +321,20 @@ function redirectPageAfterLogin(data) {
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
   }
-  const {
-    data: meeData,
-    loading,
-    error,
-  } = useQuery(meeAPI, {
-    context: {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + getToken,
-      },
-    },
-  }).then((res) => {
-    console.log("res", res);
-  });
+  // const {
+  //   data: meeData,
+  //   loading,
+  //   error,
+  // } = useQuery(meeAPI, {
+  //   context: {
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: "Bearer " + getToken,
+  //     },
+  //   },
+  // }).then((res) => {
+  //   console.log("res", res);
+  // });
 
   localStorage.setItem(
     "token",
