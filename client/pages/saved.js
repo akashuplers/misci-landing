@@ -1,47 +1,49 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
+import styles from "../styles/saved.module.css"
 // import { getAllBlogs } from "../graphql/queries/getAllBlogs";
 
 export default function saved() {
-        // {
-        //     description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
-        //     image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-        //     tags: ["label1","label2"],
-        //     title: "this a filler title",
-        //     _id: "6423f2a5df61bee260863244"
-        // },
-        // {
-        //     description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
-        //     image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-        //     tags: ["label1","label2"],
-        //     title: "this a filler title",
-        //     _id: "6423f2a5df61bee260863244"
-        // },
-        // {
-        //     description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
-        //     image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-        //     tags: ["label1","label2"],
-        //     title: "this a filler title",
-        //     _id: "6423f2a5df61bee260863244"
-        // },
-        // {
-        //     description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
-        //     image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-        //     tags: ["label1","label2"],
-        //     title: "this a filler title",
-        //     _id: "6423f2a5df61bee260863244"
-        // },
-        // {
-        //     description: null,
-        //     image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-        //     tags: ["label1","label2"],
-        //     title: "this a filler title",
-        //     _id: "6423f2a5df61bee260863244"
-        // }
-    const [allBlogs, setAllBlogs] = useState([]);
+        
+    const [allBlogs, setAllBlogs] = useState([
+        {
+            description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
+            image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+            tags: ["label1","label2"],
+            title: "this a multiline    filler title for saved post",
+            _id: "6423f2a5df61bee260863244"
+        },
+        {
+            description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
+            image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+            tags: ["label1","label2"],
+            title: "this a multiline    filler title for saved post",
+            _id: "6423f2a5df61bee260863244"
+        },
+        {
+            description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
+            image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+            tags: ["label1","label2"],
+            title: "this a multiline    filler title for saved post",
+            _id: "6423f2a5df61bee260863244"
+        },
+        {
+            description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
+            image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+            tags: ["label1","label2"],
+            title: "this a multiline    filler title for saved post",
+            _id: "6423f2a5df61bee260863244"
+        },
+        {
+            description: null,
+            image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+            tags: ["label1","label2"],
+            title: "this a multiline    filler title for saved post",
+            _id: "6423f2a5df61bee260863244"
+        }
+    ]);
 
-    useEffect(() => {
+    /*useEffect(() => {
         function fetchAllBlogs(){
             const accessToken = JSON.parse(localStorage.getItem("token")).accessToken
 
@@ -69,7 +71,7 @@ export default function saved() {
             .catch(error => console.log('error', error));
         }
         fetchAllBlogs()
-    },[])
+    },[])*/
 
     if(allBlogs == null) return
 
@@ -79,10 +81,10 @@ export default function saved() {
             <Layout>
                 <div className="flex divide-x">
                     <div className="h-[100%] w-[65%] ml-[27%] mr-9">
-                         <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+                         <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
                             {allBlogs.map((blog) => (
-                                <div key={blog._id} className="group relative">
-                                    <div className="min-h-80 aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
+                                <div key={blog._id} className={styles.blogContainer + " group relative"}>
+                                    <div className="min-h-[30vh] aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-[30vh]">
                                         <img
                                         src={blog.image}
                                         alt={blog.title}
@@ -96,19 +98,10 @@ export default function saved() {
                                                 {blog.title}
                                             </h3>
                                             <p>{blog.description}</p>
-                                            <div style={{
-                                                    marginTop: "0.5em",
-                                                    display: "flex",
-                                                    gap: "0.25em"
-                                            }}>
+                                            <div className={styles.blogTagContainer}>
                                                 {blog.tags.map(tag => {
                                                     return (
-                                                        <div style={{
-                                                            backgroundColor: "#bdd5f6",
-                                                            padding: "0.1em",
-                                                            color: "white",
-                                                            borderRadius: "5px"
-                                                        }}>
+                                                        <div className={styles.blogTag}>
                                                             {tag}
                                                         </div>
                                                     )
