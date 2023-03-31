@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { htmlToJson, jsonToHtml } from "../helpers/helper";
 import { generateBlog } from "../graphql/mutations/generateBlog";
 import { updateBlog } from "../graphql/mutations/updateBlog";
 import LoaderPlane from "./LoaderPlane";
 import { useMutation } from "@apollo/client";
-import AuthenticationModal from "../components/AuthenticationModal";
+import AuthenticationModal from "./AuthenticationModal";
 
 export default function TinyMCEEditor({
   topic,
@@ -17,6 +17,7 @@ export default function TinyMCEEditor({
   const [updatedText, setEditorText] = useState();
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
+
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -36,7 +37,7 @@ export default function TinyMCEEditor({
   const handleSave = () => {
     //console.log(isAuthenticated);
     if (isAuthenticated) {
-      const jsonDoc = htmlToJson(editorText).children;
+      const jsonDoc = htmlToJson(updatedText).children;
       const formatedJSON = { children: [...jsonDoc] };
       UpdateBlog({
         variables: {
@@ -78,7 +79,7 @@ export default function TinyMCEEditor({
         setModalIsOpen={setAuthenticationModalOpen}
       />
       <Editor
-        value={editorText ? editorText : updatedText}
+        value={updatedText ? updatedText : editorText}
         apiKey="ensd3fyudvpis4e3nzpnns1vxdtoexc363h3yww4iepx6vis"
         init={{
           skin: "naked",
@@ -101,6 +102,7 @@ export default function TinyMCEEditor({
         }}
         onEditorChange={(content, editor) => {
           setEditorText(content);
+          console.log(updatedText);
         }}
       />
 
