@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AuthenticationModal from "../components/AuthenticationModal.js";
 import Link from "next/link";
 import { Popover } from "@headlessui/react";
@@ -25,9 +25,10 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Navbar() {
+export default function Navbar({ isOpen }) {
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
-  const [authenticationModalType, setAuthneticationModalType] = useState("login");
+  const [authenticationModalType, setAuthneticationModalType] =
+    useState("signup");
 
   return (
     <>
@@ -43,7 +44,12 @@ export default function Navbar() {
       >
         {({ open }) => (
           <>
-            <AuthenticationModal type={authenticationModalType} setType={setAuthneticationModalType} modalIsOpen={authenticationModalOpen} setModalIsOpen={setAuthenticationModalOpen}/>
+            <AuthenticationModal
+              type={authenticationModalType}
+              setType={setAuthneticationModalType}
+              modalIsOpen={authenticationModalOpen || isOpen}
+              setModalIsOpen={setAuthenticationModalOpen}
+            />
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="relative flex justify-between lg:gap-8 xl:grid xl:grid-cols-12">
                 <div className="flex md:absolute md:inset-y-0 md:left-0 lg:static xl:col-span-2">
@@ -89,17 +95,21 @@ export default function Navbar() {
                     legacyBehavior
                     as={"/pricing"}
                     href={{
-                      pathname: "/pricing"
+                      pathname: "/pricing",
                     }}
                   >
-                    <p className="ml-5 flex-shrink-0 rounded-full bg-white p-1  hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                        style={{cursor:"pointer"}}>Pricing</p>
+                    <p
+                      className="ml-5 flex-shrink-0 rounded-full bg-white p-1  hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                      style={{ cursor: "pointer" }}
+                    >
+                      Pricing
+                    </p>
                   </Link>
 
                   <button
                     onClick={() => {
-                      setAuthenticationModalOpen(true)
-                      setAuthneticationModalType("login")
+                      setAuthenticationModalOpen(true);
+                      setAuthneticationModalType("login");
                     }}
                     className="ml-5 flex-shrink-0 rounded-full bg-white p-1  hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                   >
@@ -107,8 +117,8 @@ export default function Navbar() {
                   </button>
                   <button
                     onClick={() => {
-                      setAuthenticationModalOpen(true)
-                      setAuthneticationModalType("signup")
+                      setAuthenticationModalOpen(true);
+                      setAuthneticationModalType("signup");
                     }}
                     className="ml-6 inline-flex items-center rounded-md bg-[#4A3AFE] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   >

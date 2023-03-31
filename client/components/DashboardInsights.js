@@ -6,7 +6,12 @@ import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
 import { jsonToHtml } from "../helpers/helper";
 import { useMutation, gql } from "@apollo/client";
 
-export default function DashboardInsights({ loading, ideas, blog_id, setEditorText }) {
+export default function DashboardInsights({
+  loading,
+  ideas,
+  blog_id,
+  setEditorText,
+}) {
   const [enabled, setEnabled] = useState(false);
   const [valid, setValid] = useState(false);
   const [urlInput, setUrlInput] = useState("");
@@ -18,7 +23,7 @@ export default function DashboardInsights({ loading, ideas, blog_id, setEditorTe
 
   function handleInputClick(idea, article_id, e) {
     const ideaObject = {
-      "text" : idea,
+      text: idea,
       article_id,
     };
 
@@ -41,32 +46,34 @@ export default function DashboardInsights({ loading, ideas, blog_id, setEditorTe
   }
 
   function handleRegenerate() {
-    if(regenSelected.length < 1) return
-
-    console.log(regenSelected);
-    RegenerateBlog({
-      variables: {
-        options: {
-          ideas: regenSelected,
-          blog_id: blog_id,
+    if (regenSelected.length > 1) {
+      console.log(regenSelected);
+      RegenerateBlog({
+        variables: {
+          options: {
+            ideas: regenSelected,
+            blog_id: blog_id,
+          },
         },
-      },
-      onCompleted: (data) => {
-        console.log(data);
-        const regenDoc = data.regenerate.publish_data[2].tiny_mce_data;
-        const htmlDoc = jsonToHtml(regenDoc);
-        setEditorText(htmlDoc);
-        console.log("Sucessfully re-generated the article");
-        setRegenSelected([])
-      },
-      onError: (error) => {
-        console.error(error);
-      },
-    }).catch((err) => {
-      console.error(err);
-    }).finally(()=>{
-      setRegenSelected([])
-    });
+        onCompleted: (data) => {
+          console.log(data);
+          const regenDoc = data.regenerateBlog.publish_data[2].tiny_mce_data;
+          const htmlDoc = jsonToHtml(regenDoc);
+          setEditorText(htmlDoc);
+          console.log("Sucessfully re-generated the article");
+          setRegenSelected([]);
+        },
+        onError: (error) => {
+          console.error(error);
+        },
+      })
+        .catch((err) => {
+          console.error(err);
+        })
+        .finally(() => {
+          setRegenSelected([]);
+        });
+    }
   }
 
   function urlHandler(e) {
@@ -220,7 +227,7 @@ export default function DashboardInsights({ loading, ideas, blog_id, setEditorTe
         </div>
         <div className="h-1/5 overflow-y-scroll">
           {ideas.map((idea) => {
-            if (idea.idea.length <= 0) return;
+            // if (idea?.idea?.length <= 0) return;
             return (
               <div className="flex pb-10">
                 <div className="flex justify-between gap-5 w-[95%] pr-5">
