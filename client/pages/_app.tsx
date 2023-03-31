@@ -15,7 +15,7 @@ import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 
 export default function App({ Component, pageProps }: AppProps) {
   // const changeTempId = useTempId((state) => state.changeTempId);
-  const tempId = useTempId((state) => state.tempId);
+  // const tempId = useTempId((state) => state.tempId);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
   const pathName = router.pathname;
@@ -38,8 +38,6 @@ export default function App({ Component, pageProps }: AppProps) {
       .then((res) => res.json())
       .then((data) => localStorage.setItem("tempId", data.data.userId))
       .catch((err) => console.error("Error: ", err));
-
-    console.log("===", tempId);
 
     const getToken = localStorage.getItem("token");
     if (
