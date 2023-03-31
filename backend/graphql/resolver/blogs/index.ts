@@ -49,8 +49,8 @@ export const blogResolvers = {
                     _id: blog._id,
                     title: blog.keyword,
                     description: blog.description,
-                    tags: [],
-                    image: ""
+                    tags: (blog?.tags?.length && blog.tags) || [],
+                    image: blog.imageUrl || null
                 }
             })
             return updatedList
@@ -111,6 +111,7 @@ export const blogResolvers = {
             let texts = ""
             let imageUrl: string | null = null
             let article_ids: String[] = []
+            let tags: String[] = []
             const articlesData = await (
                 Promise.all(
                     articleIds.map(async (id: string, index: number) => {
@@ -121,6 +122,10 @@ export const blogResolvers = {
                             if(index === (articleIds.length - 1) && !imageUrl) imageUrl = article.proImageLink
                         }
                         keyword = article.keyword
+                        const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                        const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                        const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                        tags.push(...productsTags, ...organizationTags, ...personsTags)
                         return {
                             used_summaries: article._source.summary.slice(0, 5),
                             unused_summaries: article._source.summary.slice(5),
@@ -130,6 +135,7 @@ export const blogResolvers = {
                     })
                 )
             )
+            console.log(tags)
             articlesData.forEach((data) => {
                 data.used_summaries.forEach((summary: string, index: number) => {
                     texts += `- ${summary}\n`
@@ -139,29 +145,6 @@ export const blogResolvers = {
             console.log(articlesData)
             console.log(article_ids)
             console.log(texts)
-            // let newsLetter: any = {
-            //     linkedin: null,
-            //     twitter: null,
-            //     wordpress: null,
-            //     image: null
-            // }
-            // await (
-            //     Promise.all(
-            //         Object.keys(newsLetter).map(async (key: string) => {
-            //             try {
-            //                 if(key === "wordpress") {
-            //                     const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `write a large blog for ${key} on  "${text}" with title and content`, db}).textCompletion()
-            //                     newsLetter = {...newsLetter, [key]: chatGPTText}
-            //                 } else {
-            //                     const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `write a blog on "${text}" for a ${key === "medium" ? "medium" : `${key}`}`, db}).textCompletion()
-            //                     newsLetter = {...newsLetter, [key]: chatGPTText}
-            //                 }
-            //             } catch(e: any) {
-            //                 throw e
-            //             }
-            //         })
-            //     )
-            // )
             try {
                 const {usedIdeasArr, updatedBlogs, description}: any = await blogGeneration({
                     db,
@@ -175,7 +158,9 @@ export const blogResolvers = {
                     userId: new ObjectID(userId),
                     keyword,
                     status: "draft",
-                    description
+                    description,
+                    tags,
+                    imageUrl
                 }
                 let updatedIdeas: any = []
                 articlesData.forEach((data) => {
@@ -336,7 +321,8 @@ export const blogResolvers = {
                 }
             })
             const updatedBlog = await fetchBlog({id: blogId, db})
-            return updatedBlog
+            const blogIdeas = await fetchBlogIdeas({id: blogId, db})
+            return {...updatedBlog, ideas: blogIdeas}
         },
         irNotify: async (
             parent: unknown, args: {options: IRNotifiyArgs}, {db, pubsub}: any
