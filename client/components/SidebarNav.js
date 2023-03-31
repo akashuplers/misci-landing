@@ -22,7 +22,7 @@ const navigation = [
 ];
 
 const navigation_bottom = [
-  { name: "Setting", href: "#", icon: Cog6ToothIcon, current: true },
+  { name: "Setting", href: "/settings", icon: Cog6ToothIcon, current: true },
   {
     name: "Logout",
     href: "#",
@@ -217,7 +217,9 @@ export default function Sidebar() {
             <nav className="mt-5 space-y-1 bg-white px-2 pb-8">
               {navigation_bottom.map((item) => (
                 <a
-                  onClick={()=>{logout(item);}}
+                  onClick={() => {
+                    logout(item);
+                  }}
                   key={item.name}
                   href={item.href}
                   className={classNames(
@@ -285,4 +287,3 @@ export default function Sidebar() {
     </>
   );
 }
-
