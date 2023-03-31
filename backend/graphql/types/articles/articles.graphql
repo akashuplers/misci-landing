@@ -17,6 +17,7 @@ type Blog {
     article_id: [String] 
     publish_data: [PublishData]
     ideas: BlogIdeas
+    tags: [String]
 }
 
 type PublishData {
