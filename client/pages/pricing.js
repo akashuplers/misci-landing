@@ -49,6 +49,7 @@ export default function Pricing() {
   const [priceId, setPriceId] = useState();
 
   const subscriptionPlan = (plan) => {
+    console.log(plan)
     let selectPriceData = "";
     if (plan.subscriptionType === "Quarterly") {
       selectPriceData = plans.filter((item) => {
@@ -66,10 +67,13 @@ export default function Pricing() {
       });
       setPriceId(selectPriceData[0].priceId);
     }
-    console.log(priceId);
-    console.log(plan);
+
     setCurrentPlan(plan);
   };
+
+  useEffect(()=>{
+    console.log(currentPlan)
+  },[currentPlan])
 
   useLayoutEffect(() => {
     const fetchPriceId = async () => {
@@ -267,11 +271,12 @@ export default function Pricing() {
                     as={"/subscription"}
                     href={{
                       pathname: "/subscription",
-                      query: { data: plans, currentPlan },
+                      query: { currentPlan : JSON.stringify(currentPlan) },
                     }}
-                    className="bg-[#3CC0F6] bottom-6 inline-block w-[67%] left-[17%] cursor-pointer absolute font-semibold text-[16px] no-underline text-[#0E0E2C] rounded-[10px] p-4"
-                  >
-                    Get Started
+                  > 
+                    <div className="bg-[#3CC0F6] bottom-6 inline-block w-[67%] left-[17%] cursor-pointer absolute font-semibold text-[16px] no-underline text-[#0E0E2C] rounded-[10px] p-4">
+                      Get Started
+                    </div>
                   </Link>
                 </div>
               </div>

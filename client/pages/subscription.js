@@ -8,16 +8,22 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import CheckoutForm from "../components/CheckoutForm";
 
-const Subscription = () => {
+Subscription.getInitialProps = ({ query }) => {
+  return { query };
+};
+
+export default function Subscription({query}) {
+  console.log(JSON.parse(query.currentPlan))
+  const subsType = query.currentPlan
   const stripePromise = loadStripe(
     "pk_test_51KYwIFSI8Tkf3wUiAeZww7bVzcqwkbpXHHZsmqtPbZq12ey9Xy96mvA7KPpNQxVyiHbOPqcDm7BQwKdvZETRn4XU00FlHDBiq8"
   );
   const [plans, setPlans] = useState([]);
 
-  const [currentPlan, setCurrentPlan] = useState();
+  const [currentPlan, setCurrentPlan] = useState(JSON.parse(query.currentPlan));
 
   const [priceId, setPriceId] = useState();
   const [clickOnSubscibe, setClickOnSubscibe] = useState(false);
@@ -63,14 +69,9 @@ const Subscription = () => {
         priceId: "price_1MWfopSI8Tkf3wUiZeFpn6HI",
       },
     ]);
-    setCurrentPlan({
-      subscriptionType: "Yearly",
-      price: 1000,
-      priceId: "price_1MYowHSI8Tkf3wUilUfJbapv",
-    });
-    setPriceId("price_1MYowHSI8Tkf3wUilUfJbapv");
   }, []);
 
+console.log(currentPlan)
   return (
     <Elements stripe={stripePromise}>
       <div className="h-[100%]">
@@ -193,7 +194,7 @@ const Subscription = () => {
               </div>
               {/* Subscription Form */}
               <CheckoutForm
-                currentPlan={currentPlan?.subscriptionType.toLowerCase()}
+                currentPlan={currentPlan?.subscriptionType?.toLowerCase()}
                 priceId={priceId}
                 setClickOnSubscibe={setClickOnSubscibe}
               />
@@ -205,4 +206,3 @@ const Subscription = () => {
   );
 };
 
-export default Subscription;
