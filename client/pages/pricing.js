@@ -1,827 +1,372 @@
-import { Fragment, useState } from "react";
-import { Dialog, RadioGroup } from "@headlessui/react";
-import Navbar from "../components/Navbar"
-import { Bars3Icon, XMarkIcon as XMarkIconOutline } from "@heroicons/react/24/outline";
-import { CheckIcon, XMarkIcon as XMarkIconMini } from "@heroicons/react/20/solid";
+import { useLayoutEffect, useState } from "react";
+import { useEffect } from "react";
+import { API_BASE_PATH } from "../constants/apiEndpoints";
+import Link from "next/link";
+import Navbar from "../components/Navbar";
+import SwiperComponent from "../components/SwiperComponent";
 
-const navigation = [
-  { name: "Product", href: "#" },
-  { name: "Features", href: "#" },
-  { name: "Marketplace", href: "#" },
-  { name: "Company", href: "#" },
-];
-
-const pricing = {
-  frequencies: [
-    { value: "monthly", label: "Monthly" },
-    { value: "annually", label: "Annually" },
-  ],
-  tiers: [
-    {
-      name: "Starter",
-      id: "tier-starter",
-      href: "#",
-      featured: false,
-      description: "All your essential business finances, taken care of.",
-      price: { monthly: "$15", annually: "$144" },
-      mainFeatures: [
-        "Basic invoicing",
-        "Easy to use accounting",
-        "Mutli-accounts",
-      ],
-    },
-    {
-      name: "Scale",
-      id: "tier-scale",
-      href: "#",
-      featured: true,
-      description: "The best financial services for your thriving business.",
-      price: { monthly: "$60", annually: "$576" },
-      mainFeatures: [
-        "Advanced invoicing",
-        "Easy to use accounting",
-        "Mutli-accounts",
-        "Tax planning toolkit",
-        "VAT & VATMOSS filing",
-        "Free bank transfers",
-      ],
-    },
-    {
-      name: "Growth",
-      id: "tier-growth",
-      href: "#",
-      featured: false,
-      description:
-        "Convenient features to take your business to the next level.",
-      price: { monthly: "$30", annually: "$288" },
-      mainFeatures: [
-        "Basic invoicing",
-        "Easy to use accounting",
-        "Mutli-accounts",
-        "Tax planning toolkit",
-      ],
-    },
-  ],
-  sections: [
-    {
-      name: "Catered for business",
-      features: [
-        {
-          name: "Tax Savings",
-          tiers: { Starter: true, Scale: true, Growth: true },
-        },
-        {
-          name: "Easy to use accounting",
-          tiers: { Starter: true, Scale: true, Growth: true },
-        },
-        {
-          name: "Multi-accounts",
-          tiers: {
-            Starter: "3 accounts",
-            Scale: "Unlimited accounts",
-            Growth: "7 accounts",
-          },
-        },
-        {
-          name: "Invoicing",
-          tiers: {
-            Starter: "3 invoices",
-            Scale: "Unlimited invoices",
-            Growth: "10 invoices",
-          },
-        },
-        {
-          name: "Exclusive offers",
-          tiers: { Starter: false, Scale: true, Growth: true },
-        },
-        {
-          name: "6 months free advisor",
-          tiers: { Starter: false, Scale: true, Growth: true },
-        },
-        {
-          name: "Mobile and web access",
-          tiers: { Starter: false, Scale: true, Growth: false },
-        },
-      ],
-    },
-    {
-      name: "Other perks",
-      features: [
-        {
-          name: "24/7 customer support",
-          tiers: { Starter: true, Scale: true, Growth: true },
-        },
-        {
-          name: "Instant notifications",
-          tiers: { Starter: true, Scale: true, Growth: true },
-        },
-        {
-          name: "Budgeting tools",
-          tiers: { Starter: true, Scale: true, Growth: true },
-        },
-        {
-          name: "Digital receipts",
-          tiers: { Starter: true, Scale: true, Growth: true },
-        },
-        {
-          name: "Pots to separate money",
-          tiers: { Starter: false, Scale: true, Growth: true },
-        },
-        {
-          name: "Free bank transfers",
-          tiers: { Starter: false, Scale: true, Growth: false },
-        },
-        {
-          name: "Business debit card",
-          tiers: { Starter: false, Scale: true, Growth: false },
-        },
-      ],
-    },
-  ],
-};
-
-const faqs = [
+const featuresData = [
   {
-    id: 1,
-    question: "What's the best thing about Switzerland?",
-    answer:
-      "I don't know, but the flag is a big plus. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas cupiditate laboriosam fugiat.",
+    // icon: Search,
+    heading: "Advanced Searches",
+    description: "Replacing contemporary keyword searches",
   },
-  // More questions...
+  {
+    // icon: Information,
+    heading: "Precise Information Retrieval",
+    description: "It pulls Data from tools used daily",
+  },
+  {
+    // icon: Reading,
+    heading: "Intelligent Reading",
+    description: "Reads, Analyzes, and Stores Knowledge",
+  },
 ];
-
-const footerNavigation = {
-  solutions: [
-    { name: "Marketing", href: "#" },
-    { name: "Analytics", href: "#" },
-    { name: "Commerce", href: "#" },
-    { name: "Insights", href: "#" },
-  ],
-  support: [
-    { name: "Pricing", href: "#" },
-    { name: "Documentation", href: "#" },
-    { name: "Guides", href: "#" },
-    { name: "API Status", href: "#" },
-  ],
-  company: [
-    { name: "About", href: "#" },
-    { name: "Blog", href: "#" },
-    { name: "Jobs", href: "#" },
-    { name: "Press", href: "#" },
-    { name: "Partners", href: "#" },
-  ],
-  legal: [
-    { name: "Claim", href: "#" },
-    { name: "Privacy", href: "#" },
-    { name: "Terms", href: "#" },
-  ],
-  social: [
-    {
-      name: "Facebook",
-      href: "#",
-      icon: (props) => (
-        <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
-          <path
-            fillRule="evenodd"
-            d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
-            clipRule="evenodd"
-          />
-        </svg>
-      ),
-    },
-    {
-      name: "Instagram",
-      href: "#",
-      icon: (props) => (
-        <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
-          <path
-            fillRule="evenodd"
-            d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"
-            clipRule="evenodd"
-          />
-        </svg>
-      ),
-    },
-    {
-      name: "Twitter",
-      href: "#",
-      icon: (props) => (
-        <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
-          <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-        </svg>
-      ),
-    },
-    {
-      name: "GitHub",
-      href: "#",
-      icon: (props) => (
-        <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
-          <path
-            fillRule="evenodd"
-            d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
-            clipRule="evenodd"
-          />
-        </svg>
-      ),
-    },
-    {
-      name: "YouTube",
-      href: "#",
-      icon: (props) => (
-        <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
-          <path
-            fillRule="evenodd"
-            d="M19.812 5.418c.861.23 1.538.907 1.768 1.768C21.998 8.746 22 12 22 12s0 3.255-.418 4.814a2.504 2.504 0 0 1-1.768 1.768c-1.56.419-7.814.419-7.814.419s-6.255 0-7.814-.419a2.505 2.505 0 0 1-1.768-1.768C2 15.255 2 12 2 12s0-3.255.417-4.814a2.507 2.507 0 0 1 1.768-1.768C5.744 5 11.998 5 11.998 5s6.255 0 7.814.418ZM15.194 12 10 15V9l5.194 3Z"
-            clipRule="evenodd"
-          />
-        </svg>
-      ),
-    },
-  ],
-};
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function Pricing() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [frequency, setFrequency] = useState(pricing.frequencies[0]);
+  const [priceData, setPriceData] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    return async () => {
+      const pricesRes = await fetch(`${API_BASE_PATH}/stripe/prices`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => res.json());
+      setPriceData(pricesRes.data.data);
+      console.log(pricesRes.data.data);
+    };
+  }, []);
+
+  const [plans, setPlans] = useState([]);
+  const [currentPlan, setCurrentPlan] = useState();
+  const [priceId, setPriceId] = useState();
+
+  const subscriptionPlan = (plan) => {
+    let selectPriceData = "";
+    if (plan.subscriptionType === "Quarterly") {
+      selectPriceData = plans.filter((item) => {
+        return item?.subscriptionType === "Quarterly";
+      });
+      setPriceId(selectPriceData[0].priceId);
+    } else if (plan.subscriptionType === "Yearly") {
+      selectPriceData = plans.filter((item) => {
+        return item?.subscriptionType === "Yearly";
+      });
+      setPriceId(selectPriceData[0].priceId);
+    } else {
+      selectPriceData = plans.filter((item) => {
+        return item?.subscriptionType === "Monthly";
+      });
+      setPriceId(selectPriceData[0].priceId);
+    }
+    console.log(priceId);
+    console.log(plan);
+    setCurrentPlan(plan);
+  };
+
+  useLayoutEffect(() => {
+    const fetchPriceId = async () => {
+      const pricesRes = await fetch(`${API_BASE_PATH}/stripe/prices`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => res.json());
+      console.log(pricesRes?.data, "pricesRes");
+      const updatedPricesArray = pricesRes?.data?.data?.map((price) => {
+        let type = null;
+        if (price.recurring.interval === "month") {
+          if (price.recurring.interval_count === 3) {
+            type = "Quarterly";
+          } else {
+            type = "Monthly";
+          }
+        }
+        if (price.recurring.interval === "year") {
+          type = "Yearly";
+        }
+        return {
+          subscriptionType: type,
+          price: price.unit_amount / 100,
+          priceId: price.id,
+        };
+      });
+      console.log(updatedPricesArray);
+      setPlans(updatedPricesArray);
+    };
+    fetchPriceId();
+  }, []);
+
+  useEffect(() => {
+    if (plans && plans.length) setCurrentPlan(plans[0]);
+    if (plans.length > 0) {
+      const temp = plans.filter((item) => {
+        return item?.subscriptionType === "Yearly";
+      });
+      setPriceId(temp[0].priceId);
+    }
+  }, [plans]);
 
   return (
-<>
-<Navbar />
-      <Fragment>
-        <div className="isolate overflow-hidden -mt-8">
-          <div className="flow-root bg-gray-900 py-16 sm:pt-32 lg:pb-0">
-            <div className="mx-auto max-w-7xl px-6 lg:px-8">
-              <div className="relative z-10">
-                <h1 className="mx-auto max-w-4xl text-center text-5xl font-bold tracking-tight text-white">
-                  Simple pricing, no commitment
-                </h1>
-                <p className="mx-auto mt-4 max-w-2xl text-center text-lg leading-8 text-white/60">
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                  Velit numquam eligendi quos odit doloribus molestiae
-                  voluptatum quos odit doloribus.
-                </p>
-                <div className="mt-16 flex justify-center">
-                  <RadioGroup
-                    value={frequency}
-                    onChange={setFrequency}
-                    className="grid grid-cols-2 gap-x-1 rounded-full bg-white/5 p-1 text-center text-xs font-semibold leading-5 text-white"
-                  >
-                    <RadioGroup.Label className="sr-only">
-                      Payment frequency
-                    </RadioGroup.Label>
-                    {pricing.frequencies.map((option) => (
-                      <RadioGroup.Option
-                        key={option.value}
-                        value={option}
-                        className={({ checked }) =>
-                          classNames(
-                            checked ? "bg-indigo-500" : "",
-                            "cursor-pointer rounded-full py-1 px-2.5"
-                          )
-                        }
-                      >
-                        <span>{option.label}</span>
-                      </RadioGroup.Option>
-                    ))}
-                  </RadioGroup>
-                </div>
-              </div>
-              <div className="relative mx-auto mt-10 grid max-w-md grid-cols-1 gap-y-8 lg:mx-0 lg:-mb-14 lg:max-w-none lg:grid-cols-3">
-                <svg
-                  viewBox="0 0 1208 1024"
-                  aria-hidden="true"
-                  className="absolute left-1/2 -bottom-48 h-[64rem] translate-y-1/2 -translate-x-1/2 [mask-image:radial-gradient(closest-side,white,transparent)] lg:bottom-auto lg:-top-48 lg:translate-y-0"
-                >
-                  <ellipse
-                    cx={604}
-                    cy={512}
-                    fill="url(#d25c25d4-6d43-4bf9-b9ac-1842a30a4867)"
-                    rx={604}
-                    ry={512}
-                  />
-                  <defs>
-                    <radialGradient id="d25c25d4-6d43-4bf9-b9ac-1842a30a4867">
-                      <stop stopColor="#7775D6" />
-                      <stop offset={1} stopColor="#E935C1" />
-                    </radialGradient>
-                  </defs>
-                </svg>
-                <div
-                  className="hidden lg:absolute lg:inset-x-px lg:bottom-0 lg:top-4 lg:block lg:rounded-t-2xl lg:bg-gray-800/80 lg:ring-1 lg:ring-white/10"
-                  aria-hidden="true"
-                />
-                {pricing.tiers.map((tier) => (
-                  <div
-                    key={tier.id}
-                    className={classNames(
-                      tier.featured
-                        ? "z-10 bg-white shadow-xl ring-1 ring-gray-900/10"
-                        : "bg-gray-800/80 ring-1 ring-white/10 lg:bg-transparent lg:pb-14 lg:ring-0",
-                      "relative rounded-2xl"
-                    )}
-                  >
-                    <div className="p-8 lg:pt-12 xl:p-10 xl:pt-14">
-                      <h2
-                        id={tier.id}
-                        className={classNames(
-                          tier.featured ? "text-gray-900" : "text-white",
-                          "text-sm font-semibold leading-6"
-                        )}
-                      >
-                        {tier.name}
-                      </h2>
-                      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between lg:flex-col lg:items-stretch">
-                        <div className="mt-2 flex items-center gap-x-4">
-                          <p
-                            className={classNames(
-                              tier.featured ? "text-gray-900" : "text-white",
-                              "text-4xl font-bold tracking-tight"
-                            )}
-                          >
-                            {tier.price[frequency.value]}
-                          </p>
-                          <div className="text-sm leading-5">
-                            <p
-                              className={
-                                tier.featured ? "text-gray-900" : "text-white"
-                              }
-                            >
-                              USD
-                            </p>
-                            <p
-                              className={
-                                tier.featured
-                                  ? "text-gray-500"
-                                  : "text-gray-400"
-                              }
-                            >{`Billed ${frequency.value}`}</p>
-                          </div>
-                        </div>
-                        <a
-                          href={tier.href}
-                          aria-describedby={tier.id}
-                          className={classNames(
-                            tier.featured
-                              ? "bg-indigo-600 shadow-sm hover:bg-indigo-500 focus-visible:outline-indigo-600"
-                              : "bg-white/10 hover:bg-white/20 focus-visible:outline-white",
-                            "rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                          )}
-                        >
-                          Buy this plan
-                        </a>
-                      </div>
-                      <div className="mt-8 flow-root sm:mt-10">
-                        <ul
-                          role="list"
-                          className={classNames(
-                            tier.featured
-                              ? "divide-gray-900/5 border-gray-900/5 text-gray-600"
-                              : "divide-white/5 border-white/5 text-white",
-                            "-my-2 divide-y border-t text-sm leading-6 lg:border-t-0"
-                          )}
-                        >
-                          {tier.mainFeatures.map((mainFeature) => (
-                            <li key={mainFeature} className="flex gap-x-3 py-2">
-                              <CheckIcon
-                                className={classNames(
-                                  tier.featured
-                                    ? "text-indigo-600"
-                                    : "text-gray-500",
-                                  "h-6 w-5 flex-none"
-                                )}
-                                aria-hidden="true"
-                              />
-                              {mainFeature}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className="relative bg-gray-50 lg:pt-14">
-            <div className="mx-auto max-w-7xl py-24 px-6 sm:py-32 lg:px-8">
-              {/* Feature comparison (up to lg) */}
-              <section
-                aria-labelledby="mobile-comparison-heading"
-                className="lg:hidden"
-              >
-                <h2 id="mobile-comparison-heading" className="sr-only">
-                  Feature comparison
-                </h2>
-
-                <div className="mx-auto max-w-2xl space-y-16">
-                  {pricing.tiers.map((tier) => (
-                    <div key={tier.id} className="border-t border-gray-900/10">
-                      <div
-                        className={classNames(
-                          tier.featured
-                            ? "border-indigo-600"
-                            : "border-transparent",
-                          "-mt-px w-72 border-t-2 pt-10 md:w-80"
-                        )}
-                      >
-                        <h3
-                          className={classNames(
-                            tier.featured ? "text-indigo-600" : "text-gray-900",
-                            "text-sm font-semibold leading-6"
-                          )}
-                        >
-                          {tier.name}
-                        </h3>
-                        <p className="mt-1 text-sm leading-6 text-gray-600">
-                          {tier.description}
-                        </p>
-                      </div>
-
-                      <div className="mt-10 space-y-10">
-                        {pricing.sections.map((section) => (
-                          <div key={section.name}>
-                            <h4 className="text-sm font-semibold leading-6 text-gray-900">
-                              {section.name}
-                            </h4>
-                            <div className="relative mt-6">
-                              {/* Fake card background */}
-                              <div
-                                aria-hidden="true"
-                                className="absolute inset-y-0 right-0 hidden w-1/2 rounded-lg bg-white shadow-sm sm:block"
-                              />
-
-                              <div
-                                className={classNames(
-                                  tier.featured
-                                    ? "ring-2 ring-indigo-600"
-                                    : "ring-1 ring-gray-900/10",
-                                  "relative rounded-lg bg-white shadow-sm sm:rounded-none sm:bg-transparent sm:shadow-none sm:ring-0"
-                                )}
-                              >
-                                <dl className="divide-y divide-gray-200 text-sm leading-6">
-                                  {section.features.map((feature) => (
-                                    <div
-                                      key={feature.name}
-                                      className="flex items-center justify-between py-3 px-4 sm:grid sm:grid-cols-2 sm:px-0"
-                                    >
-                                      <dt className="pr-4 text-gray-600">
-                                        {feature.name}
-                                      </dt>
-                                      <dd className="flex items-center justify-end sm:justify-center sm:px-4">
-                                        {typeof feature.tiers[tier.name] ===
-                                        "string" ? (
-                                          <span
-                                            className={
-                                              tier.featured
-                                                ? "font-semibold text-indigo-600"
-                                                : "text-gray-900"
-                                            }
-                                          >
-                                            {feature.tiers[tier.name]}
-                                          </span>
-                                        ) : (
-                                          <>
-                                            {feature.tiers[tier.name] ===
-                                            true ? (
-                                              <CheckIcon
-                                                className="mx-auto h-5 w-5 text-indigo-600"
-                                                aria-hidden="true"
-                                              />
-                                            ) : (
-                                              <XMarkIconMini
-                                                className="mx-auto h-5 w-5 text-gray-400"
-                                                aria-hidden="true"
-                                              />
-                                            )}
-
-                                            <span className="sr-only">
-                                              {feature.tiers[tier.name] === true
-                                                ? "Yes"
-                                                : "No"}
-                                            </span>
-                                          </>
-                                        )}
-                                      </dd>
-                                    </div>
-                                  ))}
-                                </dl>
-                              </div>
-
-                              {/* Fake card border */}
-                              <div
-                                aria-hidden="true"
-                                className={classNames(
-                                  tier.featured
-                                    ? "ring-2 ring-indigo-600"
-                                    : "ring-1 ring-gray-900/10",
-                                  "pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 rounded-lg sm:block"
-                                )}
-                              />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              {/* Feature comparison (lg+) */}
-              <section
-                aria-labelledby="comparison-heading"
-                className="hidden lg:block"
-              >
-                <h2 id="comparison-heading" className="sr-only">
-                  Feature comparison
-                </h2>
-
-                <div className="grid grid-cols-4 gap-x-8 border-t border-gray-900/10 before:block">
-                  {pricing.tiers.map((tier) => (
-                    <div key={tier.id} aria-hidden="true" className="-mt-px">
-                      <div
-                        className={classNames(
-                          tier.featured
-                            ? "border-indigo-600"
-                            : "border-transparent",
-                          "border-t-2 pt-10"
-                        )}
-                      >
-                        <p
-                          className={classNames(
-                            tier.featured ? "text-indigo-600" : "text-gray-900",
-                            "text-sm font-semibold leading-6"
-                          )}
-                        >
-                          {tier.name}
-                        </p>
-                        <p className="mt-1 text-sm leading-6 text-gray-600">
-                          {tier.description}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="-mt-6 space-y-16">
-                  {pricing.sections.map((section) => (
-                    <div key={section.name}>
-                      <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                        {section.name}
-                      </h3>
-                      <div className="relative -mx-8 mt-10">
-                        {/* Fake card backgrounds */}
-                        <div
-                          className="absolute inset-y-0 inset-x-8 grid grid-cols-4 gap-x-8 before:block"
-                          aria-hidden="true"
-                        >
-                          <div className="h-full w-full rounded-lg bg-white shadow-sm" />
-                          <div className="h-full w-full rounded-lg bg-white shadow-sm" />
-                          <div className="h-full w-full rounded-lg bg-white shadow-sm" />
-                        </div>
-
-                        <table className="relative w-full border-separate border-spacing-x-8">
-                          <thead>
-                            <tr className="text-left">
-                              <th scope="col">
-                                <span className="sr-only">Feature</span>
-                              </th>
-                              {pricing.tiers.map((tier) => (
-                                <th key={tier.id} scope="col">
-                                  <span className="sr-only">
-                                    {tier.name} tier
-                                  </span>
-                                </th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {section.features.map((feature, featureIdx) => (
-                              <tr key={feature.name}>
-                                <th
-                                  scope="row"
-                                  className="w-1/4 py-3 pr-4 text-left text-sm font-normal leading-6 text-gray-900"
-                                >
-                                  {feature.name}
-                                  {featureIdx !==
-                                  section.features.length - 1 ? (
-                                    <div className="absolute inset-x-8 mt-3 h-px bg-gray-200" />
-                                  ) : null}
-                                </th>
-                                {pricing.tiers.map((tier) => (
-                                  <td
-                                    key={tier.id}
-                                    className="relative w-1/4 px-4 py-0 text-center"
-                                  >
-                                    <span className="relative h-full w-full py-3">
-                                      {typeof feature.tiers[tier.name] ===
-                                      "string" ? (
-                                        <span
-                                          className={classNames(
-                                            tier.featured
-                                              ? "font-semibold text-indigo-600"
-                                              : "text-gray-900",
-                                            "text-sm leading-6"
-                                          )}
-                                        >
-                                          {feature.tiers[tier.name]}
-                                        </span>
-                                      ) : (
-                                        <>
-                                          {feature.tiers[tier.name] === true ? (
-                                            <CheckIcon
-                                              className="mx-auto h-5 w-5 text-indigo-600"
-                                              aria-hidden="true"
-                                            />
-                                          ) : (
-                                            <XMarkIconMini
-                                              className="mx-auto h-5 w-5 text-gray-400"
-                                              aria-hidden="true"
-                                            />
-                                          )}
-
-                                          <span className="sr-only">
-                                            {feature.tiers[tier.name] === true
-                                              ? "Yes"
-                                              : "No"}
-                                          </span>
-                                        </>
-                                      )}
-                                    </span>
-                                  </td>
-                                ))}
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-
-                        {/* Fake card borders */}
-                        <div
-                          className="pointer-events-none absolute inset-y-0 inset-x-8 grid grid-cols-4 gap-x-8 before:block"
-                          aria-hidden="true"
-                        >
-                          {pricing.tiers.map((tier) => (
-                            <div
-                              key={tier.id}
-                              className={classNames(
-                                tier.featured
-                                  ? "ring-2 ring-indigo-600"
-                                  : "ring-1 ring-gray-900/10",
-                                "rounded-lg"
-                              )}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            </div>
-          </div>
-        </div>
-
-        {/* FAQ section */}
-        <div className="mx-auto mt-24 max-w-7xl divide-y divide-gray-900/10 px-6 sm:mt-56 lg:px-8">
-          <h2 className="text-2xl font-bold leading-10 tracking-tight text-gray-900">
-            Frequently asked questions
-          </h2>
-          <dl className="mt-10 space-y-8 divide-y divide-gray-900/10">
-            {faqs.map((faq) => (
-              <div
-                key={faq.id}
-                className="pt-8 lg:grid lg:grid-cols-12 lg:gap-8"
-              >
-                <dt className="text-base font-semibold leading-7 text-gray-900 lg:col-span-5">
-                  {faq.question}
-                </dt>
-                <dd className="mt-4 lg:col-span-7 lg:mt-0">
-                  <p className="text-base leading-7 text-gray-600">
-                    {faq.answer}
-                  </p>
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </Fragment>
-      {/* Footer */}
-      <footer className="mt-24 sm:mt-56" aria-labelledby="footer-heading">
-        <h2 id="footer-heading" className="sr-only">
-          Footer
-        </h2>
-        <div className="mx-auto max-w-7xl px-6 pb-8 lg:px-8">
-          <div className="xl:grid xl:grid-cols-3 xl:gap-8">
-            <div className="space-y-8">
-              <img
-                className="h-7"
-                src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                alt="Company name"
-              />
-              <p className="text-sm leading-6 text-gray-600">
-                Making the world a better place through constructing elegant
-                hierarchies.
-              </p>
-              <div className="flex space-x-6">
-                {footerNavigation.social.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className="text-gray-400 hover:text-gray-500"
-                  >
-                    <span className="sr-only">{item.name}</span>
-                    <item.icon className="h-6 w-6" aria-hidden="true" />
-                  </a>
-                ))}
-              </div>
-            </div>
-            <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
-              <div className="md:grid md:grid-cols-2 md:gap-8">
-                <div>
-                  <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                    Solutions
-                  </h3>
-                  <ul role="list" className="mt-6 space-y-4">
-                    {footerNavigation.solutions.map((item) => (
-                      <li key={item.name}>
-                        <a
-                          href={item.href}
-                          className="text-sm leading-6 text-gray-600 hover:text-gray-900"
-                        >
-                          {item.name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="mt-10 md:mt-0">
-                  <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                    Support
-                  </h3>
-                  <ul role="list" className="mt-6 space-y-4">
-                    {footerNavigation.support.map((item) => (
-                      <li key={item.name}>
-                        <a
-                          href={item.href}
-                          className="text-sm leading-6 text-gray-600 hover:text-gray-900"
-                        >
-                          {item.name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <div className="md:grid md:grid-cols-2 md:gap-8">
-                <div>
-                  <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                    Company
-                  </h3>
-                  <ul role="list" className="mt-6 space-y-4">
-                    {footerNavigation.company.map((item) => (
-                      <li key={item.name}>
-                        <a
-                          href={item.href}
-                          className="text-sm leading-6 text-gray-600 hover:text-gray-900"
-                        >
-                          {item.name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="mt-10 md:mt-0">
-                  <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                    Legal
-                  </h3>
-                  <ul role="list" className="mt-6 space-y-4">
-                    {footerNavigation.legal.map((item) => (
-                      <li key={item.name}>
-                        <a
-                          href={item.href}
-                          className="text-sm leading-6 text-gray-600 hover:text-gray-900"
-                        >
-                          {item.name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="mt-16 border-t border-gray-900/10 pt-8 sm:mt-20 lg:mt-24">
-            <p className="text-xs leading-5 text-gray-500">
-              &copy; 2020 Your Company, Inc. All rights reserved.
+    <>
+      <div>
+        <Navbar isOpen={isOpen} />
+        <div className="flex flex-col">
+          <div className="sm:mx-auto max-sm:mx-[5%] max-sm:leading-[26px] max-w-7xl bg-white max-sm:pt-5 sm:py-16 pb-0 px-6 lg:px-8">
+            <h2 className="text-3xl max-sm:text-left font-bold tracking-tight text-gray-900 sm:text-5xl sm:leading-none lg:text-6xl">
+              Pricing
+            </h2>
+            <p className="sm:pt-6 max-w-2xl max-sm:text-left text-[16px] text-[#484F5F] mx-auto">
+              Our affordable pricing scales with your business. We don’t lock
+              our features behind expensive plans. You get all the features on
+              every plan.
             </p>
           </div>
+          <div className="relative top-0 h-auto">
+            <div className="h-[380px] w-[100%]"></div>
+            <div className="bg-[#111f43] sm:h-[400px] sm:w-[100%]"></div>
+            {/* cards div */}
+            <div className="absolute max-sm:top-[7%] sm:top-[12%] sm:left-[0%] sm:right-[8%] w-full">
+              <div className="flex max-sm:flex-col w-full max-sm:space-y-8 sm:space-x-4 justify-center align-middle items-center">
+                <div
+                  style={{
+                    boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
+                  }}
+                  className="flex sm:flex-wrap sm:flex-row relative max-sm:flex-col bg-[#ffffff] rounded p-4 w-[21rem] md:w-[392px] h-[660px]"
+                >
+                  <div className="flex flex-col items-start justify-start mt-4">
+                    <p className="text-[#182735] font-semibold text-[24px] leading-[26px] pb-2">
+                      Free
+                    </p>
+                    <p className="text-[44px] text-[#182735] leading-[112%] text-left font-bold">
+                      Unlimited Access for 14 Days
+                    </p>
+                  </div>
+                  <div className="mt-4 mb-4 bg-gradient-to-r from-[#182735] to-transparent h-[2px]"></div>
+                  <div className="flex flex-col items-start justify-start mt-4">
+                    <div className="flex align-middle">
+                      <p className=" text-[#182735] text-left leading-[26px] text-[18px] font-medium mb-4">
+                        Have unlimited access of Summary & Drivers for 14 days
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    onClick={() => {
+                      setIsOpen(true);
+                    }}
+                    className="bg-[#3CC0F6] bottom-6 inline-block w-[67%] left-[17%] cursor-pointer absolute font-semibold text-[16px] no-underline text-[#0E0E2C] rounded-[10px] p-4"
+                  >
+                    Try for free
+                  </div>
+                </div>
+                <div
+                  style={{
+                    background:
+                      "linear-gradient(157.47deg, #182735 14.91%, #15324E 96.07%)",
+                    boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
+                  }}
+                  className="flex relative flex-col  rounded text-[#ffffff] p-4 w-[21rem] md:w-[392px] h-[660px]"
+                >
+                  <div className="flex flex-col  items-start justify-start mt-4">
+                    <p className=" font-semibold text-[24px] pb-2 capitalize">
+                      Paid
+                    </p>
+                    <p className="text-[64px]  font-bold">
+                      ${currentPlan?.price}
+                      <span className="text-[16px] leading-[26px] tracking-[0.5px] text-[#BFC2D9]">
+                        /month
+                      </span>
+                    </p>
+                  </div>
+                  <div className=" mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px]"></div>
+                  <div className="flex bg-[#2d4051] items-center rounded-[59px] h-[55px] w-full justify-between px-2">
+                    {plans.length > 0 &&
+                      plans.map((item, i) => {
+                        return (
+                          <div
+                            key={i}
+                            onClick={() => subscriptionPlan(item)}
+                            className={`cursor-pointer rounded-[55px] px-[7.5px] md:px-[19px] py-[8px] ${
+                              currentPlan?.subscriptionType ===
+                              item.subscriptionType
+                                ? "bg-[#3cc0f6] text-[#13213E]"
+                                : "bg-[#172E43]"
+                            }`}
+                          >
+                            {item.subscriptionType}
+                          </div>
+                        );
+                      })}
+                  </div>
+                  <div className="flex  flex-col items-start justify-start mt-4">
+                    <div className="flex align-middle">
+                      {/* <img
+                        className="h-[18px] mr-3"
+                        src={TickIcon}
+                        alt=""
+                        srcset=""
+                      /> */}
+                      <p className=" text-[18px] font-medium mb-4">
+                        Unlimited Automation
+                      </p>
+                    </div>
+                    <div className="flex align-middle">
+                      {/* <img
+                        className="h-[18px] mr-3"
+                        src={TickIcon}
+                        alt=""
+                        srcset=""
+                      /> */}
+                      <p className=" text-[18px] font-medium mb-4">
+                        24/7 hours support
+                      </p>
+                    </div>
+                    <div className="flex align-middle">
+                      {/* <img
+                        className="h-[18px] mr-3"
+                        src={TickIcon}
+                        alt=""
+                        srcset=""
+                      /> */}
+                      <p className=" text-[18px] font-medium mb-4">
+                        Access of 50 Summaries
+                      </p>
+                    </div>
+                    <div className="flex align-middle">
+                      {/* <img
+                        className="h-[18px] mr-3"
+                        src={TickIcon}
+                        alt=""
+                        srcset=""
+                      /> */}
+                      <p className=" text-[18px] font-medium mb-4">
+                        Create Unlimited Notes
+                      </p>
+                    </div>
+                    <div className="flex align-middle">
+                      {/* <img
+                        className="h-[18px]"
+                        src={TickIcon}
+                        alt=""
+                        srcset=""
+                      /> */}
+                      <p className="text-[18px] font-medium mb-4">
+                        Unlimited access of Topic Monitoring
+                      </p>
+                    </div>
+                  </div>
+                  <Link
+                    legacyBehavior
+                    as={"/subscription"}
+                    href={{
+                      pathname: "/subscription",
+                      query: { data: plans, currentPlan },
+                    }}
+                    className="bg-[#3CC0F6] bottom-6 inline-block w-[67%] left-[17%] cursor-pointer absolute font-semibold text-[16px] no-underline text-[#0E0E2C] rounded-[10px] p-4"
+                  >
+                    Get Started
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Features for mobile */}
+          <div className="h-[900px] md:hidden md:bg-[#f1f4fa] sm:bg-transparent"></div>
+          <div className="w-[100%] sm:hidden bg-[#f1f4fa] flex flex-col h-[726px] mb-[6%] pt-[40%] md:pt[6%]">
+            <div className="flex  flex-col justify-start items-start mx-[5%]">
+              <h1 className="#0E0E2C align-middle text-[24px] font-semibold">
+                Features
+              </h1>
+              <p className="uppercase text-[18px] pt-3 font-medium opacity-[0.7]">
+                SMART APP FOR
+              </p>
+            </div>
+            <div className="mx-[5%] rounded-lg mt-[5%]">
+              <SwiperComponent data={featuresData} />
+            </div>
+            <div className="flex flex-col mx-[5%] mt-[10%]">
+              <h1 className="text-[#0E0E2C] text-left text-[24px] font-bold">
+                Monitoring
+              </h1>
+              <div className="text-[#4e475f] leading-[26px] w-[100%] text-left py-3 items-start text-[16px] ">
+                Monitor over 170k web news sources with automated retrieval and
+                analysis of relevant news articles. Pluaris will create a
+                personalized, annotated news feed in the Reader &#39;s page on
+                your topics of interest.
+              </div>
+            </div>
+            <div className="mx-[10%] mt-3">
+              {/* <img className="" src={} alt="" /> */}
+            </div>
+          </div>
+
+          {/* Features for desktop */}
+          <div
+            style={
+              {
+                // background:
+                //   "linear-gradient(180deg, #111D41 23.76%, #192836 23.76%, #F8FAFF 23.77%)",
+              }
+            }
+            className="w-[100%] max-sm:hidden flex flex-col h-[726px] mx-[6%] mt-[6%]"
+          >
+            <div className="flex  flex-col justify-start items-start">
+              <h1 className="#0E0E2C align-middle text-[48px] font-semibold">
+                Features
+              </h1>
+              <p className="uppercase text-[18px] pt-3 font-medium opacity-[0.7]">
+                SMART Knowledge management tool with powerful reader
+              </p>
+            </div>
+            <div className="flex flex-wrap space-x-5 space-y-5 py-9">
+              {featuresData.map((data) => {
+                <div
+                  style={{
+                    background: "rgba(255, 255, 255, 0.06)",
+                    boxShadow: "0px 10px 60px rgba(8, 115, 174, 0.08)",
+                  }}
+                  className="rounded-[4px] bg-[white] p-4 flex flex-col mt-0"
+                >
+                  <div>
+                    <img className="h-[50px]" src={data.icon} alt="" />
+                  </div>
+                  <div className="flex flex-col justify-start items-start">
+                    <h1 className="text-[#0e0e2c] text-[24px] font-bold py-2">
+                      {data.heading}
+                    </h1>
+                    <p className="text-[#756f86] font-normal text-[18px] py-2">
+                      {data.description}
+                    </p>
+                  </div>
+                </div>;
+              })}
+            </div>
+            <div className="flex justify-start align-center items-start mt-[5%]">
+              <div className="items-start flex flex-col align-center pt-[2.5%] w-[55%]">
+                <h1 className="text-[#0E0E2C] text-[36px] font-bold">
+                  Monitoring
+                </h1>
+                <div className="text-[#484F5F] leading-[26px] opacity-[0.7] w-[50%] text-left py-3 items-start text-[16px] ">
+                  Monitor over 170k web news sources with automated retrieval
+                  and analysis of relevant news articles. Pluaris will create a
+                  personalized, annotated news feed in the Reader&#39;s page on
+                  your topics of interest.
+                </div>
+              </div>
+              <div className="w-[30%]">
+                {/* <img className="" src={} alt="" /> */}
+              </div>
+            </div>
+          </div>
         </div>
-      </footer>
-          
-  
-</>
+      </div>
+    </>
   );
 }
