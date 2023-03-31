@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from "react";
-import Layout from "../components/Layout";
-import DashboardInsights from "../components/DashboardInsights";
-import Navbar from "../components/Navbar";
+import Layout from "../../components/Layout";
+import DashboardInsights from "../../components/DashboardInsights";
+import Navbar from "../../components/Navbar";
 import { useMutation } from "@apollo/client";
-import TinyMCEEditor from "../components/TinyMCEEditor";
-import { generateBlog } from "../graphql/mutations/generateBlog";
-import { jsonToHtml } from "../helpers/helper";
+import TinyMCEEditor from "../../components/TinyMCEEditor";
+import { generateBlog } from "../../graphql/mutations/generateBlog";
+import { jsonToHtml } from "../../helpers/helper";
 
 dashboard.getInitialProps = ({ query }) => {
   return { query };
