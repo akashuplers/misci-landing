@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
@@ -18,7 +18,7 @@ const navigation = [
     icon: PaperAirplaneIcon,
     current: false,
   },
-  { name: "Saved Blogs", href: "#", icon: FolderIcon, current: false },
+  { name: "Saved Blogs", href: "/saved", icon: FolderIcon, current: false },
 ];
 
 const navigation_bottom = [
@@ -37,6 +37,15 @@ function classNames(...classes) {
 
 export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [title, setTitle] = useState("");
+
+  useEffect(()=>{
+    if(window.location.pathname === "/saved"){
+      setTitle("Saved Articles");
+    }else if(window.location.pathname === "/dashboard"){
+      setTitle("Generated Article");
+    }
+  },[])
 
   return (
     <>
@@ -273,7 +282,7 @@ export default function Sidebar() {
                   </svg>
                 </div>
                 <h1 className="text-2xl font-semibold text-gray-900 p-3">
-                  Generated Article
+                  {title}
                 </h1>
               </div>
               <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
