@@ -5,7 +5,6 @@ import DashboardInsights from "../components/DashboardInsights";
 import Navbar from "../components/Navbar";
 import { useMutation } from "@apollo/client";
 import TinyMCEEditor from "../components/TinyMCEEditor";
-import { updateBlog } from "../graphql/mutations/updateBlog";
 import { generateBlog } from "../graphql/mutations/generateBlog";
 import { jsonToHtml } from "../helpers/helper";
 
@@ -20,12 +19,9 @@ export default function dashboard({ query }) {
   const [editorText, setEditorText] = useState("");
   const [ideas, setIdeas] = useState([]);
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
-  const [
-    UpdateBlog,
-    { data: updateData, loading: updateLoading, error: updateError },
-  ] = useMutation(updateBlog);
 
   useEffect(() => {
+    const getToken = localStorage.getItem("token");
     var getUserId;
     if (typeof window !== "undefined") {
       getUserId = localStorage.getItem("userId");
@@ -43,7 +39,6 @@ export default function dashboard({ query }) {
         },
       },
       onCompleted: (data) => {
-        console.log("692", data);
         const aa = data.generate.publish_data[2].tiny_mce_data;
         setIdeas(data.generate.ideas.ideas);
         setblog_id(data.generate._id);
