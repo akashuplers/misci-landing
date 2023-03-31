@@ -26,7 +26,6 @@ export default function dashboard({ query }) {
   ] = useMutation(updateBlog);
 
   useEffect(() => {
-    const getToken = localStorage.getItem("token");
     var getUserId;
     if (typeof window !== "undefined") {
       getUserId = localStorage.getItem("userId");
@@ -48,7 +47,7 @@ export default function dashboard({ query }) {
         const aa = data.generate.publish_data[2].tiny_mce_data;
         setIdeas(data.generate.ideas.ideas);
         setblog_id(data.generate._id);
-        console.log("+++", aa);
+
         const htmlDoc = jsonToHtml(aa);
         setEditorText(htmlDoc);
         console.log("Sucessfully generated the article");

@@ -65,7 +65,11 @@ export default function AuthenticationModal({
         body: JSON.stringify(signUpFormData),
       })
         .then((res) => res.json())
-        .then((res) => afterCreateUser(res))
+        .then((res) => {
+          setSubmitting(false);
+          setModalIsOpen(false);
+          afterCreateUser(res);
+        })
         .catch((err) => console.error("Error: ", err))
         .finally(() => {
           setSubmitting(false);
@@ -318,6 +322,7 @@ export default function AuthenticationModal({
   );
 }
 function redirectPageAfterLogin(data) {
+  console.log("in redirectPageAfterLogin");
   localStorage.setItem(
     "token",
     JSON.stringify(data.data.accessToken).replace(/['"]+/g, "")
@@ -355,7 +360,7 @@ function redirectPageAfterLogin(data) {
     })
     .catch((error) => console.log("error", error));
   if (window.location.pathname === "/") {
-    // window.location.href = "/dashboard";
+    window.location.href = "/dashboard";
   } else {
     window.location.reload();
   }
