@@ -1,5 +1,6 @@
 .blogContainer{
     max-width: 400px;
+    margin: 0 auto;
 }
 
 .blogTagContainer{
@@ -15,4 +16,11 @@
     border-radius: 5px;
     padding: 0.1em 0.3em;
     font-size: 0.9em;
+}
+
+@media (max-width : 1024px) {
+    .savedBlogContainer{
+        width: 80% !important; 
+        margin: 0 auto;
+    }
 }

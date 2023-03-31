@@ -80,11 +80,11 @@ export default function saved() {
         <>
             <Layout>
                 <div className="flex divide-x">
-                    <div className="h-[100%] w-[65%] ml-[27%] mr-9">
+                    <div className={styles.savedBlogContainer + " h-[100%] w-[65%] ml-[27%] mr-9"}>
                          <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
                             {allBlogs.map((blog) => (
                                 <div key={blog._id} className={styles.blogContainer + " group relative"}>
-                                    <div className="min-h-[30vh] aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-[30vh]">
+                                    <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-[30vh]">
                                         <img
                                         src={blog.image}
                                         alt={blog.title}
