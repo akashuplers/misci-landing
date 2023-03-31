@@ -54,21 +54,24 @@ export default function AuthenticationModal({
   const handleSignUpSubmit = async (event) => {
     setSubmitting(true);
     event.preventDefault();
-
-    fetch(API_BASE_PATH + API_ROUTES.CREATE_USER, {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify(signUpFormData),
-    })
-      .then((res) => res.json())
-      .then((res) => afterCreateUser(res))
-      .catch((err) => console.error("Error: ", err))
-      .finally(() => {
-        setSubmitting(false);
-        setModalIsOpen(false);
-      });
+    if (type === "login") {
+      afterCreateUser();
+    } else {
+      fetch(API_BASE_PATH + API_ROUTES.CREATE_USER, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(signUpFormData),
+      })
+        .then((res) => res.json())
+        .then((res) => afterCreateUser(res))
+        .catch((err) => console.error("Error: ", err))
+        .finally(() => {
+          setSubmitting(false);
+          setModalIsOpen(false);
+        });
+    }
 
     function afterCreateUser(res) {
       fetch(API_BASE_PATH + API_ROUTES.LOGIN_ENDPOINT, {
@@ -315,33 +318,44 @@ export default function AuthenticationModal({
   );
 }
 function redirectPageAfterLogin(data) {
-  // console.log(data);
-  // console.log(data.data.accessToken);
-  var getToken;
-  if (typeof window !== "undefined") {
-    getToken = localStorage.getItem("token");
-  }
-  // const {
-  //   data: meeData,
-  //   loading,
-  //   error,
-  // } = useQuery(meeAPI, {
-  //   context: {
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: "Bearer " + getToken,
-  //     },
-  //   },
-  // }).then((res) => {
-  //   console.log("res", res);
-  // });
-
   localStorage.setItem(
     "token",
     JSON.stringify(data.data.accessToken).replace(/['"]+/g, "")
   );
+  var getToken;
+  if (typeof window !== "undefined") {
+    getToken = localStorage.getItem("token");
+  }
+  var myHeaders = new Headers();
+  myHeaders.append("content-type", "application/json");
+  myHeaders.append("Authorization", "Bearer " + getToken);
+
+  var raw = JSON.stringify({
+    query:
+      "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  }\n}",
+  });
+
+  var requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow",
+  };
+
+  fetch("https://maverick.lille.ai/graphql", requestOptions)
+    .then((response) => response.text())
+    .then((result) => {
+      const json = JSON.parse(result);
+
+      localStorage.setItem(
+        "userId",
+        JSON.stringify(json.data.me._id).replace(/['"]+/g, "")
+      );
+      console.log(JSON.parse(result));
+    })
+    .catch((error) => console.log("error", error));
   if (window.location.pathname === "/") {
-    window.location.href = "/dashboard";
+    // window.location.href = "/dashboard";
   } else {
     window.location.reload();
   }

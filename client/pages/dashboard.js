@@ -27,12 +27,19 @@ export default function dashboard({ query }) {
 
   useEffect(() => {
     const getToken = localStorage.getItem("token");
-    const tempId = localStorage.getItem("tempId");
+    var getUserId;
+    if (typeof window !== "undefined") {
+      getUserId = localStorage.getItem("userId");
+    }
+    var getTempId;
+    if (typeof window !== "undefined") {
+      getTempId = localStorage.getItem("tempId");
+    }
 
     GenerateBlog({
       variables: {
         options: {
-          user_id: tempId,
+          user_id: getUserId ? getUserId : getTempId,
           keyword: topic,
         },
       },
