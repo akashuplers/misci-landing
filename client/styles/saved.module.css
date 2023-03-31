@@ -1,0 +1,18 @@
+.blogContainer{
+    max-width: 400px;
+}
+
+.blogTagContainer{
+    margin-top: 0.5em;
+    display: flex;
+    gap: 0.25em;
+}
+
+.blogTag{
+    background-color: #bdd5f6;
+    padding: 0.1em;
+    color: white;
+    border-radius: 5px;
+    padding: 0.1em 0.3em;
+    font-size: 0.9em;
+}
