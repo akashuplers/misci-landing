@@ -9,9 +9,13 @@ import { contextType } from "react-modal";
 
 export default function Saved() {
 
-    const {data, error, loading} = useQuery(getAllBlogs,{context : { Headers: {
-      authorization: `Bearer ${localStorage.getItem('token')}`,
-    },}});
+  const { data, error, loading } = useQuery(getAllBlogs, {
+    context: {
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    },
+  });
         
 
     if(loading){
@@ -99,7 +103,7 @@ if (data){
                 <div className="flex divide-x">
                     <div className={styles.savedBlogContainer + " h-[100%] w-[65%] ml-[27%] mr-9"}>
                          <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-                            {/* {allBlogs.map((blog) => (
+                            {data?.getAllBlogs.map((blog) => (
                                 <div key={blog._id} className={styles.blogContainer + " group relative"}>
                                     <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-[30vh]">
                                         <img
@@ -127,7 +131,7 @@ if (data){
                                         </div>
                                     </div>
                                 </div>
-                            ))} */}
+                            ))}
                         </div>
                     </div>
                 </div>
