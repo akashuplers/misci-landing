@@ -29,6 +29,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import Layout from "../components/Layout";
+import { useQuery } from "@apollo/client";
+import { meeAPI } from "../graphql/querys/mee";
 
 const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: false },
@@ -71,6 +73,26 @@ export default function Settings() {
     useState(true);
   const [autoUpdateApplicantDataEnabled, setAutoUpdateApplicantDataEnabled] =
     useState(false);
+
+  var getToken;
+  if (typeof window !== "undefined") {
+    getToken = localStorage.getItem("token");
+  }
+
+  const {
+    data: meeData,
+    loading: meeLoading,
+    error: meeError,
+  } = useQuery(meeAPI, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken,
+      },
+    },
+  });
+
+  console.log("meeData", meeData);
 
   return (
     <>
