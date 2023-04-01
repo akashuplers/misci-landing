@@ -4,7 +4,9 @@ import Navbar from "../components/Navbar";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import LoaderPlane from "../components/LoaderPlane";
-import { useRouter } from "next/router"; // Add this import
+import { useRouter } from "next/router";
+import useKeywordStore from '../store/keywordStore'; 
+
 
 export default function Home() {
   const keywords = gql`
@@ -14,19 +16,18 @@ export default function Home() {
   `;
   const { data, loading } = useQuery(keywords);
   const [keyword, setkeyword] = useState("");
-
-  const router = useRouter(); // Add this line
+  const router = useRouter(); 
+  const setKeywordInStore = useKeywordStore((state) => state.setKeyword); 
 
   const handleEnterKeyPress = (e: { key: string; }) => {
     if (e.key === "Enter") {
+      setKeywordInStore(keyword); 
       router.push({
         pathname: "/dashboard",
         query: { topic: keyword },
       });
     }
   };
-
-  console.log(data, "keywords");
 
   const updatedArr = data?.trendingTopics?.map((topic: any, i: any) => (
     <Link
@@ -46,8 +47,6 @@ export default function Home() {
       </div>
     </Link>
   ));
-
-
 
   return (
     <>
@@ -103,8 +102,9 @@ export default function Home() {
                 type="search"
                 onChange={(e) => {
                   setkeyword(e.target.value);
+                  setKeywordInStore(e.target.value); // Update the keyword in the store
                 }}
-                onKeyPress={handleEnterKeyPress} // Add this line
+                onKeyPress={handleEnterKeyPress}
               />
               <Link
                 legacyBehavior
