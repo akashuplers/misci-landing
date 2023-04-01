@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import LoaderPlane from "../components/LoaderPlane";
+import { useRouter } from "next/router"; // Add this import
 
 export default function Home() {
   const keywords = gql`
@@ -13,6 +14,17 @@ export default function Home() {
   `;
   const { data, loading } = useQuery(keywords);
   const [keyword, setkeyword] = useState("");
+
+  const router = useRouter(); // Add this line
+
+  const handleEnterKeyPress = (e: { key: string; }) => {
+    if (e.key === "Enter") {
+      router.push({
+        pathname: "/dashboard",
+        query: { topic: keyword },
+      });
+    }
+  };
 
   console.log(data, "keywords");
 
@@ -34,6 +46,8 @@ export default function Home() {
       </div>
     </Link>
   ));
+
+
 
   return (
     <>
@@ -80,7 +94,7 @@ export default function Home() {
             ) : (
               <LoaderPlane />
             )}
-            <div className="mt-10 flex items-center justify-center gap-x-6">
+           <div className="mt-10 flex items-center justify-center gap-x-6">
               <input
                 id="search"
                 name="search"
@@ -90,6 +104,7 @@ export default function Home() {
                 onChange={(e) => {
                   setkeyword(e.target.value);
                 }}
+                onKeyPress={handleEnterKeyPress} // Add this line
               />
               <Link
                 legacyBehavior
