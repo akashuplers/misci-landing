@@ -6,7 +6,7 @@ import Link from "next/link";
 import LoaderPlane from "../components/LoaderPlane";
 import { useRouter } from "next/router";
 import useKeywordStore from '../store/store'; 
-
+import Layout from "../components/Layout";
 
 export default function Home() {
   const keywords = gql`
@@ -50,8 +50,8 @@ export default function Home() {
 
   return (
     <>
-      <Navbar isOpen={false} />
-      <div className="relative  px-6 pt-5 lg:px-8">
+      <Layout>
+        <div className="relative  px-6 pt-5 lg:px-8">
         <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
           <svg
             className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
@@ -147,6 +147,7 @@ export default function Home() {
           </svg>
         </div>
       </div>
+      </Layout>
     </>
   );
 }
