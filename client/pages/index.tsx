@@ -5,7 +5,7 @@ import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import LoaderPlane from "../components/LoaderPlane";
 import { useRouter } from "next/router";
-import useKeywordStore from '../store/store'; 
+import useStore from '../store/store'; 
 import Layout from "../components/Layout";
 
 export default function Home() {
@@ -17,7 +17,8 @@ export default function Home() {
   const { data, loading } = useQuery(keywords);
   const [keyword, setkeyword] = useState("");
   const router = useRouter(); 
-  const setKeywordInStore = useKeywordStore((state) => state.setKeyword); 
+  const setKeywordInStore = useStore((state) => state.setKeyword); 
+  const isAuthenticated = useStore((state) => state.isAuthenticated);
 
   const handleEnterKeyPress = (e: { key: string; }) => {
     if (e.key === "Enter") {
@@ -51,7 +52,7 @@ export default function Home() {
   return (
     <>
       <Layout>
-        <div className="relative  px-6 pt-5 lg:px-8">
+       <div className={`relative px-6 pt-5 lg:px-8 ${isAuthenticated ? 'left-10' : ''}`}>
         <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
           <svg
             className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"

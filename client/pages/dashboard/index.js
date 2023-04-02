@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../components/Layout";
 import DashboardInsights from "../../components/DashboardInsights";
-import useKeywordStore from '../../store/store'; // Add this import
+import useStore from '../../store/store'; // Add this import
 import { useMutation } from "@apollo/client";
 import TinyMCEEditor from "../../components/TinyMCEEditor";
 import { generateBlog } from "../../graphql/mutations/generateBlog";
@@ -18,7 +18,7 @@ export default function dashboard({ query }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [editorText, setEditorText] = useState("");
   const [ideas, setIdeas] = useState([]);
-  const keyword = useKeywordStore((state) => state.keyword);
+  const keyword = useStore((state) => state.keyword);
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
 
   useEffect(() => {
