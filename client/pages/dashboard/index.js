@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../components/Layout";
 import DashboardInsights from "../../components/DashboardInsights";
-import useKeywordStore from '../../store/keywordStore'; // Add this import
+import useKeywordStore from '../../store/store'; // Add this import
 import { useMutation } from "@apollo/client";
 import TinyMCEEditor from "../../components/TinyMCEEditor";
 import { generateBlog } from "../../graphql/mutations/generateBlog";

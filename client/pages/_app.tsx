@@ -9,7 +9,7 @@ import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { getMainDefinition } from "apollo-utilities";
 import { ApolloProvider } from "@apollo/client";
 import { GRAPHQL_URL, WEBSOCKET_URL } from "@/constants";
-import useTempId from "@/store/tempId";
+import useTempId from "@/store/store";
 import { useRouter } from "next/router";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 
