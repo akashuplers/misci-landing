@@ -5,7 +5,7 @@ import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import LoaderPlane from "../components/LoaderPlane";
 import { useRouter } from "next/router";
-import useKeywordStore from '../store/keywordStore'; 
+import useKeywordStore from '../store/store'; 
 
 
 export default function Home() {
