@@ -1,7 +1,14 @@
+/* eslint-disable @next/next/no-img-element */
 import { PlayPauseIcon } from "@heroicons/react/24/outline";
-import React, { useDebugValue, useState } from "react";
+import React, { useDebugValue, useState, useEffect } from "react";
 import Modal from "react-modal";
+import { LINKEDIN_CLIENT_ID } from "@/constants";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import { LinkedinLogin } from "../services/LinkedinLogin"
+
+import { LinkAuthenticationElement } from "@stripe/react-stripe-js";
+import { useAsyncError } from "react-router";
+import { useRouter } from "next/router";
 
 export default function AuthenticationModal({
   type,
@@ -34,52 +41,10 @@ export default function AuthenticationModal({
   };
 
   const handleLoginSubmit = () => {
-    setModalIsOpen(false);
-    console.log(formData);
-    setFormData({
-      email: "",
-      password: "",
-    });
-  };
-
-  const handleLoginChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prev) => {
-      return {
-        ...prev,
-        [name]: value,
-      };
-    });
-  };
-
-  const handleSignUpSubmit = async (event) => {
     setSubmitting(true);
     event.preventDefault();
-    if (type === "login") {
-      afterCreateUser();
-    } else {
-      fetch(API_BASE_PATH + API_ROUTES.CREATE_USER, {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(signUpFormData),
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          setSubmitting(false);
-          setModalIsOpen(false);
-          afterCreateUser(res);
-        })
-        .catch((err) => console.error("Error: ", err))
-        .finally(() => {
-          setSubmitting(false);
-          setModalIsOpen(false);
-        });
-    }
-
-    function afterCreateUser(res) {
-      fetch(API_BASE_PATH + API_ROUTES.LOGIN_ENDPOINT, {
+    
+    fetch(API_BASE_PATH + API_ROUTES.LOGIN_ENDPOINT, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -93,65 +58,105 @@ export default function AuthenticationModal({
         .then((data) => redirectPageAfterLogin(data))
         .catch((err) => console.error("Error: ", err))
         .finally(() => {
-          setSignUpFormData({
-            firstName: "",
-            lastName: "",
+
+          setModalIsOpen(false);
+          setLoginFormData({
             email: "",
             password: "",
-            tempUserId: "",
           });
         });
 
-      return console.log("Success: ", res);
-    }
-  };
-  function redirectPageAfterLogin(data) {
-    console.log("in redirectPageAfterLogin");
-    localStorage.setItem(
-      "token",
-      JSON.stringify(data.data.accessToken).replace(/['"]+/g, "")
-    );
-    var getToken;
-    if (typeof window !== "undefined") {
-      getToken = localStorage.getItem("token");
-    }
-    var myHeaders = new Headers();
-    myHeaders.append("content-type", "application/json");
-    myHeaders.append("Authorization", "Bearer " + getToken);
-
-    var raw = JSON.stringify({
-      query:
-        "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  }\n}",
-    });
-
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow",
-    };
-
-    fetch("https://maverick.lille.ai/graphql", requestOptions)
-      .then((response) => response.text())
-      .then((result) => {
-        const json = JSON.parse(result);
+      function redirectPageAfterLogin(data) {
+        console.log("in redirectPageAfterLogin");
         localStorage.setItem(
-          "userId",
-          JSON.stringify(json.data.me._id).replace(/['"]+/g, "")
+          "token",
+          JSON.stringify(data.data.accessToken).replace(/['"]+/g, "")
         );
-        console.log(JSON.parse(result));
-      })
-      .catch((error) => console.log("error", error));
-    if (window.location.pathname === "/dashboard") {
-      console.log("in ho gya bhai");
-      handleSave();
-    }
+        var getToken;
+        if (typeof window !== "undefined") {
+          getToken = localStorage.getItem("token");
+        }
+        var myHeaders = new Headers();
+        myHeaders.append("content-type", "application/json");
+        myHeaders.append("Authorization", "Bearer " + getToken);
 
-    if (window.location.pathname === "/") {
-      window.location.href = "/dashboard";
-    }
-    return;
-  }
+        var raw = JSON.stringify({
+          query:
+            "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  }\n}",
+        });
+
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+          redirect: "follow",
+        };
+
+        fetch("https://maverick.lille.ai/graphql", requestOptions)
+          .then((response) => response.text())
+          .then((result) => {
+            const json = JSON.parse(result);
+            localStorage.setItem(
+              "userId",
+              JSON.stringify(json.data.me._id).replace(/['"]+/g, "")
+            );
+            console.log(JSON.parse(result));
+          })
+          .catch((error) => console.log("error", error));
+        if (window.location.pathname === "/dashboard") {
+          console.log("in ho gya bhai");
+          handleSave();
+        }
+
+        if (window.location.pathname === "/") {
+          window.location.href = "/dashboard";
+        }
+        return;
+      }
+
+      return console.log("Success: ", res);
+  };
+
+  const handleLoginChange = (event) => {
+    const { name, value } = event.target;
+    setLoginFormData((prev) => {
+      return {
+        ...prev,
+        [name]: value,
+      };
+    });
+  };
+
+  const handleSignUpSubmit = async (event) => {
+    setSubmitting(true);
+    event.preventDefault();
+
+    fetch(API_BASE_PATH + API_ROUTES.CREATE_USER, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(signUpFormData),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        setSubmitting(false);
+        setModalIsOpen(false);
+        afterCreateUser(res);
+      })
+      .catch((err) => console.error("Error: ", err))
+      .finally(() => {
+        setSubmitting(false);
+        setSignUpFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          password: "",
+          tempUserId: "",
+        });
+        setModalIsOpen(false);
+      });
+  };
 
   const handleSignUpChange = (event) => {
     const { name, value } = event.target;
@@ -162,6 +167,51 @@ export default function AuthenticationModal({
       };
     });
   };
+
+  const [callBack, setCallBack] = useState()
+
+  React.useEffect(()=>{
+    if (typeof window !== "undefined") {
+      let temp = `${window.location.origin}${window.location.pathname}`
+      setCallBack(temp.substring(0,temp.length - 1));
+    }
+  },[])
+
+  const router = useRouter();
+
+  useEffect(() => {
+    console.log(router)
+    // const queryParams = new URLSearchParams(location.search);
+    // if (queryParams.has("code")) {
+    //   let code = queryParams.get("code");
+    //   fetchLinkedInDetails(code, setLoading);
+    //   setLoading(true);
+    // }
+    // setCallBack(`${window.location.origin}${location.pathname}`);
+    // handleCallback(callBack);
+  }, [router, callBack]);
+
+  const handleGoogleLogin = () => {
+    console.log("google login")
+  }
+
+  const handleGoogleSignUp = () => {
+    console.log("google signup")
+  }
+
+  const handleLinkedinLogin = () => {
+    console.log("linkedin login")
+  }
+
+  const handleLinkedinSignUp = () => {
+    setModalIsOpen(false);
+    console.log("linkedin singup")
+    console.log(callBack)
+
+    const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`
+    window.location = redirectUrl
+
+  }
 
   return (
     <Modal
@@ -206,22 +256,59 @@ export default function AuthenticationModal({
         <p className="text-slate-500 ">Hi, Welcome back 👋</p>
 
         <div className="mt-5">
-          <button className=" w-full text-center py-3 border flex space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150">
-            <img
-              src="https://www.svgrepo.com/show/355037/google.svg"
-              className="w-6 h-6 pl-2"
-              alt=""
-            />{" "}
-            <span className="p-4 py-2">
-              {type === "login" ? "Login with Google" : "Sign Up with Google"}
-            </span>
-          </button>
+          <div class="w-full flex justify-evenly gap-4">
+            <button 
+              className="text-center p-5 border flex flex-col space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
+              onClick={type === "login" ? handleGoogleLogin : handleGoogleSignUp}>
+              <img
+                src="https://www.svgrepo.com/show/355037/google.svg"
+                className="w-6 h-6"
+                alt=""
+              />
+              {/* <span className="p-4 py-2">
+                {type === "login" ? "Login with Google" : "Sign Up with Google"}
+              </span> */}
+            </button>
+            <button 
+              className="text-center p-5 border flex flex-col space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
+              onClick={type === "login" ? handleLinkedinLogin : handleLinkedinSignUp}>
+              <img
+                src="https://www.svgrepo.com/show/448234/linkedin.svg"
+                className="w-6 h-6"
+                alt=""
+              />
+              {/* <span className="p-4 py-2">
+                {type === "login" ? "Login with Google" : "Sign Up with Google"}
+              </span> */}
+            </button>
+          </div>
         </div>
+        {/*<div className="my-3 d-flex justify-content-center align-items-center">
+          <button
+            className="btn"
+            onClick={signUpWithGoogle}
+            aria-label="Sign in with Google"
+          >
+            <img width="50px" className="mx-2" src={google} />
+          </button>
+          <a
+            href={`https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`}
+            aria-label="Sign in with Linked-in"
+            className={styles.linkedin}
+          >
+            <img
+              width="50px"
+              src={linkedin}
+              className="mx-2"
+              alt="Linkedin"
+            />
+          </a>
+        </div>*/}
         <form
           action=""
           method="post"
           className="my-10 mt-0  "
-          onSubmit={handleSignUpSubmit}
+          onSubmit={type === "login" ? handleLoginSubmit :handleSignUpSubmit}
         >
           <div className="flex flex-col space-y-5">
             {type === "login" ? (
@@ -268,8 +355,8 @@ export default function AuthenticationModal({
                 id="email"
                 name="email"
                 type="email"
-                value={signUpFormData.email}
-                onChange={handleSignUpChange}
+                value={type === "login" ? loginFormData.email : signUpFormData.email}
+                onChange={type === "login" ? handleLoginChange : handleSignUpChange}
                 className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
                 placeholder="Enter email address"
                 required
@@ -283,8 +370,8 @@ export default function AuthenticationModal({
                 type="password"
                 title="Password should contain alphabet and number and should be between 8 to 20 characters"
                 pattern="^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{8,20}$"
-                value={signUpFormData.password}
-                onChange={handleSignUpChange}
+                value={type === "login" ? loginFormData.password : signUpFormData.password}
+                onChange={type === "login" ? handleLoginChange : handleSignUpChange}
                 className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
                 placeholder="Enter your password"
                 required
@@ -302,7 +389,7 @@ export default function AuthenticationModal({
                 </label>
               </div>
               <div>
-                <a href="#" className="text-sm  font-medium text-indigo-600">
+                <a className="text-sm  font-medium text-indigo-600">
                   Forgot Password?
                 </a>
               </div>
@@ -339,7 +426,6 @@ export default function AuthenticationModal({
                 : "Already Registered ?   "}
 
               <a
-                href="#"
                 className="text-indigo-600 font-medium inline-flex space-x-1 items-center"
                 onClick={() =>
                   type === "login" ? setType("signup") : setType("login")
