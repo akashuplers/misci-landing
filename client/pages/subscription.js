@@ -16,8 +16,6 @@ Subscription.getInitialProps = ({ query }) => {
 };
 
 export default function Subscription({query}) {
-  console.log(JSON.parse(query.currentPlan))
-  const subsType = query.currentPlan
   const stripePromise = loadStripe(
     "pk_test_51KYwIFSI8Tkf3wUiAeZww7bVzcqwkbpXHHZsmqtPbZq12ey9Xy96mvA7KPpNQxVyiHbOPqcDm7BQwKdvZETRn4XU00FlHDBiq8"
   );
@@ -25,7 +23,7 @@ export default function Subscription({query}) {
 
   const [currentPlan, setCurrentPlan] = useState(JSON.parse(query.currentPlan));
 
-  const [priceId, setPriceId] = useState();
+  const [priceId, setPriceId] = useState(JSON.parse(query.currentPlan).priceId);
   const [clickOnSubscibe, setClickOnSubscibe] = useState(false);
 
   const subscriptionPlan = (plan) => {
