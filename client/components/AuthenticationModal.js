@@ -4,13 +4,14 @@ import { PlayPauseIcon } from "@heroicons/react/24/outline";
 import React, { useDebugValue, useState, useEffect } from "react";
 import Modal from "react-modal";
 
-import LoaderPlane from "./LoaderPlane";
-
 import { LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { LinkedinLogin } from "../services/LinkedinLogin"
+import { signUpWithGoogle } from "../services/GoogleLogin"
 
 import { useRouter } from "next/router";
+import LoaderPlane from "./LoaderPlane";
+
 export default function AuthenticationModal({
   type,
   setType,
@@ -197,22 +198,19 @@ export default function AuthenticationModal({
     console.log("google login")
   }
 
-  const handleGoogleSignUp = () => {
+  const handleGoogleSignUp = async () => {
     console.log("google signup")
-  }
 
-  const handleLinkedinLogin = () => {
-    console.log("linkedin login")
+    await signUpWithGoogle(null)
+      .then((res) => console.log(res))
+      .catch((err) => console.error(err));
   }
 
   const handleLinkedinSignUp = () => {
     setModalIsOpen(false);
-    console.log("linkedin singup")
-    console.log(callBack)
 
     const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`
     window.location = redirectUrl
-
   }
 
   const [loading, setLoading] = useState(false);
@@ -277,7 +275,7 @@ export default function AuthenticationModal({
             </button>
             <button 
               className="text-center p-5 border flex flex-col space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
-              onClick={type === "login" ? handleLinkedinLogin : handleLinkedinSignUp}>
+              onClick={handleLinkedinSignUp}>
               <img
                 src="https://www.svgrepo.com/show/448234/linkedin.svg"
                 className="w-6 h-6"
