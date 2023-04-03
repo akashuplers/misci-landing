@@ -34,6 +34,39 @@ const linkedinUserDetails = async (token, login, loaderFunction) => {
         headers: Headers,
         body: JSON.stringify({accessToken: token})
     }).then(res => res.json())
-      .then(res => console.log(res))
+      .then(res => {
+        const signUpFormData = {
+            firstName: res.data.localizedFirstName,
+            lastName: res.data.localizedLastName,
+            email: res.data.email,
+            password: null,
+            tempUserId: "",
+        }
+        fetch(API_BASE_PATH + API_ROUTES.CREATE_USER, {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json",
+            },
+            body: JSON.stringify(signUpFormData),
+            })
+            .then((res) => res.json())
+            .then((res) => {
+                setSubmitting(false);
+                setModalIsOpen(false);
+                afterCreateUser(res);
+            })
+            .catch((err) => console.error("Error: ", err))
+            .finally(() => {
+                setSubmitting(false);
+                setSignUpFormData({
+                firstName: "",
+                lastName: "",
+                email: "",
+                password: "",
+                tempUserId: "",
+                });
+                setModalIsOpen(false);
+            });
+    })
       .catch(err => console.error(err))
 };
