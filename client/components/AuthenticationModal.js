@@ -200,10 +200,7 @@ export default function AuthenticationModal({
 
   const handleGoogleSignUp = async () => {
     console.log("google signup")
-
-    await signUpWithGoogle(null)
-      .then((res) => console.log(res))
-      .catch((err) => console.error(err));
+    signUpWithGoogle()
   }
 
   const handleLinkedinSignUp = () => {
@@ -263,7 +260,7 @@ export default function AuthenticationModal({
           <div className="w-full flex justify-evenly gap-4">
             <button 
               className="text-center p-5 border flex flex-col space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
-              onClick={type === "login" ? handleGoogleLogin : handleGoogleSignUp}>
+              onClick={handleGoogleSignUp}>
               <img
                 src="https://www.svgrepo.com/show/355037/google.svg"
                 className="w-6 h-6"
