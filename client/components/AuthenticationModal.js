@@ -8,6 +8,7 @@ export default function AuthenticationModal({
   setType,
   modalIsOpen,
   setModalIsOpen,
+  handleSave,
 }) {
   const [submitting, setSubmitting] = useState(false);
 
@@ -65,7 +66,11 @@ export default function AuthenticationModal({
         body: JSON.stringify(signUpFormData),
       })
         .then((res) => res.json())
-        .then((res) => afterCreateUser(res))
+        .then((res) => {
+          setSubmitting(false);
+          setModalIsOpen(false);
+          afterCreateUser(res);
+        })
         .catch((err) => console.error("Error: ", err))
         .finally(() => {
           setSubmitting(false);
@@ -96,9 +101,57 @@ export default function AuthenticationModal({
             tempUserId: "",
           });
         });
+
       return console.log("Success: ", res);
     }
   };
+  function redirectPageAfterLogin(data) {
+    console.log("in redirectPageAfterLogin");
+    localStorage.setItem(
+      "token",
+      JSON.stringify(data.data.accessToken).replace(/['"]+/g, "")
+    );
+    var getToken;
+    if (typeof window !== "undefined") {
+      getToken = localStorage.getItem("token");
+    }
+    var myHeaders = new Headers();
+    myHeaders.append("content-type", "application/json");
+    myHeaders.append("Authorization", "Bearer " + getToken);
+
+    var raw = JSON.stringify({
+      query:
+        "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  }\n}",
+    });
+
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
+
+    fetch("https://maverick.lille.ai/graphql", requestOptions)
+      .then((response) => response.text())
+      .then((result) => {
+        const json = JSON.parse(result);
+        localStorage.setItem(
+          "userId",
+          JSON.stringify(json.data.me._id).replace(/['"]+/g, "")
+        );
+        console.log(JSON.parse(result));
+      })
+      .catch((error) => console.log("error", error));
+    if (window.location.pathname === "/dashboard") {
+      console.log("in ho gya bhai");
+      handleSave();
+    }
+
+    if (window.location.pathname === "/") {
+      window.location.href = "/dashboard";
+    }
+    return;
+  }
 
   const handleSignUpChange = (event) => {
     const { name, value } = event.target;
@@ -316,48 +369,4 @@ export default function AuthenticationModal({
       </div>
     </Modal>
   );
-}
-function redirectPageAfterLogin(data) {
-  localStorage.setItem(
-    "token",
-    JSON.stringify(data.data.accessToken).replace(/['"]+/g, "")
-  );
-  var getToken;
-  if (typeof window !== "undefined") {
-    getToken = localStorage.getItem("token");
-  }
-  var myHeaders = new Headers();
-  myHeaders.append("content-type", "application/json");
-  myHeaders.append("Authorization", "Bearer " + getToken);
-
-  var raw = JSON.stringify({
-    query:
-      "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  }\n}",
-  });
-
-  var requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow",
-  };
-
-  fetch("https://maverick.lille.ai/graphql", requestOptions)
-    .then((response) => response.text())
-    .then((result) => {
-      const json = JSON.parse(result);
-
-      localStorage.setItem(
-        "userId",
-        JSON.stringify(json.data.me._id).replace(/['"]+/g, "")
-      );
-      console.log(JSON.parse(result));
-    })
-    .catch((error) => console.log("error", error));
-  if (window.location.pathname === "/") {
-    // window.location.href = "/dashboard";
-  } else {
-    window.location.reload();
-  }
-  return;
 }

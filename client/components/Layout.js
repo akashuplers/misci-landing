@@ -1,24 +1,15 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useEffect, Fragment } from "react";
 import Sidebar from "./SidebarNav";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import useStore from "../store/store";
 
 export default function Layout({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const isAuthenticated = useStore((state) => state.isAuthenticated);
+  const updateAuthentication = useStore((state) => state.updateAuthentication);
+
   useEffect(() => {
-    var getToken;
-    if (typeof window !== "undefined") {
-      getToken = localStorage.getItem("token");
-    }
-    if (
-      getToken === "undefined" ||
-      getToken === null ||
-      getToken == undefined
-    ) {
-      setIsAuthenticated(false);
-    } else {
-      setIsAuthenticated(true);
-    }
+    updateAuthentication();
   }, []);
 
   return (
@@ -26,7 +17,7 @@ export default function Layout({ children }) {
       {isAuthenticated ? (
         <>
           <Sidebar />
-          <div className=" mx-auto">{children}</div>
+          <div className="mx-auto">{children}</div>
         </>
       ) : (
         <>
