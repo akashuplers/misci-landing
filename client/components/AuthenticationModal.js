@@ -3,12 +3,13 @@ import { PlayPauseIcon } from "@heroicons/react/24/outline";
 import React, { useDebugValue, useState, useEffect } from "react";
 import Modal from "react-modal";
 
+import LoaderPlane from "./LoaderPlane";
+
 import { LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { LinkedinLogin } from "../services/LinkedinLogin"
 
 import { useRouter } from "next/router";
-
 export default function AuthenticationModal({
   type,
   setType,
@@ -39,18 +40,16 @@ export default function AuthenticationModal({
     setModalIsOpen(false);
   };
 
-  const handleLoginSubmit = () => {
+  const handleLoginSubmit = (email, password) => {
     setSubmitting(true);
-    event.preventDefault();
-    
     fetch(API_BASE_PATH + API_ROUTES.LOGIN_ENDPOINT, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
         },
         body: JSON.stringify({
-          email: signUpFormData.email,
-          password: signUpFormData.password,
+          email: email ? email : loginFormData.email,
+          password: password ? password : loginFormData.password,
         }),
       })
         .then((res) => res.json())
@@ -65,8 +64,7 @@ export default function AuthenticationModal({
           });
         });
 
-      function redirectPageAfterLogin(data) {
-        console.log("in redirectPageAfterLogin");
+      function redirectPageAfterLogin(data) {        
         localStorage.setItem(
           "token",
           JSON.stringify(data.data.accessToken).replace(/['"]+/g, "")
@@ -99,21 +97,19 @@ export default function AuthenticationModal({
               "userId",
               JSON.stringify(json.data.me._id).replace(/['"]+/g, "")
             );
-            console.log(JSON.parse(result));
           })
-          .catch((error) => console.log("error", error));
-        if (window.location.pathname === "/dashboard") {
-          console.log("in ho gya bhai");
-          handleSave();
-        }
+          .catch((error) => console.log("error", error))
+          .finally(() => {
+            if (window.location.pathname === "/dashboard") {
+              handleSave();
+            }
 
-        if (window.location.pathname === "/") {
-          window.location.href = "/dashboard";
-        }
+            if (window.location.pathname === "/") {
+              window.location.href = "/dashboard";
+            }
+          })
         return;
       }
-
-      return console.log("Success: ", res);
   };
 
   const handleLoginChange = (event) => {
@@ -141,7 +137,7 @@ export default function AuthenticationModal({
       .then((res) => {
         setSubmitting(false);
         setModalIsOpen(false);
-        afterCreateUser(res);
+        handleLoginSubmit(signUpFormData.email,signUpFormData.password);
       })
       .catch((err) => console.error("Error: ", err))
       .finally(() => {
@@ -171,7 +167,7 @@ export default function AuthenticationModal({
 
   useEffect(()=>{
     if (typeof window !== "undefined") {
-      let temp = `${window.location.origin}${window.location.pathname}`
+      let temp = `${window.location.origin}${router.pathname}`
       setCallBack(temp.substring(0,temp.length - 1));
     }
   },[])
@@ -179,14 +175,12 @@ export default function AuthenticationModal({
   const router = useRouter();
 
   useEffect(() => {
-    console.log(router)
     const queryParams = router.query
 
     if (queryParams.code) {
       let code = queryParams.code;
-      console.log(code);
-      LinkedinLogin(code);
-      //setLoading(true);
+      LinkedinLogin(code, setLoading);
+      setLoading(true);
     }
 
     // let temp = `${window.location.origin}${router.pathname}`
@@ -215,6 +209,10 @@ export default function AuthenticationModal({
     window.location = redirectUrl
 
   }
+
+  const [loading, setLoading] = useState(false);
+
+  // if(loading) return <LoaderPlane/>
 
   return (
     <Modal
