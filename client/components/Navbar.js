@@ -38,7 +38,7 @@ export default function Navbar({ isOpen }) {
         className={({ open }) =>
           classNames(
             open ? "fixed inset-0 z-40 overflow-y-auto" : "",
-            "bg-white shadow-sm lg:static lg:overflow-y-visible fixed top-0"
+            "bg-white w-full z-[9999] shadow-sm lg:static lg:overflow-y-visible fixed top-0"
           )
         }
       >
