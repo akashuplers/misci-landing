@@ -102,6 +102,7 @@ export default function DashboardInsights({
     setValid(pattern.test(urlInput));
   }
 
+
   if (loading || regenLoading) return <LoaderPlane />;
 
   return (

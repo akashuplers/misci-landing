@@ -9,7 +9,7 @@ const Headers = {
 }
 
 
-export const LinkedinLogin =  (code, loaderFunction, login) => {
+export const LinkedinLogin =  (code, loaderFunction, handleSave) => {
     fetch(`${API_BASE_PATH}${LI_API_ENDPOINTS.LI_ACCESS_TOKEN}`,{
         method : "POST",
         headers : Headers,
@@ -21,13 +21,13 @@ export const LinkedinLogin =  (code, loaderFunction, login) => {
       .then(result => {
         console.log(result)
         if(result?.data)
-            linkedinUserDetails(result.data.access_token, loaderFunction, login)
+            linkedinUserDetails(result.data.access_token, loaderFunction, handleSave)
         }
       )
       .catch(err => console.error(err))
 };
 
-const linkedinUserDetails = async (token, login, loaderFunction) => {
+const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
     localStorage.setItem("linkedInAccessToken", token);
     fetch(`${API_BASE_PATH}${LI_API_ENDPOINTS.LI_PROFILE}`,{
         method: "POST",

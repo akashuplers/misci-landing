@@ -185,7 +185,7 @@ export default function AuthenticationModal({
 
     if (queryParams.code) {
       let code = queryParams.code;
-      LinkedinLogin(code, setLoading);
+      LinkedinLogin(code, setLoading, handleSave);
       setLoading(true);
     }
 
@@ -200,7 +200,7 @@ export default function AuthenticationModal({
 
   const handleGoogleSignUp = async () => {
     console.log("google signup")
-    signUpWithGoogle()
+    signUpWithGoogle(handleSave)
   }
 
   const handleLinkedinSignUp = () => {

@@ -20,7 +20,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
-export const signUpWithGoogle = (callback) => {
+export const signUpWithGoogle = (handleSave) => {
   signInWithPopup(auth, googleProvider)
     .then(res => {
         const arr = res.user.displayName.split(" ")
