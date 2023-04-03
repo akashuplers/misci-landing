@@ -19,6 +19,11 @@ export const LI_API_ENDPOINTS = {
   TW_POST: '/auth/landing/twitter/post',
 };
 
+export const LOCAL_STORAGE_KEYS = {
+    THEME: 'Theme',
+    ACCESS_TOKEN: 'accessToken',
+};
+
 export const LINKEDIN_CLIENT_ID = '868bordkbw6hm6';
 
 export const LINKEDIN_CLIENT_SECRET = 'kOALvAhpSOkYx4MN';
