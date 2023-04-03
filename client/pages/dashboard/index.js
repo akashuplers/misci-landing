@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from "react";
-import Layout from "../components/Layout";
-import DashboardInsights from "../components/DashboardInsights";
-import Navbar from "../components/Navbar";
+import Layout from "../../components/Layout";
+import DashboardInsights from "../../components/DashboardInsights";
+import useStore from '../../store/store'; // Add this import
 import { useMutation } from "@apollo/client";
-import TinyMCEEditor from "../components/TinyMCEEditor";
-import { generateBlog } from "../graphql/mutations/generateBlog";
-import { jsonToHtml } from "../helpers/helper";
+import TinyMCEEditor from "../../components/TinyMCEEditor";
+import { generateBlog } from "../../graphql/mutations/generateBlog";
+import { jsonToHtml } from "../../helpers/helper";
 
 dashboard.getInitialProps = ({ query }) => {
   return { query };
@@ -18,6 +18,7 @@ export default function dashboard({ query }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [editorText, setEditorText] = useState("");
   const [ideas, setIdeas] = useState([]);
+  const keyword = useStore((state) => state.keyword);
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
 
   useEffect(() => {
@@ -35,7 +36,7 @@ export default function dashboard({ query }) {
       variables: {
         options: {
           user_id: getUserId ? getUserId : getTempId,
-          keyword: topic,
+          keyword: keyword, // Use the keyword from the store
         },
       },
       onCompleted: (data) => {
