@@ -83,10 +83,10 @@ console.log(currentPlan)
               </div>
             </div>
           )}
-          <div className={" d-flex align-items-center pt-2  md:p-5"}>
+          <div className={" d-flex align-items-center py-10  md:py-5"}>
             <div className="w-100 md:mx-5 d-flex justify-content-evenly text-dark flex flex-col md:flex-row px-8 sm:px-0">
               <div className="w-50 flex flex-col content-center md:items-center  md:text-center">
-                <div className="text-[24px] font-bold leading-[28px] mb-[2%] mb-5 md:mb-0">
+                <div className="text-[24px] font-bold leading-[28px] mb-[5%]">
                   Sign up & Pay
                 </div>
                 <div className="flex bg-[#ECECF4] items-center rounded-[59px] h-[63px] w-[350px] md:w-[370px] p-[10px] mb-[4%] space-x-[10px]">
