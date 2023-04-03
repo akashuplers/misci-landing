@@ -4,6 +4,7 @@ import { API_BASE_PATH } from "../constants/apiEndpoints";
 import Link from "next/link";
 import Navbar from "../components/Navbar";
 import SwiperComponent from "../components/SwiperComponent";
+import  styles  from "../styles/price.module.css";
 
 const featuresData = [
   {
@@ -123,49 +124,49 @@ export default function Pricing() {
       <div>
         <Navbar isOpen={isOpen} />
         <div className="flex flex-col">
-          <div className="sm:mx-auto max-sm:mx-[5%] max-sm:leading-[26px] max-w-7xl bg-white max-sm:pt-5 sm:py-16 pb-0 px-6 lg:px-8">
-            <h2 className="text-3xl max-sm:text-left font-bold tracking-tight text-gray-900 sm:text-5xl sm:leading-none lg:text-6xl">
-              Pricing
-            </h2>
-            <p className="sm:pt-6 max-w-2xl max-sm:text-left text-[16px] text-[#484F5F] mx-auto">
-              Our affordable pricing scales with your business. We don’t lock
-              our features behind expensive plans. You get all the features on
-              every plan.
-            </p>
-          </div>
           <div className="relative top-0 h-auto">
-            <div className="h-[380px] w-[100%]"></div>
+            <div className="h-[500px] w-[100%]"></div>
             <div className="bg-[#111f43] sm:h-[400px] sm:w-[100%]"></div>
             {/* cards div */}
-            <div className="absolute max-sm:top-[7%] sm:top-[12%] sm:left-[0%] sm:right-[8%] w-full">
+            <div className="absolute max-sm:top-[20%] sm:top-[15%] lg:top-[5%] sm:left-[0%] sm:right-[8%] w-full">
+              <div className={styles.pricingContainer + " p-5 pb-10 pt-0 px-10 lg:pl-2"}>
+                <h2>
+                  Pricing
+                </h2>
+                <p className="">
+                  Our affordable pricing scales with your business. We don’t lock
+                  our features behind expensive plans. You get all the features on
+                  every plan.
+                </p>
+              </div>
               <div className="flex max-sm:flex-col w-full max-sm:space-y-8 sm:space-x-4 justify-center align-middle items-center">
                 <div
                   style={{
                     boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
                   }}
-                  className="flex sm:flex-wrap sm:flex-row relative max-sm:flex-col bg-[#ffffff] rounded p-4 w-[21rem] md:w-[392px] h-[660px]"
+                  className="flex sm:flex-wrap sm:flex-row relative max-sm:flex-col bg-[#ffffff] rounded-[0.75rem] p-4 w-[21rem] md:w-[392px] h-[600px]"
                 >
-                  <div className="flex flex-col items-start justify-start mt-4">
-                    <p className="text-[#182735] font-semibold text-[24px] leading-[26px] pb-2">
+                  <div className="flex flex-col items-start justify-start gap-4 mt-4">
+                    <p className="text-[#182735] font-semibold text-[24px] leading-[26px]">
                       Free
                     </p>
                     <p className="text-[44px] text-[#182735] leading-[112%] text-left font-bold">
                       Unlimited Access for 14 Days
                     </p>
+                    <p className=" text-[#182735] text-left leading-[26px] text-[18px] font-medium mb-4">
+                      Have unlimited access of Summary & Drivers for 14 days
+                    </p>
                   </div>
                   <div className="mt-4 mb-4 bg-gradient-to-r from-[#182735] to-transparent h-[2px]"></div>
                   <div className="flex flex-col items-start justify-start mt-4">
                     <div className="flex align-middle">
-                      <p className=" text-[#182735] text-left leading-[26px] text-[18px] font-medium mb-4">
-                        Have unlimited access of Summary & Drivers for 14 days
-                      </p>
                     </div>
                   </div>
                   <div
                     onClick={() => {
                       setIsOpen(true);
                     }}
-                    className="bg-[#3CC0F6] bottom-6 inline-block w-[67%] left-[17%] cursor-pointer absolute font-semibold text-[16px] no-underline text-[#0E0E2C] rounded-[10px] p-4"
+                    className="bg-[#3CC0F6] bottom-6 inline-block w-[67%] right-[1rem] cursor-pointer absolute font-semibold text-[16px] no-underline text-[#0E0E2C] rounded-[10px] p-4"
                   >
                     Try for free
                   </div>
@@ -176,7 +177,7 @@ export default function Pricing() {
                       "linear-gradient(157.47deg, #182735 14.91%, #15324E 96.07%)",
                     boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
                   }}
-                  className="flex relative flex-col  rounded text-[#ffffff] p-4 w-[21rem] md:w-[392px] h-[660px]"
+                  className="flex relative flex-col  rounded-[0.75rem] text-[#ffffff] p-4 w-[21rem] md:w-[392px] h-[600px]"
                 >
                   <div className="flex flex-col  items-start justify-start mt-4">
                     <p className=" font-semibold text-[24px] pb-2 capitalize">
@@ -274,7 +275,7 @@ export default function Pricing() {
                       query: { currentPlan : JSON.stringify(currentPlan) },
                     }}
                   > 
-                    <div className="bg-[#3CC0F6] bottom-6 inline-block w-[67%] left-[17%] cursor-pointer absolute font-semibold text-[16px] no-underline text-[#0E0E2C] rounded-[10px] p-4">
+                    <div className="bg-[#3CC0F6] bottom-6 inline-block w-[67%] right-[1rem] cursor-pointer absolute font-semibold text-[16px] no-underline text-[#0E0E2C] rounded-[10px] p-4">
                       Get Started
                     </div>
                   </Link>
@@ -284,7 +285,7 @@ export default function Pricing() {
           </div>
           {/* Features for mobile */}
           <div className="h-[900px] md:hidden md:bg-[#f1f4fa] sm:bg-transparent"></div>
-          <div className="w-[100%] sm:hidden bg-[#f1f4fa] flex flex-col h-[726px] mb-[6%] pt-[40%] md:pt[6%]">
+          <div className=" sm:hidden bg-[#f1f4fa] flex flex-col h-[726px] mb-[6%] pt-[40%] md:pt[6%]">
             <div className="flex  flex-col justify-start items-start mx-[5%]">
               <h1 className="#0E0E2C align-middle text-[24px] font-semibold">
                 Features
@@ -313,15 +314,7 @@ export default function Pricing() {
           </div>
 
           {/* Features for desktop */}
-          <div
-            style={
-              {
-                // background:
-                //   "linear-gradient(180deg, #111D41 23.76%, #192836 23.76%, #F8FAFF 23.77%)",
-              }
-            }
-            className="w-[100%] max-sm:hidden flex flex-col h-[726px] mx-[6%] mt-[6%]"
-          >
+          <div className="max-sm:hidden flex flex-col h-[726px] mx-[6%] mt-[6%]">
             <div className="flex  flex-col justify-start items-start">
               <h1 className="#0E0E2C align-middle text-[48px] font-semibold">
                 Features
