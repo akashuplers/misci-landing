@@ -2,12 +2,11 @@
 import { PlayPauseIcon } from "@heroicons/react/24/outline";
 import React, { useDebugValue, useState, useEffect } from "react";
 import Modal from "react-modal";
-import { LINKEDIN_CLIENT_ID } from "@/constants";
+
+import { LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { LinkedinLogin } from "../services/LinkedinLogin"
 
-import { LinkAuthenticationElement } from "@stripe/react-stripe-js";
-import { useAsyncError } from "react-router";
 import { useRouter } from "next/router";
 
 export default function AuthenticationModal({
@@ -170,7 +169,7 @@ export default function AuthenticationModal({
 
   const [callBack, setCallBack] = useState()
 
-  React.useEffect(()=>{
+  useEffect(()=>{
     if (typeof window !== "undefined") {
       let temp = `${window.location.origin}${window.location.pathname}`
       setCallBack(temp.substring(0,temp.length - 1));
@@ -181,13 +180,17 @@ export default function AuthenticationModal({
 
   useEffect(() => {
     console.log(router)
-    // const queryParams = new URLSearchParams(location.search);
-    // if (queryParams.has("code")) {
-    //   let code = queryParams.get("code");
-    //   fetchLinkedInDetails(code, setLoading);
-    //   setLoading(true);
-    // }
-    // setCallBack(`${window.location.origin}${location.pathname}`);
+    const queryParams = router.query
+
+    if (queryParams.code) {
+      let code = queryParams.code;
+      console.log(code);
+      LinkedinLogin(code);
+      //setLoading(true);
+    }
+
+    // let temp = `${window.location.origin}${router.pathname}`
+    // setCallBack(temp.substring(0,temp.length - 1));
     // handleCallback(callBack);
   }, [router, callBack]);
 
