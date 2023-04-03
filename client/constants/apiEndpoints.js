@@ -7,6 +7,7 @@ export const API_ROUTES = {
   CREATE_COMPANY: "/auth/company/create",
   CREATE_USER: "/auth/user/create",
   LOGIN_ENDPOINT: "/auth/user/login",
+  SOCIAL_LOGIN_ENDPOINT: "/auth/user/social/login"
 };
 
 export const LI_API_ENDPOINTS = {

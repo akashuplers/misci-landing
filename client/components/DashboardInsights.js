@@ -120,7 +120,7 @@ export default function DashboardInsights({
           </button>
         </div>
         <form className="flex items-center" onSubmit={postFormData}>
-          <label for="simple-search" className="sr-only">
+          <label htmlFor="simple-search" className="sr-only">
             Search
           </label>
           <div className="relative w-full">
@@ -133,9 +133,9 @@ export default function DashboardInsights({
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
+                  fillRule="evenodd"
                   d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                  clip-rule="evenodd"
+                  clipRule="evenodd"
                 ></path>
               </svg>
             </div>
@@ -226,10 +226,10 @@ export default function DashboardInsights({
           </div>
         </div>
         <div className="h-1/5 overflow-y-scroll">
-          {ideas?.map((idea) => {
+          {ideas?.map((idea, index) => {
             // if (idea?.idea?.length <= 0) return;
             return (
-              <div className="flex pb-10">
+              <div className="flex pb-10" key={index}>
                 <div className="flex justify-between gap-5 w-[95%] pr-5">
                   <p>{idea.idea}</p>
                   <input
