@@ -13,11 +13,11 @@ export const authMiddleware = async (req: any, res: any, next: any) => {
         res.status(403).send({ error: true, message: "FORBIDDEN" });
     }
     } else {
-        // if (!accessToken) {
-        //   res
-        //     .status(401)
-        //     .send({ error: true, message: "Please Register or Login" });
-        // }
+        if (!accessToken) {
+          return res
+            .status(401)
+            .send({ error: true, message: "Please Register or Login" });
+        }
         let verAcc = {};
         if (accessToken) {
             try {

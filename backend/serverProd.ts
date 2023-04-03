@@ -25,6 +25,7 @@ const authRoutes = require('./routes/authRoutes')
 const waitlist = require('./routes/waitlistRoutes')
 const upload = require('./routes/uploadRoutes')
 const stripe = require('./routes/stripeRoutes')
+const quickupload = require('./routes/quickuploadRoutes')
 
 const PORT = process.env.PORT || 5000
 
@@ -45,11 +46,12 @@ const startServer = async () => {
 
   // parse some custom thing into a Buffer
   app.use(bodyParser.raw())
-  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(bodyParser.urlencoded({ extended: true }));
   app.use('/auth', authRoutes)
   app.use('/waitlist', waitlist)
   app.use('/upload', upload)
   app.use('/stripe', stripe)
+  app.use('/quickupload', quickupload)
   const httpServer = createServer(app);
   const database = await db()
   app.set('db', database)
