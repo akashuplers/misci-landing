@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, Fragment } from "react";
 import Sidebar from "./SidebarNav";
 import Navbar from "./Navbar";
