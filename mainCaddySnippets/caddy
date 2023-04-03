@@ -16,6 +16,9 @@
                 handle /stripe/* {
                     reverse_proxy /stripe/* localhost:5000
                 }
+                handle /quickupload/* {
+                    reverse_proxy /quickupload/* localhost:5000
+                }
                 # Resolve the root directory for the app
                 reverse_proxy localhost:{args.1}
                 log {

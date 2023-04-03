@@ -1,13 +1,9 @@
 import { withFilter } from 'graphql-subscriptions';
 import { FetchBlog, GenerateBlogMutationArg, IRNotifiyArgs, ReGenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
-import { ChatGPT } from '../../../services/chatGPT';
 import { pubsub } from '../../../pubsub';
-import { getBase64Image } from '../../../utils/image';
 import { ObjectID } from 'bson';
-import { randomUUID } from 'crypto';
 import { blogGeneration, fetchBlog, fetchBlogIdeas } from './blogsRepo';
-import { Azure } from '../../../services/azure';
-import axios from 'axios';
+import { Python } from '../../../services/python';
 
 const SOMETHING_CHANGED_TOPIC = 'new_link';
 
@@ -41,7 +37,7 @@ export const blogResolvers = {
             return {...blogDetails, ideas: blogIdeas}
         },
         getAllBlogs: async (
-            parent: unknown, args: any, {db, pubsub, user}: any
+            parent: unknown, args: { id: string }, {db, pubsub, user}: any
         ) => {
             const blogLists = await db.db('lilleBlogs').collection('blogs').find({userId: new ObjectID(user.id)}).toArray()    
             const updatedList = blogLists.map((blog: any) => {
@@ -80,34 +76,12 @@ export const blogResolvers = {
             if(!availableApi) {
                 throw "Something went wrong! Please connect with support team";
             }
-            let pythonRes: any = null
+            let articleIds: any = null
             try {
-                const data = JSON.stringify({
-                    "userId": userId,
-                    "comp": "nowigence",
-                    "topic": keyword,
-                    "topicType": "other",
-                    "subscriptionReason": "Select how this topic relates to you",
-                    "excludedTopicKeywords": [],
-                    "marketCode": [
-                      "en-US"
-                    ]
-                });
-                  
-                const config: any = {
-                    method: 'post',
-                    url: `${process.env.PYTHON_REST_BASE_ENDPOINT}/topics_check`,
-                    headers: { 
-                        'Content-Type': 'application/json'
-                    },
-                    data : data
-                };
-                pythonRes = await axios(config)
+                articleIds = await new Python({userId: userId}).uploadKeyword({keyword})
             }catch(e){
                 console.log(e, "error from python")
             }
-            // console.log(pythonRes.data, "pythonRes")
-            const articleIds = pythonRes.data
             let texts = ""
             let imageUrl: string | null = null
             let article_ids: String[] = []
@@ -215,16 +189,38 @@ export const blogResolvers = {
             const blog = await fetchBlog({db, id: blogId})
             const blogIdeas = await fetchBlogIdeas({db, id: blogId})
             let texts = ""
+            let articleIds: String[] = []
             ideas.forEach((idea, index) => {
+                if(!articleIds.includes(idea.article_id)) articleIds.push(idea.article_id)
                 return texts += `${index+1} - ${idea.text} \n`
             })
-            console.log(texts)
+            console.log(articleIds)
+            let tags: string[] = []
+            await (
+                Promise.all(
+                    articleIds.map(async (id: String, index: number) => {
+                        const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
+                        const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                        const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                        const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                        tags.push(...productsTags, ...organizationTags, ...personsTags)
+                        return {
+                            used_summaries: article._source.summary.slice(0, 5),
+                            unused_summaries: article._source.summary.slice(5),
+                            keyword: article.keyword,
+                            id
+                        }
+                    })
+                )
+            )
+            // console.log(texts)
             try {
                 const {usedIdeasArr, updatedBlogs, description}: any = await blogGeneration({
                     db,
                     text: texts,
                     regenerate: true,
-                    title: blog.keyword
+                    title: blog.keyword,
+                    imageUrl: blog.imageUrl
                 })
                 let newData: any = []
                 blog.publish_data.forEach((data: any, index: any) => {
@@ -237,40 +233,54 @@ export const blogResolvers = {
                 })
                 if(newData.length) blog.publish_data = [...blog.publish_data, ...newData]
                 let newIdeas: any = []
-                ideas.forEach((newIdea: any) => {
-                    const filteredIdea = blogIdeas.ideas.find((oldidea: any) => newIdea.text.trim() === oldidea.idea.trim())
-                    if(filteredIdea) {
-                        return {
-                            ...filteredIdea,
-                            used: 1
+                ideas.forEach((newIdea) => {
+                    // ** Code for retaining old ideas on regenerating uncommented if required
+                    // const filteredIdea = blogIdeas.ideas.find((oldidea: any) => newIdea.text.trim() === oldidea.idea.trim())
+                    // if(filteredIdea) {
+                    //     return {
+                    //         ...filteredIdea,
+                    //         used: 1
+                    //     }
+                    // } else {
+                    //     return newIdeas.push(
+                    //         {
+                    //             idea: newIdea.text,
+                    //             article_id: newIdea.article_id,
+                    //             reference: null,
+                    //             used: 1,
+                    //         }
+                    //     )
+                    // }
+                    return newIdeas.push(
+                        {
+                            idea: newIdea.text,
+                            article_id: newIdea.article_id,
+                            reference: null,
+                            used: 1,
                         }
-                    } else {
-                        return newIdeas.push(
-                            {
-                                idea: newIdea.text,
-                                article_id: blog.article_id,
-                                reference: null,
-                                used: 1,
-                            }
-                        )
-                    }
+                    )
                 })
-                if(newIdeas.length) blogIdeas.ideas = [...blogIdeas.ideas, ...newIdeas]
-                
+                const freshIdeas = blogIdeas?.freshIdeas?.filter((ideaObj: any) => !(newIdeas.map((newIdea: any) => newIdea.idea)).includes(ideaObj.idea))
+                if(newIdeas.length) blogIdeas.ideas = newIdeas
+                console.log(newIdeas, "newIdeas")
+                console.log(freshIdeas, "freshIdeas")
                 await db.db('lilleBlogs').collection('blogs').updateOne({
                     _id: new ObjectID(blog._id)
                 }, {
                     $set: {
                         publish_data: blog.publish_data,
                         status: "draft",
-                        description
+                        description,
+                        article_id: articleIds,
+                        tags
                     }
                 })
                 await db.db('lilleBlogs').collection('blogIdeas').updateOne({
                     _id: new ObjectID(blogIdeas._id)
                 }, {
                     $set: {
-                        ideas: blogIdeas.ideas
+                        ideas: blogIdeas.ideas,
+                        freshIdeas
                     }
                 })
                 let blogDetails = null
