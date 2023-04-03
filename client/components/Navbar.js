@@ -54,13 +54,13 @@ export default function Navbar({ isOpen }) {
               <div className="relative flex justify-between lg:gap-8 xl:grid xl:grid-cols-12">
                 <div className="flex md:absolute md:inset-y-0 md:left-0 lg:static xl:col-span-2">
                   <div className="flex flex-shrink-0 items-center p-4">
-                    <a href="#">
+                    <Link href="/">
                       <img
                         className="block h-12 w-auto"
                         src="/lille_logo.png"
                         alt="Lille Logo"
                       />
-                    </a>
+                    </Link>
                   </div>
                 </div>
                 <div className="min-w-0 flex-1 md:px-8 lg:px-0 xl:col-span-6">

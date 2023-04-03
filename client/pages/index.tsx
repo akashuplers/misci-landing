@@ -4,6 +4,9 @@ import Navbar from "../components/Navbar";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import LoaderPlane from "../components/LoaderPlane";
+import { useRouter } from "next/router";
+import useStore from '../store/store'; 
+import Layout from "../components/Layout";
 
 export default function Home() {
   const keywords = gql`
@@ -13,8 +16,19 @@ export default function Home() {
   `;
   const { data, loading } = useQuery(keywords);
   const [keyword, setkeyword] = useState("");
+  const router = useRouter(); 
+  const setKeywordInStore = useStore((state) => state.setKeyword); 
+  const isAuthenticated = useStore((state) => state.isAuthenticated);
 
-  console.log(data, "keywords");
+  const handleEnterKeyPress = (e: { key: string; }) => {
+    if (e.key === "Enter") {
+      setKeywordInStore(keyword); 
+      router.push({
+        pathname: "/dashboard",
+        query: { topic: keyword },
+      });
+    }
+  };
 
   const updatedArr = data?.trendingTopics?.map((topic: any, i: any) => (
     <Link
@@ -37,8 +51,8 @@ export default function Home() {
 
   return (
     <>
-      <Navbar isOpen={false} />
-      <div className="relative  px-6 pt-5 lg:px-8">
+      <Layout>
+       <div className={`relative px-6 pt-5 lg:px-8 ${isAuthenticated ? 'left-10' : ''}`}>
         <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
           <svg
             className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
@@ -80,7 +94,7 @@ export default function Home() {
             ) : (
               <LoaderPlane />
             )}
-            <div className="mt-10 flex items-center justify-center gap-x-6">
+           <div className="mt-10 flex items-center justify-center gap-x-6">
               <input
                 id="search"
                 name="search"
@@ -89,7 +103,9 @@ export default function Home() {
                 type="search"
                 onChange={(e) => {
                   setkeyword(e.target.value);
+                  setKeywordInStore(e.target.value); // Update the keyword in the store
                 }}
+                onKeyPress={handleEnterKeyPress}
               />
               <Link
                 legacyBehavior
@@ -132,6 +148,7 @@ export default function Home() {
           </svg>
         </div>
       </div>
+      </Layout>
     </>
   );
 }

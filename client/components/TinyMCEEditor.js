@@ -6,6 +6,7 @@ import { updateBlog } from "../graphql/mutations/updateBlog";
 import LoaderPlane from "./LoaderPlane";
 import { useMutation } from "@apollo/client";
 import AuthenticationModal from "./AuthenticationModal";
+import { useRouter } from "next/router";
 
 export default function TinyMCEEditor({
   topic,
@@ -17,7 +18,7 @@ export default function TinyMCEEditor({
   const [updatedText, setEditorText] = useState();
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
-
+  const router = useRouter();
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -25,43 +26,42 @@ export default function TinyMCEEditor({
   const [
     UpdateBlog,
     { data: updateData, loading: updateLoading, error: updateError },
-  ] = useMutation(updateBlog, {
-    context: {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + getToken,
-      },
-    },
-  });
+  ] = useMutation(updateBlog);
 
   const handleSave = () => {
-    //console.log(isAuthenticated);
-    if (isAuthenticated) {
+    if (typeof window !== "undefined") {
+      getToken = localStorage.getItem("token");
+    }
+    if (getToken) {
+      console.log("token", getToken);
       const jsonDoc = htmlToJson(updatedText).children;
       const formatedJSON = { children: [...jsonDoc] };
-      UpdateBlog({
-        variables: {
-          options: {
-            tinymce_json: formatedJSON,
-            blog_id: blog_id,
-            platform: "wordpress",
+      UpdateBlog(
+        {
+          variables: {
+            options: {
+              tinymce_json: formatedJSON,
+              blog_id: blog_id,
+              platform: "wordpress",
+            },
           },
         },
-        onCompleted: (data) => {
-          const aa = data.generate.publish_data[2].tiny_mce_data;
-          //console.log("+++", aa);
-          const htmlDoc = jsonToHtml(aa);
-          //console.log(updatedText)
-          setEditorText(htmlDoc);
-          //console.log(updatedText)
-          //console.log("Sucessfully generated the article");
-        },
-        onError: (error) => {
-          //console.log(error);
-        },
-      }).catch((err) => {
-        //console.log(err);
-      });
+        {
+          context: {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken,
+            },
+          },
+        }
+      )
+        .then(() => {
+          router.push("/dashboard/" + blog_id);
+        })
+        .catch((err) => {
+          //console.log(err);
+        });
+      setAuthenticationModalOpen(false);
     } else {
       setAuthneticationModalType("signup");
       setAuthenticationModalOpen(true);
@@ -77,6 +77,7 @@ export default function TinyMCEEditor({
         setType={setAuthneticationModalType}
         modalIsOpen={authenticationModalOpen}
         setModalIsOpen={setAuthenticationModalOpen}
+        handleSave={handleSave}
       />
       <Editor
         value={updatedText ? updatedText : editorText}

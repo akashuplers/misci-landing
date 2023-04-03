@@ -29,6 +29,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import Layout from "../components/Layout";
+import { useQuery } from "@apollo/client";
+import { meeAPI } from "../graphql/querys/mee";
 
 const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: false },
@@ -71,6 +73,26 @@ export default function Settings() {
     useState(true);
   const [autoUpdateApplicantDataEnabled, setAutoUpdateApplicantDataEnabled] =
     useState(false);
+
+  var getToken;
+  if (typeof window !== "undefined") {
+    getToken = localStorage.getItem("token");
+  }
+
+  const {
+    data: meeData,
+    loading: meeLoading,
+    error: meeError,
+  } = useQuery(meeAPI, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken,
+      },
+    },
+  });
+
+  console.log("meeData", meeData);
 
   return (
     <>
@@ -324,7 +346,9 @@ export default function Settings() {
                                 </dt>
                                 <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                   <span className="flex-grow">
-                                    Chelsea Hagon
+                                    {meeData?.me?.name +
+                                      " " +
+                                      meeData?.me?.lastName}
                                   </span>
                                   <span className="ml-4 flex-shrink-0">
                                     <button
@@ -376,7 +400,7 @@ export default function Settings() {
                                 </dt>
                                 <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                   <span className="flex-grow">
-                                    chelsea.hagon@example.com
+                                    {meeData?.me?.email}
                                   </span>
                                   <span className="ml-4 flex-shrink-0">
                                     <button
@@ -390,11 +414,11 @@ export default function Settings() {
                               </div>
                               <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:border-b sm:border-gray-200 sm:py-5">
                                 <dt className="text-sm font-medium text-gray-500">
-                                  Job title
+                                  Free Trail (Days Left)
                                 </dt>
                                 <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                   <span className="flex-grow">
-                                    Human Resources Manager
+                                    {meeData?.me?.freeTrialDays}
                                   </span>
                                   <span className="ml-4 flex-shrink-0">
                                     <button

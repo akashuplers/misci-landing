@@ -226,7 +226,7 @@ export default function DashboardInsights({
           </div>
         </div>
         <div className="h-1/5 overflow-y-scroll">
-          {ideas.map((idea) => {
+          {ideas?.map((idea) => {
             // if (idea?.idea?.length <= 0) return;
             return (
               <div className="flex pb-10">
