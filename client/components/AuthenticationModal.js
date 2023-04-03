@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 import { PlayPauseIcon } from "@heroicons/react/24/outline";
 import React, { useDebugValue, useState, useEffect } from "react";
@@ -92,6 +93,7 @@ export default function AuthenticationModal({
         fetch("https://maverick.lille.ai/graphql", requestOptions)
           .then((response) => response.text())
           .then((result) => {
+            console.log("Succesfully Logged In")
             const json = JSON.parse(result);
             localStorage.setItem(
               "userId",
@@ -137,6 +139,9 @@ export default function AuthenticationModal({
       .then((res) => {
         setSubmitting(false);
         setModalIsOpen(false);
+
+        console.log('Succesfully signed up')
+
         handleLoginSubmit(signUpFormData.email,signUpFormData.password);
       })
       .catch((err) => console.error("Error: ", err))
@@ -257,7 +262,7 @@ export default function AuthenticationModal({
         <p className="text-slate-500 ">Hi, Welcome back 👋</p>
 
         <div className="mt-5">
-          <div class="w-full flex justify-evenly gap-4">
+          <div className="w-full flex justify-evenly gap-4">
             <button 
               className="text-center p-5 border flex flex-col space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
               onClick={type === "login" ? handleGoogleLogin : handleGoogleSignUp}>
