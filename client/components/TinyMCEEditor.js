@@ -107,7 +107,7 @@ export default function TinyMCEEditor({
       />
       <Editor
         value={updatedText || editorText}
-        apiKey="ensd3fyudvpis4e3nzpnns1vxdtoexc363h3yww4iepx6vis"
+        apiKey="i40cogfqfupotdcavx74ibdbucbojjvpuzbl8tqy34atmkyd"
         init={{
           skin: "naked",
           icons: "small",
