@@ -116,13 +116,13 @@ export default function DashboardInsights({
 
     let url = API_BASE_PATH;
     var raw;
-    if(urlValid){
+    if(urlValid === true){
       url += API_ROUTES.URL_UPLOAD
       raw = JSON.stringify({
         "url": formInput,
         "blog_id": blog_id
       });
-    }else if(fileValid){
+    }else if(fileValid === true){
       url += API_ROUTES.FILE_UPLOAD
       raw = new FormData();
       raw.append("file", file, "[PROXY]");
@@ -135,7 +135,9 @@ export default function DashboardInsights({
       });
     }
 
-    /*var myHeaders = new Headers();
+    console.log(raw, "\n", url)
+
+    var myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${localStorage.getItem("token")}`);
     myHeaders.append("Content-Type", "application/json");
 
@@ -146,18 +148,19 @@ export default function DashboardInsights({
       redirect: 'follow'
     };
 
-    fetch("https://maverick.lille.ai/quickupload/url", requestOptions)
-      .then(response => response.text())
-      .then(result => console.log(result))
+  fetch(url, requestOptions)
+      .then(response => response.json())
+      .then(result => {
+        setIdeaType("fresh");
+        console.log(result)
+        setFreshIdea(result.data)
+      })
       .catch(error => console.log('error', error))
       .finally(() => {
-      })*/
-
-    console.log(raw, "\n", url)
-
-      setformInput("");
-      setFileValid(false);
-      setUrlValid(false)
+        setformInput("");
+        setFileValid(false);
+        setUrlValid(false)
+      })
   }
 
   function checkDataforUrl(regex) {
@@ -293,17 +296,16 @@ export default function DashboardInsights({
         <div className="flex pb-5">
           <div 
             className="m-3 pt-9 cursor-pointer"
-            onClick={()=>setIdeaType("used")}>Used Idea</div>
+            onClick={()=>setIdeaType("used")}><span className={ideaType === "used" ? "text-red-500" : ""}>Used Idea</span></div>
           <div 
             className="m-3 pt-9 flex gap-1 cursor-pointer"
             onClick={()=>setIdeaType("fresh")}>
-            <img src="/lightBulb.png" className="w-5 h-5" />Fresh Idea
+            <img src="/lightBulb.png" className="w-5 h-5" /><span className={ideaType === "fresh" ? "text-red-500" : ""}>Fresh Idea</span>
           </div>
         </div>
         <div className="h-1/5">
           {
             ideaType === "used" ? 
-          
             ideas?.map((idea, index) => {
               // if (idea?.idea?.length <= 0) return;
               return (
@@ -321,10 +323,27 @@ export default function DashboardInsights({
                   </div>
                 </div>
               );
-            }) : 
-
-            <div>hi</div>
-          }
+            }) : ""}
+            { ideaType === "fresh" ?
+            freshIdea?.map((idea, index) => {
+              // if (idea?.idea?.length <= 0) return;
+              console.log(freshIdea)
+              return (
+                <div className="flex pb-10" key={index}>
+                  <div className="flex justify-between gap-5 w-[95%] pr-5">
+                    <p>{idea.idea}</p>
+                    <input
+                      id="default-checkbox"
+                      type="checkbox"
+                      className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                      onClick={(e) =>
+                        handleInputClick(idea.idea, idea.article_id, e)
+                      }
+                    />
+                  </div>
+                </div>
+              );
+            }) : ""}
         </div>
       </div>
     </>
