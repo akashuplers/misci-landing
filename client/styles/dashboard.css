@@ -1,0 +1,12 @@
+.blog-toggle-button{
+    cursor: pointer;
+    background-color: white;
+    color: #2563eb;
+    border: 1px solid;
+    padding: 0.2em 0.35em;
+    border-radius: 6px;
+}
+.blog-toggle-button.active{
+    background-color: #2563eb;
+    color: white;
+}

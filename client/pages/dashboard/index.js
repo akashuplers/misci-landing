@@ -44,7 +44,9 @@ export default function dashboard({ query }) {
         },
       },
       onCompleted: (data) => {
+        console.log(data)
         setBlogData(data.generate)
+
         const aa = data.generate.publish_data[2].tiny_mce_data;
         setIdeas(data.generate.ideas.ideas);
         setblog_id(data.generate._id);
@@ -61,8 +63,12 @@ export default function dashboard({ query }) {
     });
   }, []);
 
-  function handleBlog(){
-    console.log("here")
+  function handleBlog(e){
+    const siblingButton = document.querySelectorAll(".blog-toggle-button");
+    siblingButton.forEach(el => el.classList.remove("active"))
+    const button = e.target;
+    button.classList.add("active")
+
     const aa = blogData.publish_data[2].tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
 
@@ -70,8 +76,12 @@ export default function dashboard({ query }) {
     setblog_id(blogData._id);
     setEditorText(htmlDoc);
   }
-  function handleLinkedinBlog(){
-    console.log("here blg")
+  function handleLinkedinBlog(e){
+    const siblingButton = document.querySelectorAll(".blog-toggle-button");
+    siblingButton.forEach(el => el.classList.remove("active"))
+    const button = e.target;
+    button.classList.add("active")
+
     const aa = blogData.publish_data[0].tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
 
@@ -79,8 +89,12 @@ export default function dashboard({ query }) {
     setblog_id(blogData._id);
     setEditorText(htmlDoc);
   }
-  function handleTwitterBlog(){
-    console.log("here twi")
+  function handleTwitterBlog(e){
+    const siblingButton = document.querySelectorAll(".blog-toggle-button");
+    siblingButton.forEach(el => el.classList.remove("active"))
+    const button = e.target;
+    button.classList.add("active")
+    
     const aa = blogData.publish_data[1].tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
 
@@ -94,27 +108,15 @@ export default function dashboard({ query }) {
       <Layout>
         <div className="flex divide-x">
           <div className="h-[100%] w-[65%] ml-[20%] mr-9 relative">
-            {isAuthenticated ? 
-              <div style={{
-                'position': 'absolute',
-                'top': '-5%',
-                'left': '0',
-                'display': 'flex',
-                'gap': '0.5em',
-                'border': '1px solid'
-              }}>
-                <button onClick={handleBlog}>Blog</button>
-                <button onClick={handleLinkedinBlog}>Linkedin</button>
-                <button onClick={handleTwitterBlog}>Twitter</button>
-              </div> : 
-              <div></div> 
-            }
             <TinyMCEEditor
               topic={topic}
               isAuthenticated={isAuthenticated}
               editorText={editorText}
               loading={loading}
               blog_id={blog_id}
+              handleBlog = {handleBlog}
+              handleLinkedinBlog = {handleLinkedinBlog}
+              handleTwitterBlog = {handleTwitterBlog}
             />
           </div>
           <DashboardInsights
