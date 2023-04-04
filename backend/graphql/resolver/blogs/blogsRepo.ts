@@ -47,12 +47,12 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                 try {
                     if(key === "wordpress") {
                         const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `
-                            ${regenerate ? `write a large blog for ${key} on topic ${title} with title and content using below points: \n "${text}"` : `write a large blog for ${key} on  "${text}" with title and content`}
+                            ${regenerate ? `write a large blog for ${key} on topic ${title} with title and content using below points: \n ${text}` : `write a large blog for ${key} on  "${text}" with title and content`}
                         `, db}).textCompletion()
                         newsLetter = {...newsLetter, [key]: chatGPTText}
                     } else {
                         const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `
-                        ${regenerate ? `write a blog on topic ${title} for a ${key} using below points: "${text}"` : `write a blog on "${text}" for a ${key}`}
+                        ${regenerate ? `write a blog on topic ${title} for a ${key} using below points: \n ${text}` : `write a blog on "${text}" for a ${key}`}
                         `, db}).textCompletion()
                         newsLetter = {...newsLetter, [key]: chatGPTText}
                     }
@@ -90,8 +90,9 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                             case "wordpress":
                                 const title = newsLetter[key].slice(newsLetter[key].indexOf("Title:"), newsLetter[key].indexOf("Content:")).trim()
                                 const content = newsLetter[key].slice(newsLetter[key].indexOf("Content:"), newsLetter[key].length).trim()
-                                description = ((content.split('Content:')?.[1]).replace("\n", "")).trimStart()
-                                usedIdeasArr = (content.split('Content:')[1]).split('.')
+                                // console.log(content.split('Content:'))
+                                description = ((content.split('Content:')?.[1])?.replace("\n", ""))?.trimStart()
+                                usedIdeasArr = (content.split('Content:')[1])?.split('.')
                                 return {
                                     published: false,
                                     published_date: false,
