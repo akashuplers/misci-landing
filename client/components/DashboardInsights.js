@@ -127,10 +127,9 @@ export default function DashboardInsights({
     }else if(fileValid){
       url += API_ROUTES.FILE_UPLOAD
       console.log(file)
-      raw = {
-        "file" : file,
-        "blog_id" : blog_id
-      }
+      raw = new FormData();
+      raw.append("file", file);
+      raw.append("blog_id", blog_id);
     }else{
       url += API_ROUTES.KEYWORD_UPLOAD
       raw = JSON.stringify({
@@ -139,55 +138,32 @@ export default function DashboardInsights({
       });
     }
 
-    if(fileValid){
-      var myHeaders = new Headers();
-      myHeaders.append("Authorization", `Bearer ${localStorage.getItem("token")}`);
-
-      var formdata = new FormData();
-      formdata.append("file", file, "[PROXY]");
-      formdata.append("blog_id", blog_id);
-
-      var requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: formdata,
-        redirect: 'follow'
-      };
-
-      fetch("https://maverick.lille.ai/quickupload/file", requestOptions)
-        .then(response => response.json())
-        .then(result => console.log(result))
-        .catch(error => console.log('error', error));
-    }else{
-      var myHeaders = new Headers();
-      myHeaders.append("Authorization", `Bearer ${localStorage.getItem("token")}`);
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${localStorage.getItem("token")}`);
+    if(!fileValid){
       myHeaders.append("Content-Type", "application/json");
-
-      var requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
-      };
-
-      fetch(url, requestOptions)
-      .then(response => response.json())
-      .then(result => {
-        setIdeaType("fresh");
-        console.log(result)
-        setFreshIdea(result.data)
-      })
-      .catch(error => console.log('error', error))
-      .finally(() => {
-        setformInput("");
-        setFileValid(false);
-        setUrlValid(false)
-      })
     }
 
-    // console.log(raw, "\n", url)
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+    };
 
-    
+    fetch(url, requestOptions)
+    .then(response => response.json())
+    .then(result => {
+      setIdeaType("fresh");
+      console.log(result)
+      setFreshIdea(result.data)
+    })
+    .catch(error => console.log('error', error))
+    .finally(() => {
+      setformInput("");
+      setFileValid(false);
+      setUrlValid(false)
+    })
   }
 
   function checkDataforUrl(regex) {
