@@ -2,10 +2,21 @@ scalar JSON
 type Query {
     trendingTopics: [String]
     fetchBlog(id: String!): Blog!
-    getAllBlogs: [BlogList]!
+    getAllBlogs(options: BlogListInput): BlogListRes!
 }
 
-type BlogList {
+input BlogListInput {
+    page_limit: Int
+    page_skip: Int
+    status: String
+}
+
+type BlogListRes {
+    count: Int
+    blogs: [BlogsList]
+}
+
+type BlogsList {
     _id: ID!
     title: String
     description: String
