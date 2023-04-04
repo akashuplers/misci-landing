@@ -94,6 +94,7 @@ export default function DashboardInsights({
 
     setformInput(target.files[0].name)
     setFile(target.files[0])
+    console.log(file)
   }
 
   function handleFormChange(e) {
@@ -102,12 +103,12 @@ export default function DashboardInsights({
     }
 
     const value = e.target.value;
+    console.log(value)
     setformInput(value);
 
     var expression = /[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)?/gi;
     var regex = new RegExp(expression);
     setUrlValid(checkDataforUrl(regex));
-    if(urlValid) setFileValid(false)
   }
 
   function postFormData(e) {
@@ -116,17 +117,18 @@ export default function DashboardInsights({
 
     let url = API_BASE_PATH;
     var raw;
-    if(urlValid === true){
+    if(urlValid){
       url += API_ROUTES.URL_UPLOAD
       raw = JSON.stringify({
         "url": formInput,
         "blog_id": blog_id
       });
-    }else if(fileValid === true){
+    }else if(fileValid){
       url += API_ROUTES.FILE_UPLOAD
-      raw = new FormData();
-      raw.append("file", file, "[PROXY]");
-      raw.append("blog_id", "64268896d51916bf8916e54b");
+      raw = JSON.stringify({
+        "file" : file,
+        "blog_id" : blog_id
+      })
     }else{
       url += API_ROUTES.KEYWORD_UPLOAD
       raw = JSON.stringify({
@@ -147,6 +149,8 @@ export default function DashboardInsights({
       body: raw,
       redirect: 'follow'
     };
+
+    console.log(requestOptions)
 
   fetch(url, requestOptions)
       .then(response => response.json())
@@ -326,8 +330,6 @@ export default function DashboardInsights({
             }) : ""}
             { ideaType === "fresh" ?
             freshIdea?.map((idea, index) => {
-              // if (idea?.idea?.length <= 0) return;
-              console.log(freshIdea)
               return (
                 <div className="flex pb-10" key={index}>
                   <div className="flex justify-between gap-5 w-[95%] pr-5">
