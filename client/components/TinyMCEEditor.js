@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { htmlToJson, jsonToHtml } from "../helpers/helper";
@@ -7,6 +8,7 @@ import LoaderPlane from "./LoaderPlane";
 import { useMutation } from "@apollo/client";
 import AuthenticationModal from "./AuthenticationModal";
 import { useRouter } from "next/router";
+import { useMemo } from "react";
 
 export default function TinyMCEEditor({
   topic,
@@ -14,8 +16,15 @@ export default function TinyMCEEditor({
   editorText,
   loading,
   blog_id,
+  handleBlog,
+  handleLinkedinBlog,
+  handleTwitterBlog
 }) {
-  const [updatedText, setEditorText] = useState();
+  const [updatedText, setEditorText] = useState(editorText);
+  useEffect(() => {
+    setEditorText(editorText)
+  })
+  
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const router = useRouter();
@@ -70,8 +79,25 @@ export default function TinyMCEEditor({
 
   if (loading) return <LoaderPlane />;
   //if(editorText){console.log(editorText)}
+
+  console.log("editor text : " , editorText)
+  console.log("updated text : " , updatedText)
   return (
     <>
+      {isAuthenticated ? 
+        <div style={{
+          'position': 'absolute',
+          'top': '-6%',
+          'left': '0',
+          'display': 'flex',
+          'gap': '0.5em'
+        }}>
+          <button className="blog-toggle-button active" onClick={handleBlog}>Blog</button>
+          <button className="blog-toggle-button" onClick={handleLinkedinBlog}>Linkedin</button>
+          <button className="blog-toggle-button" onClick={handleTwitterBlog}>Twitter</button>
+        </div> : 
+        <div></div> 
+      }
       <AuthenticationModal
         type={authenticationModalType}
         setType={setAuthneticationModalType}
@@ -80,8 +106,8 @@ export default function TinyMCEEditor({
         handleSave={handleSave}
       />
       <Editor
-        value={updatedText ? updatedText : editorText}
-        apiKey="ensd3fyudvpis4e3nzpnns1vxdtoexc363h3yww4iepx6vis"
+        value={updatedText || editorText}
+        apiKey="i40cogfqfupotdcavx74ibdbucbojjvpuzbl8tqy34atmkyd"
         init={{
           skin: "naked",
           icons: "small",
