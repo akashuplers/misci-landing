@@ -63,7 +63,12 @@ export default function dashboard({ query }) {
     });
   }, []);
 
-  function handleBlog(){
+  function handleBlog(e){
+    const siblingButton = document.querySelectorAll(".blog-toggle-button");
+    siblingButton.forEach(el => el.classList.remove("active"))
+    const button = e.target;
+    button.classList.add("active")
+
     const aa = blogData.publish_data[2].tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
 
@@ -71,7 +76,12 @@ export default function dashboard({ query }) {
     setblog_id(blogData._id);
     setEditorText(htmlDoc);
   }
-  function handleLinkedinBlog(){
+  function handleLinkedinBlog(e){
+    const siblingButton = document.querySelectorAll(".blog-toggle-button");
+    siblingButton.forEach(el => el.classList.remove("active"))
+    const button = e.target;
+    button.classList.add("active")
+
     const aa = blogData.publish_data[0].tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
 
@@ -79,7 +89,12 @@ export default function dashboard({ query }) {
     setblog_id(blogData._id);
     setEditorText(htmlDoc);
   }
-  function handleTwitterBlog(){
+  function handleTwitterBlog(e){
+    const siblingButton = document.querySelectorAll(".blog-toggle-button");
+    siblingButton.forEach(el => el.classList.remove("active"))
+    const button = e.target;
+    button.classList.add("active")
+    
     const aa = blogData.publish_data[1].tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
 
