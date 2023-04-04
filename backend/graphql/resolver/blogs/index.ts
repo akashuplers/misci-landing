@@ -1,5 +1,5 @@
 import { withFilter } from 'graphql-subscriptions';
-import { FetchBlog, GenerateBlogMutationArg, IRNotifiyArgs, ReGenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
+import { BlogListArgs, FetchBlog, GenerateBlogMutationArg, IRNotifiyArgs, ReGenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
 import { pubsub } from '../../../pubsub';
 import { ObjectID } from 'bson';
 import { blogGeneration, fetchBlog, fetchBlogIdeas } from './blogsRepo';
@@ -37,19 +37,73 @@ export const blogResolvers = {
             return {...blogDetails, ideas: blogIdeas}
         },
         getAllBlogs: async (
-            parent: unknown, args: { id: string }, {db, pubsub, user}: any
+            parent: unknown, args: { options: BlogListArgs }, {db, pubsub, user}: any
         ) => {
-            const blogLists = await db.db('lilleBlogs').collection('blogs').find({userId: new ObjectID(user.id)}).toArray()    
-            const updatedList = blogLists.map((blog: any) => {
-                return {
-                    _id: blog._id,
-                    title: blog.keyword,
-                    description: blog.description,
-                    tags: (blog?.tags?.length && blog.tags) || [],
-                    image: blog.imageUrl || null
+            const options = args.options
+            console.log(options)
+            let baseMatch: any = {
+                userId: new ObjectID(user.id)
+            }
+            if(options.status) {
+                baseMatch = {
+                    ...baseMatch,
+                    status: options.status
+                } 
+            }
+            const aggregate = [
+                {
+                    $match : baseMatch
+                },
+            ]
+            const blogLists = await db.db('lilleBlogs').collection('blogs').aggregate([
+                {
+                    $facet : {
+                        "pagination": [
+                            ...aggregate,
+                            {
+                                $project: {
+                                    _id: 1,
+                                    keyword: 1,
+                                    imageUrl: 1,
+                                    tags: 1,
+                                    description: 1
+                                }
+                            },
+                            {
+                                $sort: {
+                                    keyword: 1
+                                }
+                            },
+                            {
+                                $limit: options.page_limit
+                            },
+                            {
+                                $skip: options.page_skip
+                            }
+                        ],
+                        "total": [
+                            ...aggregate,
+                            {
+                                $count: 'count'
+                            }
+                        ]
+                    }
                 }
-            })
-            return updatedList
+            ]).toArray()
+            if(blogLists.length) {
+                const updatedList = blogLists[0].pagination.map((blog: any) => {
+                    return {
+                        _id: blog._id,
+                        title: blog.keyword,
+                        description: blog.description,
+                        tags: (blog?.tags?.length && blog.tags) || [],
+                        image: blog.imageUrl || null
+                    }
+                })
+                return {blogs: updatedList, count: blogLists[0].total[0].count}
+            } else {
+                return {blogs: [], count: 0}
+            }
         }
     },
     Mutation: {
@@ -373,7 +427,6 @@ export const blogResolvers = {
                             })
                             article_ids.push(data.id)
                         })
-                        console.log(texts)
                         try {
                             const {updatedBlogs, description}: any = await blogGeneration({
                                 db,

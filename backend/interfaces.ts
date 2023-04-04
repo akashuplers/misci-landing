@@ -41,3 +41,9 @@ export interface IRNotifiyArgs {
     topic: String;
     sequence_ids: string[]
 }
+
+export interface BlogListArgs {
+    page_limit: number;
+    page_skip: number;
+    status: string;
+}
