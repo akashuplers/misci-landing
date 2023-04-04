@@ -40,7 +40,7 @@ export default function dashboard({ query }) {
       variables: {
         options: {
           user_id: getUserId ? getUserId : getTempId,
-          keyword: keyword, // Use the keyword from the store
+          keyword: topic ? topic : keyword, 
         },
       },
       onCompleted: (data) => {
