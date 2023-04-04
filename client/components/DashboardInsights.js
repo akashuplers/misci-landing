@@ -8,7 +8,7 @@ import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
 import { jsonToHtml } from "../helpers/helper";
 import { useMutation, gql } from "@apollo/client";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
-import { isElementAccessExpression } from "typescript";
+import axios from "axios";
 
 export default function DashboardInsights({
   loading,
@@ -16,6 +16,7 @@ export default function DashboardInsights({
   blog_id,
   setEditorText,
 }) {
+  console.log(blog_id)
   const [enabled, setEnabled] = useState(false);
 
   const [formInput, setformInput] = useState(null);
@@ -94,7 +95,7 @@ export default function DashboardInsights({
 
     setformInput(target.files[0].name)
     setFile(target.files[0])
-    console.log(file)
+    // console.log(file)
   }
 
   function handleFormChange(e) {
@@ -111,7 +112,7 @@ export default function DashboardInsights({
     setUrlValid(checkDataforUrl(regex));
   }
 
-  function postFormData(e) {
+  async function postFormData(e) {
     console.log("url " + formInput,"file " + fileValid,"urlvalid " + urlValid)
     e.preventDefault();
 
@@ -126,10 +127,10 @@ export default function DashboardInsights({
     }else if(fileValid){
       url += API_ROUTES.FILE_UPLOAD
       console.log(file)
-      raw = JSON.stringify({
-        "files" : file,
+      raw = {
+        "file" : file,
         "blog_id" : blog_id
-      })
+      }
     }else{
       url += API_ROUTES.KEYWORD_UPLOAD
       raw = JSON.stringify({
@@ -138,22 +139,38 @@ export default function DashboardInsights({
       });
     }
 
-    console.log(raw, "\n", url)
+    if(fileValid){
+      var myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${localStorage.getItem("token")}`);
 
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${localStorage.getItem("token")}`);
-    myHeaders.append("Content-Type", "application/json");
+      var formdata = new FormData();
+      formdata.append("file", file, "[PROXY]");
+      formdata.append("blog_id", blog_id);
 
-    var requestOptions = {
-      method: 'POST',
-      headers: myHeaders,
-      body: raw,
-      redirect: 'follow'
-    };
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: formdata,
+        redirect: 'follow'
+      };
 
-    console.log(requestOptions)
+      fetch("https://maverick.lille.ai/quickupload/file", requestOptions)
+        .then(response => response.json())
+        .then(result => console.log(result))
+        .catch(error => console.log('error', error));
+    }else{
+      var myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${localStorage.getItem("token")}`);
+      myHeaders.append("Content-Type", "application/json");
 
-  fetch(url, requestOptions)
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
+
+      fetch(url, requestOptions)
       .then(response => response.json())
       .then(result => {
         setIdeaType("fresh");
@@ -166,6 +183,11 @@ export default function DashboardInsights({
         setFileValid(false);
         setUrlValid(false)
       })
+    }
+
+    // console.log(raw, "\n", url)
+
+    
   }
 
   function checkDataforUrl(regex) {
