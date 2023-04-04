@@ -155,7 +155,7 @@ export default function TinyMCEEditor({
         }}
         onEditorChange={(content, editor) => {
           setEditorText(content);
-          console.log(updatedText);
+          // console.log(updatedText);
         }}
       />
 
