@@ -16,6 +16,9 @@ export default function TinyMCEEditor({
   editorText,
   loading,
   blog_id,
+  handleBlog,
+  handleLinkedinBlog,
+  handleTwitterBlog
 }) {
   const [updatedText, setEditorText] = useState(editorText);
   useEffect(() => {
@@ -81,6 +84,21 @@ export default function TinyMCEEditor({
   console.log("updated text : " , updatedText)
   return (
     <>
+      {isAuthenticated ? 
+        <div style={{
+          'position': 'absolute',
+          'top': '-5%',
+          'left': '0',
+          'display': 'flex',
+          'gap': '0.5em',
+          'border': '1px solid'
+        }}>
+          <button onClick={handleBlog}>Blog</button>
+          <button onClick={handleLinkedinBlog}>Linkedin</button>
+          <button onClick={handleTwitterBlog}>Twitter</button>
+        </div> : 
+        <div></div> 
+      }
       <AuthenticationModal
         type={authenticationModalType}
         setType={setAuthneticationModalType}
