@@ -87,15 +87,14 @@ export default function TinyMCEEditor({
       {isAuthenticated ? 
         <div style={{
           'position': 'absolute',
-          'top': '-5%',
+          'top': '-6%',
           'left': '0',
           'display': 'flex',
-          'gap': '0.5em',
-          'border': '1px solid'
+          'gap': '0.5em'
         }}>
-          <button onClick={handleBlog}>Blog</button>
-          <button onClick={handleLinkedinBlog}>Linkedin</button>
-          <button onClick={handleTwitterBlog}>Twitter</button>
+          <button className="blog-toggle-button active" onClick={handleBlog}>Blog</button>
+          <button className="blog-toggle-button" onClick={handleLinkedinBlog}>Linkedin</button>
+          <button className="blog-toggle-button" onClick={handleTwitterBlog}>Twitter</button>
         </div> : 
         <div></div> 
       }
