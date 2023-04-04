@@ -37,6 +37,7 @@ export interface FetchBlog {
 }
 
 export interface IRNotifiyArgs {
-    userId: string;
-    articles: [String];
+    user_id: string;
+    topic: String;
+    sequence_ids: string[]
 }

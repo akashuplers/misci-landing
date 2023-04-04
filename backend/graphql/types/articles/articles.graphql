@@ -77,13 +77,14 @@ input IdeasInput {
 }
 
 input IRNotifiyOptions {
-    userId: String
-    articles: [String]
+    user_id: String
+    topic: String
+    sequence_ids: [String]
 }
 
 type Mutation {
     generate(options: GenerateBlogOptions!): Blog
     updateBlog(options: UpdateBlogOptions!): Blog!
     regenerateBlog(options: RegenerateBlogOptions!): Blog!
-    irNotify(options: IRNotifiyOptions!): Boolean
+    irNotify(options: [IRNotifiyOptions]!): Boolean
 }
