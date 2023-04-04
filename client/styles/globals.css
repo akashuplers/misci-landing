@@ -95,3 +95,9 @@ padding-bottom: 10px !important;
   padding: 0;
   margin: 0;
 }
+
+.tox.tox-tinymce-aux .tox-toolbar__overflow {
+    border: 1px solid #ccc;
+    padding: 0;
+    background: white !important;
+}

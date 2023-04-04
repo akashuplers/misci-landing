@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from "react";
 import Layout from "../../components/Layout";
@@ -63,46 +64,6 @@ export default function dashboard({ query }) {
     });
   }, []);
 
-  function handleBlog(e){
-    const siblingButton = document.querySelectorAll(".blog-toggle-button");
-    siblingButton.forEach(el => el.classList.remove("active"))
-    const button = e.target;
-    button.classList.add("active")
-
-    const aa = blogData.publish_data[2].tiny_mce_data;
-    const htmlDoc = jsonToHtml(aa);
-
-    setIdeas(blogData.ideas.ideas);
-    setblog_id(blogData._id);
-    setEditorText(htmlDoc);
-  }
-  function handleLinkedinBlog(e){
-    const siblingButton = document.querySelectorAll(".blog-toggle-button");
-    siblingButton.forEach(el => el.classList.remove("active"))
-    const button = e.target;
-    button.classList.add("active")
-
-    const aa = blogData.publish_data[0].tiny_mce_data;
-    const htmlDoc = jsonToHtml(aa);
-
-    setIdeas(blogData.ideas.ideas);
-    setblog_id(blogData._id);
-    setEditorText(htmlDoc);
-  }
-  function handleTwitterBlog(e){
-    const siblingButton = document.querySelectorAll(".blog-toggle-button");
-    siblingButton.forEach(el => el.classList.remove("active"))
-    const button = e.target;
-    button.classList.add("active")
-    
-    const aa = blogData.publish_data[1].tiny_mce_data;
-    const htmlDoc = jsonToHtml(aa);
-
-    setIdeas(blogData.ideas.ideas);
-    setblog_id(blogData._id);
-    setEditorText(htmlDoc);
-  }
-
   return (
     <>
       <Layout>
@@ -112,11 +73,9 @@ export default function dashboard({ query }) {
               topic={topic}
               isAuthenticated={isAuthenticated}
               editorText={editorText}
+              blogData={blogData}
               loading={loading}
               blog_id={blog_id}
-              handleBlog = {handleBlog}
-              handleLinkedinBlog = {handleLinkedinBlog}
-              handleTwitterBlog = {handleTwitterBlog}
             />
           </div>
           <DashboardInsights

@@ -57,7 +57,7 @@ export default function Navbar({ isOpen }) {
                     <Link href="/">
                       <img
                         className="block h-12 w-auto"
-                        src="/lille_logo.png"
+                        src="/lille_logo_new.png"
                         alt="Lille Logo"
                       />
                     </Link>
