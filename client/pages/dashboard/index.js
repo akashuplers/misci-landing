@@ -44,7 +44,9 @@ export default function dashboard({ query }) {
         },
       },
       onCompleted: (data) => {
+        console.log(data)
         setBlogData(data.generate)
+        
         const aa = data.generate.publish_data[2].tiny_mce_data;
         setIdeas(data.generate.ideas.ideas);
         setblog_id(data.generate._id);
@@ -62,7 +64,6 @@ export default function dashboard({ query }) {
   }, []);
 
   function handleBlog(){
-    console.log("here")
     const aa = blogData.publish_data[2].tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
 
@@ -71,7 +72,6 @@ export default function dashboard({ query }) {
     setEditorText(htmlDoc);
   }
   function handleLinkedinBlog(){
-    console.log("here blg")
     const aa = blogData.publish_data[0].tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
 
@@ -80,7 +80,6 @@ export default function dashboard({ query }) {
     setEditorText(htmlDoc);
   }
   function handleTwitterBlog(){
-    console.log("here twi")
     const aa = blogData.publish_data[1].tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
 
