@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from "react";
 import Layout from "../../components/Layout";
@@ -94,7 +95,7 @@ export default function dashboard({ query }) {
     siblingButton.forEach(el => el.classList.remove("active"))
     const button = e.target;
     button.classList.add("active")
-    
+
     const aa = blogData.publish_data[1].tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
 
