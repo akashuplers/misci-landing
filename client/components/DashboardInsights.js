@@ -49,7 +49,7 @@ export default function DashboardInsights({
     });
     if (check) return;
 
-    if (regenSelected.length >= 3) {
+    if (regenSelected.length >= 5) {
       e.target.checked = false;
       return;
     }
@@ -103,7 +103,7 @@ export default function DashboardInsights({
     }
 
     const value = e.target.value;
-    console.log(value)
+    // console.log(value)
     setformInput(value);
 
     var expression = /[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)?/gi;
@@ -125,8 +125,9 @@ export default function DashboardInsights({
       });
     }else if(fileValid){
       url += API_ROUTES.FILE_UPLOAD
+      console.log(file)
       raw = JSON.stringify({
-        "file" : file,
+        "files" : file,
         "blog_id" : blog_id
       })
     }else{
