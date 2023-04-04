@@ -108,7 +108,7 @@ export default function Sidebar() {
                     <Link href={'/'}>
                       <img
                         className="h-8 w-auto"
-                        src="/lille_logo.png"
+                        src="/lille_logo_new.png"
                         alt="Your Company"
                       />
                     </Link>
@@ -177,7 +177,7 @@ export default function Sidebar() {
               <Link href={'/'}>
                 <img
                   className="h-12 w-auto"
-                  src="/lille_logo.png"
+                  src="/lille_logo_new.png"
                   alt="Your Company"
                 />
                </Link>

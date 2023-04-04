@@ -16,14 +16,9 @@ export default function TinyMCEEditor({
   editorText,
   loading,
   blog_id,
-  handleBlog,
-  handleLinkedinBlog,
-  handleTwitterBlog
+  blogData
 }) {
   const [updatedText, setEditorText] = useState(editorText);
-  useEffect(() => {
-    setEditorText(editorText)
-  })
   
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
@@ -78,10 +73,41 @@ export default function TinyMCEEditor({
   };
 
   if (loading) return <LoaderPlane />;
-  //if(editorText){console.log(editorText)}
 
-  console.log("editor text : " , editorText)
-  console.log("updated text : " , updatedText)
+  function handleBlog(e){
+    const siblingButton = document.querySelectorAll(".blog-toggle-button");
+    siblingButton.forEach(el => el.classList.remove("active"))
+    const button = e.target;
+    button.classList.add("active")
+
+    const aa = blogData.publish_data[2].tiny_mce_data;
+    const htmlDoc = jsonToHtml(aa);
+
+    setEditorText(htmlDoc);
+  }
+  function handleLinkedinBlog(e){
+    const siblingButton = document.querySelectorAll(".blog-toggle-button");
+    siblingButton.forEach(el => el.classList.remove("active"))
+    const button = e.target;
+    button.classList.add("active")
+
+    const aa = blogData.publish_data[0].tiny_mce_data;
+    const htmlDoc = jsonToHtml(aa);
+
+    setEditorText(htmlDoc);
+  }
+  function handleTwitterBlog(e){
+    const siblingButton = document.querySelectorAll(".blog-toggle-button");
+    siblingButton.forEach(el => el.classList.remove("active"))
+    const button = e.target;
+    button.classList.add("active")
+
+    const aa = blogData.publish_data[1].tiny_mce_data;
+    const htmlDoc = jsonToHtml(aa);
+
+    setEditorText(htmlDoc);
+  }
+
   return (
     <>
       {isAuthenticated ? 
@@ -129,7 +155,7 @@ export default function TinyMCEEditor({
         }}
         onEditorChange={(content, editor) => {
           setEditorText(content);
-          console.log(updatedText);
+          // console.log(updatedText);
         }}
       />
 
