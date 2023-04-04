@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/jsx-key */
 import React, { useEffect, useState } from "react";
 import { Switch } from "@headlessui/react";
@@ -5,6 +7,8 @@ import LoaderPlane from "./LoaderPlane";
 import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
 import { jsonToHtml } from "../helpers/helper";
 import { useMutation, gql } from "@apollo/client";
+import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import axios from "axios";
 
 export default function DashboardInsights({
   loading,
@@ -12,9 +16,18 @@ export default function DashboardInsights({
   blog_id,
   setEditorText,
 }) {
+  console.log(blog_id)
   const [enabled, setEnabled] = useState(false);
-  const [valid, setValid] = useState(false);
-  const [urlInput, setUrlInput] = useState("");
+
+  const [formInput, setformInput] = useState(null);
+
+  const [urlValid,setUrlValid] = useState(false);
+
+  const [file, setFile] = useState(null);
+  const [fileValid, setFileValid] = useState(false);
+
+  const [ideaType, setIdeaType] = useState("used");
+  const [freshIdea, setFreshIdea] = useState([]);
 
   const [regenSelected, setRegenSelected] = useState([]);
 
@@ -37,7 +50,7 @@ export default function DashboardInsights({
     });
     if (check) return;
 
-    if (regenSelected.length >= 3) {
+    if (regenSelected.length >= 5) {
       e.target.checked = false;
       return;
     }
@@ -76,17 +89,81 @@ export default function DashboardInsights({
     }
   }
 
-  function urlHandler(e) {
-    const value = e.target.value;
-    setUrlInput(value);
+  function handleFileUpload({target}){
+    setFileValid(true);
+    setUrlValid(false);
+
+    setformInput(target.files[0].name)
+    setFile(target.files[0])
+    // console.log(file)
   }
 
-  function postFormData(e) {
-    e.preventDefault();
-    var expression =
-      /[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)?/gi;
+  function handleFormChange(e) {
+    if(fileValid){
+      setFileValid(false)
+    }
+
+    const value = e.target.value;
+    // console.log(value)
+    setformInput(value);
+
+    var expression = /[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)?/gi;
     var regex = new RegExp(expression);
-    checkDataforUrl(regex);
+    setUrlValid(checkDataforUrl(regex));
+  }
+
+  async function postFormData(e) {
+    console.log("url " + formInput,"file " + fileValid,"urlvalid " + urlValid)
+    e.preventDefault();
+
+    let url = API_BASE_PATH;
+    var raw;
+    if(urlValid){
+      url += API_ROUTES.URL_UPLOAD
+      raw = JSON.stringify({
+        "url": formInput,
+        "blog_id": blog_id
+      });
+    }else if(fileValid){
+      url += API_ROUTES.FILE_UPLOAD
+      console.log(file)
+      raw = new FormData();
+      raw.append("file", file);
+      raw.append("blog_id", blog_id);
+    }else{
+      url += API_ROUTES.KEYWORD_UPLOAD
+      raw = JSON.stringify({
+        "keyword": formInput,
+        "blog_id": blog_id
+      });
+    }
+
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${localStorage.getItem("token")}`);
+    if(!fileValid){
+      myHeaders.append("Content-Type", "application/json");
+    }
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+    };
+
+    fetch(url, requestOptions)
+    .then(response => response.json())
+    .then(result => {
+      setIdeaType("fresh");
+      console.log(result)
+      setFreshIdea(result.data)
+    })
+    .catch(error => console.log('error', error))
+    .finally(() => {
+      setformInput("");
+      setFileValid(false);
+      setUrlValid(false)
+    })
   }
 
   function checkDataforUrl(regex) {
@@ -99,7 +176,7 @@ export default function DashboardInsights({
         "(\\#[-a-zA-Z\\d_]*)?$",
       "i"
     ); // fragment locator
-    setValid(pattern.test(urlInput));
+    return pattern.test(formInput)
   }
 
 
@@ -107,7 +184,7 @@ export default function DashboardInsights({
 
   return (
     <>
-      <div className="w-[40%] pl-9 pr-2">
+      <div className="w-[40%] pl-9 pr-5">
         <div className="flex pb-4">
           <p className="font-normal w-[70%] pr-10">
             Regenerate your article on the basis of selected keyword, URL or
@@ -143,10 +220,11 @@ export default function DashboardInsights({
             <input
               type="text"
               id="simple-search"
-              onChange={urlHandler}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  "
               placeholder="Enter keyword, URL or upload document"
               required
+              value={formInput}
+              onChange={handleFormChange}
             />
           </div>
           <button
@@ -167,14 +245,14 @@ export default function DashboardInsights({
                 d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-
             <span className="sr-only">Search</span>
           </button>
-          <div className="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          <label className="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 cursor-pointer">
             <input
-              accept="application/pdf, .docx, .txt, .rtf, .png, .jpg, .jpeg, .gif"
               type="file"
+              accept="application/pdf, .docx, .txt, .rtf, .png, .jpg, .jpeg, .gif"
               max-size="500000"
+              onInput={handleFileUpload}
               style={{ display: "none" }}
             />
             <svg
@@ -189,12 +267,11 @@ export default function DashboardInsights({
                 clipRule="evenodd"
               />
             </svg>
-
             <span className="sr-only">Upload</span>
-          </div>
+          </label>
         </form>
         <div>
-          <p>url - {valid ? "true" : "false"}</p>
+          <p>url - {urlValid ? <span class="text-green-500">true</span> : <span class="text-red-500">false</span>}</p>
         </div>
         <div className="flex">
           <p className="pr-[50%] pt-5 pb-5 font-semibold">Filtering Keywords</p>
@@ -220,31 +297,54 @@ export default function DashboardInsights({
           <button className="bg-gray-300 rounded-full p-1">Save</button>
         </div>
         <div className="flex pb-5">
-          <div className="p-3 pt-9">Used Idea</div>
-          <div className="p-3 pt-9 flex">
-            <img src="/lightBulb.png" className="w-5 h-5" />
-            Fresh Idea
+          <div 
+            className="m-3 pt-9 cursor-pointer"
+            onClick={()=>setIdeaType("used")}><span className={ideaType === "used" ? "text-red-500" : ""}>Used Idea</span></div>
+          <div 
+            className="m-3 pt-9 flex gap-1 cursor-pointer"
+            onClick={()=>setIdeaType("fresh")}>
+            <img src="/lightBulb.png" className="w-5 h-5" /><span className={ideaType === "fresh" ? "text-red-500" : ""}>Fresh Idea</span>
           </div>
         </div>
-        <div className="h-1/5 overflow-y-scroll">
-          {ideas?.map((idea, index) => {
-            // if (idea?.idea?.length <= 0) return;
-            return (
-              <div className="flex pb-10" key={index}>
-                <div className="flex justify-between gap-5 w-[95%] pr-5">
-                  <p>{idea.idea}</p>
-                  <input
-                    id="default-checkbox"
-                    type="checkbox"
-                    className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                    onClick={(e) =>
-                      handleInputClick(idea.idea, idea.article_id, e)
-                    }
-                  />
+        <div className="h-1/5">
+          {
+            ideaType === "used" ? 
+            ideas?.map((idea, index) => {
+              // if (idea?.idea?.length <= 0) return;
+              return (
+                <div className="flex pb-10" key={index}>
+                  <div className="flex justify-between gap-5 w-[95%] pr-5">
+                    <p>{idea.idea}</p>
+                    <input
+                      id="default-checkbox"
+                      type="checkbox"
+                      className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                      onClick={(e) =>
+                        handleInputClick(idea.idea, idea.article_id, e)
+                      }
+                    />
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            }) : ""}
+            { ideaType === "fresh" ?
+            freshIdea?.map((idea, index) => {
+              return (
+                <div className="flex pb-10" key={index}>
+                  <div className="flex justify-between gap-5 w-[95%] pr-5">
+                    <p>{idea.idea}</p>
+                    <input
+                      id="default-checkbox"
+                      type="checkbox"
+                      className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                      onClick={(e) =>
+                        handleInputClick(idea.idea, idea.article_id, e)
+                      }
+                    />
+                  </div>
+                </div>
+              );
+            }) : ""}
         </div>
       </div>
     </>
