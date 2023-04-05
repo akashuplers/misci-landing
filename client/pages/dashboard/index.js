@@ -72,19 +72,19 @@ export default function dashboard({ query }) {
             <TinyMCEEditor
               topic={topic}
               isAuthenticated={isAuthenticated}
+              loading={loading}
               editorText={editorText}
               blogData={blogData}
-              loading={loading}
               blog_id={blog_id}
             />
           </div>
           <DashboardInsights
-            loading={loading}
             ideas={ideas}
-            blog_id={blog_id}
+            loading={loading}
             setEditorText={setEditorText}
             setBlogData={setBlogData}
             setblog_id={setblog_id}
+            blog_id={blog_id}
           />
         </div>
       </Layout>

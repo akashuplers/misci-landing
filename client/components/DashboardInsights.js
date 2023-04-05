@@ -77,17 +77,23 @@ export default function DashboardInsights({
         },
         onCompleted: (data) => {
           console.log(data);
+          setBlogData(data.regenerateBlog);
+          setblog_id(data.regenerateBlog?._id);
 
-          setBlogData(data.generate);
-          setblog_id(data.generate?._id);
-
-          const regenDoc = data.regenerateBlog.publish_data[2].tiny_mce_data;
-          const htmlDoc = jsonToHtml(regenDoc);
+          const aa = data.regenerateBlog.publish_data[2].tiny_mce_data;
+          const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
 
           console.log("Sucessfully re-generated the article");
 
           setRegenSelected([]);
+
+          const button = document.querySelectorAll(".blog-toggle-button");
+          button.forEach((btn) => btn.classList.remove("active"));
+          Array.from(button).filter(
+            (btn) =>
+              btn.classList.contains("wordpress") && btn.classList.add("active")
+          );
         },
         onError: (error) => {
           console.error(error);

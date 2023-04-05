@@ -16,19 +16,19 @@ export default function TinyMCEEditor({
   loading,
   blog_id,
   blogData: dataIncoming,
+  blogData,
 }) {
-  console.log(dataIncoming);
+  // console.log(dataIncoming);
   const [updatedText, setEditorText] = useState(editorText);
-  const [blogData, setBlogData] = useState(dataIncoming);
-  const [linkedinLogin, setlinkedinLogin] = useState(false);
+  // const [blogData, setBlogData] = useState(dataIncoming);
 
   useEffect(() => {
     setEditorText(editorText);
   }, [editorText]);
 
-  useEffect(() => {
-    setBlogData(dataIncoming);
-  }, [dataIncoming]);
+  // useEffect(() => {
+  //   setBlogData(dataIncoming)
+  // },[dataIncoming])
 
   //  useEffect(() => {
   //   console.log("updated text ", updatedText.substring(0,100))
@@ -174,13 +174,22 @@ export default function TinyMCEEditor({
             gap: "0.5em",
           }}
         >
-          <button className="blog-toggle-button active" onClick={handleBlog}>
+          <button
+            className="blog-toggle-button active wordpress"
+            onClick={handleBlog}
+          >
             Blog
           </button>
-          <button className="blog-toggle-button" onClick={handleLinkedinBlog}>
+          <button
+            className="blog-toggle-button linkedin"
+            onClick={handleLinkedinBlog}
+          >
             Linkedin
           </button>
-          <button className="blog-toggle-button" onClick={handleTwitterBlog}>
+          <button
+            className="blog-toggle-button twitter"
+            onClick={handleTwitterBlog}
+          >
             Twitter
           </button>
         </div>
