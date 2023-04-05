@@ -27,8 +27,7 @@ function classNames(...classes) {
 
 export default function Navbar({ isOpen }) {
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
-  const [authenticationModalType, setAuthneticationModalType] =
-    useState("signup");
+  const [authenticationModalType, setAuthneticationModalType] = useState("");
 
   return (
     <>
