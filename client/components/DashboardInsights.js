@@ -16,7 +16,6 @@ export default function DashboardInsights({
   blog_id,
   setEditorText,
 }) {
-  console.log(blog_id)
   const [enabled, setEnabled] = useState(false);
 
   const [formInput, setformInput] = useState(null);
@@ -99,20 +98,15 @@ export default function DashboardInsights({
   }
 
   function handleFormChange(e) {
+    const value = e.target.value;
+    setformInput(value);
+
     if(fileValid){
       setFileValid(false)
     }
-
-    const value = e.target.value;
-    // console.log(value)
-    setformInput(value);
-
-    var expression = /[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)?/gi;
-    var regex = new RegExp(expression);
-    setUrlValid(checkDataforUrl(regex));
   }
 
-  async function postFormData(e) {
+  function postFormData(e) {
     console.log("url " + formInput,"file " + fileValid,"urlvalid " + urlValid)
     e.preventDefault();
 
@@ -166,7 +160,13 @@ export default function DashboardInsights({
     })
   }
 
-  function checkDataforUrl(regex) {
+  useEffect(() => {
+    
+    var expression = /[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)?/gi;
+    var regex = new RegExp(expression);
+    setUrlValid(checkDataforUrl(regex));
+    
+    function checkDataforUrl(regex) {
     // Regular expression for URL validation
     var pattern = new RegExp(
       "^(https?:\\/\\/)?" + // protocol
@@ -176,8 +176,10 @@ export default function DashboardInsights({
         "(\\#[-a-zA-Z\\d_]*)?$",
       "i"
     ); // fragment locator
+    console.log(formInput)
     return pattern.test(formInput)
   }
+  },[formInput])
 
 
   if (loading || regenLoading) return <LoaderPlane />;
