@@ -86,9 +86,14 @@ export default function TinyMCEEditor({
     var raw = JSON.stringify({
       token: linkedInAccessToken,
       author: "urn:li:person:" + authorId,
-      data: JSON.stringify(htmlToJson(editorText)),
+      data: htmlToJson(editorText).children[3].children[0],
       blogId: blog_id,
     });
+
+    console.log(
+      "htmlToJson(editorText)",
+      htmlToJson(editorText).children[3].children[0]
+    );
 
     var requestOptions = {
       method: "POST",
