@@ -12,7 +12,7 @@ import { logout } from "../helpers/helper";
 import Link from "next/link";
 
 const navigation = [
-  { name: "Generate New", href: "/dashboard", icon: PlusCircleIcon, current: true },
+  { name: "Generate New", href: "/", icon: PlusCircleIcon, current: true },
   {
     name: "Published Blogs",
     href: "#",
