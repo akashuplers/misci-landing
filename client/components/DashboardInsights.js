@@ -16,7 +16,8 @@ export default function DashboardInsights({
   blog_id,
   setEditorText,
   setBlogData,
-}) {
+  setblog_id
+}){
   const [enabled, setEnabled] = useState(false);
 
   const [formInput, setformInput] = useState(null);
@@ -73,8 +74,16 @@ export default function DashboardInsights({
         },
         onCompleted: (data) => {
           console.log(data);
-          setBlogData(data.regenerateBlog)
+ 
+          setBlogData(data.generate)
+          setblog_id(data.generate?._id);
+
+          const regenDoc = data.regenerateBlog.publish_data[2].tiny_mce_data;
+          const htmlDoc = jsonToHtml(regenDoc);
+          setEditorText(htmlDoc);
+
           console.log("Sucessfully re-generated the article");
+
           setRegenSelected([]);
         },
         onError: (error) => {
