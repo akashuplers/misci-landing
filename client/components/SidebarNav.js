@@ -26,7 +26,7 @@ const navigation_bottom = [
   { name: "Setting", href: "/settings", icon: Cog6ToothIcon, current: true },
   {
     name: "Logout",
-    href: "#",
+    href: "/",
     icon: PaperAirplaneIcon,
     current: false,
   },
@@ -115,7 +115,7 @@ export default function Sidebar() {
                     </div>
                     <nav className="mt-5 space-y-1 px-2">
                       {navigation.map((item) => (
-                        <a
+                        <Link
                           key={item.name}
                           href={item.href}
                           className={classNames(
@@ -135,7 +135,7 @@ export default function Sidebar() {
                             aria-hidden="true"
                           />
                           {item.name}
-                        </a>
+                        </Link>
                       ))}
                     </nav>
                   </div>
@@ -230,7 +230,7 @@ export default function Sidebar() {
             </div>
             <nav className="mt-5 space-y-1 bg-white px-2 pb-8">
               {navigation_bottom.map((item) => (
-                <a
+                <Link
                   onClick={() => {
                     logout(item);
                   }}
@@ -253,7 +253,7 @@ export default function Sidebar() {
                     aria-hidden="true"
                   />
                   {item.name}
-                </a>
+                </Link>
               ))}
             </nav>
           </div>
@@ -297,7 +297,6 @@ export default function Sidebar() {
           </main>
         </div>
       </div>
-          
     </>
   );
 }

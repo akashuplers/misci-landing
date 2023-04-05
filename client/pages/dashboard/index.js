@@ -68,7 +68,7 @@ export default function dashboard({ query }) {
     <>
       <Layout>
         <div className="flex divide-x">
-          <div className="h-[100%] w-[65%] ml-[20%] mr-9 relative">
+          <div className="h-[100%] w-[65%] mx-5 relative">
             <TinyMCEEditor
               topic={topic}
               isAuthenticated={isAuthenticated}

@@ -184,7 +184,7 @@ export default function DashboardInsights({
 
   return (
     <>
-      <div className="w-[40%] pl-9 pr-5">
+      <div className="w-[40%] px-5">
         <div className="flex pb-4">
           <p className="font-normal w-[70%] pr-10">
             Regenerate your article on the basis of selected keyword, URL or
@@ -313,7 +313,7 @@ export default function DashboardInsights({
               // if (idea?.idea?.length <= 0) return;
               return (
                 <div className="flex pb-10" key={index}>
-                  <div className="flex justify-between gap-5 w-[95%] pr-5">
+                  <div className="flex justify-between gap-5 w-full">
                     <p>{idea.idea}</p>
                     <input
                       id="default-checkbox"
@@ -331,7 +331,7 @@ export default function DashboardInsights({
             freshIdea?.map((idea, index) => {
               return (
                 <div className="flex pb-10" key={index}>
-                  <div className="flex justify-between gap-5 w-[95%] pr-5">
+                  <div className="flex justify-between gap-5 w-full">
                     <p>{idea.idea}</p>
                     <input
                       id="default-checkbox"
