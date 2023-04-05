@@ -129,7 +129,7 @@ export const sendForgotPasswordEmail = async ({
         ],
         TemplateID: 3156186,
         TemplateLanguage: true,
-        Subject: `Pluaris Forgot Password`,
+        Subject: `Lille Forgot Password`,
         Variables: {
           url: `<a href="${process.env.PLUARIS_BASE_URL}/resetPass?token=${token}"><button style="color: white; background: #45b8d5; padding: 6px 15px; border: none; border-radius: 6px; cursor: pointer; box-shadow: 2px 2px 4px #323232;">Change Password</button></a>`,
         },
