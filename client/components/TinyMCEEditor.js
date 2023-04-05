@@ -94,9 +94,9 @@ export default function TinyMCEEditor({
       linkedInAccessToken = localStorage.getItem("linkedInAccessToken");
       authorId = localStorage.getItem("authorId");
     }
-    if (!linkedInAccessToken) {
-      // setlinkedinLogin(true);
-    }
+    // if (!linkedInAccessToken) {
+    //   // setlinkedinLogin(true);
+    // }
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + token);
     myHeaders.append("Content-Type", "application/json");
@@ -202,7 +202,6 @@ export default function TinyMCEEditor({
         modalIsOpen={authenticationModalOpen}
         setModalIsOpen={setAuthenticationModalOpen}
         handleSave={handleSave}
-        linkedinLogin={linkedinLogin}
       />
       <Editor
         value={updatedText || editorText}
