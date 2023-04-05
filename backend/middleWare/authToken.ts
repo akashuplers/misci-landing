@@ -10,7 +10,7 @@ export const authMiddleware = async (req: any, res: any, next: any) => {
     const temp2 = req?.headers?.[process.env.PYKEY2!];
     if (temp1 && temp2) {
     if (process.env.PYVAL1 !== temp1 || process.env.PYVAL2 !== temp2) {
-        res.status(403).send({ error: true, message: "FORBIDDEN" });
+        return res.status(403).send({ error: true, message: "FORBIDDEN" });
     }
     } else {
         if (!accessToken) {
@@ -24,7 +24,7 @@ export const authMiddleware = async (req: any, res: any, next: any) => {
                 verAcc = verify(accessToken, process.env.JWT_SECRET_KEY!);
                 req.verAcc = verAcc;
             } catch (err) {
-                res.status(401).send({ error: true, message: "Not Authorized" });
+                return res.status(401).send({ error: true, message: "Not Authorized" });
             }
         }
         const token = req?.headers?.authorization

@@ -842,5 +842,17 @@ router.post("/reset", async (request: any, reply: any) => {
     // reply.sendFile(path.join(__dirname + "/success.html"));
   }
 });
-
+router.post("/logout",authMiddleware, async (request: any, reply: any) => {
+  // console.log("Running logout", REFRESH_COOKIE_NAME);
+  reply.setCookie(process.env.COOKIE_NAME, "", {
+    httpOnly: __prod__,
+    path: "/",
+    sameSite: "Lax",
+    secure: __prod__,
+    domain: __prod__ ? process.env.COOKIE_DOMAIN : "localhost",
+    expires: Date.now(),
+  });
+  // .clearCookie(REFRESH_COOKIE_NAME, { maxAge: exp })
+  reply.status(200).send({ data: { success: true } });
+});
 module.exports = router;
