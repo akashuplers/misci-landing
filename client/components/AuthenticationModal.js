@@ -22,7 +22,6 @@ export default function AuthenticationModal({
   modalIsOpen,
   setModalIsOpen,
   handleSave,
-  linkedinLogin,
 }) {
   const [submitting, setSubmitting] = useState(false);
 
