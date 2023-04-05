@@ -82,29 +82,28 @@ export default function AuthenticationModal({
             if(data.message === `Could not find account: ${loginData.email}`){
               setType("signup")
             }
-          }else if(success === true){
+          }else if(data.data.accessToken){
             redirectPageAfterLogin(data)
           }
         })
         .catch((err) => console.error("Error: ", err))
         .finally(() => {
           setSubmitting(false)
-          // setModalIsOpen(false);
-          // setLoginFormData({
-          //   email: "",
-          //   password: "",
-          // });
+          setModalIsOpen(false);
+          setLoginFormData({
+            email: "",
+            password: "",
+          });
         });
 
       function redirectPageAfterLogin(data) {        
-        localStorage.setItem(
-          "token",
-          JSON.stringify(data.data.accessToken).replace(/['"]+/g, "")
-        );
+        localStorage.setItem("token",JSON.stringify(data.data.accessToken).replace(/['"]+/g, ""));
+
         var getToken;
         if (typeof window !== "undefined") {
           getToken = localStorage.getItem("token");
         }
+
         var myHeaders = new Headers();
         myHeaders.append("content-type", "application/json");
         myHeaders.append("Authorization", "Bearer " + getToken);
@@ -135,11 +134,11 @@ export default function AuthenticationModal({
           .finally(() => {
             if (window.location.pathname === "/dashboard") {
               handleSave();
-            }
-
-            if (window.location.pathname === "/") {
+            }else{
               window.location.href = "/dashboard";
             }
+            // if (window.location.pathname === "/") {
+            // }
           })
         return;
       }
