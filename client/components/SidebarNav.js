@@ -10,7 +10,9 @@ import {
 } from "@heroicons/react/24/outline";
 import { logout } from "../helpers/helper";
 import Link from "next/link";
-
+import Avatar from "react-avatar";
+import { useQuery } from "@apollo/client";
+import { meeAPI } from "../graphql/querys/mee";
 const navigation = [
   { name: "Generate New", href: "/", icon: PlusCircleIcon, current: true },
   {
@@ -39,14 +41,29 @@ function classNames(...classes) {
 export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [title, setTitle] = useState("");
-
-  useEffect(()=>{
-    if(window.location.pathname === "/saved"){
+  var getToken;
+  if (typeof window !== "undefined") {
+    getToken = localStorage.getItem("token");
+  }
+  const {
+    data: meeData,
+    loading: meeLoading,
+    error: meeError,
+  } = useQuery(meeAPI, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken,
+      },
+    },
+  });
+  useEffect(() => {
+    if (window.location.pathname === "/saved") {
       setTitle("Saved Articles");
-    }else if(window.location.pathname === "/dashboard"){
+    } else if (window.location.pathname === "/dashboard") {
       setTitle("Generated Article");
     }
-  },[])
+  }, []);
 
   return (
     <>
@@ -105,13 +122,13 @@ export default function Sidebar() {
                   </Transition.Child>
                   <div className="h-0 flex-1 overflow-y-auto pt-5 pb-4">
                     <div className="flex flex-shrink-0 items-center px-4">
-                    <Link href={'/'}>
-                      <img
-                        className="h-8 w-auto"
-                        src="/lille_logo_new.png"
-                        alt="Your Company"
-                      />
-                    </Link>
+                      <Link href={"/"}>
+                        <img
+                          className="h-8 w-auto"
+                          src="/lille_logo_new.png"
+                          alt="Your Company"
+                        />
+                      </Link>
                     </div>
                     <nav className="mt-5 space-y-1 px-2">
                       {navigation.map((item) => (
@@ -174,13 +191,13 @@ export default function Sidebar() {
           <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-white">
             <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
               <div className="flex flex-shrink-0 items-center px-4">
-              <Link href={'/'}>
-                <img
-                  className="h-12 w-auto"
-                  src="/lille_logo_new.png"
-                  alt="Your Company"
-                />
-               </Link>
+                <Link href={"/"}>
+                  <img
+                    className="h-12 w-auto"
+                    src="/lille_logo_new.png"
+                    alt="Your Company"
+                  />
+                </Link>
               </div>
               <nav className="mt-5 flex-1 space-y-1 bg-white px-2">
                 {navigation.map((item) => (
@@ -286,13 +303,26 @@ export default function Sidebar() {
                     />
                   </svg>
                 </div>
-                <h1 className="text-2xl font-semibold text-gray-900 p-3">
-                  {title}
-                </h1>
+                <div className="flex">
+                  <h1 className="text-2xl font-semibold text-gray-900 p-3">
+                    {title}
+                  </h1>
+                  <div
+                    style={{
+                      position: "absolute",
+                      right: "100px",
+                      height: "50px",
+                    }}
+                    className=" w-[50px]  r-[100px]"
+                  >
+                    <Avatar
+                      name={meeData?.me?.name + " " + meeData?.me?.lastName}
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                {/* Your content */}
-              </div>
+
+              <div className="r-0  h-[50px] w-[50px] "></div>
             </div>
           </main>
         </div>
