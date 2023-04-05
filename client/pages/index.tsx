@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import useStore from '../store/store'; 
 import Layout from "../components/Layout";
 
+
 export default function Home() {
   const keywords = gql`
     query keywords {
