@@ -13,7 +13,6 @@ import { useMemo } from "react";
 export default function TinyMCEEditor({
   topic,
   isAuthenticated,
-  editorText,
   loading,
   blog_id,
   blogData
@@ -80,33 +79,33 @@ export default function TinyMCEEditor({
     const button = e.target;
     button.classList.add("active")
 
-    const aa = blogData.publish_data[2].tiny_mce_data;
-    const htmlDoc = jsonToHtml(aa);
+      const aa = blogData.publish_data[2].tiny_mce_data;
+      const htmlDoc = jsonToHtml(aa);
 
-    setEditorText(htmlDoc);
-  }
+      setEditorText(htmlDoc);
+    }
   function handleLinkedinBlog(e){
     const siblingButton = document.querySelectorAll(".blog-toggle-button");
     siblingButton.forEach(el => el.classList.remove("active"))
     const button = e.target;
     button.classList.add("active")
-
+    
     const aa = blogData.publish_data[0].tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
 
-    setEditorText(htmlDoc);
-  }
+      setEditorText(htmlDoc);
+    }
   function handleTwitterBlog(e){
     const siblingButton = document.querySelectorAll(".blog-toggle-button");
     siblingButton.forEach(el => el.classList.remove("active"))
     const button = e.target;
     button.classList.add("active")
 
-    const aa = blogData.publish_data[1].tiny_mce_data;
-    const htmlDoc = jsonToHtml(aa);
+      const aa = blogData.publish_data[1].tiny_mce_data;
+      const htmlDoc = jsonToHtml(aa);
 
-    setEditorText(htmlDoc);
-  }
+      setEditorText(htmlDoc);
+    }
 
   return (
     <>
@@ -114,7 +113,7 @@ export default function TinyMCEEditor({
         <div style={{
           'position': 'absolute',
           'top': '-6%',
-          'left': '0',
+          'bottom': '100%',
           'display': 'flex',
           'gap': '0.5em'
         }}>
@@ -132,7 +131,7 @@ export default function TinyMCEEditor({
         handleSave={handleSave}
       />
       <Editor
-        value={updatedText || editorText}
+        value={updatedText}
         apiKey="i40cogfqfupotdcavx74ibdbucbojjvpuzbl8tqy34atmkyd"
         init={{
           skin: "naked",
