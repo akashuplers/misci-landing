@@ -24,7 +24,7 @@ export default function AuthenticationModal({
   setModalIsOpen,
   handleSave,
 }) {
-  // const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const [signUpFormData, setSignUpFormData] = useState({
     firstName: "",
@@ -49,7 +49,7 @@ export default function AuthenticationModal({
 
   const handleLoginSubmit = (event, email, password) => {
     event.preventDefault();
-    // setSubmitting(true);
+    setSubmitting(true);
 
     let loginData= {
         email: email || loginFormData.email,
@@ -69,7 +69,6 @@ export default function AuthenticationModal({
         .then((data) => {
           console.log(data);
           if(data.success === false){
-            alert("bc")
             toast.error(data.message, {
               position: "top-center",
               autoClose: 5000,
@@ -79,7 +78,7 @@ export default function AuthenticationModal({
               draggable: true,
               progress: undefined,
               theme: "light",
-            });
+            })
             if(data.message === `Could not find account: ${loginData.email}`){
               setType("signup")
             }
@@ -89,12 +88,12 @@ export default function AuthenticationModal({
         })
         .catch((err) => console.error("Error: ", err))
         .finally(() => {
-          setLoading(false)
-          setModalIsOpen(false);
-          setLoginFormData({
-            email: "",
-            password: "",
-          });
+          setSubmitting(false)
+          // setModalIsOpen(false);
+          // setLoginFormData({
+          //   email: "",
+          //   password: "",
+          // });
         });
 
       function redirectPageAfterLogin(data) {        
@@ -157,7 +156,7 @@ export default function AuthenticationModal({
   };
 
   const handleSignUpSubmit = async (event) => {
-    // setSubmitting(true);
+    setSubmitting(true);
     event.preventDefault();
 
     fetch(API_BASE_PATH + API_ROUTES.CREATE_USER, {
@@ -192,7 +191,7 @@ export default function AuthenticationModal({
       })
       .catch((err) => console.error("Error: ", err))
       .finally(() => {
-        // setSubmitting(false);
+        setSubmitting(false);
         setSignUpFormData({
           firstName: "",
           lastName: "",
@@ -260,6 +259,7 @@ export default function AuthenticationModal({
   // if(loading) return <LoaderPlane/>
 
   return (
+    <>
     <Modal
       isOpen={modalIsOpen}
       onRequestClose={closeModal}
@@ -291,6 +291,8 @@ export default function AuthenticationModal({
         },
       }}
     >
+      <ToastContainer/>
+
       <div
         className="max-w-lg mx-auto bg-white p-8 py-2 rounded-xl 
       "
@@ -356,7 +358,6 @@ export default function AuthenticationModal({
           className="my-10 mt-0  "
           onSubmit={type === "login" ? handleLoginSubmit :handleSignUpSubmit}
         >
-          <ToastContainer/>
           <div className="flex flex-col space-y-5 mt-5">
             {type === "login" ? (
               <>
@@ -478,7 +479,7 @@ export default function AuthenticationModal({
               className=" w-full py-3 font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center !mt-3"
               type="submit"
             >
-              {/* {!submitting ? ( */}
+              {!submitting ? ( 
                 <>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -496,9 +497,9 @@ export default function AuthenticationModal({
                   </svg>
                   <span>{type === "login" ? "Login" : "Sign Up"}</span>
                 </>
-              {/* ) : (
+              ) : (
                 <p>Loading...</p>
-              )} */}
+              )} 
             </button>
             <p className="!mt-3 text-center text-sm">
               {type === "login"
@@ -534,5 +535,6 @@ export default function AuthenticationModal({
         </form>
       </div>
     </Modal>
+    </>
   );
 }
