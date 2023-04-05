@@ -20,6 +20,7 @@ export default function TinyMCEEditor({
   console.log(dataIncoming);
   const [updatedText, setEditorText] = useState(editorText);
   const [blogData, setBlogData] = useState(dataIncoming);
+  const [linkedinLogin, setlinkedinLogin] = useState(false);
 
   useEffect(() => {
     setEditorText(editorText);
@@ -92,6 +93,9 @@ export default function TinyMCEEditor({
       token = localStorage.getItem("token");
       linkedInAccessToken = localStorage.getItem("linkedInAccessToken");
       authorId = localStorage.getItem("authorId");
+    }
+    if (!linkedInAccessToken) {
+      // setlinkedinLogin(true);
     }
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + token);
@@ -189,6 +193,7 @@ export default function TinyMCEEditor({
         modalIsOpen={authenticationModalOpen}
         setModalIsOpen={setAuthenticationModalOpen}
         handleSave={handleSave}
+        linkedinLogin={linkedinLogin}
       />
       <Editor
         value={updatedText || editorText}
