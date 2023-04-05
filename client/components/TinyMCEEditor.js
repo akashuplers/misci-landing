@@ -8,7 +8,6 @@ import LoaderPlane from "./LoaderPlane";
 import { useMutation } from "@apollo/client";
 import AuthenticationModal from "./AuthenticationModal";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
 
 export default function TinyMCEEditor({
   topic,
@@ -16,9 +15,24 @@ export default function TinyMCEEditor({
   editorText,
   loading,
   blog_id,
-  blogData,
+  blogData: dataIncoming,
 }) {
+  console.log(dataIncoming);
   const [updatedText, setEditorText] = useState(editorText);
+  const [blogData, setBlogData] = useState(dataIncoming);
+
+  useEffect(() => {
+    setEditorText(editorText);
+  }, [editorText]);
+
+  useEffect(() => {
+    setBlogData(dataIncoming);
+  }, [dataIncoming]);
+
+  //  useEffect(() => {
+  //   console.log("updated text ", updatedText.substring(0,100))
+  //   console.log("editor text ", editorText.substring(0,100))
+  // })
 
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
@@ -116,7 +130,7 @@ export default function TinyMCEEditor({
     const button = e.target;
     button.classList.add("active");
 
-    const aa = blogData.publish_data[2].tiny_mce_data;
+    const aa = blogData?.publish_data[2].tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
 
     setEditorText(htmlDoc);
@@ -127,7 +141,7 @@ export default function TinyMCEEditor({
     const button = e.target;
     button.classList.add("active");
 
-    const aa = blogData.publish_data[0].tiny_mce_data;
+    const aa = blogData?.publish_data[0].tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
 
     setEditorText(htmlDoc);
@@ -138,7 +152,7 @@ export default function TinyMCEEditor({
     const button = e.target;
     button.classList.add("active");
 
-    const aa = blogData.publish_data[1].tiny_mce_data;
+    const aa = blogData?.publish_data[1].tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
 
     setEditorText(htmlDoc);
@@ -178,7 +192,7 @@ export default function TinyMCEEditor({
       />
       <Editor
         value={updatedText || editorText}
-        apiKey="ensd3fyudvpis4e3nzpnns1vxdtoexc363h3yww4iepx6vis"
+        apiKey="i40cogfqfupotdcavx74ibdbucbojjvpuzbl8tqy34atmkyd"
         init={{
           skin: "naked",
           icons: "small",

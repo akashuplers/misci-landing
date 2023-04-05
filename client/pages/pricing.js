@@ -320,7 +320,7 @@ export default function Pricing() {
                 Features
               </h1>
               <p className="uppercase text-[18px] pt-3 font-medium opacity-[0.7]">
-                SMART Knowledge management tool with powerful reader
+                SMART BLOGS AND CONTENT CREATION & MANAGEMENT TOOL WITH POWERFUL EDITOR
               </p>
             </div>
             <div className="flex flex-wrap space-x-5 space-y-5 py-9">
@@ -352,10 +352,7 @@ export default function Pricing() {
                   Monitoring
                 </h1>
                 <div className="text-[#484F5F] leading-[26px] opacity-[0.7] w-[50%] text-left py-3 items-start text-[16px] ">
-                  Monitor over 170k web news sources with automated retrieval
-                  and analysis of relevant news articles. Pluaris will create a
-                  personalized, annotated news feed in the Reader&#39;s page on
-                  your topics of interest.
+                  Monitors over 170k web news sources with automated retrieval and creation of relevant content for your Blogs. Lille will create a personalized, annotated Blog repository in your account on your topics of interest.
                 </div>
               </div>
               <div className="w-[30%]">
