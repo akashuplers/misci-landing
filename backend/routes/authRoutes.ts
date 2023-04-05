@@ -9,6 +9,8 @@ import { validateRegisterInput, validateLoginInput } from "../validations/Valida
 import { encodeURIfix } from "../utils/encode";
 import { authMiddleware } from "../middleWare/authToken";
 import { getTimeStamp } from "../utils/date";
+import { verify } from "jsonwebtoken";
+import { sendForgotPasswordEmail } from "../utils/mailJetConfig";
 const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcrypt');
@@ -722,5 +724,123 @@ router.post("/user/social/login", async (req: any, res: any) => {
     return res.status(500).send({ error: true, message: `${error}` });
   }
 })
+
+router.post("/forgot-password", async (request: any, reply: any) => {
+  const db = request.app.get('db')
+  // console.log(
+  //   "================================================================================"
+  // );
+  // console.log("FORGOT PASSWORD ROUTE HIT");
+  try {
+    const email = request?.body?.email.toLowerCase();
+    if (!email) {
+      return reply.status(400).send({ error: "Please fill in email field" });
+    }
+
+    const user = await db.db("admin").collection("users").findOne({ email });
+    if (!user) {
+      return reply
+        .status(404)
+        .send({ error: true, message: "User not found" });
+    }
+
+    // console.log("user :>> ", user);
+
+    const newAccessTkn = createAccessToken({
+      id: user._id,
+      email: user.email
+    });
+    // console.log("newAccessTkn :>> ", newAccessTkn);
+
+    const updatedUser = await db
+      .db("admin")
+      .collection("users")
+      .findOneAndUpdate(
+        { email },
+        { $set: { resetPasswordToken: newAccessTkn } },
+        // or returnNewDocument: true,
+        { returnOriginal: false }
+      );
+    if (!updatedUser) throw "failed to update DB with access token";
+
+    // console.log("updatedUser :>> ", updatedUser);
+
+    const forgotReq = await sendForgotPasswordEmail({
+      email: user?.email,
+      userName: `${user?.name} ${user.lastName}`,
+      token: newAccessTkn!,
+    });
+
+    // console.log("forgotReq", forgotReq.response);
+    if (!forgotReq.response.ok) {
+      return reply.status(500).send({
+        message:
+          "Could not send forgot password email at this time.  Please try again",
+      });
+    }
+
+    return reply.status(200).send({ message: "success" });
+    //----- END Node mailer section -----//
+  } catch (error) {
+    console.log("error :>> ", error);
+    return reply.status(500).send({
+      error: "Sorry, something went wrong and we're not entirely sure what!",
+    });
+  }
+});
+
+router.post("/reset", async (request: any, reply: any) => {
+  // const filter = { resetPasswordToken: request.body.token };
+  const db = request.app.get('db')
+  const user = await db.db("admin").collection("users").findOne({
+    resetPasswordToken: request.body.token,
+  });
+  // console.log("user :>> ", user);
+  if (!user) {
+    return (
+      reply
+        .clearCookie(process.env.COOKIE_NAME, { maxAge: Date.now() })
+        // .setCookie(REFRESH_COOKIE_NAME, {
+        //   path: "/auth",
+        //   expires: exp,
+        // })
+        .status(403)
+        .send({ error: true, message: "Forbidden" })
+    );
+  }
+  try {
+    // console.log("trying to verify password...");
+    verify(user.resetPasswordToken, process.env.JWT_SECRET_KEY!);
+  } catch (err) {
+    console.log("err from reset top catch", err);
+    // return reply.sendFile(path.join(__dirname + "/tokenExpired.html"));
+  }
+  if (request.body.password !== request.body.confirm) {
+    return reply.status(400).send({
+      error: true,
+      message: "Your submitted passwords do not match. Please try again.",
+    });
+  }
+  if (request.body.password === request.body.confirm) {
+    const hashedPW = await bcrypt.hash(request.body.password, 12);
+    const filter = { resetPasswordToken: request.body.token };
+    const updates = {
+      $set: { password: hashedPW, resetPasswordToken: undefined },
+    };
+    const updatePWRes = await db
+      .db("admin")
+      .collection("users")
+      .findOneAndUpdate(filter, updates, { returnOriginal: false });
+    if (!updatePWRes) {
+      reply.status(400).send({
+        error: true,
+        message: "Could not add password at this time.",
+      });
+      // reply.sendFile(path.join(__dirname + "/Error.html"));
+    }
+    reply.status(201).send({ errors: false, message: "Password changed!" });
+    // reply.sendFile(path.join(__dirname + "/success.html"));
+  }
+});
 
 module.exports = router;

@@ -393,9 +393,12 @@ export const blogResolvers = {
         ) => {
             console.log(`Running IR Blog generation =====`)
             const pythonData = args.options
-            await (
-                Promise.all(
-                    pythonData.map(async (data) => {
+            let i = 0;
+            await (async function loop() {
+                return new Promise(async (resolve) => {
+                    if(++i <= pythonData.length) {
+                        const data = pythonData[i-1]
+                        console.log(`running for data ${data.user_id}`)
                         const userId = data.user_id
                         const articles = data.sequence_ids
                         let texts = ""
@@ -474,16 +477,14 @@ export const blogResolvers = {
                                 const id: any = insertBlogIdeas.insertedId
                                 blogIdeasDetails = await db.db('lilleBlogs').collection('blogIdeas').findOne({_id: new ObjectID(id)})
                             }
-                            return data
+                            resolve(setTimeout(loop, 60000))
                         } catch(e: any) {
                             console.log(`Ending IR Blog generation with error ===== ${e}`)
-                            throw e
+                            resolve(setTimeout(loop, 60000))
                         }
-                    })
-                )
-            )
-            console.log(`Ending IR Blog generation =====`)
-            return true
+                    }
+                })
+            })()
         }
     },
     Subscription: {
