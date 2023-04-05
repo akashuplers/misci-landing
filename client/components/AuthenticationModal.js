@@ -6,16 +6,15 @@ import Modal from "react-modal";
 
 import { LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
-import { LinkedinLogin } from "../services/LinkedinLogin"
-import { signUpWithGoogle } from "../services/GoogleLogin"
+import { LinkedinLogin } from "../services/LinkedinLogin";
+import { signUpWithGoogle } from "../services/GoogleLogin";
 
 import { useRouter } from "next/router";
 import LoaderPlane from "./LoaderPlane";
 import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css'
+import "react-toastify/dist/ReactToastify.css";
 import { createScanner } from "typescript";
-
 
 export default function AuthenticationModal({
   type,
@@ -23,6 +22,7 @@ export default function AuthenticationModal({
   modalIsOpen,
   setModalIsOpen,
   handleSave,
+  linkedinLogin,
 }) {
   const [submitting, setSubmitting] = useState(false);
 
@@ -51,97 +51,100 @@ export default function AuthenticationModal({
     event.preventDefault();
     setSubmitting(true);
 
-    let loginData= {
-        email: email || loginFormData.email,
-        password: password || loginFormData.password
-    }
+    let loginData = {
+      email: email || loginFormData.email,
+      password: password || loginFormData.password,
+    };
 
-    console.log(loginData)
+    console.log(loginData);
 
     fetch(API_BASE_PATH + API_ROUTES.LOGIN_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(loginData),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          if(data.success === false){
-            toast.error(data.message, {
-              position: "top-center",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            })
-            if(data.message === `Could not find account: ${loginData.email}`){
-              setType("signup")
-            }
-          }else if(data.data.accessToken){
-            redirectPageAfterLogin(data)
-          }
-        })
-        .catch((err) => console.error("Error: ", err))
-        .finally(() => {
-          setSubmitting(false)
-          setModalIsOpen(false);
-          setLoginFormData({
-            email: "",
-            password: "",
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(loginData),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data.success === false) {
+          toast.error(data.message, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
           });
-        });
-
-      function redirectPageAfterLogin(data) {        
-        localStorage.setItem("token",JSON.stringify(data.data.accessToken).replace(/['"]+/g, ""));
-
-        var getToken;
-        if (typeof window !== "undefined") {
-          getToken = localStorage.getItem("token");
+          if (data.message === `Could not find account: ${loginData.email}`) {
+            setType("signup");
+          }
+        } else if (data.data.accessToken) {
+          redirectPageAfterLogin(data);
         }
-
-        var myHeaders = new Headers();
-        myHeaders.append("content-type", "application/json");
-        myHeaders.append("Authorization", "Bearer " + getToken);
-
-        var raw = JSON.stringify({
-          query:
-            "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  }\n}",
+      })
+      .catch((err) => console.error("Error: ", err))
+      .finally(() => {
+        setSubmitting(false);
+        setModalIsOpen(false);
+        setLoginFormData({
+          email: "",
+          password: "",
         });
+      });
 
-        var requestOptions = {
-          method: "POST",
-          headers: myHeaders,
-          body: raw,
-          redirect: "follow",
-        };
+    function redirectPageAfterLogin(data) {
+      localStorage.setItem(
+        "token",
+        JSON.stringify(data.data.accessToken).replace(/['"]+/g, "")
+      );
 
-        fetch("https://maverick.lille.ai/graphql", requestOptions)
-          .then((response) => response.text())
-          .then((result) => {
-            console.log("Succesfully Logged In")
-            const json = JSON.parse(result);
-            localStorage.setItem(
-              "userId",
-              JSON.stringify(json.data.me._id).replace(/['"]+/g, "")
-            );
-          })
-          .catch((error) => console.log("error", error))
-          .finally(() => {
-            if (window.location.pathname === "/dashboard") {
-              handleSave();
-            }else{
-              window.location.href = "/dashboard";
-            }
-            // if (window.location.pathname === "/") {
-            // }
-          })
-        return;
+      var getToken;
+      if (typeof window !== "undefined") {
+        getToken = localStorage.getItem("token");
       }
+
+      var myHeaders = new Headers();
+      myHeaders.append("content-type", "application/json");
+      myHeaders.append("Authorization", "Bearer " + getToken);
+
+      var raw = JSON.stringify({
+        query:
+          "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  }\n}",
+      });
+
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow",
+      };
+
+      fetch("https://maverick.lille.ai/graphql", requestOptions)
+        .then((response) => response.text())
+        .then((result) => {
+          console.log("Succesfully Logged In");
+          const json = JSON.parse(result);
+          localStorage.setItem(
+            "userId",
+            JSON.stringify(json.data.me._id).replace(/['"]+/g, "")
+          );
+        })
+        .catch((error) => console.log("error", error))
+        .finally(() => {
+          if (window.location.pathname === "/dashboard") {
+            handleSave();
+          } else {
+            window.location.href = "/dashboard";
+          }
+          // if (window.location.pathname === "/") {
+          // }
+        });
+      return;
+    }
   };
 
   const handleLoginChange = (event) => {
@@ -167,7 +170,7 @@ export default function AuthenticationModal({
     })
       .then((res) => res.json())
       .then((res) => {
-        if(res.error === true){
+        if (res.error === true) {
           toast.error(res.message, {
             position: "top-center",
             autoClose: 5000,
@@ -178,14 +181,17 @@ export default function AuthenticationModal({
             progress: undefined,
             theme: "light",
           });
-          if(res.message === "User already exists"){
-            setType('login');
+          if (res.message === "User already exists") {
+            setType("login");
           }
-        }
-        else if(res.error === false){
-          handleLoginSubmit(event, signUpFormData.email, signUpFormData.password);
+        } else if (res.error === false) {
+          handleLoginSubmit(
+            event,
+            signUpFormData.email,
+            signUpFormData.password
+          );
           setModalIsOpen(false);
-          console.log('Succesfully signed up')
+          console.log("Succesfully signed up");
         }
       })
       .catch((err) => console.error("Error: ", err))
@@ -198,7 +204,7 @@ export default function AuthenticationModal({
           password: "",
           tempUserId: "",
         });
-        setLoading(false)
+        setLoading(false);
       });
   };
 
@@ -212,19 +218,21 @@ export default function AuthenticationModal({
     });
   };
 
-  const [callBack, setCallBack] = useState()
+  const [callBack, setCallBack] = useState();
 
-  useEffect(()=>{
+  useEffect(() => {
     if (typeof window !== "undefined") {
-      let temp = `${window.location.origin}${router.pathname}`
-      setCallBack(temp.substring(0,temp.length - 1));
+      let temp = `${window.location.origin}${router.pathname}`;
+      if (temp.substring(temp.length - 1) == "/")
+        setCallBack(temp.substring(0, temp.length - 1));
+      else setCallBack(temp.substring(0, temp.length));
     }
-  },[])
+  }, []);
 
   const router = useRouter();
 
   useEffect(() => {
-    const queryParams = router.query
+    const queryParams = router.query;
 
     if (queryParams.code) {
       let code = queryParams.code;
@@ -238,99 +246,111 @@ export default function AuthenticationModal({
   }, [router, callBack]);
 
   const handleGoogleLogin = () => {
-    console.log("google login")
-  }
+    console.log("google login");
+  };
 
   const handleGoogleSignUp = async () => {
-    console.log("google signup")
-    signUpWithGoogle(handleSave)
-  }
+    console.log("google signup");
+    signUpWithGoogle(handleSave);
+  };
 
   const handleLinkedinSignUp = () => {
     setModalIsOpen(false);
 
-    const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`
-    window.location = redirectUrl
-  }
+    const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`;
+    window.location = redirectUrl;
+  };
 
   const [loading, setLoading] = useState(false);
 
   // if(loading) return <LoaderPlane/>
+  // if (linkedinLogin) {
+  //   handleLinkedinSignUp();
+  //   const queryParams = router.query;
+
+  //   if (queryParams.code) {
+  //     let code = queryParams.code;
+  //     LinkedinLogin(code, setLoading, handleSave);
+  //     setLoading(true);
+  //   }
+  // }
 
   return (
     <>
-    <Modal
-      isOpen={modalIsOpen}
-      onRequestClose={closeModal}
-      ariaHideApp={false}
-      className="w-[100%] sm:w-[38%] max-h-[95%]"
-      style={{
-        overlay: {
-          backgroundColor: "rgba(0,0,0,0.5)",
-          zIndex: "9999",
-        },
-        content: {
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          right: "auto",
-          border: "none",
-          background: "white",
-          boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
-          borderRadius: "8px",
-          // height: "75%",
-          width: "50%",
-          maxWidth: "450px",
-          bottom: "",
-          zIndex: "999",
-          marginRight: "-50%",
-          transform: "translate(-50%, -50%)",
-          padding: "20px",
-          paddingBottom: "0px",
-        },
-      }}
-    >
-      <ToastContainer/>
-
-      <div
-        className="max-w-lg mx-auto bg-white p-8 py-2 rounded-xl 
-      "
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        ariaHideApp={false}
+        className="w-[100%] sm:w-[38%] max-h-[95%]"
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0,0,0,0.5)",
+            zIndex: "9999",
+          },
+          content: {
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            right: "auto",
+            border: "none",
+            background: "white",
+            boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+            borderRadius: "8px",
+            // height: "75%",
+            width: "50%",
+            maxWidth: "450px",
+            bottom: "",
+            zIndex: "999",
+            marginRight: "-50%",
+            transform: "translate(-50%, -50%)",
+            padding: "20px",
+            paddingBottom: "0px",
+          },
+        }}
       >
-        {/* shadow shadow-slate-300 */}
-        <h1 className="text-4xl font-medium ">
-          {type === "login" ? "Login" : "Sign Up"}
-        </h1>
-        <p className="text-slate-500 ">Hi, Welcome back 👋</p>
+        <ToastContainer />
 
-        <div className="mt-5">
-          <div className="w-full flex justify-evenly gap-4">
-            <button 
-              className="text-center p-5 border flex flex-col space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
-              onClick={handleGoogleSignUp}>
-              <img
-                src="https://www.svgrepo.com/show/355037/google.svg"
-                className="w-6 h-6"
-                alt=""
-              />
-              {/* <span className="p-4 py-2">
+        <div
+          className="max-w-lg mx-auto bg-white p-8 py-2 rounded-xl 
+      "
+        >
+          {/* shadow shadow-slate-300 */}
+          <h1 className="text-4xl font-medium ">
+            {type === "login" ? "Login" : "Sign Up"}
+          </h1>
+          <p className="text-slate-500 ">Hi, Welcome back 👋</p>
+
+          <div className="mt-5">
+            <div className="w-full flex justify-evenly gap-4">
+              <button
+                className="text-center p-5 border flex flex-col space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
+                onClick={handleGoogleSignUp}
+              >
+                <img
+                  src="https://www.svgrepo.com/show/355037/google.svg"
+                  className="w-6 h-6"
+                  alt=""
+                />
+                {/* <span className="p-4 py-2">
                 {type === "login" ? "Login with Google" : "Sign Up with Google"}
               </span> */}
-            </button>
-            <button 
-              className="text-center p-5 border flex flex-col space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
-              onClick={handleLinkedinSignUp}>
-              <img
-                src="https://www.svgrepo.com/show/448234/linkedin.svg"
-                className="w-6 h-6"
-                alt=""
-              />
-              {/* <span className="p-4 py-2">
+              </button>
+              <button
+                className="text-center p-5 border flex flex-col space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
+                onClick={handleLinkedinSignUp}
+              >
+                <img
+                  src="https://www.svgrepo.com/show/448234/linkedin.svg"
+                  className="w-6 h-6"
+                  alt=""
+                />
+                {/* <span className="p-4 py-2">
                 {type === "login" ? "Login with Google" : "Sign Up with Google"}
               </span> */}
-            </button>
+              </button>
+            </div>
           </div>
-        </div>
-        {/*<div className="my-3 d-flex justify-content-center align-items-center">
+          {/*<div className="my-3 d-flex justify-content-center align-items-center">
           <button
             className="btn"
             onClick={signUpWithGoogle}
@@ -351,189 +371,193 @@ export default function AuthenticationModal({
             />
           </a>
         </div>*/}
-        <form
-          action=""
-          method="post"
-          className="my-10 mt-0  "
-          onSubmit={type === "login" ? handleLoginSubmit :handleSignUpSubmit}
-        >
-          <div className="flex flex-col space-y-5 mt-5">
-            {type === "login" ? (
-              <>
-                <label htmlFor="email">
-                  <p className="font-small text-sm text-slate-700  ">
-                    Email address
-                  </p>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={loginFormData.email}
-                    onChange={handleLoginChange}
-                    className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                    placeholder="Enter email address"
-                    required
-                  />
-                </label>
-                <label htmlFor="password">
-                  <p className="font-small  text-sm text-slate-700">Password</p>
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    title="Password should contain alphabet and number and should be between 8 to 20 characters"
-                    pattern="^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{8,20}$"
-                    value={loginFormData.password}
-                    onChange={handleLoginChange}
-                    className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                    placeholder="Enter your password"
-                    required
-                  />
-                </label>
-              </>
-            ) : (
-              <>
-              <div className="flex gap-4">
-                <label htmlFor="firstName">
-                  <p className="font-small text-sm text-slate-700  ">
-                    First Name
-                  </p>
-                  <input
-                    type="text"
-                    id="firstName"
-                    name="firstName"
-                    value={signUpFormData.firstName}
-                    onChange={handleSignUpChange}
-                    className="border-black  w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                    placeholder="Enter First Name"
-                    required
-                  />
-                </label>
-                <label htmlFor="lastName">
-                  <p className="font-small text-sm text-slate-700  ">
-                    Last Name
-                  </p>
-                  <input
-                    type="text"
-                    id="lastName"
-                    name="lastName"
-                    value={signUpFormData.lastName}
-                    onChange={handleSignUpChange}
-                    className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                    placeholder="Enter Last Name"
-                    required
-                  />
-                </label>
-              </div>
-              <label htmlFor="email">
-                <p className="font-small text-sm text-slate-700  ">
-                  Email address
-                </p>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={signUpFormData.email}
-                  onChange={handleSignUpChange}
-                  className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                  placeholder="Enter email address"
-                  required
-                />
-              </label>
-              <label htmlFor="password">
-                <p className="font-small  text-sm text-slate-700">Password</p>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  title="Password should contain alphabet and number and should be between 8 to 20 characters"
-                  pattern="^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{8,20}$"
-                  value={signUpFormData.password}
-                  onChange={handleSignUpChange}
-                  className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                  placeholder="Enter your password"
-                  required
-                />
-              </label>
-              </>
-            )}
-            <div className="flex flex-row justify-between !mt-4">
-              <div>
-                <label htmlFor="remember" className="pr-4">
-                  <input
-                    type="checkbox"
-                    id="remember"
-                    className="w-4 h-4 border-slate-300 focus:bg-indigo-600"
-                  />
-                  <p className="text-sm  pl-2 inline-block">Remember me</p>
-                </label>
-              </div>
-              <div>
-                <a className="text-sm  font-medium text-indigo-600">
-                  Forgot Password?
-                </a>
-              </div>
-            </div>
-            <button
-              className=" w-full py-3 font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center !mt-3"
-              type="submit"
-            >
-              {!submitting ? ( 
+          <form
+            action=""
+            method="post"
+            className="my-10 mt-0  "
+            onSubmit={type === "login" ? handleLoginSubmit : handleSignUpSubmit}
+          >
+            <div className="flex flex-col space-y-5 mt-5">
+              {type === "login" ? (
                 <>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                  <label htmlFor="email">
+                    <p className="font-small text-sm text-slate-700  ">
+                      Email address
+                    </p>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={loginFormData.email}
+                      onChange={handleLoginChange}
+                      className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                      placeholder="Enter email address"
+                      required
                     />
-                  </svg>
-                  <span>{type === "login" ? "Login" : "Sign Up"}</span>
+                  </label>
+                  <label htmlFor="password">
+                    <p className="font-small  text-sm text-slate-700">
+                      Password
+                    </p>
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      title="Password should contain alphabet and number and should be between 8 to 20 characters"
+                      pattern="^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{8,20}$"
+                      value={loginFormData.password}
+                      onChange={handleLoginChange}
+                      className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                      placeholder="Enter your password"
+                      required
+                    />
+                  </label>
                 </>
               ) : (
-                <p>Loading...</p>
-              )} 
-            </button>
-            <p className="!mt-3 text-center text-sm">
-              {type === "login"
-                ? "Not registered yet ?  "
-                : "Already Registered ?   "}
-
-              <a
-                className="text-indigo-600 font-medium inline-flex space-x-1 items-center"
-                onClick={() =>
-                  type === "login" ? setType("signup") : setType("login")
-                }
-              >
-                <span>{type === "login" ? "Register Now!" : "Sign In"}</span>
-                <span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                <>
+                  <div className="flex gap-4">
+                    <label htmlFor="firstName">
+                      <p className="font-small text-sm text-slate-700  ">
+                        First Name
+                      </p>
+                      <input
+                        type="text"
+                        id="firstName"
+                        name="firstName"
+                        value={signUpFormData.firstName}
+                        onChange={handleSignUpChange}
+                        className="border-black  w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                        placeholder="Enter First Name"
+                        required
+                      />
+                    </label>
+                    <label htmlFor="lastName">
+                      <p className="font-small text-sm text-slate-700  ">
+                        Last Name
+                      </p>
+                      <input
+                        type="text"
+                        id="lastName"
+                        name="lastName"
+                        value={signUpFormData.lastName}
+                        onChange={handleSignUpChange}
+                        className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                        placeholder="Enter Last Name"
+                        required
+                      />
+                    </label>
+                  </div>
+                  <label htmlFor="email">
+                    <p className="font-small text-sm text-slate-700  ">
+                      Email address
+                    </p>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={signUpFormData.email}
+                      onChange={handleSignUpChange}
+                      className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                      placeholder="Enter email address"
+                      required
                     />
-                  </svg>
-                </span>
-              </a>
-            </p>
-          </div>
-        </form>
-      </div>
-    </Modal>
+                  </label>
+                  <label htmlFor="password">
+                    <p className="font-small  text-sm text-slate-700">
+                      Password
+                    </p>
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      title="Password should contain alphabet and number and should be between 8 to 20 characters"
+                      pattern="^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{8,20}$"
+                      value={signUpFormData.password}
+                      onChange={handleSignUpChange}
+                      className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                      placeholder="Enter your password"
+                      required
+                    />
+                  </label>
+                </>
+              )}
+              <div className="flex flex-row justify-between !mt-4">
+                <div>
+                  <label htmlFor="remember" className="pr-4">
+                    <input
+                      type="checkbox"
+                      id="remember"
+                      className="w-4 h-4 border-slate-300 focus:bg-indigo-600"
+                    />
+                    <p className="text-sm  pl-2 inline-block">Remember me</p>
+                  </label>
+                </div>
+                <div>
+                  <a className="text-sm  font-medium text-indigo-600">
+                    Forgot Password?
+                  </a>
+                </div>
+              </div>
+              <button
+                className=" w-full py-3 font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center !mt-3"
+                type="submit"
+              >
+                {!submitting ? (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                      />
+                    </svg>
+                    <span>{type === "login" ? "Login" : "Sign Up"}</span>
+                  </>
+                ) : (
+                  <p>Loading...</p>
+                )}
+              </button>
+              <p className="!mt-3 text-center text-sm">
+                {type === "login"
+                  ? "Not registered yet ?  "
+                  : "Already Registered ?   "}
+
+                <a
+                  className="text-indigo-600 font-medium inline-flex space-x-1 items-center"
+                  onClick={() =>
+                    type === "login" ? setType("signup") : setType("login")
+                  }
+                >
+                  <span>{type === "login" ? "Register Now!" : "Sign In"}</span>
+                  <span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
+                    </svg>
+                  </span>
+                </a>
+              </p>
+            </div>
+          </form>
+        </div>
+      </Modal>
     </>
   );
 }
