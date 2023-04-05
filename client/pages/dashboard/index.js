@@ -48,12 +48,9 @@ export default function dashboard({ query }) {
         console.log(data)
         setBlogData(data.generate)
 
-        const aa = data.generate.publish_data[2].tiny_mce_data;
-        setIdeas(data.generate.ideas.ideas);
-        setblog_id(data.generate._id);
+        setIdeas(data?.generate?.ideas?.ideas);
+        setblog_id(data?.generate?._id);
 
-        const htmlDoc = jsonToHtml(aa);
-        setEditorText(htmlDoc);
         console.log("Sucessfully generated the article");
       },
       onError: (error) => {
@@ -72,17 +69,17 @@ export default function dashboard({ query }) {
             <TinyMCEEditor
               topic={topic}
               isAuthenticated={isAuthenticated}
-              editorText={editorText}
               blogData={blogData}
               loading={loading}
               blog_id={blog_id}
             />
           </div>
           <DashboardInsights
-            loading={loading}
             ideas={ideas}
+            loading={loading}
             blog_id={blog_id}
             setEditorText={setEditorText}
+            setBlogData={setBlogData}
           />
         </div>
       </Layout>
