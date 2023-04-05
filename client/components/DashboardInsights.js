@@ -9,6 +9,7 @@ import { jsonToHtml } from "../helpers/helper";
 import { useMutation, gql } from "@apollo/client";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import ReactLoading from "react-loading"
+import useStore from "../store/store";
 
 export default function DashboardInsights({
   loading,
@@ -33,6 +34,8 @@ export default function DashboardInsights({
   const [newIdeaLoad, setNewIdeaLoad] = useState(false);
 
   const [regenSelected, setRegenSelected] = useState([]);
+
+  const isAuthenticated = useStore(state => state.isAuthenticated);
 
   const [RegenerateBlog, { data, loading: regenLoading, error }] =
     useMutation(regenerateBlog);
@@ -199,8 +202,8 @@ export default function DashboardInsights({
 
   return (
     <>
-      <div className="w-[40%] px-5">
-        <div className="flex pb-4 justify-between gap-[1.25em]">
+      <div className="w-[30%] px-5 text-xs">
+        {isAuthenticated && <div className="flex pb-4 justify-between gap-[1.25em]">
           <p className="font-normal w-[70%]">
             Regenerate your article on the basis of selected keyword, URL or
             uploaded document
@@ -211,10 +214,10 @@ export default function DashboardInsights({
           >
             Regenerate
           </button>
-        </div>
-        <form  onSubmit={postFormData}>
+        </div>}
+        {isAuthenticated && <form  onSubmit={postFormData}>
           {newIdeaLoad ? <ReactLoading type={"spin"} color={"#2563EB"} height={50} width={50} className={"mx-auto"}/> :
-          (<div className="flex items-center relative mb-[40px]">
+          (<div className="flex items-center relative mb-[10px]">
             <label htmlFor="simple-search" className="sr-only">
               Search
             </label>
@@ -242,6 +245,8 @@ export default function DashboardInsights({
                 required
                 value={formInput}
                 onChange={handleFormChange}
+                style={{fontSize: "1em"}}
+                title="Enter keyword, URL or upload document"
               />
             </div>
             <button
@@ -286,13 +291,13 @@ export default function DashboardInsights({
               </svg>
               <span className="sr-only">Upload</span>
             </label>
-            <div className="absolute top-[110%]">
+            {/* <div className="absolute top-[110%]">
               <p>url - {urlValid ? <span class="text-green-500">true</span> : <span class="text-red-500">false</span>}</p>
-            </div>
+            </div> */}
           </div>)}
-        </form>
+        </form>}
         <div className="flex justify-between w-full items-center">
-          <p className="pr-[50%] pt-5 pb-5 font-semibold">Filtering Keywords</p>
+          <p className=" font-semibold">Filtering Keywords</p>
           <div className="grid p-5">
             <Switch
               checked={enabled}
