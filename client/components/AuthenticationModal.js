@@ -11,6 +11,11 @@ import { signUpWithGoogle } from "../services/GoogleLogin"
 
 import { useRouter } from "next/router";
 import LoaderPlane from "./LoaderPlane";
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css'
+import { createScanner } from "typescript";
+
 
 export default function AuthenticationModal({
   type,
@@ -19,7 +24,7 @@ export default function AuthenticationModal({
   setModalIsOpen,
   handleSave,
 }) {
-  const [submitting, setSubmitting] = useState(false);
+  // const [submitting, setSubmitting] = useState(false);
 
   const [signUpFormData, setSignUpFormData] = useState({
     firstName: "",
@@ -42,23 +47,49 @@ export default function AuthenticationModal({
     setModalIsOpen(false);
   };
 
-  const handleLoginSubmit = (email, password) => {
-    setSubmitting(true);
+  const handleLoginSubmit = (event, email, password) => {
+    event.preventDefault();
+    // setSubmitting(true);
+
+    let loginData= {
+        email: email || loginFormData.email,
+        password: password || loginFormData.password
+    }
+
+    console.log(loginData)
+
     fetch(API_BASE_PATH + API_ROUTES.LOGIN_ENDPOINT, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
         },
-        body: JSON.stringify({
-          email: email ? email : loginFormData.email,
-          password: password ? password : loginFormData.password,
-        }),
+        body: JSON.stringify(loginData),
       })
         .then((res) => res.json())
-        .then((data) => redirectPageAfterLogin(data))
+        .then((data) => {
+          console.log(data);
+          if(data.success === false){
+            alert("bc")
+            toast.error(data.message, {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+            if(data.message === `Could not find account: ${loginData.email}`){
+              setType("signup")
+            }
+          }else if(success === true){
+            redirectPageAfterLogin(data)
+          }
+        })
         .catch((err) => console.error("Error: ", err))
         .finally(() => {
-
+          setLoading(false)
           setModalIsOpen(false);
           setLoginFormData({
             email: "",
@@ -126,7 +157,7 @@ export default function AuthenticationModal({
   };
 
   const handleSignUpSubmit = async (event) => {
-    setSubmitting(true);
+    // setSubmitting(true);
     event.preventDefault();
 
     fetch(API_BASE_PATH + API_ROUTES.CREATE_USER, {
@@ -138,16 +169,30 @@ export default function AuthenticationModal({
     })
       .then((res) => res.json())
       .then((res) => {
-        setSubmitting(false);
-        setModalIsOpen(false);
-
-        console.log('Succesfully signed up')
-
-        handleLoginSubmit(signUpFormData.email,signUpFormData.password);
+        if(res.error === true){
+          toast.error(res.message, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          if(res.message === "User already exists"){
+            setType('login');
+          }
+        }
+        else if(res.error === false){
+          handleLoginSubmit(event, signUpFormData.email, signUpFormData.password);
+          setModalIsOpen(false);
+          console.log('Succesfully signed up')
+        }
       })
       .catch((err) => console.error("Error: ", err))
       .finally(() => {
-        setSubmitting(false);
+        // setSubmitting(false);
         setSignUpFormData({
           firstName: "",
           lastName: "",
@@ -155,7 +200,7 @@ export default function AuthenticationModal({
           password: "",
           tempUserId: "",
         });
-        setModalIsOpen(false);
+        setLoading(false)
       });
   };
 
@@ -311,11 +356,44 @@ export default function AuthenticationModal({
           className="my-10 mt-0  "
           onSubmit={type === "login" ? handleLoginSubmit :handleSignUpSubmit}
         >
-          <div className="flex flex-col space-y-5">
+          <ToastContainer/>
+          <div className="flex flex-col space-y-5 mt-5">
             {type === "login" ? (
-              <div></div>
+              <>
+                <label htmlFor="email">
+                  <p className="font-small text-sm text-slate-700  ">
+                    Email address
+                  </p>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={loginFormData.email}
+                    onChange={handleLoginChange}
+                    className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                    placeholder="Enter email address"
+                    required
+                  />
+                </label>
+                <label htmlFor="password">
+                  <p className="font-small  text-sm text-slate-700">Password</p>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    title="Password should contain alphabet and number and should be between 8 to 20 characters"
+                    pattern="^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{8,20}$"
+                    value={loginFormData.password}
+                    onChange={handleLoginChange}
+                    className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                    placeholder="Enter your password"
+                    required
+                  />
+                </label>
+              </>
             ) : (
-              <div className="flex gap-4 mt-5">
+              <>
+              <div className="flex gap-4">
                 <label htmlFor="firstName">
                   <p className="font-small text-sm text-slate-700  ">
                     First Name
@@ -347,37 +425,38 @@ export default function AuthenticationModal({
                   />
                 </label>
               </div>
+              <label htmlFor="email">
+                <p className="font-small text-sm text-slate-700  ">
+                  Email address
+                </p>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={signUpFormData.email}
+                  onChange={handleSignUpChange}
+                  className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                  placeholder="Enter email address"
+                  required
+                />
+              </label>
+              <label htmlFor="password">
+                <p className="font-small  text-sm text-slate-700">Password</p>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  title="Password should contain alphabet and number and should be between 8 to 20 characters"
+                  pattern="^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{8,20}$"
+                  value={signUpFormData.password}
+                  onChange={handleSignUpChange}
+                  className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                  placeholder="Enter your password"
+                  required
+                />
+              </label>
+              </>
             )}
-            <label htmlFor="email">
-              <p className="font-small text-sm text-slate-700  ">
-                Email address
-              </p>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={type === "login" ? loginFormData.email : signUpFormData.email}
-                onChange={type === "login" ? handleLoginChange : handleSignUpChange}
-                className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                placeholder="Enter email address"
-                required
-              />
-            </label>
-            <label htmlFor="password">
-              <p className="font-small  text-sm text-slate-700">Password</p>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                title="Password should contain alphabet and number and should be between 8 to 20 characters"
-                pattern="^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{8,20}$"
-                value={type === "login" ? loginFormData.password : signUpFormData.password}
-                onChange={type === "login" ? handleLoginChange : handleSignUpChange}
-                className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                placeholder="Enter your password"
-                required
-              />
-            </label>
             <div className="flex flex-row justify-between !mt-4">
               <div>
                 <label htmlFor="remember" className="pr-4">
@@ -399,7 +478,7 @@ export default function AuthenticationModal({
               className=" w-full py-3 font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center !mt-3"
               type="submit"
             >
-              {!submitting ? (
+              {/* {!submitting ? ( */}
                 <>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -417,9 +496,9 @@ export default function AuthenticationModal({
                   </svg>
                   <span>{type === "login" ? "Login" : "Sign Up"}</span>
                 </>
-              ) : (
+              {/* ) : (
                 <p>Loading...</p>
-              )}
+              )} */}
             </button>
             <p className="!mt-3 text-center text-sm">
               {type === "login"
