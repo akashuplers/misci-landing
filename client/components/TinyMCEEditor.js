@@ -15,6 +15,7 @@ export default function TinyMCEEditor({
   editorText,
   loading,
   blog_id,
+  blogData: dataIncoming,
   blogData
 }) {
   // console.log(dataIncoming);
@@ -22,8 +23,8 @@ export default function TinyMCEEditor({
   // const [blogData, setBlogData] = useState(dataIncoming);
 
   useEffect(() => {
-    setEditorText(editorText)
-  },[editorText])
+    setEditorText(editorText);
+  }, [editorText]);
 
   // useEffect(() => {
   //   setBlogData(dataIncoming)
@@ -34,7 +35,6 @@ export default function TinyMCEEditor({
   //   console.log("editor text ", editorText.substring(0,100))
   // })
 
-  
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const router = useRouter();
@@ -87,43 +87,76 @@ export default function TinyMCEEditor({
     }
   };
 
+  const handlePublish = () => {
+    let token, linkedInAccessToken, authorId;
+    if (typeof window !== "undefined") {
+      token = localStorage.getItem("token");
+      linkedInAccessToken = localStorage.getItem("linkedInAccessToken");
+      authorId = localStorage.getItem("authorId");
+    }
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", "Bearer " + token);
+    myHeaders.append("Content-Type", "application/json");
+
+    var raw = JSON.stringify({
+      token: linkedInAccessToken,
+      author: "urn:li:person:" + authorId,
+      data: htmlToJson(editorText).children[3].children[0],
+      blogId: blog_id,
+    });
+
+    console.log(
+      "htmlToJson(editorText)",
+      htmlToJson(editorText).children[3].children[0]
+    );
+
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
+
+    fetch("https://maverick.lille.ai/auth/linkedin/post", requestOptions)
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((error) => console.log("error", error));
+  };
+
   if (loading) return <LoaderPlane />;
 
-  function handleBlog(e){
+  function handleBlog(e) {
     const siblingButton = document.querySelectorAll(".blog-toggle-button");
-    siblingButton.forEach(el => el.classList.remove("active"))
+    siblingButton.forEach((el) => el.classList.remove("active"));
     const button = e.target;
-    button.classList.add("active")
+    button.classList.add("active");
 
-    
-      const aa = blogData?.publish_data[2].tiny_mce_data;
-      const htmlDoc = jsonToHtml(aa);
+    const aa = blogData?.publish_data[2].tiny_mce_data;
+    const htmlDoc = jsonToHtml(aa);
 
-      setEditorText(htmlDoc);
+    setEditorText(htmlDoc);
   }
-  function handleLinkedinBlog(e){
+  function handleLinkedinBlog(e) {
     const siblingButton = document.querySelectorAll(".blog-toggle-button");
-    siblingButton.forEach(el => el.classList.remove("active"))
+    siblingButton.forEach((el) => el.classList.remove("active"));
     const button = e.target;
-    button.classList.add("active")
+    button.classList.add("active");
 
-    
-      const aa = blogData?.publish_data[0].tiny_mce_data;
-      const htmlDoc = jsonToHtml(aa);
+    const aa = blogData?.publish_data[0].tiny_mce_data;
+    const htmlDoc = jsonToHtml(aa);
 
-      setEditorText(htmlDoc);
+    setEditorText(htmlDoc);
   }
-  function handleTwitterBlog(e){
+  function handleTwitterBlog(e) {
     const siblingButton = document.querySelectorAll(".blog-toggle-button");
-    siblingButton.forEach(el => el.classList.remove("active"))
+    siblingButton.forEach((el) => el.classList.remove("active"));
     const button = e.target;
-    button.classList.add("active")
+    button.classList.add("active");
 
-    
-      const aa = blogData?.publish_data[1].tiny_mce_data;
-      const htmlDoc = jsonToHtml(aa);
+    const aa = blogData?.publish_data[1].tiny_mce_data;
+    const htmlDoc = jsonToHtml(aa);
 
-      setEditorText(htmlDoc);
+    setEditorText(htmlDoc);
   }
 
   return (
@@ -176,13 +209,20 @@ export default function TinyMCEEditor({
           // console.log(updatedText);
         }}
       />
-
-      <button
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-        onClick={handleSave}
-      >
-        Save
-      </button>
+      <div className="flex space-x-5">
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+          onClick={handleSave}
+        >
+          Save
+        </button>
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+          onClick={handlePublish}
+        >
+          Publish
+        </button>
+      </div>
     </>
   );
 }
