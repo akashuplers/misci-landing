@@ -21,7 +21,7 @@ export default function Post() {
     <>
       <Layout>
         <div className="flex divide-x">
-          <div className="h-[100%] w-[65%] pl-[20%] pr-9">
+          <div className="h-[100%] w-[70%] mx-5 relative">
             <TinyMCEEditor
               editorText={jsonToHtml(
                 data?.fetchBlog?.publish_data[2].tiny_mce_data
