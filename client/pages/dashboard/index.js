@@ -21,6 +21,7 @@ export default function dashboard({ query }) {
   const isAuthenticated = useStore((state) => state.isAuthenticated);
 
   const [ideas, setIdeas] = useState([]);
+  const [tags, setTags] = useState([]);
   const [blog_id, setblog_id] = useState("");
   const [editorText, setEditorText] = useState("");
   const [blogData, setBlogData] = useState([]);
@@ -126,11 +127,14 @@ export default function dashboard({ query }) {
           </div>
           <DashboardInsights
             ideas={ideas}
+            tags={tags}
             loading={loading}
             setEditorText={setEditorText}
             setBlogData={setBlogData}
             setblog_id={setblog_id}
+            setIdeas={setIdeas}
             blog_id={blog_id}
+            setTags={setTags}
           />
         </div>
       </Layout>
