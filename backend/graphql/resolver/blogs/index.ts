@@ -145,7 +145,7 @@ export const blogResolvers = {
             let tags: String[] = []
             const articlesData = await (
                 Promise.all(
-                    articleIds.map(async (id: string, index: number) => {
+                    articleIds?.map(async (id: string, index: number) => {
                         const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
                         if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
                             imageUrl = article.proImageLink

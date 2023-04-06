@@ -10,8 +10,12 @@ export const usersResolver = {
             const userDetails = await db.db('lilleAdmin').collection('users').findOne({_id: new ObjectID(user.id)})
             const subscriptionDetails = await db.db('stripe')
             .collection('subscriptions')
-            .find({user: new ObjectID(user._id)})
+            .find({user: new ObjectID(user.id)})
             .sort({lastInvoicedDate: -1}).limit(1).toArray()
+            const userPref = await db
+            .db("lilleAdmin")
+            .collection("preferences")
+            .findOne({ user: new ObjectID(user.id) });    
             const date1: any = new Date(userDetails.date);
             const date2: any = new Date();
             const diffTime = Math.abs(date2 - date1);
@@ -27,7 +31,8 @@ export const usersResolver = {
                 upcomingInvoicedDate: userDetails.upcomingInvoicedDate || false,
                 freeTrial: userDetails.freeTrial || false,
                 freeTrailEndsDate: userDetails.freeTrailEndsDate,
-                freeTrialDays: (parseInt(process.env.FREE_TRIAL_END || '14') - totalDay)
+                freeTrialDays: (parseInt(process.env.FREE_TRIAL_END || '14') - totalDay),
+                prefFilled: userPref && userPref.prefFilled ? userPref.prefFilled : false,
             }
         }
     },
