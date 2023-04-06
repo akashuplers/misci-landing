@@ -32,7 +32,7 @@ export default function dashboard({ query }) {
   useEffect(() => {
     const queryParams = router.query;
     if (queryParams.code) {
-      setTimeout(() => (window.location = "/dashboard"), 9000);
+      setTimeout(() => (window.location = "/dashboard"), 8000);
     }
     const getToken = localStorage.getItem("token");
     var getUserId;
