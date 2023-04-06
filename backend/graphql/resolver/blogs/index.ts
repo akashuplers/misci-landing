@@ -118,6 +118,9 @@ export const blogResolvers = {
             parent: unknown, args:{options: GenerateBlogMutationArg}, {req, res, db, pubsub}: any
         ) => {
             let keyword = args.options.keyword
+            if(!keyword.length) {
+                throw "No keyword passed!"
+            }
             const userId = args.options.user_id
             const chatgptApis = await db.db('admin').collection('chatGPT').findOne()
             console.log(args)

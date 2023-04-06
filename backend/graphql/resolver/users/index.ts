@@ -1,4 +1,6 @@
 import { ObjectID } from "bson";
+import { PreferencesArgs } from "interfaces";
+import { v4 as uuidv4 } from "uuid";
 
 export const usersResolver = {
     Query: {
@@ -27,6 +29,65 @@ export const usersResolver = {
                 freeTrailEndsDate: userDetails.freeTrailEndsDate,
                 freeTrialDays: (parseInt(process.env.FREE_TRIAL_END || '14') - totalDay)
             }
+        }
+    },
+    Mutation: {
+        savePreferences: async (
+            parent: unknown, args: {options: PreferencesArgs}, {db, pubsub, user}: any
+        ) => {
+            const {keywords} = args.options
+            const userDetails = await db.db("lilleAdmin").collection('users').findOne({_id: new ObjectID(user.id)})
+            console.log(userDetails)
+            const preferences = {
+                user: userDetails._id,
+                firstName: userDetails.name,
+                email: userDetails.email,
+                questions: [],
+                tags: [],
+            };
+            const userPrefExists = await db.db('lilleAdmin').collection('preferences').findOne({user: new ObjectID(userDetails._id)})
+            let newKeys: any[] = []
+            if(!userPrefExists) {
+                const prefRes = await db
+                    .db("lilleAdmin")
+                    .collection("preferences")
+                    .insertOne(preferences);
+                newKeys = keywords    
+            } else {
+                const originalKeys = userPrefExists.questions?.map((question: any) => question.question1)
+                console.log(originalKeys, keywords)
+                keywords?.forEach((key: any) => {
+                    if(!originalKeys.includes(key)) {
+                        console.log(key)
+                        newKeys.push(key)
+                    }
+                })
+            }
+            const filter = { user: new ObjectID(userDetails._id) };
+            await (Promise.all(
+                keywords?.map( async (key: any) => {
+                const updatePrefToAdd: any = {
+                    id: uuidv4(),
+                    question1: key,
+                    question2: "other",
+                    type: "other"
+                };
+                const options = { returnOriginal: false };
+                const updateExsistingPref = {
+                    $addToSet: { 
+                        questions: updatePrefToAdd
+                    },
+                    $set: {
+                        prefFilled: true
+                    }
+                };
+                const updateUserPref = await db
+                    .db("lilleAdmin")
+                    .collection("preferences")
+                    .findOneAndUpdate(filter, updateExsistingPref, options);
+                })
+            ))    
+            return true
         }
     }
 }

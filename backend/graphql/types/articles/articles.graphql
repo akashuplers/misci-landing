@@ -93,9 +93,14 @@ input IRNotifiyOptions {
     sequence_ids: [String]
 }
 
+input PreferencesOptions {
+    keywords: [String]
+}
+
 type Mutation {
     generate(options: GenerateBlogOptions!): Blog
     updateBlog(options: UpdateBlogOptions!): Blog!
     regenerateBlog(options: RegenerateBlogOptions!): Blog!
     irNotify(options: [IRNotifiyOptions]!): Boolean
+    savePreferences(options: PreferencesOptions): Boolean
 }
