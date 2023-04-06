@@ -4,6 +4,8 @@ import {
   API_ROUTES,
 } from "../constants/apiEndpoints";
 
+import { toast } from "react-toastify";
+
 const Headers = {
   "Content-Type": "application/json",
   "Access-Control-Allow-Origin": "*",
@@ -14,12 +16,13 @@ const Headers = {
 };
 
 export const LinkedinLogin = (code, loaderFunction, handleSave) => {
+  const path = window.location.pathname === "/" ? "" : window.location.pathname;
   fetch(`${API_BASE_PATH}${LI_API_ENDPOINTS.LI_ACCESS_TOKEN}`, {
     method: "POST",
     headers: Headers,
     body: JSON.stringify({
       code: code,
-      url: window.location.origin,
+      url: window.location.origin + path,
     }),
   })
     .then((res) => res.json())
@@ -35,6 +38,7 @@ export const LinkedinLogin = (code, loaderFunction, handleSave) => {
 };
 
 const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
+  console.log("linkedinUserDetails");
   localStorage.setItem("linkedInAccessToken", token);
   fetch(`${API_BASE_PATH}${LI_API_ENDPOINTS.LI_PROFILE}`, {
     method: "POST",
@@ -108,10 +112,15 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
             })
             .catch((error) => console.log("error", error))
             .finally(() => {
-              if (window.location.pathname === "/dashboard") {
+              if (
+                window.location.href === "http://localhost:3000/dashboard" ||
+                window.location.href ===
+                  "https://maverick.lille.ai/dashboard" ||
+                window.location.href ===
+                  "https://pluaris-prod.vercel.app/dashboard"
+              ) {
                 handleSave();
               }
-
               if (window.location.pathname === "/") {
                 window.location.href = "/dashboard";
               }
@@ -128,9 +137,19 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
       })
         .then((res) => res.json())
         .then((res) => {
+          if (res.error === true && res.message === "User already exists") {
+            toast.error(res.message, {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+          }
           console.log(res);
-          // if(res.error === true) return
-
           console.log("Succesfully signed up");
           handleLoginSubmit(signUpFormData.email);
         })
