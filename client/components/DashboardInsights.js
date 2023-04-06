@@ -218,7 +218,7 @@ export default function DashboardInsights({
               uploaded document
             </p>
             <button
-              className="h-10 pl-5 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+              className="h-[fit-content] bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white p-[0.25em] border border-blue-500 hover:border-transparent rounded"
               onClick={handleRegenerate}
             >
               Regenerate
@@ -370,16 +370,17 @@ export default function DashboardInsights({
             ? ideas?.map((idea, index) => {
                 // if (idea?.idea?.length <= 0) return;
                 return (
-                  <div className="flex pb-10" key={index}>
+                  <div className="flex pb-5" key={index}>
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea.idea}</p>
                       <input
                         id="default-checkbox"
                         type="checkbox"
                         className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                        onClick={(e) =>
-                          handleInputClick(idea.idea, idea.article_id, e)
-                        }
+                        checked
+                        // onClick={(e) =>
+                        //   handleInputClick(idea.idea, idea.article_id, e)
+                        // }
                       />
                     </div>
                   </div>
@@ -389,7 +390,7 @@ export default function DashboardInsights({
           {ideaType === "fresh"
             ? freshIdea?.map((idea, index) => {
                 return (
-                  <div className="flex pb-10" key={index}>
+                  <div className="flex pb-5" key={index}>
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea.idea}</p>
                       <input
