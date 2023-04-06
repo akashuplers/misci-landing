@@ -215,7 +215,7 @@ export const blogResolvers = {
                 if(!articlesData.length) {
                     usedIdeasArr.forEach((idea: string) => updatedIdeas.push({
                         idea,
-                        article_id: finalBlogObj.article_id,
+                        article_id: null,
                         reference: null,
                         used: 1,
                     }))
