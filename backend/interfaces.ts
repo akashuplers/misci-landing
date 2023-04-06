@@ -47,3 +47,7 @@ export interface BlogListArgs {
     page_skip: number;
     status: string;
 }
+
+export interface PreferencesArgs {
+    keywords: [String]
+}
