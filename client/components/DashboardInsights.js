@@ -15,13 +15,16 @@ export default function DashboardInsights({
   loading,
   ideas,
   blog_id,
+  tags,
   setEditorText,
   setBlogData,
   setblog_id,
+  setIdeas,
+  setTags
 }) {
   const [enabled, setEnabled] = useState(false);
 
-  const [formInput, setformInput] = useState(null);
+  const [formInput, setformInput] = useState("");
 
   const [urlValid, setUrlValid] = useState(false);
 
@@ -76,9 +79,11 @@ export default function DashboardInsights({
           },
         },
         onCompleted: (data) => {
-          console.log(data);
+          console.log("regen" , data);
           setBlogData(data.regenerateBlog);
-          setblog_id(data.regenerateBlog?._id);
+          setblog_id(data.regenerateBlog._id);
+          setIdeas(data.regenerateBlog.ideas.ideas)
+          setTags(data.regenerateBlog.tags)
 
           const aa = data.regenerateBlog.publish_data[2].tiny_mce_data;
           const htmlDoc = jsonToHtml(aa);
@@ -94,6 +99,12 @@ export default function DashboardInsights({
             (btn) =>
               btn.classList.contains("wordpress") && btn.classList.add("active")
           );
+
+          const fresh = document.querySelector(".idea-button.fresh");
+          const used = document.querySelector(".idea-button.used");
+
+          used.classList.add("active")
+          fresh.classList.remove("active");
         },
         onError: (error) => {
           console.error(error);
@@ -103,7 +114,9 @@ export default function DashboardInsights({
           console.error(err);
         })
         .finally(() => {
+          setIdeaType("used")
           setRegenSelected([]);
+          setFreshIdea([]);
         });
     }
   }
@@ -175,12 +188,21 @@ export default function DashboardInsights({
         setIdeaType("fresh");
         console.log(result);
         setFreshIdea(result.data);
+
+        const fresh = document.querySelector(".idea-button.fresh");
+        const used = document.querySelector(".idea-button.used");
+
+        used.classList.remove("active")
+        fresh.classList.add("active");
+        console.log(idea)
       })
       .catch((error) => console.log("error", error))
       .finally(() => {
+
         setformInput("");
         setFileValid(false);
         setUrlValid(false);
+
         setNewIdeaLoad(false);
       });
   }
@@ -218,7 +240,7 @@ export default function DashboardInsights({
               uploaded document
             </p>
             <button
-              className="h-10 pl-5 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+              className="h-[fit-content] bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white p-[0.25em] border border-blue-500 hover:border-transparent rounded"
               onClick={handleRegenerate}
             >
               Regenerate
@@ -335,45 +357,52 @@ export default function DashboardInsights({
             </Switch>
           </div>
         </div>
-        <div className="grid grid-cols-4 space-x-2">
-          <button className="bg-gray-300 rounded-full p-1">Save</button>
-          <button className="bg-gray-300 rounded-full p-1">Save</button>
-          <button className="bg-gray-300 rounded-full p-1">Save</button>
+        <div className="flex gap-[0.25em] flex-wrap max-h-[90px] overflow-y-scroll">
+          {tags.map(tag => {
+            return <button className="bg-gray-300 rounded-full p-2">{tag}</button>
+          })}
         </div>
-        <div className="flex pb-5">
-          <div
-            className="m-3 ml-0 pt-5 cursor-pointer"
-            onClick={() => setIdeaType("used")}
+        <div className="flex pb-5 pt-5">
+          <button
+            className="idea-button used m-3 ml-0 active !px-[0.4em] !py-[0.25em]"
+            onClick={(e) => {
+              setIdeaType("used")
+              const sib = e.target.nextElementSibling
+              sib?.classList.remove("active");
+              e.target.classList.add("active")
+            }}
           >
-            <span className={ideaType === "used" ? "text-red-500" : ""}>
               Used Idea
-            </span>
-          </div>
-          <div
-            className="m-3 ml-0 pt-5 flex gap-1 cursor-pointer"
-            onClick={() => setIdeaType("fresh")}
+          </button>
+          <button
+            className="idea-button fresh m-3 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em]"
+            onClick={(e) => {
+              setIdeaType("fresh")
+              const sib = e.target.previousElementSibling
+              sib?.classList.remove("active");
+              e.target.classList.add("active")
+            }}
           >
             <img src="/lightBulb.png" className="w-5 h-5" />
-            <span className={ideaType === "fresh" ? "text-red-500" : ""}>
               Fresh Idea
-            </span>
-          </div>
+          </button>
         </div>
         <div className="h-1/5 overflow-y-scroll">
           {ideaType === "used"
             ? ideas?.map((idea, index) => {
                 // if (idea?.idea?.length <= 0) return;
                 return (
-                  <div className="flex pb-10" key={index}>
+                  <div className="flex pb-5" key={index}>
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea.idea}</p>
                       <input
                         id="default-checkbox"
                         type="checkbox"
                         className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                        onClick={(e) =>
-                          handleInputClick(idea.idea, idea.article_id, e)
-                        }
+                        checked
+                        // onClick={(e) =>
+                        //   handleInputClick(idea.idea, idea.article_id, e)
+                        // }
                       />
                     </div>
                   </div>
@@ -383,7 +412,7 @@ export default function DashboardInsights({
           {ideaType === "fresh"
             ? freshIdea?.map((idea, index) => {
                 return (
-                  <div className="flex pb-10" key={index}>
+                  <div className="flex pb-5" key={index}>
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea.idea}</p>
                       <input
