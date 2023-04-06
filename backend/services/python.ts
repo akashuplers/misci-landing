@@ -56,7 +56,7 @@ export class Python {
                 {
                     "userId": this.userId,
                     "comp": "nowigence",
-                    "topic": `"${data.keyword}"`,
+                    "topic": `${data.keyword}`,
                     "topicType": "other",
                     "subscriptionReason": "Select how this topic relates to you",
                     "excludedTopicKeywords": [],
@@ -75,7 +75,7 @@ export class Python {
                 timeout: data.timeout || 0
             };
             const pythonRes = await axios(config)
-            console.log(pythonRes.data)
+            console.log(pythonRes.data, pythonRes)
             return pythonRes.data
         }catch(e){
             console.log(e, "error from python")
