@@ -19,7 +19,7 @@ export const LinkedinLogin = (code, loaderFunction, handleSave) => {
     headers: Headers,
     body: JSON.stringify({
       code: code,
-      url: window.location.origin,
+      url: window.location.origin + window.location.pathname,
     }),
   })
     .then((res) => res.json())
@@ -35,6 +35,7 @@ export const LinkedinLogin = (code, loaderFunction, handleSave) => {
 };
 
 const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
+  console.log("linkedinUserDetails");
   localStorage.setItem("linkedInAccessToken", token);
   fetch(`${API_BASE_PATH}${LI_API_ENDPOINTS.LI_PROFILE}`, {
     method: "POST",

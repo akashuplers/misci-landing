@@ -137,7 +137,7 @@ export default function AuthenticationModal({
           if (window.location.pathname === "/dashboard") {
             handleSave();
           } else {
-            window.location.href = "/dashboard";
+            window.location.href = "/";
           }
           // if (window.location.pathname === "/") {
           // }
@@ -233,7 +233,8 @@ export default function AuthenticationModal({
   useEffect(() => {
     const queryParams = router.query;
 
-    if (queryParams.code) {
+    if (queryParams.code && callBack) {
+      console.log("bgukjbkn");
       let code = queryParams.code;
       LinkedinLogin(code, setLoading, handleSave);
       setLoading(true);

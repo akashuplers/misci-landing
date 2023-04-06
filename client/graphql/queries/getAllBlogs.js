@@ -1,7 +1,16 @@
 import { gql } from "@apollo/client";
 
 export const getAllBlogs = gql`
-  query Query {
-     getAllBlogs {   _id   title  description   tags image}
+  query Query($options: BlogListInput) {
+    getAllBlogs(options: $options) {
+      count
+      blogs {
+        _id
+        description
+        image
+        tags
+        title
+      }
+    }
   }
 `;

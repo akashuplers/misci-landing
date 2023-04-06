@@ -1,141 +1,74 @@
 /* eslint-disable react/jsx-key */
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
-import styles from "../styles/saved.module.css"
+import styles from "../styles/saved.module.css";
 import { useQuery } from "@apollo/client";
 import { getAllBlogs } from "../graphql/queries/getAllBlogs";
 import Head from "next/head";
 import { contextType } from "react-modal";
 
 export default function Saved() {
-
   const { data, error, loading } = useQuery(getAllBlogs, {
     context: {
       headers: {
-        authorization: `Bearer ${localStorage.getItem('token')}`,
+        authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     },
+    variables: { options: { status: null, page_skip: 0, page_limit: 100 } },
   });
-        
+  console.log(data);
 
-    if(loading){
-        return <h1>Loading</h1>;
-}
+  if (loading) {
+    return <h1>Loading</h1>;
+  }
 
-if (data){
+  const files = [
+    {
+      title: "IMG_4985.HEIC",
+      size: "3.9 MB",
+      source:
+        "https://images.unsplash.com/photo-1582053433976-25c00369fc93?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=512&q=80",
+    },
+    // More files...
+  ];
 
- console.log(data)
-}
-    // const [allBlogs, setAllBlogs] = useState([
-    //     {
-    //         description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
-    //         image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    //         tags: ["label1","label2"],
-    //         title: "this a multiline    filler title for saved post",
-    //         _id: "6423f2a5df61bee260863244"
-    //     },
-    //     {
-    //         description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
-    //         image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    //         tags: ["label1","label2"],
-    //         title: "this a multiline    filler title for saved post",
-    //         _id: "6423f2a5df61bee260863244"
-    //     },
-    //     {
-    //         description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
-    //         image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    //         tags: ["label1","label2"],
-    //         title: "this a multiline    filler title for saved post",
-    //         _id: "6423f2a5df61bee260863244"
-    //     },
-    //     {
-    //         description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum dolor sit amet consectetur adipisicing elit. ',
-    //         image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    //         tags: ["label1","label2"],
-    //         title: "this a multiline    filler title for saved post",
-    //         _id: "6423f2a5df61bee260863244"
-    //     },
-    //     {
-    //         description: null,
-    //         image: "https://images.pexels.com/photos/3471423/pexels-photo-3471423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    //         tags: ["label1","label2"],
-    //         title: "this a multiline    filler title for saved post",
-    //         _id: "6423f2a5df61bee260863244"
-    //     }
-    // ]);
-
-    /*useEffect(() => {
-        function fetchAllBlogs(){
-            const accessToken = JSON.parse(localStorage.getItem("token")).accessToken
-
-            var myHeaders = new Headers();
-            myHeaders.append("content-type", "application/json");
-            myHeaders.append("Authorization", `Bearer ${accessToken}`);
-
-            var raw = JSON.stringify({
-            "query": "query GetAllBlogs {\n  getAllBlogs {\n    _id\n    title\n  description\n   tags\n   image\n }\n}"
-            });
-
-            var requestOptions = {
-                method: 'POST',
-                headers: myHeaders,
-                body: raw,
-                redirect: 'follow'
-            };
-
-            fetch("https://maverick.lille.ai/graphql", requestOptions)
-            .then(response => response.json())
-            .then(result => {
-                console.log(result)
-                setAllBlogs(result.data.getAllBlogs)
-            })
-            .catch(error => console.log('error', error));
-        }
-        fetchAllBlogs()
-    },[])*/
-
-    // if(allBlogs == null) return
-
-    // console.log(allBlogs)
-    return (
-        <>
-            <Layout>
-                <div className="flex divide-x">
-                    <div className={styles.savedBlogContainer + " h-[100%] w-[65%] ml-[27%] mr-9"}>
-                         <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-                            {data?.getAllBlogs.map((blog) => (
-                                <div key={blog._id} className={styles.blogContainer + " group relative"}>
-                                    <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-[30vh]">
-                                        <img
-                                        src={blog.image}
-                                        alt={blog.title}
-                                        className="h-full w-full object-cover object-center lg:h-full lg:w-full"
-                                        />
-                                    </div>
-                                    <div className="mt-4 flex justify-between">
-                                        <div>
-                                            <h3 className="text-xl font-bold mb-2">
-                                                <span aria-hidden="true" className="absolute inset-0" />
-                                                {blog.title}
-                                            </h3>
-                                            <p>{blog.description}</p>
-                                            <div className={styles.blogTagContainer}>
-                                                {blog.tags.map(tag => {
-                                                    return (
-                                                        <div className={styles.blogTag}>
-                                                            {tag}
-                                                        </div>
-                                                    )
-                                                })}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </Layout>
-        </>
-    );
+  return (
+    <>
+      <Layout>
+        <ul
+          role="list"
+          className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8 ml-[5%]"
+        >
+          {data?.getAllBlogs.blogs.map((blog) => (
+            <li key={blog._id} className="relative">
+              <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
+                <img
+                  src={blog.image}
+                  alt={blog.title}
+                  className="pointer-events-none object-cover group-hover:opacity-75"
+                />
+                <a href={"/dashboard/" + blog._id}>
+                  <button
+                    type="button"
+                    className="absolute inset-0 focus:outline-none"
+                  >
+                    <span className="sr-only">
+                      View details for {blog.title}
+                    </span>
+                  </button>
+                </a>
+              </div>
+              <p className="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">
+                {blog.title}
+              </p>
+              <p className="pointer-events-none block text-sm font-medium text-gray-500">
+                {blog.description.substring(0, 115) + "..."}
+              </p>
+            </li>
+          ))}
+              
+        </ul>
+      </Layout>
+    </>
+  );
 }
