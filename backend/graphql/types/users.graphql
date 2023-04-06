@@ -16,6 +16,7 @@ type User {
     freeTrialDays: Int!
     subscriptionId: String
     credits: Int
+    prefFilled: Boolean
 }
 type Query {
     me: User!
