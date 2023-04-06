@@ -317,6 +317,7 @@ export default function Sidebar() {
                   >
                     <Avatar
                       name={meeData?.me?.name + " " + meeData?.me?.lastName}
+                      round={true}
                     />
                   </div>
                 </div>
