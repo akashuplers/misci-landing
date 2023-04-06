@@ -4,6 +4,8 @@ import {
   API_ROUTES,
 } from "../constants/apiEndpoints";
 
+import { toast } from "react-toastify";
+
 const Headers = {
   "Content-Type": "application/json",
   "Access-Control-Allow-Origin": "*",
@@ -135,9 +137,19 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
       })
         .then((res) => res.json())
         .then((res) => {
+          if (res.error === true && res.message === "User already exists") {
+            toast.error(res.message, {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+          }
           console.log(res);
-          // if(res.error === true) return
-
           console.log("Succesfully signed up");
           handleLoginSubmit(signUpFormData.email);
         })

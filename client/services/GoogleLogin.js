@@ -4,6 +4,7 @@ import { getAuth } from "firebase/auth";
 import { GoogleAuthProvider } from "firebase/auth";
 import { signInWithPopup } from "firebase/auth";
 import {  API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import { toast } from "react-toastify";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -85,10 +86,7 @@ export const signUpWithGoogle = (handleSave) => {
                     if (window.location.pathname === "/dashboard") {
                         handleSave();
                     }
-
-                    if (window.location.pathname === "/") {
-                    window.location.href = "/dashboard";
-                    }
+                    window.location.href = "/";
                 })
                 return;
             }
@@ -103,8 +101,18 @@ export const signUpWithGoogle = (handleSave) => {
             .then((res) => res.json())
             .then((res) => {
                 console.log(res);
-                // if(res.error === true) return
-
+                if(res.error === true && res.message === "User already exists"){
+                    toast.error(res.message, {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    });
+                }
                 console.log('Succesfully signed up')
                 handleLoginSubmit(signUpFormData.email);                
             })
