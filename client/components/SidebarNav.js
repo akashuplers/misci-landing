@@ -13,6 +13,11 @@ import Link from "next/link";
 import Avatar from "react-avatar";
 import { useQuery } from "@apollo/client";
 import { meeAPI } from "../graphql/querys/mee";
+import {
+  AiFillCheckCircle,
+  AiOutlineLinkedin,
+  AiOutlineTwitter,
+} from "react-icons/ai";
 const navigation = [
   { name: "Generate New", href: "/", icon: PlusCircleIcon, current: true },
   {
@@ -41,9 +46,10 @@ function classNames(...classes) {
 export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [title, setTitle] = useState("");
-  var getToken;
+  var getToken, linkedInUserData;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
+    linkedInUserData = localStorage.getItem("linkedInAccessToken");
   }
   const {
     data: meeData,
@@ -288,7 +294,7 @@ export default function Sidebar() {
           </div>
           <main className="flex-1">
             <div className="py-6">
-              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex relative">
                 <div className="pt-4">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -307,16 +313,55 @@ export default function Sidebar() {
                   <h1 className="text-2xl font-semibold text-gray-900 p-3">
                     {title}
                   </h1>
+
+                  <div
+                    // className={styles.linkedInWrapper}
+                    style={{
+                      position: "absolute",
+                      right: "200px",
+                      height: "50px",
+                    }}
+                    onMouseEnter={() => {
+                      // setHover("linkedin");
+                    }}
+                    onMouseLeave={() => {
+                      // setHideHover();
+                    }}
+                  >
+                    <AiOutlineLinkedin
+                      size={35}
+                      // className={`${styles.icon} ${styles.linkedIn}`}
+
+                      onClick={() =>
+                        // handleHandleSocialLogin(SocialTypes.LINKEDIN)
+                        {}
+                      }
+                      onMouseEnter={() => {
+                        // setHover("linkedin");
+                      }}
+                      onMouseLeave={() => {
+                        // setHideHover();
+                      }}
+                    />
+                    {linkedInUserData ? (
+                      // <AiFillCheckCircle className={styles.checkLinkdedin} />
+                      <AiFillCheckCircle />
+                    ) : (
+                      ""
+                    )}
+                  </div>
+
                   <div
                     style={{
                       position: "absolute",
-                      right: "100px",
+                      right: "20px",
                       height: "50px",
                     }}
-                    className=" w-[50px]  r-[100px]"
+                    className=" w-[50px]"
                   >
                     <Avatar
                       name={meeData?.me?.name + " " + meeData?.me?.lastName}
+                      round={true}
                     />
                   </div>
                 </div>
