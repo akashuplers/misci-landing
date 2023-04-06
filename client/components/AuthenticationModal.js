@@ -66,7 +66,6 @@ export default function AuthenticationModal({
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         if (data.success === false) {
           toast.error(data.message, {
             position: "top-center",
@@ -81,14 +80,20 @@ export default function AuthenticationModal({
           if (data.message === `Could not find account: ${loginData.email}`) {
             setType("signup");
           }
-        } else if (data.data.accessToken) {
+        }
+        else if (data?.data?.accessToken) {
           redirectPageAfterLogin(data);
+          return true
+        }
+      })
+      .then(res => {
+        if(res){
+          setTimeout(() => setModalIsOpen(false),3000)
         }
       })
       .catch((err) => console.error("Error: ", err))
       .finally(() => {
         setSubmitting(false);
-        setModalIsOpen(false);
         setLoginFormData({
           email: "",
           password: "",
