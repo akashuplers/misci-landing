@@ -135,7 +135,7 @@ export const blogResolvers = {
             }
             let articleIds: any = null
             try {
-                articleIds = await new Python({userId: userId}).uploadKeyword({keyword})
+                articleIds = await new Python({userId: userId}).uploadKeyword({keyword, timeout:60000})
             }catch(e){
                 console.log(e, "error from python")
             }
@@ -143,45 +143,49 @@ export const blogResolvers = {
             let imageUrl: string | null = null
             let article_ids: String[] = []
             let tags: String[] = []
-            const articlesData = await (
-                Promise.all(
-                    articleIds?.map(async (id: string, index: number) => {
-                        const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
-                        if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
-                            imageUrl = article.proImageLink
-                        } else {
-                            if(index === (articleIds.length - 1) && !imageUrl) imageUrl = article.proImageLink
-                        }
-                        keyword = article.keyword
-                        const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
-                        const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
-                        const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
-                        tags.push(...productsTags, ...organizationTags, ...personsTags)
-                        return {
-                            used_summaries: article._source.summary.slice(0, 5),
-                            unused_summaries: article._source.summary.slice(5),
-                            keyword: article.keyword,
-                            id
-                        }
-                    })
+            let articlesData: any[] = []
+            if(articleIds) {
+                articlesData = await (
+                    Promise.all(
+                        articleIds?.map(async (id: string, index: number) => {
+                            const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
+                            if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
+                                imageUrl = article.proImageLink
+                            } else {
+                                if(index === (articleIds.length - 1) && !imageUrl) imageUrl = article.proImageLink
+                            }
+                            keyword = article.keyword
+                            const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                            const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                            const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                            tags.push(...productsTags, ...organizationTags, ...personsTags)
+                            return {
+                                used_summaries: article._source.summary.slice(0, 5),
+                                unused_summaries: article._source.summary.slice(5),
+                                keyword: article.keyword,
+                                id
+                            }
+                        })
+                    )
                 )
-            )
-            console.log(tags)
-            articlesData.forEach((data) => {
-                data.used_summaries.forEach((summary: string, index: number) => {
-                    texts += `- ${summary}\n`
+                console.log(tags)
+                articlesData.forEach((data) => {
+                    data.used_summaries.forEach((summary: string, index: number) => {
+                        texts += `- ${summary}\n`
+                    })
+                    article_ids.push(data.id)
                 })
-                article_ids.push(data.id)
-            })
+            }
             console.log(articlesData)
             console.log(article_ids)
             console.log(texts)
             try {
                 const {usedIdeasArr, updatedBlogs, description}: any = await blogGeneration({
                     db,
-                    text: keyword,
-                    regenerate: false,
-                    imageUrl
+                    text: !articlesData.length ? keyword : texts,
+                    regenerate: !articlesData.length ? false: true,
+                    imageUrl,
+                    title: keyword
                 })
                 const finalBlogObj = {
                     article_id: articleIds,
@@ -208,15 +212,15 @@ export const blogResolvers = {
                         used: 0,
                     }))
                 })
+                if(!articlesData.length) {
+                    usedIdeasArr.forEach((idea: string) => updatedIdeas.push({
+                        idea,
+                        article_id: finalBlogObj.article_id,
+                        reference: null,
+                        used: 1,
+                    }))
+                }
                 console.log(updatedIdeas)
-                // const updatedIdeas = usedIdeasArr.map((idea: string) => {
-                //     return {
-                //         idea,
-                //         article_id: finalBlogObj.article_id,
-                //         reference: null,
-                //         used: 1,
-                //     }
-                // })
                 const insertBlog = await db.db('lilleBlogs').collection('blogs').insertOne(finalBlogObj)
                 const insertBlogIdeas = await db.db('lilleBlogs').collection('blogIdeas').insertOne({
                     blog_id: insertBlog.insertedId,

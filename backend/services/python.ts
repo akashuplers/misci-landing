@@ -48,14 +48,15 @@ export class Python {
         }
     }
     async uploadKeyword(data: {
-        keyword: String
+        keyword: String,
+        timeout?: number
     }) {
         try {
             const uploadData = JSON.stringify(
                 {
                     "userId": this.userId,
                     "comp": "nowigence",
-                    "topic": data.keyword,
+                    "topic": `"${data.keyword}"`,
                     "topicType": "other",
                     "subscriptionReason": "Select how this topic relates to you",
                     "excludedTopicKeywords": [],
@@ -70,14 +71,15 @@ export class Python {
                 headers: { 
                     'Content-Type': 'application/json'
                 },
-                data : uploadData
+                data : uploadData,
+                timeout: data.timeout || 0
             };
             const pythonRes = await axios(config)
             console.log(pythonRes.data)
             return pythonRes.data
         }catch(e){
             console.log(e, "error from python")
-            console.log(e.response.data, "error from python")
+            console.log(e?.response?.data, "error from python")
             throw e
         }
     }
