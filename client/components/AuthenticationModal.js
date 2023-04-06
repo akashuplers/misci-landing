@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createScanner } from "typescript";
+import ReactLoading from "react-loading"
 
 export default function AuthenticationModal({
   type,
@@ -66,7 +67,6 @@ export default function AuthenticationModal({
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         if (data.success === false) {
           toast.error(data.message, {
             position: "top-center",
@@ -81,14 +81,20 @@ export default function AuthenticationModal({
           if (data.message === `Could not find account: ${loginData.email}`) {
             setType("signup");
           }
-        } else if (data.data.accessToken) {
+        }
+        else if (data?.data?.accessToken) {
           redirectPageAfterLogin(data);
+          return true
+        }
+      })
+      .then(res => {
+        if(res){
+          setTimeout(() => setModalIsOpen(false),3000)
         }
       })
       .catch((err) => console.error("Error: ", err))
       .finally(() => {
         setSubmitting(false);
-        setModalIsOpen(false);
         setLoginFormData({
           email: "",
           password: "",
@@ -137,7 +143,7 @@ export default function AuthenticationModal({
           if (window.location.pathname === "/dashboard") {
             handleSave();
           } else {
-            window.location.href = "/dashboard";
+            window.location.href = "/";
           }
           // if (window.location.pathname === "/") {
           // }
@@ -500,6 +506,7 @@ export default function AuthenticationModal({
               <button
                 className=" w-full py-3 font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center !mt-3"
                 type="submit"
+                disabled={submitting ? true : false}
               >
                 {!submitting ? (
                   <>
@@ -520,7 +527,13 @@ export default function AuthenticationModal({
                     <span>{type === "login" ? "Login" : "Sign Up"}</span>
                   </>
                 ) : (
-                  <p>Loading...</p>
+                  <ReactLoading
+                    type={"spin"}
+                    color={"#ffffff"}
+                    height={25}
+                    width={25}
+                    className={"mx-auto"}
+                  />
                 )}
               </button>
               <p className="!mt-3 text-center text-sm">
@@ -529,7 +542,7 @@ export default function AuthenticationModal({
                   : "Already Registered ?   "}
 
                 <a
-                  className="text-indigo-600 font-medium inline-flex space-x-1 items-center"
+                  className="text-indigo-600 font-medium inline-flex space-x-1 items-center cursor-pointer"
                   onClick={() =>
                     type === "login" ? setType("signup") : setType("login")
                   }

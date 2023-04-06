@@ -22,6 +22,7 @@ export const generateBlog = gql`
         }
       }
       article_id
+      tags
       _id
     }
   }
