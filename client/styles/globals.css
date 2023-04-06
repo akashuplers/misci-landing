@@ -120,3 +120,8 @@ padding-bottom: 10px !important;
 .sb-avatar__text > div{
   font-size: 1.5rem !important;
 }
+
+.Toastify{
+  z-index: 99999;
+  position: relative;
+}

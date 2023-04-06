@@ -7,7 +7,7 @@ import LoaderPlane from "../components/LoaderPlane";
 import { useRouter } from "next/router";
 import useStore from '../store/store'; 
 import Layout from "../components/Layout";
-
+import { ToastContainer } from "react-toastify";
 
 export default function Home() {
   const keywords = gql`
@@ -53,6 +53,7 @@ export default function Home() {
   return (
     <>
       <Layout>
+        <ToastContainer />
        <div className={`relative px-6 pt-5 lg:px-8`}>
         <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
           <svg
