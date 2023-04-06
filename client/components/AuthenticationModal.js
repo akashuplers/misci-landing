@@ -534,7 +534,7 @@ export default function AuthenticationModal({
                   : "Already Registered ?   "}
 
                 <a
-                  className="text-indigo-600 font-medium inline-flex space-x-1 items-center"
+                  className="text-indigo-600 font-medium inline-flex space-x-1 items-center cursor-pointer"
                   onClick={() =>
                     type === "login" ? setType("signup") : setType("login")
                   }
