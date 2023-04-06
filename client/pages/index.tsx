@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import Navbar from "../components/Navbar";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
@@ -8,6 +8,9 @@ import { useRouter } from "next/router";
 import useStore from '../store/store'; 
 import Layout from "../components/Layout";
 import { ToastContainer } from "react-toastify";
+import { meeAPI } from "../graphql/querys/mee";
+import { relative } from "path";
+import ReactModal from "react-modal";
 
 export default function Home() {
   const keywords = gql`
@@ -20,6 +23,24 @@ export default function Home() {
   const router = useRouter(); 
   const setKeywordInStore = useStore((state) => state.setKeyword); 
   const isAuthenticated = useStore((state) => state.isAuthenticated);
+
+  var getToken;
+  if (typeof window !== "undefined") {
+    getToken = localStorage.getItem("token");
+  }
+
+  const {
+    data: meeData,
+    loading: meeLoading,
+    error: meeError,
+  } = useQuery(meeAPI, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken,
+      },
+    },
+  });
 
   const handleEnterKeyPress = (e: { key: string; }) => {
     if (e.key === "Enter") {
@@ -50,11 +71,49 @@ export default function Home() {
     </Link>
   ));
 
+  const [pfmodal, setPFModal] = useState(false);
+
+  useEffect(() => {
+    console.log(meeData)
+    if(meeData?.me.prefFilled === false){
+      setPFModal(true);
+    } 
+  },[meeData])
+
   return (
     <>
       <Layout>
         <ToastContainer />
-       <div className={`relative px-6 pt-5 lg:px-8`}>
+        {pfmodal && <ReactModal
+            isOpen={pfmodal}
+            ariaHideApp={false}
+            className="w-[100%] sm:w-[38%] max-h-[95%]"
+            style={{
+              overlay: {
+                backgroundColor: "rgba(0,0,0,0.5)",
+                zIndex: "9999",
+              },
+              content: {
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                border: "none",
+                background: "white",
+                boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+                borderRadius: "8px",
+                zIndex: "999",
+                transform: "translate(-50%, -50%)",
+                display:"flex",
+                justifyContent:"center",
+                alignItems:"center",
+                padding:"1em"
+              },
+            }}
+          >
+            <button onClick={() => setPFModal(false)}>close</button>
+          </ReactModal>
+        }
+        <div className={`relative px-6 pt-5 lg:px-8`}>
         <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
           <svg
             className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"

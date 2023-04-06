@@ -166,6 +166,21 @@ export default function AuthenticationModal({
     setSubmitting(true);
     event.preventDefault();
 
+    if(signUpFormData.firstName.length < 2 || signUpFormData.firstName.length > 30 || signUpFormData.lastName.length < 2 || signUpFormData.lastName.length > 30){
+      toast.error("First and Last Name should be of min 2 or max 30 letters", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      })
+      setInterval(() => setSubmitting(false), 3000)
+      return
+    }
+
     fetch(API_BASE_PATH + API_ROUTES.CREATE_USER, {
       method: "POST",
       headers: {
@@ -313,7 +328,7 @@ export default function AuthenticationModal({
           },
         }}
       >
-
+        <ToastContainer/>
         <div
           className="max-w-lg mx-auto bg-white p-8 py-2 rounded-xl 
       "
