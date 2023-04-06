@@ -19,6 +19,7 @@ export default function dashboard({ query }) {
   const isAuthenticated = useStore((state) => state.isAuthenticated);
 
   const [ideas, setIdeas] = useState([]);
+  const [tags, setTags] = useState([])
   const [blog_id, setblog_id] = useState("");
   const [editorText, setEditorText] = useState("");
   const [blogData, setBlogData] = useState([])
@@ -45,11 +46,12 @@ export default function dashboard({ query }) {
         },
       },
       onCompleted: (data) => {
-        console.log(data)
+        console.log("gen" ,data)
         setBlogData(data.generate)
 
         const aa = data.generate.publish_data[2].tiny_mce_data;
         setIdeas(data.generate.ideas.ideas);
+        setTags(data.generate.tags)
         setblog_id(data.generate._id);
 
         const htmlDoc = jsonToHtml(aa);
@@ -80,11 +82,14 @@ export default function dashboard({ query }) {
           </div>
           <DashboardInsights
             ideas={ideas}
+            tags={tags}
             loading={loading}
             setEditorText={setEditorText}
             setBlogData={setBlogData}
             setblog_id={setblog_id}
+            setIdeas={setIdeas}
             blog_id={blog_id}
+            setTags={setTags}
           />
         </div>
       </Layout>
