@@ -106,3 +106,17 @@ padding-bottom: 10px !important;
   width: calc(100vw - 16rem);
   margin-left: auto;
 }
+
+.sb-avatar.sb-avatar--text{
+  width: 50px !important;
+  height: 50px !important;
+}
+
+.sb-avatar__text{
+  width: 50px !important;
+  height: 50px !important;
+}
+
+.sb-avatar__text > div{
+  font-size: 1.5rem !important;
+}

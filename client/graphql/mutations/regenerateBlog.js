@@ -23,6 +23,7 @@ export const regenerateBlog = gql`
         }
       }
       article_id
+      tags
     }
   }
 `;
