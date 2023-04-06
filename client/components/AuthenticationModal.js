@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createScanner } from "typescript";
+import ReactLoading from "react-loading"
 
 export default function AuthenticationModal({
   type,
@@ -142,7 +143,7 @@ export default function AuthenticationModal({
           if (window.location.pathname === "/dashboard") {
             handleSave();
           } else {
-            window.location.href = "/dashboard";
+            window.location.href = "/";
           }
           // if (window.location.pathname === "/") {
           // }
@@ -505,6 +506,7 @@ export default function AuthenticationModal({
               <button
                 className=" w-full py-3 font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center !mt-3"
                 type="submit"
+                disabled={submitting ? true : false}
               >
                 {!submitting ? (
                   <>
@@ -525,7 +527,13 @@ export default function AuthenticationModal({
                     <span>{type === "login" ? "Login" : "Sign Up"}</span>
                   </>
                 ) : (
-                  <p>Loading...</p>
+                  <ReactLoading
+                    type={"spin"}
+                    color={"#ffffff"}
+                    height={25}
+                    width={25}
+                    className={"mx-auto"}
+                  />
                 )}
               </button>
               <p className="!mt-3 text-center text-sm">
