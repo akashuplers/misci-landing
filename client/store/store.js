@@ -1,6 +1,6 @@
 // store.js
 import axios from "axios";
-import {create} from "zustand";
+import create from "zustand";
 import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 
 const useStore = create((set) => ({

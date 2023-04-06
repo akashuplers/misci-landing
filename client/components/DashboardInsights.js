@@ -340,24 +340,30 @@ export default function DashboardInsights({
           <button className="bg-gray-300 rounded-full p-1">Save</button>
           <button className="bg-gray-300 rounded-full p-1">Save</button>
         </div>
-        <div className="flex pb-5">
-          <div
-            className="m-3 ml-0 pt-5 cursor-pointer"
-            onClick={() => setIdeaType("used")}
+        <div className="flex pb-5 pt-5">
+          <button
+            className="idea-button m-3 ml-0 active !px-[0.4em] !py-[0.25em]"
+            onClick={(e) => {
+              setIdeaType("used")
+              const sib = e.target.nextElementSibling
+              sib.classList.remove("active");
+              e.target.classList.add("active")
+            }}
           >
-            <span className={ideaType === "used" ? "text-red-500" : ""}>
               Used Idea
-            </span>
-          </div>
-          <div
-            className="m-3 ml-0 pt-5 flex gap-1 cursor-pointer"
-            onClick={() => setIdeaType("fresh")}
+          </button>
+          <button
+            className="idea-button m-3 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em]"
+            onClick={(e) => {
+              setIdeaType("fresh")
+              const sib = e.target.previousElementSibling
+              sib.classList.remove("active");
+              e.target.classList.add("active")
+            }}
           >
             <img src="/lightBulb.png" className="w-5 h-5" />
-            <span className={ideaType === "fresh" ? "text-red-500" : ""}>
               Fresh Idea
-            </span>
-          </div>
+          </button>
         </div>
         <div className="h-1/5 overflow-y-scroll">
           {ideaType === "used"
