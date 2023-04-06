@@ -8,6 +8,9 @@ import LoaderPlane from "./LoaderPlane";
 import { useMutation } from "@apollo/client";
 import AuthenticationModal from "./AuthenticationModal";
 import { useRouter } from "next/router";
+import { LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
+import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import { LinkedinLogin } from "../services/LinkedinLogin";
 
 export default function TinyMCEEditor({
   topic,
@@ -47,7 +50,7 @@ export default function TinyMCEEditor({
     { data: updateData, loading: updateLoading, error: updateError },
   ] = useMutation(updateBlog);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (typeof window !== "undefined") {
       getToken = localStorage.getItem("token");
     }
@@ -87,6 +90,17 @@ export default function TinyMCEEditor({
     }
   };
 
+  const [callBack, setCallBack] = useState();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      let temp = `${window.location.origin}${router.pathname}`;
+      if (temp.substring(temp.length - 1) == "/")
+        setCallBack(temp.substring(0, temp.length - 1));
+      else setCallBack(temp.substring(0, temp.length));
+    }
+  }, []);
+
   const handlePublish = () => {
     let token, linkedInAccessToken, authorId;
     if (typeof window !== "undefined") {
@@ -94,36 +108,40 @@ export default function TinyMCEEditor({
       linkedInAccessToken = localStorage.getItem("linkedInAccessToken");
       authorId = localStorage.getItem("authorId");
     }
-    // if (!linkedInAccessToken) {
-    //   // setlinkedinLogin(true);
-    // }
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + token);
-    myHeaders.append("Content-Type", "application/json");
+    if (!linkedInAccessToken) {
+      localStorage.setItem("loginProcess", true);
+      localStorage.setItem("bid", blog_id);
+      const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`;
+      window.location = redirectUrl;
+    } else {
+      var myHeaders = new Headers();
+      myHeaders.append("Authorization", "Bearer " + token);
+      myHeaders.append("Content-Type", "application/json");
 
-    var raw = JSON.stringify({
-      token: linkedInAccessToken,
-      author: "urn:li:person:" + authorId,
-      data: htmlToJson(editorText).children[3].children[0],
-      blogId: blog_id,
-    });
+      var raw = JSON.stringify({
+        token: linkedInAccessToken,
+        author: "urn:li:person:" + authorId,
+        data: htmlToJson(editorText).children[3].children[0],
+        blogId: blog_id,
+      });
 
-    console.log(
-      "htmlToJson(editorText)",
-      htmlToJson(editorText).children[3].children[0]
-    );
+      console.log(
+        "htmlToJson(editorText)",
+        htmlToJson(editorText).children[3].children[0]
+      );
 
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow",
-    };
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow",
+      };
 
-    fetch("https://maverick.lille.ai/auth/linkedin/post", requestOptions)
-      .then((response) => response.text())
-      .then((result) => console.log(result))
-      .catch((error) => console.log("error", error));
+      fetch("https://maverick.lille.ai/auth/linkedin/post", requestOptions)
+        .then((response) => response.text())
+        .then((result) => console.log(result))
+        .catch((error) => console.log("error", error));
+    }
   };
 
   if (loading) return <LoaderPlane />;

@@ -18,26 +18,7 @@ import {
   AiOutlineLinkedin,
   AiOutlineTwitter,
 } from "react-icons/ai";
-const navigation = [
-  { name: "Generate New", href: "/", icon: PlusCircleIcon, current: true },
-  {
-    name: "Published Blogs",
-    href: "#",
-    icon: PaperAirplaneIcon,
-    current: false,
-  },
-  { name: "Saved Blogs", href: "/saved", icon: FolderIcon, current: false },
-];
-
-const navigation_bottom = [
-  { name: "Setting", href: "/settings", icon: Cog6ToothIcon, current: true },
-  {
-    name: "Logout",
-    href: "/",
-    icon: PaperAirplaneIcon,
-    current: false,
-  },
-];
+import { useRouter } from "next/router";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -51,6 +32,49 @@ export default function Sidebar() {
     getToken = localStorage.getItem("token");
     linkedInUserData = localStorage.getItem("linkedInAccessToken");
   }
+  const [url, setUrl] = useState("");
+  const router = useRouter();
+  const path = router.pathname;
+  useEffect(() => {
+    setUrl(path);
+  }, [path]);
+
+  const navigation = [
+    {
+      name: "Generate New",
+      href: "/",
+      icon: PlusCircleIcon,
+      current: url === "/",
+    },
+    {
+      name: "Published Blogs",
+      href: "#",
+      icon: PaperAirplaneIcon,
+      current: url === "/publised",
+    },
+    {
+      name: "Saved Blogs",
+      href: "/saved",
+      icon: FolderIcon,
+      current: url === "/saved",
+    },
+  ];
+
+  const navigation_bottom = [
+    {
+      name: "Setting",
+      href: "/settings",
+      icon: Cog6ToothIcon,
+      current: url === "/settings",
+    },
+    {
+      name: "Logout",
+      href: "/",
+      icon: PaperAirplaneIcon,
+      current: false,
+    },
+  ];
+
   const {
     data: meeData,
     loading: meeLoading,
