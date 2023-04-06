@@ -14,12 +14,13 @@ const Headers = {
 };
 
 export const LinkedinLogin = (code, loaderFunction, handleSave) => {
+  const path = window.location.pathname === "/" ? "" : window.location.pathname;
   fetch(`${API_BASE_PATH}${LI_API_ENDPOINTS.LI_ACCESS_TOKEN}`, {
     method: "POST",
     headers: Headers,
     body: JSON.stringify({
       code: code,
-      url: window.location.origin + window.location.pathname,
+      url: window.location.origin + path,
     }),
   })
     .then((res) => res.json())

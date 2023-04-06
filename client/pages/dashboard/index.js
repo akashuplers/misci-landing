@@ -32,7 +32,7 @@ export default function dashboard({ query }) {
   useEffect(() => {
     const queryParams = router.query;
     if (queryParams.code) {
-      window.location = "/dashboard";
+      setTimeout(() => (window.location = "/dashboard"), 3000);
     }
     const getToken = localStorage.getItem("token");
     var getUserId;
@@ -78,8 +78,10 @@ export default function dashboard({ query }) {
           setblog_id(data.fetchBlog._id);
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
-          localStorage.removeItem("bid");
-          localStorage.removeItem("loginProcess");
+          if (!queryParams.code) {
+            localStorage.removeItem("bid");
+            localStorage.removeItem("loginProcess");
+          }
         })
         .catch((error) => console.log("error", error));
     } else {
