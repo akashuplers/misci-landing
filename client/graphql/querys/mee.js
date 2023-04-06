@@ -20,6 +20,7 @@ export const meeAPI = gql`
       admin
       _id
       credits
+      prefFilled
     }
   }
 `;
