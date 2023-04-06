@@ -358,7 +358,7 @@ export default function DashboardInsights({
           </div>
         </div>
         <div className="flex gap-[0.25em] flex-wrap max-h-[90px] overflow-y-scroll">
-          {tags.map(tag => {
+          {tags?.map(tag => {
             return <button className="bg-gray-300 rounded-full p-2">{tag}</button>
           })}
         </div>
