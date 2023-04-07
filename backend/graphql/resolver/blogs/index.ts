@@ -258,10 +258,16 @@ export const blogResolvers = {
             })
             console.log(articleIds)
             let tags: string[] = []
+            let imageUrl: string | null = null
             await (
                 Promise.all(
                     articleIds.map(async (id: String, index: number) => {
                         const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
+                        if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
+                            imageUrl = article.proImageLink
+                        } else {
+                            if(index === (articleIds.length - 1) && !imageUrl) imageUrl = article.proImageLink
+                        }
                         const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
                         const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
                         const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
@@ -282,7 +288,7 @@ export const blogResolvers = {
                     text: texts,
                     regenerate: true,
                     title: blog.keyword,
-                    imageUrl: blog.imageUrl
+                    imageUrl: blog.imageUrl ? blog.imageUrl : imageUrl
                 })
                 let newData: any = []
                 blog.publish_data.forEach((data: any, index: any) => {
