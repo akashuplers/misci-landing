@@ -27,6 +27,8 @@ export default function Post() {
                 data?.fetchBlog?.publish_data[2].tiny_mce_data
               )}
               blog_id={bid}
+              isAuthenticated={true}
+              blogData={data?.fetchBlog}
             />
           </div>
           <DashboardInsights
