@@ -83,7 +83,7 @@ export default function Home() {
   return (
     <>
       <Layout>
-        <ToastContainer />
+        {/* <ToastContainer /> */}
         {pfmodal && <ReactModal
             isOpen={pfmodal}
             ariaHideApp={false}
@@ -106,7 +106,7 @@ export default function Home() {
                 display:"flex",
                 justifyContent:"center",
                 alignItems:"center",
-                padding:"1em"
+                padding:"1emin"
               },
             }}
           >
