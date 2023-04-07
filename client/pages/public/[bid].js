@@ -17,7 +17,7 @@ export default function Post() {
 
   return (
     <>
-      <div className="p-4">
+      <div className="p-4 px-20">
         <div dangerouslySetInnerHTML={{ __html: html }} />
       </div>
       <style>
