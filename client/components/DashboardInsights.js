@@ -80,13 +80,8 @@ export default function DashboardInsights({
 
   const [filterTags, setFilterTags] = useState([])
 
-  let target;
   function handleTagClick(e){
-    /* Active class toggle functionality for the button */
-    target = e.target;
-    if(target === e.target) e.target.classList.toggle("active")
-    else if(target !== e.target) Array.from(document.querySelectorAll(".tag-button.active")).forEach(el => el.classList.remove("active"));
-    else e.target.classList.add("active")
+    e.target.classList.toggle("active")
 
     /* Adding or removing the keywords to an array */
     const filterText = e.target.innerText;
