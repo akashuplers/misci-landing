@@ -62,9 +62,9 @@ export default function Home() {
         query: { topic: topic },
       }}
     >
-      <div className="flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-white shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer">
+      <div className="cursor-pointer flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-white shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer">
         <button className="text-sm font-medium text-gray-900 cursor-auto">
-          <a>{topic}</a>
+          <a className="cursor-pointer">{topic}</a>
         </button>
         <ArrowRightCircleIcon className="w-5 h-5 text-gray-400" />
       </div>
