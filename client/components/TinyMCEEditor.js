@@ -41,9 +41,11 @@ export default function TinyMCEEditor({
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const router = useRouter();
-  var getToken;
+  let token, linkedInAccessToken, authorId;
   if (typeof window !== "undefined") {
-    getToken = localStorage.getItem("token");
+    token = localStorage.getItem("token");
+    linkedInAccessToken = localStorage.getItem("linkedInAccessToken");
+    authorId = localStorage.getItem("authorId");
   }
   const [
     UpdateBlog,
@@ -97,56 +99,55 @@ export default function TinyMCEEditor({
       let temp = `${window.location.origin}${router.pathname}`;
       if (temp.substring(temp.length - 1) == "/")
         setCallBack(temp.substring(0, temp.length - 1));
-      else setCallBack(temp.substring(0, temp.length));
+      else {
+        setCallBack(window.location.origin + "/dashboard");
+      }
     }
   }, []);
 
-  const handlePublish = () => {
-    let token, linkedInAccessToken, authorId;
-    if (typeof window !== "undefined") {
-      token = localStorage.getItem("token");
-      linkedInAccessToken = localStorage.getItem("linkedInAccessToken");
-      authorId = localStorage.getItem("authorId");
-    }
-    if (!linkedInAccessToken) {
-      localStorage.setItem("loginProcess", true);
-      localStorage.setItem("bid", blog_id);
-      const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`;
-      window.location = redirectUrl;
-    } else {
-      var myHeaders = new Headers();
-      myHeaders.append("Authorization", "Bearer " + token);
-      myHeaders.append("Content-Type", "application/json");
-
-      var raw = JSON.stringify({
-        token: linkedInAccessToken,
-        author: "urn:li:person:" + authorId,
-        data: htmlToJson(editorText).children[3].children[0],
-        blogId: blog_id,
-      });
-
-      console.log(
-        "htmlToJson(editorText)",
-        htmlToJson(editorText).children[3].children[0]
-      );
-
-      var requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
-      };
-
-      fetch("https://maverick.lille.ai/auth/linkedin/post", requestOptions)
-        .then((response) => response.text())
-        .then((result) => console.log(result))
-        .catch((error) => console.log("error", error));
-    }
+  const handleconnectLinkedin = () => {
+    localStorage.setItem("loginProcess", true);
+    localStorage.setItem("bid", blog_id);
+    const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`;
+    window.location = redirectUrl;
   };
 
-  if (loading) return <LoaderPlane />;
+  const handleSavePublish = () => {};
+
+  const handlePublish = () => {
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", "Bearer " + token);
+    myHeaders.append("Content-Type", "application/json");
+
+    var raw = JSON.stringify({
+      token: linkedInAccessToken,
+      author: "urn:li:person:" + authorId,
+      data: htmlToJson(editorText).children[3].children[0],
+      blogId: blog_id,
+    });
+
+    console.log(
+      "htmlToJson(editorText)",
+      htmlToJson(editorText).children[3].children[0]
+    );
+
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
+
+    fetch("https://maverick.lille.ai/auth/linkedin/post", requestOptions)
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((error) => console.log("error", error));
+  };
+
+  const [option, setOption] = useState("blog");
 
   function handleBlog(e) {
+    setOption("blog");
     const siblingButton = document.querySelectorAll(".blog-toggle-button");
     siblingButton.forEach((el) => el.classList.remove("active"));
     const button = e.target;
@@ -158,6 +159,7 @@ export default function TinyMCEEditor({
     setEditorText(htmlDoc);
   }
   function handleLinkedinBlog(e) {
+    setOption("linkedin");
     const siblingButton = document.querySelectorAll(".blog-toggle-button");
     siblingButton.forEach((el) => el.classList.remove("active"));
     const button = e.target;
@@ -169,6 +171,7 @@ export default function TinyMCEEditor({
     setEditorText(htmlDoc);
   }
   function handleTwitterBlog(e) {
+    setOption("twitter");
     const siblingButton = document.querySelectorAll(".blog-toggle-button");
     siblingButton.forEach((el) => el.classList.remove("active"));
     const button = e.target;
@@ -179,7 +182,7 @@ export default function TinyMCEEditor({
 
     setEditorText(htmlDoc);
   }
-
+  if (loading) return <LoaderPlane />;
   return (
     <>
       {isAuthenticated ? (
@@ -255,12 +258,34 @@ export default function TinyMCEEditor({
         >
           Save
         </button>
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-          onClick={handlePublish}
-        >
-          Publish
-        </button>
+        {option === "linkedin" ? (
+          linkedInAccessToken ? (
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+              onClick={handlePublish}
+            >
+              Publish on Linkedin
+            </button>
+          ) : (
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+              onClick={handleconnectLinkedin}
+            >
+              Connect with Linkedin
+            </button>
+          )
+        ) : option === "twitter" ? (
+          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+            Coming Soon...
+          </button>
+        ) : (
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+            onClick={handleSavePublish}
+          >
+            Save & Publish
+          </button>
+        )}
       </div>
     </>
   );
