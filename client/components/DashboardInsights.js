@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/jsx-key */
@@ -24,6 +25,7 @@ export default function DashboardInsights({
 }) {
   const [enabled, setEnabled] = useState(false);
 
+  const [filteredIdeas, setFilteredIdeas] = useState(ideas);
   const [formInput, setformInput] = useState("");
 
   const [urlValid, setUrlValid] = useState(false);
@@ -66,6 +68,34 @@ export default function DashboardInsights({
 
     setRegenSelected((prev) => [...prev, ideaObject]);
   }
+
+  const [filterTags, setFilterTags] = useState([])
+
+  let target;
+  function handleTagClick(e){
+    /* Active class toggle functionality for the button */
+    target = e.target;
+    if(target === e.target) e.target.classList.toggle("active")
+    else if(target !== e.target) Array.from(document.querySelectorAll(".tag-button.active")).forEach(el => el.classList.remove("active"));
+    else e.target.classList.add("active")
+
+    /* Adding or removing the keywords to an array */
+    const filterText = e.target.innerText;
+    setFilterTags(prev => prev.includes(filterText) ? [...prev.filter(el => el !== filterText)] : [...prev, filterText])
+  }
+
+  useEffect(() => {
+    console.log(filterTags)
+
+    // const filteredIdeas = []
+    // filterTags.forEach(tag => ideas.forEach(idea => idea.idea.indexOf(tag) >= 0 ? console.log("hi") : console.log("fuck")));
+    const filter = []
+    filterTags.forEach(filterText => ideas.forEach(idea => idea.idea.indexOf(filterText) >= 0 && filter.push(idea.idea)));
+    console.log(filter);
+
+    // console.log(filteredIdeas)
+  },[filterTags])
+
 
   function handleRegenerate() {
     console.log(regenSelected);
@@ -194,7 +224,7 @@ export default function DashboardInsights({
 
         used.classList.remove("active")
         fresh.classList.add("active");
-        console.log(idea)
+        // console.log(idea)
       })
       .catch((error) => console.log("error", error))
       .finally(() => {
@@ -339,9 +369,9 @@ export default function DashboardInsights({
             )}
           </form>
         )}
-        <div className="flex justify-between w-full items-center">
+        <div className="flex justify-between w-full items-center py-5">
           <p className=" font-semibold">Filtering Keywords</p>
-          <div className="grid p-5">
+          {/* <div className="grid p-5">
             <Switch
               checked={enabled}
               onChange={setEnabled}
@@ -355,11 +385,14 @@ export default function DashboardInsights({
             pointer-events-none inline-block h-[17px] w-[17px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
               />
             </Switch>
-          </div>
+          </div> */}
         </div>
-        <div className="flex gap-[0.25em] flex-wrap max-h-[90px] overflow-y-scroll">
+        <div className="flex gap-[0.25em] flex-wrap max-h-[70px] overflow-y-scroll">
           {tags?.map(tag => {
-            return <button className="bg-gray-300 rounded-full p-2">{tag}</button>
+            return <div 
+                      className="bg-gray-300 rounded-full p-2 cursor-pointer tag-button"
+                      onClick={(e) => handleTagClick(e)}
+                    >{tag}</div>
           })}
         </div>
         <div className="flex pb-5 pt-5">

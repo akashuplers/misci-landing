@@ -6,7 +6,7 @@
     padding: 0.2em 0.35em;
     border-radius: 6px;
 }
-.blog-toggle-button.active,.idea-button.active{
+.blog-toggle-button.active,.idea-button.active, .tag-button.active{
     background-color: #2563eb;
     color: white;
 }

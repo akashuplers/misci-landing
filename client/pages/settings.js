@@ -55,12 +55,12 @@ const secondaryNavigation = [
   { name: "Logout", href: "#", icon: ArrowLeftOnRectangleIcon },
 ];
 const tabs = [
-  { name: "General", href: "#", current: true },
-  { name: "Password", href: "#", current: false },
-  { name: "Notifications", href: "#", current: false },
-  { name: "Plan", href: "#", current: false },
-  { name: "Billing", href: "#", current: false },
-  { name: "Team Members", href: "#", current: false },
+  { name: "General", href: "", current: true },
+  // { name: "Password", href: "#", current: false },
+  // { name: "Notifications", href: "#", current: false },
+  // { name: "Plan", href: "#", current: false },
+  // { name: "Billing", href: "#", current: false },
+  // { name: "Team Members", href: "#", current: false },
 ];
 
 function classNames(...classes) {
@@ -222,7 +222,7 @@ export default function Settings() {
         <div className="lg:pl-64">
           <div className="lg:px-8">
             <div className="mx-auto flex flex-col lg:max-w-4xl">
-              <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 border-b border-gray-200 bg-white">
+              {/* <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 border-b border-gray-200 bg-white">
                 <button
                   type="button"
                   className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500 lg:hidden"
@@ -278,18 +278,13 @@ export default function Settings() {
                     </button>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               <main className="flex-1">
                 <div className="relative mx-auto max-w-4xl">
-                  <div className="pt-10 pb-16">
+                  <div className=" pb-16">
                     <div className="px-4 sm:px-6 lg:px-0">
-                      <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-                        Settings
-                      </h1>
-                    </div>
-                    <div className="px-4 sm:px-6 lg:px-0">
-                      <div className="py-6">
+                      <div className="pb-6">
                         {/* Tabs */}
                         <div className="lg:hidden">
                           <label htmlFor="selected-tab" className="sr-only">
@@ -462,7 +457,7 @@ export default function Settings() {
                                   </span>
                                 </dd>
                               </div>
-                              <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:pt-5">
+                              {/* <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:pt-5">
                                 <dt className="text-sm font-medium text-gray-500">
                                   Date format
                                 </dt>
@@ -557,7 +552,7 @@ export default function Settings() {
                                     />
                                   </Switch>
                                 </dd>
-                              </Switch.Group>
+                              </Switch.Group> */}
                             </dl>
                           </div>
                         </div>
