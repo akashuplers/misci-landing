@@ -11,6 +11,8 @@ import { useRouter } from "next/router";
 import { LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { LinkedinLogin } from "../services/LinkedinLogin";
+import ReactLoading from "react-loading";
+import Modal from "react-modal";
 
 export default function TinyMCEEditor({
   topic,
@@ -23,7 +25,11 @@ export default function TinyMCEEditor({
 }) {
   // console.log(dataIncoming);
   const [updatedText, setEditorText] = useState(editorText);
+  const [saveLoad, setSaveLoad] = useState(false);
+  const [saveText, setSaveText] = useState("Save!");
   // const [blogData, setBlogData] = useState(dataIncoming);
+
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     setEditorText(editorText);
@@ -41,9 +47,11 @@ export default function TinyMCEEditor({
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const router = useRouter();
-  var getToken;
+  let token, linkedInAccessToken, authorId;
   if (typeof window !== "undefined") {
-    getToken = localStorage.getItem("token");
+    token = localStorage.getItem("token");
+    linkedInAccessToken = localStorage.getItem("linkedInAccessToken");
+    authorId = localStorage.getItem("authorId");
   }
   const [
     UpdateBlog,
@@ -51,9 +59,12 @@ export default function TinyMCEEditor({
   ] = useMutation(updateBlog);
 
   const handleSave = async () => {
+    setSaveLoad(true);
+
     if (typeof window !== "undefined") {
       getToken = localStorage.getItem("token");
     }
+
     if (getToken) {
       console.log("token", getToken);
       const jsonDoc = htmlToJson(updatedText).children;
@@ -78,10 +89,15 @@ export default function TinyMCEEditor({
         }
       )
         .then(() => {
+          if (window.location === "/dashboard/" + blog_id) return;
           router.push("/dashboard/" + blog_id);
         })
         .catch((err) => {
           //console.log(err);
+        })
+        .finally(() => {
+          setSaveLoad(false);
+          setSaveText("Saved!");
         });
       setAuthenticationModalOpen(false);
     } else {
@@ -97,56 +113,118 @@ export default function TinyMCEEditor({
       let temp = `${window.location.origin}${router.pathname}`;
       if (temp.substring(temp.length - 1) == "/")
         setCallBack(temp.substring(0, temp.length - 1));
-      else setCallBack(temp.substring(0, temp.length));
+      else {
+        setCallBack(window.location.origin + "/dashboard");
+      }
     }
   }, []);
 
-  const handlePublish = () => {
-    let token, linkedInAccessToken, authorId;
+  const handleconnectLinkedin = () => {
+    localStorage.setItem("loginProcess", true);
+    localStorage.setItem("bid", blog_id);
+    const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`;
+    window.location = redirectUrl;
+  };
+
+  const handleSavePublish = () => {
+    let getToken;
     if (typeof window !== "undefined") {
-      token = localStorage.getItem("token");
-      linkedInAccessToken = localStorage.getItem("linkedInAccessToken");
-      authorId = localStorage.getItem("authorId");
+      getToken = localStorage.getItem("token");
     }
-    if (!linkedInAccessToken) {
-      localStorage.setItem("loginProcess", true);
-      localStorage.setItem("bid", blog_id);
-      const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`;
-      window.location = redirectUrl;
-    } else {
-      var myHeaders = new Headers();
-      myHeaders.append("Authorization", "Bearer " + token);
-      myHeaders.append("Content-Type", "application/json");
+    if (getToken) {
+      const jsonDoc = htmlToJson(updatedText).children;
+      const formatedJSON = { children: [...jsonDoc] };
+      UpdateBlog(
+        {
+          variables: {
+            options: {
+              tinymce_json: formatedJSON,
+              blog_id: blog_id,
+              platform: "wordpress",
+            },
+          },
+        },
+        {
+          context: {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken,
+            },
+          },
+        }
+      )
+        .then(() => {
+          var myHeaders = new Headers();
+          myHeaders.append("content-type", "application/json");
+          myHeaders.append("Authorization", "Bearer " + token);
 
-      var raw = JSON.stringify({
-        token: linkedInAccessToken,
-        author: "urn:li:person:" + authorId,
-        data: htmlToJson(editorText).children[3].children[0],
-        blogId: blog_id,
-      });
+          var raw = JSON.stringify({
+            query:
+              "mutation SavePreferences($options: PublisOptions) {\n  publish(options: $options)\n}",
+            variables: {
+              options: {
+                blog_id: blog_id,
+              },
+            },
+          });
 
-      console.log(
-        "htmlToJson(editorText)",
-        htmlToJson(editorText).children[3].children[0]
-      );
+          var requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+            redirect: "follow",
+          };
 
-      var requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
-      };
-
-      fetch("https://maverick.lille.ai/auth/linkedin/post", requestOptions)
-        .then((response) => response.text())
-        .then((result) => console.log(result))
-        .catch((error) => console.log("error", error));
+          fetch("https://maverick.lille.ai/graphql", requestOptions)
+            .then((response) => response.text())
+            .then((result) => {
+              const data = JSON.parse(result);
+              if (data.data.publish) {
+                setOpenModal(true);
+              }
+            })
+            .catch((error) => console.log("error", error));
+        })
+        .catch((err) => {
+          //console.log(err);
+        });
     }
   };
 
-  if (loading) return <LoaderPlane />;
+  const handlePublish = () => {
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", "Bearer " + token);
+    myHeaders.append("Content-Type", "application/json");
+
+    var raw = JSON.stringify({
+      token: linkedInAccessToken,
+      author: "urn:li:person:" + authorId,
+      data: htmlToJson(editorText).children[3].children[0],
+      blogId: blog_id,
+    });
+
+    console.log(
+      "htmlToJson(editorText)",
+      htmlToJson(editorText).children[3].children[0]
+    );
+
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
+
+    fetch("https://maverick.lille.ai/auth/linkedin/post", requestOptions)
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((error) => console.log("error", error));
+  };
+
+  const [option, setOption] = useState("blog");
 
   function handleBlog(e) {
+    setOption("blog");
     const siblingButton = document.querySelectorAll(".blog-toggle-button");
     siblingButton.forEach((el) => el.classList.remove("active"));
     const button = e.target;
@@ -158,6 +236,7 @@ export default function TinyMCEEditor({
     setEditorText(htmlDoc);
   }
   function handleLinkedinBlog(e) {
+    setOption("linkedin");
     const siblingButton = document.querySelectorAll(".blog-toggle-button");
     siblingButton.forEach((el) => el.classList.remove("active"));
     const button = e.target;
@@ -169,6 +248,7 @@ export default function TinyMCEEditor({
     setEditorText(htmlDoc);
   }
   function handleTwitterBlog(e) {
+    setOption("twitter");
     const siblingButton = document.querySelectorAll(".blog-toggle-button");
     siblingButton.forEach((el) => el.classList.remove("active"));
     const button = e.target;
@@ -179,7 +259,7 @@ export default function TinyMCEEditor({
 
     setEditorText(htmlDoc);
   }
-
+  if (loading) return <LoaderPlane />;
   return (
     <>
       {isAuthenticated ? (
@@ -214,6 +294,42 @@ export default function TinyMCEEditor({
       ) : (
         <div></div>
       )}
+      <Modal
+        isOpen={openModal}
+        onRequestClose={() => setOpenModal(false)}
+        ariaHideApp={false}
+        className="w-[100%] sm:w-[38%] max-h-[95%]"
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0,0,0,0.5)",
+            zIndex: "9999",
+          },
+          content: {
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            right: "auto",
+            border: "none",
+            background: "white",
+            boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+            borderRadius: "8px",
+            // height: "75%",
+            width: "50%",
+            maxWidth: "450px",
+            bottom: "",
+            zIndex: "999",
+            marginRight: "-50%",
+            transform: "translate(-50%, -50%)",
+            padding: "20px",
+            paddingBottom: "0px",
+          },
+        }}
+      >
+        <div className="p-5 pl-2">
+          {window.location.origin + "/public/" + blog_id}
+        </div>
+        <div className="p-4 pt-0 pl-2">Copy and Share URL</div>
+      </Modal>
       <AuthenticationModal
         type={authenticationModalType}
         setType={setAuthneticationModalType}
@@ -245,22 +361,49 @@ export default function TinyMCEEditor({
         }}
         onEditorChange={(content, editor) => {
           setEditorText(content);
+          setSaveText("Save Now!");
           // console.log(updatedText);
         }}
       />
       <div className="flex space-x-5">
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-          onClick={handleSave}
+          onClick={saveText === "Save Now!" && handleSave}
         >
-          Save
+          {saveLoad ? (
+            <ReactLoading width={25} height={25} round={true} />
+          ) : (
+            saveText
+          )}
         </button>
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-          onClick={handlePublish}
-        >
-          Publish
-        </button>
+        {option === "linkedin" ? (
+          linkedInAccessToken ? (
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+              onClick={handlePublish}
+            >
+              Publish on Linkedin
+            </button>
+          ) : (
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+              onClick={handleconnectLinkedin}
+            >
+              Connect with Linkedin
+            </button>
+          )
+        ) : option === "twitter" ? (
+          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+            Coming Soon...
+          </button>
+        ) : (
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+            onClick={handleSavePublish}
+          >
+            Save & Publish
+          </button>
+        )}
       </div>
     </>
   );

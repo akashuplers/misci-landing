@@ -16,7 +16,7 @@ const Headers = {
 };
 
 export const LinkedinLogin = (code, loaderFunction, handleSave) => {
-  const path = window.location.pathname === "/" ? "" : window.location.pathname;
+  const path = window.location.pathname === "/" ? "" : "/dashboard";
   fetch(`${API_BASE_PATH}${LI_API_ENDPOINTS.LI_ACCESS_TOKEN}`, {
     method: "POST",
     headers: Headers,
@@ -47,6 +47,18 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
   })
     .then((res) => res.json())
     .then((res) => {
+      if (res.statusCode === 500) {
+        toast.error("Error..Please login again", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
       localStorage.setItem(
         "authorId",
         JSON.stringify(res.data.id).replace(/['"]+/g, "")
@@ -112,6 +124,9 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
             })
             .catch((error) => console.log("error", error))
             .finally(() => {
+              if (window.location.pathname === "/") {
+                window.location.href = "/dashboard";
+              }
               if (
                 window.location.href === "http://localhost:3000/dashboard" ||
                 window.location.href ===
@@ -120,8 +135,7 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
                   "https://pluaris-prod.vercel.app/dashboard"
               ) {
                 handleSave();
-              }
-              if (window.location.pathname === "/") {
+              } else {
                 window.location.href = "/dashboard";
               }
             });
@@ -137,8 +151,8 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
       })
         .then((res) => res.json())
         .then((res) => {
-          if (res.error === true && res.message === "User already exists") {
-            toast.error(res.message, {
+          if (!res.error) {
+            toast.success("Succesfully signed up", {
               position: "top-center",
               autoClose: 5000,
               hideProgressBar: false,
@@ -149,7 +163,7 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
               theme: "light",
             });
           }
-          console.log(res);
+
           console.log("Succesfully signed up");
           handleLoginSubmit(signUpFormData.email);
         })

@@ -10,6 +10,7 @@ import { generateBlog } from "../../graphql/mutations/generateBlog";
 import { jsonToHtml } from "../../helpers/helper";
 import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
 import { useRouter } from "next/router";
+import { ToastContainer, toast } from "react-toastify";
 
 dashboard.getInitialProps = ({ query }) => {
   return { query };
@@ -30,10 +31,6 @@ export default function dashboard({ query }) {
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
 
   useEffect(() => {
-    const queryParams = router.query;
-    if (queryParams.code) {
-      setTimeout(() => (window.location = "/dashboard"), 8000);
-    }
     const getToken = localStorage.getItem("token");
     var getUserId;
     if (typeof window !== "undefined") {
@@ -78,10 +75,14 @@ export default function dashboard({ query }) {
           setblog_id(data.fetchBlog._id);
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
+          const queryParams = router.query;
           if (!queryParams.code) {
             localStorage.removeItem("bid");
             localStorage.removeItem("loginProcess");
           }
+        })
+        .finally(() => {
+          toast.success("LinkedIn SingUp Succesfull!!");
         })
         .catch((error) => console.log("error", error));
     } else {
@@ -99,6 +100,7 @@ export default function dashboard({ query }) {
           const aa = data.generate.publish_data[2].tiny_mce_data;
           setIdeas(data.generate.ideas.ideas);
           setblog_id(data.generate._id);
+          setTags(data.generate.tags)
 
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
@@ -116,7 +118,7 @@ export default function dashboard({ query }) {
   return (
     <>
       <Layout>
-        <div className="flex divide-x">
+        <div className="flex divide-x mt-[2em]">
           <div className="h-[100%] w-[70%] mx-5 relative">
             <TinyMCEEditor
               topic={topic}
