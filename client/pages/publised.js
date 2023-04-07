@@ -49,7 +49,7 @@ export default function Saved() {
                   alt={blog.title}
                   className="pointer-events-none object-cover group-hover:opacity-75"
                 />
-                <a href={"/dashboard/" + blog._id}>
+                <a href={"/public/" + blog._id}>
                   <button
                     type="button"
                     className="absolute inset-0 focus:outline-none"
