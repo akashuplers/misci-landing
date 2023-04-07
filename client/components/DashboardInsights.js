@@ -25,7 +25,7 @@ export default function DashboardInsights({
 }) {
   const [enabled, setEnabled] = useState(false);
 
-  const [filteredIdeas, setFilteredIdeas] = useState(ideas);
+  const [filteredIdeas, setFilteredIdeas] = useState([]);
   const [formInput, setformInput] = useState("");
 
   const [urlValid, setUrlValid] = useState(false);
@@ -85,16 +85,13 @@ export default function DashboardInsights({
   }
 
   useEffect(() => {
-    console.log(filterTags)
-
-    // const filteredIdeas = []
-    // filterTags.forEach(tag => ideas.forEach(idea => idea.idea.indexOf(tag) >= 0 ? console.log("hi") : console.log("fuck")));
-    const filter = []
-    filterTags.forEach(filterText => ideas.forEach(idea => idea.idea.indexOf(filterText) >= 0 && filter.push(idea.idea)));
-    console.log(filter);
-
-    // console.log(filteredIdeas)
+    setFilteredIdeas([])
+    filterTags.forEach(filterText => ideas.forEach(idea => idea.idea.indexOf(filterText) >= 0 && setFilteredIdeas(prev => [...prev, idea.idea])));
   },[filterTags])
+
+  useEffect(() => {
+    console.log(filteredIdeas)
+  },[filteredIdeas])
 
 
   function handleRegenerate() {
