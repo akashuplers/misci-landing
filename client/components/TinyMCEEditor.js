@@ -61,6 +61,7 @@ export default function TinyMCEEditor({
   const handleSave = async () => {
     setSaveLoad(true);
 
+    var getToken;
     if (typeof window !== "undefined") {
       getToken = localStorage.getItem("token");
     }
@@ -325,9 +326,9 @@ export default function TinyMCEEditor({
           },
         }}
       >
-        <div className="p-5 pl-2">
+        {/* <div className="p-5 pl-2">
           {window.location.origin + "/public/" + blog_id}
-        </div>
+        </div> */}
         <div className="p-4 pt-0 pl-2">Copy and Share URL</div>
       </Modal>
       <AuthenticationModal
