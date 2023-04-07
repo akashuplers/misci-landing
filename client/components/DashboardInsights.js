@@ -132,6 +132,11 @@ export default function DashboardInsights({
 
           used.classList.add("active")
           fresh.classList.remove("active");
+
+          setFilterTags([])
+          setFilteredIdeas([])
+          Array.from(document.querySelectorAll(".tag-button.active")).forEach(el => el.classList.remove("active"));
+          target = undefined
         },
         onError: (error) => {
           console.error(error);
@@ -419,8 +424,26 @@ export default function DashboardInsights({
         </div>
         <div className="h-1/5 overflow-y-scroll">
           {ideaType === "used"
-            ? ideas?.map((idea, index) => {
-                // if (idea?.idea?.length <= 0) return;
+            ? filteredIdeas.length > 0 
+            ? filteredIdeas?.map((idea, index) => {
+                return (
+                  <div className="flex pb-5" key={index}>
+                    <div className="flex justify-between gap-5 w-full">
+                      <p>{idea}</p>
+                      <input
+                        id="default-checkbox"
+                        type="checkbox"
+                        className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                        checked
+                        // onClick={(e) =>
+                        //   handleInputClick(idea.idea, idea.article_id, e)
+                        // }
+                      />
+                    </div>
+                  </div>
+                );
+              })
+            : ideas?.map((idea, index) => {
                 return (
                   <div className="flex pb-5" key={index}>
                     <div className="flex justify-between gap-5 w-full">
