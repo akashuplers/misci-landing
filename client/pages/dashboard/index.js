@@ -100,6 +100,7 @@ export default function dashboard({ query }) {
           const aa = data.generate.publish_data[2].tiny_mce_data;
           setIdeas(data.generate.ideas.ideas);
           setblog_id(data.generate._id);
+          setTags(data.generate.tags)
 
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
@@ -117,8 +118,7 @@ export default function dashboard({ query }) {
   return (
     <>
       <Layout>
-        <ToastContainer />
-        <div className="flex divide-x">
+        <div className="flex divide-x mt-[2em]">
           <div className="h-[100%] w-[70%] mx-5 relative">
             <TinyMCEEditor
               topic={topic}
