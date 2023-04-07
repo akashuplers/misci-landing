@@ -32,7 +32,7 @@ export default function Post() {
             />
           </div>
           <DashboardInsights
-            ideas={data?.fetchBlog?.ideas.ideas}
+            ideas={data?.fetchBlog?.ideas?.ideas}
             blog_id={bid}
           />
         </div>
