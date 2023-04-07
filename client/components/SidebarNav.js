@@ -91,7 +91,9 @@ export default function Sidebar() {
     if (window.location.pathname === "/saved") {
       setTitle("Saved Articles");
     } else if (window.location.pathname === "/dashboard") {
-      setTitle("Generated Article");
+      setTitle("Generated Blogs(s)");
+    } else if(window.location.pathname === "/settings") {
+      setTitle("Settings")
     }
   }, []);
 
@@ -391,7 +393,7 @@ export default function Sidebar() {
                 </div>
               </div>
 
-              <div className="r-0  h-[50px] w-[50px] "></div>
+              {/* <div className="r-0  h-[50px] w-[50px] "></div> */}
             </div>
           </main>
         </div>
