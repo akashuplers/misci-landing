@@ -11,7 +11,8 @@ import { useRouter } from "next/router";
 import { LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { LinkedinLogin } from "../services/LinkedinLogin";
-import ReactLoading from "react-loading"
+import ReactLoading from "react-loading";
+import Modal from "react-modal";
 
 export default function TinyMCEEditor({
   topic,
@@ -24,9 +25,11 @@ export default function TinyMCEEditor({
 }) {
   // console.log(dataIncoming);
   const [updatedText, setEditorText] = useState(editorText);
-  const [saveLoad, setSaveLoad] = useState(false)
-  const [saveText, setSaveText] =useState("Save!");
+  const [saveLoad, setSaveLoad] = useState(false);
+  const [saveText, setSaveText] = useState("Save!");
   // const [blogData, setBlogData] = useState(dataIncoming);
+
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     setEditorText(editorText);
@@ -86,15 +89,15 @@ export default function TinyMCEEditor({
         }
       )
         .then(() => {
-          if(window.location === "/dashboard/" + blog_id) return
+          if (window.location === "/dashboard/" + blog_id) return;
           router.push("/dashboard/" + blog_id);
         })
         .catch((err) => {
           //console.log(err);
         })
         .finally(() => {
-          setSaveLoad(false)
-          setSaveText("Saved!")
+          setSaveLoad(false);
+          setSaveText("Saved!");
         });
       setAuthenticationModalOpen(false);
     } else {
@@ -123,7 +126,70 @@ export default function TinyMCEEditor({
     window.location = redirectUrl;
   };
 
-  const handleSavePublish = () => {};
+  const handleSavePublish = () => {
+    let getToken;
+    if (typeof window !== "undefined") {
+      getToken = localStorage.getItem("token");
+    }
+    if (getToken) {
+      const jsonDoc = htmlToJson(updatedText).children;
+      const formatedJSON = { children: [...jsonDoc] };
+      UpdateBlog(
+        {
+          variables: {
+            options: {
+              tinymce_json: formatedJSON,
+              blog_id: blog_id,
+              platform: "wordpress",
+            },
+          },
+        },
+        {
+          context: {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken,
+            },
+          },
+        }
+      )
+        .then(() => {
+          var myHeaders = new Headers();
+          myHeaders.append("content-type", "application/json");
+          myHeaders.append("Authorization", "Bearer " + token);
+
+          var raw = JSON.stringify({
+            query:
+              "mutation SavePreferences($options: PublisOptions) {\n  publish(options: $options)\n}",
+            variables: {
+              options: {
+                blog_id: blog_id,
+              },
+            },
+          });
+
+          var requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+            redirect: "follow",
+          };
+
+          fetch("https://maverick.lille.ai/graphql", requestOptions)
+            .then((response) => response.text())
+            .then((result) => {
+              const data = JSON.parse(result);
+              if (data.data.publish) {
+                setOpenModal(true);
+              }
+            })
+            .catch((error) => console.log("error", error));
+        })
+        .catch((err) => {
+          //console.log(err);
+        });
+    }
+  };
 
   const handlePublish = () => {
     var myHeaders = new Headers();
@@ -228,6 +294,42 @@ export default function TinyMCEEditor({
       ) : (
         <div></div>
       )}
+      <Modal
+        isOpen={openModal}
+        onRequestClose={() => setOpenModal(false)}
+        ariaHideApp={false}
+        className="w-[100%] sm:w-[38%] max-h-[95%]"
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0,0,0,0.5)",
+            zIndex: "9999",
+          },
+          content: {
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            right: "auto",
+            border: "none",
+            background: "white",
+            boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+            borderRadius: "8px",
+            // height: "75%",
+            width: "50%",
+            maxWidth: "450px",
+            bottom: "",
+            zIndex: "999",
+            marginRight: "-50%",
+            transform: "translate(-50%, -50%)",
+            padding: "20px",
+            paddingBottom: "0px",
+          },
+        }}
+      >
+        <div className="p-5 pl-2">
+          {window.location.origin + "/public/" + blog_id}
+        </div>
+        <div className="p-4 pt-0 pl-2">Copy and Share URL</div>
+      </Modal>
       <AuthenticationModal
         type={authenticationModalType}
         setType={setAuthneticationModalType}
@@ -268,7 +370,11 @@ export default function TinyMCEEditor({
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
           onClick={saveText === "Save Now!" && handleSave}
         >
-          {saveLoad ? <ReactLoading width={25} height={25} round={true}/> : saveText}
+          {saveLoad ? (
+            <ReactLoading width={25} height={25} round={true} />
+          ) : (
+            saveText
+          )}
         </button>
         {option === "linkedin" ? (
           linkedInAccessToken ? (
