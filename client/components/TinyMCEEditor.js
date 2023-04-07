@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import { LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { LinkedinLogin } from "../services/LinkedinLogin";
+import ReactLoading from "react-loading";
 import Modal from "react-modal";
 
 export default function TinyMCEEditor({
@@ -24,6 +25,8 @@ export default function TinyMCEEditor({
 }) {
   // console.log(dataIncoming);
   const [updatedText, setEditorText] = useState(editorText);
+  const [saveLoad, setSaveLoad] = useState(false);
+  const [saveText, setSaveText] = useState("Save!");
   // const [blogData, setBlogData] = useState(dataIncoming);
 
   const [openModal, setOpenModal] = useState(false);
@@ -56,9 +59,12 @@ export default function TinyMCEEditor({
   ] = useMutation(updateBlog);
 
   const handleSave = async () => {
+    setSaveLoad(true);
+
     if (typeof window !== "undefined") {
       getToken = localStorage.getItem("token");
     }
+
     if (getToken) {
       console.log("token", getToken);
       const jsonDoc = htmlToJson(updatedText).children;
@@ -83,10 +89,15 @@ export default function TinyMCEEditor({
         }
       )
         .then(() => {
+          if (window.location === "/dashboard/" + blog_id) return;
           router.push("/dashboard/" + blog_id);
         })
         .catch((err) => {
           //console.log(err);
+        })
+        .finally(() => {
+          setSaveLoad(false);
+          setSaveText("Saved!");
         });
       setAuthenticationModalOpen(false);
     } else {
@@ -350,15 +361,20 @@ export default function TinyMCEEditor({
         }}
         onEditorChange={(content, editor) => {
           setEditorText(content);
+          setSaveText("Save Now!");
           // console.log(updatedText);
         }}
       />
       <div className="flex space-x-5">
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-          onClick={handleSave}
+          onClick={saveText === "Save Now!" && handleSave}
         >
-          Save
+          {saveLoad ? (
+            <ReactLoading width={25} height={25} round={true} />
+          ) : (
+            saveText
+          )}
         </button>
         {option === "linkedin" ? (
           linkedInAccessToken ? (

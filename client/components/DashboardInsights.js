@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/jsx-key */
@@ -24,6 +25,7 @@ export default function DashboardInsights({
 }) {
   const [enabled, setEnabled] = useState(false);
 
+  const [filteredIdeas, setFilteredIdeas] = useState([]);
   const [formInput, setformInput] = useState("");
 
   const [urlValid, setUrlValid] = useState(false);
@@ -76,6 +78,31 @@ export default function DashboardInsights({
     setRegenSelected((prev) => [...prev, ideaObject]);
   }
 
+  const [filterTags, setFilterTags] = useState([])
+
+  let target;
+  function handleTagClick(e){
+    /* Active class toggle functionality for the button */
+    target = e.target;
+    if(target === e.target) e.target.classList.toggle("active")
+    else if(target !== e.target) Array.from(document.querySelectorAll(".tag-button.active")).forEach(el => el.classList.remove("active"));
+    else e.target.classList.add("active")
+
+    /* Adding or removing the keywords to an array */
+    const filterText = e.target.innerText;
+    setFilterTags(prev => prev.includes(filterText) ? [...prev.filter(el => el !== filterText)] : [...prev, filterText])
+  }
+
+  useEffect(() => {
+    setFilteredIdeas([])
+    filterTags.forEach(filterText => ideas.forEach(idea => idea.idea.indexOf(filterText) >= 0 && setFilteredIdeas(prev => [...prev, idea.idea])));
+  },[filterTags])
+
+  useEffect(() => {
+    console.log(filteredIdeas)
+  },[filteredIdeas])
+
+
   function handleRegenerate() {
     console.log(regenSelected);
     if (regenSelected.length >= 1) {
@@ -114,6 +141,11 @@ export default function DashboardInsights({
 
           used.classList.add("active");
           fresh.classList.remove("active");
+
+          setFilterTags([])
+          setFilteredIdeas([])
+          Array.from(document.querySelectorAll(".tag-button.active")).forEach(el => el.classList.remove("active"));
+          target = undefined
         },
         onError: (error) => {
           console.error(error);
@@ -203,7 +235,7 @@ export default function DashboardInsights({
 
         used.classList.remove("active");
         fresh.classList.add("active");
-        console.log(idea);
+        // console.log(idea)
       })
       .catch((error) => console.log("error", error))
       .finally(() => {
@@ -363,9 +395,9 @@ export default function DashboardInsights({
             )}
           </form>
         )}
-        <div className="flex justify-between w-full items-center">
+        <div className="flex justify-between w-full items-center py-5">
           <p className=" font-semibold">Filtering Keywords</p>
-          <div className="grid p-5">
+          {/* <div className="grid p-5">
             <Switch
               checked={enabled}
               onChange={setEnabled}
@@ -379,13 +411,14 @@ export default function DashboardInsights({
             pointer-events-none inline-block h-[17px] w-[17px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
               />
             </Switch>
-          </div>
+          </div> */}
         </div>
-        <div className="flex gap-[0.25em] flex-wrap max-h-[90px] overflow-y-scroll">
-          {tags?.map((tag) => {
-            return (
-              <button className="bg-gray-300 rounded-full p-2">{tag}</button>
-            );
+        <div className="flex gap-[0.25em] flex-wrap max-h-[70px] overflow-y-scroll">
+          {tags?.map(tag => {
+            return <div 
+                      className="bg-gray-300 rounded-full p-2 cursor-pointer tag-button"
+                      onClick={(e) => handleTagClick(e)}
+                    >{tag}</div>
           })}
         </div>
         <div className="flex pb-5 pt-5">
@@ -415,8 +448,25 @@ export default function DashboardInsights({
         </div>
         <div className="h-1/5 overflow-y-scroll">
           {ideaType === "used"
-            ? ideas?.map((idea, index) => {
-                // if (idea?.idea?.length <= 0) return;
+            ? filteredIdeas.length > 0 
+            ? filteredIdeas?.map((idea, index) => {
+                return (
+                  <div className="flex pb-5" key={index}>
+                    <div className="flex justify-between gap-5 w-full">
+                      <p>{idea}</p>
+                      <input
+                        id="default-checkbox"
+                        type="checkbox"
+                        className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                        onClick={(e) =>
+                          handleInputClick(idea.idea, idea.article_id, e)
+                        }
+                      />
+                    </div>
+                  </div>
+                );
+              })
+            : ideas?.map((idea, index) => {
                 return (
                   <div className="flex pb-5" key={index}>
                     <div className="flex justify-between gap-5 w-full">
