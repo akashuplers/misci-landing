@@ -2,7 +2,7 @@ import { withFilter } from 'graphql-subscriptions';
 import { BlogListArgs, FetchBlog, GenerateBlogMutationArg, IRNotifiyArgs, ReGenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
 import { pubsub } from '../../../pubsub';
 import { ObjectID } from 'bson';
-import { blogGeneration, deleteBlog, fetchBlog, fetchBlogByUser, fetchBlogIdeas, fetchUser, publishBlog, updateUserCredit } from './blogsRepo';
+import { blogGeneration, deleteBlog, fetchBlog, fetchBlogByUser, fetchBlogIdeas, fetchUser, publishBlog, updateUserCredit, deleteBlogIdeas } from './blogsRepo';
 import { Python } from '../../../services/python';
 import { getTimeStamp } from '../../../utils/date';
 
@@ -525,6 +525,7 @@ export const blogResolvers = {
                 throw "@no blog found"
             }
             await deleteBlog({id: blog_id, db})
+            await deleteBlogIdeas({id: blog_id, db})
             return true
         },
     },
