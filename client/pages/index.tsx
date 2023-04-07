@@ -22,7 +22,20 @@ export default function Home() {
   `;
   const { data, loading } = useQuery(keywords);
 
-  const [AddPreferance, { data:prefData, loading:prefLoading, error }] = useMutation(addPreferances);
+  var getToken;
+  if (typeof window !== "undefined") {
+    getToken = localStorage.getItem("token");
+  }
+
+  const [AddPreferance, { data:prefData, loading:prefLoading, error }] = useMutation(addPreferances, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken,
+      },
+    },
+  });
+
   const [prefKeyword, setPrefKeyword] = useState([
                                           "Latest Vocational courses",
                                           "Organising a Job fair",
@@ -79,10 +92,6 @@ export default function Home() {
   const setKeywordInStore = useStore((state) => state.setKeyword); 
   const isAuthenticated = useStore((state) => state.isAuthenticated);
 
-  var getToken;
-  if (typeof window !== "undefined") {
-    getToken = localStorage.getItem("token");
-  }
 
   const {
     data: meeData,
