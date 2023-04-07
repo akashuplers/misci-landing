@@ -3,12 +3,21 @@ import { GenerateBlogMutationArg, ReGenerateBlogMutationArg } from "interfaces";
 import { getBase64Image } from "../../../utils/image";
 import { ChatGPT } from "../../../services/chatGPT";
 import { Azure } from "../../../services/azure";
+import { getTimeStamp } from "../../../utils/date";
 
 export const fetchBlog = async ({id, db}: {
     id: string;
     db: any
 }) => {
    return await db.db('lilleBlogs').collection('blogs').findOne({_id: new ObjectID(id)})
+}
+
+export const fetchBlogByUser = async ({id, db, userId}: {
+    id: string;
+    db: any;
+    userId: string
+}) => {
+   return await db.db('lilleBlogs').collection('blogs').findOne({_id: new ObjectID(id), userId: new ObjectID(userId)})
 }
 
 export const fetchBlogIdeas = async ({id, db}: {
@@ -228,4 +237,43 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
     }catch(e){
         throw e
     }
+}
+
+export const fetchUser = async ({id, db}: {
+    id: string;
+    db: any
+}) => {
+    return db.db('lilleAdmin').collection('users').findOne({_id: new ObjectID(id)})
+}
+
+export const updateUserCredit = async ({id, db, credit}: {
+    id: string;
+    db: any,
+    credit: number
+}) => {
+    return await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(id)}, {$set: {credits: credit}})
+}
+
+export const publishBlog = async ({id, db, platform}: {
+    id: string;
+    db: any,
+    platform: string
+}) => {
+    return await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(id), "publish_data.platform": platform, "publish_data.published": false}, {
+        $set: {
+        "publish_data.$.published": true,
+        "publish_data.$.published_date": getTimeStamp(),
+        "status": "published"
+        }
+    })
+}
+
+export const deleteBlog = async ({
+    id,
+    db
+}:{
+    id: string;
+    db: any
+}) => {
+    return await db.db('lilleBlogs').collection('blogs').deleteOne({_id: new ObjectID(id)})
 }
