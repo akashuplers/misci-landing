@@ -21,7 +21,7 @@ export default function DashboardInsights({
   setBlogData,
   setblog_id,
   setIdeas,
-  setTags
+  setTags,
 }) {
   const [enabled, setEnabled] = useState(false);
 
@@ -44,6 +44,15 @@ export default function DashboardInsights({
 
   const [RegenerateBlog, { data, loading: regenLoading, error }] =
     useMutation(regenerateBlog);
+
+  const [hover, setHover] = useState(false);
+  const onHover = () => {
+    setHover(true);
+  };
+
+  const onLeave = () => {
+    setHover(false);
+  };
 
   function handleInputClick(idea, article_id, e) {
     const ideaObject = {
@@ -106,11 +115,11 @@ export default function DashboardInsights({
           },
         },
         onCompleted: (data) => {
-          console.log("regen" , data);
+          console.log("regen", data);
           setBlogData(data.regenerateBlog);
           setblog_id(data.regenerateBlog._id);
-          setIdeas(data.regenerateBlog.ideas.ideas)
-          setTags(data.regenerateBlog.tags)
+          setIdeas(data.regenerateBlog.ideas.ideas);
+          setTags(data.regenerateBlog.tags);
 
           const aa = data.regenerateBlog.publish_data[2].tiny_mce_data;
           const htmlDoc = jsonToHtml(aa);
@@ -130,7 +139,7 @@ export default function DashboardInsights({
           const fresh = document.querySelector(".idea-button.fresh");
           const used = document.querySelector(".idea-button.used");
 
-          used.classList.add("active")
+          used.classList.add("active");
           fresh.classList.remove("active");
 
           setFilterTags([])
@@ -146,7 +155,7 @@ export default function DashboardInsights({
           console.error(err);
         })
         .finally(() => {
-          setIdeaType("used")
+          setIdeaType("used");
           setRegenSelected([]);
           setFreshIdea([]);
         });
@@ -224,13 +233,12 @@ export default function DashboardInsights({
         const fresh = document.querySelector(".idea-button.fresh");
         const used = document.querySelector(".idea-button.used");
 
-        used.classList.remove("active")
+        used.classList.remove("active");
         fresh.classList.add("active");
         // console.log(idea)
       })
       .catch((error) => console.log("error", error))
       .finally(() => {
-
         setformInput("");
         setFileValid(false);
         setUrlValid(false);
@@ -314,7 +322,7 @@ export default function DashboardInsights({
                     type="text"
                     id="simple-search"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  "
-                    placeholder="Enter keyword, URL or upload document"
+                    placeholder="Keyword or URL or file"
                     required
                     value={formInput}
                     onChange={handleFormChange}
@@ -342,6 +350,18 @@ export default function DashboardInsights({
                   </svg>
                   <span className="sr-only">Search</span>
                 </button>
+                {hover ? (
+                  <>
+                    <div
+                      className="max-w-sm rounded overflow-hidden shadow-lg india r-0 bg-white mt-15"
+                      style={{ zIndex: 9999, position: "absolute", right: "0" }}
+                    >
+                      upload a file
+                    </div>
+                  </>
+                ) : (
+                  <></>
+                )}
                 <label className="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 cursor-pointer">
                   <input
                     type="file"
@@ -350,20 +370,24 @@ export default function DashboardInsights({
                     onInput={handleFileUpload}
                     style={{ display: "none" }}
                   />
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10.5 3.75a6 6 0 00-5.98 6.496A5.25 5.25 0 006.75 20.25H18a4.5 4.5 0 002.206-8.423 3.75 3.75 0 00-4.133-4.303A6.001 6.001 0 0010.5 3.75zm2.03 5.47a.75.75 0 00-1.06 0l-3 3a.75.75 0 101.06 1.06l1.72-1.72v4.94a.75.75 0 001.5 0v-4.94l1.72 1.72a.75.75 0 101.06-1.06l-3-3z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="sr-only">Upload</span>
+                  <div onMouseEnter={onHover} onMouseLeave={onLeave}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="w-6 h-6"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10.5 3.75a6 6 0 00-5.98 6.496A5.25 5.25 0 006.75 20.25H18a4.5 4.5 0 002.206-8.423 3.75 3.75 0 00-4.133-4.303A6.001 6.001 0 0010.5 3.75zm2.03 5.47a.75.75 0 00-1.06 0l-3 3a.75.75 0 101.06 1.06l1.72-1.72v4.94a.75.75 0 001.5 0v-4.94l1.72 1.72a.75.75 0 101.06-1.06l-3-3z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+
+                    <span className="sr-only">Upload</span>
+                  </div>
                 </label>
+
                 {/* <div className="absolute top-[110%]">
               <p>url - {urlValid ? <span class="text-green-500">true</span> : <span class="text-red-500">false</span>}</p>
             </div> */}
@@ -401,25 +425,25 @@ export default function DashboardInsights({
           <button
             className="idea-button used m-3 ml-0 active !px-[0.4em] !py-[0.25em]"
             onClick={(e) => {
-              setIdeaType("used")
-              const sib = e.target.nextElementSibling
+              setIdeaType("used");
+              const sib = e.target.nextElementSibling;
               sib?.classList.remove("active");
-              e.target.classList.add("active")
+              e.target.classList.add("active");
             }}
           >
-              Used Idea
+            Used Idea(s)
           </button>
           <button
             className="idea-button fresh m-3 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em]"
             onClick={(e) => {
-              setIdeaType("fresh")
-              const sib = e.target.previousElementSibling
+              setIdeaType("fresh");
+              const sib = e.target.previousElementSibling;
               sib?.classList.remove("active");
-              e.target.classList.add("active")
+              e.target.classList.add("active");
             }}
           >
             <img src="/lightBulb.png" className="w-5 h-5" />
-              Fresh Idea
+            Fresh Idea(s)
           </button>
         </div>
         <div className="h-1/5 overflow-y-scroll">
@@ -434,10 +458,9 @@ export default function DashboardInsights({
                         id="default-checkbox"
                         type="checkbox"
                         className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                        checked
-                        // onClick={(e) =>
-                        //   handleInputClick(idea.idea, idea.article_id, e)
-                        // }
+                        onClick={(e) =>
+                          handleInputClick(idea.idea, idea.article_id, e)
+                        }
                       />
                     </div>
                   </div>
@@ -452,10 +475,9 @@ export default function DashboardInsights({
                         id="default-checkbox"
                         type="checkbox"
                         className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                        checked
-                        // onClick={(e) =>
-                        //   handleInputClick(idea.idea, idea.article_id, e)
-                        // }
+                        onClick={(e) =>
+                          handleInputClick(idea.idea, idea.article_id, e)
+                        }
                       />
                     </div>
                   </div>
