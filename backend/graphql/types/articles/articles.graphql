@@ -97,10 +97,16 @@ input PreferencesOptions {
     keywords: [String]
 }
 
+input PublisOptions {
+    blog_id: String
+}
+
 type Mutation {
     generate(options: GenerateBlogOptions!): Blog
     updateBlog(options: UpdateBlogOptions!): Blog!
     regenerateBlog(options: RegenerateBlogOptions!): Blog!
     irNotify(options: [IRNotifiyOptions]!): Boolean
     savePreferences(options: PreferencesOptions): Boolean
+    publish(options: PublisOptions): Boolean
+    delete(options: PublisOptions): Boolean
 }

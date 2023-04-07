@@ -11,6 +11,7 @@ import { authMiddleware } from "../middleWare/authToken";
 import { getTimeStamp } from "../utils/date";
 import { verify } from "jsonwebtoken";
 import { sendForgotPasswordEmail } from "../utils/mailJetConfig";
+import { publishBlog, updateUserCredit } from "../graphql/resolver/blogs/blogsRepo";
 const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcrypt');
@@ -488,14 +489,8 @@ router.post('/linkedin/post', authMiddleware ,async (request: any, reply: any) =
 
       const uin = "x-restli-id"
       const updatedCredits = (user.credits - 1)
-      await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user._id)}, {$set: {credits: updatedCredits}})
-      await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(options.blogId), "publish_data.platform": "linkedin", "publish_data.published": false}, {
-        $set: {
-          "publish_data.$.published": true,
-          "publish_data.$.published_date": getTimeStamp(),
-          "status": "published"
-        }
-      })
+      await updateUserCredit({id: user._id, credit: updatedCredits, db})
+      await publishBlog({id: options.blogId, db, platform: "linkedin"})
       return reply
       .status(200)
       .send({ error: true, data: postUrn.headers[uin] });
@@ -552,14 +547,8 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
         data: JSON.stringify({"text": textBody})
     });
     const updatedCredits = (user.credits - 1)
-    await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user._id)}, {$set: {credits: updatedCredits}})
-    await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(options.blogId), "publish_data.platform": "twitter", "publish_data.published": false}, {
-      $set: {
-        "publish_data.$.published": true,
-        "publish_data.$.published_date": getTimeStamp(),
-        "status": "published"
-      }
-    })
+    await updateUserCredit({id: user._id, credit: updatedCredits, db})
+    await publishBlog({id: options.blogId, db, platform: "twitter"})
     return reply.status(200).send({
       data: response.data
     })

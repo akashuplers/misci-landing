@@ -2,8 +2,9 @@ import { withFilter } from 'graphql-subscriptions';
 import { BlogListArgs, FetchBlog, GenerateBlogMutationArg, IRNotifiyArgs, ReGenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
 import { pubsub } from '../../../pubsub';
 import { ObjectID } from 'bson';
-import { blogGeneration, fetchBlog, fetchBlogIdeas } from './blogsRepo';
+import { blogGeneration, deleteBlog, fetchBlog, fetchBlogByUser, fetchBlogIdeas, fetchUser, publishBlog, updateUserCredit } from './blogsRepo';
 import { Python } from '../../../services/python';
+import { getTimeStamp } from '../../../utils/date';
 
 const SOMETHING_CHANGED_TOPIC = 'new_link';
 
@@ -492,7 +493,40 @@ export const blogResolvers = {
                     }
                 })
             })()
-        }
+        },
+        publish: async (
+            parent: unknown, args: {options: {blog_id: string}}, {db, pubsub, user}: any
+        ) => {
+            if(!user || !Object.keys(user).length) {
+                throw "@Not authorized"
+            }
+            const {blog_id} = args.options
+            const userDetails = await fetchUser({id: user.id, db})
+            const blog = await fetchBlogByUser({id: blog_id, db, userId: user.id})
+            if(!blog) {
+                throw "@no blog found"
+            }
+            const updatedCredits = (userDetails.credits - 1)
+            await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(userDetails._id)}, {$set: {credits: updatedCredits}})
+            await updateUserCredit({id: user._id, credit: updatedCredits, db})
+            await publishBlog({id: blog_id, db, platform: "wordpress"})
+            return true
+        },
+        delete: async (
+            parent: unknown, args: {options: {blog_id: string}}, {db, pubsub, user}: any
+        ) => {
+            if(!user || !Object.keys(user).length) {
+                throw "@Not authorized"
+            }
+            const {blog_id} = args.options
+            const userDetails = await fetchUser({id: user.id, db})
+            const blog = await fetchBlogByUser({id: blog_id, db, userId: user.id})
+            if(!blog) {
+                throw "@no blog found"
+            }
+            await deleteBlog({id: blog_id, db})
+            return true
+        },
     },
     Subscription: {
         newLink: {
