@@ -844,4 +844,32 @@ router.post("/logout",authMiddleware, async (request: any, reply: any) => {
   // .clearCookie(REFRESH_COOKIE_NAME, { maxAge: exp })
   reply.status(200).send({ data: { success: true } });
 });
+// router.post('/delete', async (request: any, reply: any) => {
+//   const {emails} = request.body
+//   const db = request.app.get('db')
+//   const userIds = await db.db('lilleAdmin').collection('users').find({email: {$in: emails}}, {projection: {_id: 1}}).toArray()
+//   const ids = userIds.map((data: any) => data._id)
+//   await db.db('lilleBlogs').collection('blogs').deleteMany({userId: {$nin: ids}})
+//   await db.db('lilleArticles').collection('articles').deleteMany({"userMetaData.userId": {$nin: ids}})
+//   return reply.send(200)
+//   // await (
+//   //   Promise.all(
+//   //     userIds.map(async(data: any) => {
+//   //       console.log(data)
+//   //       await db.db('lilleAdmin').collection('users').deleteOne({_id: new ObjectID(data._id)})
+//   //       await db.db('lilleArticles').collection('articles').deleteMany({"userMetaData.userId": new ObjectID(data._id)})
+//   //       const blogIds = await db.db('lilleBlogs').collection('blogs').find({userId: new ObjectID(data._id)}, {projection: {_id: 1}}).toArray()
+//   //       await db.db('lilleBlogs').collection('blogs').deleteMany()
+//   //       // await (
+//   //       //   Promise.all(
+//   //       //     blogIds.map(async (blogData: any) => {
+//   //       //       await db.db('lilleBlogs').collection('blogs').deleteMany({_id: new ObjectID(blogData._id)})
+//   //       //       await db.db('lilleBlogs').collection('blogIdeas').deleteMany({blogId: new ObjectID(blogData._id)})
+//   //       //     })
+//   //       //   )
+//   //       // )
+//   //     })
+//   //   )
+//   // )
+// })
 module.exports = router;

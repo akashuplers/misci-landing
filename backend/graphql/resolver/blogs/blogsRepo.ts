@@ -277,3 +277,14 @@ export const deleteBlog = async ({
 }) => {
     return await db.db('lilleBlogs').collection('blogs').deleteOne({_id: new ObjectID(id)})
 }
+
+export const deleteBlogIdeas = async ({
+    id,
+    db
+}:{
+    id: string;
+    db: any
+}) => {
+    return await db.db('lilleBlogs').collection('blogIdeas').deleteOne({blog_id: new ObjectID(id)})
+}
+
