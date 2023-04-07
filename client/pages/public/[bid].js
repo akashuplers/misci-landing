@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useQuery } from "@apollo/client";
 import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
 import React, { useState, useEffect } from "react";
-import { Editor } from "@tinymce/tinymce-react";
+
 import { jsonToHtml } from "../../helpers/helper";
 
 export default function Post() {
@@ -13,23 +13,34 @@ export default function Post() {
       fetchBlogId: bid,
     },
   });
+  const html = jsonToHtml(data?.fetchBlog?.publish_data[2].tiny_mce_data);
 
   return (
     <>
-      <Editor
-        value={jsonToHtml(data?.fetchBlog?.publish_data[2].tiny_mce_data)}
-        apiKey="i40cogfqfupotdcavx74ibdbucbojjvpuzbl8tqy34atmkyd"
-        init={{
-          skin: "naked",
-          icons: "small",
-          toolbar_location: "bottom",
-          plugins: "lists code table codesample link",
-          menubar: false,
-          statusbar: false,
-          height: 900,
-        }}
-        disabled={true}
-      />
+      <div className="p-4 px-20">
+        <div dangerouslySetInnerHTML={{ __html: html }} />
+      </div>
+      <style>
+        {`
+      h3{
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  margin-top: 16px;
+  margin-left: 4px;
+}
+img{
+  width: 500px;
+  height: 300px;
+  padding: 16px
+}
+p{
+font-size: 19px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+        `}
+      </style>
     </>
   );
 }

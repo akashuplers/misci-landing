@@ -1,4 +1,4 @@
-.blog-toggle-button,.idea-button{
+.blog-toggle-button,.idea-button,.pref-keyword{
     cursor: pointer;
     background-color: white;
     color: #2563eb;
@@ -6,7 +6,7 @@
     padding: 0.2em 0.35em;
     border-radius: 6px;
 }
-.blog-toggle-button.active,.idea-button.active, .tag-button.active{
+.blog-toggle-button.active,.idea-button.active, .tag-button.active, .pref-keyword.active{
     background-color: #2563eb;
     color: white;
 }
