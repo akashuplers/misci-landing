@@ -506,7 +506,7 @@ export const blogResolvers = {
             if(!blog) {
                 throw "@no blog found"
             }
-            const updatedCredits = (userDetails.credits - 1)
+            const updatedCredits = ((userDetails.credits || 25) - 1)
             await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(userDetails._id)}, {$set: {credits: updatedCredits}})
             await updateUserCredit({id: user._id, credit: updatedCredits, db})
             await publishBlog({id: blog_id, db, platform: "wordpress"})
