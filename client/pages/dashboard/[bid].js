@@ -8,6 +8,7 @@ import Navbar from "../../components/Navbar";
 import PreferencesModal from "../../modals/PreferencesModal";
 import TinyMCEEditor from "../../components/TinyMCEEditor";
 import { jsonToHtml } from "../../helpers/helper";
+import { meeAPI } from "../../graphql/querys/mee";
 
 export default function Post() {
   const [pfmodal, setPFModal] = useState(false);
