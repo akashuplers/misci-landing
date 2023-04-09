@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
-import Navbar from "../components/Navbar";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import LoaderPlane from "../components/LoaderPlane";
@@ -10,7 +9,6 @@ import Layout from "../components/Layout";
 import { toast, ToastContainer } from "react-toastify";
 import { meeAPI } from "../graphql/querys/mee";
 import { addPreferances } from '../graphql/mutations/addPreferances'
-import { relative } from "path";
 import ReactModal from "react-modal";
 import { useMutation } from "@apollo/client";
 
@@ -90,7 +88,6 @@ export default function Home() {
   const [keyword, setkeyword] = useState("");
   const router = useRouter(); 
   const setKeywordInStore = useStore((state) => state.setKeyword); 
-  const isAuthenticated = useStore((state) => state.isAuthenticated);
 
 
   const {
@@ -161,8 +158,8 @@ export default function Home() {
 
     if(check) return
 
-    if(selectedPrefKeyword.length >= 3){
-      toast.error("Max 3 keywords", {
+    if(selectedPrefKeyword.length >= 7){
+      toast.error("Max 7 keywords", {
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
@@ -187,52 +184,26 @@ export default function Home() {
 
   return (
     <>
-      <Layout>
+            <Layout>
         <ToastContainer />
         {pfmodal && <ReactModal
             isOpen={pfmodal}
             ariaHideApp={false}
-            className="w-[80%] sm:w-[75%] max-h-[95%]"
-            style={{
-              overlay: {
-                backgroundColor: "rgba(0,0,0,0.5)",
-                zIndex: "9999",
-              },
-              content: {
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                border: "none",
-                background: "white",
-                boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
-                borderRadius: "8px",
-                zIndex: "999",
-                transform: "translate(-50%, -50%)",
-                display:"flex",
-                flexDirection:"column",
-                justifyContent:"center",
-                alignItems:"center",
-                padding:"1em"
-              },
-            }}
+            className="fixed inset-0 flex items-center justify-center w-full h-full p-4 overflow-auto bg-black bg-opacity-50 z-50"
+            overlayClassName="fixed inset-0 z-50"
           >
-            <div style={{
-              display: "flex",
-              gap: "0.35em",
-              flexWrap: "wrap",
-            }}>
-              {prefKeyword.map((keyword, index) => {
-                return (
-                  <span className="cursor-pointer pref-keyword" key={index} onClick={(e) => handlePrefClick(e, setSelectedPrefKeyword)}>{keyword}</span>
-                )
-              })}
+            <div className="relative w-full max-w-2xl p-8 mx-auto mt-10 bg-white rounded-md shadow-lg">
+              <h2 className="text-lg">Select your interested topics</h2>
+ <p className="text-sm text-gray-500 pb-5">Select atleast 3 Keywords so we can show you personalized topics and ideas</p>
+              <div className="flex flex-wrap gap-2">
+                {prefKeyword.map((keyword, index) => {
+                  return (
+                    <span className="px-3 py-1 m-0.5 text-sm font-medium text-gray-900 cursor-pointer border-2 border-indigo-500 rounded-md pref-keyword hover:bg-indigo-500 hover:text-white" key={index} onClick={(e) => handlePrefClick(e, setSelectedPrefKeyword)}>{keyword}</span>
+                  )
+                })}
+              </div>
+             <button className={` ${selectedPrefKeyword.length > 2 ? "cursor-pointer opacity-100" : "cursor-not-allowed opacity-40"} self-end px-4 py-2 mt-4 text-sm font-semibold text-white bg-indigo-600 rounded-md`} onClick={handlePref}>Submit</button>
             </div>
-            {selectedPrefKeyword.length > 0 && <button style={{
-              alignSelf : "flex-end",
-              backgroundColor: "#d4d4d4",
-              padding: "0.25em 0.5em",
-              borderRadius: "10px"
-            }} onClick={handlePref}>Submit</button>}
           </ReactModal>
         }
         <div className={`relative px-6 pt-5 lg:px-8`}>
