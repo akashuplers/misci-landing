@@ -10,6 +10,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { meeAPI } from "../graphql/querys/mee";
 import { addPreferances } from '../graphql/mutations/addPreferances'
 import ReactModal from "react-modal";
+import PreferencesModal from "../modals/PreferencesModal";
 import { useMutation } from "@apollo/client";
 
 export default function Home() {
@@ -19,72 +20,11 @@ export default function Home() {
     }
   `;
   const { data, loading } = useQuery(keywords);
-
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
   }
 
-  const [AddPreferance, { data:prefData, loading:prefLoading, error }] = useMutation(addPreferances, {
-    context: {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + getToken,
-      },
-    },
-  });
-
-  const [prefKeyword, setPrefKeyword] = useState([
-                                          "Latest Vocational courses",
-                                          "Organising a Job fair",
-                                          "Latest Student Jobs",
-                                          "Campus interview preparation",
-                                          "Homeschooling",
-                                          "Online learning",
-                                          "Job Oriented courses",
-                                          "Plant Based diets",
-                                          "Benefits of keto Diet",
-                                          "Simple weight loss techniques",
-
-                                          "latest Technology Trends",
-                                          "Affordable Healthcare ",
-                                          "Survive the Climate Change",
-                                          "What are Super foods",
-                                          "Investment ideas 2023",
-                                          "Cheap vacation destinations",
-
-                                          "Income tax saving",
-                                          "Leadership skills",
-                                          "Project planning techniques",
-                                          "Recruitment and Hiring tips",
-                                          "Technology training trends",
-                                          "Enhancement in professional skills",
-                                          "Event planning tips",
-                                          "Choosing outsourcing partmers",
-                                          "Successful Customer service ",
-                                          "AI in emergency response",
-                                          "Productivity in Work From Home"
-                                        ])
-
-  function handlePref(){
-    AddPreferance({
-      variables: {
-        options: {
-          "keywords": selectedPrefKeyword
-        }
-      },
-      onCompleted: (data:any) => {
-        console.log(data);
-        setPFModal(false)
-      },
-      onError: (error:any) => {
-        console.error(error);
-      },
-    }).catch((err:any) => {
-      console.log(err);
-    });
-  }
-  
   const [keyword, setkeyword] = useState("");
   const router = useRouter(); 
   const setKeywordInStore = useStore((state) => state.setKeyword); 
@@ -123,7 +63,7 @@ export default function Home() {
         query: { topic: topic },
       }}
     >
-      <div className="cursor-pointer flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-white shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer">
+      <div className="cursor-pointer flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-white shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
         <button className="text-sm font-medium text-gray-900 cursor-auto">
           <a className="cursor-pointer">{topic}</a>
         </button>
@@ -141,70 +81,19 @@ export default function Home() {
     } 
   },[meeData])
 
-  const [selectedPrefKeyword, setSelectedPrefKeyword] = useState<string[]>([]);
-
-  function handlePrefClick(e:any, setSelectedPrefKeyword: React.Dispatch<React.SetStateAction<string[]>>) {
-    const value: string = e.target.innerText;
-
-    let check;
-    selectedPrefKeyword.find(el => {
-      if(el === value){
-        check = true
-        e.target.classList.remove("active")
-        setSelectedPrefKeyword(prev => prev.filter(el => el !== value))
-        return
-      }
-    })
-
-    if(check) return
-
-    if(selectedPrefKeyword.length >= 7){
-      toast.error("Max 7 keywords", {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-      return
-    }
-
-    e.target.classList.add("active")
-    setSelectedPrefKeyword(prev => [...prev, value]);
-  }
-
-  useEffect(() => {
-    console.log(selectedPrefKeyword)
-  },[selectedPrefKeyword])
-
   // Usage
 
   return (
     <>
             <Layout>
         <ToastContainer />
-        {pfmodal && <ReactModal
-            isOpen={pfmodal}
-            ariaHideApp={false}
-            className="fixed inset-0 flex items-center justify-center w-full h-full p-4 overflow-auto bg-black bg-opacity-50 z-50"
-            overlayClassName="fixed inset-0 z-50"
-          >
-            <div className="relative w-full max-w-2xl p-8 mx-auto mt-10 bg-white rounded-md shadow-lg">
-              <h2 className="text-lg">Select your interested topics</h2>
- <p className="text-sm text-gray-500 pb-5">Select atleast 3 Keywords so we can show you personalized topics and ideas</p>
-              <div className="flex flex-wrap gap-2">
-                {prefKeyword.map((keyword, index) => {
-                  return (
-                    <span className="px-3 py-1 m-0.5 text-sm font-medium text-gray-900 cursor-pointer border-2 border-indigo-500 rounded-md pref-keyword hover:bg-indigo-500 hover:text-white" key={index} onClick={(e) => handlePrefClick(e, setSelectedPrefKeyword)}>{keyword}</span>
-                  )
-                })}
-              </div>
-             <button className={` ${selectedPrefKeyword.length > 2 ? "cursor-pointer opacity-100" : "cursor-not-allowed opacity-40"} self-end px-4 py-2 mt-4 text-sm font-semibold text-white bg-indigo-600 rounded-md`} onClick={handlePref}>Submit</button>
-            </div>
-          </ReactModal>
+        {pfmodal && 
+        <PreferencesModal
+          pfmodal={pfmodal}
+          setPFModal={setPFModal}
+          getToken={getToken}
+        />
+
         }
         <div className={`relative px-6 pt-5 lg:px-8`}>
         <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
