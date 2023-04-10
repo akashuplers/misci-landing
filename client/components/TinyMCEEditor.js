@@ -48,9 +48,11 @@ export default function TinyMCEEditor({
       setIsCopied(false);
     }, 1000);
   };
+  
   useEffect(() => {
     setEditorText(editorText);
   }, [editorText]);
+
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const router = useRouter();
@@ -67,6 +69,7 @@ export default function TinyMCEEditor({
 
   const handleSave = async () => {
     setSaveLoad(true);
+
     var getToken;
     if (typeof window !== "undefined") {
       getToken = localStorage.getItem("token");
