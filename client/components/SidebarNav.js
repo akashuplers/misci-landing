@@ -35,6 +35,7 @@ export default function Sidebar() {
   const [url, setUrl] = useState("");
   const router = useRouter();
   const path = router.pathname;
+  console.log(path)
   useEffect(() => {
     setUrl(path);
   }, [path]);
@@ -48,9 +49,9 @@ export default function Sidebar() {
     },
     {
       name: "Published Blogs",
-      href: "/publised",
+      href: "/published",
       icon: PaperAirplaneIcon,
-      current: url === "/publised",
+      current: url === "/published",
     },
     {
       name: "Saved Blogs",
@@ -94,8 +95,8 @@ export default function Sidebar() {
       setTitle("Generated Blogs(s)");
     } else if (window.location.pathname === "/settings") {
       setTitle("Settings");
-    } else if (window.location.pathname === "/publised") {
-      setTitle("Publised");
+    } else if (window.location.pathname === "/published") {
+      setTitle("Published");
     }
   }, []);
 
@@ -324,6 +325,7 @@ export default function Sidebar() {
             <div className="py-6">
               <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex relative">
                 <div className="pt-4">
+                <button className={`${path ==='/' ? 'none' : 'block'}`}   onClick={() => router.back()}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -335,7 +337,7 @@ export default function Sidebar() {
                       d="M11.03 3.97a.75.75 0 010 1.06l-6.22 6.22H21a.75.75 0 010 1.5H4.81l6.22 6.22a.75.75 0 11-1.06 1.06l-7.5-7.5a.75.75 0 010-1.06l7.5-7.5a.75.75 0 011.06 0z"
                       clipRule="evenodd"
                     />
-                  </svg>
+                  </svg></button>
                 </div>
                 <div className="flex">
                   <h1 className="text-2xl font-semibold text-gray-900 p-3">
