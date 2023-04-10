@@ -1,0 +1,38 @@
+.publishContainer{
+    width: 80%;
+    max-width: 900px;
+
+    padding: 2em;
+    margin: 0 auto;
+    margin-top: 5em;
+    margin-bottom: 3em;
+
+    background-color: #f0f0f0;
+    border-radius: 15px;
+    box-shadow: 4px 9px 10px #00000061;
+}
+
+.publishContainer > * > h3{
+    font-size: 1.5rem;
+}
+
+.publishContainer > * > * > img{
+    border-radius: 10px;
+    max-width: 70%;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.publishContainer > *{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1em;
+}
+
+@media (min-width : 1024px){
+    .publishContainer{
+        margin: 0 auto;
+        margin-bottom: 3em;
+    }
+}
