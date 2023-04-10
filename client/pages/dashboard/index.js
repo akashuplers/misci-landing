@@ -20,7 +20,6 @@ export default function dashboard({ query }) {
   const { topic } = query;
   const router = useRouter();
   const isAuthenticated = useStore((state) => state.isAuthenticated);
-
   const [ideas, setIdeas] = useState([]);
   const [tags, setTags] = useState([]);
   const [blog_id, setblog_id] = useState("");
@@ -29,6 +28,12 @@ export default function dashboard({ query }) {
 
   const keyword = useStore((state) => state.keyword);
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
+
+  if (typeof window !== "undefined") {
+    window.addEventListener("beforeunload", function (event) {
+      event.stopImmediatePropagation();
+    });
+  }
 
   useEffect(() => {
     const getToken = localStorage.getItem("token");
@@ -100,7 +105,7 @@ export default function dashboard({ query }) {
           const aa = data.generate.publish_data[2].tiny_mce_data;
           setIdeas(data.generate.ideas.ideas);
           setblog_id(data.generate._id);
-          setTags(data.generate.tags)
+          setTags(data.generate.tags);
 
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);

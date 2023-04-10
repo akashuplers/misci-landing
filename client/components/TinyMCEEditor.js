@@ -100,7 +100,8 @@ export default function TinyMCEEditor({
       )
         .then(() => {
           if (window.location === "/dashboard/" + blog_id) return;
-          router.push("/dashboard/" + blog_id);
+          window.location.href = "/dashboard/" + blog_id;
+          // router.push("/dashboard/" + blog_id);
         })
         .catch((err) => {
           //console.log(err);
@@ -400,6 +401,7 @@ export default function TinyMCEEditor({
         modalIsOpen={authenticationModalOpen}
         setModalIsOpen={setAuthenticationModalOpen}
         handleSave={handleSave}
+        bid={blog_id}
       />
       <Editor
         value={updatedText || editorText}
