@@ -100,7 +100,8 @@ export default function TinyMCEEditor({
       )
         .then(() => {
           if (window.location === "/dashboard/" + blog_id) return;
-          router.push("/dashboard/" + blog_id);
+          window.location.href = "/dashboard/" + blog_id;
+          // router.push("/dashboard/" + blog_id);
         })
         .catch((err) => {
           //console.log(err);
