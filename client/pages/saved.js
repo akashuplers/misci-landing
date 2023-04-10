@@ -6,6 +6,7 @@ import { useQuery } from "@apollo/client";
 import { getAllBlogs } from "../graphql/queries/getAllBlogs";
 import Head from "next/head";
 import { contextType } from "react-modal";
+import LoaderPlane from "../components/LoaderPlane";
 
 export default function Saved() {
   const { data, error, loading } = useQuery(getAllBlogs, {
@@ -18,10 +19,6 @@ export default function Saved() {
   });
   console.log(data);
 
-  if (loading) {
-    return <h1>Loading</h1>;
-  }
-
   const files = [
     {
       title: "IMG_4985.HEIC",
@@ -31,6 +28,8 @@ export default function Saved() {
     },
     // More files...
   ];
+
+  if (loading) return <LoaderPlane />;
 
   return (
     <>
