@@ -92,7 +92,6 @@ export const blogResolvers = {
                     }
                 }
             ]).toArray()
-            console.log(blogLists)
             if(blogLists.length) {
                 const updatedList = blogLists[0].pagination.map((blog: any) => {
                     return {
