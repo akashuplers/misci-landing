@@ -197,7 +197,8 @@ export const blogResolvers = {
                     status: "draft",
                     description,
                     tags,
-                    imageUrl
+                    imageUrl,
+                    date: getTimeStamp()
                 }
                 let updatedIdeas: any = []
                 articlesData.forEach((data) => {
@@ -461,7 +462,8 @@ export const blogResolvers = {
                                 keyword,
                                 status: "ir_generated",
                                 description,
-                                imageUrl
+                                imageUrl,
+                                date: getTimeStamp()
                             }
                             let updatedIdeas: any = []
                             articlesData.forEach((data) => {
