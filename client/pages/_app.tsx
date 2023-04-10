@@ -51,7 +51,7 @@ export default function App({ Component, pageProps }: AppProps) {
     } else {
       setIsAuthenticated(true);
     }
-  });
+  }, []);
 
   useEffect(() => {
     if (
