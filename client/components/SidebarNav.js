@@ -48,9 +48,9 @@ export default function Sidebar() {
     },
     {
       name: "Published Blogs",
-      href: "/publised",
+      href: "/published",
       icon: PaperAirplaneIcon,
-      current: url === "/publised",
+      current: url === "/published",
     },
     {
       name: "Saved Blogs",
@@ -94,8 +94,8 @@ export default function Sidebar() {
       setTitle("Generated Blogs(s)");
     } else if (window.location.pathname === "/settings") {
       setTitle("Settings");
-    } else if (window.location.pathname === "/publised") {
-      setTitle("Publised");
+    } else if (window.location.pathname === "/published") {
+      setTitle("Published");
     }
   }, []);
 
