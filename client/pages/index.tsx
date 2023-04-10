@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
-import Navbar from "../components/Navbar";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import LoaderPlane from "../components/LoaderPlane";
 import { useRouter } from "next/router";
-import useStore from '../store/store'; 
+import useStore from "../store/store";
 import Layout from "../components/Layout";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { meeAPI } from "../graphql/querys/mee";
-import { addPreferances } from '../graphql/mutations/addPreferances'
-import { relative } from "path";
-import ReactModal from "react-modal";
-import { useMutation } from "@apollo/client";
+import PreferencesModal from "../modals/PreferencesModal";
 
 export default function Home() {
   const keywords = gql`
@@ -21,77 +17,14 @@ export default function Home() {
     }
   `;
   const { data, loading } = useQuery(keywords);
-
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
   }
 
-  const [AddPreferance, { data:prefData, loading:prefLoading, error }] = useMutation(addPreferances, {
-    context: {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + getToken,
-      },
-    },
-  });
-
-  const [prefKeyword, setPrefKeyword] = useState([
-                                          "Latest Vocational courses",
-                                          "Organising a Job fair",
-                                          "Latest Student Jobs",
-                                          "Campus interview preparation",
-                                          "Homeschooling",
-                                          "Online learning",
-                                          "Job Oriented courses",
-                                          "Plant Based diets",
-                                          "Benefits of keto Diet",
-                                          "Simple weight loss techniques",
-
-                                          "latest Technology Trends",
-                                          "Affordable Healthcare ",
-                                          "Survive the Climate Change",
-                                          "What are Super foods",
-                                          "Investment ideas 2023",
-                                          "Cheap vacation destinations",
-
-                                          "Income tax saving",
-                                          "Leadership skills",
-                                          "Project planning techniques",
-                                          "Recruitment and Hiring tips",
-                                          "Technology training trends",
-                                          "Enhancement in professional skills",
-                                          "Event planning tips",
-                                          "Choosing outsourcing partmers",
-                                          "Successful Customer service ",
-                                          "AI in emergency response",
-                                          "Productivity in Work From Home"
-                                        ])
-
-  function handlePref(){
-    AddPreferance({
-      variables: {
-        options: {
-          "keywords": selectedPrefKeyword
-        }
-      },
-      onCompleted: (data:any) => {
-        console.log(data);
-        setPFModal(false)
-      },
-      onError: (error:any) => {
-        console.error(error);
-      },
-    }).catch((err:any) => {
-      console.log(err);
-    });
-  }
-  
   const [keyword, setkeyword] = useState("");
-  const router = useRouter(); 
-  const setKeywordInStore = useStore((state) => state.setKeyword); 
-  const isAuthenticated = useStore((state) => state.isAuthenticated);
-
+  const router = useRouter();
+  const setKeywordInStore = useStore((state) => state.setKeyword);
 
   const {
     data: meeData,
@@ -106,9 +39,9 @@ export default function Home() {
     },
   });
 
-  const handleEnterKeyPress = (e: { key: string; }) => {
+  const handleEnterKeyPress = (e: { key: string }) => {
     if (e.key === "Enter") {
-      setKeywordInStore(keyword); 
+      setKeywordInStore(keyword);
       router.push({
         pathname: "/dashboard",
         query: { topic: keyword },
@@ -126,7 +59,7 @@ export default function Home() {
         query: { topic: topic },
       }}
     >
-      <div className="cursor-pointer flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-white shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer">
+      <div className="cursor-pointer flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-white shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
         <button className="text-sm font-medium text-gray-900 cursor-auto">
           <a className="cursor-pointer">{topic}</a>
         </button>
@@ -138,199 +71,119 @@ export default function Home() {
   const [pfmodal, setPFModal] = useState(false);
 
   useEffect(() => {
-    console.log(meeData)
-    if(meeData?.me.prefFilled === false){
+    console.log(meeData);
+    if (meeData?.me.prefFilled === false) {
       setPFModal(true);
-    } 
-  },[meeData])
-
-  const [selectedPrefKeyword, setSelectedPrefKeyword] = useState<string[]>([]);
-
-  function handlePrefClick(e:any, setSelectedPrefKeyword: React.Dispatch<React.SetStateAction<string[]>>) {
-    const value: string = e.target.innerText;
-
-    let check;
-    selectedPrefKeyword.find(el => {
-      if(el === value){
-        check = true
-        e.target.classList.remove("active")
-        setSelectedPrefKeyword(prev => prev.filter(el => el !== value))
-        return
-      }
-    })
-
-    if(check) return
-
-    if(selectedPrefKeyword.length >= 3){
-      toast.error("Max 3 keywords", {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-      return
     }
-
-    e.target.classList.add("active")
-    setSelectedPrefKeyword(prev => [...prev, value]);
-  }
-
-  useEffect(() => {
-    console.log(selectedPrefKeyword)
-  },[selectedPrefKeyword])
-
-  // Usage
+  }, [meeData]);
 
   return (
     <>
       <Layout>
         <ToastContainer />
-        {pfmodal && <ReactModal
-            isOpen={pfmodal}
-            ariaHideApp={false}
-            className="w-[80%] sm:w-[75%] max-h-[95%]"
-            style={{
-              overlay: {
-                backgroundColor: "rgba(0,0,0,0.5)",
-                zIndex: "9999",
-              },
-              content: {
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                border: "none",
-                background: "white",
-                boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
-                borderRadius: "8px",
-                zIndex: "999",
-                transform: "translate(-50%, -50%)",
-                display:"flex",
-                flexDirection:"column",
-                justifyContent:"center",
-                alignItems:"center",
-                padding:"1em"
-              },
-            }}
-          >
-            <div style={{
-              display: "flex",
-              gap: "0.35em",
-              flexWrap: "wrap",
-            }}>
-              {prefKeyword.map((keyword, index) => {
-                return (
-                  <span className="cursor-pointer pref-keyword" key={index} onClick={(e) => handlePrefClick(e, setSelectedPrefKeyword)}>{keyword}</span>
-                )
-              })}
-            </div>
-            {selectedPrefKeyword.length > 0 && <button style={{
-              alignSelf : "flex-end",
-              backgroundColor: "#d4d4d4",
-              padding: "0.25em 0.5em",
-              borderRadius: "10px"
-            }} onClick={handlePref}>Submit</button>}
-          </ReactModal>
-        }
+        {pfmodal && (
+          <PreferencesModal
+            pfmodal={pfmodal}
+            setPFModal={setPFModal}
+            getToken={getToken}
+          />
+        )}
         <div className={`relative px-6 pt-5 lg:px-8`}>
-        <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
-          <svg
-            className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
-            viewBox="0 0 1155 678"
-          >
-            <path
-              fill="url(#45de2b6b-92d5-4d68-a6a0-9b9b2abad533)"
-              fillOpacity=".3"
-              d="M317.219 518.975L203.852 678 0 438.341l317.219 80.634 204.172-286.402c1.307 132.337 45.083 346.658 209.733 145.248C936.936 126.058 882.053-94.234 1031.02 41.331c119.18 108.451 130.68 295.337 121.53 375.223L855 299l21.173 362.054-558.954-142.079z"
-            />
-            <defs>
-              <linearGradient
-                id="45de2b6b-92d5-4d68-a6a0-9b9b2abad533"
-                x1="1155.49"
-                x2="-78.208"
-                y1=".177"
-                y2="474.645"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stopColor="#9089FC" />
-                <stop offset={1} stopColor="#FF80B5" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-        <div className="mx-auto max-w-2xl py-32 sm:py-30 lg:py-20">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-              Generate Newsletter with Lille
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-600">
-              Streamline your content creation process with our website that
-              generates blog posts from URLs or uploaded files, providing
-              concise and informative content in no time
-            </p>
-            <div className="p-4 mt-4">Try some of our trending topics</div>
-            {!loading ? (
-              <div className="grid grid-cols-3 gap-4 p-4">{updatedArr}</div>
-            ) : (
-              <LoaderPlane />
-            )}
-           <div className="mt-10 flex items-center justify-center gap-x-6">
-              <input
-                id="search"
-                name="search"
-                className="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
-                placeholder="Search"
-                type="search"
-                onChange={(e) => {
-                  setkeyword(e.target.value);
-                  setKeywordInStore(e.target.value); // Update the keyword in the store
-                }}
-                onKeyPress={handleEnterKeyPress}
+          <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
+            <svg
+              className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
+              viewBox="0 0 1155 678"
+            >
+              <path
+                fill="url(#45de2b6b-92d5-4d68-a6a0-9b9b2abad533)"
+                fillOpacity=".3"
+                d="M317.219 518.975L203.852 678 0 438.341l317.219 80.634 204.172-286.402c1.307 132.337 45.083 346.658 209.733 145.248C936.936 126.058 882.053-94.234 1031.02 41.331c119.18 108.451 130.68 295.337 121.53 375.223L855 299l21.173 362.054-558.954-142.079z"
               />
-              <Link
-                legacyBehavior
-                as={"/dashboard"}
-                href={{
-                  pathname: "/dashboard",
-                  query: { topic: keyword },
-                }}
-              >
-                <a className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                  Generate
-                </a>
-              </Link>
+              <defs>
+                <linearGradient
+                  id="45de2b6b-92d5-4d68-a6a0-9b9b2abad533"
+                  x1="1155.49"
+                  x2="-78.208"
+                  y1=".177"
+                  y2="474.645"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stopColor="#9089FC" />
+                  <stop offset={1} stopColor="#FF80B5" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div className="mx-auto max-w-2xl py-32 sm:py-30 lg:py-20">
+            <div className="text-center">
+              <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+                Generate Newsletter with Lille
+              </h1>
+              <p className="mt-6 text-lg leading-8 text-gray-600">
+                Streamline your content creation process with our website that
+                generates blog posts from URLs or uploaded files, providing
+                concise and informative content in no time
+              </p>
+              <div className="p-4 mt-4">Try some of our trending topics</div>
+              {!loading ? (
+                <div className="grid grid-cols-3 gap-4 p-4">{updatedArr}</div>
+              ) : (
+                <LoaderPlane />
+              )}
+              <div className="mt-10 flex items-center justify-center gap-x-6">
+                <input
+                  id="search"
+                  name="search"
+                  className="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                  placeholder="Search"
+                  type="search"
+                  onChange={(e) => {
+                    setkeyword(e.target.value);
+                    setKeywordInStore(e.target.value); // Update the keyword in the store
+                  }}
+                  onKeyPress={handleEnterKeyPress}
+                />
+                <Link
+                  legacyBehavior
+                  as={"/dashboard"}
+                  href={{
+                    pathname: "/dashboard",
+                    query: { topic: keyword },
+                  }}
+                >
+                  <a className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                    Generate
+                  </a>
+                </Link>
+              </div>
             </div>
           </div>
+          <div className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
+            <svg
+              className="relative left-[calc(50%+3rem)] h-[21.1875rem] max-w-none -translate-x-1/2 sm:left-[calc(50%+36rem)] sm:h-[42.375rem]"
+              viewBox="0 0 1155 678"
+            >
+              <path
+                fill="url(#ecb5b0c9-546c-4772-8c71-4d3f06d544bc)"
+                fillOpacity=".3"
+                d="M317.219 518.975L203.852 678 0 438.341l317.219 80.634 204.172-286.402c1.307 132.337 45.083 346.658 209.733 145.248C936.936 126.058 882.053-94.234 1031.02 41.331c119.18 108.451 130.68 295.337 121.53 375.223L855 299l21.173 362.054-558.954-142.079z"
+              />
+              <defs>
+                <linearGradient
+                  id="ecb5b0c9-546c-4772-8c71-4d3f06d544bc"
+                  x1="1155.49"
+                  x2="-78.208"
+                  y1=".177"
+                  y2="474.645"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stopColor="#9089FC" />
+                  <stop offset={1} stopColor="#FF80B5" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
         </div>
-        <div className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
-          <svg
-            className="relative left-[calc(50%+3rem)] h-[21.1875rem] max-w-none -translate-x-1/2 sm:left-[calc(50%+36rem)] sm:h-[42.375rem]"
-            viewBox="0 0 1155 678"
-          >
-            <path
-              fill="url(#ecb5b0c9-546c-4772-8c71-4d3f06d544bc)"
-              fillOpacity=".3"
-              d="M317.219 518.975L203.852 678 0 438.341l317.219 80.634 204.172-286.402c1.307 132.337 45.083 346.658 209.733 145.248C936.936 126.058 882.053-94.234 1031.02 41.331c119.18 108.451 130.68 295.337 121.53 375.223L855 299l21.173 362.054-558.954-142.079z"
-            />
-            <defs>
-              <linearGradient
-                id="ecb5b0c9-546c-4772-8c71-4d3f06d544bc"
-                x1="1155.49"
-                x2="-78.208"
-                y1=".177"
-                y2="474.645"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stopColor="#9089FC" />
-                <stop offset={1} stopColor="#FF80B5" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-      </div>
       </Layout>
     </>
   );
