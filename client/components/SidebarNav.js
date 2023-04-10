@@ -92,7 +92,7 @@ export default function Sidebar() {
     if (window.location.pathname === "/saved") {
       setTitle("Saved Blogs");
     } else if (window.location.pathname === "/dashboard") {
-      setTitle("Generated Blogs(s)");
+      setTitle("Generated Blog(s)");
     } else if (window.location.pathname === "/settings") {
       setTitle("Settings");
     } else if (window.location.pathname === "/published") {
