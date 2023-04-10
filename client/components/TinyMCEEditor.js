@@ -24,9 +24,11 @@ export default function TinyMCEEditor({
   const [saveLoad, setSaveLoad] = useState(false);
   const [saveText, setSaveText] = useState("Save!");
   const [openModal, setOpenModal] = useState(false);
+
   useEffect(() => {
     setEditorText(editorText);
   }, [editorText]);
+
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const router = useRouter();
