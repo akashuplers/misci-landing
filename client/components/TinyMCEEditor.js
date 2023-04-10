@@ -10,6 +10,21 @@ import { useRouter } from "next/router";
 import { LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
 import ReactLoading from "react-loading";
 import Modal from "react-modal";
+import {
+  FacebookShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+  TelegramShareButton,
+  EmailShareButton,
+} from "react-share";
+import {
+  FacebookIcon,
+  TwitterIcon,
+  WhatsappIcon,
+  TelegramIcon,
+  EmailIcon,
+} from "react-share";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 export default function TinyMCEEditor({
   topic,
@@ -24,9 +39,20 @@ export default function TinyMCEEditor({
   const [saveLoad, setSaveLoad] = useState(false);
   const [saveText, setSaveText] = useState("Save!");
   const [openModal, setOpenModal] = useState(false);
+  const [text, setText] = useState("");
+  const [isCopied, setIsCopied] = useState(false);
+
+  const onCopyText = () => {
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 1000);
+  };
+
   useEffect(() => {
     setEditorText(editorText);
   }, [editorText]);
+
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const router = useRouter();
@@ -46,6 +72,7 @@ export default function TinyMCEEditor({
     var getToken;
     if (typeof window !== "undefined") {
       getToken = localStorage.getItem("token");
+      window.submitted = true;
     }
 
     if (getToken) {
@@ -92,6 +119,9 @@ export default function TinyMCEEditor({
   const [callBack, setCallBack] = useState();
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      setText(window.location.origin + "/public/");
+    }
     if (typeof window !== "undefined") {
       let temp = `${window.location.origin}${router.pathname}`;
       if (temp.substring(temp.length - 1) == "/")
@@ -168,8 +198,7 @@ export default function TinyMCEEditor({
             })
             .catch((error) => console.log("error", error));
         })
-        .catch((err) => {
-        });
+        .catch((err) => {});
     }
   };
 
@@ -293,8 +322,8 @@ export default function TinyMCEEditor({
             boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
             borderRadius: "8px",
             // height: "75%",
-            width: "50%",
-            maxWidth: "450px",
+            width: "80%",
+            maxWidth: "580px",
             bottom: "",
             zIndex: "999",
             marginRight: "-50%",
@@ -304,10 +333,66 @@ export default function TinyMCEEditor({
           },
         }}
       >
-        <div className="p-5 pl-2">
-          {typeof window !== "undefined" && window.location.origin + "/public/" + blog_id}
+        <div className="pl-4 text-xl font-bold">Share</div>
+        <WhatsappShareButton
+          url={text + blog_id}
+          quote={""}
+          hashtag={"#Lille"}
+          description={"Lille"}
+          className="Demo__some-network__share-button m-5"
+        >
+          <WhatsappIcon size={62} round /> Whatsapp
+        </WhatsappShareButton>
+        <FacebookShareButton
+          url={text + blog_id}
+          quote={""}
+          hashtag={"#Lille"}
+          description={"Lille"}
+          className="Demo__some-network__share-button m-5"
+        >
+          <FacebookIcon size={62} round /> Facebook
+        </FacebookShareButton>
+        <TwitterShareButton
+          url={text + blog_id}
+          hashtags={["lille", "nowg"]}
+          className="m-5"
+        >
+          <TwitterIcon size={62} round />
+          Twitter
+        </TwitterShareButton>
+        <EmailShareButton
+          url={text + blog_id}
+          subject="Link for my Blog"
+          className="Demo__some-network__share-button m-5"
+        >
+          <EmailIcon size={62} round /> Email
+        </EmailShareButton>
+        <TelegramShareButton
+          url={text + blog_id}
+          quote={""}
+          hashtag={"#Lille"}
+          description={"Lille"}
+          className="Demo__some-network__share-button m-5"
+        >
+          <TelegramIcon size={62} round /> Telegram
+        </TelegramShareButton>
+        <div className="p-5 pl-2 flex">
+          <input
+            type="text"
+            value={text + blog_id}
+            className="w-[70%] h-[40px] mr-5"
+          />
+          <CopyToClipboard text={text + blog_id} onCopy={onCopyText}>
+            <div className="copy-area">
+              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+                Copy
+              </button>
+              <span className={`copy-feedback ${isCopied ? "active" : ""}`}>
+                Copied!
+              </span>
+            </div>
+          </CopyToClipboard>
         </div>
-        <div className="p-4 pt-0 pl-2">Copy and Share URL</div>
       </Modal>
       <AuthenticationModal
         type={authenticationModalType}
@@ -320,6 +405,11 @@ export default function TinyMCEEditor({
         value={updatedText || editorText}
         apiKey="i40cogfqfupotdcavx74ibdbucbojjvpuzbl8tqy34atmkyd"
         init={{
+          setup: (editor) => {
+            if (editor.inline) {
+              registerPageMouseUp(editor, throttledStore);
+            }
+          },
           skin: "naked",
           icons: "small",
           toolbar_location: "bottom",
@@ -375,13 +465,15 @@ export default function TinyMCEEditor({
           <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
             Coming Soon...
           </button>
-        ) : (
+        ) : isAuthenticated ? (
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
             onClick={handleSavePublish}
           >
             Save & Publish
           </button>
+        ) : (
+          <></>
         )}
       </div>
     </>

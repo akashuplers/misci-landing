@@ -263,6 +263,8 @@ export default function DashboardInsights({
     }
   }, [formInput]);
 
+  const [checkboxState, setCheckboxState] = useState(true)
+
   if (loading || regenLoading) return <LoaderPlane />;
 
   return (
@@ -383,14 +385,15 @@ export default function DashboardInsights({
                   </div>
                 </label>
 
-                {/* <div className="absolute top-[110%]">
-              <p>url - {urlValid ? <span class="text-green-500">true</span> : <span class="text-red-500">false</span>}</p>
-            </div> */}
+                <div className="absolute top-[110%]">
+                  <span>To get Fresh Ideas enter Keyword, URL or File</span>
+                  {/* <p>url - {urlValid ? <span class="text-green-500">true</span> : <span class="text-red-500">false</span>}</p> */}
+                </div>
               </div>
             )}
           </form>
         )}
-        <div className="flex justify-between w-full items-center py-5">
+        <div className="flex justify-between w-full items-center py-5 mt-7">
           <p className=" font-semibold">Filtering Keywords</p>
           {/* <div className="grid p-5">
             <Switch
@@ -428,7 +431,7 @@ export default function DashboardInsights({
           >
             Used Idea(s)
           </button>
-          <button
+          {isAuthenticated && <button
             className="idea-button fresh m-3 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em]"
             onClick={(e) => {
               setIdeaType("fresh");
@@ -439,7 +442,7 @@ export default function DashboardInsights({
           >
             <img src="/lightBulb.png" className="w-5 h-5" />
             Fresh Idea(s)
-          </button>
+          </button>}
         </div>
         <div className="h-1/5 overflow-y-scroll">
           {ideaType === "used"
@@ -453,9 +456,8 @@ export default function DashboardInsights({
                         id="default-checkbox"
                         type="checkbox"
                         className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                        onClick={(e) =>
-                          handleInputClick(idea.idea, idea.article_id, e)
-                        }
+                        onClick={(e) => setCheckboxState(prev => !prev)}
+                        value = {checkboxState}
                       />
                     </div>
                   </div>
@@ -470,9 +472,8 @@ export default function DashboardInsights({
                         id="default-checkbox"
                         type="checkbox"
                         className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                        onClick={(e) =>
-                          handleInputClick(idea.idea, idea.article_id, e)
-                        }
+                        onClick={(e) => setCheckboxState(prev => !prev)}
+                        value = {checkboxState}
                       />
                     </div>
                   </div>
