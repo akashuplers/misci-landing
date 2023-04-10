@@ -10,3 +10,12 @@
     background-color: #2563eb;
     color: white;
 }
+
+.copy-feedback {
+  margin-left: 1rem;
+  visibility: hidden;
+}
+
+.copy-feedback.active {
+  visibility: visible;
+}
