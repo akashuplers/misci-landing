@@ -35,7 +35,7 @@ export default function Sidebar() {
   const [url, setUrl] = useState("");
   const router = useRouter();
   const path = router.pathname;
-  console.log(path)
+  console.log(path);
   useEffect(() => {
     setUrl(path);
   }, [path]);
@@ -90,7 +90,7 @@ export default function Sidebar() {
   });
   useEffect(() => {
     if (window.location.pathname === "/saved") {
-      setTitle("Saved Articles");
+      setTitle("Saved Blogs");
     } else if (window.location.pathname === "/dashboard") {
       setTitle("Generated Blogs(s)");
     } else if (window.location.pathname === "/settings") {
@@ -325,19 +325,20 @@ export default function Sidebar() {
             <div className="py-6">
               <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex relative">
                 <div className="pt-4">
-                <button className={`${path ==='/' ? 'none' : 'block'}`}   onClick={() => router.back()}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M11.03 3.97a.75.75 0 010 1.06l-6.22 6.22H21a.75.75 0 010 1.5H4.81l6.22 6.22a.75.75 0 11-1.06 1.06l-7.5-7.5a.75.75 0 010-1.06l7.5-7.5a.75.75 0 011.06 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg></button>
+                  <button onClick={() => router.back()}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="w-6 h-6"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M11.03 3.97a.75.75 0 010 1.06l-6.22 6.22H21a.75.75 0 010 1.5H4.81l6.22 6.22a.75.75 0 11-1.06 1.06l-7.5-7.5a.75.75 0 010-1.06l7.5-7.5a.75.75 0 011.06 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
                 </div>
                 <div className="flex">
                   <h1 className="text-2xl font-semibold text-gray-900 p-3">
