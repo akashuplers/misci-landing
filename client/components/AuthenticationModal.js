@@ -23,6 +23,7 @@ export default function AuthenticationModal({
   modalIsOpen,
   setModalIsOpen,
   handleSave,
+  bid,
 }) {
   const [submitting, setSubmitting] = useState(false);
 
@@ -264,17 +265,18 @@ export default function AuthenticationModal({
 
   useEffect(() => {
     const queryParams = router.query;
+    var pass;
+    pass = localStorage.getItem("pass");
+    if (!pass) {
+      if (queryParams.code && callBack) {
+        console.log("bgukjbkn");
+        localStorage.setItem("pass", true);
 
-    if (queryParams.code && callBack) {
-      console.log("bgukjbkn");
-      let code = queryParams.code;
-      LinkedinLogin(code, setLoading, handleSave);
-      setLoading(true);
+        let code = queryParams.code;
+        LinkedinLogin(code, setLoading, handleSave);
+        setLoading(true);
+      }
     }
-
-    // let temp = `${window.location.origin}${router.pathname}`
-    // setCallBack(temp.substring(0,temp.length - 1));
-    // handleCallback(callBack);
   }, [router, callBack]);
 
   const handleGoogleLogin = () => {
@@ -287,6 +289,13 @@ export default function AuthenticationModal({
   };
 
   const handleLinkedinSignUp = () => {
+    if (
+      typeof window !== "undefined" &&
+      window.location.pathname === "/dashboard"
+    ) {
+      localStorage.setItem("bid", bid);
+      localStorage.setItem("loginProcess", true);
+    }
     setModalIsOpen(false);
 
     const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`;
