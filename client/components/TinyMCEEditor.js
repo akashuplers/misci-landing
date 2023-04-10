@@ -2,15 +2,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { htmlToJson, jsonToHtml } from "../helpers/helper";
-import { generateBlog } from "../graphql/mutations/generateBlog";
 import { updateBlog } from "../graphql/mutations/updateBlog";
 import LoaderPlane from "./LoaderPlane";
 import { useMutation } from "@apollo/client";
 import AuthenticationModal from "./AuthenticationModal";
 import { useRouter } from "next/router";
 import { LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
-import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
-import { LinkedinLogin } from "../services/LinkedinLogin";
 import ReactLoading from "react-loading";
 import Modal from "react-modal";
 
@@ -23,27 +20,13 @@ export default function TinyMCEEditor({
   blogData: dataIncoming,
   blogData,
 }) {
-  // console.log(dataIncoming);
   const [updatedText, setEditorText] = useState(editorText);
   const [saveLoad, setSaveLoad] = useState(false);
   const [saveText, setSaveText] = useState("Save!");
-  // const [blogData, setBlogData] = useState(dataIncoming);
-
   const [openModal, setOpenModal] = useState(false);
-
   useEffect(() => {
     setEditorText(editorText);
   }, [editorText]);
-
-  // useEffect(() => {
-  //   setBlogData(dataIncoming)
-  // },[dataIncoming])
-
-  //  useEffect(() => {
-  //   console.log("updated text ", updatedText.substring(0,100))
-  //   console.log("editor text ", editorText.substring(0,100))
-  // })
-
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const router = useRouter();
@@ -186,7 +169,6 @@ export default function TinyMCEEditor({
             .catch((error) => console.log("error", error));
         })
         .catch((err) => {
-          //console.log(err);
         });
     }
   };
@@ -241,10 +223,8 @@ export default function TinyMCEEditor({
     siblingButton.forEach((el) => el.classList.remove("active"));
     const button = e.target;
     button.classList.add("active");
-
-    const aa = blogData?.publish_data[0].tiny_mce_data;
+    const aa = blogData?.publish_data[0]?.tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
-
     setEditorText(htmlDoc);
   }
   function handleTwitterBlog(e) {
@@ -253,12 +233,11 @@ export default function TinyMCEEditor({
     siblingButton.forEach((el) => el.classList.remove("active"));
     const button = e.target;
     button.classList.add("active");
-
-    const aa = blogData?.publish_data[1].tiny_mce_data;
+    const aa = blogData?.publish_data[1]?.tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
-
     setEditorText(htmlDoc);
   }
+
   if (loading) return <LoaderPlane />;
   return (
     <>
