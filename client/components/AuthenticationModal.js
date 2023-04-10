@@ -264,17 +264,18 @@ export default function AuthenticationModal({
 
   useEffect(() => {
     const queryParams = router.query;
+    var pass;
+    pass = localStorage.getItem("pass");
+    if (!pass) {
+      if (queryParams.code && callBack) {
+        console.log("bgukjbkn");
+        localStorage.setItem("pass", true);
 
-    if (queryParams.code && callBack) {
-      console.log("bgukjbkn");
-      let code = queryParams.code;
-      LinkedinLogin(code, setLoading, handleSave);
-      setLoading(true);
+        let code = queryParams.code;
+        LinkedinLogin(code, setLoading, handleSave);
+        setLoading(true);
+      }
     }
-
-    // let temp = `${window.location.origin}${router.pathname}`
-    // setCallBack(temp.substring(0,temp.length - 1));
-    // handleCallback(callBack);
   }, [router, callBack]);
 
   const handleGoogleLogin = () => {

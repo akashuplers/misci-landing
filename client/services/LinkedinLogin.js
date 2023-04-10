@@ -16,6 +16,7 @@ const Headers = {
 };
 
 export const LinkedinLogin = (code, loaderFunction, handleSave) => {
+  console.log("called LinkedinLogin");
   const path = window.location.pathname === "/" ? "" : "/dashboard";
   fetch(`${API_BASE_PATH}${LI_API_ENDPOINTS.LI_ACCESS_TOKEN}`, {
     method: "POST",
@@ -47,7 +48,7 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
   })
     .then((res) => res.json())
     .then((res) => {
-      if (res.statusCode === 500) {
+      if (res.statusCode === 401) {
         toast.error("Error..Please login again", {
           position: "top-center",
           autoClose: 5000,
@@ -124,6 +125,12 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
             })
             .catch((error) => console.log("error", error))
             .finally(() => {
+              if (typeof window !== "undefined") {
+                const pass = localStorage.getItem("pass");
+                if (pass) {
+                  localStorage.removeItem("pass");
+                }
+              }
               if (window.location.pathname === "/") {
                 window.location.href = "/dashboard";
               }
