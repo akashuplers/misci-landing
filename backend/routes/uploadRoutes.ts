@@ -45,7 +45,8 @@ router.post('/image', uploadStrategy, async (req: any, res: any) => {
 })
 router.post('/image/base64', async (req: any, res: any) => {
     const rawdata = req.body.base64;
-    const blobName = `blogs/${new Date().getTime()}.jpeg`;
+    const path = req.body.path || "blogs"
+    const blobName = `${path}/${new Date().getTime()}.jpeg`;
     try {
         const {url} = await new Azure({
             blobName
