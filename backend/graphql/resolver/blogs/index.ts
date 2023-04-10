@@ -340,7 +340,8 @@ export const blogResolvers = {
                         status: "draft",
                         description,
                         article_id: articleIds,
-                        tags
+                        tags,
+                        imageUrl: blog.imageUrl ? blog.imageUrl : imageUrl
                     }
                 })
                 await db.db('lilleBlogs').collection('blogIdeas').updateOne({
