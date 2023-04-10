@@ -263,6 +263,8 @@ export default function DashboardInsights({
     }
   }, [formInput]);
 
+  const [checkboxState, setCheckboxState] = useState(true)
+
   if (loading || regenLoading) return <LoaderPlane />;
 
   return (
@@ -453,9 +455,8 @@ export default function DashboardInsights({
                         id="default-checkbox"
                         type="checkbox"
                         className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                        onClick={(e) =>
-                          handleInputClick(idea.idea, idea.article_id, e)
-                        }
+                        onClick={(e) => setCheckboxState(prev => !prev)}
+                        value = {checkboxState}
                       />
                     </div>
                   </div>
@@ -470,9 +471,8 @@ export default function DashboardInsights({
                         id="default-checkbox"
                         type="checkbox"
                         className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                        onClick={(e) =>
-                          handleInputClick(idea.idea, idea.article_id, e)
-                        }
+                        onClick={(e) => setCheckboxState(prev => !prev)}
+                        value = {checkboxState}
                       />
                     </div>
                   </div>
