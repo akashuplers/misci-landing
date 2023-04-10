@@ -1,17 +1,5 @@
-/*
-  This example requires some changes to your config:
-  
-  
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  
-*/
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable @next/next/no-img-element */
 import { Fragment, useState } from "react";
 import { Dialog, Switch, Transition } from "@headlessui/react";
 import {
@@ -31,6 +19,9 @@ import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import Layout from "../components/Layout";
 import { useQuery } from "@apollo/client";
 import { meeAPI } from "../graphql/querys/mee";
+import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import LoaderPlane from "../components/LoaderPlane";
+import { useEffect } from "react";
 
 const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: false },
@@ -50,10 +41,12 @@ const navigation = [
   { name: "Team", href: "#", icon: UsersIcon, current: false },
   { name: "Settings", href: "#", icon: CogIcon, current: true },
 ];
+
 const secondaryNavigation = [
   { name: "Help", href: "#", icon: QuestionMarkCircleIcon },
   { name: "Logout", href: "#", icon: ArrowLeftOnRectangleIcon },
 ];
+
 const tabs = [
   { name: "General", href: "", current: true },
   // { name: "Password", href: "#", current: false },
@@ -69,10 +62,14 @@ function classNames(...classes) {
 
 export default function Settings() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [automaticTimezoneEnabled, setAutomaticTimezoneEnabled] =
-    useState(true);
-  const [autoUpdateApplicantDataEnabled, setAutoUpdateApplicantDataEnabled] =
-    useState(false);
+  const [updateProfileData, setUpdateProfileData] = useState({
+    "firstName": "",
+    "lastName": "",
+    "profileImage": ""
+  })
+
+  const [automaticTimezoneEnabled, setAutomaticTimezoneEnabled] = useState(true);
+  const [autoUpdateApplicantDataEnabled, setAutoUpdateApplicantDataEnabled] = useState(false);
 
   var getToken;
   if (typeof window !== "undefined") {
@@ -92,17 +89,56 @@ export default function Settings() {
     },
   });
 
+  useEffect(() => {
+    if(meeData != null){
+      setUpdateProfileData({
+        "firstName": meeData.me.name,
+        "lastName": meeData.me.lastName,
+        "profileImage": "https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+      })
+    }
+  }, [meeData])
+
   console.log("meeData", meeData);
+
+  const handleUpdate = (e) => {
+
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${getToken}`);
+    myHeaders.append("Content-Type", "application/json");
+
+    fetch(API_BASE_PATH+API_ROUTES.UPDATE_PROFILE,{
+      method: "PUT",
+      headers: myHeaders,
+      body: JSON.stringify(updateProfileData)
+    }).then(res => res.json())
+      .then(res => console.log(res))
+      .catch(err => console.error(err.message));
+  }
+
+  const handleInputChange = ({target}) => {
+    let {value, name} = target
+    if(target.id === "profileImageInput"){
+      var image = document.getElementById("profileImage");
+      image.src = URL.createObjectURL(target.files[0]);
+      value = image.src;
+    }
+    setUpdateProfileData(prev => {
+      return {
+        ...prev,
+        [name] : value
+      }
+    })
+  }
+
+  useEffect(() => {
+    console.log(updateProfileData)
+  },[updateProfileData])
+
+  if(meeLoading) return <LoaderPlane/>
 
   return (
     <>
-      {/*
-        This example requires updating your template:
-        
-        <html class="h-full bg-white">
-        <body class="h-full">
-        
-      */}
       <div>
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
@@ -222,7 +258,7 @@ export default function Settings() {
         <div className="lg:pl-64">
           <div className="lg:px-8">
             <div className="mx-auto flex flex-col lg:max-w-4xl">
-              {/* <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 border-b border-gray-200 bg-white">
+              <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 border-b border-gray-200 bg-white">
                 <button
                   type="button"
                   className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500 lg:hidden"
@@ -278,7 +314,7 @@ export default function Settings() {
                     </button>
                   </div>
                 </div>
-              </div> */}
+              </div> 
 
               <main className="flex-1">
                 <div className="relative mx-auto max-w-4xl">
@@ -337,18 +373,52 @@ export default function Settings() {
                             <dl className="divide-y divide-gray-200">
                               <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
                                 <dt className="text-sm font-medium text-gray-500">
-                                  Name
+                                  First Name
                                 </dt>
                                 <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                  <span className="flex-grow">
-                                    {meeData?.me?.name +
-                                      " " +
-                                      meeData?.me?.lastName}
-                                  </span>
+                                  <input 
+                                    type="text" 
+                                    className="flex-grow"
+                                    value={updateProfileData.firstName}
+                                    onChange={handleInputChange}
+                                    name="firstName"
+                                    style={{
+                                      border:"none",
+                                      padding:"0 0.25em"
+                                    }}
+                                  />
                                   <span className="ml-4 flex-shrink-0">
                                     <button
                                       type="button"
                                       className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                                      onClick={handleUpdate}
+                                    >
+                                      Update
+                                    </button>
+                                  </span>
+                                </dd>
+                              </div>
+                              <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
+                                <dt className="text-sm font-medium text-gray-500">
+                                  Last Name
+                                </dt>
+                                <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                  <input 
+                                    type="text" 
+                                    className="flex-grow"
+                                    value={updateProfileData.lastName}
+                                    onChange={handleInputChange}
+                                    name="lastName"
+                                    style={{
+                                      border:"none",
+                                      padding:"0 0.25em"
+                                    }}
+                                  />
+                                  <span className="ml-4 flex-shrink-0">
+                                    <button
+                                      type="button"
+                                      className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                                      onClick={handleUpdate}
                                     >
                                       Update
                                     </button>
@@ -360,33 +430,13 @@ export default function Settings() {
                                   Photo
                                 </dt>
                                 <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                  <span className="flex-grow">
-                                    <img
-                                      className="h-8 w-8 rounded-full"
-                                      src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                      alt=""
-                                    />
-                                  </span>
-                                  <span className="ml-4 flex flex-shrink-0 items-start space-x-4">
-                                    <button
-                                      type="button"
-                                      className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-                                    >
-                                      Update
-                                    </button>
-                                    <span
-                                      className="text-gray-300"
-                                      aria-hidden="true"
-                                    >
-                                      |
-                                    </span>
-                                    <button
-                                      type="button"
-                                      className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-                                    >
-                                      Remove
-                                    </button>
-                                  </span>
+                                  <div class="profile-pic">
+                                    <label class="-label" htmlFor="profileImageInput">
+                                      <span>Change Image</span>
+                                      <input name="profileImage" id="profileImageInput" type="file" accept="image/*" onChange={handleInputChange}/>
+                                    </label>
+                                    <img src={updateProfileData.profileImage} width="100" id="profileImage"/>
+                                  </div>
                                 </dd>
                               </div>
                               <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:pt-5">
@@ -397,14 +447,6 @@ export default function Settings() {
                                   <span className="flex-grow">
                                     {meeData?.me?.email}
                                   </span>
-                                  <span className="ml-4 flex-shrink-0">
-                                    <button
-                                      type="button"
-                                      className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-                                    >
-                                      Update
-                                    </button>
-                                  </span>
                                 </dd>
                               </div>
                               <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:border-b sm:border-gray-200 sm:py-5">
@@ -414,14 +456,6 @@ export default function Settings() {
                                 <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                   <span className="flex-grow">
                                     {meeData?.me?.freeTrialDays}
-                                  </span>
-                                  <span className="ml-4 flex-shrink-0">
-                                    <button
-                                      type="button"
-                                      className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-                                    >
-                                      Update
-                                    </button>
                                   </span>
                                 </dd>
                               </div>
