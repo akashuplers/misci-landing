@@ -65,3 +65,28 @@ export const validateLoginInput = (data: any) => {
   };
 };
 
+export const validateUpdateInput = (data: any) => {
+  interface CustValid {
+    firstName?: string;
+    lastName?: string;
+  }
+
+  let errors = <CustValid>{};
+
+  data.firstName = !isEmpty(data.firstName) ? data.firstName : "";
+  data.lastName = !isEmpty(data.lastName) ? data.lastName : "";
+
+  if (Validator.isEmpty(data.firstName)) {
+    errors.firstName = "First name field is required";
+  }
+
+  if (Validator.isEmpty(data.lastName)) {
+    errors.lastName = "Last name field is required";
+  }
+
+  return {
+    errors,
+    isValid: isEmpty(errors),
+  };
+};
+
