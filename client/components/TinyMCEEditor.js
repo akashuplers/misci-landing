@@ -48,7 +48,7 @@ export default function TinyMCEEditor({
       setIsCopied(false);
     }, 1000);
   };
-  
+
   useEffect(() => {
     setEditorText(editorText);
   }, [editorText]);
@@ -460,13 +460,15 @@ export default function TinyMCEEditor({
           <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
             Coming Soon...
           </button>
-        ) : (
+        ) : isAuthenticated ? (
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
             onClick={handleSavePublish}
           >
             Save & Publish
           </button>
+        ) : (
+          <></>
         )}
       </div>
     </>
