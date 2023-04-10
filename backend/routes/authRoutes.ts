@@ -5,7 +5,7 @@ import { ObjectID } from "bson";
 import { randomUUID, createHmac } from "crypto";
 import { fileCreate } from "../utils/file";
 import { createAccessToken, createRefreshToken } from "../utils/accessToken";
-import { validateRegisterInput, validateLoginInput } from "../validations/Validations";
+import { validateRegisterInput, validateLoginInput, validateUpdateInput } from "../validations/Validations";
 import { encodeURIfix } from "../utils/encode";
 import { authMiddleware } from "../middleWare/authToken";
 import { getTimeStamp } from "../utils/date";
@@ -889,6 +889,11 @@ router.put('/update-profile', authMiddleware, async (req: any, res: any) => {
       message: "User not found!"
     })
   }
+  const { errors, isValid } = validateUpdateInput(data);
+  if (!isValid)
+    return res
+      .status(400)
+      .send({ error: true, errors, message: "input errors" });
   await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user.id)}, {
     $set: {
       ...data,
