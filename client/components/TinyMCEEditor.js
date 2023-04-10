@@ -400,6 +400,7 @@ export default function TinyMCEEditor({
         modalIsOpen={authenticationModalOpen}
         setModalIsOpen={setAuthenticationModalOpen}
         handleSave={handleSave}
+        bid={blog_id}
       />
       <Editor
         value={updatedText || editorText}

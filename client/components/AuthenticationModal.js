@@ -23,6 +23,7 @@ export default function AuthenticationModal({
   modalIsOpen,
   setModalIsOpen,
   handleSave,
+  bid,
 }) {
   const [submitting, setSubmitting] = useState(false);
 
@@ -288,6 +289,13 @@ export default function AuthenticationModal({
   };
 
   const handleLinkedinSignUp = () => {
+    if (
+      typeof window !== "undefined" &&
+      window.location.pathname === "/dashboard"
+    ) {
+      localStorage.setItem("bid", bid);
+      localStorage.setItem("loginProcess", true);
+    }
     setModalIsOpen(false);
 
     const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`;
