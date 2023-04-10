@@ -41,7 +41,7 @@ export const blogResolvers = {
             parent: unknown, args: { options: BlogListArgs }, {db, pubsub, user}: any
         ) => {
             const options = args.options
-            console.log(options)
+            console.log(user)
             let baseMatch: any = {
                 userId: new ObjectID(user.id)
             }
@@ -51,6 +51,7 @@ export const blogResolvers = {
                     status: options.status
                 } 
             }
+            console.log(baseMatch)
             const aggregate = [
                 {
                     $match : baseMatch
@@ -91,6 +92,7 @@ export const blogResolvers = {
                     }
                 }
             ]).toArray()
+            console.log(blogLists)
             if(blogLists.length) {
                 const updatedList = blogLists[0].pagination.map((blog: any) => {
                     return {
@@ -101,7 +103,7 @@ export const blogResolvers = {
                         image: blog.imageUrl || null
                     }
                 })
-                return {blogs: updatedList, count: blogLists[0].total[0].count}
+                return {blogs: updatedList, count: blogLists[0].total?.length ? blogLists[0].total[0].count : 0}
             } else {
                 return {blogs: [], count: 0}
             }
