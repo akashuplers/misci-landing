@@ -385,14 +385,15 @@ export default function DashboardInsights({
                   </div>
                 </label>
 
-                {/* <div className="absolute top-[110%]">
-              <p>url - {urlValid ? <span class="text-green-500">true</span> : <span class="text-red-500">false</span>}</p>
-            </div> */}
+                <div className="absolute top-[110%]">
+                  <span>To get Fresh Ideas enter Keyword, URL or File</span>
+                  {/* <p>url - {urlValid ? <span class="text-green-500">true</span> : <span class="text-red-500">false</span>}</p> */}
+                </div>
               </div>
             )}
           </form>
         )}
-        <div className="flex justify-between w-full items-center py-5">
+        <div className="flex justify-between w-full items-center py-5 mt-7">
           <p className=" font-semibold">Filtering Keywords</p>
           {/* <div className="grid p-5">
             <Switch
@@ -430,7 +431,7 @@ export default function DashboardInsights({
           >
             Used Idea(s)
           </button>
-          <button
+          {isAuthenticated && <button
             className="idea-button fresh m-3 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em]"
             onClick={(e) => {
               setIdeaType("fresh");
@@ -441,7 +442,7 @@ export default function DashboardInsights({
           >
             <img src="/lightBulb.png" className="w-5 h-5" />
             Fresh Idea(s)
-          </button>
+          </button>}
         </div>
         <div className="h-1/5 overflow-y-scroll">
           {ideaType === "used"
