@@ -109,6 +109,7 @@ const startServer = async () => {
         
       // }
       let verAcc = {};
+      let user = <User>{};
       if (accessToken) {
         try {
           verAcc = verify(accessToken, process.env.JWT_SECRET_KEY!);
@@ -121,15 +122,15 @@ const startServer = async () => {
             }
           });
         }
+        const token = req?.headers?.authorization
+          ? req?.headers?.authorization?.split(" ")?.[1]
+          : "";
+        try {
+          user = <User>verify(token, process.env.JWT_SECRET_KEY!);
+        } catch (err) {
+          return res.status(401).send({ error: true, message: err.message });
+        }
       }
-      console.log("hola")
-      const token = req?.headers?.authorization
-        ? req?.headers?.authorization?.split(" ")?.[1]
-        : "";
-      let user = <User>{};
-      try {
-        user = <User>verify(token, process.env.JWT_SECRET_KEY!);
-      } catch (err) {}
       return {
         db: database,
         pubsub: pubsub,
