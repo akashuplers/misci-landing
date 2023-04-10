@@ -29,6 +29,12 @@ export default function dashboard({ query }) {
   const keyword = useStore((state) => state.keyword);
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
 
+  if (typeof window !== "undefined") {
+    window.addEventListener("beforeunload", function (event) {
+      event.stopImmediatePropagation();
+    });
+  }
+
   useEffect(() => {
     const getToken = localStorage.getItem("token");
     var getUserId;
