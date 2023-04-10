@@ -33,6 +33,7 @@ export const usersResolver = {
                 freeTrailEndsDate: userDetails.freeTrailEndsDate,
                 freeTrialDays: (parseInt(process.env.FREE_TRIAL_END || '14') - totalDay),
                 prefFilled: userPref && userPref.prefFilled ? userPref.prefFilled : false,
+                profileImage: userDetails.profileImage || null
             }
         }
     },
