@@ -90,7 +90,7 @@ export default function Sidebar() {
   });
   useEffect(() => {
     if (window.location.pathname === "/saved") {
-      setTitle("Saved Articles");
+      setTitle("Saved Blogs");
     } else if (window.location.pathname === "/dashboard") {
       setTitle("Generated Blogs(s)");
     } else if (window.location.pathname === "/settings") {
