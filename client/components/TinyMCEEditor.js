@@ -48,7 +48,7 @@ export default function TinyMCEEditor({
       setIsCopied(false);
     }, 1000);
   };
-  
+
   useEffect(() => {
     setEditorText(editorText);
   }, [editorText]);
@@ -69,10 +69,10 @@ export default function TinyMCEEditor({
 
   const handleSave = async () => {
     setSaveLoad(true);
-
     var getToken;
     if (typeof window !== "undefined") {
       getToken = localStorage.getItem("token");
+      window.submitted = true;
     }
 
     if (getToken) {
@@ -405,6 +405,11 @@ export default function TinyMCEEditor({
         value={updatedText || editorText}
         apiKey="i40cogfqfupotdcavx74ibdbucbojjvpuzbl8tqy34atmkyd"
         init={{
+          setup: (editor) => {
+            if (editor.inline) {
+              registerPageMouseUp(editor, throttledStore);
+            }
+          },
           skin: "naked",
           icons: "small",
           toolbar_location: "bottom",
@@ -460,13 +465,15 @@ export default function TinyMCEEditor({
           <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
             Coming Soon...
           </button>
-        ) : (
+        ) : isAuthenticated ? (
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
             onClick={handleSavePublish}
           >
             Save & Publish
           </button>
+        ) : (
+          <></>
         )}
       </div>
     </>

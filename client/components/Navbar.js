@@ -48,7 +48,7 @@ export default function Navbar({ isOpen }) {
               setType={setAuthneticationModalType}
               modalIsOpen={authenticationModalOpen || isOpen}
               setModalIsOpen={setAuthenticationModalOpen}
-              handleSave={() => window.location = "/"}
+              handleSave={() => (window.location = "/")}
             />
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="relative flex justify-between lg:gap-8 xl:grid xl:grid-cols-12">

@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createScanner } from "typescript";
-import ReactLoading from "react-loading"
+import ReactLoading from "react-loading";
 
 export default function AuthenticationModal({
   type,
@@ -81,15 +81,14 @@ export default function AuthenticationModal({
           if (data.message === `Could not find account: ${loginData.email}`) {
             setType("signup");
           }
-        }
-        else if (data?.data?.accessToken) {
+        } else if (data?.data?.accessToken) {
           redirectPageAfterLogin(data);
-          return true
+          return true;
         }
       })
-      .then(res => {
-        if(res){
-          setTimeout(() => setModalIsOpen(false),3000)
+      .then((res) => {
+        if (res) {
+          setTimeout(() => setModalIsOpen(false), 3000);
         }
       })
       .catch((err) => console.error("Error: ", err))
@@ -166,7 +165,12 @@ export default function AuthenticationModal({
     setSubmitting(true);
     event.preventDefault();
 
-    if(signUpFormData.firstName.length < 2 || signUpFormData.firstName.length > 30 || signUpFormData.lastName.length < 2 || signUpFormData.lastName.length > 30){
+    if (
+      signUpFormData.firstName.length < 2 ||
+      signUpFormData.firstName.length > 30 ||
+      signUpFormData.lastName.length < 2 ||
+      signUpFormData.lastName.length > 30
+    ) {
       toast.error("First and Last Name should be of min 2 or max 30 letters", {
         position: "top-center",
         autoClose: 5000,
@@ -176,10 +180,17 @@ export default function AuthenticationModal({
         draggable: true,
         progress: undefined,
         theme: "light",
-      })
-      setInterval(() => setSubmitting(false), 3000)
-      return
+      });
+      setInterval(() => setSubmitting(false), 3000);
+      return;
     }
+
+    var tempid;
+    if (typeof window !== "undefined") {
+      tempid = localStorage.getItem("tempId");
+    }
+
+    signUpFormData["tempUserId"] = tempid;
 
     fetch(API_BASE_PATH + API_ROUTES.CREATE_USER, {
       method: "POST",
@@ -329,7 +340,7 @@ export default function AuthenticationModal({
           },
         }}
       >
-        <ToastContainer/>
+        <ToastContainer />
         <div
           className="max-w-lg mx-auto bg-white p-8 py-2 rounded-xl 
       "
