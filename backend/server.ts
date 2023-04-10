@@ -20,6 +20,7 @@ import db from "./plugins/db/dbConnection";
 import { pubsub } from "./pubsub";
 import { User } from "./interfaces";
 import { verify } from "jsonwebtoken";
+import { GraphQLError } from "graphql";
 const express = require('express');
 const authRoutes = require('./routes/authRoutes')
 const waitlist = require('./routes/waitlistRoutes')
@@ -113,9 +114,15 @@ const startServer = async () => {
           verAcc = verify(accessToken, process.env.JWT_SECRET_KEY!);
           req.verAcc = verAcc;
         } catch (err) {
-          return res.status(401).send({ error: true, message: "Not Authorized" });
+          throw new GraphQLError('User is not authenticated', {
+            extensions: {
+              code: 'UNAUTHENTICATED',
+              http: { status: 401 }
+            }
+          });
         }
       }
+      console.log("hola")
       const token = req?.headers?.authorization
         ? req?.headers?.authorization?.split(" ")?.[1]
         : "";

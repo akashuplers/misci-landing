@@ -11,7 +11,7 @@ import { authMiddleware } from "../middleWare/authToken";
 import { getTimeStamp } from "../utils/date";
 import { verify } from "jsonwebtoken";
 import { sendForgotPasswordEmail } from "../utils/mailJetConfig";
-import { publishBlog, updateUserCredit } from "../graphql/resolver/blogs/blogsRepo";
+import { fetchUser, publishBlog, updateUserCredit } from "../graphql/resolver/blogs/blogsRepo";
 const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcrypt');
@@ -872,4 +872,30 @@ router.post("/logout",authMiddleware, async (request: any, reply: any) => {
 //   //   )
 //   // )
 // })
+router.put('/update-profile', authMiddleware, async (req: any, res: any) => {
+  const db = req.app.get('db')
+  const data = req.body
+  const user = req.user
+  if(!user) {
+    return res.status(401).send({
+      type: "ERROR",
+      message: "Not authorised!"
+    })
+  }
+  const userDetails = await fetchUser({id: user.id, db})
+  if(!userDetails) {
+    return res.status(401).send({
+      type: "ERROR",
+      message: "User not found!"
+    })
+  }
+  await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user.id)}, {
+    $set: {
+      ...data,
+      name: data.firstName
+    }
+  })
+  const userUpdatedDetails = await fetchUser({id: user.id, db})
+  return res.status(201).send({ errors: false, message: "Profile Updated!", data: userUpdatedDetails });
+})
 module.exports = router;
