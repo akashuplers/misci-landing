@@ -132,18 +132,19 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
                 }
               }
               if (window.location.pathname === "/") {
-                window.location.href = "/dashboard";
-              }
-              if (
-                window.location.href === "http://localhost:3000/dashboard" ||
-                window.location.href ===
-                  "https://maverick.lille.ai/dashboard" ||
-                window.location.href ===
-                  "https://pluaris-prod.vercel.app/dashboard"
-              ) {
-                handleSave();
+                window.location.href = "/";
               } else {
-                window.location.href = "/dashboard";
+                if (
+                  window.location.href === "http://localhost:3000/dashboard" ||
+                  window.location.href ===
+                    "https://maverick.lille.ai/dashboard" ||
+                  window.location.href ===
+                    "https://pluaris-prod.vercel.app/dashboard"
+                ) {
+                  handleSave();
+                } else {
+                  window.location.href = "/dashboard";
+                }
               }
             });
           return;
