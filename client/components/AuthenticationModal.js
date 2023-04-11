@@ -349,7 +349,7 @@ export default function AuthenticationModal({
           },
         }}
       >
-        <ToastContainer />
+        {/* <ToastContainer /> */}
         <div
           className="max-w-lg mx-auto bg-white p-8 py-2 rounded-xl 
       "

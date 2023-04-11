@@ -168,3 +168,28 @@ padding-bottom: 10px !important;
   padding: 0.2em;
   height: 2em;
 }
+
+.cta{
+    cursor: pointer;
+    background-color: white;
+    color: #2563eb;
+    border: 1px solid;
+    padding: 0.2em 0.35em;
+    border-radius: 6px;
+}
+.cta:hover{
+    background-color: #b5cbf9;
+}
+.cta.active{
+    background-color: #2563eb;
+    color: white;
+}
+
+.copy-feedback {
+  margin-left: 1rem;
+  visibility: hidden;
+}
+
+.copy-feedback.active {
+  visibility: visible;
+}
