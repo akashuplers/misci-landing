@@ -88,7 +88,7 @@ export default function TinyMCEEditor({
             options: {
               tinymce_json: formatedJSON,
               blog_id: blog_id,
-              platform: option,
+              platform: option === "blog" ? "wordpress" : option,
             },
           },
         },
