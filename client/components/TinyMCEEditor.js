@@ -42,6 +42,7 @@ export default function TinyMCEEditor({
   const [openModal, setOpenModal] = useState(false);
   const [text, setText] = useState("");
   const [isCopied, setIsCopied] = useState(false);
+  const [option, setOption] = useState("blog");
 
   const onCopyText = () => {
     setIsCopied(true);
@@ -78,6 +79,7 @@ export default function TinyMCEEditor({
 
     if (getToken) {
       console.log("token", getToken);
+
       const jsonDoc = htmlToJson(updatedText).children;
       const formatedJSON = { children: [...jsonDoc] };
       UpdateBlog(
@@ -86,7 +88,7 @@ export default function TinyMCEEditor({
             options: {
               tinymce_json: formatedJSON,
               blog_id: blog_id,
-              platform: "wordpress",
+              platform: option,
             },
           },
         },
@@ -233,8 +235,6 @@ export default function TinyMCEEditor({
       .then((result) => console.log(result))
       .catch((error) => console.log("error", error));
   };
-
-  const [option, setOption] = useState("blog");
 
   function handleBlog(e) {
     setOption("blog");
