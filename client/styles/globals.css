@@ -177,7 +177,10 @@ padding-bottom: 10px !important;
     padding: 0.2em 0.35em;
     border-radius: 6px;
 }
-.cta.active,.cta:hover{
+.cta:hover{
+    background-color: #b5cbf9;
+}
+.cta.active{
     background-color: #2563eb;
     color: white;
 }
