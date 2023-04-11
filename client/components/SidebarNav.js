@@ -349,7 +349,7 @@ export default function Sidebar() {
                     {title}
                   </h1>
 
-                  <div
+                  {/* <div
                     // className={styles.linkedInWrapper}
                     style={{
                       position: "absolute",
@@ -384,7 +384,7 @@ export default function Sidebar() {
                     ) : (
                       ""
                     )}
-                  </div>
+                  </div> */}
 
                   <div
                     style={{
