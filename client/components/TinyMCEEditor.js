@@ -420,7 +420,7 @@ export default function TinyMCEEditor({
           menubar: false,
           statusbar: false,
           height: 600,
-          images_upload_base_path: `https://maverick.lille.ai/upload/image`,
+          images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
           images_upload_credentials: true,
           plugins:
             "preview powerpaste casechange importcss tinydrive searchreplace autolink autosave save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount tinymcespellchecker a11ychecker editimage help formatpainter permanentpen pageembed charmap mentions quickbars linkchecker emoticons advtable export footnotes mergetags autocorrect",
@@ -431,7 +431,7 @@ export default function TinyMCEEditor({
             },
           },
           toolbar:
-            "undo redo | bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment | footnotes | mergetags",
+            "undo redo image| bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment | footnotes | mergetags",
           image_title: true,
           automatic_uploads: true,
           file_picker_types: "image",
@@ -484,23 +484,22 @@ export default function TinyMCEEditor({
             input.click();
           },
           images_upload_handler: (blobInfo, success, failure) => {
-            let data = new FormData();
-            var reader = new FileReader();
-            // var file = this.files[0];
-            var url = `https://maverick.nowigence.ai/upload/image`;
-            data.append("file", blobInfo.blob());
-            // data.append("upload_preset", unsignedUploadPreset);
-            // data.append("tags", "browser_upload");
-            axios
-              .post(url, data)
-              .then(function (res) {
-                console.log("//", res.url);
-                success(res.url);
+            var formdata = new FormData();
+            formdata.append("file", blobInfo.blob());
+
+            var requestOptions = {
+              method: "POST",
+              body: formdata,
+              redirect: "follow",
+            };
+
+            fetch("https://maverick.lille.ai/upload/image", requestOptions)
+              .then((response) => response.text())
+              .then((result) => {
+                const data = JSON.parse(result);
+                success(data.url);
               })
-              .catch(function (err) {
-                console.log(err);
-              });
-            reader.readAsDataURL(blobInfo.blob());
+              .catch((error) => console.log("error", error));
           },
         }}
         onEditorChange={(content, editor) => {
