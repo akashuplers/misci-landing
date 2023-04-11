@@ -134,7 +134,7 @@ export default function PreferencesModal({ pfmodal, setPFModal, getToken }) {
           {prefKeyword.map((keyword, index) => {
             return (
               <span
-                className="px-3 py-1 m-0.5 text-sm font-medium text-gray-900 cursor-pointer border-2 border-indigo-500 rounded-md pref-keyword hover:bg-indigo-500 hover:text-white"
+                className="px-3 py-1 m-0.5 text-sm font-medium text-gray-900 cursor-pointer border-2 border-indigo-500 rounded-md pref-keyword cta hover:bg-indigo-500 hover:text-white"
                 key={index}
                 onClick={(e) => handlePrefClick(e, setSelectedPrefKeyword)}
               >

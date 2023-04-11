@@ -414,14 +414,14 @@ export default function DashboardInsights({
         <div className="flex gap-[0.25em] flex-wrap max-h-[70px] overflow-y-scroll">
           {tags?.map(tag => {
             return <div 
-                      className="bg-gray-300 rounded-full p-2 cursor-pointer tag-button"
+                      className="bg-gray-300 rounded-full p-2 cursor-pointer tag-button cta"
                       onClick={(e) => handleTagClick(e)}
                     >{tag}</div>
           })}
         </div>
         <div className="flex pb-5 pt-5">
           <button
-            className="idea-button used m-3 ml-0 active !px-[0.4em] !py-[0.25em]"
+            className="idea-button cta used m-3 ml-0 active !px-[0.4em] !py-[0.25em]"
             onClick={(e) => {
               setIdeaType("used");
               const sib = e.target.nextElementSibling;
@@ -432,7 +432,7 @@ export default function DashboardInsights({
             Used Idea(s)
           </button>
           {isAuthenticated && <button
-            className="idea-button fresh m-3 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em]"
+            className="idea-button cta fresh m-3 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em]"
             onClick={(e) => {
               setIdeaType("fresh");
               const sib = e.target.previousElementSibling;

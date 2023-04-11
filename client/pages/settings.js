@@ -22,6 +22,8 @@ import { meeAPI } from "../graphql/querys/mee";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import LoaderPlane from "../components/LoaderPlane";
 import { useEffect } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import ReactLoading from "react-loading"
 
 const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: false },
@@ -62,11 +64,13 @@ function classNames(...classes) {
 
 export default function Settings() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const [updateProfileData, setUpdateProfileData] = useState({
     "firstName": "",
     "lastName": "",
     "profileImage": ""
   })
+  const [updateLoader, setUpdateLoader] = useState(false);
 
   const [automaticTimezoneEnabled, setAutomaticTimezoneEnabled] = useState(true);
   const [autoUpdateApplicantDataEnabled, setAutoUpdateApplicantDataEnabled] = useState(false);
@@ -103,6 +107,23 @@ export default function Settings() {
 
   const handleUpdate = (e) => {
 
+    if(meeData.me.name === updateProfileData.firstName &&
+       meeData.me.lastName === updateProfileData.lastName &&
+       meeData.me.profileImage === updateProfileData.profileImage){
+          toast.success("Profile up to Date!", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          return
+       }
+
+    setUpdateLoader(true)
     const myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${getToken}`);
     myHeaders.append("Content-Type", "application/json");
@@ -112,8 +133,33 @@ export default function Settings() {
       headers: myHeaders,
       body: JSON.stringify(updateProfileData)
     }).then(res => res.json())
-      .then(res => console.log(res))
-      .catch(err => console.error(err.message));
+      .then(res => {
+        if(res.errors === false){
+          toast.success(res.message, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        }else{
+          toast.error(res.message, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        }
+      })
+      .catch(err => console.error(err.message))
+      .finally(() => setUpdateLoader(false))
   }
 
   const handleInputChange = ({target}) => {
@@ -140,6 +186,7 @@ export default function Settings() {
   return (
     <>
       <div>
+        <ToastContainer/>
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
@@ -387,7 +434,7 @@ export default function Settings() {
                                       padding:"0 0.25em"
                                     }}
                                   />
-                                  <span className="ml-4 flex-shrink-0">
+                                  {/* <span className="ml-4 flex-shrink-0">
                                     <button
                                       type="button"
                                       className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
@@ -395,7 +442,7 @@ export default function Settings() {
                                     >
                                       Update
                                     </button>
-                                  </span>
+                                  </span> */}
                                 </dd>
                               </div>
                               <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
@@ -414,7 +461,7 @@ export default function Settings() {
                                       padding:"0 0.25em"
                                     }}
                                   />
-                                  <span className="ml-4 flex-shrink-0">
+                                  {/* <span className="ml-4 flex-shrink-0">
                                     <button
                                       type="button"
                                       className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
@@ -422,7 +469,7 @@ export default function Settings() {
                                     >
                                       Update
                                     </button>
-                                  </span>
+                                  </span> */}
                                 </dd>
                               </div>
                               <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:pt-5">
@@ -458,6 +505,32 @@ export default function Settings() {
                                     {meeData?.me?.freeTrialDays}
                                   </span>
                                 </dd>
+                              </div>
+                              <div>
+                                
+                                  <button
+                                    type="button"
+                                    className="update-button cta"
+                                    style={{
+                                      position:"absolute",
+                                      right:"0",
+                                      bottom:"30px",
+                                      width:"80px",
+                                      height:"30px"
+                                    }}
+                                    onClick={handleUpdate}
+                                  >
+                                    {updateLoader ?
+                                      <ReactLoading
+                                        type={"spin"}
+                                        color={"#2563EB"}
+                                        height={15}
+                                        width={15}
+                                        className={"mx-auto"}
+                                      />
+                                    : "Update"}
+                                  </button>
+                                
                               </div>
                             </dl>
                           </div>
