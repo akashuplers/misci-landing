@@ -282,19 +282,19 @@ export default function TinyMCEEditor({
           }}
         >
           <button
-            className="blog-toggle-button active wordpress"
+            className="blog-toggle-button cta active wordpress"
             onClick={handleBlog}
           >
             Blog
           </button>
           <button
-            className="blog-toggle-button linkedin"
+            className="blog-toggle-button cta linkedin"
             onClick={handleLinkedinBlog}
           >
             Linkedin
           </button>
           <button
-            className="blog-toggle-button twitter"
+            className="blog-toggle-button cta twitter"
             onClick={handleTwitterBlog}
           >
             Twitter

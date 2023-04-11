@@ -61,7 +61,7 @@ export default function Saved() {
                 {blog.title}
               </p>
               <p className="pointer-events-none block text-sm font-medium text-gray-500">
-                {blog.description.substring(0, 115) + "..."}
+                {blog?.description?.length > 115 ? blog?.description?.substring(0, 115) + "..." : blog.description}
               </p>
             </li>
           ))}
