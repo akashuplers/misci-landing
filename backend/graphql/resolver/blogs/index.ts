@@ -435,8 +435,11 @@ export const blogResolvers = {
             }
         },
         updateBlog: async (
-            parent: unknown, args: {options: UpdateBlogMutationArg}, {req, res, db, pubsub}: any
+            parent: unknown, args: {options: UpdateBlogMutationArg}, {req, res, db, pubsub, user}: any
         ) => {
+            if(!user) {
+                throw "@not authorised!"
+            }
             const blogId = args.options.blog_id
             const tinymce_json = args.options.tinymce_json
             const platform = args.options.platform
@@ -464,7 +467,8 @@ export const blogResolvers = {
             await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(blogId)}, {
                 $set: {
                     publish_data: updatedPublisData,
-                    status: "draft"
+                    status: "draft",
+                    user: new ObjectID(user.id)
                 }
             })
             const updatedBlog = await fetchBlog({id: blogId, db})
