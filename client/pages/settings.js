@@ -163,42 +163,44 @@ export default function Settings() {
   }
 
   const handleInputChange = ({target}) => {
+
     let {value, name} = target
-    // if(target.id === "profileImageInput"){
-    //   const selectedfile = target.files[0];
-    //   const fileReader = new FileReader();
 
-    //   let srcData;
-    //   fileReader.onload = () => {
-    //     srcData = fileReader.result;
-    //     console.log('base64:', srcData)
-    //   };
-    //   fileReader.readAsDataURL(selectedfile);
+    if(target.id === "profileImageInput"){
+      const selectedfile = target.files[0];
+      const fileReader = new FileReader();
 
-    //   var myHeaders = new Headers();
-    //   myHeaders.append("Content-Type", "application/json");
+      fileReader.onload = () => {
+        const srcData = fileReader.result;
+        console.log('base64:', srcData)
 
-    //   var imageRaw = JSON.stringify({
-    //     "path": "profile",
-    //     "base64": srcData
-    //   })
+        var myHeaders = {
+          "Content-Type" : "application/json"
+        };
 
-    //   var requestOptions = {
-    //     method: 'POST',
-    //     headers: myHeaders,
-    //     body: imageRaw,
-    //     redirect: 'follow'
-    //   };
+        var imageRaw = JSON.stringify({
+          "path": "profile",
+          "base64": srcData
+        })
 
-    //   console.log(requestOptions);
-      
-    //   fetch(API_BASE_PATH+API_ROUTES.IMAGE_UPLOAD,requestOptions)
-    //     .then(response => response.text())
-    //     .then(result => console.log(result))
-    //     .catch(error => console.log('error', error));
+        var requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body: imageRaw,
+          redirect: 'follow'
+        };
 
-    //   return;
-    // }
+        console.log(requestOptions);
+        
+        fetch(API_BASE_PATH+API_ROUTES.IMAGE_UPLOAD,requestOptions)
+          .then(response => response.text())
+          .then(result => console.log(result))
+          .catch(error => console.log('error', error));
+      };
+
+      fileReader.readAsDataURL(selectedfile);
+      return;
+    }
     setUpdateProfileData(prev => {
       return {
         ...prev,
