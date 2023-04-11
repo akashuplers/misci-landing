@@ -437,7 +437,7 @@ export const blogResolvers = {
         updateBlog: async (
             parent: unknown, args: {options: UpdateBlogMutationArg}, {req, res, db, pubsub, user}: any
         ) => {
-            if(!user) {
+            if(!Object.keys(user).length) {
                 throw "@not authorised!"
             }
             const blogId = args.options.blog_id
