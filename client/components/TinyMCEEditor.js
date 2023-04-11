@@ -25,6 +25,7 @@ import {
   EmailIcon,
 } from "react-share";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import axios from "axios";
 
 export default function TinyMCEEditor({
   topic,
@@ -419,6 +420,8 @@ export default function TinyMCEEditor({
           menubar: false,
           statusbar: false,
           height: 600,
+          images_upload_base_path: `https://maverick.lille.ai/upload/image`,
+          images_upload_credentials: true,
           plugins:
             "preview powerpaste casechange importcss tinydrive searchreplace autolink autosave save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount tinymcespellchecker a11ychecker editimage help formatpainter permanentpen pageembed charmap mentions quickbars linkchecker emoticons advtable export footnotes mergetags autocorrect",
           menu: {
@@ -429,6 +432,76 @@ export default function TinyMCEEditor({
           },
           toolbar:
             "undo redo | bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment | footnotes | mergetags",
+          image_title: true,
+          automatic_uploads: true,
+          file_picker_types: "image",
+          file_picker_callback: function (cb, value, meta) {
+            var input = document.createElement("input");
+            input.setAttribute("type", "file");
+            input.setAttribute("accept", "image/*");
+            var url = `https://maverick.lille.ai/upload/image`;
+            var xhr = new XMLHttpRequest();
+            var fd = new FormData();
+            xhr.open("POST", url, true);
+
+            input.onchange = function () {
+              var file = this.files[0];
+              var reader = new FileReader();
+              xhr.onload = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                  // File uploaded successfully
+                  var response = JSON.parse(xhr.responseText);
+
+                  // https://res.cloudinary.com/cloudName/image/upload/v1483481128/public_id.jpg
+                  var url = response.url;
+                  // console.log(url)
+                  // Create a thumbnail of the uploaded image, with 150px width
+                  cb(url, { title: response.type });
+                }
+              };
+
+              reader.onload = function () {
+                var id = "blobid" + new Date().getTime();
+                var blobCache =
+                  window.tinymce.activeEditor.editorUpload.blobCache;
+                var base64 = reader.result.split(",")[1];
+
+                var blobInfo = blobCache.create(id, file, base64);
+                blobCache.add(blobInfo);
+
+                // call the callback and populate the Title field with the file name
+
+                // fd.append("upload_preset", unsignedUploadPreset);
+                // fd.append("path", "browser_upload");
+                fd.append("file", blobInfo.blob());
+
+                xhr.send(fd);
+              };
+
+              reader.readAsDataURL(file);
+            };
+
+            input.click();
+          },
+          images_upload_handler: (blobInfo, success, failure) => {
+            let data = new FormData();
+            var reader = new FileReader();
+            // var file = this.files[0];
+            var url = `https://maverick.nowigence.ai/upload/image`;
+            data.append("file", blobInfo.blob());
+            // data.append("upload_preset", unsignedUploadPreset);
+            // data.append("tags", "browser_upload");
+            axios
+              .post(url, data)
+              .then(function (res) {
+                console.log("//", res.url);
+                success(res.url);
+              })
+              .catch(function (err) {
+                console.log(err);
+              });
+            reader.readAsDataURL(blobInfo.blob());
+          },
         }}
         onEditorChange={(content, editor) => {
           setEditorText(content);

@@ -58,10 +58,10 @@ export default function Saved() {
                 </a>
               </div>
               <p className="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">
-                {blog.title}
+                {blog?.title}
               </p>
               <p className="pointer-events-none block text-sm font-medium text-gray-500">
-                {blog.description.substring(0, 115) + "..."}
+                {blog?.description?.substring(0, 115) + "..."}
               </p>
             </li>
           ))}
