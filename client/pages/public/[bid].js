@@ -30,7 +30,11 @@ export default function Post() {
   }
 
   useEffect(() => {
-    const html = jsonToHtml(gqlData?.fetchBlog?.publish_data[2].tiny_mce_data);
+    // const html = jsonToHtml(gqlData?.fetchBlog?.publish_data[2].tiny_mce_data);
+    
+    const aa = gqlData?.fetchBlog?.publish_data.find(pd => pd.platform === 'wordpress').tiny_mce_data
+    const html = jsonToHtml(aa);
+
     setData(html);
   }, [router, gqlData]);
 

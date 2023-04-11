@@ -60,8 +60,9 @@ var getToken;
           <div className="h-[100%] w-[70%] mx-5 relative">
             <TinyMCEEditor
               editorText={jsonToHtml(
-                data?.fetchBlog?.publish_data[2].tiny_mce_data
+                data?.fetchBlog?.publish_data.find(pd => pd.platform === 'wordpress').tiny_mce_data
               )}
+              // data?.fetchBlog?.publish_data[2].tiny_mce_data ^^
               blog_id={bid}
               isAuthenticated={true}
               blogData={data?.fetchBlog}
