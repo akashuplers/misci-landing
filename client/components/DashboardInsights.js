@@ -116,7 +116,8 @@ export default function DashboardInsights({
           setIdeas(data.regenerateBlog.ideas.ideas);
           setTags(data.regenerateBlog.tags);
 
-          const aa = data.regenerateBlog.publish_data[2].tiny_mce_data;
+          // const aa = data.regenerateBlog.publish_data[2].tiny_mce_data;
+          const aa = data.regenerateBlog.publish_data.find(pd => pd.platform === 'linkedin').tiny_mce_data
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
 
@@ -267,7 +268,7 @@ export default function DashboardInsights({
     if(loading || regenLoading) return
     const checkbox = Array.from(document.querySelectorAll("input[type='checkbox'].usedIdeas"))
     checkbox.forEach(box => box.checked = true);
-    console.log(checkbox);
+    // console.log(checkbox);
   },[ideas, filteredIdeas])
 
 
