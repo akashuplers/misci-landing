@@ -212,13 +212,13 @@ export default function TinyMCEEditor({
     var raw = JSON.stringify({
       token: linkedInAccessToken,
       author: "urn:li:person:" + authorId,
-      data: htmlToJson(editorText).children[3].children[0],
+      data: htmlToJson(editorText)?.children[3]?.children[0],
       blogId: blog_id,
     });
 
     console.log(
       "htmlToJson(editorText)",
-      htmlToJson(editorText).children[3].children[0]
+      htmlToJson(editorText)?.children[3]?.children[0]
     );
 
     var requestOptions = {
@@ -243,7 +243,9 @@ export default function TinyMCEEditor({
     const button = e.target;
     button.classList.add("active");
 
-    const aa = blogData?.publish_data[2].tiny_mce_data;
+    // const aa = blogData?.publish_data[2].tiny_mce_data;
+    const aa = blogData?.publish_data.find(pd => pd.platform === 'wordpress').tiny_mce_data
+
     const htmlDoc = jsonToHtml(aa);
 
     setEditorText(htmlDoc);
@@ -254,7 +256,8 @@ export default function TinyMCEEditor({
     siblingButton.forEach((el) => el.classList.remove("active"));
     const button = e.target;
     button.classList.add("active");
-    const aa = blogData?.publish_data[0]?.tiny_mce_data;
+    // const aa = blogData?.publish_data[0]?.tiny_mce_data;
+    const aa = blogData?.publish_data?.find(pd => pd.platform === 'linkedin').tiny_mce_data
     const htmlDoc = jsonToHtml(aa);
     setEditorText(htmlDoc);
   }
@@ -264,7 +267,8 @@ export default function TinyMCEEditor({
     siblingButton.forEach((el) => el.classList.remove("active"));
     const button = e.target;
     button.classList.add("active");
-    const aa = blogData?.publish_data[1]?.tiny_mce_data;
+    // const aa = blogData?.publish_data[1]?.tiny_mce_data;
+    const aa = blogData?.publish_data?.find(pd => pd.platform === 'twitter').tiny_mce_data
     const htmlDoc = jsonToHtml(aa);
     setEditorText(htmlDoc);
   }
@@ -423,7 +427,7 @@ export default function TinyMCEEditor({
           images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
           images_upload_credentials: true,
           plugins:
-            "preview powerpaste casechange importcss tinydrive searchreplace autolink autosave save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount tinymcespellchecker a11ychecker editimage help formatpainter permanentpen pageembed charmap mentions quickbars linkchecker emoticons advtable export footnotes mergetags autocorrect",
+            "preview casechange importcss tinydrive searchreplace autolink save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount tinymcespellchecker a11ychecker editimage help formatpainter permanentpen pageembed charmap mentions linkchecker emoticons advtable export footnotes mergetags autocorrect",
           menu: {
             tc: {
               title: "Comments",
@@ -494,11 +498,11 @@ export default function TinyMCEEditor({
             };
 
             fetch("https://maverick.lille.ai/upload/image", requestOptions)
-              .then((response) => response.text())
-              .then((result) => {
-                const data = JSON.parse(result);
-                success(data.url);
-              })
+              // .then((response) => response.text())
+              // .then((result) => {
+              //   const data = JSON.parse(result);
+              //   success(data.url);
+              // })
               .catch((error) => console.log("error", error));
           },
         }}
