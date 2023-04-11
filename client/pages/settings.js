@@ -1,17 +1,5 @@
-/*
-  This example requires some changes to your config:
-  
-  
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  
-*/
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable @next/next/no-img-element */
 import { Fragment, useState } from "react";
 import { Dialog, Switch, Transition } from "@headlessui/react";
 import {
@@ -31,6 +19,11 @@ import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import Layout from "../components/Layout";
 import { useQuery } from "@apollo/client";
 import { meeAPI } from "../graphql/querys/mee";
+import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import LoaderPlane from "../components/LoaderPlane";
+import { useEffect } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import ReactLoading from "react-loading"
 
 const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: false },
@@ -50,10 +43,12 @@ const navigation = [
   { name: "Team", href: "#", icon: UsersIcon, current: false },
   { name: "Settings", href: "#", icon: CogIcon, current: true },
 ];
+
 const secondaryNavigation = [
   { name: "Help", href: "#", icon: QuestionMarkCircleIcon },
   { name: "Logout", href: "#", icon: ArrowLeftOnRectangleIcon },
 ];
+
 const tabs = [
   { name: "General", href: "", current: true },
   // { name: "Password", href: "#", current: false },
@@ -69,10 +64,16 @@ function classNames(...classes) {
 
 export default function Settings() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [automaticTimezoneEnabled, setAutomaticTimezoneEnabled] =
-    useState(true);
-  const [autoUpdateApplicantDataEnabled, setAutoUpdateApplicantDataEnabled] =
-    useState(false);
+
+  const [updateProfileData, setUpdateProfileData] = useState({
+    "firstName": "",
+    "lastName": "",
+    "profileImage": ""
+  })
+  const [updateLoader, setUpdateLoader] = useState(false);
+
+  const [automaticTimezoneEnabled, setAutomaticTimezoneEnabled] = useState(true);
+  const [autoUpdateApplicantDataEnabled, setAutoUpdateApplicantDataEnabled] = useState(false);
 
   var getToken;
   if (typeof window !== "undefined") {
@@ -92,18 +93,141 @@ export default function Settings() {
     },
   });
 
+  useEffect(() => {
+    if(meeData != null){
+      setUpdateProfileData({
+        "firstName": meeData.me.name,
+        "lastName": meeData.me.lastName,
+        "profileImage": meeData.me.profileImage
+      })
+    }
+  }, [meeData])
+
   console.log("meeData", meeData);
+
+  const handleUpdate = (e) => {
+
+    if(meeData.me.name === updateProfileData.firstName &&
+       meeData.me.lastName === updateProfileData.lastName &&
+       meeData.me.profileImage === updateProfileData.profileImage){
+          toast.success("Profile up to Date!", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          return
+       }
+
+    setUpdateLoader(true)
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${getToken}`);
+    myHeaders.append("Content-Type", "application/json");
+
+    fetch(API_BASE_PATH+API_ROUTES.UPDATE_PROFILE,{
+      method: "PUT",
+      headers: myHeaders,
+      body: JSON.stringify(updateProfileData)
+    }).then(res => res.json())
+      .then(res => {
+        if(res.errors === false){
+          toast.success(res.message, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        }else{
+          toast.error(res.message, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        }
+      })
+      .catch(err => console.error(err.message))
+      .finally(() => setUpdateLoader(false))
+  }
+
+  const handleInputChange = ({target}) => {
+
+    let {value, name} = target
+
+    if(target.id === "profileImageInput"){
+      const selectedfile = target.files[0];
+      const fileReader = new FileReader();
+
+      fileReader.onload = () => {
+        const srcData = fileReader.result;
+        // console.log('base64:', srcData)
+
+        var myHeaders = {
+          "Content-Type" : "application/json"
+        };
+
+        var imageRaw = JSON.stringify({
+          "path": "profile",
+          "base64": srcData
+        })
+
+        var requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body: imageRaw,
+          redirect: 'follow'
+        };
+
+        // console.log(requestOptions);
+        
+        fetch(API_BASE_PATH+API_ROUTES.IMAGE_UPLOAD,requestOptions)
+          .then(response => response.json())
+          .then(result => {
+            console.log(result)
+            setUpdateProfileData(prev => {
+              return {
+                ...prev,
+                profileImage : result.url
+              }
+            })
+          })
+          .catch(error => console.log('error', error));
+      };
+
+      fileReader.readAsDataURL(selectedfile);
+      return;
+    }
+
+    setUpdateProfileData(prev => {
+      return {
+        ...prev,
+        [name] : value
+      }
+    })
+  }
+
+  useEffect(() => {
+    console.log(updateProfileData)
+  },[updateProfileData])
+
+  if(meeLoading) return <LoaderPlane/>
 
   return (
     <>
-      {/*
-        This example requires updating your template:
-        
-        <html class="h-full bg-white">
-        <body class="h-full">
-        
-      */}
       <div>
+        <ToastContainer/>
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
@@ -222,7 +346,7 @@ export default function Settings() {
         <div className="lg:pl-64">
           <div className="lg:px-8">
             <div className="mx-auto flex flex-col lg:max-w-4xl">
-              {/* <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 border-b border-gray-200 bg-white">
+              <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 border-b border-gray-200 bg-white">
                 <button
                   type="button"
                   className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500 lg:hidden"
@@ -278,7 +402,7 @@ export default function Settings() {
                     </button>
                   </div>
                 </div>
-              </div> */}
+              </div> 
 
               <main className="flex-1">
                 <div className="relative mx-auto max-w-4xl">
@@ -337,22 +461,56 @@ export default function Settings() {
                             <dl className="divide-y divide-gray-200">
                               <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
                                 <dt className="text-sm font-medium text-gray-500">
-                                  Name
+                                  First Name
                                 </dt>
                                 <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                  <span className="flex-grow">
-                                    {meeData?.me?.name +
-                                      " " +
-                                      meeData?.me?.lastName}
-                                  </span>
-                                  <span className="ml-4 flex-shrink-0">
+                                  <input 
+                                    type="text" 
+                                    className="flex-grow"
+                                    value={updateProfileData.firstName}
+                                    onChange={handleInputChange}
+                                    name="firstName"
+                                    style={{
+                                      border:"none",
+                                      padding:"0 0.25em"
+                                    }}
+                                  />
+                                  {/* <span className="ml-4 flex-shrink-0">
                                     <button
                                       type="button"
                                       className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                                      onClick={handleUpdate}
                                     >
                                       Update
                                     </button>
-                                  </span>
+                                  </span> */}
+                                </dd>
+                              </div>
+                              <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
+                                <dt className="text-sm font-medium text-gray-500">
+                                  Last Name
+                                </dt>
+                                <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                  <input 
+                                    type="text" 
+                                    className="flex-grow"
+                                    value={updateProfileData.lastName}
+                                    onChange={handleInputChange}
+                                    name="lastName"
+                                    style={{
+                                      border:"none",
+                                      padding:"0 0.25em"
+                                    }}
+                                  />
+                                  {/* <span className="ml-4 flex-shrink-0">
+                                    <button
+                                      type="button"
+                                      className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                                      onClick={handleUpdate}
+                                    >
+                                      Update
+                                    </button>
+                                  </span> */}
                                 </dd>
                               </div>
                               <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:pt-5">
@@ -360,33 +518,13 @@ export default function Settings() {
                                   Photo
                                 </dt>
                                 <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                  <span className="flex-grow">
-                                    <img
-                                      className="h-8 w-8 rounded-full"
-                                      src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                      alt=""
-                                    />
-                                  </span>
-                                  <span className="ml-4 flex flex-shrink-0 items-start space-x-4">
-                                    <button
-                                      type="button"
-                                      className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-                                    >
-                                      Update
-                                    </button>
-                                    <span
-                                      className="text-gray-300"
-                                      aria-hidden="true"
-                                    >
-                                      |
-                                    </span>
-                                    <button
-                                      type="button"
-                                      className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-                                    >
-                                      Remove
-                                    </button>
-                                  </span>
+                                  <div class="profile-pic">
+                                    <label class="-label" htmlFor="profileImageInput">
+                                      <span>Change Image</span>
+                                      <input name="profileImage" id="profileImageInput" type="file" accept="image/*" onChange={handleInputChange}/>
+                                    </label>
+                                    <img src={updateProfileData.profileImage} width="100" id="profileImage"/>
+                                  </div>
                                 </dd>
                               </div>
                               <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:pt-5">
@@ -396,14 +534,6 @@ export default function Settings() {
                                 <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                   <span className="flex-grow">
                                     {meeData?.me?.email}
-                                  </span>
-                                  <span className="ml-4 flex-shrink-0">
-                                    <button
-                                      type="button"
-                                      className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-                                    >
-                                      Update
-                                    </button>
                                   </span>
                                 </dd>
                               </div>
@@ -415,15 +545,33 @@ export default function Settings() {
                                   <span className="flex-grow">
                                     {meeData?.me?.freeTrialDays}
                                   </span>
-                                  <span className="ml-4 flex-shrink-0">
-                                    <button
-                                      type="button"
-                                      className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-                                    >
-                                      Update
-                                    </button>
-                                  </span>
                                 </dd>
+                              </div>
+                              <div>
+                                
+                                  <button
+                                    type="button"
+                                    className="update-button cta"
+                                    style={{
+                                      position:"absolute",
+                                      right:"0",
+                                      bottom:"30px",
+                                      width:"80px",
+                                      height:"30px"
+                                    }}
+                                    onClick={handleUpdate}
+                                  >
+                                    {updateLoader ?
+                                      <ReactLoading
+                                        type={"spin"}
+                                        color={"#2563EB"}
+                                        height={15}
+                                        width={15}
+                                        className={"mx-auto"}
+                                      />
+                                    : "Update"}
+                                  </button>
+                                
                               </div>
                             </dl>
                           </div>

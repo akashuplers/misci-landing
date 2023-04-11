@@ -48,7 +48,7 @@ var getToken;
   return (
     <>
       <Layout>
-        <div className="flex divide-x mt-[2em]">
+        <div className="flex divide-x mt-[2em] pb-[1em]">
       {pfmodal && 
         <PreferencesModal
           pfmodal={pfmodal}

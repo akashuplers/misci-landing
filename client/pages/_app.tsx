@@ -12,7 +12,7 @@ import { GRAPHQL_URL, WEBSOCKET_URL } from "@/constants";
 import useTempId from "@/store/store";
 import { useRouter } from "next/router";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
-import "../styles/dashboard.css";
+
 
 export default function App({ Component, pageProps }: AppProps) {
   // const changeTempId = useTempId((state) => state.changeTempId);
