@@ -243,7 +243,9 @@ export default function TinyMCEEditor({
     const button = e.target;
     button.classList.add("active");
 
-    const aa = blogData?.publish_data[2]?.tiny_mce_data;
+    // const aa = blogData?.publish_data[2].tiny_mce_data;
+    const aa = blogData?.publish_data.find(pd => pd.platform === 'wordpress').tiny_mce_data
+
     const htmlDoc = jsonToHtml(aa);
 
     setEditorText(htmlDoc);
@@ -254,7 +256,8 @@ export default function TinyMCEEditor({
     siblingButton.forEach((el) => el.classList.remove("active"));
     const button = e.target;
     button.classList.add("active");
-    const aa = blogData?.publish_data[0]?.tiny_mce_data;
+    // const aa = blogData?.publish_data[0]?.tiny_mce_data;
+    const aa = blogData?.publish_data?.find(pd => pd.platform === 'linkedin').tiny_mce_data
     const htmlDoc = jsonToHtml(aa);
     setEditorText(htmlDoc);
   }
@@ -264,7 +267,8 @@ export default function TinyMCEEditor({
     siblingButton.forEach((el) => el.classList.remove("active"));
     const button = e.target;
     button.classList.add("active");
-    const aa = blogData?.publish_data[1]?.tiny_mce_data;
+    // const aa = blogData?.publish_data[1]?.tiny_mce_data;
+    const aa = blogData?.publish_data?.find(pd => pd.platform === 'twitter').tiny_mce_data
     const htmlDoc = jsonToHtml(aa);
     setEditorText(htmlDoc);
   }

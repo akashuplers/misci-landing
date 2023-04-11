@@ -79,7 +79,8 @@ export default function dashboard({ query }) {
         .then((res) => {
           const { data } = JSON.parse(res);
           setBlogData(data.fetchBlog);
-          const aa = data.fetchBlog.publish_data[2].tiny_mce_data;
+          // const aa = data.fetchBlog.publish_data[2].tiny_mce_data;
+          const aa = data.fetchBlog.publish_data.find(pd => pd.platform === 'wordpress').tiny_mce_data
           setIdeas(data.fetchBlog.ideas.ideas);
           setblog_id(data.fetchBlog._id);
           const htmlDoc = jsonToHtml(aa);
@@ -105,7 +106,10 @@ export default function dashboard({ query }) {
         onCompleted: (data) => {
           console.log(data);
           setBlogData(data.generate);
-          const aa = data.generate.publish_data[2].tiny_mce_data;
+
+          // const aa = data.generate.publish_data[2].tiny_mce_data;
+          const aa = data.generate.publish_data.find(pd => pd.platform === 'wordpress').tiny_mce_data
+
           setIdeas(data.generate.ideas.ideas);
           setblog_id(data.generate._id);
           localStorage.setItem("Gbid", data.generate._id);
