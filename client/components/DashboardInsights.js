@@ -263,7 +263,13 @@ export default function DashboardInsights({
     }
   }, [formInput]);
 
-  const [checkboxState, setCheckboxState] = useState(true)
+  useEffect(() => {
+    if(loading || regenLoading) return
+    const checkbox = Array.from(document.querySelectorAll("input[type='checkbox'].usedIdeas"))
+    checkbox.forEach(box => box.checked = true);
+    console.log(checkbox);
+  },[ideas, filteredIdeas])
+
 
   if (loading || regenLoading) return <LoaderPlane />;
 
@@ -414,14 +420,14 @@ export default function DashboardInsights({
         <div className="flex gap-[0.25em] flex-wrap max-h-[70px] overflow-y-scroll">
           {tags?.map(tag => {
             return <div 
-                      className="bg-gray-300 rounded-full p-2 cursor-pointer tag-button"
+                      className="bg-gray-300 rounded-full p-2 cursor-pointer tag-button cta"
                       onClick={(e) => handleTagClick(e)}
                     >{tag}</div>
           })}
         </div>
         <div className="flex pb-5 pt-5">
           <button
-            className="idea-button used m-3 ml-0 active !px-[0.4em] !py-[0.25em]"
+            className="idea-button cta used m-3 ml-0 active !px-[0.4em] !py-[0.25em]"
             onClick={(e) => {
               setIdeaType("used");
               const sib = e.target.nextElementSibling;
@@ -432,7 +438,7 @@ export default function DashboardInsights({
             Used Idea(s)
           </button>
           {isAuthenticated && <button
-            className="idea-button fresh m-3 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em]"
+            className="idea-button cta fresh m-3 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em]"
             onClick={(e) => {
               setIdeaType("fresh");
               const sib = e.target.previousElementSibling;
@@ -444,7 +450,7 @@ export default function DashboardInsights({
             Fresh Idea(s)
           </button>}
         </div>
-        <div className="h-1/5 overflow-y-scroll">
+        <div className="h-[35%] overflow-y-scroll absolute mr-5">
           {ideaType === "used"
             ? filteredIdeas.length > 0 
             ? filteredIdeas?.map((idea, index) => {
@@ -453,11 +459,8 @@ export default function DashboardInsights({
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea}</p>
                       <input
-                        id="default-checkbox"
                         type="checkbox"
-                        className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                        onClick={(e) => setCheckboxState(prev => !prev)}
-                        value = {checkboxState}
+                        className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 usedIdeas"
                       />
                     </div>
                   </div>
@@ -465,15 +468,12 @@ export default function DashboardInsights({
               })
             : ideas?.map((idea, index) => {
                 return (
-                  <div className="flex pb-5" key={index}>
+                  <div className="flex pb-5 usedIdeas" key={index}>
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea.idea}</p>
                       <input
-                        id="default-checkbox"
                         type="checkbox"
-                        className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                        onClick={(e) => setCheckboxState(prev => !prev)}
-                        value = {checkboxState}
+                        className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 usedIdeas"
                       />
                     </div>
                   </div>
@@ -487,7 +487,6 @@ export default function DashboardInsights({
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea.idea}</p>
                       <input
-                        id="default-checkbox"
                         type="checkbox"
                         className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                         onClick={(e) =>

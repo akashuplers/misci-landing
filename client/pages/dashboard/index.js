@@ -37,6 +37,10 @@ export default function dashboard({ query }) {
 
   useEffect(() => {
     const getToken = localStorage.getItem("token");
+    const Gbid = localStorage.getItem("Gbid");
+    if (getToken && Gbid) {
+      localStorage.removeItem("Gbid");
+    }
     var getUserId;
     if (typeof window !== "undefined") {
       getUserId = localStorage.getItem("userId");
@@ -101,12 +105,11 @@ export default function dashboard({ query }) {
         onCompleted: (data) => {
           console.log(data);
           setBlogData(data.generate);
-
           const aa = data.generate.publish_data[2].tiny_mce_data;
           setIdeas(data.generate.ideas.ideas);
           setblog_id(data.generate._id);
+          localStorage.setItem("Gbid", data.generate._id);
           setTags(data.generate.tags);
-
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
           console.log("Sucessfully generated the article");
@@ -123,7 +126,7 @@ export default function dashboard({ query }) {
   return (
     <>
       <Layout>
-        <div className="flex divide-x mt-[2em]">
+        <div className="flex divide-x mt-[2em] pb-[1em]">
           <div className="h-[100%] w-[70%] mx-5 relative">
             <TinyMCEEditor
               topic={topic}

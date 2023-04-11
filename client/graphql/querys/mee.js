@@ -21,6 +21,7 @@ export const meeAPI = gql`
       _id
       credits
       prefFilled
+      profileImage
     }
   }
 `;

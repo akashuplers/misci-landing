@@ -25,6 +25,7 @@ import {
   EmailIcon,
 } from "react-share";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import axios from "axios";
 
 export default function TinyMCEEditor({
   topic,
@@ -282,19 +283,19 @@ export default function TinyMCEEditor({
           }}
         >
           <button
-            className="blog-toggle-button active wordpress"
+            className="blog-toggle-button cta active wordpress"
             onClick={handleBlog}
           >
             Blog
           </button>
           <button
-            className="blog-toggle-button linkedin"
+            className="blog-toggle-button cta linkedin"
             onClick={handleLinkedinBlog}
           >
             Linkedin
           </button>
           <button
-            className="blog-toggle-button twitter"
+            className="blog-toggle-button cta twitter"
             onClick={handleTwitterBlog}
           >
             Twitter
@@ -419,6 +420,8 @@ export default function TinyMCEEditor({
           menubar: false,
           statusbar: false,
           height: 600,
+          images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
+          images_upload_credentials: true,
           plugins:
             "preview powerpaste casechange importcss tinydrive searchreplace autolink autosave save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount tinymcespellchecker a11ychecker editimage help formatpainter permanentpen pageembed charmap mentions quickbars linkchecker emoticons advtable export footnotes mergetags autocorrect",
           menu: {
@@ -428,7 +431,76 @@ export default function TinyMCEEditor({
             },
           },
           toolbar:
-            "undo redo | bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment | footnotes | mergetags",
+            "undo redo image| bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment | footnotes | mergetags",
+          image_title: true,
+          automatic_uploads: true,
+          file_picker_types: "image",
+          file_picker_callback: function (cb, value, meta) {
+            var input = document.createElement("input");
+            input.setAttribute("type", "file");
+            input.setAttribute("accept", "image/*");
+            var url = `https://maverick.lille.ai/upload/image`;
+            var xhr = new XMLHttpRequest();
+            var fd = new FormData();
+            xhr.open("POST", url, true);
+
+            input.onchange = function () {
+              var file = this.files[0];
+              var reader = new FileReader();
+              xhr.onload = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                  // File uploaded successfully
+                  var response = JSON.parse(xhr.responseText);
+
+                  // https://res.cloudinary.com/cloudName/image/upload/v1483481128/public_id.jpg
+                  var url = response.url;
+                  // console.log(url)
+                  // Create a thumbnail of the uploaded image, with 150px width
+                  cb(url, { title: response.type });
+                }
+              };
+
+              reader.onload = function () {
+                var id = "blobid" + new Date().getTime();
+                var blobCache =
+                  window.tinymce.activeEditor.editorUpload.blobCache;
+                var base64 = reader.result.split(",")[1];
+
+                var blobInfo = blobCache.create(id, file, base64);
+                blobCache.add(blobInfo);
+
+                // call the callback and populate the Title field with the file name
+
+                // fd.append("upload_preset", unsignedUploadPreset);
+                // fd.append("path", "browser_upload");
+                fd.append("file", blobInfo.blob());
+
+                xhr.send(fd);
+              };
+
+              reader.readAsDataURL(file);
+            };
+
+            input.click();
+          },
+          images_upload_handler: (blobInfo, success, failure) => {
+            var formdata = new FormData();
+            formdata.append("file", blobInfo.blob());
+
+            var requestOptions = {
+              method: "POST",
+              body: formdata,
+              redirect: "follow",
+            };
+
+            fetch("https://maverick.lille.ai/upload/image", requestOptions)
+              .then((response) => response.text())
+              .then((result) => {
+                const data = JSON.parse(result);
+                success(data.url);
+              })
+              .catch((error) => console.log("error", error));
+          },
         }}
         onEditorChange={(content, editor) => {
           setEditorText(content);
