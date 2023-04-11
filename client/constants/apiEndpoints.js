@@ -8,9 +8,11 @@ export const API_ROUTES = {
   CREATE_USER: "/auth/user/create",
   LOGIN_ENDPOINT: "/auth/user/login",
   SOCIAL_LOGIN_ENDPOINT: "/auth/user/social/login",
+  UPDATE_PROFILE: "/auth/update-profile",
   URL_UPLOAD: "/quickupload/url",
   KEYWORD_UPLOAD: "/quickupload/keyword",
-  FILE_UPLOAD: "/quickupload/file"
+  FILE_UPLOAD: "/quickupload/file",
+  IMAGE_UPLOAD : "/upload/image/base64"
 };
 
 export const LI_API_ENDPOINTS = {
