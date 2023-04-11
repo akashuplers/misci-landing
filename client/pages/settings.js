@@ -164,11 +164,41 @@ export default function Settings() {
 
   const handleInputChange = ({target}) => {
     let {value, name} = target
-    if(target.id === "profileImageInput"){
-      var image = document.getElementById("profileImage");
-      image.src = URL.createObjectURL(target.files[0]);
-      value = image.src;
-    }
+    // if(target.id === "profileImageInput"){
+    //   const selectedfile = target.files[0];
+    //   const fileReader = new FileReader();
+
+    //   let srcData;
+    //   fileReader.onload = () => {
+    //     srcData = fileReader.result;
+    //     console.log('base64:', srcData)
+    //   };
+    //   fileReader.readAsDataURL(selectedfile);
+
+    //   var myHeaders = new Headers();
+    //   myHeaders.append("Content-Type", "application/json");
+
+    //   var imageRaw = JSON.stringify({
+    //     "path": "profile",
+    //     "base64": srcData
+    //   })
+
+    //   var requestOptions = {
+    //     method: 'POST',
+    //     headers: myHeaders,
+    //     body: imageRaw,
+    //     redirect: 'follow'
+    //   };
+
+    //   console.log(requestOptions);
+      
+    //   fetch(API_BASE_PATH+API_ROUTES.IMAGE_UPLOAD,requestOptions)
+    //     .then(response => response.text())
+    //     .then(result => console.log(result))
+    //     .catch(error => console.log('error', error));
+
+    //   return;
+    // }
     setUpdateProfileData(prev => {
       return {
         ...prev,
