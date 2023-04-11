@@ -99,7 +99,7 @@ export default function TinyMCEEditor({
           context: {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + getToken,
+              "Authorization": "Bearer " + getToken,
             },
           },
         }
@@ -169,7 +169,7 @@ export default function TinyMCEEditor({
           context: {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + getToken,
+              "Authorization": "Bearer " + getToken,
             },
           },
         }
