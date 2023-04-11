@@ -91,7 +91,7 @@ export default function dashboard({ query }) {
           }
         })
         .finally(() => {
-          toast.success("LinkedIn SingUp Succesfull!!");
+          toast.success("LinkedIn SignUp Succesfull!!");
         })
         .catch((error) => console.log("error", error));
     } else {
