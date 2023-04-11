@@ -37,6 +37,10 @@ export default function dashboard({ query }) {
 
   useEffect(() => {
     const getToken = localStorage.getItem("token");
+    const Gbid = localStorage.getItem("Gbid");
+    if (getToken && Gbid) {
+      localStorage.removeItem("Gbid");
+    }
     var getUserId;
     if (typeof window !== "undefined") {
       getUserId = localStorage.getItem("userId");
@@ -108,8 +112,8 @@ export default function dashboard({ query }) {
 
           setIdeas(data.generate.ideas.ideas);
           setblog_id(data.generate._id);
+          localStorage.setItem("Gbid", data.generate._id);
           setTags(data.generate.tags);
-
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
           console.log("Sucessfully generated the article");

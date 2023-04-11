@@ -28,6 +28,10 @@ function classNames(...classes) {
 export default function Navbar({ isOpen }) {
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const [authenticationModalType, setAuthneticationModalType] = useState("");
+  var Gbid;
+  if (typeof window !== "undefined") {
+    Gbid = localStorage.getItem("Gbid");
+  }
 
   return (
     <>
@@ -49,7 +53,7 @@ export default function Navbar({ isOpen }) {
               modalIsOpen={authenticationModalOpen || isOpen}
               setModalIsOpen={setAuthenticationModalOpen}
               handleSave={() => (window.location = "/")}
-              bid=""
+              bid={Gbid}
             />
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="relative flex justify-between lg:gap-8 xl:grid xl:grid-cols-12">
