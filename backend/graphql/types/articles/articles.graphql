@@ -49,6 +49,13 @@ type IdeasArr {
     idea: String
     article_id: String
     used: Int
+    reference: Reference
+}
+
+type Reference {
+    type: String
+    link: String
+    id: String
 }
 
 type TinyMceObj {

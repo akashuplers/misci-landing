@@ -2,7 +2,7 @@ import { withFilter } from 'graphql-subscriptions';
 import { BlogListArgs, FetchBlog, GenerateBlogMutationArg, IRNotifiyArgs, ReGenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
 import { pubsub } from '../../../pubsub';
 import { ObjectID } from 'bson';
-import { blogGeneration, deleteBlog, fetchBlog, fetchBlogByUser, fetchBlogIdeas, fetchUser, publishBlog, updateUserCredit, deleteBlogIdeas } from './blogsRepo';
+import { blogGeneration, deleteBlog, fetchBlog, fetchBlogByUser, fetchBlogIdeas, fetchUser, publishBlog, updateUserCredit, deleteBlogIdeas, fetchUsedBlogIdeasByIdea, fetchArticleById } from './blogsRepo';
 import { Python } from '../../../services/python';
 import { getTimeStamp } from '../../../utils/date';
 
@@ -223,6 +223,39 @@ export const blogResolvers = {
                         used: 1,
                     }))
                 }
+                if(updatedIdeas && updatedIdeas.length) {
+                    updatedIdeas = await (
+                        Promise.all(
+                            updatedIdeas.map(async (ideasData: any) => {
+                                const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db})
+                                if(ideaExistInBlog) {
+                                    return {
+                                        ...ideasData,
+                                        reference: {
+                                            type: "blog",
+                                            link: null,
+                                            id: ideaExistInBlog._id
+                                        }
+                                    }
+                                } else if(ideasData.article_id) {
+                                    const article = await fetchArticleById({id: ideasData.article_id, db})
+                                    return {
+                                        ...ideasData,
+                                        reference: {
+                                            type: "article",
+                                            link: article._source.orig_url,
+                                            id: ideasData.article_id
+                                        }
+                                    }
+                                } else {
+                                    return {
+                                        ...ideasData
+                                    }
+                                }
+                            })       
+                        )
+                    )
+                }
                 console.log(updatedIdeas)
                 const insertBlog = await db.db('lilleBlogs').collection('blogs').insertOne(finalBlogObj)
                 const insertBlogIdeas = await db.db('lilleBlogs').collection('blogIdeas').insertOne({
@@ -346,6 +379,39 @@ export const blogResolvers = {
                         imageUrl: blog.imageUrl ? blog.imageUrl : imageUrl
                     }
                 })
+                if(blogIdeas.ideas && blogIdeas.ideas.length) {
+                    blogIdeas.ideas = await (
+                        Promise.all(
+                            blogIdeas.ideas.map(async (ideasData: any) => {
+                                const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db})
+                                if(ideaExistInBlog) {
+                                    return {
+                                        ...ideasData,
+                                        reference: {
+                                            type: "blog",
+                                            link: null,
+                                            id: ideaExistInBlog._id
+                                        }
+                                    }
+                                } else if(ideasData.article_id) {
+                                    const article = await fetchArticleById({id: ideasData.article_id, db})
+                                    return {
+                                        ...ideasData,
+                                        reference: {
+                                            type: "article",
+                                            link: article._source.orig_url,
+                                            id: ideasData.article_id
+                                        }
+                                    }
+                                } else {
+                                    return {
+                                        ...ideasData
+                                    }
+                                }
+                            })       
+                        )
+                    )
+                }
                 await db.db('lilleBlogs').collection('blogIdeas').updateOne({
                     _id: new ObjectID(blogIdeas._id)
                 }, {
@@ -480,6 +546,39 @@ export const blogResolvers = {
                                     used: 0,
                                 }))
                             })
+                            if(updatedIdeas && updatedIdeas.length) {
+                                updatedIdeas = await (
+                                    Promise.all(
+                                        updatedIdeas.map(async (ideasData: any) => {
+                                            const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db})
+                                            if(ideaExistInBlog) {
+                                                return {
+                                                    ...ideasData,
+                                                    reference: {
+                                                        type: "blog",
+                                                        link: null,
+                                                        id: ideaExistInBlog._id
+                                                    }
+                                                }
+                                            } else if(ideasData.article_id) {
+                                                const article = await fetchArticleById({id: ideasData.article_id, db})
+                                                return {
+                                                    ...ideasData,
+                                                    reference: {
+                                                        type: "article",
+                                                        link: article._source.orig_url,
+                                                        id: ideasData.article_id
+                                                    }
+                                                }
+                                            } else {
+                                                return {
+                                                    ...ideasData
+                                                }
+                                            }
+                                        })       
+                                    )
+                                )
+                            }
                             const insertBlog = await db.db('lilleBlogs').collection('blogs').insertOne(finalBlogObj)
                             const insertBlogIdeas = await db.db('lilleBlogs').collection('blogIdeas').insertOne({
                                 blog_id: insertBlog.insertedId,
