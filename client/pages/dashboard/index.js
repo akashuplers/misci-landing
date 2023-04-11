@@ -34,6 +34,18 @@ export default function dashboard({ query }) {
       event.stopImmediatePropagation();
     });
   }
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      event.preventDefault();
+      event.returnValue = null;
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
 
   useEffect(() => {
     const getToken = localStorage.getItem("token");
@@ -80,7 +92,9 @@ export default function dashboard({ query }) {
           const { data } = JSON.parse(res);
           setBlogData(data.fetchBlog);
           // const aa = data.fetchBlog.publish_data[2].tiny_mce_data;
-          const aa = data.fetchBlog.publish_data.find(pd => pd.platform === 'wordpress').tiny_mce_data
+          const aa = data.fetchBlog.publish_data.find(
+            (pd) => pd.platform === "wordpress"
+          ).tiny_mce_data;
           setIdeas(data.fetchBlog.ideas.ideas);
           setblog_id(data.fetchBlog._id);
           const htmlDoc = jsonToHtml(aa);
@@ -92,7 +106,7 @@ export default function dashboard({ query }) {
           }
         })
         .finally(() => {
-          toast.success("LinkedIn SingUp Succesfull!!");
+          toast.success("LinkedIn SignUp Succesfull!!");
         })
         .catch((error) => console.log("error", error));
     } else {
@@ -108,7 +122,9 @@ export default function dashboard({ query }) {
           setBlogData(data.generate);
 
           // const aa = data.generate.publish_data[2].tiny_mce_data;
-          const aa = data.generate.publish_data.find(pd => pd.platform === 'wordpress').tiny_mce_data
+          const aa = data.generate.publish_data.find(
+            (pd) => pd.platform === "wordpress"
+          ).tiny_mce_data;
 
           setIdeas(data.generate.ideas.ideas);
           setblog_id(data.generate._id);

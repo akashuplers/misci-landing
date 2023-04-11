@@ -42,6 +42,7 @@ export default function TinyMCEEditor({
   const [openModal, setOpenModal] = useState(false);
   const [text, setText] = useState("");
   const [isCopied, setIsCopied] = useState(false);
+  const [option, setOption] = useState("blog");
 
   const onCopyText = () => {
     setIsCopied(true);
@@ -72,12 +73,16 @@ export default function TinyMCEEditor({
     setSaveLoad(true);
     var getToken;
     if (typeof window !== "undefined") {
+      window.addEventListener("beforeunload", (event) => {
+        event.preventDefault();
+        event.returnValue = null;
+      });
       getToken = localStorage.getItem("token");
-      window.submitted = true;
     }
 
     if (getToken) {
       console.log("token", getToken);
+
       const jsonDoc = htmlToJson(updatedText).children;
       const formatedJSON = { children: [...jsonDoc] };
       UpdateBlog(
@@ -86,7 +91,7 @@ export default function TinyMCEEditor({
             options: {
               tinymce_json: formatedJSON,
               blog_id: blog_id,
-              platform: "wordpress",
+              platform: option === "blog" ? "wordpress" : option,
             },
           },
         },
@@ -100,8 +105,9 @@ export default function TinyMCEEditor({
         }
       )
         .then(() => {
-          if (window.location === "/dashboard/" + blog_id) return;
-          window.location.href = "/dashboard/" + blog_id;
+          console.log(">>", window.location);
+          if (window.location.pathname !== "/dashboard/" + blog_id)
+            window.location.href = "/dashboard/" + blog_id;
           // router.push("/dashboard/" + blog_id);
         })
         .catch((err) => {
@@ -234,8 +240,6 @@ export default function TinyMCEEditor({
       .catch((error) => console.log("error", error));
   };
 
-  const [option, setOption] = useState("blog");
-
   function handleBlog(e) {
     setOption("blog");
     const siblingButton = document.querySelectorAll(".blog-toggle-button");
@@ -244,7 +248,9 @@ export default function TinyMCEEditor({
     button.classList.add("active");
 
     // const aa = blogData?.publish_data[2].tiny_mce_data;
-    const aa = blogData?.publish_data.find(pd => pd.platform === 'wordpress').tiny_mce_data
+    const aa = blogData?.publish_data.find(
+      (pd) => pd.platform === "wordpress"
+    ).tiny_mce_data;
 
     const htmlDoc = jsonToHtml(aa);
 
@@ -257,7 +263,9 @@ export default function TinyMCEEditor({
     const button = e.target;
     button.classList.add("active");
     // const aa = blogData?.publish_data[0]?.tiny_mce_data;
-    const aa = blogData?.publish_data?.find(pd => pd.platform === 'linkedin').tiny_mce_data
+    const aa = blogData?.publish_data?.find(
+      (pd) => pd.platform === "linkedin"
+    ).tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
     setEditorText(htmlDoc);
   }
@@ -268,7 +276,9 @@ export default function TinyMCEEditor({
     const button = e.target;
     button.classList.add("active");
     // const aa = blogData?.publish_data[1]?.tiny_mce_data;
-    const aa = blogData?.publish_data?.find(pd => pd.platform === 'twitter').tiny_mce_data
+    const aa = blogData?.publish_data?.find(
+      (pd) => pd.platform === "twitter"
+    ).tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
     setEditorText(htmlDoc);
   }
@@ -427,7 +437,7 @@ export default function TinyMCEEditor({
           images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
           images_upload_credentials: true,
           plugins:
-            "preview casechange importcss tinydrive searchreplace autolink save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount tinymcespellchecker a11ychecker editimage help formatpainter permanentpen pageembed charmap mentions linkchecker emoticons advtable export footnotes mergetags autocorrect",
+            "preview casechange importcss tinydrive searchreplace save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount a11ychecker editimage help formatpainter permanentpen pageembed charmap mentions linkchecker emoticons advtable export footnotes mergetags",
           menu: {
             tc: {
               title: "Comments",

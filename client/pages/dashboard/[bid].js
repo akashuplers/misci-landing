@@ -20,16 +20,12 @@ export default function Post() {
     },
   });
 
-var getToken;
+  var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
   }
 
-
-
-  const {
-    data: meeData,
-  } = useQuery(meeAPI, {
+  const { data: meeData } = useQuery(meeAPI, {
     context: {
       headers: {
         "Content-Type": "application/json",
@@ -39,28 +35,42 @@ var getToken;
   });
 
   useEffect(() => {
-    console.log(meeData)
-    if(meeData?.me.prefFilled === false){
+    const handleBeforeUnload = (event) => {
+      event.preventDefault();
+      event.returnValue = null;
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log(meeData);
+    if (meeData?.me.prefFilled === false) {
       setPFModal(true);
-    } 
-  },[meeData])
+    }
+  }, [meeData]);
 
   return (
     <>
       <Layout>
         <div className="flex divide-x mt-[2em] pb-[1em]">
-      {pfmodal && 
-        <PreferencesModal
-          pfmodal={pfmodal}
-          setPFModal={setPFModal}
-          getToken={getToken}
-        />
-
-        }
+          {pfmodal && (
+            <PreferencesModal
+              pfmodal={pfmodal}
+              setPFModal={setPFModal}
+              getToken={getToken}
+            />
+          )}
           <div className="h-[100%] w-[70%] mx-5 relative">
             <TinyMCEEditor
               editorText={jsonToHtml(
-                data?.fetchBlog?.publish_data.find(pd => pd.platform === 'wordpress').tiny_mce_data
+                data?.fetchBlog?.publish_data.find(
+                  (pd) => pd.platform === "wordpress"
+                ).tiny_mce_data
               )}
               // data?.fetchBlog?.publish_data[2].tiny_mce_data ^^
               blog_id={bid}
