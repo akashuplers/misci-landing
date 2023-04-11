@@ -172,7 +172,7 @@ export default function Settings() {
 
       fileReader.onload = () => {
         const srcData = fileReader.result;
-        console.log('base64:', srcData)
+        // console.log('base64:', srcData)
 
         var myHeaders = {
           "Content-Type" : "application/json"
@@ -190,17 +190,26 @@ export default function Settings() {
           redirect: 'follow'
         };
 
-        console.log(requestOptions);
+        // console.log(requestOptions);
         
         fetch(API_BASE_PATH+API_ROUTES.IMAGE_UPLOAD,requestOptions)
-          .then(response => response.text())
-          .then(result => console.log(result))
+          .then(response => response.json())
+          .then(result => {
+            console.log(result)
+            setUpdateProfileData(prev => {
+              return {
+                ...prev,
+                profileImage : result.url
+              }
+            })
+          })
           .catch(error => console.log('error', error));
       };
 
       fileReader.readAsDataURL(selectedfile);
       return;
     }
+
     setUpdateProfileData(prev => {
       return {
         ...prev,
