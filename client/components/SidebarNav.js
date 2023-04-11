@@ -236,7 +236,7 @@ export default function Sidebar() {
               </div>
               <nav className="mt-5 flex-1 space-y-1 bg-white px-2">
                 {navigation.map((item) => (
-                  <a
+                  <Link
                     key={item.name}
                     href={item.href}
                     className={classNames(
@@ -256,7 +256,7 @@ export default function Sidebar() {
                       aria-hidden="true"
                     />
                     {item.name}
-                  </a>
+                  </Link>
                 ))}
               </nav>
             </div>
@@ -349,7 +349,7 @@ export default function Sidebar() {
                     {title}
                   </h1>
 
-                  <div
+                  {/* <div
                     // className={styles.linkedInWrapper}
                     style={{
                       position: "absolute",
@@ -384,7 +384,7 @@ export default function Sidebar() {
                     ) : (
                       ""
                     )}
-                  </div>
+                  </div> */}
 
                   <div
                     style={{

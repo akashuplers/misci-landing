@@ -90,6 +90,10 @@ padding-bottom: 10px !important;
   }
 }
 
+.tox-dialog__body-nav-item.tox-tab{
+  visibility: hidden;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
