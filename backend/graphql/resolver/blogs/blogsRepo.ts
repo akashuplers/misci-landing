@@ -288,3 +288,31 @@ export const deleteBlogIdeas = async ({
     return await db.db('lilleBlogs').collection('blogIdeas').deleteOne({blog_id: new ObjectID(id)})
 }
 
+export const fetchUsedBlogIdeasByIdea = async ({
+    idea,
+    db
+}: {
+    idea: any
+    db: any
+}) => {
+    return await db.db('lilleBlogs').collection('blogIdeas').findOne({
+        ideas: {
+            $elemMatch: {
+                "idea": idea, 
+                "used": 1
+            }
+        }
+    })
+}
+
+export const fetchArticleById = async ({
+    id,
+    db
+}: {
+    id: string
+    db: any
+}) => {
+    return await db.db('lilleArticles').collection('articles').findOne({
+        _id: id
+    })
+}
