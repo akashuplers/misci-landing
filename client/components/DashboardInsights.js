@@ -400,7 +400,7 @@ export default function DashboardInsights({
             )}
           </form>
         )}
-        {tags.length > 0 && <div>
+        {tags?.length > 0 && <div>
           <div className="flex justify-between w-full items-center py-5 mt-7">
             <p className=" font-semibold">Filtering Keywords</p>
           </div>
