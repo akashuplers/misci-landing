@@ -468,7 +468,7 @@ export const blogResolvers = {
                 $set: {
                     publish_data: updatedPublisData,
                     status: "draft",
-                    user: new ObjectID(user.id)
+                    userId: new ObjectID(user.id)
                 }
             })
             const updatedBlog = await fetchBlog({id: blogId, db})
