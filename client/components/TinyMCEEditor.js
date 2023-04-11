@@ -94,9 +94,7 @@ export default function TinyMCEEditor({
               platform: option === "blog" ? "wordpress" : option,
             },
           },
-        },
-        {
-          context: {
+           context: {
             headers: {
               "Content-Type": "application/json",
               "Authorization": "Bearer " + getToken,
@@ -164,8 +162,6 @@ export default function TinyMCEEditor({
               platform: "wordpress",
             },
           },
-        },
-        {
           context: {
             headers: {
               "Content-Type": "application/json",
