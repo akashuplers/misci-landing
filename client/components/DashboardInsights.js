@@ -400,32 +400,19 @@ export default function DashboardInsights({
             )}
           </form>
         )}
-        <div className="flex justify-between w-full items-center py-5 mt-7">
-          <p className=" font-semibold">Filtering Keywords</p>
-          {/* <div className="grid p-5">
-            <Switch
-              checked={enabled}
-              onChange={setEnabled}
-              className={`${enabled ? "bg-blue-500" : "bg-blue-200"}
-          relative inline-flex h-[19px] w-[40px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
-            >
-              <span className="sr-only">Use setting</span>
-              <span
-                aria-hidden="true"
-                className={`${enabled ? "translate-x-5" : "translate-x-0"}
-            pointer-events-none inline-block h-[17px] w-[17px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
-              />
-            </Switch>
-          </div> */}
-        </div>
-        <div className="flex gap-[0.25em] flex-wrap max-h-[70px] overflow-y-scroll">
-          {tags?.map(tag => {
-            return <div 
-                      className="bg-gray-300 rounded-full p-2 cursor-pointer tag-button cta"
-                      onClick={(e) => handleTagClick(e)}
-                    >{tag}</div>
-          })}
-        </div>
+        {tags.length > 0 && <div>
+          <div className="flex justify-between w-full items-center py-5 mt-7">
+            <p className=" font-semibold">Filtering Keywords</p>
+          </div>
+          <div className="flex gap-[0.25em] flex-wrap max-h-[70px] overflow-y-scroll">
+            {tags?.map(tag => {
+              return <div
+                        className="bg-gray-300 rounded-full p-2 cursor-pointer tag-button cta"
+                        onClick={(e) => handleTagClick(e)}
+                      >{tag}</div>
+            })}
+          </div>
+        </div>}
         <div className="flex pb-5 pt-5">
           <button
             className="idea-button cta used m-3 ml-0 active !px-[0.4em] !py-[0.25em]"
