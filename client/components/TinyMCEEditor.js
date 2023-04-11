@@ -73,8 +73,11 @@ export default function TinyMCEEditor({
     setSaveLoad(true);
     var getToken;
     if (typeof window !== "undefined") {
+      window.addEventListener("beforeunload", (event) => {
+        event.preventDefault();
+        event.returnValue = null;
+      });
       getToken = localStorage.getItem("token");
-      window.submitted = true;
     }
 
     if (getToken) {
@@ -102,8 +105,9 @@ export default function TinyMCEEditor({
         }
       )
         .then(() => {
-          if (window.location === "/dashboard/" + blog_id) return;
-          window.location.href = "/dashboard/" + blog_id;
+          console.log(">>", window.location);
+          if (window.location.pathname !== "/dashboard/" + blog_id)
+            window.location.href = "/dashboard/" + blog_id;
           // router.push("/dashboard/" + blog_id);
         })
         .catch((err) => {
