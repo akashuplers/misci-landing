@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import {
@@ -89,14 +90,18 @@ export default function Sidebar() {
     },
   });
   useEffect(() => {
+    const regex = /^\/dashboard\/[6|4][a-zA-Z0-9]*$/;
+
     if (window.location.pathname === "/saved") {
-      setTitle("Saved Blogs");
+      setTitle("Saved Blog(s)");
     } else if (window.location.pathname === "/dashboard") {
       setTitle("Generated Blog(s)");
-    } else if (window.location.pathname === "/settings") {
+    }  else if (window.location.pathname === "/settings") {
       setTitle("Settings");
     } else if (window.location.pathname === "/published") {
       setTitle("Published");
+    } else if (regex.test(window.location.pathname)) {
+      setTitle("Saved Blog");
     }
   }, []);
 
@@ -322,8 +327,8 @@ export default function Sidebar() {
             </button>
           </div>
           <main className="flex-1">
-            <div className="py-6">
-              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex relative">
+            <div className="py-4">
+              <div className="mx-auto max-w-7xl px-6 flex relative">
                 <div className="pt-4">
                   {path !== "/" ? (
                     <button onClick={() => router.back()}>

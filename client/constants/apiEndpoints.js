@@ -18,7 +18,7 @@ export const API_ROUTES = {
 export const LI_API_ENDPOINTS = {
   TW_ACCESS_TOKEN: '/auth/twitter/access-token',
   ARTICLE: '/auth/landing/article',
-  LI_POST: '/auth/landing/linkedin/post',
+  LI_POST: '/auth/linkedin/post',
   LI_ACCESS_TOKEN: '/auth/linkedin/token',
   LI_PROFILE: '/auth/linkedin/me',
   TW_POST: '/auth/landing/twitter/post',
