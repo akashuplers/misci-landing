@@ -197,7 +197,7 @@ export default function Sidebar() {
                     </nav>
                   </div>
                   <div className="flex flex-shrink-0 pb-0 pt-4">
-                    <a
+                    <Link
                       href="#"
                       className="ml-6 inline-flex items-center rounded-md bg-[#4A3AFE] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
@@ -214,7 +214,7 @@ export default function Sidebar() {
                         />
                       </svg>
                       UPGRADE
-                    </a>
+                    </Link>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
@@ -266,7 +266,7 @@ export default function Sidebar() {
               </nav>
             </div>
             <div className="flex flex-shrink-0 pb-0 pt-4">
-              <a
+              <Link
                 href="#"
                 className="ml-6 inline-flex items-center rounded-md bg-[#4A3AFE] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
@@ -283,7 +283,7 @@ export default function Sidebar() {
                   />
                 </svg>
                 UPGRADE
-              </a>
+              </Link>
             </div>
             <nav className="mt-5 space-y-1 bg-white px-2 pb-8">
               {navigation_bottom.map((item) => (
@@ -425,7 +425,7 @@ export default function Sidebar() {
                       </div>
                     </div>
                   )}
-                  <a
+                  <Link
                     style={{
                       position: "absolute",
                       right: "70px",
@@ -439,7 +439,7 @@ export default function Sidebar() {
                       src={meeData?.me?.profileImage}
                       round={true}
                     />
-                  </a>
+                  </Link>
                 </div>
               </div>
 

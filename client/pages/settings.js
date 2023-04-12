@@ -24,7 +24,6 @@ import LoaderPlane from "../components/LoaderPlane";
 import { useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import ReactLoading from "react-loading";
-import { Link } from "react-router-dom";
 
 const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: false },
@@ -305,7 +304,7 @@ export default function Settings() {
                     <nav className="flex h-full flex-col">
                       <div className="space-y-1">
                         {navigation.map((item) => (
-                          <Link
+                          <a
                             key={item.name}
                             href={item.href}
                             className={classNames(
@@ -326,12 +325,12 @@ export default function Settings() {
                               aria-hidden="true"
                             />
                             {item.name}
-                          </Link>
+                          </a>
                         ))}
                       </div>
                       <div className="mt-auto space-y-1 pt-10">
                         {secondaryNavigation.map((item) => (
-                          <Link
+                          <a
                             key={item.name}
                             href={item.href}
                             className="group flex items-center border-l-4 border-transparent py-2 px-3 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
@@ -341,7 +340,7 @@ export default function Settings() {
                               aria-hidden="true"
                             />
                             {item.name}
-                          </Link>
+                          </a>
                         ))}
                       </div>
                     </nav>
@@ -443,7 +442,7 @@ export default function Settings() {
                           <div className="border-b border-gray-200">
                             <nav className="-mb-px flex space-x-8">
                               {tabs.map((tab) => (
-                                <Link
+                                <a
                                   key={tab.name}
                                   href={tab.href}
                                   className={classNames(
@@ -454,7 +453,7 @@ export default function Settings() {
                                   )}
                                 >
                                   {tab.name}
-                                </Link>
+                                </a>
                               ))}
                             </nav>
                           </div>
