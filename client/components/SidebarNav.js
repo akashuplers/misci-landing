@@ -421,7 +421,7 @@ export default function Sidebar() {
                             fill="#EEC800"
                           />
                         </svg>
-                        {meeData?.me?.credits}/25 Credits used
+                        {25 - meeData?.me?.credits}/25 Credits used
                       </div>
                     </div>
                   )}
