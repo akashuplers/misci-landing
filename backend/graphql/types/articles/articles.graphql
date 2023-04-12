@@ -23,6 +23,7 @@ type BlogsList {
     tags: [String]!
     image: String
     status: String
+    date: Int
 }
 type Blog {
     _id: ID!
