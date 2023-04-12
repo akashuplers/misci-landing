@@ -35,7 +35,13 @@ export const blogResolvers = {
             const id = args.id
             const blogDetails = await fetchBlog({id, db})
             const blogIdeas = await fetchBlogIdeas({id, db})
-            return {...blogDetails, ideas: blogIdeas}
+            const updatedIdeas = blogIdeas.ideas.map((data: any) => data.summary ? ({...data, idea: data.summary}) : ({...data}))
+            const updatedFreshIdeas = blogIdeas?.feshIdeas?.map((data: any) => data.summary ? ({...data, idea: data.summary}) : ({...data}))
+            return {...blogDetails, ideas: {
+                ...blogIdeas,
+                ideas: updatedIdeas,
+                freshIdeas: updatedFreshIdeas?.length ? updatedFreshIdeas : null
+            }}
         },
         getAllBlogs: async (
             parent: unknown, args: { options: BlogListArgs }, {db, pubsub, user}: any
@@ -546,13 +552,13 @@ export const blogResolvers = {
                             let updatedIdeas: any = []
                             articlesData.forEach((data) => {
                                 data.used_summaries.forEach((summary: string) => updatedIdeas.push({
-                                    summary,
+                                    idea:summary,
                                     article_id: data.id,
                                     reference: null,
                                     used: 1,
                                 }))
                                 data.unused_summaries.forEach((summary: string) => updatedIdeas.push({
-                                    summary,
+                                    idea:summary,
                                     article_id: data.id,
                                     reference: null,
                                     used: 0,
