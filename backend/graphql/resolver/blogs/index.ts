@@ -68,7 +68,8 @@ export const blogResolvers = {
                                     keyword: 1,
                                     imageUrl: 1,
                                     tags: 1,
-                                    description: 1
+                                    description: 1,
+                                    status: 1,
                                 }
                             },
                             {
