@@ -22,6 +22,7 @@ type BlogsList {
     description: String
     tags: [String]!
     image: String
+    status: String
 }
 type Blog {
     _id: ID!
