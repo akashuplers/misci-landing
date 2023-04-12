@@ -18,7 +18,7 @@ export default function Layout({ children }) {
       {isAuthenticated ? (
         <>
           <Sidebar />
-          <div className={`ml-auto pr-3 ${isAuthenticated ? "authenticatedLayout" : ''}`}>{children}</div>
+          <div className={`ml-auto ${isAuthenticated ? "authenticatedLayout" : ''}`}>{children}</div>
         </>
       ) : (
         <>

@@ -79,7 +79,7 @@ export default function Post() {
   return (
     <>
       <Layout>
-        <div className="flex divide-x mt-[2em] pb-[1em]">
+        <div className="flex divide-x">
           {pfmodal && (
             <PreferencesModal
               pfmodal={pfmodal}
@@ -87,7 +87,7 @@ export default function Post() {
               getToken={getToken}
             />
           )}
-          <div className="h-[100%] w-[70%] mx-5 relative">
+          <div className="w-[60%] relative">
             <TinyMCEEditor
               isAuthenticated={true}
               editorText={editorText}
