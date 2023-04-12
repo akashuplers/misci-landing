@@ -280,8 +280,7 @@ export default function DashboardInsights({
         {isAuthenticated && (
           <div className="flex pb-4 justify-between gap-[1.25em]">
             <p className="font-normal w-[70%]">
-              Regenerate your article on the basis of selected keyword, URL or
-              uploaded document
+              Regenerate your blog by selecting ideas from fresh and used ideas.
             </p>
             <button
               className="h-[fit-content] bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white p-[0.25em] border border-blue-500 hover:border-transparent rounded"
@@ -393,7 +392,7 @@ export default function DashboardInsights({
                 </label>
 
                 <div className="absolute top-[110%]">
-                  <span>To get Fresh Ideas enter Keyword, URL or File</span>
+                  <span>To get Fresh Ideas upload topic, URL or File.</span>
                   {/* <p>url - {urlValid ? <span class="text-green-500">true</span> : <span class="text-red-500">false</span>}</p> */}
                 </div>
               </div>
