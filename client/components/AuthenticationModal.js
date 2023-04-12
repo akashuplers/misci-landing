@@ -224,6 +224,16 @@ export default function AuthenticationModal({
           );
           setModalIsOpen(false);
           console.log("Succesfully signed up");
+          toast.success("Succesfully signed up", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
         }
       })
       .catch((err) => console.error("Error: ", err))
@@ -318,6 +328,7 @@ export default function AuthenticationModal({
 
   return (
     <>
+      <ToastContainer />
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
