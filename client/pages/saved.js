@@ -5,7 +5,6 @@ import Layout from "../components/Layout";
 import styles from "../styles/saved.module.css";
 import { useQuery, useMutation } from "@apollo/client";
 import { getAllBlogs } from "../graphql/queries/getAllBlogs";
-;
 import LoaderPlane from "../components/LoaderPlane";
 import { deleteBlog } from "../graphql/mutations/deleteBlog";
 import { toast } from "react-toastify";
@@ -71,7 +70,7 @@ export default function Saved() {
       });
   };
 
-  console.log(data)
+  console.log(data);
 
   if (loading) return <LoaderPlane />;
 
@@ -83,10 +82,10 @@ export default function Saved() {
           role="list"
           className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8 ml-[5%]"
           style={{
-            listStyleType:"none"
+            listStyleType: "none",
           }}
         >
-          {data?.getAllBlogs.blogs.map((blog,index) => (
+          {data?.getAllBlogs.blogs.map((blog, index) => (
             <>
               <li key={blog._id} className="relative">
                 <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
@@ -100,12 +99,16 @@ export default function Saved() {
                       type="button"
                       className="absolute inset-0 focus:outline-none"
                       onMouseEnter={(e) => {
-                        const delButton = document.querySelector(`#savedBlog${index}DelButton`)
-                        delButton.classList.remove("!hidden")
+                        const delButton = document.querySelector(
+                          `#savedBlog${index}DelButton`
+                        );
+                        delButton.classList.remove("!hidden");
                       }}
                       onMouseLeave={(e) => {
-                        const delButton = document.querySelector(`#savedBlog${index}DelButton`)
-                        delButton.classList.add("!hidden")
+                        const delButton = document.querySelector(
+                          `#savedBlog${index}DelButton`
+                        );
+                        delButton.classList.add("!hidden");
                       }}
                     >
                       <button className={`${styles.statusDelButton} ${styles.statusButton}`}>
@@ -120,11 +123,11 @@ export default function Saved() {
                         onClick={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
-                          console.log(blog._id)
-                          handleDelete(blog._id)
+                          console.log(blog._id);
+                          handleDelete(blog._id);
                         }}
                         onMouseEnter={(e) => {
-                          e.stopPropagation()
+                          e.stopPropagation();
                         }}
                       >
                         {/* <svg
@@ -154,7 +157,6 @@ export default function Saved() {
                     ? blog?.description?.substring(0, 115) + "..."
                     : blog.description}
                 </p>
-                
               </li>
             </>
           ))}
