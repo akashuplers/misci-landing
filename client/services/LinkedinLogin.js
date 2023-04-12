@@ -150,43 +150,49 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
           return;
         }
       };
-      fetch(API_BASE_PATH + API_ROUTES.CREATE_USER, {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(signUpFormData),
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          if (!res.error) {
-            toast.success("Succesfully signed up", {
-              position: "top-center",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            });
-          }
-
-          console.log("Succesfully signed up");
-          handleLoginSubmit(signUpFormData.email);
+      var getToken;
+      if (typeof window !== "undefined") {
+        getToken = localStorage.getItem("token");
+      }
+      if (!getToken) {
+        fetch(API_BASE_PATH + API_ROUTES.CREATE_USER, {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify(signUpFormData),
         })
-        .catch((err) => console.error("Error: ", err))
-        .finally(() => {
-          // setSubmitting(false);
-          // setSignUpFormData({
-          // firstName: "",
-          // lastName: "",
-          // email: "",
-          // password: "",
-          // tempUserId: "",
-          // });
-          // setModalIsOpen(false);
-        });
+          .then((res) => res.json())
+          .then((res) => {
+            if (!res.error) {
+              toast.success("Succesfully signed up", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+            }
+
+            console.log("Succesfully signed up");
+            handleLoginSubmit(signUpFormData.email);
+          })
+          .catch((err) => console.error("Error: ", err))
+          .finally(() => {
+            // setSubmitting(false);
+            // setSignUpFormData({
+            // firstName: "",
+            // lastName: "",
+            // email: "",
+            // password: "",
+            // tempUserId: "",
+            // });
+            // setModalIsOpen(false);
+          });
+      }
     })
     .catch((err) => console.error(err));
 };
