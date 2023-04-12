@@ -97,7 +97,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                             case "image":
                                 break;
                             case "wordpress":
-                                const title = newsLetter[key].slice(newsLetter[key].indexOf("Title:"), newsLetter[key].indexOf("Content:")).trim()
+                                // const title = newsLetter[key].slice(newsLetter[key].indexOf("Title:"), newsLetter[key].indexOf("Content:")).trim()
                                 const content = newsLetter[key].slice(newsLetter[key].indexOf("Content:"), newsLetter[key].length).trim()
                                 // console.log(content.split('Content:'))
                                 description = ((content.split('Content:')?.[1])?.replace("\n", ""))?.trimStart()
