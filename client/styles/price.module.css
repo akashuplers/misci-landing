@@ -1,0 +1,18 @@
+.pricingContainer{
+    max-width: 800px;
+    /* border:1px solid; */
+    margin: 0 auto;
+}
+
+.pricingContainer > h2{
+    font-size: 3em;
+    font-weight: 600;
+}
+
+.pricingContainer > p{
+    color: #484F5F;
+    max-width: 500px
+}
+
+
+
