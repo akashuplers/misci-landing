@@ -25,7 +25,6 @@ import {
   EmailIcon,
 } from "react-share";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import axios from "axios";
 
 export default function TinyMCEEditor({
   topic,
@@ -70,7 +69,6 @@ export default function TinyMCEEditor({
   ] = useMutation(updateBlog);
 
   const handleSave = async () => {
-    setSaveLoad(true);
     var getToken;
     if (typeof window !== "undefined") {
       window.addEventListener("beforeunload", (event) => {
@@ -81,6 +79,8 @@ export default function TinyMCEEditor({
     }
 
     if (getToken) {
+      setSaveLoad(true);
+
       console.log("token", getToken);
 
       const jsonDoc = htmlToJson(updatedText).children;
@@ -416,13 +416,13 @@ export default function TinyMCEEditor({
         ) : (
           <div style={{display:"none"}}></div>
         )}
-        <div className="flex" style={{gap:"0.25em"}}>
+        <div className="flex" style={{gap:"0.25em",marginLeft :"auto"}}>
           <button
             className="cta"
             onClick={saveText === "Save Now!" && handleSave}
           >
             {saveLoad ? (
-              <ReactLoading width={25} height={25} round={true} />
+              <ReactLoading width={25} height={25} round={true} color={'#2563EB'}/>
             ) : (
               saveText
             )}
