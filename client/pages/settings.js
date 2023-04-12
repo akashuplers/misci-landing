@@ -83,7 +83,7 @@ export default function Settings() {
     var linkedInAccessToken;
     if (typeof window !== "undefined") {
       linkedInAccessToken = localStorage.getItem("linkedInAccessToken");
-      setlinkedin(true);
+      if (linkedInAccessToken) setlinkedin(true);
     }
   }, []);
 
