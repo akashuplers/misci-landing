@@ -23,6 +23,7 @@ export default function DashboardInsights({
   setIdeas,
   setTags,
 }) {
+  console.log(ideas);
   const [enabled, setEnabled] = useState(false);
 
   const [filteredIdeas, setFilteredIdeas] = useState([]);
@@ -90,7 +91,7 @@ export default function DashboardInsights({
 
   useEffect(() => {
     setFilteredIdeas([])
-    filterTags.forEach(filterText => ideas.forEach(idea => idea.idea.indexOf(filterText) >= 0 && setFilteredIdeas(prev => [...prev, idea.idea])));
+    filterTags.forEach(filterText => ideas.forEach(idea => idea.idea.indexOf(filterText) >= 0 && setFilteredIdeas(prev => [...prev, idea])));
   },[filterTags])
 
   useEffect(() => {
@@ -264,13 +265,12 @@ export default function DashboardInsights({
     }
   }, [formInput]);
 
-  useEffect(() => {
-    if(loading || regenLoading) return
-    const checkbox = Array.from(document.querySelectorAll("input[type='checkbox'].usedIdeas"))
-    checkbox.forEach(box => box.checked = true);
-    // console.log(checkbox);
-  },[ideas, filteredIdeas])
-
+  // useEffect(() => {
+  //   if(loading || regenLoading) return
+  //   const checkbox = Array.from(document.querySelectorAll("input[type='checkbox'].usedIdeas"))
+  //   checkbox.forEach(box => box.checked = true);
+  //   // console.log(checkbox);
+  // },[ideas, filteredIdeas])
 
   if (loading || regenLoading) return <LoaderPlane />;
 
@@ -445,10 +445,18 @@ export default function DashboardInsights({
                 return (
                   <div className="flex pb-5" key={index}>
                     <div className="flex justify-between gap-5 w-full">
-                      <p>{idea}</p>
+                      <p>{idea.idea}</p>
                       <input
                         type="checkbox"
-                        className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 usedIdeas"
+                        className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                        checked = {idea.used}
+                        onClick={() => {
+                          const updatedIdeas = ideas.map((el) => el.idea === idea.idea ? {...el, used : el.used === 1 ? 0 : 1 } : el)
+                          setIdeas(updatedIdeas)
+
+                          const updatedFilteredIdeas = filteredIdeas.map((el, elIndex) => elIndex === index ? {...el, used : el.used === 1 ? 0 : 1 } : el)
+                          setFilteredIdeas(updatedFilteredIdeas)
+                        }}
                       />
                     </div>
                   </div>
@@ -461,7 +469,12 @@ export default function DashboardInsights({
                       <p>{idea.idea}</p>
                       <input
                         type="checkbox"
-                        className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 usedIdeas"
+                        className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                        checked = {idea.used}
+                        onClick={() => {
+                          const updatedIdeas = ideas.map((el,elIndex) => elIndex === index ? {...el, used : el.used === 1 ? 0 : 1 } : el)
+                          setIdeas(updatedIdeas)
+                        }}
                       />
                     </div>
                   </div>
