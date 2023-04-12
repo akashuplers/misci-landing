@@ -88,11 +88,6 @@ export default function Saved() {
           {data?.getAllBlogs.blogs.map((blog, index) => (
             <>
               <li key={blog._id} className="relative">
-                {blog.status === "published" && (
-                  <div className="flex text-sm text-left bg-transparent text-blue-400 font-semibold py-2 px-2 border border-blue-500 rounded relative z-99 m-2 h-[35px] w-[83px]">
-                    {blog.status}
-                  </div>
-                )}
                 <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
                   <img
                     src={blog.image}
