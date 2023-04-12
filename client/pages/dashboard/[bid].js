@@ -81,6 +81,7 @@ export default function Post() {
           <DashboardInsights
             ideas={data?.fetchBlog?.ideas?.ideas}
             blog_id={bid}
+            tags={data?.fetchBlog?.tags}
           />
         </div>
       </Layout>
