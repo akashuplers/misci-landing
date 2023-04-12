@@ -95,7 +95,7 @@ export default function Sidebar() {
       setTitle("Saved Blog(s)");
     } else if (window.location.pathname === "/dashboard") {
       setTitle("Generated Blog(s)");
-    }  else if (window.location.pathname === "/settings") {
+    } else if (window.location.pathname === "/settings") {
       setTitle("Settings");
     } else if (window.location.pathname === "/published") {
       setTitle("Published");
@@ -389,20 +389,56 @@ export default function Sidebar() {
                       ""
                     )}
                   </div> */}
-
-                  <div
+                  {!meeData?.me?.isSubscribed && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        right: "170px",
+                      }}
+                      className="flex text-center font-bold text-sm w-auto rounded border border-gray"
+                      href="/settings"
+                    >
+                      <div className="flex p-2">
+                        <svg
+                          width="21"
+                          height="14"
+                          viewBox="0 0 21 14"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="mr-2"
+                        >
+                          <path
+                            d="M20.8023 1.556V1.70157H0V1.556C0 0.698922 0.698967 0 1.556 0H19.2464C19.4627 0 19.6666 0.0457936 19.8497 0.12067C20.4113 0.357659 20.8024 0.91102 20.8024 1.556H20.8023Z"
+                            fill="#EEC800"
+                          />
+                          <path
+                            d="M0 5.32031V12.4433C0 12.697 0.066518 12.9341 0.174827 13.1464C0.432713 13.6498 0.952828 13.9993 1.55618 13.9993H19.2465C20.1036 13.9993 20.8026 13.3045 20.8026 12.4433L20.8024 5.32031H0ZM2.49631 8.45323H5.54181C5.7748 8.45323 5.9578 8.64042 5.9578 8.86922C5.9578 9.09803 5.77479 9.28521 5.54181 9.28521H2.49631C2.26751 9.28521 2.08032 9.09803 2.08032 8.86922C2.08014 8.64042 2.26751 8.45323 2.49631 8.45323ZM10.0057 11.3655H2.49631C2.26751 11.3655 2.08032 11.1783 2.08032 10.9495C2.08032 10.7207 2.26751 10.5335 2.49631 10.5335H10.0057C10.2346 10.5335 10.4217 10.7207 10.4217 10.9495C10.4217 11.1783 10.2346 11.3655 10.0057 11.3655ZM16.8372 11.7941C16.4045 11.7941 15.9843 11.6443 15.6555 11.3697C15.331 11.636 14.915 11.7941 14.4657 11.7941C13.4298 11.7941 12.5851 10.9496 12.5851 9.9093C12.5851 8.86923 13.4296 8.02454 14.4657 8.02454C14.915 8.02454 15.3311 8.18265 15.6555 8.44889C15.9843 8.17429 16.4045 8.02454 16.8372 8.02454C17.8772 8.02454 18.7219 8.86906 18.7219 9.91349C18.7219 10.9496 17.8772 11.7941 16.8372 11.7941V11.7941Z"
+                            fill="#EEC800"
+                          />
+                          <path
+                            d="M0 2.53711H20.8027V4.49257H0V2.53711Z"
+                            fill="#EEC800"
+                          />
+                        </svg>
+                        {meeData?.me?.credits}/25 Credits used
+                      </div>
+                    </div>
+                  )}
+                  <a
                     style={{
                       position: "absolute",
-                      right: "20px",
-                      height: "50px",
+                      right: "70px",
                     }}
                     className=" w-[50px]"
+                    href="/settings"
                   >
                     <Avatar
+                      size="60"
                       name={meeData?.me?.name + " " + meeData?.me?.lastName}
+                      src={meeData?.me?.profileImage}
                       round={true}
                     />
-                  </div>
+                  </a>
                 </div>
               </div>
 
