@@ -70,11 +70,12 @@ export const blogResolvers = {
                                     tags: 1,
                                     description: 1,
                                     status: 1,
+                                    updatedAt: 1,
                                 }
                             },
                             {
                                 $sort: {
-                                    keyword: 1
+                                    updatedAt: -1
                                 }
                             },
                             {
@@ -101,7 +102,8 @@ export const blogResolvers = {
                         description: blog.description,
                         tags: (blog?.tags?.length && blog.tags) || [],
                         image: blog.imageUrl || null,
-                        status: blog.status || null
+                        status: blog.status || null,
+                        date: blog.updatedAt || null
                     }
                 })
                 return {blogs: updatedList, count: blogLists[0].total?.length ? blogLists[0].total[0].count : 0}
@@ -200,7 +202,8 @@ export const blogResolvers = {
                     description,
                     tags,
                     imageUrl,
-                    date: getTimeStamp()
+                    date: getTimeStamp(),
+                    updatedAt: getTimeStamp(),
                 }
                 let updatedIdeas: any = []
                 articlesData.forEach((data) => {
@@ -378,7 +381,8 @@ export const blogResolvers = {
                         description,
                         article_id: articleIds,
                         tags,
-                        imageUrl: blog.imageUrl ? blog.imageUrl : imageUrl
+                        imageUrl: blog.imageUrl ? blog.imageUrl : imageUrl,
+                        updatedAt: getTimeStamp()
                     }
                 })
                 if(blogIdeas.ideas && blogIdeas.ideas.length) {
@@ -470,7 +474,8 @@ export const blogResolvers = {
                 $set: {
                     publish_data: updatedPublisData,
                     status: "saved",
-                    userId: new ObjectID(user.id)
+                    userId: new ObjectID(user.id),
+                    updatedAt: getTimeStamp()
                 }
             })
             const updatedBlog = await fetchBlog({id: blogId, db})
@@ -535,7 +540,8 @@ export const blogResolvers = {
                                 status: "ir_generated",
                                 description,
                                 imageUrl,
-                                date: getTimeStamp()
+                                date: getTimeStamp(),
+                                updatedAt: getTimeStamp(),
                             }
                             let updatedIdeas: any = []
                             articlesData.forEach((data) => {
