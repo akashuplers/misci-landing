@@ -146,7 +146,7 @@ export default function dashboard({ query }) {
   return (
     <>
       <Layout>
-        <div className="flex divide-x">
+        <div className="flex ml-2">
           <div className="w-[60%] relative">
             <TinyMCEEditor
               topic={topic}
