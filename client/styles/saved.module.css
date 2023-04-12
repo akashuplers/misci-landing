@@ -43,8 +43,8 @@
 .deleteButton{
     color: #ff2a00;
     position: absolute;
-    top: 43%;
-    left: 5%;
+    top: 3%;
+    left: 3%;
     z-index: 1000;
 }
 
