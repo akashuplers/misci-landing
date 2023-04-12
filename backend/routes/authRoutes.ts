@@ -390,7 +390,7 @@ router.post('/linkedin/post', authMiddleware ,async (request: any, reply: any) =
       message: "No user found!"
     })
   }
-  if(parseInt(userDetails.credits) <= 0) {
+  if(!userDetails.paid && parseInt(userDetails.credits) <= 0) {
     return reply.status(400).send({
       type: "SUCCESS",
       message: "No free credits left!"
@@ -533,7 +533,7 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
       message: "No user found!"
     })
   }
-  if(parseInt(userDetails.credits) <= 0) {
+  if(!userDetails.paid && parseInt(userDetails.credits) <= 0) {
     return reply.status(400).send({
       type: "SUCCESS",
       message: "No free credits left!"

@@ -626,7 +626,7 @@ export const blogResolvers = {
             if(!userDetails) {
                 throw "@no user found"
             }
-            if(parseInt(userDetails.credits) <= 0) {
+            if(!userDetails.paid && parseInt(userDetails.credits) <= 0) {
                 throw "@No free credits left!"
             }
             const blog = await fetchBlogByUser({id: blog_id, db, userId: user.id})
