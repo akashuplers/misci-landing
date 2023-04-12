@@ -276,14 +276,14 @@ export default function DashboardInsights({
 
   return (
     <>
-      <div className="w-[30%] px-5 text-xs">
+      <div className="w-[40%] text-xs px-2" style={{width:"40%"}}>
         {isAuthenticated && (
           <div className="flex pb-4 justify-between gap-[1.25em]">
             <p className="font-normal w-[70%]">
               Regenerate your blog by selecting ideas from fresh and used ideas.
             </p>
             <button
-              className="h-[fit-content] bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white p-[0.25em] border border-blue-500 hover:border-transparent rounded"
+              className="h-[fit-content] text-sm bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white p-[0.25em] border border-blue-500 hover:border-transparent rounded"
               onClick={handleRegenerate}
             >
               Regenerate
@@ -403,7 +403,7 @@ export default function DashboardInsights({
           <div className="flex justify-between w-full items-center py-5 mt-7">
             <p className=" font-semibold">Filtering Keywords</p>
           </div>
-          <div className="flex gap-[0.25em] flex-wrap max-h-[70px] overflow-y-scroll">
+          <div className="flex gap-[0.5em] flex-wrap max-h-[80px] overflow-y-scroll">
             {tags?.map(tag => {
               return <div
                         className="bg-gray-300 rounded-full p-2 cursor-pointer tag-button cta"
@@ -412,7 +412,7 @@ export default function DashboardInsights({
             })}
           </div>
         </div>}
-        <div className="flex pb-5 pt-5">
+        <div className="flex py-2">
           <button
             className="idea-button cta used m-3 ml-0 active !px-[0.4em] !py-[0.25em]"
             onClick={(e) => {
@@ -437,12 +437,12 @@ export default function DashboardInsights({
             Fresh Idea(s)
           </button>}
         </div>
-        <div className="h-[35%] overflow-y-scroll absolute mr-5">
+        <div className="h-[38%] overflow-y-scroll absolute px-2" style={{marginRight:"0.5em"}}>
           {ideaType === "used"
             ? filteredIdeas.length > 0 
             ? filteredIdeas?.map((idea, index) => {
                 return (
-                  <div className="flex pb-5" key={index}>
+                  <div className="flex pb-3" key={index}>
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea.idea}</p>
                       <input
@@ -463,7 +463,7 @@ export default function DashboardInsights({
               })
             : ideas?.map((idea, index) => {
                 return (
-                  <div className="flex pb-5 usedIdeas" key={index}>
+                  <div className="flex pb-3 usedIdeas" key={index}>
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea.idea}</p>
                       <input
@@ -483,7 +483,7 @@ export default function DashboardInsights({
           {ideaType === "fresh"
             ? freshIdea?.map((idea, index) => {
                 return (
-                  <div className="flex pb-5" key={index}>
+                  <div className="flex pb-3" key={index}>
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea.idea}</p>
                       <input

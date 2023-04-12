@@ -283,38 +283,6 @@ export default function TinyMCEEditor({
   if (loading) return <LoaderPlane />;
   return (
     <>
-      {isAuthenticated ? (
-        <div
-          style={{
-            position: "absolute",
-            top: "-6%",
-            left: "0",
-            display: "flex",
-            gap: "0.5em",
-          }}
-        >
-          <button
-            className="blog-toggle-button cta active wordpress"
-            onClick={handleBlog}
-          >
-            Blog
-          </button>
-          <button
-            className="blog-toggle-button cta linkedin"
-            onClick={handleLinkedinBlog}
-          >
-            Linkedin
-          </button>
-          <button
-            className="blog-toggle-button cta twitter"
-            onClick={handleTwitterBlog}
-          >
-            Twitter
-          </button>
-        </div>
-      ) : (
-        <div></div>
-      )}
       <Modal
         isOpen={openModal}
         onRequestClose={() => setOpenModal(false)}
@@ -415,6 +383,82 @@ export default function TinyMCEEditor({
         handleSave={handleSave}
         bid={blog_id}
       />
+      <div style={{
+        paddingBottom:"0.5em",
+        display:"flex",
+        justifyContent:"space-between",
+        alignItems:"center"
+      }} className="text-sm">
+        {isAuthenticated ? (
+          <div style={{
+            display:"flex",
+            gap:"0.25em"
+          }}>
+            <button
+              className="blog-toggle-button cta active wordpress"
+              onClick={handleBlog}
+            >
+              Blog
+            </button>
+            <button
+              className="blog-toggle-button cta linkedin"
+              onClick={handleLinkedinBlog}
+            >
+              Linkedin
+            </button>
+            <button
+              className="blog-toggle-button cta twitter"
+              onClick={handleTwitterBlog}
+            >
+              Twitter
+            </button>
+          </div>
+        ) : (
+          <div style={{display:"none"}}></div>
+        )}
+        <div className="flex" style={{gap:"0.25em"}}>
+          <button
+            className="cta"
+            onClick={saveText === "Save Now!" && handleSave}
+          >
+            {saveLoad ? (
+              <ReactLoading width={25} height={25} round={true} />
+            ) : (
+              saveText
+            )}
+          </button>
+          {option === "linkedin" ? (
+            linkedInAccessToken ? (
+              <button
+                className="cta"
+                onClick={handlePublish}
+              >
+                Publish on Linkedin
+              </button>
+            ) : (
+              <button
+                className="cta"
+                onClick={handleconnectLinkedin}
+              >
+                Connect with Linkedin
+              </button>
+            )
+          ) : option === "twitter" ? (
+            <button className="cta">
+              Coming Soon...
+            </button>
+          ) : isAuthenticated ? (
+            <button
+              className="cta"
+              onClick={handleSavePublish}
+            >
+              Save & Publish
+            </button>
+          ) : (
+            <></>
+          )}
+        </div>
+      </div>
       <Editor
         value={updatedText || editorText}
         apiKey="i40cogfqfupotdcavx74ibdbucbojjvpuzbl8tqy34atmkyd"
@@ -430,7 +474,7 @@ export default function TinyMCEEditor({
           plugins: "lists code table codesample link",
           menubar: false,
           statusbar: false,
-          height: 600,
+          height: "82vh",
           images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
           images_upload_credentials: true,
           plugins:
@@ -519,48 +563,6 @@ export default function TinyMCEEditor({
           // console.log(updatedText);
         }}
       />
-      <div className="flex space-x-5">
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-          onClick={saveText === "Save Now!" && handleSave}
-        >
-          {saveLoad ? (
-            <ReactLoading width={25} height={25} round={true} />
-          ) : (
-            saveText
-          )}
-        </button>
-        {option === "linkedin" ? (
-          linkedInAccessToken ? (
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-              onClick={handlePublish}
-            >
-              Publish on Linkedin
-            </button>
-          ) : (
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-              onClick={handleconnectLinkedin}
-            >
-              Connect with Linkedin
-            </button>
-          )
-        ) : option === "twitter" ? (
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-            Coming Soon...
-          </button>
-        ) : isAuthenticated ? (
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-            onClick={handleSavePublish}
-          >
-            Save & Publish
-          </button>
-        ) : (
-          <></>
-        )}
-      </div>
     </>
   );
 }
