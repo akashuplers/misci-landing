@@ -1,15 +1,15 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/jsx-key */
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import styles from "../styles/saved.module.css";
 import { useQuery, useMutation } from "@apollo/client";
 import { getAllBlogs } from "../graphql/queries/getAllBlogs";
-import Head from "next/head";
-import { contextType } from "react-modal";
 import LoaderPlane from "../components/LoaderPlane";
 import { deleteBlog } from "../graphql/mutations/deleteBlog";
 import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
+import { Link } from "react-router-dom";
 
 export default function Saved() {
   const { data, error, loading } = useQuery(getAllBlogs, {
@@ -70,6 +70,8 @@ export default function Saved() {
       });
   };
 
+  console.log(data);
+
   if (loading) return <LoaderPlane />;
 
   return (
@@ -79,8 +81,11 @@ export default function Saved() {
         <ul
           role="list"
           className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8 ml-[5%]"
+          style={{
+            listStyleType: "none",
+          }}
         >
-          {data?.getAllBlogs.blogs.map((blog) => (
+          {data?.getAllBlogs.blogs.map((blog, index) => (
             <>
               <li key={blog._id} className="relative">
                 {blog.status === "published" && (
@@ -92,16 +97,62 @@ export default function Saved() {
                   <img
                     src={blog.image}
                     alt={blog.title}
-                    className="pointer-events-none object-cover group-hover:opacity-75"
+                    className="pointer-events-none object-cover"
                   />
                   <a href={"/dashboard/" + blog._id}>
                     <button
                       type="button"
                       className="absolute inset-0 focus:outline-none"
+                      onMouseEnter={(e) => {
+                        const delButton = document.querySelector(
+                          `#savedBlog${index}DelButton`
+                        );
+                        delButton.classList.remove("!hidden");
+                      }}
+                      onMouseLeave={(e) => {
+                        const delButton = document.querySelector(
+                          `#savedBlog${index}DelButton`
+                        );
+                        delButton.classList.add("!hidden");
+                      }}
                     >
+                      <button
+                        className={`${styles.statusDelButton} ${styles.statusButton}`}
+                      >
+                        {blog?.status}
+                      </button>
                       <span className="sr-only">
                         View details for {blog.title}
                       </span>
+                      <button
+                        id={`savedBlog${index}DelButton`}
+                        className={`${styles.statusDelButton} !hidden ${styles.deleteButton}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          console.log(blog._id);
+                          handleDelete(blog._id);
+                        }}
+                        onMouseEnter={(e) => {
+                          e.stopPropagation();
+                        }}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 28 28"
+                          stroke-width="1"
+                          stroke="currentColor"
+                          class="w-6 h-6"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                          />
+                        </svg>
+                        Delete
+                      </button>
                     </button>
                   </a>
                 </div>
@@ -113,30 +164,9 @@ export default function Saved() {
                     ? blog?.description?.substring(0, 115) + "..."
                     : blog.description}
                 </p>
-                <button
-                  className="flex bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded relative z-99 mt-4 w-[100px]"
-                  onClick={() => handleDelete(blog._id)}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="w-6 h-6"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                    />
-                  </svg>
-                  Delete
-                </button>
               </li>
             </>
           ))}
-              
         </ul>
       </Layout>
     </>
