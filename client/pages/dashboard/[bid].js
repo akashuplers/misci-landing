@@ -20,6 +20,28 @@ export default function Post() {
     },
   });
 
+  const [ideas, setIdeas] = useState([]);
+  const [editorText, setEditorText] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [blogData, setBlogData] = useState([]);
+
+  useEffect(() => {
+    if(data == null) return
+
+    console.log(data);
+    setBlogData(data.fetchBlog);
+
+    // const aa = data.generate.publish_data[2].tiny_mce_data;
+    const aa = data.fetchBlog.publish_data.find(
+      (pd) => pd.platform === "wordpress"
+    ).tiny_mce_data;
+    const htmlDoc = jsonToHtml(aa);
+    setEditorText(htmlDoc);
+
+    setIdeas(data.fetchBlog.ideas.ideas)
+    setTags(data.fetchBlog.tags);
+  },[data])
+
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -67,20 +89,22 @@ export default function Post() {
           )}
           <div className="h-[100%] w-[70%] mx-5 relative">
             <TinyMCEEditor
-              editorText={jsonToHtml(
-                data?.fetchBlog?.publish_data.find(
-                  (pd) => pd.platform === "wordpress"
-                ).tiny_mce_data
-              )}
-              // data?.fetchBlog?.publish_data[2].tiny_mce_data ^^
-              blog_id={bid}
               isAuthenticated={true}
-              blogData={data?.fetchBlog}
+              editorText={editorText}
+              blogData={blogData}
+              blog_id={bid}
             />
           </div>
           <DashboardInsights
-            ideas={data?.fetchBlog?.ideas?.ideas}
+            ideas={ideas}
             blog_id={bid}
+            tags={tags}
+            // loading={loading}
+            setEditorText={setEditorText}
+            setBlogData={setBlogData}
+            setIdeas={setIdeas}
+            setTags={setTags}
+            // tags={data?.fetchBlog?.tags}
           />
         </div>
       </Layout>
