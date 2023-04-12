@@ -383,6 +383,19 @@ router.post('/linkedin/post', authMiddleware ,async (request: any, reply: any) =
   const db = request.app.get('db')
   const user = request.user
   if(!user) throw "No user found!"
+  const userDetails = await fetchUser({id: user.id, db})
+  if(!userDetails) {
+    return reply.status(400).send({
+      type: "SUCCESS",
+      message: "No user found!"
+    })
+  }
+  if(parseInt(userDetails.credits) <= 0) {
+    return reply.status(400).send({
+      type: "SUCCESS",
+      message: "No free credits left!"
+    })
+  }
   const options = request.body
   const todaysDate = new Date()
   const headers = {
@@ -493,7 +506,7 @@ router.post('/linkedin/post', authMiddleware ,async (request: any, reply: any) =
       await publishBlog({id: options.blogId, db, platform: "linkedin"})
       return reply
       .status(200)
-      .send({ error: true, data: postUrn.headers[uin] });
+      .send({ error: false, data: postUrn.headers[uin] });
   }  catch (err) {
       console.log(err)
       // throw new Error(`${err}`);
@@ -513,6 +526,19 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
   const db = request.app.get('db')
   const user = request.user
   if(!user) throw "No user found!"
+  const userDetails = await fetchUser({id: user.id, db})
+  if(!userDetails) {
+    return reply.status(400).send({
+      type: "SUCCESS",
+      message: "No user found!"
+    })
+  }
+  if(parseInt(userDetails.credits) <= 0) {
+    return reply.status(400).send({
+      type: "SUCCESS",
+      message: "No free credits left!"
+    })
+  }
   const options = request.body
   const body = options
   const secretKey: string = process.env.TWITTER_API_Key_Secret || "Hjy1ujvoQpHvYBRisBz3deCWKfjsH6peapdTLPx3p8eCKt43YU"

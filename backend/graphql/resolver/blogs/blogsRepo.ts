@@ -120,7 +120,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                         "tag": "STRONG",
                                                         "attributes": {},
                                                         "children": [
-                                                            title.split("Title: ")[1]
+                                                            title
                                                         ]
                                                     }
                                                 ]

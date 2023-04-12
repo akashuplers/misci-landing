@@ -438,7 +438,7 @@ export const blogResolvers = {
             parent: unknown, args: {options: UpdateBlogMutationArg}, {req, res, db, pubsub, user}: any
         ) => {
             if(!Object.keys(user).length) {
-                throw "@not authorised!"
+                throw "@Not authorized!"
             }
             const blogId = args.options.blog_id
             const tinymce_json = args.options.tinymce_json
@@ -467,7 +467,7 @@ export const blogResolvers = {
             await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(blogId)}, {
                 $set: {
                     publish_data: updatedPublisData,
-                    status: "draft",
+                    status: "saved",
                     userId: new ObjectID(user.id)
                 }
             })
@@ -615,9 +615,15 @@ export const blogResolvers = {
             }
             const {blog_id} = args.options
             const userDetails = await fetchUser({id: user.id, db})
+            if(!userDetails) {
+                throw "@no user found"
+            }
+            if(parseInt(userDetails.credits) <= 0) {
+                throw "@No free credits left!"
+            }
             const blog = await fetchBlogByUser({id: blog_id, db, userId: user.id})
             if(!blog) {
-                throw "@no blog found"
+                throw "@No blog found"
             }
             const updatedCredits = ((userDetails.credits || 25) - 1)
             await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(userDetails._id)}, {$set: {credits: updatedCredits}})
