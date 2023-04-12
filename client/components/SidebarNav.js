@@ -428,10 +428,16 @@ export default function Sidebar() {
                   <Link
                     style={{
                       position: "absolute",
-                      right: "70px",
+                      right: "50px",
                     }}
-                    className=" w-[50px]"
+                    // className=" w-[50px]"
                     href="/settings"
+                    onMouseEnter={() => {
+                      document.getElementById("trialenddiv").classList.remove("hidden")
+                    }}
+                    onMouseLeave={() => {
+                      document.getElementById("trialenddiv").classList.add("hidden")
+                    }}
                   >
                     <Avatar
                       size="60"
@@ -439,6 +445,23 @@ export default function Sidebar() {
                       src={meeData?.me?.profileImage}
                       round={true}
                     />
+                    <div
+                      id="trialenddiv"
+                      className="hidden"
+                      style={{
+                      border: '1px solid',
+                      fontSize: '0.65em',
+                      width: 'max-content',
+                      borderRadius: '5px',
+                      textAlign: 'center',
+                      padding: '0.25em 0.75em',
+                      position: 'absolute',
+                      top: '105%',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      zIndex:'100',
+                      backgroundColor:'#EEC800'
+                    }}>{meeData?.me?.freeTrialDays} Days left for <br/> your trial to end!</div>
                   </Link>
                 </div>
               </div>
