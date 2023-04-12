@@ -5,12 +5,28 @@ export const getBlogbyId = gql`
     fetchBlog(id: $fetchBlogId) {
       _id
       article_id
+      tags
       ideas {
         blog_id
         ideas {
           used
           idea
           article_id
+          reference {
+            type
+            link
+            id
+          }
+        }
+        freshIdeas {
+          used
+          idea
+          article_id
+          reference {
+            type
+            link
+            id
+          }
         }
       }
       publish_data {

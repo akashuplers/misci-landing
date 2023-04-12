@@ -39,7 +39,7 @@ export default function Post() {
     setEditorText(htmlDoc);
 
     setIdeas(data.fetchBlog.ideas.ideas)
-    //setTags(data.fetchBlog.tags);
+    setTags(data.fetchBlog.tags);
   },[data])
 
   var getToken;
@@ -98,12 +98,13 @@ export default function Post() {
           <DashboardInsights
             ideas={ideas}
             blog_id={bid}
-            // tags={tags}
+            tags={tags}
             // loading={loading}
             setEditorText={setEditorText}
             setBlogData={setBlogData}
             setIdeas={setIdeas}
-            // setTags={setTags}
+            setTags={setTags}
+            // tags={data?.fetchBlog?.tags}
           />
         </div>
       </Layout>
