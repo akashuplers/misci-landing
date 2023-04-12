@@ -13,9 +13,39 @@
     background-color: #bdd5f6;
     padding: 0.1em;
     color: white;
-    border-radius: 5px;
+    border-radius: 7px;
     padding: 0.1em 0.3em;
     font-size: 0.9em;
+}
+
+.statusDelButton{
+    font-size: 0.75em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border: 1px solid;
+    border-radius: 7px;
+    width: -moz-min-content;
+    width: min-content;
+    padding: 0.25em 1em;
+    margin-bottom: 0.5em;    
+}
+
+.statusButton{
+    color: #00d1ff;
+    position: absolute;
+    top: 3%;
+    right: 3%;
+    z-index: 1000;
+}
+
+.deleteButton{
+    color: #ff2a00;
+    position: absolute;
+    top: 43%;
+    left: 5%;
+    z-index: 1000;
 }
 
 @media (max-width : 1024px) {

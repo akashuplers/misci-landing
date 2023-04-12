@@ -23,7 +23,7 @@ import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import LoaderPlane from "../components/LoaderPlane";
 import { useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import ReactLoading from "react-loading"
+import ReactLoading from "react-loading";
 
 const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: false },
@@ -66,14 +66,26 @@ export default function Settings() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [updateProfileData, setUpdateProfileData] = useState({
-    "firstName": "",
-    "lastName": "",
-    "profileImage": ""
-  })
+    firstName: "",
+    lastName: "",
+    profileImage: "",
+  });
   const [updateLoader, setUpdateLoader] = useState(false);
 
-  const [automaticTimezoneEnabled, setAutomaticTimezoneEnabled] = useState(true);
-  const [autoUpdateApplicantDataEnabled, setAutoUpdateApplicantDataEnabled] = useState(false);
+  const [automaticTimezoneEnabled, setAutomaticTimezoneEnabled] =
+    useState(true);
+  const [autoUpdateApplicantDataEnabled, setAutoUpdateApplicantDataEnabled] =
+    useState(false);
+
+  const [linkedin, setlinkedin] = useState(false);
+
+  useEffect(() => {
+    var linkedInAccessToken;
+    if (typeof window !== "undefined") {
+      linkedInAccessToken = localStorage.getItem("linkedInAccessToken");
+      if (linkedInAccessToken) setlinkedin(true);
+    }
+  }, []);
 
   var getToken;
   if (typeof window !== "undefined") {
@@ -94,47 +106,49 @@ export default function Settings() {
   });
 
   useEffect(() => {
-    if(meeData != null){
+    if (meeData != null) {
       setUpdateProfileData({
-        "firstName": meeData.me.name,
-        "lastName": meeData.me.lastName,
-        "profileImage": meeData.me.profileImage
-      })
+        firstName: meeData.me.name,
+        lastName: meeData.me.lastName,
+        profileImage: meeData.me.profileImage,
+      });
     }
-  }, [meeData])
+  }, [meeData]);
 
   console.log("meeData", meeData);
 
   const handleUpdate = (e) => {
+    if (
+      meeData.me.name === updateProfileData.firstName &&
+      meeData.me.lastName === updateProfileData.lastName &&
+      meeData.me.profileImage === updateProfileData.profileImage
+    ) {
+      toast.success("Profile up to Date!", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      return;
+    }
 
-    if(meeData.me.name === updateProfileData.firstName &&
-       meeData.me.lastName === updateProfileData.lastName &&
-       meeData.me.profileImage === updateProfileData.profileImage){
-          toast.success("Profile up to Date!", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
-          return
-       }
-
-    setUpdateLoader(true)
+    setUpdateLoader(true);
     const myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${getToken}`);
     myHeaders.append("Content-Type", "application/json");
 
-    fetch(API_BASE_PATH+API_ROUTES.UPDATE_PROFILE,{
+    fetch(API_BASE_PATH + API_ROUTES.UPDATE_PROFILE, {
       method: "PUT",
       headers: myHeaders,
-      body: JSON.stringify(updateProfileData)
-    }).then(res => res.json())
-      .then(res => {
-        if(res.errors === false){
+      body: JSON.stringify(updateProfileData),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.errors === false) {
           toast.success(res.message, {
             position: "top-center",
             autoClose: 5000,
@@ -145,7 +159,7 @@ export default function Settings() {
             progress: undefined,
             theme: "light",
           });
-        }else{
+        } else {
           toast.error(res.message, {
             position: "top-center",
             autoClose: 5000,
@@ -158,15 +172,14 @@ export default function Settings() {
           });
         }
       })
-      .catch(err => console.error(err.message))
-      .finally(() => setUpdateLoader(false))
-  }
+      .catch((err) => console.error(err.message))
+      .finally(() => setUpdateLoader(false));
+  };
 
-  const handleInputChange = ({target}) => {
+  const handleInputChange = ({ target }) => {
+    let { value, name } = target;
 
-    let {value, name} = target
-
-    if(target.id === "profileImageInput"){
+    if (target.id === "profileImageInput") {
       const selectedfile = target.files[0];
       const fileReader = new FileReader();
 
@@ -175,59 +188,59 @@ export default function Settings() {
         // console.log('base64:', srcData)
 
         var myHeaders = {
-          "Content-Type" : "application/json"
+          "Content-Type": "application/json",
         };
 
         var imageRaw = JSON.stringify({
-          "path": "profile",
-          "base64": srcData
-        })
+          path: "profile",
+          base64: srcData,
+        });
 
         var requestOptions = {
-          method: 'POST',
+          method: "POST",
           headers: myHeaders,
           body: imageRaw,
-          redirect: 'follow'
+          redirect: "follow",
         };
 
         // console.log(requestOptions);
-        
-        fetch(API_BASE_PATH+API_ROUTES.IMAGE_UPLOAD,requestOptions)
-          .then(response => response.json())
-          .then(result => {
-            console.log(result)
-            setUpdateProfileData(prev => {
+
+        fetch(API_BASE_PATH + API_ROUTES.IMAGE_UPLOAD, requestOptions)
+          .then((response) => response.json())
+          .then((result) => {
+            console.log(result);
+            setUpdateProfileData((prev) => {
               return {
                 ...prev,
-                profileImage : result.url
-              }
-            })
+                profileImage: result.url,
+              };
+            });
           })
-          .catch(error => console.log('error', error));
+          .catch((error) => console.log("error", error));
       };
 
       fileReader.readAsDataURL(selectedfile);
       return;
     }
 
-    setUpdateProfileData(prev => {
+    setUpdateProfileData((prev) => {
       return {
         ...prev,
-        [name] : value
-      }
-    })
-  }
+        [name]: value,
+      };
+    });
+  };
 
   useEffect(() => {
-    console.log(updateProfileData)
-  },[updateProfileData])
+    console.log(updateProfileData);
+  }, [updateProfileData]);
 
-  if(meeLoading) return <LoaderPlane/>
+  if (meeLoading) return <LoaderPlane />;
 
   return (
     <>
       <div>
-        <ToastContainer/>
+        <ToastContainer />
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
@@ -402,7 +415,7 @@ export default function Settings() {
                     </button>
                   </div>
                 </div>
-              </div> 
+              </div>
 
               <main className="flex-1">
                 <div className="relative mx-auto max-w-4xl">
@@ -464,15 +477,15 @@ export default function Settings() {
                                   First Name
                                 </dt>
                                 <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                  <input 
-                                    type="text" 
+                                  <input
+                                    type="text"
                                     className="flex-grow"
                                     value={updateProfileData.firstName}
                                     onChange={handleInputChange}
                                     name="firstName"
                                     style={{
-                                      border:"none",
-                                      padding:"0 0.25em"
+                                      border: "none",
+                                      padding: "0 0.25em",
                                     }}
                                   />
                                   {/* <span className="ml-4 flex-shrink-0">
@@ -491,15 +504,15 @@ export default function Settings() {
                                   Last Name
                                 </dt>
                                 <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                  <input 
-                                    type="text" 
+                                  <input
+                                    type="text"
                                     className="flex-grow"
                                     value={updateProfileData.lastName}
                                     onChange={handleInputChange}
                                     name="lastName"
                                     style={{
-                                      border:"none",
-                                      padding:"0 0.25em"
+                                      border: "none",
+                                      padding: "0 0.25em",
                                     }}
                                   />
                                   {/* <span className="ml-4 flex-shrink-0">
@@ -519,11 +532,24 @@ export default function Settings() {
                                 </dt>
                                 <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                   <div class="profile-pic">
-                                    <label class="-label" htmlFor="profileImageInput">
+                                    <label
+                                      class="-label"
+                                      htmlFor="profileImageInput"
+                                    >
                                       <span>Change Image</span>
-                                      <input name="profileImage" id="profileImageInput" type="file" accept="image/*" onChange={handleInputChange}/>
+                                      <input
+                                        name="profileImage"
+                                        id="profileImageInput"
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleInputChange}
+                                      />
                                     </label>
-                                    <img src={updateProfileData.profileImage} width="100" id="profileImage"/>
+                                    <img
+                                      src={updateProfileData.profileImage}
+                                      width="100"
+                                      id="profileImage"
+                                    />
                                   </div>
                                 </dd>
                               </div>
@@ -548,30 +574,52 @@ export default function Settings() {
                                 </dd>
                               </div>
                               <div>
-                                
+                                <button
+                                  type="button"
+                                  className="update-button cta"
+                                  style={{
+                                    position: "absolute",
+                                    right: "0",
+                                    bottom: "30px",
+                                    width: "80px",
+                                    height: "30px",
+                                  }}
+                                  onClick={handleUpdate}
+                                >
+                                  {updateLoader ? (
+                                    <ReactLoading
+                                      type={"spin"}
+                                      color={"#2563EB"}
+                                      height={15}
+                                      width={15}
+                                      className={"mx-auto"}
+                                    />
+                                  ) : (
+                                    "Update"
+                                  )}
+                                </button>
+                                {linkedin ? (
                                   <button
-                                    type="button"
                                     className="update-button cta"
                                     style={{
-                                      position:"absolute",
-                                      right:"0",
-                                      bottom:"30px",
-                                      width:"80px",
-                                      height:"30px"
+                                      position: "absolute",
+                                      right: "100px",
+                                      bottom: "30px",
+                                      width: "150px",
+                                      height: "30px",
                                     }}
-                                    onClick={handleUpdate}
+                                    onClick={() => {
+                                      localStorage.removeItem(
+                                        "linkedInAccessToken"
+                                      );
+                                      setlinkedin(false);
+                                    }}
                                   >
-                                    {updateLoader ?
-                                      <ReactLoading
-                                        type={"spin"}
-                                        color={"#2563EB"}
-                                        height={15}
-                                        width={15}
-                                        className={"mx-auto"}
-                                      />
-                                    : "Update"}
+                                    Logout Linkedin
                                   </button>
-                                
+                                ) : (
+                                  <></>
+                                )}
                               </div>
                             </dl>
                           </div>
