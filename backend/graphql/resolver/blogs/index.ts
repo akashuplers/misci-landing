@@ -99,7 +99,8 @@ export const blogResolvers = {
                         title: blog.keyword,
                         description: blog.description,
                         tags: (blog?.tags?.length && blog.tags) || [],
-                        image: blog.imageUrl || null
+                        image: blog.imageUrl || null,
+                        status: blog.status || null
                     }
                 })
                 return {blogs: updatedList, count: blogLists[0].total?.length ? blogLists[0].total[0].count : 0}
