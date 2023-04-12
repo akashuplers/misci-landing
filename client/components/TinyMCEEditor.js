@@ -207,6 +207,7 @@ export default function TinyMCEEditor({
   };
 
   const handlePublish = () => {
+        console.log('req here')
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + token);
     myHeaders.append("Content-Type", "application/json");
@@ -229,7 +230,7 @@ export default function TinyMCEEditor({
       body: raw,
       redirect: "follow",
     };
-
+    console.log('req', requestOptions)
     fetch("https://maverick.lille.ai/auth/linkedin/post", requestOptions)
       .then((response) => response.text())
       .then((result) => console.log(result))
