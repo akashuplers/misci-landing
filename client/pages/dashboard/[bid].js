@@ -79,7 +79,7 @@ export default function Post() {
   return (
     <>
       <Layout>
-        <div className="flex divide-x">
+        <div className="flex ml-2">
           {pfmodal && (
             <PreferencesModal
               pfmodal={pfmodal}
