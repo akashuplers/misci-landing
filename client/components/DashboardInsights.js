@@ -11,6 +11,7 @@ import { useMutation, gql } from "@apollo/client";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import ReactLoading from "react-loading";
 import useStore from "../store/store";
+import AuthenticationModal from "./AuthenticationModal";
 
 export default function DashboardInsights({
   loading,
@@ -271,27 +272,40 @@ export default function DashboardInsights({
   //   checkbox.forEach(box => box.checked = true);
   //   // console.log(checkbox);
   // },[ideas, filteredIdeas])
+  const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
+  const [authenticationModalType, setAuthneticationModalType] = useState("signup");
+  var Gbid;
+  if (typeof window !== "undefined") {
+    Gbid = localStorage.getItem("Gbid");
+  }
 
   if (loading || regenLoading) return <LoaderPlane />;
 
   return (
     <>
+      <AuthenticationModal
+        type={authenticationModalType}
+        setType={setAuthneticationModalType}
+        modalIsOpen={authenticationModalOpen}
+        setModalIsOpen={setAuthenticationModalOpen}
+        handleSave={() => (window.location = "/")}
+        bid={blog_id}
+      />
       <div className="w-[40%] text-xs px-2" style={{width:"40%"}}>
+        <div className="flex justify-between gap-[1.25em]">
+          <p className="font-normal w-[70%]">
+            Regenerate your blog by selecting ideas from fresh and used ideas.
+          </p>
+          <button
+            className="h-[fit-content] text-sm bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white p-[0.25em] border border-blue-500 hover:border-transparent rounded"
+            onClick={isAuthenticated ? handleRegenerate : () => setAuthenticationModalOpen(true)}
+          >
+            Regenerate
+          </button>
+        </div>
         {isAuthenticated && (
-          <div className="flex pb-4 justify-between gap-[1.25em]">
-            <p className="font-normal w-[70%]">
-              Regenerate your blog by selecting ideas from fresh and used ideas.
-            </p>
-            <button
-              className="h-[fit-content] text-sm bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white p-[0.25em] border border-blue-500 hover:border-transparent rounded"
-              onClick={handleRegenerate}
-            >
-              Regenerate
-            </button>
-          </div>
-        )}
-        {isAuthenticated && (
-          <form onSubmit={postFormData}>
+          <>
+          <form onSubmit={postFormData} className="pt-4 mb-7">
             {newIdeaLoad ? (
               <ReactLoading
                 type={"spin"}
@@ -398,9 +412,10 @@ export default function DashboardInsights({
               </div>
             )}
           </form>
+        </>
         )}
         {tags?.length > 0 && <div>
-          <div className="flex justify-between w-full items-center py-5 mt-7">
+          <div className="flex justify-between w-full items-center py-3">
             <p className=" font-semibold">Filtering Keywords</p>
           </div>
           <div className="flex gap-[0.5em] flex-wrap max-h-[80px] overflow-y-scroll">
@@ -437,7 +452,12 @@ export default function DashboardInsights({
             Fresh Idea(s)
           </button>}
         </div>
-        <div className="h-[38%] overflow-y-scroll absolute px-2" style={{marginRight:"0.5em"}}>
+        <div className="overflow-y-scroll absolute px-2" style={{
+          marginRight:"0.5em",
+          maxHeight: "82vh",
+          minHeight: "38%",
+          height: "-webkit-fill-available"
+          }}>
           {ideaType === "used"
             ? filteredIdeas.length > 0 
             ? filteredIdeas?.map((idea, index) => {
