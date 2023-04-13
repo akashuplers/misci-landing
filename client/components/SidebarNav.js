@@ -198,7 +198,7 @@ export default function Sidebar() {
                   </div>
                   <div className="flex flex-shrink-0 pb-0 pt-4">
                     <Link
-                      href="#"
+                      href="/upgrade"
                       className="ml-6 inline-flex items-center rounded-md bg-[#4A3AFE] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
                       <svg
@@ -267,7 +267,7 @@ export default function Sidebar() {
             </div>
             <div className="flex flex-shrink-0 pb-0 pt-4">
               <Link
-                href="#"
+                href="/upgrade"
                 className="ml-6 inline-flex items-center rounded-md bg-[#4A3AFE] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 <svg
@@ -433,10 +433,14 @@ export default function Sidebar() {
                     // className=" w-[50px]"
                     href="/settings"
                     onMouseEnter={() => {
-                      document.getElementById("trialenddiv").classList.remove("hidden")
+                      document
+                        .getElementById("trialenddiv")
+                        .classList.remove("hidden");
                     }}
                     onMouseLeave={() => {
-                      document.getElementById("trialenddiv").classList.add("hidden")
+                      document
+                        .getElementById("trialenddiv")
+                        .classList.add("hidden");
                     }}
                   >
                     <Avatar
@@ -449,19 +453,23 @@ export default function Sidebar() {
                       id="trialenddiv"
                       className="hidden"
                       style={{
-                      border: '1px solid',
-                      fontSize: '0.65em',
-                      width: 'max-content',
-                      borderRadius: '5px',
-                      textAlign: 'center',
-                      padding: '0.25em 0.75em',
-                      position: 'absolute',
-                      top: '105%',
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      zIndex:'100',
-                      backgroundColor:'#EEC800'
-                    }}>{meeData?.me?.freeTrialDays} Days left for <br/> your trial to end!</div>
+                        border: "1px solid",
+                        fontSize: "0.65em",
+                        width: "max-content",
+                        borderRadius: "5px",
+                        textAlign: "center",
+                        padding: "0.25em 0.75em",
+                        position: "absolute",
+                        top: "105%",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        zIndex: "100",
+                        backgroundColor: "#EEC800",
+                      }}
+                    >
+                      {meeData?.me?.freeTrialDays} Days left for <br /> your
+                      trial to end!
+                    </div>
                   </Link>
                 </div>
               </div>
