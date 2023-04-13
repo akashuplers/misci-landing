@@ -18,7 +18,13 @@ export default function Saved() {
         authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     },
-    variables: { options: { status: null, page_skip: 0, page_limit: 100 } },
+    variables: {
+      options: {
+        status: ["ir_generated", "draft", "saved"],
+        page_skip: 0,
+        page_limit: 100,
+      },
+    },
   });
   const [
     DeleteBlog,
@@ -111,7 +117,9 @@ export default function Saved() {
                         delButton.classList.add("!hidden");
                       }}
                     >
-                      <button className={`${styles.statusDelButton} ${styles.statusButton}`}>
+                      <button
+                        className={`${styles.statusDelButton} ${styles.statusButton}`}
+                      >
                         {blog?.status.toUpperCase()}
                       </button>
                       <span className="sr-only">
