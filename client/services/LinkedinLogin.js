@@ -5,6 +5,7 @@ import {
 } from "../constants/apiEndpoints";
 
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const Headers = {
   "Content-Type": "application/json",
@@ -12,22 +13,20 @@ const Headers = {
   "Access-Control-Allow-Credentials": "true",
   "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST,PUT",
   "Access-Control-Allow-Headers":
-    "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers",
+  "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers",
 };
 
 export const LinkedinLogin = (code, loaderFunction, handleSave) => {
   console.log("called LinkedinLogin");
   const path = window.location.pathname === "/" ? "" : "/dashboard";
-  fetch(`${API_BASE_PATH}${LI_API_ENDPOINTS.LI_ACCESS_TOKEN}`, {
-    method: "POST",
+  axios.post(`${API_BASE_PATH}${LI_API_ENDPOINTS.LI_ACCESS_TOKEN}`, {
+    code: code,
+    url: window.location.origin + path,
+  }, {
     headers: Headers,
-    body: JSON.stringify({
-      code: code,
-      url: window.location.origin + path,
-    }),
   })
-    .then((res) => res.json())
-    .then((result) => {
+    .then(result => result.data)
+    .then(result => {
       if (result?.data)
         linkedinUserDetails(
           result.data.access_token,
@@ -41,12 +40,8 @@ export const LinkedinLogin = (code, loaderFunction, handleSave) => {
 const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
   console.log("linkedinUserDetails");
   localStorage.setItem("linkedInAccessToken", token);
-  fetch(`${API_BASE_PATH}${LI_API_ENDPOINTS.LI_PROFILE}`, {
-    method: "POST",
-    headers: Headers,
-    body: JSON.stringify({ accessToken: token }),
-  })
-    .then((res) => res.json())
+  axios.post(`${API_BASE_PATH}${LI_API_ENDPOINTS.LI_PROFILE}`,{ accessToken: token },{headers:Headers})
+    .then((res) => res.data)
     .then((res) => {
       if (res.statusCode === 401) {
         toast.error("Error..Please login again", {
@@ -72,126 +67,112 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
         tempUserId: "",
       };
       const handleLoginSubmit = (email) => {
-        fetch(API_BASE_PATH + API_ROUTES.SOCIAL_LOGIN_ENDPOINT, {
-          method: "POST",
+        axios.post(API_BASE_PATH + API_ROUTES.SOCIAL_LOGIN_ENDPOINT, {email: email}, {
           headers: {
             "Content-type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email,
-          }),
+          }
         })
-          .then((res) => res.json())
-          .then((data) => redirectPageAfterLogin(data))
-          .catch((err) => console.error("Error: ", err))
-          .finally(() => {
-            // setModalIsOpen(false);
-            // setLoginFormData({
-            //     email: "",
-            //     password: "",
-            // });
-          });
+        .then((response) => {
+          const data = response.data;
+          console.log(data);
+          if (data?.data?.accessToken) {
+            toast.success("Successfully Logged in with Linkedin", {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light"
+            });
+            redirectPageAfterLogin(data);
+            return true;
+          }
+        })
+        .catch((error) => {
+          console.error("Error: ", error);
+        })
+        .finally(() => {
+          // setSubmitting(false);
+          // setLoginFormData({
+          //   email: "",
+          //   password: "",
+          // });
+        });
 
         function redirectPageAfterLogin(data) {
-          console.log(data);
-
           localStorage.setItem(
             "token",
             JSON.stringify(data.data.accessToken).replace(/['"]+/g, "")
           );
 
-          var raw = JSON.stringify({
+          var getToken;
+          if (typeof window !== "undefined") {
+            getToken = localStorage.getItem("token");
+          }
+
+          const myHeaders = {
+            "content-type": "application/json",
+            "Authorization": "Bearer " + getToken
+          };
+
+          var raw = {
             query:
               "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  }\n}",
-          });
+          };
 
-          fetch("https://maverick.lille.ai/graphql", {
-            method: "POST",
-            headers: {
-              "content-type": "application/json",
-              Authorization: "Bearer " + localStorage.getItem("token"),
-            },
-            body: raw,
-            redirect: "follow",
+          axios.post('https://maverick.lille.ai/graphql', raw, {
+            headers: myHeaders
           })
-            .then((response) => response.text())
-            .then((result) => {
-              console.log("Succesfully Logged In");
-              const json = JSON.parse(result);
-              localStorage.setItem(
-                "userId",
-                JSON.stringify(json.data.me._id).replace(/['"]+/g, "")
-              );
-            })
-            .catch((error) => console.log("error", error))
-            .finally(() => {
-              if (typeof window !== "undefined") {
-                const pass = localStorage.getItem("pass");
-                if (pass) {
-                  localStorage.removeItem("pass");
-                }
+          .then(response => response.data)
+          .then(response => {
+            // const json = JSON.parse(response);
+            console.log(response.data.me._id);
+            localStorage.setItem("userId", JSON.stringify(response.data.me._id).replace(/['"]+/g, ""));
+          })
+          .catch(error => console.error(error))
+          .finally(() => {
+            if (typeof window !== "undefined") {
+              const pass = localStorage.getItem("pass");
+              if (pass) {
+                localStorage.removeItem("pass");
               }
-              if (window.location.pathname === "/") {
-                window.location.href = "/";
+            }
+            if (window.location.pathname === "/") {
+              window.location.href = "/";
+            } else {
+              if (
+                window.location.href === "http://localhost:3000/dashboard" ||
+                window.location.href ===
+                  "https://maverick.lille.ai/dashboard" ||
+                window.location.href ===
+                  "https://pluaris-prod.vercel.app/dashboard"
+              ) {
+                handleSave();
               } else {
-                if (
-                  window.location.href === "http://localhost:3000/dashboard" ||
-                  window.location.href ===
-                    "https://maverick.lille.ai/dashboard" ||
-                  window.location.href ===
-                    "https://pluaris-prod.vercel.app/dashboard"
-                ) {
-                  handleSave();
-                } else {
-                  window.location.href = "/dashboard";
-                }
+                window.location.href = "/dashboard";
               }
-            });
+            }
+          });
           return;
         }
       };
+
       var getToken;
       if (typeof window !== "undefined") {
         getToken = localStorage.getItem("token");
       }
       if (!getToken) {
-        fetch(API_BASE_PATH + API_ROUTES.CREATE_USER, {
-          method: "POST",
+        axios.post(API_BASE_PATH + API_ROUTES.CREATE_USER, signUpFormData, {
           headers: {
             "Content-type": "application/json",
           },
-          body: JSON.stringify(signUpFormData),
         })
-          .then((res) => res.json())
-          .then((res) => {
-            if (!res.error) {
-              toast.success("Succesfully signed up", {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-              });
-            }
-
-            console.log("Succesfully signed up");
+          .then(response => {
             handleLoginSubmit(signUpFormData.email);
           })
           .catch((err) => console.error("Error: ", err))
-          .finally(() => {
-            // setSubmitting(false);
-            // setSignUpFormData({
-            // firstName: "",
-            // lastName: "",
-            // email: "",
-            // password: "",
-            // tempUserId: "",
-            // });
-            // setModalIsOpen(false);
-          });
       }
     })
     .catch((err) => console.error(err));
