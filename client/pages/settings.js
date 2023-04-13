@@ -24,6 +24,7 @@ import LoaderPlane from "../components/LoaderPlane";
 import { useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import ReactLoading from "react-loading";
+import fillerProfileImage from "../public/profile-filler.jpg"
 
 const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: false },
@@ -110,7 +111,7 @@ export default function Settings() {
       setUpdateProfileData({
         firstName: meeData.me.name,
         lastName: meeData.me.lastName,
-        profileImage: meeData.me.profileImage,
+        profileImage: meeData.me.profileImage ?? fillerProfileImage.src,
       });
     }
   }, [meeData]);
@@ -476,7 +477,7 @@ export default function Settings() {
                                 <dt className="text-sm font-medium text-gray-500">
                                   First Name
                                 </dt>
-                                <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                <dd className="updateSettingsField firstName mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                   <input
                                     type="text"
                                     className="flex-grow"
@@ -503,7 +504,7 @@ export default function Settings() {
                                 <dt className="text-sm font-medium text-gray-500">
                                   Last Name
                                 </dt>
-                                <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                <dd className="updateSettingsField lastName mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                   <input
                                     type="text"
                                     className="flex-grow"
@@ -530,7 +531,7 @@ export default function Settings() {
                                 <dt className="text-sm font-medium text-gray-500">
                                   Photo
                                 </dt>
-                                <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                   <div class="profile-pic">
                                     <label
                                       class="-label"
@@ -550,6 +551,17 @@ export default function Settings() {
                                       width="100"
                                       id="profileImage"
                                     />
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '80%',
+                                        fontSize: '0.6rem',
+                                        background: 'white',
+                                        color: 'black',
+                                        width: '80%',
+                                        textAlign: 'center',
+                                        fontWeight:'600'
+                                      }
+                                    }>UPDATE</div>
                                   </div>
                                 </dd>
                               </div>
@@ -557,7 +569,7 @@ export default function Settings() {
                                 <dt className="text-sm font-medium text-gray-500">
                                   Email
                                 </dt>
-                                <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                   <span className="flex-grow">
                                     {meeData?.me?.email}
                                   </span>
@@ -567,7 +579,7 @@ export default function Settings() {
                                 <dt className="text-sm font-medium text-gray-500">
                                   Free Trail (Days Left)
                                 </dt>
-                                <dd className="mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                   <span className="flex-grow">
                                     {meeData?.me?.freeTrialDays}
                                   </span>
