@@ -2,12 +2,12 @@ import "@/styles/globals.css";
 import axios from "axios";
 import type { AppProps } from "next/app";
 import { useEffect, useLayoutEffect, useState } from "react";
-import { split, HttpLink, useSubscription, gql } from "@apollo/client";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+
+import { ApolloClient, ApolloProvider, InMemoryCache,split, HttpLink, useSubscription, gql } from "@apollo/client";
+
 import { getMainDefinition } from "apollo-utilities";
-import { ApolloProvider } from "@apollo/client";
 import { GRAPHQL_URL, WEBSOCKET_URL } from "@/constants";
 import useTempId from "@/store/store";
 import { useRouter } from "next/router";
@@ -41,6 +41,7 @@ axios.interceptors.response.use(
 
 
 export default function App({ Component, pageProps }: AppProps) {
+  
   // const changeTempId = useTempId((state) => state.changeTempId);
   // const tempId = useTempId((state) => state.tempId);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -72,11 +73,6 @@ export default function App({ Component, pageProps }: AppProps) {
           .catch((error) => {
             console.error("Error: ", error);
           });
-    
-    // fetch(API_BASE_PATH + API_ROUTES.TEMP_ID, requestOptions)
-    //   .then((res) => res.json())
-    //   .then((data) => localStorage.setItem("tempId", data.data.userId))
-    //   .catch((err) => console.error("Error: ", err));
 
     const getToken = localStorage.getItem("token");
     if (
@@ -90,7 +86,7 @@ export default function App({ Component, pageProps }: AppProps) {
     }
   }, []);
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (
       localStorage.getItem("token") &&
       (router.asPath === "/login" ||
@@ -99,7 +95,7 @@ export default function App({ Component, pageProps }: AppProps) {
     ) {
       // router.push("/dashboard");
     }
-  }, []);
+  }, []);*/
 
   if (typeof window !== "undefined") {
     // Perform localStorage action
