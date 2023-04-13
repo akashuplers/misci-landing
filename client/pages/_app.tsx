@@ -113,16 +113,16 @@ export default function App({ Component, pageProps }: AppProps) {
     return forward(operation).map((response) => {
       if (response.errors) {
         // localStorage.clear();
-        toast.success("Bad Request!!", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        // toast.success("Bad Request!!", {
+        //   position: "top-center",
+        //   autoClose: 5000,
+        //   hideProgressBar: false,
+        //   closeOnClick: true,
+        //   pauseOnHover: true,
+        //   draggable: true,
+        //   progress: undefined,
+        //   theme: "light",
+        // });
       }
       console.log(`[GraphQL] Response: ${operation.operationName}`, response);
       return response;
