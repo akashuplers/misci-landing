@@ -221,12 +221,12 @@ export const blogResolvers = {
                         reference: null,
                         used: 1,
                     }))
-                    data.unused_summaries.forEach((summary: string) => updatedIdeas.push({
-                        idea: summary,
-                        article_id: data.id,
-                        reference: null,
-                        used: 0,
-                    }))
+                    // data.unused_summaries.forEach((summary: string) => updatedIdeas.push({
+                    //     idea: summary,
+                    //     article_id: data.id,
+                    //     reference: null,
+                    //     used: 0,
+                    // }))
                 })
                 if(!articlesData.length) {
                     usedIdeasArr.forEach((idea: string) => updatedIdeas.push({
@@ -507,10 +507,15 @@ export const blogResolvers = {
                         let keyword = null
                         let imageUrl: String | null = null
                         let article_ids: String[] = []
+                        let tags: String[] = []
                         const articlesData = await (
                             Promise.all(
                                 articles.map(async (id, index) => {
                                     const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
+                                    const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                                    const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                                    const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                                    tags.push(...productsTags, ...organizationTags, ...personsTags)
                                     if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
                                         imageUrl = article.proImageLink
                                     } else {
@@ -548,6 +553,7 @@ export const blogResolvers = {
                                 status: "ir_generated",
                                 description,
                                 imageUrl,
+                                tags,
                                 date: getTimeStamp(),
                                 updatedAt: getTimeStamp(),
                             }
@@ -559,12 +565,12 @@ export const blogResolvers = {
                                     reference: null,
                                     used: 1,
                                 }))
-                                data.unused_summaries.forEach((summary: string) => updatedIdeas.push({
-                                    idea:summary,
-                                    article_id: data.id,
-                                    reference: null,
-                                    used: 0,
-                                }))
+                                // data.unused_summaries.forEach((summary: string) => updatedIdeas.push({
+                                //     idea:summary,
+                                //     article_id: data.id,
+                                //     reference: null,
+                                //     used: 0,
+                                // }))
                             })
                             if(updatedIdeas && updatedIdeas.length) {
                                 updatedIdeas = await (
