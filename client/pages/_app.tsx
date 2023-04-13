@@ -66,7 +66,7 @@ export default function App({ Component, pageProps }: AppProps) {
             }
           })
           .then((response) => {
-            alert("axios request")
+            // alert("axios request")
             console.log("axios temp id ",response)
             localStorage.setItem("tempId", response.data.data.userId);
           })
