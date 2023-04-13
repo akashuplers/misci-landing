@@ -455,7 +455,6 @@ export default function DashboardInsights({
         <div className="overflow-y-scroll absolute px-2" style={{
           marginRight:"0.5em",
           maxHeight: "82vh",
-          minHeight: "38%",
           height: "-webkit-fill-available"
           }}>
           {ideaType === "used"

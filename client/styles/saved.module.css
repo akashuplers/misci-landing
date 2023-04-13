@@ -19,15 +19,15 @@
 }
 
 .statusDelButton{
-    font-size: 0.75em;
+    font-size: 0.65em;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: white;
     border: 1px solid;
     border-radius: 7px;
-    width: -moz-min-content;
-    width: min-content;
+    width: -moz-fit-content;
+    width: fit-content;
     padding: 0.25em 1em;
     margin-bottom: 0.5em;    
 }
