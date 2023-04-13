@@ -2,17 +2,21 @@ import "@/styles/globals.css";
 import axios from "axios";
 import type { AppProps } from "next/app";
 import { useEffect, useLayoutEffect, useState } from "react";
-import { split, HttpLink, useSubscription, gql } from "@apollo/client";
+import { split, useSubscription, gql } from "@apollo/client";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
-import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { getMainDefinition } from "apollo-utilities";
 import { ApolloProvider } from "@apollo/client";
 import { GRAPHQL_URL, WEBSOCKET_URL } from "@/constants";
 import useTempId from "@/store/store";
 import { useRouter } from "next/router";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
-
+import {
+  ApolloClient,
+  ApolloLink,
+  HttpLink,
+  InMemoryCache,
+} from "@apollo/client";
 
 export default function App({ Component, pageProps }: AppProps) {
   // const changeTempId = useTempId((state) => state.changeTempId);
@@ -98,8 +102,34 @@ export default function App({ Component, pageProps }: AppProps) {
         )
       : httpLink;
 
+  const authLink = new ApolloLink((operation, forward) => {
+    // Retrieve the authorization token from local storage or wherever you have stored it
+    const authToken = localStorage.getItem("token");
+
+    // Set the authorization header if the token exists
+    if (authToken) {
+      operation.setContext(({ headers = {} }) => ({
+        headers: {
+          ...headers,
+          authorization: `Bearer ${authToken}`,
+        },
+      }));
+    }
+
+    return forward(operation).map((response) => {
+      if (response.errors) {
+        const statusCode =
+          response.errors[0]?.extensions?.exception?.response?.status;
+        if (statusCode === 401) {
+          console.log("logout");
+        }
+      }
+      return response;
+    });
+  });
+
   const client = new ApolloClient({
-    link: link,
+    link: authLink.concat(link),
     cache: new InMemoryCache(),
   });
 
