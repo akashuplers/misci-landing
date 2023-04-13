@@ -45,7 +45,7 @@ export interface IRNotifiyArgs {
 export interface BlogListArgs {
     page_limit: number;
     page_skip: number;
-    status: string;
+    status: [String];
 }
 
 export interface PreferencesArgs {

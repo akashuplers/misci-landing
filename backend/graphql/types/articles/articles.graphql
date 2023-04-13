@@ -8,7 +8,7 @@ type Query {
 input BlogListInput {
     page_limit: Int
     page_skip: Int
-    status: String
+    status: [String]
 }
 
 type BlogListRes {

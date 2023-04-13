@@ -54,7 +54,9 @@ export const blogResolvers = {
             if(options.status) {
                 baseMatch = {
                     ...baseMatch,
-                    status: options.status
+                    status: {
+                        $in: options.status
+                    }
                 } 
             }
             console.log(baseMatch)
