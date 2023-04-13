@@ -3,6 +3,7 @@
 import { PlayPauseIcon } from "@heroicons/react/24/outline";
 import React, { useDebugValue, useState, useEffect } from "react";
 import Modal from "react-modal";
+import axios from "axios";
 
 import { LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
@@ -59,47 +60,57 @@ export default function AuthenticationModal({
 
     console.log(loginData);
 
-    fetch(API_BASE_PATH + API_ROUTES.LOGIN_ENDPOINT, {
-      method: "POST",
+    axios.post(API_BASE_PATH + API_ROUTES.LOGIN_ENDPOINT, loginData, {
       headers: {
         "Content-type": "application/json",
-      },
-      body: JSON.stringify(loginData),
+      }
     })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success === false) {
-          toast.error(data.message, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
-          if (data.message === `Could not find account: ${loginData.email}`) {
-            setType("signup");
-          }
-        } else if (data?.data?.accessToken) {
-          redirectPageAfterLogin(data);
-          return true;
-        }
-      })
-      .then((res) => {
-        if (res) {
-          setTimeout(() => setModalIsOpen(false), 3000);
-        }
-      })
-      .catch((err) => console.error("Error: ", err))
-      .finally(() => {
-        setSubmitting(false);
-        setLoginFormData({
-          email: "",
-          password: "",
+    .then((response) => {
+      const data = response.data;
+      if (data.success === false) {
+        toast.error(data.message, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
         });
+        if (data.message === `Could not find account: ${loginData.email}`) {
+          setType("signup");
+        }
+      } else if (data?.data?.accessToken) {
+        redirectPageAfterLogin(data);
+        toast.success("Successfully Logged in", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        return true;
+      }
+    })
+    .then((res) => {
+      if (res) {
+        setTimeout(() => setModalIsOpen(false), 3000);
+      }
+    })
+    .catch((error) => {
+      console.error("Error: ", error);
+    })
+    .finally(() => {
+      setSubmitting(false);
+      setLoginFormData({
+        email: "",
+        password: "",
       });
+    });
 
     function redirectPageAfterLogin(data) {
       localStorage.setItem(
@@ -112,41 +123,29 @@ export default function AuthenticationModal({
         getToken = localStorage.getItem("token");
       }
 
-      var myHeaders = new Headers();
-      myHeaders.append("content-type", "application/json");
-      myHeaders.append("Authorization", "Bearer " + getToken);
-
-      var raw = JSON.stringify({
-        query:
-          "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  }\n}",
-      });
-
-      var requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
+      const myHeaders = {
+        "content-type": "application/json",
+        "Authorization": "Bearer " + getToken
       };
 
-      fetch("https://maverick.lille.ai/graphql", requestOptions)
-        .then((response) => response.text())
-        .then((result) => {
-          console.log("Succesfully Logged In");
-          const json = JSON.parse(result);
-          localStorage.setItem(
-            "userId",
-            JSON.stringify(json.data.me._id).replace(/['"]+/g, "")
-          );
+      const raw = {
+        query: "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  }\n}"
+      };
+
+      axios.post('https://maverick.lille.ai/graphql', raw, {
+          headers: myHeaders
         })
-        .catch((error) => console.log("error", error))
+        .then(response => {
+          const json = JSON.parse(response.data);
+          localStorage.setItem("userId", JSON.stringify(json.data.me._id).replace(/['"]+/g, ""));
+        })
+        .catch(error => console.error(error))
         .finally(() => {
-          if (window.location.pathname === "/dashboard") {
+          if (window.location.pathname === '/dashboard') {
             handleSave();
           } else {
-            window.location.href = "/";
+            window.location.href = '/';
           }
-          // if (window.location.pathname === "/") {
-          // }
         });
       return;
     }
@@ -190,65 +189,63 @@ export default function AuthenticationModal({
     if (typeof window !== "undefined") {
       tempid = localStorage.getItem("tempId");
     }
-
     signUpFormData["tempUserId"] = tempid;
 
-    fetch(API_BASE_PATH + API_ROUTES.CREATE_USER, {
-      method: "POST",
+    axios.post(API_BASE_PATH + API_ROUTES.CREATE_USER, signUpFormData, {
       headers: {
         "Content-type": "application/json",
-      },
-      body: JSON.stringify(signUpFormData),
+      }
     })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.error === true) {
-          toast.error(res.message, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
-          if (res.message === "User already exists") {
-            setType("login");
-          }
-        } else if (res.error === false) {
-          handleLoginSubmit(
-            event,
-            signUpFormData.email,
-            signUpFormData.password
-          );
-          setModalIsOpen(false);
-          console.log("Succesfully signed up");
-          toast.success("Succesfully signed up", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
-        }
-      })
-      .catch((err) => console.error("Error: ", err))
-      .finally(() => {
-        setSubmitting(false);
-        setSignUpFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          password: "",
-          tempUserId: "",
+    .then(res => {
+      const response = res.data
+      // console.log("axios signup")
+      // console.log(response)
+      if (response.error === true) {
+        toast.error(response.message, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
         });
-        setLoading(false);
+        if (response.message === "User already exists") {
+          setType("login");
+        }
+      } else if (response.error === false) {
+        handleLoginSubmit(event, signUpFormData.email, signUpFormData.password);
+        
+        setModalIsOpen(false);
+        toast.success("Successfully signed up", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
+    })
+    .catch((error) => {
+      console.error("Error: ", error);
+    })
+    .finally(() => {
+      setSubmitting(false);
+      setSignUpFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        tempUserId: "",
       });
-  };
+      setLoading(false);
+    });
+  }
+
 
   const handleSignUpChange = (event) => {
     const { name, value } = event.target;

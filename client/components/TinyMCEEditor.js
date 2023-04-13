@@ -388,7 +388,7 @@ export default function TinyMCEEditor({
         display:"flex",
         justifyContent:"space-between",
         alignItems:"center"
-      }} className="text-sm">
+      }} className="text-sm mx-2">
         {isAuthenticated ? (
           <div style={{
             display:"flex",
