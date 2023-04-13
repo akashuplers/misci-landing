@@ -48,6 +48,10 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
   })
     .then((res) => res.json())
     .then((res) => {
+      var getToken;
+      if (typeof window !== "undefined") {
+        getToken = localStorage.getItem("token");
+      }
       if (res.statusCode === 401) {
         toast.error("Error..Please login again", {
           position: "top-center",
@@ -150,10 +154,7 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
           return;
         }
       };
-      var getToken;
-      if (typeof window !== "undefined") {
-        getToken = localStorage.getItem("token");
-      }
+
       if (!getToken) {
         fetch(API_BASE_PATH + API_ROUTES.CREATE_USER, {
           method: "POST",
@@ -192,6 +193,10 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
             // });
             // setModalIsOpen(false);
           });
+      } else {
+        setTimeout(() => {
+          window.location.href = "/dashboard";
+        }, 2000);
       }
     })
     .catch((err) => console.error(err));

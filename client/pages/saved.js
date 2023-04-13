@@ -10,8 +10,11 @@ import { deleteBlog } from "../graphql/mutations/deleteBlog";
 import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
+import Modal from "react-modal";
 
 export default function Saved() {
+  const [openModal, setOpenModal] = useState(false);
+  const [blog_id, setblog_id] = useState("");
   const { data, error, loading } = useQuery(getAllBlogs, {
     context: {
       headers: {
@@ -40,7 +43,7 @@ export default function Saved() {
     },
     // More files...
   ];
-  const handleDelete = (blog_id) => {
+  const handleDelete = () => {
     console.log("blog_id", blog_id);
     DeleteBlog({
       variables: {
@@ -70,6 +73,7 @@ export default function Saved() {
           progress: undefined,
           theme: "light",
         });
+        setOpenModal(false);
         setTimeout(() => {
           window.location.reload();
         }, 2000);
@@ -132,7 +136,8 @@ export default function Saved() {
                           e.stopPropagation();
                           e.preventDefault();
                           console.log(blog._id);
-                          handleDelete(blog._id);
+                          setblog_id(blog._id);
+                          setOpenModal(true);
                         }}
                         onMouseEnter={(e) => {
                           e.stopPropagation();
@@ -169,6 +174,55 @@ export default function Saved() {
             </>
           ))}
         </ul>
+        <Modal
+          isOpen={openModal}
+          onRequestClose={() => setOpenModal(false)}
+          ariaHideApp={false}
+          className="w-[100%] sm:w-[38%] max-h-[95%]"
+          style={{
+            overlay: {
+              backgroundColor: "rgba(0,0,0,0.5)",
+              zIndex: "9999",
+            },
+            content: {
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              right: "auto",
+              border: "none",
+              background: "white",
+              boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+              borderRadius: "8px",
+              height: "17%",
+              width: "80%",
+              maxWidth: "230px",
+              bottom: "",
+              zIndex: "999",
+              marginRight: "-50%",
+              transform: "translate(-50%, -50%)",
+              padding: "20px",
+              paddingBottom: "0px",
+            },
+          }}
+        >
+          <div className="pl-4 text-xl font-bold mb-5">Are You Sure ?</div>
+          <button
+            class="mr-5 bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded"
+            onClick={() => {
+              handleDelete();
+            }}
+          >
+            YES
+          </button>
+          <button
+            class="ml-6 p-4 bg-transparent hover:bg-green-500 text-green-700 font-semibold hover:text-white py-2 px-4 border border-green-500 hover:border-transparent rounded"
+            onClick={() => {
+              setOpenModal(false);
+            }}
+          >
+            NO!
+          </button>
+        </Modal>
       </Layout>
     </>
   );

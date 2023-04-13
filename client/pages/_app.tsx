@@ -17,6 +17,8 @@ import {
   HttpLink,
   InMemoryCache,
 } from "@apollo/client";
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 
 export default function App({ Component, pageProps }: AppProps) {
   // const changeTempId = useTempId((state) => state.changeTempId);
@@ -103,27 +105,26 @@ export default function App({ Component, pageProps }: AppProps) {
       : httpLink;
 
   const authLink = new ApolloLink((operation, forward) => {
-    // Retrieve the authorization token from local storage or wherever you have stored it
-    const authToken = localStorage.getItem("token");
-
-    // Set the authorization header if the token exists
-    if (authToken) {
-      operation.setContext(({ headers = {} }) => ({
-        headers: {
-          ...headers,
-          authorization: `Bearer ${authToken}`,
-        },
-      }));
-    }
+    console.log(
+      `[GraphQL] Request: ${operation.operationName}`,
+      operation.variables
+    );
 
     return forward(operation).map((response) => {
       if (response.errors) {
-        const statusCode =
-          response.errors[0]?.extensions?.exception?.response?.status;
-        if (statusCode === 401) {
-          console.log("logout");
-        }
+        // localStorage.clear();
+        toast.success("Bad Request!!", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
       }
+      console.log(`[GraphQL] Response: ${operation.operationName}`, response);
       return response;
     });
   });
@@ -137,6 +138,7 @@ export default function App({ Component, pageProps }: AppProps) {
     return (
       <>
         <ApolloProvider client={client}>
+          <ToastContainer />
           <Component {...pageProps} />
         </ApolloProvider>
       </>
@@ -145,6 +147,7 @@ export default function App({ Component, pageProps }: AppProps) {
     return (
       <>
         <ApolloProvider client={client}>
+          <ToastContainer />
           <Component {...pageProps} />
         </ApolloProvider>
       </>
