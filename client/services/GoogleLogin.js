@@ -5,6 +5,7 @@ import { GoogleAuthProvider } from "firebase/auth";
 import { signInWithPopup } from "firebase/auth";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -36,90 +37,16 @@ export const signUpWithGoogle = (handleSave) => {
       };
       console.log(signUpFormData);
       const handleLoginSubmit = (email) => {
-        fetch(API_BASE_PATH + API_ROUTES.SOCIAL_LOGIN_ENDPOINT, {
-          method: "POST",
+        axios.post(API_BASE_PATH + API_ROUTES.SOCIAL_LOGIN_ENDPOINT, {email: email}, {
           headers: {
             "Content-type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email,
-          }),
+          }
         })
-          .then((res) => res.json())
-          .then((data) => redirectPageAfterLogin(data))
-          .catch((err) => console.error("Error: ", err))
-          .finally(() => {
-            // setModalIsOpen(false);
-            // setLoginFormData({
-            //     email: "",
-            //     password: "",
-            // });
-          });
-
-        function redirectPageAfterLogin(data) {
+        .then((response) => {
+          const data = response.data;
           console.log(data);
-
-          localStorage.setItem(
-            "token",
-            JSON.stringify(data.data.accessToken).replace(/['"]+/g, "")
-          );
-
-          var raw = JSON.stringify({
-            query:
-              "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  }\n}",
-          });
-
-          fetch("https://maverick.lille.ai/graphql", {
-            method: "POST",
-            headers: {
-              "content-type": "application/json",
-              Authorization: "Bearer " + localStorage.getItem("token"),
-            },
-            body: raw,
-            redirect: "follow",
-          })
-            .then((response) => response.text())
-            .then((result) => {
-              console.log("Succesfully Logged In");
-              const json = JSON.parse(result);
-              localStorage.setItem(
-                "userId",
-                JSON.stringify(json.data.me._id).replace(/['"]+/g, "")
-              );
-            })
-            .catch((error) => console.log("error", error))
-            .finally(() => {
-              if (typeof window !== "undefined") {
-                const pass = localStorage.getItem("pass");
-                if (pass) {
-                  localStorage.removeItem("pass");
-                }
-              }
-              if (window.location.pathname === "/") {
-                window.location.href = "/";
-              } else {
-                if (window.location.pathname === "/dashboard") {
-                  handleSave();
-                } else {
-                  window.location.href = "/dashboard";
-                }
-              }
-            });
-          return;
-        }
-      };
-      fetch(API_BASE_PATH + API_ROUTES.CREATE_USER, {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(signUpFormData),
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          console.log(res);
-          if (res.error === true && res.message === "User already exists") {
-            toast.error(res.message, {
+          if (data?.data?.accessToken) {
+            toast.success("Successfully Logged in with Google", {
               position: "top-center",
               autoClose: 5000,
               hideProgressBar: false,
@@ -127,24 +54,89 @@ export const signUpWithGoogle = (handleSave) => {
               pauseOnHover: true,
               draggable: true,
               progress: undefined,
-              theme: "light",
+              theme: "light"
             });
+            redirectPageAfterLogin(data);
+            return true;
           }
-          console.log("Succesfully signed up");
-          handleLoginSubmit(signUpFormData.email);
         })
-        .catch((err) => console.error("Error: ", err))
+        .catch((error) => {
+          console.error("Error: ", error);
+        })
         .finally(() => {
           // setSubmitting(false);
-          // setSignUpFormData({
-          // firstName: "",
-          // lastName: "",
-          // email: "",
-          // password: "",
-          // tempUserId: "",
+          // setLoginFormData({
+          //   email: "",
+          //   password: "",
           // });
-          // setModalIsOpen(false);
         });
+
+        function redirectPageAfterLogin(data) {
+          localStorage.setItem(
+            "token",
+            JSON.stringify(data.data.accessToken).replace(/['"]+/g, "")
+          );
+
+          var getToken;
+          if (typeof window !== "undefined") {
+            getToken = localStorage.getItem("token");
+          }
+
+          const myHeaders = {
+            "content-type": "application/json",
+            "Authorization": "Bearer " + getToken
+          };
+
+          var raw = {
+            query:
+              "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  }\n}",
+          };
+
+          axios.post('https://maverick.lille.ai/graphql', raw, {
+            headers: myHeaders
+          })
+          .then(response => response.data)
+          .then(response => {
+            // const json = JSON.parse(response);
+            console.log(response.data.me._id);
+            localStorage.setItem("userId", JSON.stringify(response.data.me._id).replace(/['"]+/g, ""));
+          })
+          .catch(error => console.error(error))
+          .finally(() => {
+            if (typeof window !== "undefined") {
+              const pass = localStorage.getItem("pass");
+              if (pass) {
+                localStorage.removeItem("pass");
+              }
+            }
+            if (window.location.pathname === "/") {
+              window.location.href = "/";
+            } else {
+              if (
+                window.location.href === "http://localhost:3000/dashboard" ||
+                window.location.href ===
+                  "https://maverick.lille.ai/dashboard" ||
+                window.location.href ===
+                  "https://pluaris-prod.vercel.app/dashboard"
+              ) {
+                handleSave();
+              } else {
+                window.location.href = "/dashboard";
+              }
+            }
+          });
+          return;
+        }
+      };
+        axios.post(API_BASE_PATH + API_ROUTES.CREATE_USER, signUpFormData, {
+          headers: {
+            "Content-type": "application/json",
+          },
+        })
+          .then(response => {
+            handleLoginSubmit(signUpFormData.email);
+          })
+          .catch((err) => console.error("Error: ", err))
     })
     .catch((error) => {
       console.log(error.message);
