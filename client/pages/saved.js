@@ -86,7 +86,7 @@ export default function Saved() {
       <Layout>
         <ul
           role="list"
-          className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8 ml-[5%]"
+          className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8 mx-[5%]"
           style={{
             listStyleType: "none",
           }}
@@ -120,7 +120,7 @@ export default function Saved() {
                       <button
                         className={`${styles.statusDelButton} ${styles.statusButton}`}
                       >
-                        {blog?.status.toUpperCase()}
+                        {blog?.status === 'ir_generated' ? "DAILY FEED" :blog?.status.toUpperCase()}
                       </button>
                       <span className="sr-only">
                         View details for {blog.title}
