@@ -13,11 +13,38 @@ import useTempId from "@/store/store";
 import { useRouter } from "next/router";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 
+axios.interceptors.request.use(
+  (config) => {
+    // Add any headers or modify the request as needed
+    console.log("request : ",config)
+    return config;
+  },
+  (error) => {
+    // Handle any request errors
+    // return Promise.reject(error);
+    console.error("request : ",error)
+  }
+);
+
+axios.interceptors.response.use(
+  (response) => {
+    // Handle successful responses
+    console.log("response : ",response)
+    return response;
+  },
+  (error) => {
+    // Handle any response errors
+    // return Promise.reject(error);
+    console.error("response : ",error)
+  }
+);
+
 
 export default function App({ Component, pageProps }: AppProps) {
   // const changeTempId = useTempId((state) => state.changeTempId);
   // const tempId = useTempId((state) => state.tempId);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   const router = useRouter();
   const pathName = router.pathname;
   const notAllowedRoutes = [""];
@@ -30,16 +57,26 @@ export default function App({ Component, pageProps }: AppProps) {
     "/subscription",
     "/public/[bid]",
   ];
+
   useEffect(() => {
-    fetch(API_BASE_PATH + API_ROUTES.TEMP_ID, {
-      method: "GET",
-      headers: {
-        "Content-type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => localStorage.setItem("tempId", data.data.userId))
-      .catch((err) => console.error("Error: ", err));
+    axios.get(API_BASE_PATH + API_ROUTES.TEMP_ID, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          .then((response) => {
+            alert("axios request")
+            console.log("axios temp id ",response)
+            localStorage.setItem("tempId", response.data.data.userId);
+          })
+          .catch((error) => {
+            console.error("Error: ", error);
+          });
+    
+    // fetch(API_BASE_PATH + API_ROUTES.TEMP_ID, requestOptions)
+    //   .then((res) => res.json())
+    //   .then((data) => localStorage.setItem("tempId", data.data.userId))
+    //   .catch((err) => console.error("Error: ", err));
 
     const getToken = localStorage.getItem("token");
     if (
