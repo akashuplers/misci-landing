@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import { LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
 import ReactLoading from "react-loading";
 import Modal from "react-modal";
+import axios from "axios";
 import {
   FacebookShareButton,
   TwitterShareButton,
@@ -171,32 +172,27 @@ export default function TinyMCEEditor({
         }
       )
         .then(() => {
-          var myHeaders = new Headers();
-          myHeaders.append("content-type", "application/json");
-          myHeaders.append("Authorization", "Bearer " + token);
-
-          var raw = JSON.stringify({
-            query:
-              "mutation SavePreferences($options: PublisOptions) {\n  publish(options: $options)\n}",
-            variables: {
-              options: {
-                blog_id: blog_id,
-              },
+          // console.log("save and publish");
+          axios({
+            method: "post",
+            url: "https://maverick.lille.ai/graphql",
+            headers: {
+              "content-type": "application/json",
+              "Authorization": "Bearer " + token
             },
-          });
-
-          var requestOptions = {
-            method: "POST",
-            headers: myHeaders,
-            body: raw,
-            redirect: "follow",
-          };
-
-          fetch("https://maverick.lille.ai/graphql", requestOptions)
-            .then((response) => response.text())
-            .then((result) => {
-              const data = JSON.parse(result);
-              if (data.data.publish) {
+            data: {
+              query: "mutation SavePreferences($options: PublisOptions) {\n  publish(options: $options)\n}",
+              variables: {
+                options: {
+                  blog_id: blog_id
+                }
+              }
+            }
+          })
+            .then((response) => {
+              console.log(response);
+              console.log(response.data);
+              if (response.data.data.publish) {
                 setOpenModal(true);
               }
             })
@@ -207,7 +203,7 @@ export default function TinyMCEEditor({
   };
 
   const handlePublish = () => {
-        console.log('req here')
+    console.log('req here')
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + token);
     myHeaders.append("Content-Type", "application/json");
@@ -539,7 +535,7 @@ export default function TinyMCEEditor({
             input.click();
           },
           images_upload_handler: (blobInfo, success, failure) => {
-            var formdata = new FormData();
+            /*var formdata = new FormData();
             formdata.append("file", blobInfo.blob());
 
             var requestOptions = {
@@ -554,7 +550,25 @@ export default function TinyMCEEditor({
               //   const data = JSON.parse(result);
               //   success(data.url);
               // })
-              .catch((error) => console.log("error", error));
+              .catch((error) => console.log("error", error));*/
+
+              console.log("Harsh test this block")
+
+              const formdata = new FormData();
+              formdata.append("file", blobInfo.blob());
+
+              const config = {
+                method: "post",
+                url: "https://maverick.lille.ai/upload/image",
+                data: formdata,
+              };
+
+              axios(config)
+                /*.then((response) => {
+                  const data = response.data;
+                  success(data.url);
+                })*/
+                .catch((error) => console.log("error", error));
           },
         }}
         onEditorChange={(content, editor) => {
