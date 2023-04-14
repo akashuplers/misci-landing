@@ -433,9 +433,11 @@ export default function Sidebar() {
                     // className=" w-[50px]"
                     href="/settings"
                     onMouseEnter={() => {
-                      document
-                        .getElementById("trialenddiv")
-                        .classList.remove("hidden");
+                      if (meeData?.me?.freeTrial) {
+                        document
+                          .getElementById("trialenddiv")
+                          .classList.remove("hidden");
+                      }
                     }}
                     onMouseLeave={() => {
                       document
