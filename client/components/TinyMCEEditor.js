@@ -204,33 +204,21 @@ export default function TinyMCEEditor({
 
   const handlePublish = () => {
     console.log('req here')
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + token);
-    myHeaders.append("Content-Type", "application/json");
-
-    var raw = JSON.stringify({
-      token: linkedInAccessToken,
-      author: "urn:li:person:" + authorId,
-      data: htmlToJson(editorText)?.children[3]?.children[0],
-      blogId: blog_id,
-    });
-
-    console.log(
-      "htmlToJson(editorText)",
-      htmlToJson(editorText)?.children[3]?.children[0]
-    );
-
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow",
+    const myHeaders = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
     };
-    console.log('req', requestOptions)
-    fetch("https://maverick.lille.ai/auth/linkedin/post", requestOptions)
-      .then((response) => response.text())
-      .then((result) => console.log(result))
-      .catch((error) => console.log("error", error));
+
+    const data = {
+      token: linkedInAccessToken,
+      author: `urn:li:person:${authorId}`,
+      data: htmlToJson(editorText)?.children[3]?.children[0],
+      blogId: blog_id
+    };
+
+    axios.post('https://maverick.lille.ai/auth/linkedin/post', data, { headers: myHeaders })
+      .then((response) => console.log(response.data))
+      .catch((error) => console.log(error));
   };
 
   function handleBlog(e) {
