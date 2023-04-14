@@ -14,31 +14,31 @@ import useTempId from "@/store/store";
 import { useRouter } from "next/router";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 
-// axios.interceptors.request.use(
-//   (config) => {
-//     // Add any headers or modify the request as needed
-//     console.log("request : ",config)
-//     return config;
-//   },
-//   (error) => {
-//     // Handle any request errors
-//     // return Promise.reject(error);
-//     console.error("request : ",error)
-//   }
-// );
+axios.interceptors.request.use(
+  (config) => {
+    // Add any headers or modify the request as needed
+    console.log("request : ",config)
+    return config;
+  },
+  (error) => {
+    // Handle any request errors
+    // return Promise.reject(error);
+    console.error("request : ",error)
+  }
+);
 
-// axios.interceptors.response.use(
-//   (response) => {
-//     // Handle successful responses
-//     console.log("response : ",response)
-//     return response;
-//   },
-//   (error) => {
-//     // Handle any response errors
-//     // return Promise.reject(error);
-//     console.error("response : ",error)
-//   }
-// );
+axios.interceptors.response.use(
+  (response) => {
+    // Handle successful responses
+    console.log("response : ",response)
+    return response;
+  },
+  (error) => {
+    // Handle any response errors
+    // return Promise.reject(error);
+    console.error("response : ",error)
+  }
+);
 
 export default function App({ Component, pageProps }: AppProps) {
   
