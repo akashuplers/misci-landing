@@ -226,22 +226,23 @@ export default function TinyMCEEditor({
   };
 
   const handlePublish = () => {
+    const jsonData = htmlToJson(editorText)?.children[3]?.children[0];
     setPublishLinkLoad(true);
     console.log("req here");
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + token);
-    myHeaders.append("Content-Type", "application/json");
 
     const data = {
       token: linkedInAccessToken,
       author: `urn:li:person:${authorId}`,
-      data: htmlToJson(editorText)?.children[3]?.children[0],
+      data: jsonData,
       blogId: blog_id,
     };
 
     axios
       .post("https://maverick.lille.ai/auth/linkedin/post", data, {
-        headers: myHeaders,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       })
       .then((response) => {
         console.log(response.data);
