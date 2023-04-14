@@ -144,11 +144,13 @@ export default function PreferencesModal({ pfmodal, setPFModal, getToken }) {
           }
         }}
     >
+      
+
+
       <div className="relative w-full max-w-2xl p-8 mx-auto bg-white rounded-lg shadow-lg">
-        <h2 className="text-lg">Select your interested topics</h2>
+        <h2 className="text-lg">Select topics of your interest</h2>
         <p className="text-sm text-gray-500 pb-5">
-          Select atleast 3 Keywords so we can show you personalized topics and
-          ideas
+          Select at least 3 topics of your interest so that we can provide daily blogs
         </p>
         <div className="flex flex-wrap gap-1">
           {prefKeyword.map((keyword, index) => {
