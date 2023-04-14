@@ -11,7 +11,11 @@ import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
 
+const PAGE_COUNT = 12;
+
 export default function Saved() {
+  const [pageSkip, setPageSkip] = useState(0)
+
   const { data, error, loading } = useQuery(getAllBlogs, {
     context: {
       headers: {
@@ -21,8 +25,8 @@ export default function Saved() {
     variables: {
       options: {
         status: ["ir_generated", "draft", "saved"],
-        page_skip: 0,
-        page_limit: 100,
+        page_skip: pageSkip*PAGE_COUNT,
+        page_limit: (1 + pageSkip)*PAGE_COUNT,
       },
     },
   });
@@ -30,6 +34,9 @@ export default function Saved() {
     DeleteBlog,
     { data: delteData, loading: delteLoading, error: delteError },
   ] = useMutation(deleteBlog);
+
+  var paginationArr = [];
+  for(var i = 1 ; i <= Math.ceil(data?.getAllBlogs.count/PAGE_COUNT) ; i++) paginationArr.push(i)
 
   const files = [
     {
@@ -78,12 +85,12 @@ export default function Saved() {
 
   console.log(data);
 
-  if (loading) return <LoaderPlane />;
-
   return (
     <>
       <ToastContainer />
       <Layout>
+        {
+        loading ? <LoaderPlane/> : 
         <ul
           role="list"
           className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8 mx-[5%]"
@@ -169,6 +176,40 @@ export default function Saved() {
             </>
           ))}
         </ul>
+        }
+        <div className="pagination" style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: '2em',
+          paddingBottom: '2em'
+        }}>
+          <ul style={{
+            display: 'flex',
+            gap: '2em',
+            listStyleType: 'none'
+          }}>
+            {paginationArr.map((el,index) => 
+            <li 
+              style={{
+                border: '1px solid',
+                width: '30px',
+                height: '30px',
+                borderRadius: '50%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                cursor: 'pointer'
+              }}
+              className={pageSkip === index ? "active" : ""}
+              onClick={(e) => {
+                setPageSkip(index)
+              }}
+            >
+              {el}
+            </li>)}
+          </ul>
+        </div>
       </Layout>
     </>
   );

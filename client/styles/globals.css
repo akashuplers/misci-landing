@@ -259,3 +259,8 @@ padding-bottom: 10px !important;
 .sb-avatar__image{
   object-fit: cover;
 }
+
+.pagination>ul>li.active{
+  background-color:blue;
+  color: white;
+}
