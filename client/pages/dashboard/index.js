@@ -13,6 +13,12 @@ import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeunload", function (event) {
+    event.stopImmediatePropagation();
+  });
+}
+
 dashboard.getInitialProps = ({ query }) => {
   return { query };
 };
@@ -111,23 +117,24 @@ export default function dashboard({ query }) {
         })
         .catch((error) => console.log("error", error));*/
 
-      console.log("Harsh test this block")
+      console.log("Harsh test this block");
 
       const myHeaders = {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       };
 
       const graphql = JSON.stringify({
-        query: "query FetchBlog($fetchBlogId: String!) {\n  fetchBlog(id: $fetchBlogId) {\n    _id\n    article_id\n    ideas {\n      blog_id\n      ideas {\n        used\n        idea\n        article_id\n      }\n    }\n    publish_data {\n      tiny_mce_data {\n        children\n        tag\n      }\n      published_date\n      published\n      platform\n      creation_date\n    }\n  }\n  trendingTopics\n  increment\n}",
-        variables: { fetchBlogId: bid }
+        query:
+          "query FetchBlog($fetchBlogId: String!) {\n  fetchBlog(id: $fetchBlogId) {\n    _id\n    article_id\n    ideas {\n      blog_id\n      ideas {\n        used\n        idea\n        article_id\n      }\n    }\n    publish_data {\n      tiny_mce_data {\n        children\n        tag\n      }\n      published_date\n      published\n      platform\n      creation_date\n    }\n  }\n  trendingTopics\n  increment\n}",
+        variables: { fetchBlogId: bid },
       });
 
       const config = {
-        method: 'post',
-        url: 'https://maverick.lille.ai/graphql',
+        method: "post",
+        url: "https://maverick.lille.ai/graphql",
         headers: myHeaders,
         data: graphql,
-        redirect: 'follow'
+        redirect: "follow",
       };
 
       axios(config)

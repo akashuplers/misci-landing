@@ -9,15 +9,33 @@ import LoaderPlane from "../components/LoaderPlane";
 import { deleteBlog } from "../graphql/mutations/deleteBlog";
 import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
-import { Link } from "react-router-dom";
 import Modal from "react-modal";
-
+import Link from "next/link";
 const PAGE_COUNT = 12;
+
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeunload", function (event) {
+    event.stopImmediatePropagation();
+  });
+}
 
 export default function Saved() {
   const [openModal, setOpenModal] = useState(false);
   const [blog_id, setblog_id] = useState("");
   const [pageSkip, setPageSkip] = useState(0);
+
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      event.preventDefault();
+      event.returnValue = null;
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
 
   const { data, error, loading } = useQuery(getAllBlogs, {
     context: {
@@ -42,15 +60,6 @@ export default function Saved() {
   for (var i = 1; i <= Math.ceil(data?.getAllBlogs.count / PAGE_COUNT); i++)
     paginationArr.push(i);
 
-  const files = [
-    {
-      title: "IMG_4985.HEIC",
-      size: "3.9 MB",
-      source:
-        "https://images.unsplash.com/photo-1582053433976-25c00369fc93?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=512&q=80",
-    },
-    // More files...
-  ];
   const handleDelete = () => {
     console.log("blog_id", blog_id);
     DeleteBlog({
@@ -88,12 +97,10 @@ export default function Saved() {
       });
   };
 
-  console.log(data);
-
   return (
     <>
-      <ToastContainer />
       <Layout>
+        <ToastContainer />
         {loading ? (
           <LoaderPlane />
         ) : (
@@ -113,7 +120,8 @@ export default function Saved() {
                       alt={blog.title}
                       className="pointer-events-none object-cover"
                     />
-                    <a href={"/dashboard/" + blog._id}>
+
+                    <Link href={"/dashboard/" + blog._id}>
                       <button
                         type="button"
                         className="absolute inset-0 focus:outline-none"
@@ -171,7 +179,7 @@ export default function Saved() {
                           DELETE
                         </button>
                       </button>
-                    </a>
+                    </Link>
                   </div>
                   <p className="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">
                     {blog?.title}
