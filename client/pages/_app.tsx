@@ -3,7 +3,12 @@ import axios from "axios";
 import type { AppProps } from "next/app";
 import { useEffect, useLayoutEffect, useState } from "react";
 
-import { ApolloClient, ApolloProvider, InMemoryCache, HttpLink } from "@apollo/client";
+import {
+  ApolloClient,
+  ApolloProvider,
+  InMemoryCache,
+  HttpLink,
+} from "@apollo/client";
 import { ApolloLink } from "@apollo/client";
 import { split, useSubscription, gql } from "@apollo/client";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
@@ -17,31 +22,32 @@ import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 axios.interceptors.request.use(
   (config) => {
     // Add any headers or modify the request as needed
-    console.log("request : ",config)
+    console.log("request : ", config);
     return config;
   },
   (error) => {
     // Handle any request errors
     // return Promise.reject(error);
-    console.error("request : ",error)
+    console.error("request : ", error);
   }
 );
 
 axios.interceptors.response.use(
   (response) => {
     // Handle successful responses
-    console.log("response : ",response)
+    console.log("response : ", response);
     return response;
   },
   (error) => {
     // Handle any response errors
     // return Promise.reject(error);
-    console.error("response : ",error)
+    console.error("response : ", error);
   }
 );
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 
 export default function App({ Component, pageProps }: AppProps) {
-  
   // const changeTempId = useTempId((state) => state.changeTempId);
   // const tempId = useTempId((state) => state.tempId);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -60,19 +66,20 @@ export default function App({ Component, pageProps }: AppProps) {
   ];
 
   useEffect(() => {
-    axios.get(API_BASE_PATH + API_ROUTES.TEMP_ID, {
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
-          .then((response) => {
-            // alert("axios request")
-            console.log("axios temp id ",response)
-            localStorage.setItem("tempId", response.data.data.userId);
-          })
-          .catch((error) => {
-            console.error("Error: ", error);
-          });
+    axios
+      .get(API_BASE_PATH + API_ROUTES.TEMP_ID, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        // alert("axios request")
+        console.log("axios temp id ", response);
+        localStorage.setItem("tempId", response.data.data.userId);
+      })
+      .catch((error) => {
+        console.error("Error: ", error);
+      });
 
     const getToken = localStorage.getItem("token");
     if (
@@ -132,27 +139,26 @@ export default function App({ Component, pageProps }: AppProps) {
       : httpLink;
 
   const authLink = new ApolloLink((operation, forward) => {
-    // Retrieve the authorization token from local storage or wherever you have stored it
-    const authToken = localStorage.getItem("token");
-
-    // Set the authorization header if the token exists
-    if (authToken) {
-      operation.setContext(({ headers = {} }) => ({
-        headers: {
-          ...headers,
-          authorization: `Bearer ${authToken}`,
-        },
-      }));
-    }
+    console.log(
+      `[GraphQL] Request: ${operation.operationName}`,
+      operation.variables
+    );
 
     return forward(operation).map((response) => {
       if (response.errors) {
-        const statusCode =
-          response.errors[0]?.extensions?.exception?.response?.status;
-        if (statusCode === 401) {
-          console.log("logout");
-        }
+        // localStorage.clear();
+        // toast.success("Bad Request!!", {
+        //   position: "top-center",
+        //   autoClose: 5000,
+        //   hideProgressBar: false,
+        //   closeOnClick: true,
+        //   pauseOnHover: true,
+        //   draggable: true,
+        //   progress: undefined,
+        //   theme: "light",
+        // });
       }
+      console.log(`[GraphQL] Response: ${operation.operationName}`, response);
       return response;
     });
   });
@@ -166,6 +172,7 @@ export default function App({ Component, pageProps }: AppProps) {
     return (
       <>
         <ApolloProvider client={client}>
+          <ToastContainer />
           <Component {...pageProps} />
         </ApolloProvider>
       </>
@@ -174,6 +181,7 @@ export default function App({ Component, pageProps }: AppProps) {
     return (
       <>
         <ApolloProvider client={client}>
+          <ToastContainer />
           <Component {...pageProps} />
         </ApolloProvider>
       </>
