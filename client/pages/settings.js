@@ -233,6 +233,15 @@ export default function Settings() {
     console.log(updateProfileData);
   }, [updateProfileData]);
 
+  function handleDate(){
+    const lastInvoicedDate = new Date(meeData?.me?.lastInvoicedDate)
+    console.log(lastInvoicedDate.toLocaleDateString('in-IN'))
+    const upcomingInvoicedDate = new Date(meeData?.me?.upcomingInvoicedDate)
+    console.log(upcomingInvoicedDate.toLocaleDateString('in-IN'))
+    const string = <span style={{fontWeight:"600"}}>``</span>
+    return `You are on a ${string} plan`
+  }
+
   if (meeLoading) return <LoaderPlane />;
 
   return (
@@ -572,16 +581,18 @@ export default function Settings() {
                                   </span>
                                 </dd>
                               </div>
-                              <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:border-b sm:border-gray-200 sm:py-5">
+                              {meeData?.me?.paid && <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:border-b sm:border-gray-200 sm:py-5">
                                 <dt className="text-sm font-medium text-gray-500">
-                                  Free Trail (Days Left)
+                                  Susbcription Details
                                 </dt>
                                 <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                   <span className="flex-grow">
-                                    {meeData?.me?.freeTrialDays}
+                                    You are on a <span style={{fontWeight:"600"}}>{meeData?.me?.interval}ly</span> plan <br/>
+                                    Last Invoice Date : <span style={{fontWeight:"600"}}>{new Date(meeData?.me?.lastInvoicedDate).toLocaleDateString('in-IN')}</span> <br/>
+                                    Next Invoice Date : <span style={{fontWeight:"600"}}>{new Date(meeData?.me?.upcomingInvoicedDate).toLocaleDateString('in-IN')}</span>
                                   </span>
                                 </dd>
-                              </div>
+                              </div>}
                               <div>
                                 <button
                                   type="button"
