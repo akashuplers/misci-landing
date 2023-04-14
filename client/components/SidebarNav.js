@@ -442,7 +442,7 @@ export default function Sidebar() {
                     onMouseLeave={() => {
                       document
                         .getElementById("trialenddiv")
-                        .classList.add("hidden");
+                        ?.classList.add("hidden");
                     }}
                   >
                     <Avatar
