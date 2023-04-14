@@ -434,13 +434,11 @@ export default function Sidebar() {
                     href="/settings"
                     onMouseEnter={() => {
                       document
-                        .getElementById("trialenddiv")
-                        .classList.remove("hidden");
+                        .getElementById("trialenddiv")?.classList.remove("hidden");
                     }}
                     onMouseLeave={() => {
                       document
-                        .getElementById("trialenddiv")
-                        .classList.add("hidden");
+                        .getElementById("trialenddiv")?.classList.add("hidden");
                     }}
                   >
                     <Avatar
@@ -449,7 +447,7 @@ export default function Sidebar() {
                       src={meeData?.me?.profileImage}
                       round={true}
                     />
-                    <div
+                    {meeData?.me?.paid || <div
                       id="trialenddiv"
                       className="hidden"
                       style={{
@@ -467,9 +465,8 @@ export default function Sidebar() {
                         backgroundColor: "#EEC800",
                       }}
                     >
-                      {meeData?.me?.freeTrialDays} Days left for <br /> your
-                      trial to end!
-                    </div>
+                      Upgrade Now!
+                    </div>}
                   </Link>
                 </div>
               </div>
