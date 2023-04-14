@@ -25,6 +25,7 @@ import { useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import ReactLoading from "react-loading";
 import fillerProfileImage from "../public/profile-filler.jpg"
+import axios from "axios";
 
 const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: false },
@@ -138,19 +139,15 @@ export default function Settings() {
     }
 
     setUpdateLoader(true);
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${getToken}`);
-    myHeaders.append("Content-Type", "application/json");
-
-    fetch(API_BASE_PATH + API_ROUTES.UPDATE_PROFILE, {
-      method: "PUT",
-      headers: myHeaders,
-      body: JSON.stringify(updateProfileData),
+    axios.put(API_BASE_PATH + API_ROUTES.UPDATE_PROFILE, updateProfileData, {
+      headers: {
+        Authorization: `Bearer ${getToken}`,
+        "Content-Type": "application/json",
+      },
     })
-      .then((res) => res.json())
       .then((res) => {
-        if (res.errors === false) {
-          toast.success(res.message, {
+        if (res.data.errors === false) {
+          toast.success(res.data.message, {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -161,7 +158,7 @@ export default function Settings() {
             theme: "light",
           });
         } else {
-          toast.error(res.message, {
+          toast.error(res.data.message, {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -188,36 +185,36 @@ export default function Settings() {
         const srcData = fileReader.result;
         // console.log('base64:', srcData)
 
-        var myHeaders = {
+        const myHeaders = {
           "Content-Type": "application/json",
         };
 
-        var imageRaw = JSON.stringify({
+        const imageRaw = {
           path: "profile",
           base64: srcData,
-        });
+        };
 
-        var requestOptions = {
+        const config = {
           method: "POST",
+          url: API_BASE_PATH + API_ROUTES.IMAGE_UPLOAD,
           headers: myHeaders,
-          body: imageRaw,
+          data: imageRaw,
           redirect: "follow",
         };
 
-        // console.log(requestOptions);
-
-        fetch(API_BASE_PATH + API_ROUTES.IMAGE_UPLOAD, requestOptions)
-          .then((response) => response.json())
-          .then((result) => {
-            console.log(result);
+        axios(config)
+          .then((response) => {
+            console.log(response.data);
             setUpdateProfileData((prev) => {
               return {
                 ...prev,
-                profileImage: result.url,
+                profileImage: response.data.url,
               };
             });
           })
-          .catch((error) => console.log("error", error));
+          .catch((error) => {
+            console.log("error", error);
+          });
       };
 
       fileReader.readAsDataURL(selectedfile);
