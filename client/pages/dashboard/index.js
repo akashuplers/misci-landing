@@ -11,6 +11,7 @@ import { jsonToHtml } from "../../helpers/helper";
 import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
 import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
 
 dashboard.getInitialProps = ({ query }) => {
   return { query };
@@ -71,27 +72,31 @@ export default function dashboard({ query }) {
       loginProcess = localStorage.getItem("loginProcess");
     }
     if (bid && loginProcess) {
-      var myHeaders = new Headers();
-      myHeaders.append("content-type", "application/json");
 
-      var graphql = JSON.stringify({
-        query:
-          "query FetchBlog($fetchBlogId: String!) {\n  fetchBlog(id: $fetchBlogId) {\n    _id\n    article_id\n    ideas {\n      blog_id\n      ideas {\n        used\n        idea\n        article_id\n      }\n    }\n    publish_data {\n      tiny_mce_data {\n        children\n        tag\n      }\n      published_date\n      published\n      platform\n      creation_date\n    }\n  }\n  trendingTopics\n  increment\n}",
-        variables: { fetchBlogId: bid },
-      });
-      var requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: graphql,
-        redirect: "follow",
+      /* Harsh test this block*/
+
+      const myHeaders = {
+        'Content-Type': 'application/json'
       };
 
-      fetch("https://maverick.lille.ai/graphql", requestOptions)
-        .then((response) => response.text())
-        .then((res) => {
-          const { data } = JSON.parse(res);
+      const graphql = JSON.stringify({
+        query: "query FetchBlog($fetchBlogId: String!) {\n  fetchBlog(id: $fetchBlogId) {\n    _id\n    article_id\n    ideas {\n      blog_id\n      ideas {\n        used\n        idea\n        article_id\n      }\n    }\n    publish_data {\n      tiny_mce_data {\n        children\n        tag\n      }\n      published_date\n      published\n      platform\n      creation_date\n    }\n  }\n  trendingTopics\n  increment\n}",
+        variables: { fetchBlogId: bid }
+      });
+
+      const config = {
+        method: 'post',
+        url: 'https://maverick.lille.ai/graphql',
+        headers: myHeaders,
+        data: graphql,
+        redirect: 'follow'
+      };
+
+      axios(config)
+        .then(function (response) {
+          const data = response.data.data;
+          console.log(data);
           setBlogData(data.fetchBlog);
-          // const aa = data.fetchBlog.publish_data[2].tiny_mce_data;
           const aa = data.fetchBlog.publish_data.find(
             (pd) => pd.platform === "wordpress"
           ).tiny_mce_data;
@@ -108,7 +113,9 @@ export default function dashboard({ query }) {
         .finally(() => {
           toast.success("LinkedIn SignUp Succesfull!!");
         })
-        .catch((error) => console.log("error", error));
+        .catch(function (error) {
+          console.log(error);
+        });
     } else {
       GenerateBlog({
         variables: {
