@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import { LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
 import ReactLoading from "react-loading";
 import Modal from "react-modal";
+import axios from "axios";
 import {
   FacebookShareButton,
   TwitterShareButton,
@@ -25,6 +26,7 @@ import {
   EmailIcon,
 } from "react-share";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { toast, ToastContainer } from "react-toastify";
 
 export default function TinyMCEEditor({
   topic,
@@ -38,6 +40,10 @@ export default function TinyMCEEditor({
   const [updatedText, setEditorText] = useState(editorText);
   const [saveLoad, setSaveLoad] = useState(false);
   const [saveText, setSaveText] = useState("Save!");
+  const [publishLoad, setPublishLoad] = useState(false);
+  const [publishText, setPublishText] = useState("Save & Publish");
+  const [publishLinkLoad, setPublishLinkLoad] = useState(false);
+  const [publishLinkText, setPublishLinkText] = useState("Publish on Linkedin");
   const [openModal, setOpenModal] = useState(false);
   const [text, setText] = useState("");
   const [isCopied, setIsCopied] = useState(false);
@@ -85,23 +91,21 @@ export default function TinyMCEEditor({
 
       const jsonDoc = htmlToJson(updatedText).children;
       const formatedJSON = { children: [...jsonDoc] };
-      UpdateBlog(
-        {
-          variables: {
-            options: {
-              tinymce_json: formatedJSON,
-              blog_id: blog_id,
-              platform: option === "blog" ? "wordpress" : option,
-            },
+      UpdateBlog({
+        variables: {
+          options: {
+            tinymce_json: formatedJSON,
+            blog_id: blog_id,
+            platform: option === "blog" ? "wordpress" : option,
           },
-           context: {
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": "Bearer " + getToken,
-            },
+        },
+        context: {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + getToken,
           },
-        }
-      )
+        },
+      })
         .then(() => {
           console.log(">>", window.location);
           if (window.location.pathname !== "/dashboard/" + blog_id)
@@ -112,6 +116,16 @@ export default function TinyMCEEditor({
           //console.log(err);
         })
         .finally(() => {
+          toast.success("Saved!!", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
           setSaveLoad(false);
           setSaveText("Saved!");
         });
@@ -151,53 +165,58 @@ export default function TinyMCEEditor({
       getToken = localStorage.getItem("token");
     }
     if (getToken) {
+      setPublishLoad(true);
       const jsonDoc = htmlToJson(updatedText).children;
       const formatedJSON = { children: [...jsonDoc] };
-      UpdateBlog(
-        {
-          variables: {
-            options: {
-              tinymce_json: formatedJSON,
-              blog_id: blog_id,
-              platform: "wordpress",
-            },
+      UpdateBlog({
+        variables: {
+          options: {
+            tinymce_json: formatedJSON,
+            blog_id: blog_id,
+            platform: "wordpress",
           },
-          context: {
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": "Bearer " + getToken,
-            },
+        },
+        context: {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + getToken,
           },
-        }
-      )
+        },
+      })
         .then(() => {
-          var myHeaders = new Headers();
-          myHeaders.append("content-type", "application/json");
-          myHeaders.append("Authorization", "Bearer " + token);
-
-          var raw = JSON.stringify({
-            query:
-              "mutation SavePreferences($options: PublisOptions) {\n  publish(options: $options)\n}",
-            variables: {
-              options: {
-                blog_id: blog_id,
+          // console.log("save and publish");
+          axios({
+            method: "post",
+            url: "https://maverick.lille.ai/graphql",
+            headers: {
+              "content-type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+            data: {
+              query:
+                "mutation SavePreferences($options: PublisOptions) {\n  publish(options: $options)\n}",
+              variables: {
+                options: {
+                  blog_id: blog_id,
+                },
               },
             },
-          });
-
-          var requestOptions = {
-            method: "POST",
-            headers: myHeaders,
-            body: raw,
-            redirect: "follow",
-          };
-
-          fetch("https://maverick.lille.ai/graphql", requestOptions)
-            .then((response) => response.text())
-            .then((result) => {
-              const data = JSON.parse(result);
-              if (data.data.publish) {
+          })
+            .then((response) => {
+              if (response?.data?.data?.publish) {
+                toast.success("Published!!", {
+                  position: "top-center",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "light",
+                });
                 setOpenModal(true);
+                setPublishLoad(false);
+                setPublishText("Save & Publish");
               }
             })
             .catch((error) => console.log("error", error));
@@ -207,34 +226,40 @@ export default function TinyMCEEditor({
   };
 
   const handlePublish = () => {
-        console.log('req here')
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + token);
-    myHeaders.append("Content-Type", "application/json");
+    const jsonData = htmlToJson(editorText)?.children[3]?.children[0];
+    setPublishLinkLoad(true);
+    console.log("req here");
 
-    var raw = JSON.stringify({
+    const data = {
       token: linkedInAccessToken,
-      author: "urn:li:person:" + authorId,
-      data: htmlToJson(editorText)?.children[3]?.children[0],
+      author: `urn:li:person:${authorId}`,
+      data: jsonData,
       blogId: blog_id,
-    });
-
-    console.log(
-      "htmlToJson(editorText)",
-      htmlToJson(editorText)?.children[3]?.children[0]
-    );
-
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow",
     };
-    console.log('req', requestOptions)
-    fetch("https://maverick.lille.ai/auth/linkedin/post", requestOptions)
-      .then((response) => response.text())
-      .then((result) => console.log(result))
-      .catch((error) => console.log("error", error));
+
+    axios
+      .post("https://maverick.lille.ai/auth/linkedin/post", data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        setPublishLinkLoad(false);
+        setPublishLinkText("Published on Linkedin!!");
+        toast.success("Published on Linkedin!!", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      })
+      .catch((error) => console.log(error));
   };
 
   function handleBlog(e) {
@@ -245,7 +270,7 @@ export default function TinyMCEEditor({
     button.classList.add("active");
 
     // const aa = blogData?.publish_data[2].tiny_mce_data;
-    const aa = blogData?.publish_data.find(
+    const aa = blogData?.publish_data?.find(
       (pd) => pd.platform === "wordpress"
     ).tiny_mce_data;
 
@@ -283,6 +308,7 @@ export default function TinyMCEEditor({
   if (loading) return <LoaderPlane />;
   return (
     <>
+      <ToastContainer />
       <Modal
         isOpen={openModal}
         onRequestClose={() => setOpenModal(false)}
@@ -383,17 +409,22 @@ export default function TinyMCEEditor({
         handleSave={handleSave}
         bid={blog_id}
       />
-      <div style={{
-        paddingBottom:"0.5em",
-        display:"flex",
-        justifyContent:"space-between",
-        alignItems:"center"
-      }} className="text-sm mx-2">
+      <div
+        style={{
+          paddingBottom: "0.5em",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+        className="text-sm mx-2"
+      >
         {isAuthenticated ? (
-          <div style={{
-            display:"flex",
-            gap:"0.25em"
-          }}>
+          <div
+            style={{
+              display: "flex",
+              gap: "0.25em",
+            }}
+          >
             <button
               className="blog-toggle-button cta active wordpress"
               onClick={handleBlog}
@@ -414,15 +445,20 @@ export default function TinyMCEEditor({
             </button>
           </div>
         ) : (
-          <div style={{display:"none"}}></div>
+          <div style={{ display: "none" }}></div>
         )}
-        <div className="flex" style={{gap:"0.25em",marginLeft :"auto"}}>
+        <div className="flex" style={{ gap: "0.25em", marginLeft: "auto" }}>
           <button
             className="cta"
             onClick={saveText === "Save Now!" && handleSave}
           >
             {saveLoad ? (
-              <ReactLoading width={25} height={25} round={true} color={'#2563EB'}/>
+              <ReactLoading
+                width={25}
+                height={25}
+                round={true}
+                color={"#2563EB"}
+              />
             ) : (
               saveText
             )}
@@ -431,28 +467,43 @@ export default function TinyMCEEditor({
             linkedInAccessToken ? (
               <button
                 className="cta"
-                onClick={handlePublish}
+                onClick={
+                  publishLinkText === "Publish on Linkedin" && handlePublish
+                }
               >
-                Publish on Linkedin
+                {publishLinkLoad ? (
+                  <ReactLoading
+                    width={25}
+                    height={25}
+                    round={true}
+                    color={"#2563EB"}
+                  />
+                ) : (
+                  publishLinkText
+                )}
               </button>
             ) : (
-              <button
-                className="cta"
-                onClick={handleconnectLinkedin}
-              >
+              <button className="cta" onClick={handleconnectLinkedin}>
                 Connect with Linkedin
               </button>
             )
           ) : option === "twitter" ? (
-            <button className="cta">
-              Coming Soon...
-            </button>
+            <button className="cta">Coming Soon...</button>
           ) : isAuthenticated ? (
             <button
               className="cta"
-              onClick={handleSavePublish}
+              onClick={publishText === "Save & Publish" && handleSavePublish}
             >
-              Save & Publish
+              {publishLoad ? (
+                <ReactLoading
+                  width={25}
+                  height={25}
+                  round={true}
+                  color={"#2563EB"}
+                />
+              ) : (
+                publishText
+              )}
             </button>
           ) : (
             <></>
@@ -539,7 +590,7 @@ export default function TinyMCEEditor({
             input.click();
           },
           images_upload_handler: (blobInfo, success, failure) => {
-            var formdata = new FormData();
+            /*var formdata = new FormData();
             formdata.append("file", blobInfo.blob());
 
             var requestOptions = {
@@ -554,6 +605,24 @@ export default function TinyMCEEditor({
               //   const data = JSON.parse(result);
               //   success(data.url);
               // })
+              .catch((error) => console.log("error", error));*/
+
+            console.log("Harsh test this block");
+
+            const formdata = new FormData();
+            formdata.append("file", blobInfo.blob());
+
+            const config = {
+              method: "post",
+              url: "https://maverick.lille.ai/upload/image",
+              data: formdata,
+            };
+
+            axios(config)
+              /*.then((response) => {
+                  const data = response.data;
+                  success(data.url);
+                })*/
               .catch((error) => console.log("error", error));
           },
         }}
