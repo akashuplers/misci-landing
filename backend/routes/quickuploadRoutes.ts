@@ -2,6 +2,7 @@ import { Python } from "../services/python"
 import { authMiddleware } from "../middleWare/authToken"
 import { fetchArticles } from "../repos"
 import { ObjectID } from "bson"
+import { fetchArticleById, fetchUsedBlogIdeasByIdea } from "../graphql/resolver/blogs/blogsRepo"
 
 const express = require('express')
 const router = express.Router()
@@ -28,6 +29,39 @@ router.post('/url', authMiddleware, async (req: any, res: any) => {
                     })
                 }
             })
+            if(freshIdeas && freshIdeas.length) {
+                freshIdeas = await (
+                    Promise.all(
+                        freshIdeas.map(async (ideasData: any) => {
+                            const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db, userId: user.id})
+                            if(ideaExistInBlog) {
+                                return {
+                                    ...ideasData,
+                                    reference: {
+                                        type: "blog",
+                                        link: null,
+                                        id: ideaExistInBlog._id
+                                    }
+                                }
+                            } else if(ideasData.article_id) {
+                                const article = await fetchArticleById({id: ideasData.article_id, db, userId: user.id})
+                                return {
+                                    ...ideasData,
+                                    reference: {
+                                        type: "article",
+                                        link: article._source.orig_url,
+                                        id: ideasData.article_id
+                                    }
+                                }
+                            } else {
+                                return {
+                                    ...ideasData
+                                }
+                            }
+                        })       
+                    )
+                )
+            }
             if(blog_id)
                 await db.db('lilleBlogs').collection('blogIdeas').updateOne({blog_id: new ObjectID(blog_id)}, {
                     $set: {
@@ -58,7 +92,12 @@ router.post('/keyword', authMiddleware, async (req: any, res: any) => {
     const user = req.user
     if(!user) throw "No user found!"
     try {
-        const articleIds = await new Python({userId: user.id}).uploadKeyword({keyword})
+        // const articleIds = await new Python({userId: user.id}).uploadKeyword({keyword})
+        const articleIds = [
+            '35801043-dd12-11ed-877d-0242ac130002',
+        'c399a6dd-dd12-11ed-877d-0242ac130002',
+        'c5a42f45-dd12-11ed-877d-0242ac130002'
+        ]
         let articlesData: any[] = []
         await (
             Promise.all(
@@ -76,6 +115,39 @@ router.post('/keyword', authMiddleware, async (req: any, res: any) => {
         )
         let freshIdeas: any[] = []
         freshIdeas = articlesData
+        if(freshIdeas && freshIdeas.length) {
+            freshIdeas = await (
+                Promise.all(
+                    freshIdeas.map(async (ideasData: any) => {
+                        const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db, userId: user.id})
+                        if(ideaExistInBlog) {
+                            return {
+                                ...ideasData,
+                                reference: {
+                                    type: "blog",
+                                    link: null,
+                                    id: ideaExistInBlog._id
+                                }
+                            }
+                        } else if(ideasData.article_id) {
+                            const article = await fetchArticleById({id: ideasData.article_id, db, userId: user.id})
+                            return {
+                                ...ideasData,
+                                reference: {
+                                    type: "article",
+                                    link: article._source.orig_url,
+                                    id: ideasData.article_id
+                                }
+                            }
+                        } else {
+                            return {
+                                ...ideasData
+                            }
+                        }
+                    })       
+                )
+            )
+        }
         if(blog_id)
             await db.db('lilleBlogs').collection('blogIdeas').updateOne({blog_id: new ObjectID(blog_id)}, {
                 $set: {
@@ -117,6 +189,39 @@ router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any
                     })
                 }
             })
+            if(freshIdeas && freshIdeas.length) {
+                freshIdeas = await (
+                    Promise.all(
+                        freshIdeas.map(async (ideasData: any) => {
+                            const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db, userId: user.id})
+                            if(ideaExistInBlog) {
+                                return {
+                                    ...ideasData,
+                                    reference: {
+                                        type: "blog",
+                                        link: null,
+                                        id: ideaExistInBlog._id
+                                    }
+                                }
+                            } else if(ideasData.article_id) {
+                                const article = await fetchArticleById({id: ideasData.article_id, db, userId: user.id})
+                                return {
+                                    ...ideasData,
+                                    reference: {
+                                        type: "article",
+                                        link: article._source.orig_url,
+                                        id: ideasData.article_id
+                                    }
+                                }
+                            } else {
+                                return {
+                                    ...ideasData
+                                }
+                            }
+                        })       
+                    )
+                )
+            }
             if(blog_id)
                 await db.db('lilleBlogs').collection('blogIdeas').updateOne({blog_id: new ObjectID(blog_id)}, {
                     $set: {
