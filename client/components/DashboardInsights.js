@@ -466,9 +466,26 @@ export default function DashboardInsights({
                         href={idea?.reference?.link} 
                         target="_blank" 
                         title={idea?.reference?.link}
-                        style={{color:"blue", alignSelf:"flex-start"}}
+                        style={{color:"blue", alignSelf:"flex-start", position:"relative"}}
+                        onMouseEnter={() => {
+                          document.querySelector(`.refrenceTooltip${index}`).classList.remove("hidden")
+                        }}
+                        onMouseLeave={() => {
+                          document.querySelector(`.refrenceTooltip${index}`).classList.add("hidden")
+                        }}
                       >
                         {idea?.reference?.type === "article" ? "[2]" : "[1]"}
+                        <div className={`hidden refrenceTooltip${index}`}
+                          style={{
+                            position: 'absolute',
+                            top: '100%',
+                            right: '0',
+                            border: '1px solid',
+                            color: 'black',
+                            backgroundColor: 'white',
+                            padding: '0.5em',
+                            borderRadius: '5px'
+                          }}>hello ji s</div>
                       </a>
                       <input
                         type="checkbox"
@@ -495,9 +512,26 @@ export default function DashboardInsights({
                         href={idea?.reference?.link} 
                         target="_blank" 
                         title={idea?.reference?.link}
-                        style={{color:"blue", alignSelf:"flex-start"}}
+                        style={{color:"blue", alignSelf:"flex-start", position:"relative"}}
+                        onMouseEnter={() => {
+                          document.querySelector(`.refrenceTooltip${index}`).classList.remove("hidden")
+                        }}
+                        onMouseLeave={() => {
+                          document.querySelector(`.refrenceTooltip${index}`).classList.add("hidden")
+                        }}
                       >
                         {idea?.reference?.type === "article" ? "[2]" : "[1]"}
+                        <div className={`hidden refrenceTooltip${index}`}
+                          style={{
+                            position: 'absolute',
+                            top: '100%',
+                            right: '0',
+                            border: '1px solid',
+                            color: 'black',
+                            backgroundColor: 'white',
+                            padding: '0.5em',
+                            borderRadius: '5px'
+                          }}>hello ji s</div>
                       </a>
                       <input
                         type="checkbox"
@@ -515,6 +549,7 @@ export default function DashboardInsights({
             : ""}
           {ideaType === "fresh"
             ? freshIdea?.map((idea, index) => {
+              console.log(idea)
                 return (
                   <div className="flex pb-3" key={index}>
                     <div className="flex justify-between gap-5 w-full">
@@ -523,9 +558,26 @@ export default function DashboardInsights({
                         href={idea?.reference?.link} 
                         target="_blank" 
                         title={idea?.reference?.link}
-                        style={{color:"blue", alignSelf:"flex-start"}}
+                        style={{color:"blue", alignSelf:"flex-start", position:"relative"}}
+                        onMouseEnter={() => {
+                          document.querySelector(`.refrenceTooltip${index}`).classList.remove("hidden")
+                        }}
+                        onMouseLeave={() => {
+                          document.querySelector(`.refrenceTooltip${index}`).classList.add("hidden")
+                        }}
                       >
                         {idea?.reference?.type === "article" ? "[2]" : "[1]"}
+                        <div className={`hidden refrenceTooltip${index}`}
+                          style={{
+                            position: 'absolute',
+                            top: '100%',
+                            right: '0',
+                            border: '1px solid',
+                            color: 'black',
+                            backgroundColor: 'white',
+                            padding: '0.5em',
+                            borderRadius: '5px'
+                          }}>hello ji s</div>
                       </a>
                       <input
                         type="checkbox"
