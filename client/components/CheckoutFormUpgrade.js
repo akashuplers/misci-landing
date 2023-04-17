@@ -83,25 +83,20 @@ const CheckoutFormUpgrade = ({
       if (typeof window !== "undefined") {
         getToken = localStorage.getItem("token");
       }
-      var myHeaders = new Headers();
-      myHeaders.append("Authorization", "Bearer " + getToken);
-      myHeaders.append("Content-Type", "application/json");
+      const myHeaders = {
+        Authorization: `Bearer ${getToken}`,
+        "Content-Type": "application/json",
+      };
 
-      var raw = JSON.stringify({
+      const requestBody = {
         paymentMethodId: paymentMethod?.paymentMethod?.id,
         priceId: priceId,
         interval: interval,
-      });
-
-      var requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
       };
 
-      fetch("https://maverick.lille.ai/stripe/upgrade", requestOptions)
-        .then((res) => res.json())
+      axios
+        .post("https://maverick.lille.ai/stripe/upgrade", requestBody, { headers: myHeaders })
+        .then((res) => res.data)
         .then((data) => {
           console.log(data.data);
           console.log(data.data.status);
@@ -112,7 +107,22 @@ const CheckoutFormUpgrade = ({
             );
           }
         })
-        .catch((err) => console.log(err));
+        .catch((error) => {
+          const errorMessage = error.response.data.error && error.response.data.message;
+          if(errorMessage != null){
+            toast.error("Error : " + errorMessage, {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+          }
+          console.error("Error : ", error.response);
+        });
     } catch (error) {
       console.log(error);
     }
@@ -123,25 +133,13 @@ const CheckoutFormUpgrade = ({
     if (typeof window !== "undefined") {
       getToken = localStorage.getItem("token");
     }
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + getToken);
-    myHeaders.append("Content-Type", "application/json");
 
-    var raw = JSON.stringify({
-      subscriptionId: subscriptionId,
-    });
-
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow",
-    };
-
-    fetch("https://maverick.lille.ai/stripe/upgrade-confirm", requestOptions)
-      .then((response) => response.text())
-      .then((result) => {
-        const data = JSON.parse(result);
+    axios.post("https://maverick.lille.ai/stripe/upgrade-confirm", {subscriptionId: subscriptionId} ,{headers : {
+      "Content-Type" : "application/json",
+      "Authorization" : "Bearer " + getToken
+    }})
+      .then(result => result.data)
+      .then((data) => {
         if (data.data === "Upgrade Confirmed!") {
           toast.success(data.data, {
             position: "top-center",
