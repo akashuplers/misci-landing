@@ -5,6 +5,7 @@ import Link from "next/link";
 import Navbar from "../components/Navbar";
 import SwiperComponent from "../components/SwiperComponent";
 import  styles  from "../styles/price.module.css";
+import axios from "axios";
 
 const featuresData = [
   {
@@ -34,16 +35,22 @@ export default function Pricing() {
 
   useEffect(() => {
     return async () => {
-      const pricesRes = await fetch(`${API_BASE_PATH}/stripe/prices`, {
-        method: "GET",
+      const pricesRes = await axios({
+        method: "get",
+        url: `${API_BASE_PATH}/stripe/prices`,
         headers: {
           "Content-Type": "application/json",
         },
-      }).then((res) => res.json());
+      }).then((res) => res.data);
+
       setPriceData(pricesRes.data.data);
       console.log(pricesRes.data.data);
     };
   }, []);
+
+  useEffect(() => {
+    console.log(priceData);
+  },[priceData])
 
   const [plans, setPlans] = useState([]);
   const [currentPlan, setCurrentPlan] = useState();
@@ -78,12 +85,14 @@ export default function Pricing() {
 
   useLayoutEffect(() => {
     const fetchPriceId = async () => {
-      const pricesRes = await fetch(`${API_BASE_PATH}/stripe/prices`, {
-        method: "GET",
+      const pricesRes = await axios({
+        method: "get",
+        url: `${API_BASE_PATH}/stripe/prices`,
         headers: {
           "Content-Type": "application/json",
         },
-      }).then((res) => res.json());
+      }).then((res) => res.data);
+
       console.log(pricesRes?.data, "pricesRes");
       const updatedPricesArray = pricesRes?.data?.data?.map((price) => {
         let type = null;
