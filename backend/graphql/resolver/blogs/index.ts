@@ -213,7 +213,7 @@ export const blogResolvers = {
                     status: "draft",
                     description,
                     tags,
-                    imageUrl,
+                    imageUrl: imageUrl ? imageUrl : "https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/plabeholder/1681740088024.jpeg",
                     date: getTimeStamp(),
                     updatedAt: getTimeStamp(),
                 }
@@ -345,7 +345,7 @@ export const blogResolvers = {
                     text: texts,
                     regenerate: true,
                     title: blog.keyword,
-                    imageUrl: blog.imageUrl ? blog.imageUrl : imageUrl,
+                    imageUrl: imageUrl ? imageUrl : blog.imageUrl,
                 })
                 let newData: any = []
                 blog.publish_data.forEach((data: any, index: any) => {
@@ -573,7 +573,7 @@ export const blogResolvers = {
                                 keyword,
                                 status: "ir_generated",
                                 description,
-                                imageUrl,
+                                imageUrl: imageUrl ? imageUrl : "https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/plabeholder/1681740088024.jpeg",
                                 tags,
                                 date: getTimeStamp(),
                                 updatedAt: getTimeStamp(),
