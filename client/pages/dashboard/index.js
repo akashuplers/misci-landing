@@ -125,7 +125,7 @@ export default function dashboard({ query }) {
 
       const graphql = JSON.stringify({
         query:
-          "query FetchBlog($fetchBlogId: String!) {\n  fetchBlog(id: $fetchBlogId) {\n    _id\n    article_id\n    ideas {\n      blog_id\n      ideas {\n        used\n        idea\n        article_id\n      }\n    }\n    publish_data {\n      tiny_mce_data {\n        children\n        tag\n      }\n      published_date\n      published\n      platform\n      creation_date\n    }\n  }\n  trendingTopics\n  increment\n}",
+          "query FetchBlog($fetchBlogId: String!) {\n fetchBlog(id: $fetchBlogId) {\n_id\narticle_id\nreferences\nideas {\nblog_id\nideas {\n        used\n        idea\n        article_id\n        reference {\n            type\n            link\n            id\n        }\n      }\n      freshIdeas {\n        used\n        idea\n        article_id\n        reference {\n            type\n            link\n            id\n        }\n      }\n    }\n    publish_data {\n      tiny_mce_data {\n        children\n        tag\n      }\n      published_date\n      published\n      platform\n      creation_date\n    }\n  }\n  trendingTopics\n  increment\n}",
         variables: { fetchBlogId: bid },
       });
 

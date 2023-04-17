@@ -1,11 +1,11 @@
 import { gql } from "@apollo/client";
 
 export const getBlogbyId = gql`
-  query FetchBlog($fetchBlogId: String!) {
+    query FetchBlog($fetchBlogId: String!) {
     fetchBlog(id: $fetchBlogId) {
       _id
       article_id
-      tags
+      references
       ideas {
         blog_id
         ideas {
@@ -13,9 +13,9 @@ export const getBlogbyId = gql`
           idea
           article_id
           reference {
-            type
-            link
-            id
+              type
+              link
+              id
           }
         }
         freshIdeas {
@@ -23,9 +23,9 @@ export const getBlogbyId = gql`
           idea
           article_id
           reference {
-            type
-            link
-            id
+              type
+              link
+              id
           }
         }
       }
