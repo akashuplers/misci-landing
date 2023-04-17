@@ -290,29 +290,79 @@ export const deleteBlogIdeas = async ({
 
 export const fetchUsedBlogIdeasByIdea = async ({
     idea,
-    db
+    db,
+    userId
 }: {
     idea: any
     db: any
+    userId: string
 }) => {
-    return await db.db('lilleBlogs').collection('blogIdeas').findOne({
-        ideas: {
-            $elemMatch: {
-                "idea": idea, 
-                "used": 1
+    const res = await db.db('lilleBlogs').collection('blogIdeas').aggregate([
+        {
+            $match: {
+                ideas: {
+                    $elemMatch: {
+                        "idea": idea, 
+                        "used": 1,
+                    }
+                }
+            }
+        },
+        {
+            $lookup: {
+                from: "blogs",
+                localField: "blog_id",
+                foreignField: "_id",
+                as: "blogs",
+            }
+        },
+        { "$unwind": "$blogs" },
+        {
+            $match: {
+                "blogs.userId": new ObjectID(userId)
+            }
+        },
+        {
+            $project: {
+                _id: 1
             }
         }
-    })
+    ]).toArray()
+    return res?.length ? res[0] : null
 }
 
 export const fetchArticleById = async ({
     id,
-    db
+    db,
+    userId
 }: {
     id: string
     db: any
+    userId: string
 }) => {
     return await db.db('lilleArticles').collection('articles').findOne({
         _id: id
     })
+}
+
+export const fetchArticleUrls = async ({
+    blog,
+    db
+}: {
+    blog: any
+    db: any
+}) => {
+    let urls : string[] = []
+    if(blog && blog?.article_id?.length) {
+        const urlsData = await db.db("lilleArticles").collection('articles').find({
+            _id: {$in: blog?.article_id}
+        }, {
+            projection: {
+                "_id": 0,
+                "_source.orig_url": 1
+            }
+        }).toArray()
+        if(urlsData?.length) urlsData?.forEach((data: {_source: {orig_url: string}}) => urls.push(data?._source?.orig_url))
+    }
+    return urls
 }
