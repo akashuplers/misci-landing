@@ -446,7 +446,7 @@ export default function DashboardInsights({
               e.target.classList.add("active");
             }}
           >
-            <img src="/lightBulb.png" className="w-5 h-5" />
+            <img src="/lightBulb.png" className="w-5 h-5" style={{pointerEvents:"none"}}/>
             Fresh Idea(s)
           </button>}
         </div>
@@ -462,6 +462,14 @@ export default function DashboardInsights({
                   <div className="flex pb-3" key={index}>
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea.idea}</p>
+                      <a 
+                        href={idea?.reference?.link} 
+                        target="_blank" 
+                        title={idea?.reference?.link}
+                        style={{color:"blue", alignSelf:"flex-start"}}
+                      >
+                        {idea?.reference?.type === "article" ? "[2]" : "[1]"}
+                      </a>
                       <input
                         type="checkbox"
                         className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
@@ -483,6 +491,14 @@ export default function DashboardInsights({
                   <div className="flex pb-3 usedIdeas" key={index}>
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea.idea}</p>
+                      <a 
+                        href={idea?.reference?.link} 
+                        target="_blank" 
+                        title={idea?.reference?.link}
+                        style={{color:"blue", alignSelf:"flex-start"}}
+                      >
+                        {idea?.reference?.type === "article" ? "[2]" : "[1]"}
+                      </a>
                       <input
                         type="checkbox"
                         className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
@@ -503,6 +519,14 @@ export default function DashboardInsights({
                   <div className="flex pb-3" key={index}>
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea.idea}</p>
+                      <a 
+                        href={idea?.reference?.link} 
+                        target="_blank" 
+                        title={idea?.reference?.link}
+                        style={{color:"blue", alignSelf:"flex-start"}}
+                      >
+                        {idea?.reference?.type === "article" ? "[2]" : "[1]"}
+                      </a>
                       <input
                         type="checkbox"
                         className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
