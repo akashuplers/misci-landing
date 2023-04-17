@@ -174,9 +174,11 @@ export const blogResolvers = {
                             const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
                             const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
                             const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                            const name = article._source?.source?.name
                             tags.push(...productsTags, ...organizationTags, ...personsTags)
                             return {
                                 used_summaries: article._source.summary.slice(0, 5),
+                                name: name && name === "file" ? "note" : name,
                                 unused_summaries: article._source.summary.slice(5),
                                 keyword: article.keyword,
                                 id
@@ -221,6 +223,7 @@ export const blogResolvers = {
                         idea: summary,
                         article_id: data.id,
                         reference: null,
+                        name: data.name,
                         used: 1,
                     }))
                 })
@@ -303,6 +306,12 @@ export const blogResolvers = {
                 return texts += `${index+1} - ${idea.text} \n`
             })
             console.log(articleIds)
+            let articleNames = await db.db('lilleArticles').collection('articles').find({_id: {
+                $in: articleIds
+            }}, {projection: {
+                "_source.source.name": 1,
+            }}).toArray()
+            articleNames = articleNames.map((data: any) => ({_id: data._id, name: data?._source?.source.name}))
             let tags: string[] = []
             let imageUrl: string | null = null
             await (
@@ -314,6 +323,7 @@ export const blogResolvers = {
                         } else {
                             if(index === (articleIds.length - 1) && !imageUrl) imageUrl = article.proImageLink
                         }
+                        const name = article._source?.source?.name
                         const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
                         const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
                         const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
@@ -322,6 +332,7 @@ export const blogResolvers = {
                             used_summaries: article._source.summary.slice(0, 5),
                             unused_summaries: article._source.summary.slice(5),
                             keyword: article.keyword,
+                            name: name && name === "file" ? "note" : name,
                             id
                         }
                     })
@@ -334,7 +345,7 @@ export const blogResolvers = {
                     text: texts,
                     regenerate: true,
                     title: blog.keyword,
-                    imageUrl: blog.imageUrl ? blog.imageUrl : imageUrl
+                    imageUrl: blog.imageUrl ? blog.imageUrl : imageUrl,
                 })
                 let newData: any = []
                 blog.publish_data.forEach((data: any, index: any) => {
@@ -365,12 +376,18 @@ export const blogResolvers = {
                     //         }
                     //     )
                     // }
+                    let name = null
+                    const filteredIdData = articleNames.find((data: any) => data._id === newIdea.article_id)
+                    if(filteredIdData) {
+                        name = filteredIdData && filteredIdData.name === "file" ? "note" : filteredIdData.name
+                    } 
                     return newIdeas.push(
                         {
                             idea: newIdea.text,
                             article_id: newIdea.article_id,
                             reference: null,
                             used: 1,
+                            name
                         }
                     )
                 })
@@ -514,6 +531,7 @@ export const blogResolvers = {
                             Promise.all(
                                 articles.map(async (id, index) => {
                                     const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
+                                    const name = article._source?.source?.name
                                     const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
                                     const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
                                     const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
@@ -528,6 +546,7 @@ export const blogResolvers = {
                                         used_summaries: article._source.summary.slice(0, 5),
                                         unused_summaries: article._source.summary.slice(5),
                                         keyword: article.keyword,
+                                        name: name && name === "file" ? "note" : name,
                                         id
                                     }
                                 })

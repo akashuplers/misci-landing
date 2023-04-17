@@ -53,6 +53,7 @@ type IdeasArr {
     article_id: String
     used: Int
     reference: Reference
+    name: String
 }
 
 type Reference {
