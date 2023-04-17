@@ -92,12 +92,7 @@ router.post('/keyword', authMiddleware, async (req: any, res: any) => {
     const user = req.user
     if(!user) throw "No user found!"
     try {
-        // const articleIds = await new Python({userId: user.id}).uploadKeyword({keyword})
-        const articleIds = [
-            '35801043-dd12-11ed-877d-0242ac130002',
-        'c399a6dd-dd12-11ed-877d-0242ac130002',
-        'c5a42f45-dd12-11ed-877d-0242ac130002'
-        ]
+        const articleIds = await new Python({userId: user.id}).uploadKeyword({keyword})
         let articlesData: any[] = []
         await (
             Promise.all(
