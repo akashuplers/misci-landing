@@ -107,7 +107,22 @@ const CheckoutFormUpgrade = ({
             );
           }
         })
-        .catch((err) => console.log(err));
+        .catch((error) => {
+          const errorMessage = error.response.data.error && error.response.data.message;
+          if(errorMessage != null){
+            toast.error("Error : " + errorMessage, {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+          }
+          console.error("Error : ", error.response);
+        });
     } catch (error) {
       console.log(error);
     }
