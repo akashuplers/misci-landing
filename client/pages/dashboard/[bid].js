@@ -10,6 +10,12 @@ import TinyMCEEditor from "../../components/TinyMCEEditor";
 import { jsonToHtml } from "../../helpers/helper";
 import { meeAPI } from "../../graphql/querys/mee";
 
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeunload", function (event) {
+    event.stopImmediatePropagation();
+  });
+}
+
 export default function Post() {
   const [pfmodal, setPFModal] = useState(false);
   const router = useRouter();
@@ -26,7 +32,7 @@ export default function Post() {
   const [blogData, setBlogData] = useState([]);
 
   useEffect(() => {
-    if(data == null) return
+    if (data == null) return;
 
     console.log(data);
     setBlogData(data.fetchBlog);
@@ -38,9 +44,9 @@ export default function Post() {
     const htmlDoc = jsonToHtml(aa);
     setEditorText(htmlDoc);
 
-    setIdeas(data.fetchBlog.ideas.ideas)
+    setIdeas(data.fetchBlog.ideas.ideas);
     setTags(data.fetchBlog.tags);
-  },[data])
+  }, [data]);
 
   var getToken;
   if (typeof window !== "undefined") {

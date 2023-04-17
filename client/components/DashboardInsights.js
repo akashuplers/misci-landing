@@ -12,6 +12,7 @@ import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import ReactLoading from "react-loading";
 import useStore from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
+import axios from "axios";
 
 export default function DashboardInsights({
   loading,
@@ -187,10 +188,10 @@ export default function DashboardInsights({
     var raw;
     if (urlValid) {
       url += API_ROUTES.URL_UPLOAD;
-      raw = JSON.stringify({
+      raw = {
         url: formInput,
         blog_id: blog_id,
-      });
+      };
     } else if (fileValid) {
       url += API_ROUTES.FILE_UPLOAD;
       console.log(file);
@@ -199,41 +200,38 @@ export default function DashboardInsights({
       raw.append("blog_id", blog_id);
     } else {
       url += API_ROUTES.KEYWORD_UPLOAD;
-      raw = JSON.stringify({
+      raw = {
         keyword: formInput,
         blog_id: blog_id,
-      });
+      };
     }
 
-    var myHeaders = new Headers();
-    myHeaders.append(
-      "Authorization",
-      `Bearer ${localStorage.getItem("token")}`
-    );
-    if (!fileValid) {
-      myHeaders.append("Content-Type", "application/json");
-    }
-
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow",
+    const myHeaders = {
+      "Authorization": `Bearer ${localStorage.getItem("token")}`
     };
 
-    fetch(url, requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
+    if (!fileValid) {
+      myHeaders["Content-Type"] = "application/json";
+    }
+
+    const config = {
+      method: 'post',
+      url: url,
+      headers: myHeaders,
+      data: raw
+    };
+
+    axios(config)
+      .then((response) => {
         setIdeaType("fresh");
-        console.log(result);
-        setFreshIdea(result.data);
+        console.log(response.data);
+        setFreshIdea(response.data.data);
 
         const fresh = document.querySelector(".idea-button.fresh");
         const used = document.querySelector(".idea-button.used");
 
         used.classList.remove("active");
         fresh.classList.add("active");
-        // console.log(idea)
       })
       .catch((error) => console.log("error", error))
       .finally(() => {
@@ -508,9 +506,13 @@ export default function DashboardInsights({
                       <input
                         type="checkbox"
                         className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                        onClick={(e) =>
+                        onClick={(e) =>{
+                          console.log(idea);
+                          const updatedIdeas = freshIdea.map((el,elIndex) => elIndex === index ? {...el, used : el.used === 1 ? 0 : 1 } : el)
+                          setFreshIdea(updatedIdeas)
                           handleInputClick(idea.idea, idea.article_id, e)
-                        }
+                        }}
+                        checked={idea.used}
                       />
                     </div>
                   </div>

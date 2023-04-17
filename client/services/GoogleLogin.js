@@ -136,7 +136,13 @@ export const signUpWithGoogle = (handleSave) => {
           .then(response => {
             handleLoginSubmit(signUpFormData.email);
           })
-          .catch((err) => console.error("Error: ", err))
+          .catch((error) => {
+            const errorMessage = error.response.data.error && error.response.data.message;
+            if(errorMessage == "User already exists"){
+              handleLoginSubmit(signUpFormData.email);
+            }
+            console.error("Error : ", error.response);
+          })
     })
     .catch((error) => {
       console.log(error.message);

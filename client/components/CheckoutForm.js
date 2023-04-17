@@ -91,7 +91,7 @@ const CheckoutForm = ({ priceId, currentPlan, setClickOnSubscibe }) => {
         },
       });
       console.log(paymentMethod);
-      const response = await fetch(`${API_BASE_PATH}/stripe/subscribe`, {
+      /*const response = await fetch(`${API_BASE_PATH}/stripe/subscribe`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -110,10 +110,37 @@ const CheckoutForm = ({ priceId, currentPlan, setClickOnSubscibe }) => {
           console.log(data.data);
           console.log(data.data.status);
           if (data.data.status === "requires_action") {
-            confirmPaymentFunction(data.data.clientSecret);
+            //confirmPaymentFunction(data.data.clientSecret);
           }
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err));*/
+      var response
+      try {
+        response = await axios({
+          method: "post",
+          url: `${API_BASE_PATH}/stripe/subscribe`,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          data: {
+            paymentMethodId: paymentMethod?.paymentMethod?.id,
+            firstName: firstName,
+            lastName: lastName,
+            tempUserId: tempUserId,
+            email: email,
+            priceId: priceId,
+          },
+        });
+        const data = response.data;
+        console.log(data.data);
+        console.log(data.data.status);
+        if (data.data.status === "requires_action") {
+          confirmPaymentFunction(data.data.clientSecret);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+ 
 
       console.log("*****", response);
     } catch (error) {
@@ -127,26 +154,39 @@ const CheckoutForm = ({ priceId, currentPlan, setClickOnSubscibe }) => {
       await axios
         .post(`${API_BASE_PATH}/auth/user/create`, payload)
         .then(() => {
-          fetch(API_BASE_PATH + API_ROUTES.LOGIN_ENDPOINT, {
-            method: "POST",
+          axios.post(API_BASE_PATH + API_ROUTES.LOGIN_ENDPOINT, {email: payload.email, password: payload.password,}, {
             headers: {
               "Content-type": "application/json",
-            },
-            body: JSON.stringify({
-              email: payload.email,
-              password: payload.password,
-            }),
+            }
           })
-            .then((res) => res.json())
-            .then((data) => {
-              localStorage.setItem("token", JSON.stringify(data.data));
+          .then((response) => {
+            const data = response.data;
+            console.log(data);
+            if (data.success === false) {
+              alert("some error happened")
+              // toast.error(data.message, {
+              //   position: "top-center",
+              //   autoClose: 5000,
+              //   hideProgressBar: false,
+              //   closeOnClick: true,
+              //   pauseOnHover: true,
+              //   draggable: true,
+              //   progress: undefined,
+              //   theme: "light",
+              // });
+            } else if (data?.data?.accessToken) {
+              //redirectPageAfterLogin(data);
+              localStorage.setItem("token", JSON.stringify(data.data.accessToken));
               if (window.location.pathname === "/subscription") {
                 window.location.href = "/dashboard";
               } else {
                 window.location.reload();
               }
-            })
-            .catch((err) => console.error("Error: ", err));
+            }
+          })
+          .catch((error) => {
+            console.error("Error: ", error);
+          })
         });
       console.log("In create user");
       console.log("====================================");
