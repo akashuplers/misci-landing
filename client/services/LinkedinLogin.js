@@ -73,13 +73,7 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
         "authorId",
         JSON.stringify(res.data.id).replace(/['"]+/g, "")
       );
-      const signUpFormData = {
-        firstName: res.data.localizedFirstName,
-        lastName: res.data.localizedLastName,
-        email: res.data.email,
-        password: null,
-        tempUserId: "",
-      };
+
       const handleLoginSubmit = (email) => {
         axios
           .post(
@@ -138,7 +132,7 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
 
           var raw = {
             query:
-              "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  }\n}",
+              "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  prefFilled\n  profileImage\n  }\n}",
           };
 
           axios
@@ -182,6 +176,14 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
         }
       };
 
+      const signUpFormData = {
+        firstName: res.data.localizedFirstName,
+        lastName: res.data.localizedLastName,
+        email: res.data.email,
+        password: null,
+        tempUserId: "",
+      };
+
       if (!getToken) {
         axios
           .post(API_BASE_PATH + API_ROUTES.CREATE_USER, signUpFormData, {
@@ -192,18 +194,13 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
           .then((response) => {
             handleLoginSubmit(signUpFormData.email);
           })
-          .catch((err) => console.error("Error: ", err))
-          .finally(() => {
-            // setSubmitting(false);
-            // setSignUpFormData({
-            // firstName: "",
-            // lastName: "",
-            // email: "",
-            // password: "",
-            // tempUserId: "",
-            // });
-            // setModalIsOpen(false);
-          });
+          .catch((error) => {
+            const errorMessage = error.response.data.error && error.response.data.message;
+            if(errorMessage == "User already exists"){
+              handleLoginSubmit(signUpFormData.email);
+            }
+            console.error("Error : ", error.response);
+          })  
       } else {
         setTimeout(() => {
           window.location.href = "/dashboard";
