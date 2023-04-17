@@ -531,7 +531,7 @@ export default function DashboardInsights({
                             backgroundColor: 'white',
                             padding: '0.5em',
                             borderRadius: '5px'
-                          }}>hello ji s</div>
+                          }}>{idea?.name} ({idea?.reference?.link})</div>
                       </a>
                       <input
                         type="checkbox"
