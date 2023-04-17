@@ -2,7 +2,7 @@ import { withFilter } from 'graphql-subscriptions';
 import { BlogListArgs, FetchBlog, GenerateBlogMutationArg, IRNotifiyArgs, ReGenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
 import { pubsub } from '../../../pubsub';
 import { ObjectID } from 'bson';
-import { blogGeneration, deleteBlog, fetchBlog, fetchBlogByUser, fetchBlogIdeas, fetchUser, publishBlog, updateUserCredit, deleteBlogIdeas, fetchUsedBlogIdeasByIdea, fetchArticleById } from './blogsRepo';
+import { blogGeneration, deleteBlog, fetchBlog, fetchBlogByUser, fetchBlogIdeas, fetchUser, publishBlog, updateUserCredit, deleteBlogIdeas, fetchUsedBlogIdeasByIdea, fetchArticleById, fetchArticleUrls } from './blogsRepo';
 import { Python } from '../../../services/python';
 import { getTimeStamp } from '../../../utils/date';
 
@@ -37,11 +37,13 @@ export const blogResolvers = {
             const blogIdeas = await fetchBlogIdeas({id, db})
             const updatedIdeas = blogIdeas.ideas.map((data: any) => data.summary ? ({...data, idea: data.summary}) : ({...data}))
             const updatedFreshIdeas = blogIdeas?.feshIdeas?.map((data: any) => data.summary ? ({...data, idea: data.summary}) : ({...data}))
+            let refUrls: string[] = []
+            if(blogDetails) refUrls = await fetchArticleUrls({db, blog: blogDetails})
             return {...blogDetails, ideas: {
                 ...blogIdeas,
                 ideas: updatedIdeas,
                 freshIdeas: updatedFreshIdeas?.length ? updatedFreshIdeas : null
-            }}
+            }, references: refUrls}
         },
         getAllBlogs: async (
             parent: unknown, args: { options: BlogListArgs }, {db, pubsub, user}: any
@@ -221,12 +223,6 @@ export const blogResolvers = {
                         reference: null,
                         used: 1,
                     }))
-                    // data.unused_summaries.forEach((summary: string) => updatedIdeas.push({
-                    //     idea: summary,
-                    //     article_id: data.id,
-                    //     reference: null,
-                    //     used: 0,
-                    // }))
                 })
                 if(!articlesData.length) {
                     usedIdeasArr.forEach((idea: string) => updatedIdeas.push({
@@ -240,7 +236,7 @@ export const blogResolvers = {
                     updatedIdeas = await (
                         Promise.all(
                             updatedIdeas.map(async (ideasData: any) => {
-                                const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db})
+                                const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db, userId})
                                 if(ideaExistInBlog) {
                                     return {
                                         ...ideasData,
@@ -251,7 +247,7 @@ export const blogResolvers = {
                                         }
                                     }
                                 } else if(ideasData.article_id) {
-                                    const article = await fetchArticleById({id: ideasData.article_id, db})
+                                    const article = await fetchArticleById({id: ideasData.article_id, db, userId})
                                     return {
                                         ...ideasData,
                                         reference: {
@@ -285,7 +281,9 @@ export const blogResolvers = {
                     const id: any = insertBlogIdeas.insertedId
                     blogIdeasDetails = await db.db('lilleBlogs').collection('blogIdeas').findOne({_id: new ObjectID(id)})
                 }
-                return {...blogDetails, ideas: blogIdeasDetails}
+                let refUrls: string[] = []
+                if(blogDetails) refUrls = await fetchArticleUrls({db, blog: blogDetails})
+                return {...blogDetails, ideas: blogIdeasDetails, references: refUrls}
             } catch(e: any) {
                 throw e
             }
@@ -397,7 +395,7 @@ export const blogResolvers = {
                     blogIdeas.ideas = await (
                         Promise.all(
                             blogIdeas.ideas.map(async (ideasData: any) => {
-                                const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db})
+                                const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db, userId: blog.userId})
                                 if(ideaExistInBlog) {
                                     return {
                                         ...ideasData,
@@ -408,7 +406,7 @@ export const blogResolvers = {
                                         }
                                     }
                                 } else if(ideasData.article_id) {
-                                    const article = await fetchArticleById({id: ideasData.article_id, db})
+                                    const article = await fetchArticleById({id: ideasData.article_id, db, userId: blog.userId})
                                     return {
                                         ...ideasData,
                                         reference: {
@@ -443,7 +441,9 @@ export const blogResolvers = {
                 if(blogIdeas._id){
                     blogIdeasDetails = await fetchBlogIdeas({id: blogId, db})
                 }
-                return {...blogDetails, ideas: blogIdeasDetails}
+                let refUrls: string[] = []
+                if(blog) refUrls = await fetchArticleUrls({db, blog: blog})
+                return {...blogDetails, ideas: blogIdeasDetails, references: refUrls}
             } catch(e: any) {
                 throw e
             }
@@ -488,7 +488,9 @@ export const blogResolvers = {
             })
             const updatedBlog = await fetchBlog({id: blogId, db})
             const blogIdeas = await fetchBlogIdeas({id: blogId, db})
-            return {...updatedBlog, ideas: blogIdeas}
+            let refUrls: string[] = []
+            if(updatedBlog) refUrls = await fetchArticleUrls({db, blog: updatedBlog})
+            return {...updatedBlog, ideas: blogIdeas, references: refUrls}
         },
         irNotify: async (
             parent: unknown, args: {options: IRNotifiyArgs[]}, {db, pubsub}: any
@@ -576,7 +578,7 @@ export const blogResolvers = {
                                 updatedIdeas = await (
                                     Promise.all(
                                         updatedIdeas.map(async (ideasData: any) => {
-                                            const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db})
+                                            const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db, userId})
                                             if(ideaExistInBlog) {
                                                 return {
                                                     ...ideasData,
@@ -587,7 +589,7 @@ export const blogResolvers = {
                                                     }
                                                 }
                                             } else if(ideasData.article_id) {
-                                                const article = await fetchArticleById({id: ideasData.article_id, db})
+                                                const article = await fetchArticleById({id: ideasData.article_id, db, userId})
                                                 return {
                                                     ...ideasData,
                                                     reference: {
