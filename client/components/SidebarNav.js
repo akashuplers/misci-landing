@@ -265,7 +265,7 @@ export default function Sidebar() {
                 ))}
               </nav>
             </div>
-            <div className="flex flex-shrink-0 pb-0 pt-4">
+            {meeData?.me?.paid || <div className="flex flex-shrink-0 pb-0 pt-4">
               <Link
                 href="/upgrade"
                 className="ml-6 inline-flex items-center rounded-md bg-[#4A3AFE] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -284,7 +284,7 @@ export default function Sidebar() {
                 </svg>
                 UPGRADE
               </Link>
-            </div>
+            </div>}
             <nav className="mt-5 space-y-1 bg-white px-2 pb-8">
               {navigation_bottom.map((item) => (
                 <Link
@@ -433,16 +433,12 @@ export default function Sidebar() {
                     // className=" w-[50px]"
                     href="/settings"
                     onMouseEnter={() => {
-                      if (meeData?.me?.freeTrial) {
-                        document
-                          .getElementById("trialenddiv")
-                          .classList.remove("hidden");
-                      }
+                      document
+                        .getElementById("trialenddiv")?.classList.remove("hidden");
                     }}
                     onMouseLeave={() => {
                       document
-                        .getElementById("trialenddiv")
-                        ?.classList.add("hidden");
+                        .getElementById("trialenddiv")?.classList.add("hidden");
                     }}
                   >
                     <Avatar
@@ -451,7 +447,7 @@ export default function Sidebar() {
                       src={meeData?.me?.profileImage}
                       round={true}
                     />
-                    <div
+                    {meeData?.me?.paid || <div
                       id="trialenddiv"
                       className="hidden"
                       style={{
@@ -469,9 +465,8 @@ export default function Sidebar() {
                         backgroundColor: "#EEC800",
                       }}
                     >
-                      {meeData?.me?.freeTrialDays} Days left for <br /> your
-                      trial to end!
-                    </div>
+                      Upgrade Now!
+                    </div>}
                   </Link>
                 </div>
               </div>
