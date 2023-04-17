@@ -588,8 +588,8 @@ export default function Settings() {
                                 <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                   <span className="flex-grow">
                                     You are on a <span style={{fontWeight:"600"}}>{meeData?.me?.interval}ly</span> plan <br/>
-                                    Last Invoice Date : <span style={{fontWeight:"600"}}>{new Date(meeData?.me?.lastInvoicedDate).toLocaleDateString('in-IN')}</span> <br/>
-                                    Next Invoice Date : <span style={{fontWeight:"600"}}>{new Date(meeData?.me?.upcomingInvoicedDate).toLocaleDateString('in-IN')}</span>
+                                    Last Invoice Date : <span style={{fontWeight:"600"}}>{new Date(meeData?.me?.lastInvoicedDate * 1000).toLocaleDateString('in-IN')}</span> <br/>
+                                    Next Invoice Date : <span style={{fontWeight:"600"}}>{new Date(meeData?.me?.upcomingInvoicedDate * 1000).toLocaleDateString('in-IN')}</span>
                                   </span>
                                 </dd>
                               </div>}
