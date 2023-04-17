@@ -417,7 +417,7 @@ export default function Sidebar() {
                       className="flex text-center font-bold text-sm w-auto rounded border border-gray"
                       href="/settings"
                     >
-                      <div className="flex p-2">
+                      <div className="flex p-2 items-center">
                         <svg
                           width="21"
                           height="14"
