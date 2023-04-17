@@ -65,24 +65,11 @@ export default function AuthenticationModal({
         "Content-type": "application/json",
       }
     })
+    .then(response => response.data)
     .then((response) => {
-      const data = response.data;
-      if (data.success === false) {
-        toast.error(data.message, {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-        if (data.message === `Could not find account: ${loginData.email}`) {
-          setType("signup");
-        }
-      } else if (data?.data?.accessToken) {
-        redirectPageAfterLogin(data);
+      console.log(response)
+      if (response?.data?.accessToken) {
+        redirectPageAfterLogin(response?.data?.accessToken);
         toast.success("Successfully Logged in", {
           position: "top-center",
           autoClose: 5000,
@@ -102,7 +89,23 @@ export default function AuthenticationModal({
       }
     })
     .catch((error) => {
-      console.error("Error: ", error);
+      const errorMessage = !error.response.data.success && error.response.data.message;
+      if(errorMessage != null){
+        toast.error("Error : " + errorMessage, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        if (errorMessage === `Could not find account: ${loginData.email}`) {
+          setType("signup");
+        }
+      }
+      console.error("Error : ", error.response);
     })
     .finally(() => {
       setSubmitting(false);
@@ -112,10 +115,10 @@ export default function AuthenticationModal({
       });
     });
 
-    function redirectPageAfterLogin(data) {
+    function redirectPageAfterLogin(accessToken) {
       localStorage.setItem(
         "token",
-        JSON.stringify(data.data.accessToken).replace(/['"]+/g, "")
+        JSON.stringify(accessToken).replace(/['"]+/g, "")
       );
 
       var getToken;
@@ -129,16 +132,14 @@ export default function AuthenticationModal({
       };
 
       const raw = {
-        query: "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  }\n}"
+        query: "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n prefFilled\n profileImage\n  }\n}"
       };
 
       axios.post('https://maverick.lille.ai/graphql', raw, {
           headers: myHeaders
         })
-        .then(response => {
-          const json = JSON.parse(response.data);
-          localStorage.setItem("userId", JSON.stringify(json.data.me._id).replace(/['"]+/g, ""));
-        })
+        .then(response => response.data)
+        .then(response => localStorage.setItem("userId", JSON.stringify(response.data.me._id).replace(/['"]+/g, "")))
         .catch(error => console.error(error))
         .finally(() => {
           if (window.location.pathname === '/dashboard') {
@@ -196,42 +197,39 @@ export default function AuthenticationModal({
         "Content-type": "application/json",
       }
     })
-    .then(res => {
-      const response = res.data
-      // console.log("axios signup")
-      // console.log(response)
-      if (response.error === true) {
-        toast.error(response.message, {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-        if (response.message === "User already exists") {
-          setType("login");
-        }
-      } else if (response.error === false) {
-        handleLoginSubmit(event, signUpFormData.email, signUpFormData.password);
-        
-        setModalIsOpen(false);
-        toast.success("Successfully signed up", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-      }
+    .then(response => response.data)
+    .then(response => {
+      console.log(response)
+      if(response.error) return
+      handleLoginSubmit(event, signUpFormData.email, signUpFormData.password);
+      setModalIsOpen(false);
+      toast.success(response.message, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     })
     .catch((error) => {
-      console.error("Error: ", error);
+      const errorMessage = error.response.data.error && error.response.data.message;
+      if(errorMessage != null){
+        toast.error("Error : " + errorMessage, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        setType("login");
+      }
+      console.error("Error : ", error.response);
     })
     .finally(() => {
       setSubmitting(false);

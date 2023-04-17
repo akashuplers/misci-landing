@@ -16,6 +16,8 @@ import { createClient } from "graphql-ws";
 import { getMainDefinition } from "apollo-utilities";
 import { GRAPHQL_URL, WEBSOCKET_URL } from "@/constants";
 import useTempId from "@/store/store";
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { useRouter } from "next/router";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 
@@ -27,8 +29,8 @@ axios.interceptors.request.use(
   },
   (error) => {
     // Handle any request errors
-    // return Promise.reject(error);
     console.error("request : ", error);
+    return Promise.reject(error);
   }
 );
 
@@ -40,12 +42,11 @@ axios.interceptors.response.use(
   },
   (error) => {
     // Handle any response errors
-    // return Promise.reject(error);
     console.error("response : ", error);
+    return Promise.reject(error);
   }
 );
-import { toast } from "react-toastify";
-import { ToastContainer } from "react-toastify";
+
 
 export default function App({ Component, pageProps }: AppProps) {
   // const changeTempId = useTempId((state) => state.changeTempId);
