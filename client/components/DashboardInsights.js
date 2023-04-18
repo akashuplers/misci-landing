@@ -13,6 +13,7 @@ import ReactLoading from "react-loading";
 import useStore from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import axios from "axios";
+import Link from "next/link";
 
 export default function DashboardInsights({
   loading,
@@ -466,9 +467,7 @@ export default function DashboardInsights({
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea.idea}</p>
                       <a 
-                        href={idea?.reference?.link} 
-                        target="_blank" 
-                        style={{color:"#4a3afe", alignSelf:"flex-start", position:"relative",marginLeft:'auto'}}
+                        style={{color:"#4a3afe", alignSelf:"flex-start", position:"relative","marginLeft":'auto',cursor:'pointer'}}
                         onMouseEnter={() => {
                           document.querySelector(`.refrenceTooltip${index}`).classList.remove("hidden")
                         }}
@@ -489,7 +488,7 @@ export default function DashboardInsights({
                             borderRadius: '5px',
                             zIndex: '1'
                           }}>
-                            {idea?.name} <a href={idea?.reference?.link} target="_blank" style={{color:"blue"}}>Link</a>
+                            {idea?.name} {idea?.reference?.type === "article" ? <a href={idea?.reference?.link} target="_blank" style={{color:"blue"}}>Link</a> : <Link href={`/dashboard/${idea?.reference?.id}`} target="_blank">Link</Link>}
                           </div>
                       </a>
                       <input
@@ -514,9 +513,7 @@ export default function DashboardInsights({
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea.idea}</p>
                       <a 
-                        href={idea?.reference?.link} 
-                        target="_blank"
-                        style={{color:"#4a3afe", alignSelf:"flex-start", position:"relative","marginLeft":'auto'}}
+                        style={{color:"#4a3afe", alignSelf:"flex-start", position:"relative","marginLeft":'auto',cursor:'pointer'}}
                         onMouseEnter={() => {
                           document.querySelector(`.refrenceTooltip${index}`).classList.remove("hidden")
                         }}
@@ -537,7 +534,7 @@ export default function DashboardInsights({
                             borderRadius: '5px',
                             zIndex: '1'
                           }}>
-                            {idea?.name} <a href={idea?.reference?.link} target="_blank" style={{color:"blue"}}>Link</a>
+                            {idea?.name} {idea?.reference?.type === "article" ? <a href={idea?.reference?.link} target="_blank" style={{color:"blue"}}>Link</a> : <Link href={`/dashboard/${idea?.reference?.id}`} target="_blank">Link</Link>}
                           </div>
                       </a>
                       <input
@@ -562,9 +559,7 @@ export default function DashboardInsights({
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea.idea}</p>
                       <a 
-                        href={idea?.reference?.link} 
-                        target="_blank"
-                        style={{color:"#4a3afe", alignSelf:"flex-start", position:"relative","marginLeft":'auto'}}
+                        style={{color:"#4a3afe", alignSelf:"flex-start", position:"relative","marginLeft":'auto',cursor:'pointer'}}
                         onMouseEnter={() => {
                           document.querySelector(`.refrenceTooltip${index}`).classList.remove("hidden")
                         }}
@@ -585,7 +580,7 @@ export default function DashboardInsights({
                             borderRadius: '5px',
                             zIndex: '1'
                           }}>
-                            {idea?.name} <a href={idea?.reference?.link} target="_blank" style={{color:"blue"}}>Link</a>
+                            {idea?.name} {idea?.reference?.type === "article" ? <a href={idea?.reference?.link} target="_blank" style={{color:"blue"}}>Link</a> : <Link href={`/dashboard/${idea?.reference?.id}`} target="_blank">Link</Link>}
                           </div>
                       </a>
                       <input
