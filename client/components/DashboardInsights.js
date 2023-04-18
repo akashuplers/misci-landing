@@ -28,7 +28,7 @@ export default function DashboardInsights({
   setPyResTime,
   setNdResTime
 }) {
-  console.log(ideas);
+  
   const [enabled, setEnabled] = useState(false);
 
   const [filteredIdeas, setFilteredIdeas] = useState([]);
@@ -118,10 +118,9 @@ export default function DashboardInsights({
         onCompleted: (data) => {
           console.log("regen", data);
           setBlogData(data.regenerateBlog);
-          setblog_id(data.regenerateBlog._id);
           setIdeas(data.regenerateBlog.ideas.ideas);
           setTags(data.regenerateBlog.tags);
-
+          console.log("asfgasfda " , data.regenerateBlog.pythonRespTime,data.regenerateBlog.respTime);
           setPyResTime(data.regenerateBlog.pythonRespTime);
           setNdResTime(data.regenerateBlog.respTime)
 
@@ -133,6 +132,7 @@ export default function DashboardInsights({
           console.log("Sucessfully re-generated the article");
 
           setRegenSelected([]);
+          setblog_id(data.regenerateBlog._id);
 
           const button = document.querySelectorAll(".blog-toggle-button");
           button.forEach((btn) => btn.classList.remove("active"));
@@ -431,7 +431,7 @@ export default function DashboardInsights({
           <div className="flex gap-[0.5em] flex-wrap max-h-[80px] overflow-y-scroll">
             {tags?.map(tag => {
               return <div
-                        className="bg-gray-300 rounded-full p-2 cursor-pointer tag-button cta"
+                        className="bg-gray-300 rounded-full !p-1 !px-2 cursor-pointer tag-button cta"
                         onClick={(e) => handleTagClick(e)}
                       >{tag}</div>
             })}
