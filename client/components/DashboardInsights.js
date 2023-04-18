@@ -553,7 +553,6 @@ export default function DashboardInsights({
             : ""}
           {ideaType === "fresh"
             ? freshIdea?.map((idea, index) => {
-              console.log(idea)
                 return (
                   <div className="flex pb-3" key={index}>
                     <div className="flex justify-between gap-5 w-full">

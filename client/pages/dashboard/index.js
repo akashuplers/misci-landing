@@ -32,6 +32,8 @@ export default function dashboard({ query }) {
   const [blog_id, setblog_id] = useState("");
   const [editorText, setEditorText] = useState("");
   const [blogData, setBlogData] = useState([]);
+  const [pyResTime, setPyResTime] = useState(null);
+  const [ndResTime, setNdResTime] = useState(null);
 
   const keyword = useStore((state) => state.keyword);
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
@@ -139,7 +141,7 @@ export default function dashboard({ query }) {
       axios(config)
         .then(function (response) {
           const data = response.data.data;
-          console.log(data);
+          console.log("fetchblog ", data);
           setBlogData(data.fetchBlog);
           const aa = data.fetchBlog.publish_data.find(
             (pd) => pd.platform === "wordpress"
