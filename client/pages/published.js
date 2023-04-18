@@ -10,14 +10,15 @@ import { contextType } from "react-modal";
 import LoaderPlane from "../components/LoaderPlane";
 import { deleteBlog } from "../graphql/mutations/deleteBlog";
 import { toast } from "react-toastify";
-import Modal from "react-modal"
+import Modal from "react-modal";
 import { ToastContainer } from "react-toastify";
+import Link from "next/link";
 
 const PAGE_COUNT = 12;
 
 export default function Saved() {
   const [pageSkip, setPageSkip] = useState(0);
-  const [blog_id, setblog_id] = useState("")
+  const [blog_id, setblog_id] = useState("");
   const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
@@ -125,53 +126,77 @@ export default function Saved() {
                       alt={blog.title}
                       className="pointer-events-none object-cover"
                     />
-                    <a 
-                      href={"/public/" + blog._id} 
-                      target="_blank"
-                      style={{
-                        position: 'absolute',
-                        top: '0',
-                        right: '0',
-                        zIndex: '1',
-                        background: 'white',
-                        borderRadius: '0 0 0 5px'
-                      }}>
-                      <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
-                    </a>
-                    <a href={"/dashboard/" + blog._id}>
-                      <button
-                        type="button"
-                        className="absolute inset-0 focus:outline-none"
-                        onMouseEnter={(e) => {
-                          const delButton = document.querySelector(
-                            `#savedBlog${index}DelButton`
-                          );
-                          delButton.classList.remove("!hidden");
-                        }}
-                        onMouseLeave={(e) => {
-                          const delButton = document.querySelector(
-                            `#savedBlog${index}DelButton`
-                          );
-                          delButton.classList.add("!hidden");
+                    <Link
+                      legacyBehavior
+                      as={"/public/" + blog._id}
+                      href={{
+                        pathname: "/public/" + blog,
+                      }}
+                      passHref
+                    >
+                      <a
+                        target="_blank"
+                        style={{
+                          position: "absolute",
+                          top: "0",
+                          right: "0",
+                          zIndex: "1",
+                          background: "white",
+                          borderRadius: "0 0 0 5px",
                         }}
                       >
-                        <span className="sr-only">
-                          View details for {blog.title}
-                        </span>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          width="24"
+                        >
+                          <path d="M0 0h24v24H0z" fill="none" />
+                          <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z" />
+                        </svg>
+                      </a>
+                    </Link>
+                    <Link
+                      legacyBehavior
+                      href={{
+                        pathname: "/dashboard/" + blog._id,
+                        query: { isPublished: true },
+                      }}
+                    >
+                      <a>
                         <button
-                          id={`savedBlog${index}DelButton`}
-                          className={`${styles.statusDelButton} !hidden ${styles.deleteButton}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            setblog_id(blog._id);
-                            setOpenModal(true);
-                          }}
+                          type="button"
+                          className="absolute inset-0 focus:outline-none"
                           onMouseEnter={(e) => {
-                            e.stopPropagation();
+                            const delButton = document.querySelector(
+                              `#savedBlog${index}DelButton`
+                            );
+                            delButton.classList.remove("!hidden");
+                          }}
+                          onMouseLeave={(e) => {
+                            const delButton = document.querySelector(
+                              `#savedBlog${index}DelButton`
+                            );
+                            delButton.classList.add("!hidden");
                           }}
                         >
-                          {/* <svg
+                          <span className="sr-only">
+                            View details for {blog.title}
+                          </span>
+                          <button
+                            id={`savedBlog${index}DelButton`}
+                            className={`${styles.statusDelButton} !hidden ${styles.deleteButton}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              setblog_id(blog._id);
+                              setOpenModal(true);
+                            }}
+                            onMouseEnter={(e) => {
+                              e.stopPropagation();
+                            }}
+                          >
+                            {/* <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 28 28"
@@ -185,10 +210,11 @@ export default function Saved() {
                             d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
                           />
                         </svg> */}
-                          DELETE
+                            DELETE
+                          </button>
                         </button>
-                      </button>
-                    </a>
+                      </a>
+                    </Link>
                   </div>
                   <p className="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">
                     {blog?.title}
@@ -203,45 +229,47 @@ export default function Saved() {
             ))}
           </ul>
         )}
-        {paginationArr.length > 1 && <div
-          className="pagination"
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: "2em",
-            paddingBottom: "2em",
-          }}
-        >
-          <ul
+        {paginationArr.length > 1 && (
+          <div
+            className="pagination"
             style={{
               display: "flex",
-              gap: "2em",
-              listStyleType: "none",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: "2em",
+              paddingBottom: "2em",
             }}
           >
-            {paginationArr.map((el, index) => (
-              <li
-                style={{
-                  border: "1px solid",
-                  width: "30px",
-                  height: "30px",
-                  borderRadius: "50%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  cursor: "pointer",
-                }}
-                className={pageSkip === index ? "active" : ""}
-                onClick={(e) => {
-                  setPageSkip(index);
-                }}
-              >
-                {el}
-              </li>
-            ))}
-          </ul>
-        </div>}
+            <ul
+              style={{
+                display: "flex",
+                gap: "2em",
+                listStyleType: "none",
+              }}
+            >
+              {paginationArr.map((el, index) => (
+                <li
+                  style={{
+                    border: "1px solid",
+                    width: "30px",
+                    height: "30px",
+                    borderRadius: "50%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    cursor: "pointer",
+                  }}
+                  className={pageSkip === index ? "active" : ""}
+                  onClick={(e) => {
+                    setPageSkip(index);
+                  }}
+                >
+                  {el}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <Modal
           isOpen={openModal}
           onRequestClose={() => setOpenModal(false)}
