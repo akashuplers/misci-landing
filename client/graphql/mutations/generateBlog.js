@@ -1,29 +1,5 @@
 import { gql } from "@apollo/client";
 
 export const generateBlog = gql`
-  mutation Mutation($options: GenerateBlogOptions!) {
-    generate(options: $options) {
-      publish_data {
-        tiny_mce_data {
-          children
-          tag
-        }
-        published_date
-        published
-        platform
-        creation_date
-      }
-      ideas {
-        blog_id
-        ideas {
-          idea
-          article_id
-          used
-        }
-      }
-      article_id
-      tags
-      _id
-    }
-  }
+  mutation Mutation($options: GenerateBlogOptions!) {\n  generate(options: $options) {\n    publish_data {\n      tiny_mce_data {\n        children\n        tag\n      }\n      published_date\n      published\n      platform\n      creation_date\n    }\n    ideas {\n      blog_id\n      ideas {\n        idea\n   name\n     article_id\n    used\n  reference {\n type\n  link\n  id\n} \n }\n    }\n    article_id\n  tags\n   _id\n  references\n  }\n}
 `;
