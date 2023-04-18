@@ -174,7 +174,10 @@ export default function Settings() {
       .finally(() => setUpdateLoader(false));
   };
 
+  const [imageLoader, setImageLoader] = useState(false);
+
   const handleInputChange = ({ target }) => {
+    setImageLoader(true);
     let { value, name } = target;
 
     if (target.id === "profileImageInput") {
@@ -214,7 +217,8 @@ export default function Settings() {
           })
           .catch((error) => {
             console.log("error", error);
-          });
+          })
+          .finally(() => setImageLoader(false));
       };
 
       fileReader.readAsDataURL(selectedfile);
@@ -538,7 +542,12 @@ export default function Settings() {
                                   Photo
                                 </dt>
                                 <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                  <div class="profile-pic">
+                                  <div class="profile-pic" style={{width:'100px',height:'100px'}}>
+                                    {imageLoader ? 
+                                    <div style={{margin:"0 auto"}}>
+                                      <ReactLoading width={50} height={100} color={"#2563EB"} type="spin"/> 
+                                    </div>:
+                                    <>
                                     <label
                                       class="-label"
                                       htmlFor="profileImageInput"
@@ -557,6 +566,8 @@ export default function Settings() {
                                       width="100"
                                       id="profileImage"
                                     />
+                                    </>
+                                    }
                                     <div style={{
                                         position: 'absolute',
                                         top: '80%',

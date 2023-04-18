@@ -200,6 +200,12 @@ export default function Sidebar() {
                     <Link
                       href="/upgrade"
                       className="ml-6 inline-flex items-center rounded-md bg-[#4A3AFE] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      style={{
+                        margin: '0em 0.5em',
+                        width: '100%',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                      }}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -226,19 +232,19 @@ export default function Sidebar() {
         </Transition.Root>
 
         {/* Static sidebar for desktop */}
-        <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
+        <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-[12rem] lg:flex-col z-20">
           {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-white">
             <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
-              <div className="flex flex-shrink-0 items-center px-4">
-                <Link href={"/"}>
+              <Link href="/">
+                <div className="flex flex-shrink-0 items-center justify-center px-4">
                   <img
                     className="h-12 w-auto"
                     src="/lille_logo_new.png"
                     alt="Your Company"
                   />
-                </Link>
-              </div>
+                </div>
+              </Link>
               <nav className="mt-5 flex-1 space-y-1 bg-white px-2">
                 {navigation.map((item) => (
                   <Link
@@ -246,7 +252,7 @@ export default function Sidebar() {
                     href={item.href}
                     className={classNames(
                       item.current
-                        ? "bg-gray-100 text-gray-900"
+                        ? "bg-[#E0E6FF] text-gray-900"
                         : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
                       "group flex items-center rounded-md px-2 py-2 text-sm font-medium"
                     )}
@@ -269,6 +275,12 @@ export default function Sidebar() {
               <Link
                 href="/upgrade"
                 className="ml-6 inline-flex items-center rounded-md bg-[#4A3AFE] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                style={{
+                        margin: '0em 0.5em',
+                        width: '100%',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                      }}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -315,7 +327,7 @@ export default function Sidebar() {
             </nav>
           </div>
         </div>
-        <div className="flex flex-1 flex-col lg:pl-64">
+        <div className="flex flex-1 flex-col lg:pl-[12rem] w-full fixed top-0 z-10">
           <div className="sticky top-0 z-10 bg-white pl-1 pt-1 sm:pl-3 sm:pt-3 lg:hidden">
             <button
               type="button"
@@ -326,9 +338,9 @@ export default function Sidebar() {
               <Bars3Icon className="h-6 w-6" aria-hidden="true" />
             </button>
           </div>
-          <main className="flex-1">
-            <div className="py-4">
-              <div className="mx-auto max-w-7xl px-6 flex relative">
+          <main className="flex-1 bg-white">
+            <div className="py-2 pb-4">
+              <div className="mx-auto max-w-7xl px-2 flex relative">
                 <div className="pt-4">
                   {path !== "/" ? (
                     <button onClick={() => router.back()}>
@@ -390,16 +402,22 @@ export default function Sidebar() {
                       ""
                     )}
                   </div> */}
+                </div>
+                <div 
+                  style={{
+                    alignSelf: 'center',
+                    marginLeft: 'auto',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '2em'
+                  }}>
                   {!meeData?.me?.isSubscribed && (
                     <div
-                      style={{
-                        position: "absolute",
-                        right: "170px",
-                      }}
                       className="flex text-center font-bold text-sm w-auto rounded border border-gray"
                       href="/settings"
                     >
-                      <div className="flex p-2">
+                      <div className="flex p-2 items-center">
                         <svg
                           width="21"
                           height="14"
@@ -426,10 +444,6 @@ export default function Sidebar() {
                     </div>
                   )}
                   <Link
-                    style={{
-                      position: "absolute",
-                      right: "50px",
-                    }}
                     // className=" w-[50px]"
                     href="/settings"
                     onMouseEnter={() => {
@@ -442,7 +456,7 @@ export default function Sidebar() {
                     }}
                   >
                     <Avatar
-                      size="60"
+                      size="50"
                       name={meeData?.me?.name + " " + meeData?.me?.lastName}
                       src={meeData?.me?.profileImage}
                       round={true}
