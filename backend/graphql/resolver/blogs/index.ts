@@ -530,7 +530,7 @@ export const blogResolvers = {
             await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(blogId)}, {
                 $set: {
                     publish_data: updatedPublisData,
-                    status: "saved",
+                    status: blogDetails.status === 'published' ? blogDetails.status : "saved",
                     userId: new ObjectID(user.id),
                     updatedAt: getTimeStamp(),
                     imageUrl: imageUrl !== blogDetails.imageUrl ? imageUrl : blogDetails.imageUrl
