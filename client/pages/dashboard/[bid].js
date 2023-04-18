@@ -93,7 +93,7 @@ export default function Post() {
               getToken={getToken}
             />
           )}
-          <div className="w-[60%] relative">
+          <div className="w-[65%] relative">
             <TinyMCEEditor
               isAuthenticated={true}
               editorText={editorText}
