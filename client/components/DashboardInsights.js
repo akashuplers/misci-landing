@@ -13,6 +13,7 @@ import ReactLoading from "react-loading";
 import useStore from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import axios from "axios";
+import Link from "next/link";
 
 export default function DashboardInsights({
   loading,
@@ -24,8 +25,10 @@ export default function DashboardInsights({
   setblog_id,
   setIdeas,
   setTags,
+  setPyResTime,
+  setNdResTime
 }) {
-  console.log(ideas);
+  
   const [enabled, setEnabled] = useState(false);
 
   const [filteredIdeas, setFilteredIdeas] = useState([]);
@@ -115,9 +118,11 @@ export default function DashboardInsights({
         onCompleted: (data) => {
           console.log("regen", data);
           setBlogData(data.regenerateBlog);
-          setblog_id(data.regenerateBlog._id);
           setIdeas(data.regenerateBlog.ideas.ideas);
           setTags(data.regenerateBlog.tags);
+          console.log("asfgasfda " , data.regenerateBlog.pythonRespTime,data.regenerateBlog.respTime);
+          setPyResTime(data.regenerateBlog.pythonRespTime);
+          setNdResTime(data.regenerateBlog.respTime)
 
           // const aa = data.regenerateBlog.publish_data[2].tiny_mce_data;
           const aa = data.regenerateBlog.publish_data.find(pd => pd.platform === 'linkedin').tiny_mce_data
@@ -127,6 +132,7 @@ export default function DashboardInsights({
           console.log("Sucessfully re-generated the article");
 
           setRegenSelected([]);
+          setblog_id(data.regenerateBlog._id);
 
           const button = document.querySelectorAll(".blog-toggle-button");
           button.forEach((btn) => btn.classList.remove("active"));
@@ -227,6 +233,9 @@ export default function DashboardInsights({
         console.log(response.data);
         setFreshIdea(response.data.data);
 
+        setPyResTime(response.data.pythonRespTime);
+        setNdResTime(response.data.respTime)
+
         const fresh = document.querySelector(".idea-button.fresh");
         const used = document.querySelector(".idea-button.used");
 
@@ -289,15 +298,18 @@ export default function DashboardInsights({
         handleSave={() => (window.location = "/")}
         bid={blog_id}
       />
-      <div className="w-[40%] text-xs px-2" style={{width:"40%"}}>
+      <div className="w-[35%] text-xs px-2" style={{width:"40%"}}>
         <div className="flex justify-between gap-[1.25em]">
           <p className="font-normal w-[70%]">
-            Regenerate your blog by selecting ideas from fresh and used ideas.
+            Regenerate your article on the basis of selected keyword, URL or uploaded document
           </p>
           <button
-            className="h-[fit-content] text-sm bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white p-[0.25em] border border-blue-500 hover:border-transparent rounded"
+            className="cta flex items-center gap-2 self-start !py-2"
             onClick={isAuthenticated ? handleRegenerate : () => setAuthenticationModalOpen(true)}
           >
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" fill="none">
+              <path d="M8 16C5.76667 16 3.875 15.225 2.325 13.675C0.775 12.125 0 10.2333 0 8C0 5.76667 0.775 3.875 2.325 2.325C3.875 0.775003 5.76667 3.4602e-06 8 3.4602e-06C9.15 3.4602e-06 10.25 0.237337 11.3 0.712003C12.35 1.18667 13.25 1.866 14 2.75V1C14 0.71667 14.096 0.479004 14.288 0.287004C14.48 0.0950036 14.7173 -0.000663206 15 3.4602e-06C15.2833 3.4602e-06 15.521 0.0960036 15.713 0.288004C15.905 0.480004 16.0007 0.717337 16 1V6C16 6.28334 15.904 6.521 15.712 6.713C15.52 6.905 15.2827 7.00067 15 7H10C9.71667 7 9.479 6.904 9.287 6.712C9.095 6.52 8.99933 6.28267 9 6C9 5.71667 9.096 5.479 9.288 5.287C9.48 5.095 9.71733 4.99934 10 5H13.2C12.6667 4.06667 11.9373 3.33334 11.012 2.8C10.0867 2.26667 9.08267 2 8 2C6.33333 2 4.91667 2.58334 3.75 3.75C2.58333 4.91667 2 6.33334 2 8C2 9.66667 2.58333 11.0833 3.75 12.25C4.91667 13.4167 6.33333 14 8 14C9.15 14 10.2127 13.6957 11.188 13.087C12.1633 12.4783 12.8923 11.666 13.375 10.65C13.4583 10.4667 13.596 10.3123 13.788 10.187C13.98 10.0617 14.1757 9.99934 14.375 10C14.7583 10 15.046 10.1333 15.238 10.4C15.43 10.6667 15.4507 10.9667 15.3 11.3C14.6667 12.7167 13.6917 13.8543 12.375 14.713C11.0583 15.5717 9.6 16.0007 8 16Z" fill="#4A3AFE"/>
+            </svg>
             Regenerate
           </button>
         </div>
@@ -313,7 +325,7 @@ export default function DashboardInsights({
                 className={"mx-auto"}
               />
             ) : (
-              <div className="flex items-center relative mb-[10px]">
+              <div className="flex items-center gap-1 relative mb-[10px]">
                 <label htmlFor="simple-search" className="sr-only">
                   Search
                 </label>
@@ -336,7 +348,7 @@ export default function DashboardInsights({
                   <input
                     type="text"
                     id="simple-search"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  "
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 py-[0.75em]"
                     placeholder="Keyword or URL or file"
                     required
                     value={formInput}
@@ -345,27 +357,7 @@ export default function DashboardInsights({
                     title="Enter keyword, URL or upload document"
                   />
                 </div>
-                <button
-                  type="submit"
-                  className="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <span className="sr-only">Search</span>
-                </button>
-                {hover ? (
+                 {hover ? (
                   <>
                     <div
                       className="max-w-sm rounded overflow-hidden shadow-lg india r-0 bg-white mt-15"
@@ -377,7 +369,11 @@ export default function DashboardInsights({
                 ) : (
                   <></>
                 )}
-                <label className="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 cursor-pointer">
+                <label className="cta-invert" style={{
+                  background: 'none',
+                  color: 'black',
+                  border: '1px solid #b3b3b3'
+                }}>
                   <input
                     type="file"
                     accept="application/pdf, .docx, .txt, .rtf, .png, .jpg, .jpeg, .gif"
@@ -402,6 +398,26 @@ export default function DashboardInsights({
                     <span className="sr-only">Upload</span>
                   </div>
                 </label>
+                <button
+                  type="submit"
+                  className="cta-invert"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span className="sr-only">Search</span>
+                </button>
 
                 <div className="absolute top-[110%]">
                   <span>To get Fresh Ideas upload topic, URL or File.</span>
@@ -419,13 +435,13 @@ export default function DashboardInsights({
           <div className="flex gap-[0.5em] flex-wrap max-h-[80px] overflow-y-scroll">
             {tags?.map(tag => {
               return <div
-                        className="bg-gray-300 rounded-full p-2 cursor-pointer tag-button cta"
+                        className="bg-gray-300 rounded-full !p-1 !px-2 cursor-pointer tag-button cta"
                         onClick={(e) => handleTagClick(e)}
                       >{tag}</div>
             })}
           </div>
         </div>}
-        <div className="flex py-2">
+        <div className="flex py-2 text-xs">
           <button
             className="idea-button cta used m-3 ml-0 active !px-[0.4em] !py-[0.25em]"
             onClick={(e) => {
@@ -463,10 +479,7 @@ export default function DashboardInsights({
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea.idea}</p>
                       <a 
-                        href={idea?.reference?.link} 
-                        target="_blank" 
-                        title={idea?.reference?.link}
-                        style={{color:"blue", alignSelf:"flex-start", position:"relative"}}
+                        style={{color:"#4a3afe", alignSelf:"flex-start", position:"relative","marginLeft":'auto',cursor:'pointer'}}
                         onMouseEnter={() => {
                           document.querySelector(`.refrenceTooltip${index}`).classList.remove("hidden")
                         }}
@@ -484,8 +497,11 @@ export default function DashboardInsights({
                             color: 'black',
                             backgroundColor: 'white',
                             padding: '0.5em',
-                            borderRadius: '5px'
-                          }}>hello ji s</div>
+                            borderRadius: '5px',
+                            zIndex: '1'
+                          }}>
+                            {idea?.name} {idea?.reference?.type === "article" ? <a href={idea?.reference?.link} target="_blank" style={{color:"blue"}}>Link</a> : <Link href={`/dashboard/${idea?.reference?.id}`} target="_blank">Link</Link>}
+                          </div>
                       </a>
                       <input
                         type="checkbox"
@@ -509,10 +525,7 @@ export default function DashboardInsights({
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea.idea}</p>
                       <a 
-                        href={idea?.reference?.link} 
-                        target="_blank" 
-                        title={idea?.reference?.link}
-                        style={{color:"blue", alignSelf:"flex-start", position:"relative"}}
+                        style={{color:"#4a3afe", alignSelf:"flex-start", position:"relative","marginLeft":'auto',cursor:'pointer'}}
                         onMouseEnter={() => {
                           document.querySelector(`.refrenceTooltip${index}`).classList.remove("hidden")
                         }}
@@ -530,8 +543,11 @@ export default function DashboardInsights({
                             color: 'black',
                             backgroundColor: 'white',
                             padding: '0.5em',
-                            borderRadius: '5px'
-                          }}>{idea?.name} ({idea?.reference?.link})</div>
+                            borderRadius: '5px',
+                            zIndex: '1'
+                          }}>
+                            {idea?.name} {idea?.reference?.type === "article" ? <a href={idea?.reference?.link} target="_blank" style={{color:"blue"}}>Link</a> : <Link href={`/dashboard/${idea?.reference?.id}`} target="_blank">Link</Link>}
+                          </div>
                       </a>
                       <input
                         type="checkbox"
@@ -549,16 +565,12 @@ export default function DashboardInsights({
             : ""}
           {ideaType === "fresh"
             ? freshIdea?.map((idea, index) => {
-              console.log(idea)
                 return (
                   <div className="flex pb-3" key={index}>
                     <div className="flex justify-between gap-5 w-full">
                       <p>{idea.idea}</p>
                       <a 
-                        href={idea?.reference?.link} 
-                        target="_blank" 
-                        title={idea?.reference?.link}
-                        style={{color:"blue", alignSelf:"flex-start", position:"relative"}}
+                        style={{color:"#4a3afe", alignSelf:"flex-start", position:"relative","marginLeft":'auto',cursor:'pointer'}}
                         onMouseEnter={() => {
                           document.querySelector(`.refrenceTooltip${index}`).classList.remove("hidden")
                         }}
@@ -576,8 +588,11 @@ export default function DashboardInsights({
                             color: 'black',
                             backgroundColor: 'white',
                             padding: '0.5em',
-                            borderRadius: '5px'
-                          }}>hello ji s</div>
+                            borderRadius: '5px',
+                            zIndex: '1'
+                          }}>
+                            {idea?.name} {idea?.reference?.type === "article" ? <a href={idea?.reference?.link} target="_blank" style={{color:"blue"}}>Link</a> : <Link href={`/dashboard/${idea?.reference?.id}`} target="_blank">Link</Link>}
+                          </div>
                       </a>
                       <input
                         type="checkbox"
