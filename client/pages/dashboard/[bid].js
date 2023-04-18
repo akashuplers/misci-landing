@@ -19,13 +19,16 @@ if (typeof window !== "undefined") {
 export default function Post() {
   const [pfmodal, setPFModal] = useState(false);
   const router = useRouter();
-  const { bid } = router.query;
+  const { bid, isPublished } = router.query;
+
+  // console.log("isPublished", isPublished);
+  console.log("router.query", router.query);
   const { data, loading, error } = useQuery(getBlogbyId, {
     variables: {
       fetchBlogId: bid,
     },
   });
-
+  // const [isPublished, setIsPublished] = useState(false);
   const [ideas, setIdeas] = useState([]);
   const [editorText, setEditorText] = useState([]);
   const [tags, setTags] = useState([]);
@@ -39,6 +42,7 @@ export default function Post() {
 
     console.log(data);
     setBlogData(data.fetchBlog);
+    // setIsPublished(data?.fetchBlog?.publish_data[2]?.published);
 
     // const aa = data.generate.publish_data[2].tiny_mce_data;
     const aa = data.fetchBlog.publish_data.find(
@@ -116,6 +120,7 @@ export default function Post() {
               editorText={editorText}
               blogData={blogData}
               blog_id={bid}
+              isPublished={isPublished}
             />
           </div>
           <DashboardInsights

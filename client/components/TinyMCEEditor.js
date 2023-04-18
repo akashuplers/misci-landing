@@ -36,6 +36,7 @@ export default function TinyMCEEditor({
   blog_id,
   blogData: dataIncoming,
   blogData,
+  isPublished,
 }) {
   const [updatedText, setEditorText] = useState(editorText);
   const [saveLoad, setSaveLoad] = useState(false);
@@ -450,54 +451,13 @@ export default function TinyMCEEditor({
         ) : (
           <div style={{ display: "none" }}></div>
         )}
-        <div className="flex" style={{ gap: "0.25em", marginLeft: "auto" }}>
-          <button
-            className="mr-2 font-bold"
-            onClick={saveText === "Save Now!" && handleSave}
-          >
-            {saveLoad ? (
-              <ReactLoading
-                width={25}
-                height={25}
-                round={true}
-                color={"#2563EB"}
-              />
-            ) : (
-              saveText
-            )}
-          </button>
-          {option === "linkedin" ? (
-            linkedInAccessToken ? (
-              <button
-                className="cta-invert"
-                onClick={
-                  publishLinkText === "Publish on Linkedin" && handlePublish
-                }
-              >
-                {publishLinkLoad ? (
-                  <ReactLoading
-                    width={25}
-                    height={25}
-                    round={true}
-                    color={"#2563EB"}
-                  />
-                ) : (
-                  publishLinkText
-                )}
-              </button>
-            ) : (
-              <button className="cta-invert" onClick={handleconnectLinkedin}>
-                Connect with Linkedin
-              </button>
-            )
-          ) : option === "twitter" ? (
-            <button className="cta-invert">Coming Soon...</button>
-          ) : isAuthenticated ? (
+        {!isPublished ? (
+          <div className="flex" style={{ gap: "0.25em", marginLeft: "auto" }}>
             <button
-              className="cta-invert"
-              onClick={publishText === "Save & Publish" && handleSavePublish}
+              className="cta"
+              onClick={saveText === "Save Now!" && handleSave}
             >
-              {publishLoad ? (
+              {saveLoad ? (
                 <ReactLoading
                   width={25}
                   height={25}
@@ -505,13 +465,74 @@ export default function TinyMCEEditor({
                   color={"#2563EB"}
                 />
               ) : (
-                publishText
+                saveText
               )}
             </button>
-          ) : (
-            <></>
-          )}
-        </div>
+            {option === "linkedin" ? (
+              linkedInAccessToken ? (
+                <button
+                  className="cta-invert"
+                  onClick={
+                    publishLinkText === "Publish on Linkedin" && handlePublish
+                  }
+                >
+                  {publishLinkLoad ? (
+                    <ReactLoading
+                      width={25}
+                      height={25}
+                      round={true}
+                      color={"#2563EB"}
+                    />
+                  ) : (
+                    publishLinkText
+                  )}
+                </button>
+              ) : (
+                <button className="cta-invert" onClick={handleconnectLinkedin}>
+                  Connect with Linkedin
+                </button>
+              )
+            ) : option === "twitter" ? (
+              <button className="cta-invert">Coming Soon...</button>
+            ) : isAuthenticated ? (
+              <button
+                className="cta-invert"
+                onClick={publishText === "Save & Publish" && handleSavePublish}
+              >
+                {publishLoad ? (
+                  <ReactLoading
+                    width={25}
+                    height={25}
+                    round={true}
+                    color={"#2563EB"}
+                  />
+                ) : (
+                  publishText
+                )}
+              </button>
+            ) : (
+              <></>
+            )}
+          </div>
+        ) : (
+          <div className="flex" style={{ gap: "0.25em", marginLeft: "auto" }}>
+            <button
+              className="cta"
+              onClick={saveText === "Save Now!" && handleSave}
+            >
+              {saveLoad ? (
+                <ReactLoading
+                  width={25}
+                  height={25}
+                  round={true}
+                  color={"#2563EB"}
+                />
+              ) : (
+                "Update"
+              )}
+            </button>
+          </div>
+        )}
       </div>
       <Editor
         value={updatedText || editorText}
