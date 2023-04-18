@@ -194,7 +194,7 @@ export default function Saved() {
             ))}
           </ul>
         )}
-        <div
+        {paginationArr.length > 1 && <div
           className="pagination"
           style={{
             display: "flex",
@@ -232,7 +232,7 @@ export default function Saved() {
               </li>
             ))}
           </ul>
-        </div>
+        </div>}
         <Modal
           isOpen={openModal}
           onRequestClose={() => setOpenModal(false)}
