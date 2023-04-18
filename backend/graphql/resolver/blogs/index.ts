@@ -533,7 +533,7 @@ export const blogResolvers = {
                     status: blogDetails.status === 'published' ? blogDetails.status : "saved",
                     userId: new ObjectID(user.id),
                     updatedAt: getTimeStamp(),
-                    imageUrl: imageUrl !== blogDetails.imageUrl ? imageUrl : blogDetails.imageUrl
+                    imageUrl: imageUrl && imageUrl.length && imageUrl !== blogDetails.imageUrl ? imageUrl : blogDetails.imageUrl
                 }
             })
             const updatedBlog = await fetchBlog({id: blogId, db})
