@@ -23,6 +23,7 @@ router.post('/url', authMiddleware, async (req: any, res: any) => {
         let pythonEnd = new Date()
         let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
         const article = await fetchArticles({db, id: articleid})
+        const name = article._source?.source?.name
         if(article) {
             let freshIdeas: any[] = []
             article?._source?.summary.forEach((summary: string, index: number) => {
@@ -30,7 +31,8 @@ router.post('/url', authMiddleware, async (req: any, res: any) => {
                     freshIdeas.push({
                         idea: summary,
                         article_id: articleid,
-                        used: 0
+                        used: 0,
+                        name: name && name === "file" ? "note" : name,
                     })
                 }
             })
@@ -112,11 +114,13 @@ router.post('/keyword', authMiddleware, async (req: any, res: any) => {
             Promise.all(
                 articleIds?.map(async (id: string) => {
                     const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
+                    const name = article._source?.source?.name
                     return (
                         article?._source?.summary?.forEach((summary: string, index: number) => index < 5 ? articlesData.push({
                             idea: summary,
                             article_id: id,
-                            used: 0
+                            used: 0,
+                            name: name && name === "file" ? "note" : name,
                         }) : false)
                     )
                 })
@@ -184,9 +188,6 @@ router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any
     const db = req.app.get('db')
     const {blog_id} = req.body
     const file = req.file
-    console.log("tada1")
-    console.log(blog_id, "tada")
-    console.log(req.file)
     const user = req.user
     if(!user) throw "No user found!"
     try {
@@ -195,6 +196,7 @@ router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any
         let pythonEnd = new Date()
         let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
         const article = await fetchArticles({db, id: articleid})
+        const name = article._source?.source?.name
         if(article) {
             let freshIdeas: any[] = []
             article?._source?.summary.forEach((summary: string, index: number) => {
@@ -202,7 +204,8 @@ router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any
                     freshIdeas.push({
                         idea: summary,
                         article_id: articleid,
-                        used: 0
+                        used: 0,
+                        name: name && name === "file" ? "note" : name,
                     })
                 }
             })
