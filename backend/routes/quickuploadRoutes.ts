@@ -3,6 +3,7 @@ import { authMiddleware } from "../middleWare/authToken"
 import { fetchArticles } from "../repos"
 import { ObjectID } from "bson"
 import { fetchArticleById, fetchUsedBlogIdeasByIdea } from "../graphql/resolver/blogs/blogsRepo"
+import { diff_minutes } from "../utils/date"
 
 const express = require('express')
 const router = express.Router()
@@ -11,12 +12,16 @@ const inMemoryStorage = multer.memoryStorage();
 const uploadStrategy = multer({ storage: inMemoryStorage }).single('file');
 
 router.post('/url', authMiddleware, async (req: any, res: any) => {
+    let startRequest = new Date()
     const db = req.app.get('db')
     const {url, blog_id} = req.body
     const user = req.user
     if(!user) throw "No user found!"
     try {
+        let pythonStart = new Date()
         const articleid = await new Python({userId: user.id}).uploadUrl({url})
+        let pythonEnd = new Date()
+        let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
         const article = await fetchArticles({db, id: articleid})
         if(article) {
             let freshIdeas: any[] = []
@@ -68,14 +73,19 @@ router.post('/url', authMiddleware, async (req: any, res: any) => {
                         freshIdeas
                     }
                 })
+            let endRequest = new Date()
+            let respTime = diff_minutes(endRequest, startRequest)    
             return res.status(200).send({
                 type: "SUCCESS",
-                data: freshIdeas
+                data: freshIdeas,
+                respTime,
+                pythonRespTime
             })
         } else {
             return res.status(400).send({
                 type: "SUCCESS",
-                data: "No ideas found!!"
+                data: "No ideas found!!",
+                pythonRespTime
             })
         }
     }catch (e) {
@@ -87,12 +97,16 @@ router.post('/url', authMiddleware, async (req: any, res: any) => {
 })
 
 router.post('/keyword', authMiddleware, async (req: any, res: any) => {
+    let startRequest = new Date()
     const db = req.app.get('db')
     const {keyword, blog_id} = req.body
     const user = req.user
     if(!user) throw "No user found!"
     try {
+        let pythonStart = new Date()
         const articleIds = await new Python({userId: user.id}).uploadKeyword({keyword})
+        let pythonEnd = new Date()
+        let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
         let articlesData: any[] = []
         await (
             Promise.all(
@@ -149,9 +163,13 @@ router.post('/keyword', authMiddleware, async (req: any, res: any) => {
                     freshIdeas
                 }
             })
+        let endRequest = new Date()
+        let respTime = diff_minutes(endRequest, startRequest)        
         return res.status(200).send({
             type: "SUCCESS",
-            data: freshIdeas
+            data: freshIdeas,
+            respTime,
+            pythonRespTime
         })
     }catch (e) {
         return res.status(400).send({
@@ -162,6 +180,7 @@ router.post('/keyword', authMiddleware, async (req: any, res: any) => {
 })
 
 router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any) => {
+    let startRequest = new Date()
     const db = req.app.get('db')
     const {blog_id} = req.body
     const file = req.file
@@ -171,7 +190,10 @@ router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any
     const user = req.user
     if(!user) throw "No user found!"
     try {
+        let pythonStart = new Date()
         const articleid = await new Python({userId: user.id}).uploadFile({file})
+        let pythonEnd = new Date()
+        let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
         const article = await fetchArticles({db, id: articleid})
         if(article) {
             let freshIdeas: any[] = []
@@ -223,14 +245,19 @@ router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any
                         freshIdeas
                     }
                 })
+            let endRequest = new Date()
+            let respTime = diff_minutes(endRequest, startRequest)      
             return res.status(200).send({
                 type: "SUCCESS",
-                data: freshIdeas
+                data: freshIdeas,
+                respTime,
+                pythonRespTime
             })
         } else {
             return res.status(400).send({
                 type: "SUCCESS",
-                data: "No ideas found!!"
+                data: "No ideas found!!",
+                pythonRespTime
             })
         }
     }catch (e) {

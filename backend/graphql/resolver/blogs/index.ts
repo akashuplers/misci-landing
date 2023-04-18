@@ -4,7 +4,7 @@ import { pubsub } from '../../../pubsub';
 import { ObjectID } from 'bson';
 import { blogGeneration, deleteBlog, fetchBlog, fetchBlogByUser, fetchBlogIdeas, fetchUser, publishBlog, updateUserCredit, deleteBlogIdeas, fetchUsedBlogIdeasByIdea, fetchArticleById, fetchArticleUrls } from './blogsRepo';
 import { Python } from '../../../services/python';
-import { getTimeStamp } from '../../../utils/date';
+import { diff_minutes, getTimeStamp } from '../../../utils/date';
 
 const SOMETHING_CHANGED_TOPIC = 'new_link';
 
@@ -133,13 +133,20 @@ export const blogResolvers = {
         generate: async (
             parent: unknown, args:{options: GenerateBlogMutationArg}, {req, res, db, pubsub}: any
         ) => {
+            let startRequest = new Date()
             let keyword = args.options.keyword
             if(!keyword.length) {
                 throw "No keyword passed!"
             }
             const userId = args.options.user_id
             const chatgptApis = await db.db('admin').collection('chatGPT').findOne()
-            console.log(args)
+            await db.db('lilleAdmin').collection('activityLogs').insertOne({
+                userId,
+                activity: "Generate new",
+                data: {
+                    keyword
+                }
+            })
             let availableApi: any = null
             if(chatgptApis) {
                 availableApi = chatgptApis.apis?.find((api: any) => !api.quotaFull)
@@ -150,11 +157,14 @@ export const blogResolvers = {
                 throw "Something went wrong! Please connect with support team";
             }
             let articleIds: any = null
+            let pythonStart = new Date()
             try {
                 articleIds = await new Python({userId: userId}).uploadKeyword({keyword, timeout:60000})
             }catch(e){
                 console.log(e, "error from python")
             }
+            let pythonEnd = new Date()
+            let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
             let texts = ""
             let imageUrl: string | null = null
             let article_ids: String[] = []
@@ -202,7 +212,7 @@ export const blogResolvers = {
                     db,
                     text: !articlesData.length ? keyword : texts,
                     regenerate: !articlesData.length ? false: true,
-                    imageUrl,
+                    imageUrl: imageUrl || "https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/plabeholder/1681740088024.jpeg",
                     title: keyword
                 })
                 const finalBlogObj = {
@@ -286,7 +296,9 @@ export const blogResolvers = {
                 }
                 let refUrls: string[] = []
                 if(blogDetails) refUrls = await fetchArticleUrls({db, blog: blogDetails})
-                return {...blogDetails, ideas: blogIdeasDetails, references: refUrls}
+                let endRequest = new Date()
+                let respTime = diff_minutes(endRequest, startRequest)
+                return {...blogDetails, ideas: blogIdeasDetails, references: refUrls, pythonRespTime, respTime}
             } catch(e: any) {
                 throw e
             }
@@ -295,6 +307,7 @@ export const blogResolvers = {
         regenerateBlog: async (
             parent: unknown, args: {options: ReGenerateBlogMutationArg}, {req, res, db, pubsub}: any
         ) => {
+            let startRequest = new Date()
             console.log(args.options)
             const ideas = args.options.ideas, blogId = args.options.blog_id;
             const blog = await fetchBlog({db, id: blogId})
@@ -460,7 +473,9 @@ export const blogResolvers = {
                 }
                 let refUrls: string[] = []
                 if(blog) refUrls = await fetchArticleUrls({db, blog: blog})
-                return {...blogDetails, ideas: blogIdeasDetails, references: refUrls}
+                let endRequest = new Date()
+                let respTime = diff_minutes(endRequest, startRequest)
+                return {...blogDetails, ideas: blogIdeasDetails, references: refUrls, respTime}
             } catch(e: any) {
                 throw e
             }
