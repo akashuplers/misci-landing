@@ -47,7 +47,6 @@ axios.interceptors.response.use(
   }
 );
 
-
 export default function App({ Component, pageProps }: AppProps) {
   // const changeTempId = useTempId((state) => state.changeTempId);
   // const tempId = useTempId((state) => state.tempId);
