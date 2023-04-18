@@ -34,6 +34,9 @@ export default function Post() {
   const [tags, setTags] = useState([]);
   const [blogData, setBlogData] = useState([]);
 
+  const [pyResTime, setPyResTime] = useState(null);
+  const [ndResTime, setNdResTime] = useState(null);
+
   useEffect(() => {
     if (data == null) return;
 
@@ -97,7 +100,21 @@ export default function Post() {
               getToken={getToken}
             />
           )}
-          <div className="w-[60%] relative">
+          <div style={{
+            zIndex: '10',
+            position: 'absolute',
+            background: 'white',
+            border: '1px solid black',
+            width: '200px',
+            top: '2%',
+            left: '50%',
+            transform: 'translateX(-30%)',
+            fontSize:'0.75rem'
+          }}>
+            <span>Python Response Time : {(pyResTime*60).toFixed(2) ?? ""}sec</span><br/>
+            <span>Node Response Time : {(ndResTime*60).toFixed(2) ?? ""}sec</span>
+          </div>
+          <div className="w-[65%] relative">
             <TinyMCEEditor
               isAuthenticated={true}
               editorText={editorText}
@@ -116,6 +133,9 @@ export default function Post() {
             setIdeas={setIdeas}
             setTags={setTags}
             // tags={data?.fetchBlog?.tags}
+
+            setPyResTime = {setPyResTime}
+            setNdResTime = {setNdResTime}
           />
         </div>
       </Layout>

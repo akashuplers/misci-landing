@@ -32,6 +32,8 @@ export default function dashboard({ query }) {
   const [blog_id, setblog_id] = useState("");
   const [editorText, setEditorText] = useState("");
   const [blogData, setBlogData] = useState([]);
+  const [pyResTime, setPyResTime] = useState(null);
+  const [ndResTime, setNdResTime] = useState(null);
 
   const keyword = useStore((state) => state.keyword);
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
@@ -140,7 +142,7 @@ export default function dashboard({ query }) {
       axios(config)
         .then(function (response) {
           const data = response.data.data;
-          console.log(data);
+          console.log("fetchblog ", data);
           setBlogData(data.fetchBlog);
           const aa = data.fetchBlog.publish_data.find(
             (pd) => pd.platform === "wordpress"
@@ -173,6 +175,9 @@ export default function dashboard({ query }) {
           console.log(data);
           setBlogData(data.generate);
 
+          setPyResTime(data.generate.pythonRespTime);
+          setNdResTime(data.generate.respTime);
+
           // const aa = data.generate.publish_data[2].tiny_mce_data;
           const aa = data.generate.publish_data.find(
             (pd) => pd.platform === "wordpress"
@@ -195,11 +200,31 @@ export default function dashboard({ query }) {
     }
   }, []);
 
+  useEffect(() => {
+    console.log("===restime===")
+    console.log(pyResTime, ndResTime)
+    console.log("===restime===")
+  },[pyResTime, ndResTime])
+
   return (
     <>
       <Layout>
         <div className="flex divide-x">
-          <div className="w-[60%] relative">
+          <div style={{
+            zIndex: '10',
+            position: 'absolute',
+            background: 'white',
+            border: '1px solid black',
+            width: '200px',
+            top: '2%',
+            left: '50%',
+            transform: 'translateX(-30%)',
+            fontSize:'0.75rem'
+          }}>
+            <span>Python Response Time : {(pyResTime*60).toFixed(2) ?? ""}sec</span><br/>
+            <span>Node Response Time : {(ndResTime*60).toFixed(2) ?? ""}sec</span>
+          </div>
+          <div className="w-[65%] relative">
             <TinyMCEEditor
               topic={topic}
               isAuthenticated={isAuthenticated}
@@ -219,6 +244,8 @@ export default function dashboard({ query }) {
             setIdeas={setIdeas}
             blog_id={blog_id}
             setTags={setTags}
+            setPyResTime = {setPyResTime}
+            setNdResTime = {setNdResTime}
           />
         </div>
       </Layout>
