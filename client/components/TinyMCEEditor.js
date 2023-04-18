@@ -49,6 +49,7 @@ export default function TinyMCEEditor({
   const [text, setText] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const [option, setOption] = useState("blog");
+  const [imageURL, setImageURL] = useState("");
 
   const onCopyText = () => {
     setIsCopied(true);
@@ -98,6 +99,7 @@ export default function TinyMCEEditor({
             tinymce_json: formatedJSON,
             blog_id: blog_id,
             platform: option === "blog" ? "wordpress" : option,
+            imageUrl: imageURL,
           },
         },
         context: {
@@ -581,7 +583,10 @@ export default function TinyMCEEditor({
 
                   // https://res.cloudinary.com/cloudName/image/upload/v1483481128/public_id.jpg
                   var url = response.url;
-                  // console.log(url)
+                  setImageURL(url);
+                  console.log("response.data", response.data);
+                  console.log("imageURL", imageURL);
+                  console.log("88", url);
                   // Create a thumbnail of the uploaded image, with 150px width
                   cb(url, { title: response.type });
                 }
@@ -640,10 +645,10 @@ export default function TinyMCEEditor({
             };
 
             axios(config)
-              /*.then((response) => {
-                  const data = response.data;
-                  success(data.url);
-                })*/
+              .then((response) => {
+                const data = response.data;
+                success(data.url);
+              })
               .catch((error) => console.log("error", error));
           },
         }}
