@@ -18,7 +18,7 @@ export default function Layout({ children }) {
       {isAuthenticated ? (
         <>
           <Sidebar />
-          <div className={`mt-[6em] ${isAuthenticated ? "authenticatedLayout" : ''}`}>{children}</div>
+          <div className={`mt-[5em] ${isAuthenticated ? "authenticatedLayout" : ''}`}>{children}</div>
         </>
       ) : (
         <>

@@ -7,11 +7,6 @@
   }
 }
 
-body{
-  height: 100vh;
-  /* overflow:hidden ; */
-}
-
 /* width */
 ::-webkit-scrollbar{
     width: 5px;
@@ -199,20 +194,35 @@ padding-bottom: 10px !important;
 }
 
 .cta{
+    font-size: 0.85rem;
     cursor: pointer;
-    background-color: white;
-    color: #2563eb;
+    background-color: white ;
+    color: #4a3afe;
     border: 1px solid;
-    padding: 0.2em 0.35em;
+    padding: 0.5em 0.75em;
     border-radius: 6px;
 }
 .cta:hover{
-    background-color: #b5cbf9;
+    background-color: #efefef;
 }
 .cta.active{
     background-color: #2563eb;
     color: white;
 }
+
+.cta-invert{
+    font-size: 0.85rem;
+    cursor: pointer;
+    background-color: #4a3afe;
+    color: #ffffff;
+    border: 1px solid;
+    padding: 0.5em 0.75em;
+    border-radius: 6px;
+}
+.cta-invert:hover{
+    background-color: #6255fa;
+}
+
 
 .copy-feedback {
   margin-left: 1rem;
@@ -223,7 +233,8 @@ padding-bottom: 10px !important;
   visibility: visible;
 }
 
-.cta.idea-button{
+.cta.idea-button,
+.cta.blog-toggle-button{
     color: black;
     background-color: transparent;
     border: none;
@@ -231,11 +242,13 @@ padding-bottom: 10px !important;
     position: relative;
 }
 
-.cta.idea-button.cta.active{
+.cta.idea-button.active, 
+.cta.blog-toggle-button.active{
     font-weight: 600;
 }
 
-.cta.idea-button.active::after{
+.cta.idea-button.active::after, 
+.cta.blog-toggle-button.active::after{
     content: "";
     width: 100%;
     height: 1px;
@@ -243,7 +256,7 @@ padding-bottom: 10px !important;
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 10;
+    z-index: 1;
     background-color: black;
 }
 
@@ -260,7 +273,7 @@ padding-bottom: 10px !important;
 }
 
 .pagination>ul>li.active{
-  background-color:blue;
+  background-color:#4a3afe;
   color: white;
 }
 
@@ -268,12 +281,12 @@ padding-bottom: 10px !important;
   background-color: #E0E6FF;
 } 
 
-.sidebar-links.active::after{
+.sidebar-links.active::before{
   content: "";
-  height: '40px';
-  width: '4px';
-  border-radius: '0px 5px 5px 0px';
-  background-color: '#4062ff';
-  position: 'absolute';
-  left: '0';
+  height: 40px;
+  width: 4px;
+  border-radius: 0px 5px 5px 0px;
+  background-color: #4a3afe;
+  position: absolute;
+  left: 0;
 }

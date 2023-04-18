@@ -252,9 +252,9 @@ export default function Sidebar() {
                     href={item.href}
                     className={classNames(
                       item.current
-                        ? "bg-[#E0E6FF] text-gray-900"
+                        ? "bg-[#E0E6FF] text-gray-900 active"
                         : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
-                      "group flex items-center rounded-md px-2 py-2 text-sm font-medium"
+                      "group flex items-center rounded-md px-2 py-2 text-sm font-medium sidebar-links"
                     )}
                   >
                     <item.icon
