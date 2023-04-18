@@ -39,3 +39,12 @@ export const getBeginningOfTheWeek = (now: Date) => {
 export const getTimeStamp = () => {
   return Math.round(new Date().getTime() / 1000) 
 }
+
+export function diff_minutes(dt2: Date, dt1: Date) 
+{
+
+ var diff =(dt2.getTime() - dt1.getTime()) / 1000;
+ diff /= 60;
+ return diff;
+ 
+}

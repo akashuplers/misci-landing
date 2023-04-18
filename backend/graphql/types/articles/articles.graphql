@@ -32,6 +32,8 @@ type Blog {
     ideas: BlogIdeas
     tags: [String]
     references: [String]
+    pythonRespTime: Float
+    respTime: Float
 }
 
 type PublishData {
