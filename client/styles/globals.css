@@ -7,50 +7,12 @@
   }
 }
 
-body{
-  height: 100vh;
-  /* overflow:hidden ; */
-}
-
-/* width */
-::-webkit-scrollbar{
-    width: 5px;
-}
-
-/* Track */
-::-webkit-scrollbar-track{
-    background: #f1f1f1;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb{
-    background: #888;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover{
-    background: #555;
-}
-
-.list-inside > li{
-list-style: circle !important;
-padding-bottom: 10px !important;
-}
-
 @font-face {
   font-family: 'Georgia';
   src: url('/fonts/reg.ttf') format('ttf')
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300&family=Jost:wght@300&family=Piazzolla:opsz,wght@8..30,200;8..30,300;8..30,400&family=Roboto:wght@300&family=Zen+Kurenaido&display=swap');
-
-* {
-  font-family: 'Josefin Sans', sans-serif;
-  font-family: 'Jost', sans-serif;
-  font-family: 'Piazzolla', serif;
-  font-family: 'Roboto', sans-serif;
-  font-family: 'Zen Kurenaido', sans-serif;
-}
 
 :root {
   --ashokaBlue: #13345f;
@@ -115,20 +77,67 @@ padding-bottom: 10px !important;
   }
 }
 
-.tox-dialog__body-nav-item.tox-tab{
-  visibility: hidden;
-}
 
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  font-family: 'Josefin Sans', sans-serif;
+  font-family: 'Jost', sans-serif;
+  font-family: 'Piazzolla', serif;
+  font-family: 'Roboto', sans-serif;
+  font-family: 'Zen Kurenaido', sans-serif;
 }
 
+/* width */
+::-webkit-scrollbar{
+    width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track{
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb{
+    background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover{
+    background: #555;
+}
+
+.newsletter{
+  position: relative;
+}
+
+.newsletter::after{
+  content: "";
+  width: 100%;
+  height: 9px;
+  background-color: #EEC800;
+  position: absolute;
+  left: 3px;
+  bottom: 9px;
+  z-index: -1;
+}
+
+.list-inside > li{
+list-style: circle !important;
+padding-bottom: 10px !important;
+}
+
+.tox-dialog__body-nav-item.tox-tab{
+  visibility: hidden;
+}
+
+
 .tox.tox-tinymce-aux .tox-toolbar__overflow {
-    border: 1px solid #ccc;
-    padding: 0;
-    background: white !important;
+  border: 1px solid #ccc;
+  padding: 0;
+  background: white !important;
 }
 
 .authenticatedLayout{
@@ -199,20 +208,35 @@ padding-bottom: 10px !important;
 }
 
 .cta{
+    font-size: 0.85rem;
     cursor: pointer;
-    background-color: white;
-    color: #2563eb;
+    background-color: white ;
+    color: #4a3afe;
     border: 1px solid;
-    padding: 0.2em 0.35em;
+    padding: 0.5em 0.75em;
     border-radius: 6px;
 }
 .cta:hover{
-    background-color: #b5cbf9;
+    background-color: #efefef;
 }
 .cta.active{
     background-color: #2563eb;
     color: white;
 }
+
+.cta-invert{
+    font-size: 0.85rem;
+    cursor: pointer;
+    background-color: #4a3afe;
+    color: #ffffff;
+    border: 1px solid;
+    padding: 0.5em 0.75em;
+    border-radius: 6px;
+}
+.cta-invert:hover{
+    background-color: #6255fa;
+}
+
 
 .copy-feedback {
   margin-left: 1rem;
@@ -223,7 +247,8 @@ padding-bottom: 10px !important;
   visibility: visible;
 }
 
-.cta.idea-button{
+.cta.idea-button,
+.cta.blog-toggle-button{
     color: black;
     background-color: transparent;
     border: none;
@@ -231,11 +256,13 @@ padding-bottom: 10px !important;
     position: relative;
 }
 
-.cta.idea-button.cta.active{
+.cta.idea-button.active, 
+.cta.blog-toggle-button.active{
     font-weight: 600;
 }
 
-.cta.idea-button.active::after{
+.cta.idea-button.active::after, 
+.cta.blog-toggle-button.active::after{
     content: "";
     width: 100%;
     height: 1px;
@@ -243,7 +270,7 @@ padding-bottom: 10px !important;
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 10;
+    z-index: 1;
     background-color: black;
 }
 
@@ -260,7 +287,7 @@ padding-bottom: 10px !important;
 }
 
 .pagination>ul>li.active{
-  background-color:blue;
+  background-color:#4a3afe;
   color: white;
 }
 
@@ -268,12 +295,12 @@ padding-bottom: 10px !important;
   background-color: #E0E6FF;
 } 
 
-.sidebar-links.active::after{
+.sidebar-links.active::before{
   content: "";
-  height: '40px';
-  width: '4px';
-  border-radius: '0px 5px 5px 0px';
-  background-color: '#4062ff';
-  position: 'absolute';
-  left: '0';
+  height: 40px;
+  width: 4px;
+  border-radius: 0px 5px 5px 0px;
+  background-color: #4a3afe;
+  position: absolute;
+  left: 0;
 }

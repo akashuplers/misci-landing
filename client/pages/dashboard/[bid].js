@@ -19,23 +19,30 @@ if (typeof window !== "undefined") {
 export default function Post() {
   const [pfmodal, setPFModal] = useState(false);
   const router = useRouter();
-  const { bid } = router.query;
+  const { bid, isPublished } = router.query;
+
+  // console.log("isPublished", isPublished);
+  console.log("router.query", router.query);
   const { data, loading, error } = useQuery(getBlogbyId, {
     variables: {
       fetchBlogId: bid,
     },
   });
-
+  // const [isPublished, setIsPublished] = useState(false);
   const [ideas, setIdeas] = useState([]);
   const [editorText, setEditorText] = useState([]);
   const [tags, setTags] = useState([]);
   const [blogData, setBlogData] = useState([]);
+
+  const [pyResTime, setPyResTime] = useState(null);
+  const [ndResTime, setNdResTime] = useState(null);
 
   useEffect(() => {
     if (data == null) return;
 
     console.log(data);
     setBlogData(data.fetchBlog);
+    // setIsPublished(data?.fetchBlog?.publish_data[2]?.published);
 
     // const aa = data.generate.publish_data[2].tiny_mce_data;
     const aa = data.fetchBlog.publish_data.find(
@@ -93,12 +100,27 @@ export default function Post() {
               getToken={getToken}
             />
           )}
-          <div className="w-[60%] relative">
+          <div style={{
+            zIndex: '10',
+            position: 'absolute',
+            background: 'white',
+            border: '1px solid black',
+            width: '200px',
+            top: '2%',
+            left: '50%',
+            transform: 'translateX(-30%)',
+            fontSize:'0.75rem'
+          }}>
+            <span>Python Response Time : {(pyResTime*60).toFixed(2) ?? ""}sec</span><br/>
+            <span>Node Response Time : {(ndResTime*60).toFixed(2) ?? ""}sec</span>
+          </div>
+          <div className="w-[65%] relative">
             <TinyMCEEditor
               isAuthenticated={true}
               editorText={editorText}
               blogData={blogData}
               blog_id={bid}
+              isPublished={isPublished}
             />
           </div>
           <DashboardInsights
@@ -111,6 +133,9 @@ export default function Post() {
             setIdeas={setIdeas}
             setTags={setTags}
             // tags={data?.fetchBlog?.tags}
+
+            setPyResTime = {setPyResTime}
+            setNdResTime = {setNdResTime}
           />
         </div>
       </Layout>
