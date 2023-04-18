@@ -7,45 +7,12 @@
   }
 }
 
-/* width */
-::-webkit-scrollbar{
-    width: 5px;
-}
-
-/* Track */
-::-webkit-scrollbar-track{
-    background: #f1f1f1;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb{
-    background: #888;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover{
-    background: #555;
-}
-
-.list-inside > li{
-list-style: circle !important;
-padding-bottom: 10px !important;
-}
-
 @font-face {
   font-family: 'Georgia';
   src: url('/fonts/reg.ttf') format('ttf')
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300&family=Jost:wght@300&family=Piazzolla:opsz,wght@8..30,200;8..30,300;8..30,400&family=Roboto:wght@300&family=Zen+Kurenaido&display=swap');
-
-* {
-  font-family: 'Josefin Sans', sans-serif;
-  font-family: 'Jost', sans-serif;
-  font-family: 'Piazzolla', serif;
-  font-family: 'Roboto', sans-serif;
-  font-family: 'Zen Kurenaido', sans-serif;
-}
 
 :root {
   --ashokaBlue: #13345f;
@@ -110,20 +77,63 @@ padding-bottom: 10px !important;
   }
 }
 
-.tox-dialog__body-nav-item.tox-tab{
-  visibility: hidden;
-}
 
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  font-family: 'Josefin Sans', sans-serif;
+  font-family: 'Jost', sans-serif;
+  font-family: 'Piazzolla', serif;
+  font-family: 'Roboto', sans-serif;
+  font-family: 'Zen Kurenaido', sans-serif;
 }
 
+/* width */
+::-webkit-scrollbar{
+    width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track{
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb{
+    background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover{
+    background: #555;
+}
+
+.newsletter::after{
+  content: "";
+  width: 100%;
+  height: 9px;
+  background-color: #EEC800;
+  position: absolute;
+  left: 3px;
+  bottom: 9px;
+  z-index: -1;
+}
+
+.list-inside > li{
+list-style: circle !important;
+padding-bottom: 10px !important;
+}
+
+.tox-dialog__body-nav-item.tox-tab{
+  visibility: hidden;
+}
+
+
 .tox.tox-tinymce-aux .tox-toolbar__overflow {
-    border: 1px solid #ccc;
-    padding: 0;
-    background: white !important;
+  border: 1px solid #ccc;
+  padding: 0;
+  background: white !important;
 }
 
 .authenticatedLayout{
