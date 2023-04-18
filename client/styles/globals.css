@@ -109,6 +109,10 @@
     background: #555;
 }
 
+.newsletter{
+  position: relative;
+}
+
 .newsletter::after{
   content: "";
   width: 100%;
