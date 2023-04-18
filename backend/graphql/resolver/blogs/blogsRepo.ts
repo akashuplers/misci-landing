@@ -27,12 +27,13 @@ export const fetchBlogIdeas = async ({id, db}: {
    return await db.db('lilleBlogs').collection('blogIdeas').findOne({blog_id: new ObjectID(id)})
 }
 
-export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null}: {
+export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null}: {
     db: any;
     text: String;
     regenerate: Boolean;
     title?: String | null;
     imageUrl?: String | null
+    imageSrc?: String | null
 }) => {
     const chatgptApis = await db.db('admin').collection('chatGPT').findOne()
     let availableApi: any = null
@@ -130,14 +131,25 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                 "attributes": {},
                                                 "children": [
                                                     {
-                                                        "tag": "IMG",
+                                                        "tag": "A",
                                                         "attributes": {
-                                                            "style": "display: block; margin-left: auto; margin-right: auto;",
-                                                            "src": imageUrl,
-                                                            "width": "441",
-                                                            "height": "305"
+                                                            "title": "Source URL",
+                                                            "href": imageSrc || "#",
+                                                            "target": "_blank",
+                                                            "rel": "noopener"
                                                         },
-                                                        "children": []
+                                                        "children": [
+                                                            {
+                                                                "tag": "IMG",
+                                                                "attributes": {
+                                                                    "style": "float: left;",
+                                                                    "src": imageUrl,
+                                                                    "width": "479",
+                                                                    "height": "331"
+                                                                },
+                                                                "children": []
+                                                            }
+                                                        ]
                                                     }
                                                 ]
                                             },

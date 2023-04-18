@@ -167,6 +167,7 @@ export const blogResolvers = {
             let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
             let texts = ""
             let imageUrl: string | null = null
+            let imageSrc: string | null = null
             let article_ids: String[] = []
             let tags: String[] = []
             let articlesData: any[] = []
@@ -177,8 +178,12 @@ export const blogResolvers = {
                             const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
                             if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
                                 imageUrl = article.proImageLink
+                                imageSrc = article._source?.orig_url
                             } else {
-                                if(index === (articleIds.length - 1) && !imageUrl) imageUrl = article.proImageLink
+                                if(index === (articleIds.length - 1) && !imageUrl) {
+                                    imageUrl = article.proImageLink
+                                    imageSrc = article._source?.orig_url
+                                }
                             }
                             keyword = article.keyword
                             const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
@@ -213,7 +218,8 @@ export const blogResolvers = {
                     text: !articlesData.length ? keyword : texts,
                     regenerate: !articlesData.length ? false: true,
                     imageUrl: imageUrl || "https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/plabeholder/1681740088024.jpeg",
-                    title: keyword
+                    title: keyword,
+                    imageSrc
                 })
                 const finalBlogObj = {
                     article_id: articleIds,
@@ -224,6 +230,7 @@ export const blogResolvers = {
                     description,
                     tags,
                     imageUrl: imageUrl ? imageUrl : "https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/plabeholder/1681740088024.jpeg",
+                    imageSrc,
                     date: getTimeStamp(),
                     updatedAt: getTimeStamp(),
                 }
@@ -327,14 +334,19 @@ export const blogResolvers = {
             articleNames = articleNames.map((data: any) => ({_id: data._id, name: data?._source?.source.name}))
             let tags: string[] = []
             let imageUrl: string | null = null
+            let imageSrc: string | null = null
             await (
                 Promise.all(
                     articleIds.map(async (id: String, index: number) => {
                         const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
                         if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
                             imageUrl = article.proImageLink
+                            imageSrc = article._source?.orig_url
                         } else {
-                            if(index === (articleIds.length - 1) && !imageUrl) imageUrl = article.proImageLink
+                            if(index === (articleIds.length - 1) && !imageUrl) {
+                                imageUrl = article.proImageLink
+                                imageSrc = article._source?.orig_url
+                            }
                         }
                         const name = article._source?.source?.name
                         const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
@@ -418,6 +430,7 @@ export const blogResolvers = {
                         article_id: articleIds,
                         tags,
                         imageUrl: blog.imageUrl ? blog.imageUrl : imageUrl,
+                        imageSrc,
                         updatedAt: getTimeStamp()
                     }
                 })
@@ -489,7 +502,11 @@ export const blogResolvers = {
             const blogId = args.options.blog_id
             const tinymce_json = args.options.tinymce_json
             const platform = args.options.platform
+            const imageUrl = args.options.imageUrl
             const blogDetails = await fetchBlog({id: blogId, db})
+            if(!blogDetails){
+                throw "@No blog found"
+            }
             let updatedPublisData = blogDetails.publish_data.map((data: any) => {
                 if(platform === data.platform) {
                     if(!data.published) {
@@ -515,7 +532,8 @@ export const blogResolvers = {
                     publish_data: updatedPublisData,
                     status: "saved",
                     userId: new ObjectID(user.id),
-                    updatedAt: getTimeStamp()
+                    updatedAt: getTimeStamp(),
+                    imageUrl: imageUrl !== blogDetails.imageUrl ? imageUrl : blogDetails.imageUrl
                 }
             })
             const updatedBlog = await fetchBlog({id: blogId, db})
@@ -540,6 +558,7 @@ export const blogResolvers = {
                         let texts = ""
                         let keyword = null
                         let imageUrl: String | null = null
+                        let imageSrc: string | null = null
                         let article_ids: String[] = []
                         let tags: String[] = []
                         const articlesData = await (
@@ -553,8 +572,12 @@ export const blogResolvers = {
                                     tags.push(...productsTags, ...organizationTags, ...personsTags)
                                     if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
                                         imageUrl = article.proImageLink
+                                        imageSrc = article._source?.orig_url
                                     } else {
-                                        if(index === (articles.length - 1) && !imageUrl) imageUrl = article.proImageLink
+                                        if(index === (articles.length - 1) && !imageUrl) {
+                                            imageUrl = article.proImageLink
+                                            imageSrc = article._source?.orig_url
+                                        }
                                     }
                                     keyword = article.keyword
                                     return {
@@ -579,7 +602,8 @@ export const blogResolvers = {
                                 text: texts,
                                 regenerate: true,
                                 title: articlesData[0]?.keyword,
-                                imageUrl
+                                imageUrl,
+                                imageSrc
                             })
                             const finalBlogObj = {
                                 article_id: article_ids,
@@ -590,6 +614,7 @@ export const blogResolvers = {
                                 description,
                                 imageUrl: imageUrl ? imageUrl : "https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/plabeholder/1681740088024.jpeg",
                                 tags,
+                                imageSrc,
                                 date: getTimeStamp(),
                                 updatedAt: getTimeStamp(),
                             }

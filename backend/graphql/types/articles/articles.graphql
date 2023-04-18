@@ -88,6 +88,7 @@ input UpdateBlogOptions {
     platform: String
     blog_id: String
     tinymce_json: TinyMceObjInput
+    imageUrl: String
 }
 
 input RegenerateBlogOptions {
