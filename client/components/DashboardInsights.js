@@ -357,27 +357,7 @@ export default function DashboardInsights({
                     title="Enter keyword, URL or upload document"
                   />
                 </div>
-                <button
-                  type="submit"
-                  className="cta-invert"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <span className="sr-only">Search</span>
-                </button>
-                {hover ? (
+                 {hover ? (
                   <>
                     <div
                       className="max-w-sm rounded overflow-hidden shadow-lg india r-0 bg-white mt-15"
@@ -389,7 +369,11 @@ export default function DashboardInsights({
                 ) : (
                   <></>
                 )}
-                <label className="cta-invert">
+                <label className="cta-invert" style={{
+                  background: 'none',
+                  color: 'black',
+                  border: '1px solid #b3b3b3'
+                }}>
                   <input
                     type="file"
                     accept="application/pdf, .docx, .txt, .rtf, .png, .jpg, .jpeg, .gif"
@@ -414,6 +398,26 @@ export default function DashboardInsights({
                     <span className="sr-only">Upload</span>
                   </div>
                 </label>
+                <button
+                  type="submit"
+                  className="cta-invert"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span className="sr-only">Search</span>
+                </button>
 
                 <div className="absolute top-[110%]">
                   <span>To get Fresh Ideas upload topic, URL or File.</span>
