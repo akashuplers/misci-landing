@@ -59,9 +59,9 @@ export default function Home() {
         query: { topic: topic },
       }}
     >
-      <div className="cursor-pointer flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-white shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-        <button className="text-sm font-medium text-gray-900 cursor-auto">
-          <a className="cursor-pointer">{topic}</a>
+      <div className="cursor-pointer flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-gray-100 shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+        <button className="cursor-pointer text-sm font-medium text-gray-900 cursor-auto">
+          {topic}
         </button>
         <ArrowRightCircleIcon className="w-5 h-5 text-gray-400" />
       </div>
@@ -117,7 +117,7 @@ export default function Home() {
           <div className="mx-auto max-w-2xl py-32 sm:py-30 lg:py-20">
             <div className="text-center">
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-                Generate Newsletter with Lille
+                Generate <span className="newsletter">Newsletter</span> with <span style={{color:"#4a3afe"}}>Lille</span>
               </h1>
               <p className="mt-6 text-lg leading-8 text-gray-600">
                 Streamline your content creation process with our website that
@@ -126,7 +126,7 @@ export default function Home() {
               </p>
               <div className="p-4 mt-4">Try some of our trending topics</div>
               {!loading ? (
-                <div className="grid grid-cols-3 gap-4 p-4">{updatedArr}</div>
+                <div className="grid grid-cols-3 gap-4 py-4">{updatedArr}</div>
               ) : (
                 <LoaderPlane />
               )}
@@ -134,7 +134,7 @@ export default function Home() {
                 <input
                   id="search"
                   name="search"
-                  className="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 bg-white py-2.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                   placeholder="Search"
                   type="search"
                   onChange={(e) => {
