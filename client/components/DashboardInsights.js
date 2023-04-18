@@ -25,6 +25,8 @@ export default function DashboardInsights({
   setblog_id,
   setIdeas,
   setTags,
+  setPyResTime,
+  setNdResTime
 }) {
   console.log(ideas);
   const [enabled, setEnabled] = useState(false);
@@ -119,6 +121,9 @@ export default function DashboardInsights({
           setblog_id(data.regenerateBlog._id);
           setIdeas(data.regenerateBlog.ideas.ideas);
           setTags(data.regenerateBlog.tags);
+
+          setPyResTime(data.regenerateBlog.pythonRespTime);
+          setNdResTime(data.regenerateBlog.respTime)
 
           // const aa = data.regenerateBlog.publish_data[2].tiny_mce_data;
           const aa = data.regenerateBlog.publish_data.find(pd => pd.platform === 'linkedin').tiny_mce_data
@@ -227,6 +232,9 @@ export default function DashboardInsights({
         setIdeaType("fresh");
         console.log(response.data);
         setFreshIdea(response.data.data);
+
+        setPyResTime(response.data.pythonRespTime);
+        setNdResTime(response.data.respTime)
 
         const fresh = document.querySelector(".idea-button.fresh");
         const used = document.querySelector(".idea-button.used");

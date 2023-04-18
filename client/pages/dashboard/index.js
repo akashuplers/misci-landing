@@ -174,6 +174,9 @@ export default function dashboard({ query }) {
           console.log(data);
           setBlogData(data.generate);
 
+          setPyResTime(data.generate.pythonRespTime);
+          setNdResTime(data.generate.respTime);
+
           // const aa = data.generate.publish_data[2].tiny_mce_data;
           const aa = data.generate.publish_data.find(
             (pd) => pd.platform === "wordpress"
@@ -200,6 +203,20 @@ export default function dashboard({ query }) {
     <>
       <Layout>
         <div className="flex divide-x">
+          <div style={{
+            zIndex: '10',
+            position: 'absolute',
+            background: 'white',
+            border: '1px solid black',
+            width: '250px',
+            top: '2%',
+            left: '50%',
+            transform: 'translateX(-30%)',
+
+          }}>
+            <span>Python Response Time : {(pyResTime*60).toFixed(2) ?? ""}sec</span><br/>
+            <span>Node Response Time : {(ndResTime*60).toFixed(2) ?? ""}sec</span>
+          </div>
           <div className="w-[65%] relative">
             <TinyMCEEditor
               topic={topic}
@@ -220,6 +237,9 @@ export default function dashboard({ query }) {
             setIdeas={setIdeas}
             blog_id={blog_id}
             setTags={setTags}
+
+            setPyResTime
+            setNdResTime
           />
         </div>
       </Layout>
