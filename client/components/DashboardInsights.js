@@ -17,14 +17,22 @@ import Link from "next/link";
 
 export default function DashboardInsights({
   loading,
+
   ideas,
-  blog_id,
-  tags,
-  setEditorText,
-  setBlogData,
-  setblog_id,
   setIdeas,
+
+  blog_id,
+  setblog_id,
+
+  tags,
   setTags,
+
+  reference,
+  setRefrences,
+
+  setBlogData,
+  setEditorText,
+
   setPyResTime,
   setNdResTime
 }) {
@@ -84,24 +92,42 @@ export default function DashboardInsights({
     setRegenSelected((prev) => [...prev, ideaObject]);
   }
 
-  const [filterTags, setFilterTags] = useState([])
+  const [filteredArray, setFilteredArray] = useState([]);
+  const [filterCriteria, setFilterCriteria] = useState(null);
 
   function handleTagClick(e){
+    setFilterCriteria("tag");
+
     e.target.classList.toggle("active")
 
     /* Adding or removing the keywords to an array */
     const filterText = e.target.innerText;
-    setFilterTags(prev => prev.includes(filterText) ? [...prev.filter(el => el !== filterText)] : [...prev, filterText])
+    setFilteredArray(prev => prev.forEach(el => el.filterText === filterText) ? [...prev.filter(el => el.filterText !== filterText)] : [...prev, {filterText,criteria : "tag"}])
   }
 
+  function handleRefClick(e){
+    setFilterCriteria("ref");
+
+    e.target.classList.toggle("active")
+
+    /* Adding or removing the keywords to an array */
+    const filterText = e.target.dataset.url;
+    setFilteredArray(prev => prev.forEach(el => el.filterText === filterText) ? [...prev.filter(el => el.filterText !== filterText)] : [...prev, {filterText, criteria : "ref"}])
+  }
+  
   useEffect(() => {
-    setFilteredIdeas([])
-    filterTags.forEach(filterText => ideas.forEach(idea => idea.idea.indexOf(filterText) >= 0 && setFilteredIdeas(prev => [...prev, idea])));
-  },[filterTags])
+    //setFilteredIdeas([])
+    console.log(filteredArray);
+
+    //if(filterCriteria === "tag") filteredArray.forEach(filterText => ideas.forEach(idea => idea.idea.indexOf(filterText) >= 0 && setFilteredIdeas(prev => [...prev, idea])));
+    //else if(filterCriteria === "ref") filteredArray.forEach(filterText => ideas.forEach(idea => idea.reference.link === filterText && setFilteredIdeas(prev => [...prev, idea])));
+  },[filteredArray])
 
   useEffect(() => {
-    console.log(filteredIdeas)
+    console.log(filteredArray);
+    console.log(filteredIdeas);
   },[filteredIdeas])
+
 
 
   function handleRegenerate() {
@@ -147,7 +173,7 @@ export default function DashboardInsights({
           used.classList.add("active");
           fresh.classList.remove("active");
 
-          setFilterTags([])
+          setFilteredArray([])
           setFilteredIdeas([])
           Array.from(document.querySelectorAll(".tag-button.active")).forEach(el => el.classList.remove("active"));
           target = undefined
@@ -273,12 +299,6 @@ export default function DashboardInsights({
     }
   }, [formInput]);
 
-  // useEffect(() => {
-  //   if(loading || regenLoading) return
-  //   const checkbox = Array.from(document.querySelectorAll("input[type='checkbox'].usedIdeas"))
-  //   checkbox.forEach(box => box.checked = true);
-  //   // console.log(checkbox);
-  // },[ideas, filteredIdeas])
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const [authenticationModalType, setAuthneticationModalType] = useState("signup");
   var Gbid;
@@ -429,21 +449,35 @@ export default function DashboardInsights({
         </>
         )}
         {tags?.length > 0 && <div>
-          <div className="flex justify-between w-full items-center py-3">
+          <div className="flex justify-between w-full items-center py-2">
             <p className=" font-semibold">Filtering Keywords</p>
           </div>
-          <div className="flex gap-[0.5em] flex-wrap max-h-[81px] overflow-y-scroll">
+          <div className="flex gap-[0.5em] flex-wrap max-h-[51px] overflow-y-scroll">
             {tags?.map(tag => {
               return <div
-                        className="bg-gray-300 rounded-full !p-[0.2em] cursor-pointer tag-button cta"
+                        className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer tag-button cta"
                         onClick={(e) => handleTagClick(e)}
                       >{tag}</div>
             })}
           </div>
         </div>}
-        <div className="flex py-2 text-xs">
+        {reference?.length > 0 && <div>
+          <div className="flex justify-between w-full items-center py-2">
+            <p className=" font-semibold">Sources</p>
+          </div>
+          <div className="flex gap-[0.5em] flex-wrap max-h-[51px] overflow-y-scroll">
+            {reference?.map(ref => {
+              return <div
+                        className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta"
+                        onClick={handleRefClick}
+                        data-url={ref.url}
+                      >{ref.source}</div>
+            })}
+          </div>
+        </div>}
+        <div className="flex py-2">
           <button
-            className="idea-button cta used m-3 ml-0 active !px-[0.4em] !py-[0.25em]"
+            className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs"
             onClick={(e) => {
               setIdeaType("used");
               const sib = e.target.nextElementSibling;
@@ -454,7 +488,7 @@ export default function DashboardInsights({
             Used Idea(s)
           </button>
           {isAuthenticated && <button
-            className="idea-button cta fresh m-3 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em]"
+            className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs"
             onClick={(e) => {
               setIdeaType("fresh");
               const sib = e.target.previousElementSibling;
@@ -500,7 +534,7 @@ export default function DashboardInsights({
                             borderRadius: '5px',
                             zIndex: '1'
                           }}>
-                            {idea?.name} {idea?.reference?.type === "article" ? <a href={idea?.reference?.link} target="_blank" style={{color:"blue"}}>Link</a> : <Link href={`/dashboard/${idea?.reference?.id}`} target="_blank">Link</Link>}
+                            {idea?.name} {idea?.reference?.type === "article" ? <a href={idea?.reference?.link} target="_blank" style={{color:"blue"}}>Link {idea?.reference?.link}</a> : <Link href={`/dashboard/${idea?.reference?.id}`} target="_blank">Link</Link>}
                           </div>
                       </a>
                       <input
@@ -546,7 +580,7 @@ export default function DashboardInsights({
                             borderRadius: '5px',
                             zIndex: '1'
                           }}>
-                            {idea?.name} {idea?.reference?.type === "article" ? <a href={idea?.reference?.link} target="_blank" style={{color:"blue"}}>Link</a> : <Link href={`/dashboard/${idea?.reference?.id}`} target="_blank">Link</Link>}
+                            {idea?.name} {idea?.reference?.type === "article" ? <a href={idea?.reference?.link} target="_blank" style={{color:"blue"}}>Link {idea?.reference?.link}</a> : <Link href={`/dashboard/${idea?.reference?.id}`} target="_blank">Link</Link>}
                           </div>
                       </a>
                       <input
@@ -554,6 +588,7 @@ export default function DashboardInsights({
                         className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                         checked = {idea.used}
                         onClick={() => {
+                          console.log(idea)
                           const updatedIdeas = ideas.map((el,elIndex) => elIndex === index ? {...el, used : el.used === 1 ? 0 : 1 } : el)
                           setIdeas(updatedIdeas)
                         }}
@@ -591,7 +626,7 @@ export default function DashboardInsights({
                             borderRadius: '5px',
                             zIndex: '1'
                           }}>
-                            {idea?.name} {idea?.reference?.type === "article" ? <a href={idea?.reference?.link} target="_blank" style={{color:"blue"}}>Link</a> : <Link href={`/dashboard/${idea?.reference?.id}`} target="_blank">Link</Link>}
+                            {idea?.name} {idea?.reference?.type === "article" ? <a href={idea?.reference?.link} target="_blank" style={{color:"blue"}}>Link {idea?.reference?.link}</a> : <Link href={`/dashboard/${idea?.reference?.id}`} target="_blank">Link</Link>}
                           </div>
                       </a>
                       <input
