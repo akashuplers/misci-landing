@@ -92,6 +92,8 @@ export default function DashboardInsights({
   }
 
   const [filteredIdeas, setFilteredIdeas] = useState([]);
+  const [notUniquefilteredIdeas, setNotUniqueFilteredIdeas] = useState([]);
+  
   const [filteredArray, setFilteredArray] = useState([]);
 
   function handleTagClick(e){
@@ -110,22 +112,39 @@ export default function DashboardInsights({
     setFilteredArray(prev => prev.find(el => Object.values(el).indexOf(filterText) > -1 )? [...prev.filter(el => el.filterText !== filterText)] : [...prev, {filterText, criteria : "ref"}])
   }
   
+  // Adds the matched idea into notUniqueFilteredIdeas
   useEffect(() => {
-    setFilteredIdeas([])
+    setNotUniqueFilteredIdeas([])
     console.log(filteredArray);
 
     filteredArray.forEach(filterObject => ideas.forEach(idea => {
       if(filterObject?.criteria === "tag"){
-        idea.idea.indexOf(filterObject?.filterText) >= 0 && setFilteredIdeas(prev => [...prev, idea])
+        idea.idea.indexOf(filterObject?.filterText) >= 0 && setNotUniqueFilteredIdeas(prev => [...prev, idea])
       } else if (filterObject?.criteria === "ref"){
-        idea.reference.link === filterObject?.filterText && setFilteredIdeas(prev => [...prev, idea])
+        idea.reference.link === filterObject?.filterText && setNotUniqueFilteredIdeas(prev => [...prev, idea])
       }
     }));
+
   },[filteredArray])
 
+  // We create a set so that the values are unique, and multiple ideas are not added
   useEffect(() => {
+    // Create a new Set object from the array, which removes duplicates
+    const uniqueFilteredSet = new Set(notUniquefilteredIdeas.map(JSON.stringify));
+
+    // Create a new array from the Set object
+    const uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse);
+
+    setFilteredIdeas(uniqueFilteredArray);
+  },[notUniquefilteredIdeas])
+
+  /*
+  keep this for de-bugging
+  useEffect(() => {
+    console.log(filteredArray);
     console.log(filteredIdeas);
   },[filteredIdeas])
+  */
 
 
 
