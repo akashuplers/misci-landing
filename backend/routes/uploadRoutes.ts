@@ -63,4 +63,8 @@ router.post('/image/base64', async (req: any, res: any) => {
     }
 })
 
+router.post('/upload/static-blog', async (req: any, res: any) => {
+    // const blog = 
+})
+
 module.exports = router
