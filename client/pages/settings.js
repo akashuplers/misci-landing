@@ -178,10 +178,10 @@ export default function Settings() {
   const [imageLoader, setImageLoader] = useState(false);
 
   const handleInputChange = ({ target }) => {
-    setImageLoader(true);
     let { value, name } = target;
 
     if (target.id === "profileImageInput") {
+      setImageLoader(true);
       const selectedfile = target.files[0];
       const fileReader = new FileReader();
 

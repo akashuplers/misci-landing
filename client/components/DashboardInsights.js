@@ -603,7 +603,7 @@ export default function DashboardInsights({
                               .classList.add("hidden");
                           }}
                         >
-                          {idea?.reference?.type === "article" ? "[2]" : "[1]"}
+                          {index + 1}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{
@@ -625,7 +625,7 @@ export default function DashboardInsights({
                                 target="_blank"
                                 style={{ color: "blue" }}
                               >
-                                Link {idea?.reference?.link}
+                                Link 
                               </a>
                             ) : (
                               <Link
@@ -708,7 +708,7 @@ export default function DashboardInsights({
                                 target="_blank"
                                 style={{ color: "blue" }}
                               >
-                                Link {idea?.reference?.link}
+                                Link 
                               </a>
                             ) : (
                               <Link
@@ -786,7 +786,7 @@ export default function DashboardInsights({
                               target="_blank"
                               style={{ color: "blue" }}
                             >
-                              Link {idea?.reference?.link}
+                              Link 
                             </a>
                           ) : (
                             <Link
