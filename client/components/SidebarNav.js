@@ -201,10 +201,10 @@ export default function Sidebar() {
                       href="/upgrade"
                       className="ml-6 inline-flex items-center rounded-md bg-[#4A3AFE] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                       style={{
-                        margin: '0em 0.5em',
-                        width: '100%',
-                        justifyContent: 'center',
-                        alignItems: 'center'
+                        margin: "0em 0.5em",
+                        width: "100%",
+                        justifyContent: "center",
+                        alignItems: "center",
                       }}
                     >
                       <svg
@@ -271,32 +271,34 @@ export default function Sidebar() {
                 ))}
               </nav>
             </div>
-            {meeData?.me?.paid || <div className="flex flex-shrink-0 pb-0 pt-4">
-              <Link
-                href="/upgrade"
-                className="ml-6 inline-flex items-center rounded-md bg-[#4A3AFE] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                style={{
-                        margin: '0em 0.5em',
-                        width: '100%',
-                        justifyContent: 'center',
-                        alignItems: 'center'
-                      }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="w-6 h-6"
+            {!meeData?.me?.paid && !meeLoading && (
+              <div className="flex flex-shrink-0 pb-0 pt-4">
+                <Link
+                  href="/upgrade"
+                  className="ml-6 inline-flex items-center rounded-md bg-[#4A3AFE] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  style={{
+                    margin: "0em 0.5em",
+                    width: "100%",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
                 >
-                  <path
-                    fillRule="evenodd"
-                    d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                UPGRADE
-              </Link>
-            </div>}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  UPGRADE
+                </Link>
+              </div>
+            )}
             <nav className="mt-5 space-y-1 bg-white px-2 pb-8">
               {navigation_bottom.map((item) => (
                 <Link
@@ -403,16 +405,17 @@ export default function Sidebar() {
                     )}
                   </div> */}
                 </div>
-                <div 
+                <div
                   style={{
-                    alignSelf: 'center',
-                    marginLeft: 'auto',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '2em'
-                  }}>
-                  {!meeData?.me?.isSubscribed && (
+                    alignSelf: "center",
+                    marginLeft: "auto",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "2em",
+                  }}
+                >
+                  {!meeData?.me?.isSubscribed && !meeLoading && (
                     <div
                       className="flex text-center font-bold text-sm w-auto rounded border border-gray"
                       href="/settings"
@@ -443,45 +446,51 @@ export default function Sidebar() {
                       </div>
                     </div>
                   )}
-                  <Link
-                    // className=" w-[50px]"
-                    href="/settings"
-                    onMouseEnter={() => {
-                      document
-                        .getElementById("trialenddiv")?.classList.remove("hidden");
-                    }}
-                    onMouseLeave={() => {
-                      document
-                        .getElementById("trialenddiv")?.classList.add("hidden");
-                    }}
-                  >
-                    <Avatar
-                      size="50"
-                      name={meeData?.me?.name + " " + meeData?.me?.lastName}
-                      src={meeData?.me?.profileImage}
-                      round={true}
-                    />
-                    {meeData?.me?.paid || <div
-                      id="trialenddiv"
-                      className="hidden"
-                      style={{
-                        border: "1px solid",
-                        fontSize: "0.65em",
-                        width: "max-content",
-                        borderRadius: "5px",
-                        textAlign: "center",
-                        padding: "0.25em 0.75em",
-                        position: "absolute",
-                        top: "105%",
-                        left: "50%",
-                        transform: "translateX(-50%)",
-                        zIndex: "100",
-                        backgroundColor: "#EEC800",
+                  {!meeLoading && (
+                    <Link
+                      // className=" w-[50px]"
+                      href="/settings"
+                      onMouseEnter={() => {
+                        document
+                          .getElementById("trialenddiv")
+                          ?.classList.remove("hidden");
+                      }}
+                      onMouseLeave={() => {
+                        document
+                          .getElementById("trialenddiv")
+                          ?.classList.add("hidden");
                       }}
                     >
-                      Upgrade Now!
-                    </div>}
-                  </Link>
+                      <Avatar
+                        size="50"
+                        name={meeData?.me?.name + " " + meeData?.me?.lastName}
+                        src={meeData?.me?.profileImage}
+                        round={true}
+                      />
+                      {meeData?.me?.paid || (
+                        <div
+                          id="trialenddiv"
+                          className="hidden"
+                          style={{
+                            border: "1px solid",
+                            fontSize: "0.65em",
+                            width: "max-content",
+                            borderRadius: "5px",
+                            textAlign: "center",
+                            padding: "0.25em 0.75em",
+                            position: "absolute",
+                            top: "105%",
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                            zIndex: "100",
+                            backgroundColor: "#EEC800",
+                          }}
+                        >
+                          Upgrade Now!
+                        </div>
+                      )}
+                    </Link>
+                  )}
                 </div>
               </div>
 

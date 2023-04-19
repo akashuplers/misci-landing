@@ -5,7 +5,7 @@ import Layout from "../components/Layout";
 import styles from "../styles/saved.module.css";
 import { useQuery, useMutation } from "@apollo/client";
 import { getAllBlogs } from "../graphql/queries/getAllBlogs";
-import LoaderPlane from "../components/LoaderPlane";
+import LoaderScan from "../components/LoaderScan";
 import { deleteBlog } from "../graphql/mutations/deleteBlog";
 import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
@@ -102,7 +102,7 @@ export default function Saved() {
       <Layout>
         <ToastContainer />
         {loading ? (
-          <LoaderPlane />
+          <LoaderScan />
         ) : (
           <ul
             role="list"
@@ -194,45 +194,47 @@ export default function Saved() {
             ))}
           </ul>
         )}
-        {paginationArr.length > 1 && <div
-          className="pagination"
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: "2em",
-            paddingBottom: "2em",
-          }}
-        >
-          <ul
+        {paginationArr.length > 1 && (
+          <div
+            className="pagination"
             style={{
               display: "flex",
-              gap: "2em",
-              listStyleType: "none",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: "2em",
+              paddingBottom: "2em",
             }}
           >
-            {paginationArr.map((el, index) => (
-              <li
-                style={{
-                  border: "1px solid",
-                  width: "30px",
-                  height: "30px",
-                  borderRadius: "50%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  cursor: "pointer",
-                }}
-                className={pageSkip === index ? "active" : ""}
-                onClick={(e) => {
-                  setPageSkip(index);
-                }}
-              >
-                {el}
-              </li>
-            ))}
-          </ul>
-        </div>}
+            <ul
+              style={{
+                display: "flex",
+                gap: "2em",
+                listStyleType: "none",
+              }}
+            >
+              {paginationArr.map((el, index) => (
+                <li
+                  style={{
+                    border: "1px solid",
+                    width: "30px",
+                    height: "30px",
+                    borderRadius: "50%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    cursor: "pointer",
+                  }}
+                  className={pageSkip === index ? "active" : ""}
+                  onClick={(e) => {
+                    setPageSkip(index);
+                  }}
+                >
+                  {el}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <Modal
           isOpen={openModal}
           onRequestClose={() => setOpenModal(false)}
