@@ -443,7 +443,7 @@ export default function DashboardInsights({
           )}
         </div>
         <div
-          className="overflow-y-scroll absolute px-2 w-[32%]"
+          className="overflow-y-scroll absolute px-2"
           style={{
             marginRight: "0.5em",
             maxHeight: "82vh",
