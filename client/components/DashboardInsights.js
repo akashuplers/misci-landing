@@ -140,11 +140,11 @@ export default function DashboardInsights({
 
   /*
   keep this for de-bugging
+  */
   useEffect(() => {
     console.log(filteredArray);
     console.log(filteredIdeas);
   },[filteredIdeas])
-  */
 
 
 
