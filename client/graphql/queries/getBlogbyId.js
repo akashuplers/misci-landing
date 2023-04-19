@@ -1,48 +1,49 @@
 import { gql } from "@apollo/client";
 
 export const getBlogbyId = gql`
-    query FetchBlog($fetchBlogId: String!) {
+  query FetchBlog($fetchBlogId: String!) {
     fetchBlog(id: $fetchBlogId) {
-        _id
-        article_id
-        references
-        ideas {
+      _id
+      article_id
+      references
+      tags
+      ideas {
         blog_id
         ideas {
-            used
-            idea
-            article_id
-            name
-            reference {
-                type
-                link
-                id
-            }
+          used
+          idea
+          article_id
+          name
+          reference {
+            type
+            link
+            id
+          }
         }
         freshIdeas {
-            used
-            idea
-            article_id
-            name
-            reference {
-                type
-                link
-                id
-            }
+          used
+          idea
+          article_id
+          name
+          reference {
+            type
+            link
+            id
+          }
         }
-        }
-        publish_data {
+      }
+      publish_data {
         tiny_mce_data {
-            children
-            tag
+          children
+          tag
         }
         published_date
         published
         platform
         creation_date
-        }
+      }
     }
     trendingTopics
     increment
-    }
+  }
 `;
