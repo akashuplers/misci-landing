@@ -38,11 +38,41 @@ axios.interceptors.response.use(
   (response) => {
     // Handle successful responses
     console.log("response : ", response);
+    if(response.status === 401){
+      console.log("User Not Unauthorized");
+      localStorage.clear();
+      window.location.href = "/";
+      // toast.success("User Not Unauthorized", {
+      //   position: "top-center",
+      //   autoClose: 5000,
+      //   hideProgressBar: false,
+      //   closeOnClick: true,
+      //   pauseOnHover: true,
+      //   draggable: true,
+      //   progress: undefined,
+      //   theme: "light",
+      // });
+    }
     return response;
   },
   (error) => {
     // Handle any response errors
-    console.error("response : ", error);
+    console.error("error response : ", error);
+    if(error.response.status === 401){
+      console.log("User Not Unauthorized");
+      localStorage.clear();
+      window.location.href = "/";
+      // toast.success("User Not Unauthorized", {
+      //   position: "top-center",
+      //   autoClose: 5000,
+      //   hideProgressBar: false,
+      //   closeOnClick: true,
+      //   pauseOnHover: true,
+      //   draggable: true,
+      //   progress: undefined,
+      //   theme: "light",
+      // });
+    }
     return Promise.reject(error);
   }
 );

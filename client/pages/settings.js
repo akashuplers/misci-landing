@@ -20,11 +20,11 @@ import Layout from "../components/Layout";
 import { useQuery } from "@apollo/client";
 import { meeAPI } from "../graphql/querys/mee";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
-import LoaderPlane from "../components/LoaderPlane";
+import LoaderScan from "../components/LoaderScan";
 import { useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import ReactLoading from "react-loading";
-import fillerProfileImage from "../public/profile-filler.jpg"
+import fillerProfileImage from "../public/profile-filler.jpg";
 import axios from "axios";
 
 const navigation = [
@@ -139,12 +139,13 @@ export default function Settings() {
     }
 
     setUpdateLoader(true);
-    axios.put(API_BASE_PATH + API_ROUTES.UPDATE_PROFILE, updateProfileData, {
-      headers: {
-        Authorization: `Bearer ${getToken}`,
-        "Content-Type": "application/json",
-      },
-    })
+    axios
+      .put(API_BASE_PATH + API_ROUTES.UPDATE_PROFILE, updateProfileData, {
+        headers: {
+          Authorization: `Bearer ${getToken}`,
+          "Content-Type": "application/json",
+        },
+      })
       .then((res) => {
         if (res.data.errors === false) {
           toast.success(res.data.message, {
@@ -177,10 +178,10 @@ export default function Settings() {
   const [imageLoader, setImageLoader] = useState(false);
 
   const handleInputChange = ({ target }) => {
-    setImageLoader(true);
     let { value, name } = target;
 
     if (target.id === "profileImageInput") {
+      setImageLoader(true);
       const selectedfile = target.files[0];
       const fileReader = new FileReader();
 
@@ -237,16 +238,16 @@ export default function Settings() {
     console.log(updateProfileData);
   }, [updateProfileData]);
 
-  function handleDate(){
-    const lastInvoicedDate = new Date(meeData?.me?.lastInvoicedDate)
-    console.log(lastInvoicedDate.toLocaleDateString('in-IN'))
-    const upcomingInvoicedDate = new Date(meeData?.me?.upcomingInvoicedDate)
-    console.log(upcomingInvoicedDate.toLocaleDateString('in-IN'))
-    const string = <span style={{fontWeight:"600"}}>``</span>
-    return `You are on a ${string} plan`
+  function handleDate() {
+    const lastInvoicedDate = new Date(meeData?.me?.lastInvoicedDate);
+    console.log(lastInvoicedDate.toLocaleDateString("in-IN"));
+    const upcomingInvoicedDate = new Date(meeData?.me?.upcomingInvoicedDate);
+    console.log(upcomingInvoicedDate.toLocaleDateString("in-IN"));
+    const string = <span style={{ fontWeight: "600" }}>``</span>;
+    return `You are on a ${string} plan`;
   }
 
-  if (meeLoading) return <LoaderPlane />;
+  if (meeLoading) return <LoaderScan />;
 
   return (
     <>
@@ -370,8 +371,6 @@ export default function Settings() {
         <div className="lg:pl-64">
           <div className="lg:px-8">
             <div className="mx-auto flex flex-col lg:max-w-4xl">
-              
-
               <main className="flex-1">
                 <div className="relative mx-auto max-w-4xl">
                   <div className=" pb-16">
@@ -486,43 +485,55 @@ export default function Settings() {
                                   Photo
                                 </dt>
                                 <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                  <div class="profile-pic" style={{width:'100px',height:'100px'}}>
-                                    {imageLoader ? 
-                                    <div style={{margin:"0 auto"}}>
-                                      <ReactLoading width={50} height={100} color={"#2563EB"} type="spin"/> 
-                                    </div>:
-                                    <>
-                                    <label
-                                      class="-label"
-                                      htmlFor="profileImageInput"
+                                  <div
+                                    class="profile-pic"
+                                    style={{ width: "100px", height: "100px" }}
+                                  >
+                                    {imageLoader ? (
+                                      <div style={{ margin: "0 auto" }}>
+                                        <ReactLoading
+                                          width={50}
+                                          height={100}
+                                          color={"#2563EB"}
+                                          type="spin"
+                                        />
+                                      </div>
+                                    ) : (
+                                      <>
+                                        <label
+                                          class="-label"
+                                          htmlFor="profileImageInput"
+                                        >
+                                          <span>Change Image</span>
+                                          <input
+                                            name="profileImage"
+                                            id="profileImageInput"
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleInputChange}
+                                          />
+                                        </label>
+                                        <img
+                                          src={updateProfileData.profileImage}
+                                          width="100"
+                                          id="profileImage"
+                                        />
+                                      </>
+                                    )}
+                                    <div
+                                      style={{
+                                        position: "absolute",
+                                        top: "80%",
+                                        fontSize: "0.6rem",
+                                        background: "white",
+                                        color: "black",
+                                        width: "80%",
+                                        textAlign: "center",
+                                        fontWeight: "600",
+                                      }}
                                     >
-                                      <span>Change Image</span>
-                                      <input
-                                        name="profileImage"
-                                        id="profileImageInput"
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={handleInputChange}
-                                      />
-                                    </label>
-                                    <img
-                                      src={updateProfileData.profileImage}
-                                      width="100"
-                                      id="profileImage"
-                                    />
-                                    </>
-                                    }
-                                    <div style={{
-                                        position: 'absolute',
-                                        top: '80%',
-                                        fontSize: '0.6rem',
-                                        background: 'white',
-                                        color: 'black',
-                                        width: '80%',
-                                        textAlign: 'center',
-                                        fontWeight:'600'
-                                      }
-                                    }>UPDATE</div>
+                                      UPDATE
+                                    </div>
                                   </div>
                                 </dd>
                               </div>
@@ -536,18 +547,36 @@ export default function Settings() {
                                   </span>
                                 </dd>
                               </div>
-                              {meeData?.me?.paid && <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:border-b sm:border-gray-200 sm:py-5">
-                                <dt className="text-sm font-medium text-gray-500">
-                                  Susbcription Details
-                                </dt>
-                                <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                  <span className="flex-grow">
-                                    You are on a <span style={{fontWeight:"600"}}>{meeData?.me?.interval}ly</span> plan <br/>
-                                    Last Invoice Date : <span style={{fontWeight:"600"}}>{new Date(meeData?.me?.lastInvoicedDate * 1000).toLocaleDateString('in-IN')}</span> <br/>
-                                    Next Invoice Date : <span style={{fontWeight:"600"}}>{new Date(meeData?.me?.upcomingInvoicedDate * 1000).toLocaleDateString('in-IN')}</span>
-                                  </span>
-                                </dd>
-                              </div>}
+                              {meeData?.me?.paid && (
+                                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:border-b sm:border-gray-200 sm:py-5">
+                                  <dt className="text-sm font-medium text-gray-500">
+                                    Susbcription Details
+                                  </dt>
+                                  <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                    <span className="flex-grow">
+                                      You are on a{" "}
+                                      <span style={{ fontWeight: "600" }}>
+                                        {meeData?.me?.interval}ly
+                                      </span>{" "}
+                                      plan <br />
+                                      Last Invoice Date :{" "}
+                                      <span style={{ fontWeight: "600" }}>
+                                        {new Date(
+                                          meeData?.me?.lastInvoicedDate * 1000
+                                        ).toLocaleDateString("in-IN")}
+                                      </span>{" "}
+                                      <br />
+                                      Next Invoice Date :{" "}
+                                      <span style={{ fontWeight: "600" }}>
+                                        {new Date(
+                                          meeData?.me?.upcomingInvoicedDate *
+                                            1000
+                                        ).toLocaleDateString("in-IN")}
+                                      </span>
+                                    </span>
+                                  </dd>
+                                </div>
+                              )}
                               <div>
                                 <button
                                   type="button"

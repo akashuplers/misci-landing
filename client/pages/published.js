@@ -7,7 +7,7 @@ import { useQuery, useMutation } from "@apollo/client";
 import { getAllBlogs } from "../graphql/queries/getAllBlogs";
 import Head from "next/head";
 import { contextType } from "react-modal";
-import LoaderPlane from "../components/LoaderPlane";
+import LoaderScan from "../components/LoaderScan";
 import { deleteBlog } from "../graphql/mutations/deleteBlog";
 import { toast } from "react-toastify";
 import Modal from "react-modal";
@@ -108,7 +108,7 @@ export default function Saved() {
       <ToastContainer />
       <Layout>
         {loading ? (
-          <LoaderPlane />
+          <LoaderScan />
         ) : (
           <ul
             role="list"
