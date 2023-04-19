@@ -42,7 +42,7 @@ export default function TinyMCEEditor({
   const [saveLoad, setSaveLoad] = useState(false);
   const [saveText, setSaveText] = useState("Save!");
   const [publishLoad, setPublishLoad] = useState(false);
-  const [publishText, setPublishText] = useState("Save & Publish");
+  const [publishText, setPublishText] = useState("Publish");
   const [publishLinkLoad, setPublishLinkLoad] = useState(false);
   const [publishLinkText, setPublishLinkText] = useState("Publish on Linkedin");
   const [openModal, setOpenModal] = useState(false);
@@ -172,60 +172,43 @@ export default function TinyMCEEditor({
       setPublishLoad(true);
       const jsonDoc = htmlToJson(updatedText).children;
       const formatedJSON = { children: [...jsonDoc] };
-      UpdateBlog({
-        variables: {
-          options: {
-            tinymce_json: formatedJSON,
-            blog_id: blog_id,
-            platform: "wordpress",
-          },
+
+      // console.log("save and publish");
+      axios({
+        method: "post",
+        url: "https://maverick.lille.ai/graphql",
+        headers: {
+          "content-type": "application/json",
+          Authorization: "Bearer " + token,
         },
-        context: {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + getToken,
+        data: {
+          query:
+            "mutation SavePreferences($options: PublisOptions) {\n  publish(options: $options)\n}",
+          variables: {
+            options: {
+              blog_id: blog_id,
+            },
           },
         },
       })
-        .then(() => {
-          // console.log("save and publish");
-          axios({
-            method: "post",
-            url: "https://maverick.lille.ai/graphql",
-            headers: {
-              "content-type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-            data: {
-              query:
-                "mutation SavePreferences($options: PublisOptions) {\n  publish(options: $options)\n}",
-              variables: {
-                options: {
-                  blog_id: blog_id,
-                },
-              },
-            },
-          })
-            .then((response) => {
-              if (response?.data?.data?.publish) {
-                toast.success("Published!!", {
-                  position: "top-center",
-                  autoClose: 5000,
-                  hideProgressBar: false,
-                  closeOnClick: true,
-                  pauseOnHover: true,
-                  draggable: true,
-                  progress: undefined,
-                  theme: "light",
-                });
-                setOpenModal(true);
-                setPublishLoad(false);
-                setPublishText("Save & Publish");
-              }
-            })
-            .catch((error) => console.log("error", error));
+        .then((response) => {
+          if (response?.data?.data?.publish) {
+            toast.success("Published!!", {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+            setOpenModal(true);
+            setPublishLoad(false);
+            setPublishText("Published!!");
+          }
         })
-        .catch((err) => {});
+        .catch((error) => console.log("error", error));
     }
   };
 
@@ -534,7 +517,7 @@ export default function TinyMCEEditor({
             ) : isAuthenticated ? (
               <button
                 className="cta-invert"
-                onClick={publishText === "Save & Publish" && handleSavePublish}
+                onClick={publishText === "Publish" && handleSavePublish}
               >
                 {publishLoad ? (
                   <ReactLoading
