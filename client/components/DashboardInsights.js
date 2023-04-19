@@ -442,17 +442,9 @@ export default function DashboardInsights({
             </button>
           )}
         </div>
-        <div
-          className="overflow-y-scroll absolute px-2 w-[32%]"
-          style={{
-            marginRight: "0.5em",
-            maxHeight: "82vh",
-            height: "-webkit-fill-available",
-          }}
-        >
-          {isAuthenticated && (
+        {isAuthenticated && (
             <>
-              <form onSubmit={postFormData} className="pt-4 mb-7">
+              <form onSubmit={postFormData} className="mb-4">
                 {newIdeaLoad ? (
                   <ReactLoading
                     type={"spin"}
@@ -564,6 +556,14 @@ export default function DashboardInsights({
               </form>
             </>
           )}
+        <div
+          className="overflow-y-scroll absolute px-2"
+          style={{
+            marginRight: "0.5em",
+            maxHeight: "82vh",
+            height: "-webkit-fill-available",
+          }}
+        >
           {ideaType === "used"
             ? filteredIdeas.length > 0
               ? filteredIdeas?.map((idea, index) => {
