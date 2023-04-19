@@ -432,10 +432,10 @@ export default function DashboardInsights({
           <div className="flex justify-between w-full items-center py-3">
             <p className=" font-semibold">Filtering Keywords</p>
           </div>
-          <div className="flex gap-[0.5em] flex-wrap max-h-[80px] overflow-y-scroll">
+          <div className="flex gap-[0.5em] flex-wrap max-h-[81px] overflow-y-scroll">
             {tags?.map(tag => {
               return <div
-                        className="bg-gray-300 rounded-full !p-1 !px-2 cursor-pointer tag-button cta"
+                        className="bg-gray-300 rounded-full !p-[0.2em] cursor-pointer tag-button cta"
                         onClick={(e) => handleTagClick(e)}
                       >{tag}</div>
             })}
