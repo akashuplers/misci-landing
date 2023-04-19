@@ -1,4 +1,8 @@
+import { getTimeStamp } from "../utils/date";
 import { Azure } from "../services/azure";
+import { ObjectID } from "bson";
+import { fetchUser } from "../graphql/resolver/blogs/blogsRepo";
+import { randomUUID } from "crypto";
 
 const getStream = require('into-stream')
 const express = require("express");
@@ -63,8 +67,85 @@ router.post('/image/base64', async (req: any, res: any) => {
     }
 })
 
-router.post('/upload/static-blog', async (req: any, res: any) => {
-    // const blog = 
+router.post('/static-blog', async (req: any, res: any) => {
+    const db = req.app.get('db')
+    const {blog, ideas, imageUrl, tags, title, imageSource} = req.body
+    const user = await fetchUser({db, id: "643fbcfcb18352c0d4c1596c"})
+    console.log(blog, ideas, imageUrl)
+    let urlsData: any[] = [] 
+    let ideasArray: any[] = [] 
+    ideas.forEach((data: any) => {
+        const find = urlsData.find((c: any) => c._source.orig_url === data.link)
+        ideasArray.push({
+            idea: data.idea,
+            used: 1,
+            reference: {
+                type: "article",
+                link: data.link,
+            }  
+        })
+        if(!find) {
+            urlsData.push({
+                _id: randomUUID(),
+                _source: {source: {name: data.source}, orig_url: data.link}, 
+                createdAt: getTimeStamp(),
+                userMetaData: [
+                    {
+                        userId: new ObjectID(user._id),
+                        permanent: true,
+                        date: getTimeStamp()
+                    }
+                ],
+                pubStatus: "private",
+                proImageLink: imageUrl,
+                sharedBy: `${user.name} ${user.lastName}`,
+                userList: [user._id]
+            })
+        }
+    })
+    let articleIdsArray: any[] = []
+    const articleIds = await (
+        Promise.all (
+            urlsData.map(async (data: any) => {
+                const article = await db.db('lilleArticles').collection('articles').insertOne(data)
+                articleIdsArray.push({id: article.insertedId, link: data._source.source.orig_url})
+                return article.insertedId
+            })
+        )
+    )
+    ideasArray = ideasArray.map((data: any) => {
+        const find = articleIdsArray.find((d: any) => d.link === data.link)
+        if(find) {
+            return {
+                ...data,
+                article_id: find.id,
+            }
+        } else {
+            return {
+                ...data,
+            }
+        }
+    })
+    const blogData = {
+        article_id: articleIds,
+        publish_data: blog,
+        userId: new ObjectID(user._id),
+        keyword: title,
+        tags: tags.split(','),
+        imageUrl,
+        imageSource,
+        data: getTimeStamp(),
+        updatedAt: getTimeStamp()
+    }
+    const blogInserted = await db.db('lilleBlogs').collection('blogs').insertOne(blogData)
+    await db.db('lilleBlogs').collection('blogIdeas').insertOne({
+        blog_id: new ObjectID(blogInserted.insertedId),
+        ideas: ideasArray
+    })
+    res.status(200).send({
+        type: "SUCCESS",
+        data: blogInserted
+    })
 })
 
 module.exports = router
