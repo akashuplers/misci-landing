@@ -38,7 +38,6 @@ export default function DashboardInsights({
 }) {
   const [enabled, setEnabled] = useState(false);
 
-  const [filteredIdeas, setFilteredIdeas] = useState([]);
   const [formInput, setformInput] = useState("");
 
   const [urlValid, setUrlValid] = useState(false);
@@ -91,49 +90,60 @@ export default function DashboardInsights({
     setRegenSelected((prev) => [...prev, ideaObject]);
   }
 
+  const [filteredIdeas, setFilteredIdeas] = useState([]);
+  const [notUniquefilteredIdeas, setNotUniqueFilteredIdeas] = useState([]);
+  
   const [filteredArray, setFilteredArray] = useState([]);
-  const [filterCriteria, setFilterCriteria] = useState(null);
 
-  function handleTagClick(e) {
-    setFilterCriteria("tag");
-
-    e.target.classList.toggle("active");
+  function handleTagClick(e){
+    e.target.classList.toggle("active")
 
     /* Adding or removing the keywords to an array */
     const filterText = e.target.innerText;
-    setFilteredArray((prev) =>
-      prev.forEach((el) => el.filterText === filterText)
-        ? [...prev.filter((el) => el.filterText !== filterText)]
-        : [...prev, { filterText, criteria: "tag" }]
-    );
+    setFilteredArray(prev => prev.find(el => Object.values(el).indexOf(filterText) > -1) ? [...prev.filter(el => el.filterText !== filterText)] : [...prev, {filterText,criteria : "tag"}])
   }
 
-  function handleRefClick(e) {
-    setFilterCriteria("ref");
-
-    e.target.classList.toggle("active");
+  function handleRefClick(e){
+    e.target.classList.toggle("active")
 
     /* Adding or removing the keywords to an array */
     const filterText = e.target.dataset.url;
-    setFilteredArray((prev) =>
-      prev.forEach((el) => el.filterText === filterText)
-        ? [...prev.filter((el) => el.filterText !== filterText)]
-        : [...prev, { filterText, criteria: "ref" }]
-    );
+    setFilteredArray(prev => prev.find(el => Object.values(el).indexOf(filterText) > -1 )? [...prev.filter(el => el.filterText !== filterText)] : [...prev, {filterText, criteria : "ref"}])
   }
-
+  
+  // Adds the matched idea into notUniqueFilteredIdeas
   useEffect(() => {
-    //setFilteredIdeas([])
+    setNotUniqueFilteredIdeas([])
     console.log(filteredArray);
 
-    //if(filterCriteria === "tag") filteredArray.forEach(filterText => ideas.forEach(idea => idea.idea.indexOf(filterText) >= 0 && setFilteredIdeas(prev => [...prev, idea])));
-    //else if(filterCriteria === "ref") filteredArray.forEach(filterText => ideas.forEach(idea => idea.reference.link === filterText && setFilteredIdeas(prev => [...prev, idea])));
-  }, [filteredArray]);
+    filteredArray.forEach(filterObject => ideas.forEach(idea => {
+      if(filterObject?.criteria === "tag"){
+        idea.idea.indexOf(filterObject?.filterText) >= 0 && setNotUniqueFilteredIdeas(prev => [...prev, idea])
+      } else if (filterObject?.criteria === "ref"){
+        idea.reference.link === filterObject?.filterText && setNotUniqueFilteredIdeas(prev => [...prev, idea])
+      }
+    }));
 
+  },[filteredArray])
+
+  // We create a set so that the values are unique, and multiple ideas are not added
+  useEffect(() => {
+    // Create a new Set object from the array, which removes duplicates
+    const uniqueFilteredSet = new Set(notUniquefilteredIdeas.map(JSON.stringify));
+
+    // Create a new array from the Set object
+    const uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse);
+
+    setFilteredIdeas(uniqueFilteredArray);
+  },[notUniquefilteredIdeas])
+
+  /*
+  keep this for de-bugging
+  */
   useEffect(() => {
     console.log(filteredArray);
     console.log(filteredIdeas);
-  }, [filteredIdeas]);
+  },[filteredIdeas])
 
   function handleRegenerate() {
     console.log(regenSelected);
@@ -432,17 +442,9 @@ export default function DashboardInsights({
             </button>
           )}
         </div>
-        <div
-          className="overflow-y-scroll absolute px-2 w-[32%]"
-          style={{
-            marginRight: "0.5em",
-            maxHeight: "82vh",
-            height: "-webkit-fill-available",
-          }}
-        >
-          {isAuthenticated && (
+        {isAuthenticated && (
             <>
-              <form onSubmit={postFormData} className="pt-4 mb-7">
+              <form onSubmit={postFormData} className="mb-4">
                 {newIdeaLoad ? (
                   <ReactLoading
                     type={"spin"}
@@ -554,13 +556,21 @@ export default function DashboardInsights({
               </form>
             </>
           )}
+        <div
+          className="overflow-y-scroll absolute px-2"
+          style={{
+            marginRight: "0.5em",
+            maxHeight: "82vh",
+            height: "-webkit-fill-available",
+          }}
+        >
           {ideaType === "used"
             ? filteredIdeas.length > 0
               ? filteredIdeas?.map((idea, index) => {
                   return (
                     <div className="flex pb-3" key={index}>
                       <div className="flex justify-between gap-5 w-full">
-                        <p>{idea.idea}</p>
+                        <p>{idea?.idea}</p>
                         <a
                           style={{
                             color: "#4a3afe",
@@ -617,7 +627,7 @@ export default function DashboardInsights({
                         <input
                           type="checkbox"
                           className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                          checked={idea.used}
+                          checked={idea?.used}
                           onClick={() => {
                             const updatedIdeas = ideas.map((el) =>
                               el.idea === idea.idea
@@ -643,7 +653,7 @@ export default function DashboardInsights({
                   return (
                     <div className="flex pb-3 usedIdeas" key={index}>
                       <div className="flex justify-between gap-5 w-full">
-                        <p>{idea.idea}</p>
+                        <p>{idea?.idea}</p>
                         <a
                           style={{
                             color: "#4a3afe",
@@ -700,7 +710,7 @@ export default function DashboardInsights({
                         <input
                           type="checkbox"
                           className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                          checked={idea.used}
+                          checked={idea?.used}
                           onClick={() => {
                             console.log(idea);
                             const updatedIdeas = ideas.map((el, elIndex) =>
@@ -721,7 +731,7 @@ export default function DashboardInsights({
                 return (
                   <div className="flex pb-3" key={index}>
                     <div className="flex justify-between gap-5 w-full">
-                      <p>{idea.idea}</p>
+                      <p>{idea?.idea}</p>
                       <a
                         style={{
                           color: "#4a3afe",
@@ -786,9 +796,9 @@ export default function DashboardInsights({
                               : el
                           );
                           setFreshIdea(updatedIdeas);
-                          handleInputClick(idea.idea, idea.article_id, e);
+                          handleInputClick(idea?.idea, idea?.article_id, e);
                         }}
-                        checked={idea.used}
+                        checked={idea?.used}
                       />
                     </div>
                   </div>
