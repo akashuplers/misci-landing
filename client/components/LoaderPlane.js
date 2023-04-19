@@ -13,21 +13,21 @@ export default function LoaderPlane() {
       <Typewriter
         onInit={(typewriter) => {
           typewriter
-            .pauseFor(500)
+            .pauseFor(300)
             .typeString("Searching the sources on the Internet.")
-            .pauseFor(500)
+            .pauseFor(300)
             .deleteAll()
             .typeString("Extracting Ideas from the sources.")
-            .pauseFor(500)
+            .pauseFor(300)
             .deleteAll()
             .typeString("Creating backlinks for your blogs.")
-            .pauseFor(500)
+            .pauseFor(300)
             .deleteAll()
             .typeString("Generating H1 & H2 headings")
-            .pauseFor(500)
+            .pauseFor(300)
             .deleteAll()
             .typeString("Creating the blog for you!!")
-            .pauseFor(500)
+            .pauseFor(300)
             .start();
         }}
       />
