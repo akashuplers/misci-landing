@@ -31,9 +31,14 @@ type Blog {
     publish_data: [PublishData]
     ideas: BlogIdeas
     tags: [String]
-    references: [String]
+    references: [UrlObj]
     pythonRespTime: Float
     respTime: Float
+}
+
+type UrlObj {
+    url: String
+    source: String
 }
 
 type PublishData {
