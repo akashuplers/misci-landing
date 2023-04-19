@@ -20,6 +20,8 @@ export default function Post() {
   const [pfmodal, setPFModal] = useState(false);
   const router = useRouter();
   const { bid, isPublished } = router.query;
+  const [reference, setRefrence] = useState([]);
+
 
   // console.log("isPublished", isPublished);
   console.log("router.query", router.query);
@@ -42,6 +44,9 @@ export default function Post() {
 
     console.log(data);
     setBlogData(data.fetchBlog);
+    setIdeas(data.fetchBlog.ideas.ideas);
+    setTags(data.fetchBlog.tags);
+    setRefrence(data.fetchBlog.references)
     // setIsPublished(data?.fetchBlog?.publish_data[2]?.published);
 
     // const aa = data.generate.publish_data[2].tiny_mce_data;
@@ -51,8 +56,6 @@ export default function Post() {
     const htmlDoc = jsonToHtml(aa);
     setEditorText(htmlDoc);
 
-    setIdeas(data.fetchBlog.ideas.ideas);
-    setTags(data.fetchBlog.tags);
   }, [data]);
 
   var getToken;
@@ -136,6 +139,10 @@ export default function Post() {
 
             setPyResTime = {setPyResTime}
             setNdResTime = {setNdResTime}
+
+            
+            reference={reference}
+            setRefrence={reference}
           />
         </div>
       </Layout>
