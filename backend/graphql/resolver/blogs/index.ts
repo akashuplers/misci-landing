@@ -37,7 +37,10 @@ export const blogResolvers = {
             const blogIdeas = await fetchBlogIdeas({id, db})
             const updatedIdeas = blogIdeas.ideas.map((data: any) => data.summary ? ({...data, idea: data.summary}) : ({...data}))
             const updatedFreshIdeas = blogIdeas?.freshIdeas?.map((data: any) => data.summary ? ({...data, idea: data.summary}) : ({...data}))
-            let refUrls: string[] = []
+            let refUrls: {
+                url: string
+                source: string
+            }[] = []
             if(blogDetails) refUrls = await fetchArticleUrls({db, blog: blogDetails})
             return {...blogDetails, ideas: {
                 ...blogIdeas,
@@ -301,7 +304,10 @@ export const blogResolvers = {
                     const id: any = insertBlogIdeas.insertedId
                     blogIdeasDetails = await db.db('lilleBlogs').collection('blogIdeas').findOne({_id: new ObjectID(id)})
                 }
-                let refUrls: string[] = []
+                let refUrls: {
+                    url: string
+                    source: string
+                }[] = []
                 if(blogDetails) refUrls = await fetchArticleUrls({db, blog: blogDetails})
                 let endRequest = new Date()
                 let respTime = diff_minutes(endRequest, startRequest)
@@ -484,7 +490,10 @@ export const blogResolvers = {
                 if(blogIdeas._id){
                     blogIdeasDetails = await fetchBlogIdeas({id: blogId, db})
                 }
-                let refUrls: string[] = []
+                let refUrls: {
+                    url: string
+                    source: string
+                }[] = []
                 if(blog) refUrls = await fetchArticleUrls({db, blog: blog})
                 let endRequest = new Date()
                 let respTime = diff_minutes(endRequest, startRequest)
@@ -538,7 +547,10 @@ export const blogResolvers = {
             })
             const updatedBlog = await fetchBlog({id: blogId, db})
             const blogIdeas = await fetchBlogIdeas({id: blogId, db})
-            let refUrls: string[] = []
+            let refUrls: {
+                url: string
+                source: string
+            }[] = []
             if(updatedBlog) refUrls = await fetchArticleUrls({db, blog: updatedBlog})
             return {...updatedBlog, ideas: blogIdeas, references: refUrls}
         },

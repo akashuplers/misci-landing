@@ -4,6 +4,7 @@ import { getBase64Image } from "../../../utils/image";
 import { ChatGPT } from "../../../services/chatGPT";
 import { Azure } from "../../../services/azure";
 import { getTimeStamp } from "../../../utils/date";
+import { URL } from "url";
 
 export const fetchBlog = async ({id, db}: {
     id: string;
@@ -128,7 +129,9 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                             },
                                             {
                                                 "tag": "P",
-                                                "attributes": {},
+                                                "attributes": {
+                                                    "style": "text-align: left;"
+                                                },
                                                 "children": [
                                                     {
                                                         "tag": "A",
@@ -142,7 +145,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                             {
                                                                 "tag": "IMG",
                                                                 "attributes": {
-                                                                    "style": "float: left;",
+                                                                    "style": "display: block; margin-left: auto; margin-right: auto;",
                                                                     "src": imageUrl,
                                                                     "width": "479",
                                                                     "height": "331"
@@ -155,7 +158,9 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                             },
                                             {
                                                 "tag": "P",
-                                                "attributes": {},
+                                                "attributes": {
+                                                    "style": "text-align: left;"
+                                                },
                                                 "children": []
                                             },
                                             {
@@ -364,17 +369,41 @@ export const fetchArticleUrls = async ({
     blog: any
     db: any
 }) => {
-    let urls : string[] = []
+    let urls : {
+        url: string
+        source: string
+    }[] = []
     if(blog && blog?.article_id?.length) {
         const urlsData = await db.db("lilleArticles").collection('articles').find({
             _id: {$in: blog?.article_id}
         }, {
             projection: {
                 "_id": 0,
-                "_source.orig_url": 1
+                "_source.orig_url": 1,
+                "_source.source.name": 1
             }
         }).toArray()
-        if(urlsData?.length) urlsData?.forEach((data: {_source: {orig_url: string}}) => urls.push(data?._source?.orig_url))
+        if(urlsData?.length) {
+            urlsData?.forEach((data: {_source: {orig_url: string, source: {name: string}}}) => {
+                console.log(data._source.source.name)
+                let urlObj: null | {
+                    url: string
+                    source: string
+                } = null
+                if(!data._source.source.name || (data._source.source.name && data._source.source.name === "Not Available")) {
+                    urlObj = {
+                        url : data?._source?.orig_url,
+                        source: new URL(data?._source?.orig_url).host
+                    }
+                } else {
+                    urlObj = {
+                        url : data?._source?.orig_url,
+                        source: data._source.source.name
+                    }
+                }
+                urls.push(urlObj)
+            })
+        }
     }
     return urls
 }
