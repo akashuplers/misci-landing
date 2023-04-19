@@ -32,21 +32,25 @@ export const blogResolvers = {
             return topics.slice(0, 6);
         },
         fetchBlog: async (parent: unknown, args: { id: string }, {db, pubsub}: any) => {
-            const id = args.id
-            const blogDetails = await fetchBlog({id, db})
-            const blogIdeas = await fetchBlogIdeas({id, db})
-            const updatedIdeas = blogIdeas.ideas.map((data: any) => data.summary ? ({...data, idea: data.summary}) : ({...data}))
-            const updatedFreshIdeas = blogIdeas?.freshIdeas?.map((data: any) => data.summary ? ({...data, idea: data.summary}) : ({...data}))
-            let refUrls: {
-                url: string
-                source: string
-            }[] = []
-            if(blogDetails) refUrls = await fetchArticleUrls({db, blog: blogDetails})
-            return {...blogDetails, ideas: {
-                ...blogIdeas,
-                ideas: updatedIdeas,
-                freshIdeas: updatedFreshIdeas?.length ? updatedFreshIdeas : null
-            }, references: refUrls}
+            try {
+                const id = args.id
+                const blogDetails = await fetchBlog({id, db})
+                const blogIdeas = await fetchBlogIdeas({id, db})
+                const updatedIdeas = blogIdeas.ideas.map((data: any) => data.summary ? ({...data, idea: data.summary}) : ({...data}))
+                const updatedFreshIdeas = blogIdeas?.freshIdeas?.map((data: any) => data.summary ? ({...data, idea: data.summary}) : ({...data}))
+                let refUrls: {
+                    url: string
+                    source: string
+                }[] = []
+                if(blogDetails) refUrls = await fetchArticleUrls({db, blog: blogDetails})
+                return {...blogDetails, ideas: {
+                    ...blogIdeas,
+                    ideas: updatedIdeas,
+                    freshIdeas: updatedFreshIdeas?.length ? updatedFreshIdeas : null
+                }, references: refUrls}
+            }catch(e) {
+                console.log(e)
+            }
         },
         getAllBlogs: async (
             parent: unknown, args: { options: BlogListArgs }, {db, pubsub, user}: any
@@ -266,16 +270,7 @@ export const blogResolvers = {
                         Promise.all(
                             updatedIdeas.map(async (ideasData: any) => {
                                 const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db, userId})
-                                if(ideaExistInBlog) {
-                                    return {
-                                        ...ideasData,
-                                        reference: {
-                                            type: "blog",
-                                            link: null,
-                                            id: ideaExistInBlog._id
-                                        }
-                                    }
-                                } else if(ideasData.article_id) {
+                                if(ideasData.article_id) {
                                     const article = await fetchArticleById({id: ideasData.article_id, db, userId})
                                     return {
                                         ...ideasData,
@@ -457,16 +452,7 @@ export const blogResolvers = {
                         Promise.all(
                             blogIdeas.ideas.map(async (ideasData: any) => {
                                 const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db, userId: blog.userId})
-                                if(ideaExistInBlog) {
-                                    return {
-                                        ...ideasData,
-                                        reference: {
-                                            type: "blog",
-                                            link: null,
-                                            id: ideaExistInBlog._id
-                                        }
-                                    }
-                                } else if(ideasData.article_id) {
+                                if(ideasData.article_id) {
                                     const article = await fetchArticleById({id: ideasData.article_id, db, userId: blog.userId})
                                     return {
                                         ...ideasData,
@@ -668,16 +654,7 @@ export const blogResolvers = {
                                     Promise.all(
                                         updatedIdeas.map(async (ideasData: any) => {
                                             const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db, userId})
-                                            if(ideaExistInBlog) {
-                                                return {
-                                                    ...ideasData,
-                                                    reference: {
-                                                        type: "blog",
-                                                        link: null,
-                                                        id: ideaExistInBlog._id
-                                                    }
-                                                }
-                                            } else if(ideasData.article_id) {
+                                            if(ideasData.article_id) {
                                                 const article = await fetchArticleById({id: ideasData.article_id, db, userId})
                                                 return {
                                                     ...ideasData,
