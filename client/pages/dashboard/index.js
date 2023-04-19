@@ -35,6 +35,8 @@ export default function dashboard({ query }) {
   const [pyResTime, setPyResTime] = useState(null);
   const [ndResTime, setNdResTime] = useState(null);
 
+  const [reference, setRefrence] = useState([]);
+
   const keyword = useStore((state) => state.keyword);
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
 
@@ -126,8 +128,7 @@ export default function dashboard({ query }) {
       };
 
       const graphql = JSON.stringify({
-        query:
-          "query FetchBlog($fetchBlogId: String!) {\n  fetchBlog(id: $fetchBlogId) {\n      _id\n      article_id\n      references\n      ideas {\n      blog_id\n      ideas {\n          used\n          idea\n          article_id\n          name\n          reference {\n              type\n              link\n              id\n          }\n      }\n      freshIdeas {\n          used\n          idea\n          article_id\n          name\n          reference {\n              type\n              link\n              id\n          }\n      }\n      }\n      publish_data {\n      tiny_mce_data {\n          children\n          tag\n      }\n      published_date\n      published\n      platform\n      creation_date\n      }\n  }\n  trendingTopics\n  increment\n}",
+        query: "query FetchBlog($fetchBlogId: String!) {\n  fetchBlog(id: $fetchBlogId) {\n    _id\n    article_id\n    references {\n        url\n        source    \n    }\n    ideas {\n      blog_id\n      ideas {\n        used\n        idea\n        article_id\n        name\n        reference {\n            type\n            link\n            id\n        }\n      }\n      freshIdeas {\n        used\n        idea\n        article_id\n        name\n        reference {\n            type\n            link\n            id\n        }\n      }\n    }\n    publish_data {\n      tiny_mce_data {\n        children\n        tag\n      }\n      published_date\n      published\n      platform\n      creation_date\n    }\n  }\n  trendingTopics\n  increment\n}",
         variables: { fetchBlogId: bid },
       });
 
@@ -140,17 +141,21 @@ export default function dashboard({ query }) {
       };
 
       axios(config)
-        .then(function (response) {
-          const data = response.data.data;
+        .then(response => response.data.data)
+        .then(data => {
           console.log("fetchblog ", data);
+          
           setBlogData(data.fetchBlog);
+          setIdeas(data.fetchBlog.ideas.ideas);
+          setRefrence(data.fetchBlog.references);
+          setblog_id(data.fetchBlog._id);
+
           const aa = data.fetchBlog.publish_data.find(
             (pd) => pd.platform === "wordpress"
           ).tiny_mce_data;
-          setIdeas(data.fetchBlog.ideas.ideas);
-          setblog_id(data.fetchBlog._id);
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
+
           const queryParams = router.query;
           if (!queryParams.code) {
             localStorage.removeItem("bid");
@@ -174,6 +179,9 @@ export default function dashboard({ query }) {
         onCompleted: (data) => {
           console.log(data);
           setBlogData(data.generate);
+
+          setRefrence(data.generate.references);
+
 
           setPyResTime(data.generate.pythonRespTime);
           setNdResTime(data.generate.respTime);
@@ -235,17 +243,21 @@ export default function dashboard({ query }) {
             />
           </div>
           <DashboardInsights
-            ideas={ideas}
-            tags={tags}
             loading={loading}
+            ideas={ideas}
+
+            tags={tags}
+            setTags={setTags}
             setEditorText={setEditorText}
             setBlogData={setBlogData}
             setblog_id={setblog_id}
             setIdeas={setIdeas}
             blog_id={blog_id}
-            setTags={setTags}
             setPyResTime = {setPyResTime}
             setNdResTime = {setNdResTime}
+
+            reference={reference}
+            setRefrence={reference}
           />
         </div>
       </Layout>
