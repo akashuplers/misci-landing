@@ -216,11 +216,17 @@ export const blogResolvers = {
             console.log(article_ids)
             console.log(texts)
             try {
+                let uniqueTags: String[] = [];
+                tags.forEach((c) => {
+                    if (!uniqueTags.includes(c)) {
+                        uniqueTags.push(c);
+                    }
+                });
                 const {usedIdeasArr, updatedBlogs, description}: any = await blogGeneration({
                     db,
                     text: !articlesData.length ? keyword : texts,
                     regenerate: !articlesData.length ? false: true,
-                    imageUrl: imageUrl || "https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/plabeholder/1681740088024.jpeg",
+                    imageUrl: imageUrl || process.env.PLACEHOLDER_IMAGE,
                     title: keyword,
                     imageSrc
                 })
@@ -231,8 +237,8 @@ export const blogResolvers = {
                     keyword,
                     status: "draft",
                     description,
-                    tags,
-                    imageUrl: imageUrl ? imageUrl : "https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/plabeholder/1681740088024.jpeg",
+                    tags: uniqueTags,
+                    imageUrl: imageUrl ? imageUrl : process.env.PLACEHOLDER_IMAGE,
                     imageSrc,
                     date: getTimeStamp(),
                     updatedAt: getTimeStamp(),
@@ -422,6 +428,12 @@ export const blogResolvers = {
                         }
                     )
                 })
+                let uniqueTags: String[] = [];
+                tags.forEach((c) => {
+                    if (!uniqueTags.includes(c)) {
+                        uniqueTags.push(c);
+                    }
+                });
                 const freshIdeas = blogIdeas?.freshIdeas?.filter((ideaObj: any) => !(newIdeas.map((newIdea: any) => newIdea.idea)).includes(ideaObj.idea))
                 if(newIdeas.length) blogIdeas.ideas = newIdeas
                 console.log(newIdeas, "newIdeas")
@@ -434,7 +446,7 @@ export const blogResolvers = {
                         status: "draft",
                         description,
                         article_id: articleIds,
-                        tags,
+                        tags: uniqueTags,
                         imageUrl: blog.imageUrl ? blog.imageUrl : imageUrl,
                         imageSrc,
                         updatedAt: getTimeStamp()
@@ -617,6 +629,12 @@ export const blogResolvers = {
                                 imageUrl,
                                 imageSrc
                             })
+                            let uniqueTags: String[] = [];
+                            tags.forEach((c) => {
+                                if (!uniqueTags.includes(c)) {
+                                    uniqueTags.push(c);
+                                }
+                            });
                             const finalBlogObj = {
                                 article_id: article_ids,
                                 publish_data: updatedBlogs,
@@ -624,8 +642,8 @@ export const blogResolvers = {
                                 keyword,
                                 status: "ir_generated",
                                 description,
-                                imageUrl: imageUrl ? imageUrl : "https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/plabeholder/1681740088024.jpeg",
-                                tags,
+                                imageUrl: imageUrl ? imageUrl : process.env.PLACEHOLDER_IMAGE,
+                                tags: uniqueTags,
                                 imageSrc,
                                 date: getTimeStamp(),
                                 updatedAt: getTimeStamp(),

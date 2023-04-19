@@ -405,5 +405,16 @@ export const fetchArticleUrls = async ({
             })
         }
     }
-    return urls
+    let uniqueUrls : {
+        url: string
+        source: string
+    }[] = [];
+    urls.forEach((c) => {
+        const dupe = uniqueUrls.find((data: {
+            url: string
+            source: string
+        }) => data.source === c.source)
+        if(!dupe) uniqueUrls.push(c)
+    });
+    return uniqueUrls
 }
