@@ -111,7 +111,6 @@ export default function DashboardInsights({
   function handleRefClick(e) {
     e.target.classList.toggle("active");
     const refCount = e.target.firstElementChild;
-    refCount?.classList.toggle("!hidden")
 
 
     /* Adding or removing the keywords to an array */
@@ -125,7 +124,11 @@ export default function DashboardInsights({
       setFilteredArray(prev => [...prev, { filterText, criteria: "ref" }]) 
       setRefClickCount(prev => prev + 1);
     }
-    refCount.innerText = refClickCount
+
+    if(refC != null){
+      refCount.classList.toggle("!hidden")
+      refCount.innerText = refClickCount
+    }
   }
 
   // Adds the matched idea into notUniqueFilteredIdeas
