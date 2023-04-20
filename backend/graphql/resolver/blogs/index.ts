@@ -42,14 +42,20 @@ export const blogResolvers = {
                     url: string
                     source: string
                 }[] = []
+                let refUrlsFreshIdeas: {
+                    url: string
+                    source: string
+                }[] = []
                 let articleIds = [...blogDetails.article_id]
-                blogIdeas?.freshIdeas?.forEach((idea: any) => idea.article_id ? articleIds.push(idea.article_id) : false)
                 if(blogDetails) refUrls = await fetchArticleUrls({db, articleId: articleIds})
+                let freshIdeasArticle: string[] = []
+                blogIdeas?.freshIdeas?.forEach((idea: any) => idea.article_id ? freshIdeasArticle.push(idea.article_id) : false)
+                if(blogDetails) refUrlsFreshIdeas = await fetchArticleUrls({db, articleId: freshIdeasArticle})
                 return {...blogDetails, ideas: {
                     ...blogIdeas,
                     ideas: updatedIdeas,
                     freshIdeas: updatedFreshIdeas?.length ? updatedFreshIdeas : null
-                }, references: refUrls}
+                }, references: refUrls, freshIdeasReferences:refUrlsFreshIdeas}
             }catch(e) {
                 console.log(e)
             }
@@ -494,12 +500,18 @@ export const blogResolvers = {
                     url: string
                     source: string
                 }[] = []
+                let refUrlsFreshIdeas: {
+                    url: string
+                    source: string
+                }[] = []
                 let articleIdsFromAllIdeas = [...blog.article_id]
-                blogIdeas?.freshIdeas?.forEach((idea: any) => idea.article_id ? articleIds.push(idea.article_id) : false)
                 if(blog) refUrls = await fetchArticleUrls({db, articleId: articleIdsFromAllIdeas})
+                let freshIdeasArticle: string[] = []
+                blogIdeas?.freshIdeas?.forEach((idea: any) => idea.article_id ? freshIdeasArticle.push(idea.article_id) : false)
+                if(blogDetails) refUrlsFreshIdeas = await fetchArticleUrls({db, articleId: freshIdeasArticle})
                 let endRequest = new Date()
                 let respTime = diff_minutes(endRequest, startRequest)
-                return {...blogDetails, ideas: blogIdeasDetails, references: refUrls, respTime}
+                return {...blogDetails, ideas: blogIdeasDetails, references: refUrls, respTime, freshIdeasReferences:refUrlsFreshIdeas}
             } catch(e: any) {
                 throw e
             }
