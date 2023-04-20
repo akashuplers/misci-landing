@@ -174,7 +174,11 @@ export default function DashboardInsights({
     );
 
     // Create a new array from the Set object
-    const uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse);
+    let uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse)
+    uniqueFilteredArray = uniqueFilteredArray.sort((a,b) =>  a.reference.link.localeCompare(b.reference.link))
+    console.log("----sex----");
+    console.log(uniqueFilteredArray);
+    console.log("----sex----");
 
     // Add a new property to each idea calles citation number.
     var prevLink = uniqueFilteredArray[0]?.reference.link;

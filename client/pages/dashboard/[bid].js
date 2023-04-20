@@ -124,13 +124,15 @@ export default function Post() {
               blogData={blogData}
               blog_id={bid}
               isPublished={isPublished}
+              loading={loading}
+
             />
           </div>
           <DashboardInsights
             ideas={ideas}
             blog_id={bid}
             tags={tags}
-            // loading={loading}
+            loading={loading}
             setEditorText={setEditorText}
             setBlogData={setBlogData}
             setIdeas={setIdeas}

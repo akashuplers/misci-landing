@@ -9,6 +9,10 @@ export const getBlogbyId = gql`
         url
         source    
     }
+    freshIdeasReferences {
+        url
+        source    
+    }
     tags
     ideas {
       blog_id
