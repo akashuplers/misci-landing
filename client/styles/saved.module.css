@@ -37,17 +37,18 @@
 .statusButton{
     color: #00d1ff;
     top: 3%;
-    right: 3%;
+    right: 2%;
 }
 
 .deleteButton{
     color: #ff2a00;
     top: 3%;
-    left: 3%;
+    left: 2%;
 }
 
 .dateTag{
-    
+    font-size: 0.85em;
+    color: grey;
 }
 
 @media (max-width : 1024px) {

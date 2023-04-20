@@ -109,8 +109,9 @@ export default function DashboardInsights({
 
   const [refClickCount, setRefClickCount] = useState(1);
   function handleRefClick(e) {
+    setIdeaType("used")
     e.target.classList.toggle("active");
-    const refCount = e.target.firstElementChild;
+    //const refCount = e.target.firstElementChild;
 
 
     /* Adding or removing the keywords to an array */
@@ -125,11 +126,24 @@ export default function DashboardInsights({
       setRefClickCount(prev => prev + 1);
     }
 
-    if(refC != null){
-      refCount.classList.toggle("!hidden")
-      refCount.innerText = refClickCount
-    }
+    // if(refCount != null){
+    //   refCount.classList.toggle("!hidden")
+    //   refCount.innerText = refClickCount
+    // }
   }
+
+  useEffect(()=>{
+    const fresh = document.querySelector(".idea-button.fresh");
+    const used = document.querySelector(".idea-button.used")
+
+    if(ideaType === "used"){
+      fresh.classList.remove("active");
+      used.classList.add("active");
+    }else if(ideaType === "fresh"){
+      fresh.classList.add("active");
+      used.classList.remove("active");
+    }
+  },[ideaType])
 
   // Adds the matched idea into notUniqueFilteredIdeas
   useEffect(() => {
@@ -469,9 +483,7 @@ export default function DashboardInsights({
             className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs"
             onClick={(e) => {
               setIdeaType("used");
-              const sib = e.target.nextElementSibling;
-              sib?.classList.remove("active");
-              e.target.classList.add("active");
+              
             }}
           >
             Used Idea(s)
@@ -481,9 +493,7 @@ export default function DashboardInsights({
               className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs"
               onClick={(e) => {
                 setIdeaType("fresh");
-                const sib = e.target.previousElementSibling;
-                sib?.classList.remove("active");
-                e.target.classList.add("active");
+                
               }}
             >
               <img
