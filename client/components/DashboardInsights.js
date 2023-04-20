@@ -40,7 +40,6 @@ export default function DashboardInsights({
   setPyResTime,
   setNdResTime,
 }) {
-  console.log(freshIdeasReferences,"freshhhhh")
   const [enabled, setEnabled] = useState(false);
 
   const [formInput, setformInput] = useState("");
@@ -117,35 +116,32 @@ export default function DashboardInsights({
     );
   }
 
-  const [refClickCount, setRefClickCount] = useState(1);
   function handleRefClick(e) {
-    setIdeaType("used");
     e.target.classList.toggle("active");
     //const refCount = e.target.firstElementChild;
 
     /* Adding or removing the keywords to an array */
     const filterText = e.target.dataset.url;
 
-    const valueExists = filteredArray.find(
-      (el) => Object.values(el).indexOf(filterText) > -1
-    );
+    const valueExists = filteredArray.find((el) => Object.values(el).indexOf(filterText) > -1);
     if (valueExists) {
       setFilteredArray((prev) => [...prev.filter((el) => el.filterText !== filterText)]);
-      setRefClickCount((prev) => prev - 1);
     } else {
       setFilteredArray((prev) => [...prev, { filterText, criteria: "ref" }]);
-      setRefClickCount((prev) => prev + 1);
     }
-
-    // if(refCount != null){
-    //   refCount.classList.toggle("!hidden")
-    //   refCount.innerText = refClickCount
-    // }
   }
 
   useEffect(() => {
     const fresh = document.querySelector(".idea-button.fresh");
     const used = document.querySelector(".idea-button.used");
+
+    const tags = document.querySelectorAll(".tag-button.cta");
+    const refButtons = document.querySelectorAll(".ref-button.cta");
+
+    tags?.forEach(tag => tag?.classList.remove("active"));
+    refButtons?.forEach(btn => btn?.classList.remove("active"));
+
+    setFilteredArray([]);
 
     if (ideaType === "used") {
       fresh?.classList.remove("active");
@@ -159,19 +155,36 @@ export default function DashboardInsights({
   // Adds the matched idea into notUniqueFilteredIdeas
   useEffect(() => {
     setFilteredIdeas([]);
+    setFreshFilteredIdeas([]);
+
     setNotUniqueFilteredIdeas([]);
 
-    filteredArray.forEach((filterObject) =>
-      ideas.forEach((idea) => {
-        if (filterObject?.criteria === "tag") {
-          idea?.idea?.indexOf(filterObject?.filterText) >= 0 &&
-            setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-        } else if (filterObject?.criteria === "ref") {
-          idea?.reference?.link === filterObject?.filterText &&
-            setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-        }
-      })
-    );
+    if(ideaType === "used"){
+      filteredArray.forEach((filterObject) =>
+        ideas.forEach((idea) => {
+          if (filterObject?.criteria === "tag") {
+            idea?.idea?.indexOf(filterObject?.filterText) >= 0 &&
+              setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
+          } else if (filterObject?.criteria === "ref") {
+            idea?.reference?.link === filterObject?.filterText &&
+              setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
+          }
+        })
+      );
+    }else if(ideaType === "fresh"){
+      filteredArray.forEach((filterObject) =>
+        freshIdeas.forEach((idea) => {
+          if (filterObject?.criteria === "tag") {
+            idea?.idea?.indexOf(filterObject?.filterText) >= 0 &&
+              setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
+          } else if (filterObject?.criteria === "ref") {
+            idea?.reference?.link === filterObject?.filterText &&
+              setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
+          }
+        })
+      );
+    }
+
   }, [filteredArray]);
 
   // We create a set so that the values are unique, and multiple ideas are not added
@@ -195,7 +208,11 @@ export default function DashboardInsights({
       prevLink = idea?.reference?.link;
       idea.citationNumber = citationNumber;
 
-      setFilteredIdeas((prev) => [...prev, idea]);
+      if(ideaType === "used"){
+        setFilteredIdeas((prev) => [...prev, idea]);
+      }else if(ideaType === "fresh"){
+        setFreshFilteredIdeas((prev) => [...prev, idea]);
+      }
     });
   }, [notUniquefilteredIdeas]);
 
@@ -205,10 +222,6 @@ export default function DashboardInsights({
   useEffect(() => {
     console.log(filteredArray);
     console.log(filteredIdeas);
-
-    /* Add the logic of numbers appearing on the sources */
-    filteredIdeas.forEach(idea => console.log(new URL(idea?.reference?.link).hostname))
-
   }, [filteredIdeas]);
 
   function handleRegenerate() {
@@ -399,12 +412,21 @@ export default function DashboardInsights({
   function handleCitationFunction(link) {
     let filtered;
     // console.log(link)
-    reference.forEach((el,index) => {
-      // console.log(el)
-      if(el.url === link){
-        filtered = index;
-      }
-    })
+    if(ideaType === "used"){
+      reference.forEach((el,index) => {
+        // console.log(el)
+        if(el.url === link){
+          filtered = index;
+        }
+      })
+    }else if(ideaType === "fresh"){
+      freshIdeasReferences.forEach((el,index) => {
+        // console.log(el)
+        if(el.url === link){
+          filtered = index;
+        }
+      })
+    }
 
     if(filtered === 0 || filtered) {
       return filtered + 1;
@@ -515,7 +537,7 @@ export default function DashboardInsights({
                 return (
                   <div
                     className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
-                    //onClick={handleRefClick}
+                    onClick={handleRefClick}
                     data-url={ref.url}
                   >
                     {ref.source}
