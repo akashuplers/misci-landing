@@ -20,7 +20,8 @@ export default function Post() {
   const [pfmodal, setPFModal] = useState(false);
   const router = useRouter();
   const { bid, isPublished } = router.query;
-  const [reference, setRefrence] = useState([]);
+  const [reference, setReference] = useState([]);
+  const [freshIdeasReferences, setFreshIdeasReferences] = useState([])
 
 
   // console.log("isPublished", isPublished);
@@ -32,6 +33,7 @@ export default function Post() {
   });
   // const [isPublished, setIsPublished] = useState(false);
   const [ideas, setIdeas] = useState([]);
+  const [freshIdeas, setFreshIdeas] = useState([]);
   const [editorText, setEditorText] = useState([]);
   const [tags, setTags] = useState([]);
   const [blogData, setBlogData] = useState([]);
@@ -42,11 +44,13 @@ export default function Post() {
   useEffect(() => {
     if (data == null) return;
 
-    console.log(data);
+    console.log("fetchBlog ",data);
     setBlogData(data.fetchBlog);
     setIdeas(data.fetchBlog.ideas.ideas);
     setTags(data.fetchBlog.tags);
-    setRefrence(data.fetchBlog.references)
+    setFreshIdeasReferences(data.fetchBlog.freshIdeasReferences)
+    setReference(data.fetchBlog.references)
+    setFreshIdeas(data.fetchBlog.ideas.freshIdeas)
     // setIsPublished(data?.fetchBlog?.publish_data[2]?.published);
 
     // const aa = data.generate.publish_data[2].tiny_mce_data;
@@ -103,7 +107,7 @@ export default function Post() {
               getToken={getToken}
             />
           )}
-          <div style={{
+          {/* <div style={{
             zIndex: '10',
             position: 'absolute',
             background: 'white',
@@ -116,7 +120,7 @@ export default function Post() {
           }}>
             <span>Python Response Time : {(pyResTime*60).toFixed(2) ?? ""}sec</span><br/>
             <span>Node Response Time : {(ndResTime*60).toFixed(2) ?? ""}sec</span>
-          </div>
+          </div> */}
           <div className="w-[65%] relative">
             <TinyMCEEditor
               isAuthenticated={true}
@@ -124,25 +128,32 @@ export default function Post() {
               blogData={blogData}
               blog_id={bid}
               isPublished={isPublished}
+              loading={loading}
+
             />
           </div>
           <DashboardInsights
             ideas={ideas}
-            blog_id={bid}
+            setIdeas={setIdeas}
+            
+            freshIdeas={freshIdeas}
+
             tags={tags}
-            // loading={loading}
+            setTags={setTags}
+
+            freshIdeasReferences = {freshIdeasReferences}
+            reference={reference}
+            setReference={setReference}
+
+            blog_id={bid}
+            
+            loading={loading}
             setEditorText={setEditorText}
             setBlogData={setBlogData}
-            setIdeas={setIdeas}
-            setTags={setTags}
             // tags={data?.fetchBlog?.tags}
 
             setPyResTime = {setPyResTime}
             setNdResTime = {setNdResTime}
-
-            
-            reference={reference}
-            setRefrence={reference}
           />
         </div>
       </Layout>
