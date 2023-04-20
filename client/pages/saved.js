@@ -114,13 +114,12 @@ export default function Saved() {
             {data?.getAllBlogs.blogs.map((blog, index) => (
               <>
                 <li key={blog._id} className="relative">
-                  <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
+                  <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 relative">
                     <img
                       src={blog.image}
                       alt={blog.title}
                       className="pointer-events-none object-cover h-[185px] w-[280px]"
                     />
-
                     <Link href={"/dashboard/" + blog._id}>
                       <button
                         type="button"
@@ -181,7 +180,14 @@ export default function Saved() {
                       </button>
                     </Link>
                   </div>
-                  <p className="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">
+                  <button className={`${styles.dateTag} mt-2`}>
+                    {new Date(blog?.date * 1000).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </button>
+                  <p className="pointer-events-none mt-1 block truncate text-sm font-medium text-gray-900">
                     {blog?.title}
                   </p>
                   <p className="pointer-events-none block text-sm font-medium text-gray-500">
