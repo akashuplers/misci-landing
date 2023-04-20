@@ -1,4 +1,4 @@
-export const htmlToJson = (htmlString) => {
+export const htmlToJson = (htmlString, imageURL) => {
   const parser = new DOMParser();
   const htmlDoc = parser.parseFromString(htmlString, "text/html");
   function nodeToJson(node) {
@@ -9,7 +9,15 @@ export const htmlToJson = (htmlString) => {
     };
     for (let i = 0; i < node.attributes.length; i++) {
       const attribute = node.attributes[i];
-      json.attributes[attribute.name] = attribute.value;
+      if (node.tagName === "A") {
+        if (attribute.name === "href" && imageURL) {
+          json.attributes[attribute.name] = "#";
+        } else {
+          json.attributes[attribute.name] = attribute.value;
+        }
+      } else {
+        json.attributes[attribute.name] = attribute.value;
+      }
     }
     for (let i = 0; i < node.childNodes.length; i++) {
       const childNode = node.childNodes[i];
@@ -63,4 +71,3 @@ export function logout(item) {
     window.location.href = "/";
   }
 }
-

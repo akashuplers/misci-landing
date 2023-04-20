@@ -91,8 +91,10 @@ export default function Sidebar() {
   });
   useEffect(() => {
     const regex = /^\/dashboard\/[6|4][a-zA-Z0-9]*$/;
-
-    if (window.location.pathname === "/saved") {
+    const { bid, isPublished } = router.query;
+    if (isPublished) {
+      setTitle("Published Blog");
+    } else if (window.location.pathname === "/saved") {
       setTitle("Saved Blog(s)");
     } else if (window.location.pathname === "/dashboard") {
       setTitle("Generated Blog(s)");
