@@ -453,7 +453,7 @@ export const blogResolvers = {
                         description,
                         article_id: articleIds,
                         tags: uniqueTags,
-                        imageUrl: blog.imageUrl ? blog.imageUrl : imageUrl,
+                        imageUrl: imageUrl ? imageUrl : blog.imageUrl,
                         imageSrc,
                         updatedAt: getTimeStamp()
                     }
