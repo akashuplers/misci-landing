@@ -190,8 +190,8 @@ export const blogResolvers = {
                                 imageSrc = article._source?.orig_url
                             } else {
                                 if(index === (articleIds.length - 1) && !imageUrl) {
-                                    imageUrl = article.proImageLink
-                                    imageSrc = article._source?.orig_url
+                                    imageUrl = (process.env.PLACEHOLDER_IMAGE || article.proImageLink)
+                                    imageSrc = null
                                 }
                             }
                             keyword = article.keyword
@@ -353,8 +353,8 @@ export const blogResolvers = {
                             imageSrc = article._source?.orig_url
                         } else {
                             if(index === (articleIds.length - 1) && !imageUrl) {
-                                imageUrl = article.proImageLink
-                                imageSrc = article._source?.orig_url
+                                imageUrl = (process.env.PLACEHOLDER_IMAGE || article.proImageLink)
+                                imageSrc = null
                             }
                         }
                         const name = article._source?.source?.name
@@ -591,8 +591,8 @@ export const blogResolvers = {
                                         imageSrc = article._source?.orig_url
                                     } else {
                                         if(index === (articles.length - 1) && !imageUrl) {
-                                            imageUrl = article.proImageLink
-                                            imageSrc = article._source?.orig_url
+                                            imageUrl = (process.env.PLACEHOLDER_IMAGE || article.proImageLink)
+                                            imageSrc = null
                                         }
                                     }
                                     keyword = article.keyword

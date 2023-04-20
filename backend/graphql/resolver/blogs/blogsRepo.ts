@@ -158,7 +158,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                                     "style": "font-size: 8pt;"
                                                                 },
                                                                 "children": [
-                                                                    "Image Source"
+                                                                    imageSrc ? "Image Source" : "A placeholder image has been added, you can upload your own image."
                                                                 ]
                                                             }
                                                         ]
