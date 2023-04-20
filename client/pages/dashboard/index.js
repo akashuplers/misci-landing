@@ -28,6 +28,7 @@ export default function dashboard({ query }) {
   const router = useRouter();
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const [ideas, setIdeas] = useState([]);
+  const [freshIdeas, setFreshIdeas] = useState([]);
   const [tags, setTags] = useState([]);
   const [blog_id, setblog_id] = useState("");
   const [editorText, setEditorText] = useState("");
@@ -35,7 +36,8 @@ export default function dashboard({ query }) {
   const [pyResTime, setPyResTime] = useState(null);
   const [ndResTime, setNdResTime] = useState(null);
 
-  const [reference, setRefrence] = useState([]);
+  const [reference, setReference] = useState([]);
+  const [freshIdeasReferences, setFreshIdeasReferences] = useState([])
 
   const keyword = useStore((state) => state.keyword);
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
@@ -147,7 +149,10 @@ export default function dashboard({ query }) {
 
           setBlogData(data.fetchBlog);
           setIdeas(data.fetchBlog.ideas.ideas);
-          setRefrence(data.fetchBlog.references);
+          setTags(data.fetchBlog.tags);
+          setFreshIdeasReferences(data.fetchBlog.freshIdeasReferences)
+          setReference(data.fetchBlog.references);
+          setFreshIdeas(data.fetchBlog.idea.freshIdeas);
           setblog_id(data.fetchBlog._id);
 
           const aa = data.fetchBlog.publish_data.find(
@@ -180,7 +185,7 @@ export default function dashboard({ query }) {
           console.log(data);
           setBlogData(data.generate);
 
-          setRefrence(data.generate.references);
+          setReference(data.generate.references);
 
           setPyResTime(data.generate.pythonRespTime);
           setNdResTime(data.generate.respTime);
@@ -212,6 +217,7 @@ export default function dashboard({ query }) {
     console.log(pyResTime, ndResTime);
     console.log("===restime===");
   }, [pyResTime, ndResTime]);
+
 
   return (
     <>
@@ -249,19 +255,27 @@ export default function dashboard({ query }) {
             />
           </div>
           <DashboardInsights
-            loading={loading}
             ideas={ideas}
+            setIdeas={setIdeas}
+
+
             tags={tags}
             setTags={setTags}
+
+            blog_id={blog_id}
+            setblog_id={setblog_id}
+
+            loading={loading}
+            freshIdeas={freshIdeas}
             setEditorText={setEditorText}
             setBlogData={setBlogData}
-            setblog_id={setblog_id}
-            setIdeas={setIdeas}
-            blog_id={blog_id}
+
             setPyResTime={setPyResTime}
             setNdResTime={setNdResTime}
+
+            freshIdeasReferences = {freshIdeasReferences}
             reference={reference}
-            setRefrence={reference}
+            setReference={setReference}
           />
         </div>
       </Layout>

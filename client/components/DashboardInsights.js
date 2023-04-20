@@ -22,14 +22,17 @@ export default function DashboardInsights({
   ideas,
   setIdeas,
 
+  freshIdeas:oldFreshIdeas,
+
   blog_id,
   setblog_id,
 
   tags,
   setTags,
 
+  freshIdeasReferences,
   reference,
-  setRefrences,
+  setReferences,
 
   setBlogData,
   setEditorText,
@@ -37,6 +40,7 @@ export default function DashboardInsights({
   setPyResTime,
   setNdResTime,
 }) {
+  console.log(freshIdeasReferences,"freshhhhh")
   const [enabled, setEnabled] = useState(false);
 
   const [formInput, setformInput] = useState("");
@@ -47,7 +51,11 @@ export default function DashboardInsights({
   const [fileValid, setFileValid] = useState(false);
 
   const [ideaType, setIdeaType] = useState("used");
-  const [freshIdea, setFreshIdea] = useState([]);
+  const [freshIdeas, setFreshIdeas] = useState([]);
+
+  useEffect(() => {
+    setFreshIdeas(oldFreshIdeas)
+  },[oldFreshIdeas])
 
   const [newIdeaLoad, setNewIdeaLoad] = useState(false);
 
@@ -268,7 +276,7 @@ export default function DashboardInsights({
         .finally(() => {
           setIdeaType("used");
           setRegenSelected([]);
-          setFreshIdea([]);
+          setFreshIdeas([]);
         });
     }
   }
@@ -337,7 +345,7 @@ export default function DashboardInsights({
       .then((response) => {
         setIdeaType("fresh");
         console.log(response.data);
-        setFreshIdea(response.data.data);
+        setFreshIdeas(response.data.data);
 
         setPyResTime(response.data.pythonRespTime);
         setNdResTime(response.data.respTime);
@@ -472,7 +480,8 @@ export default function DashboardInsights({
               <p className="pt-[0.65em] font-semibold">Sources</p>
             </div>
             <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll pt-[0.65em]">
-              {reference?.map((ref,index) => {
+              {ideaType === "used" ? 
+              reference?.map((ref,index) => {
                 return (
                   <div
                     className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
@@ -500,7 +509,37 @@ export default function DashboardInsights({
                     >{index + 1}</span>
                   </div>
                 );
-              })}
+              }) : 
+              freshIdeasReferences?.map((ref,index) => {
+                console.log(ref)
+                return (
+                  <div
+                    className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
+                    //onClick={handleRefClick}
+                    data-url={ref.url}
+                  >
+                    {ref.source}
+                    <span
+                      className=""
+                      style={{
+                        position: "absolute",
+                        bottom: "70%",
+                        left: "92%",
+                        backgroundColor: "#4a3afe",
+                        color: "white",
+                        width: "14px",
+                        height: "14px",
+                        fontSize: "0.65rem",
+                        borderRadius: "100px",
+                        display: "flex",
+                        justifyContent: "center",
+                        zIndex: "100",
+                        alignItems: "center",
+                      }}
+                    >{index + 1}</span>
+                  </div>
+              )})
+              }
             </div>
           </div>
         )}
@@ -513,7 +552,7 @@ export default function DashboardInsights({
           >
             Used Idea(s)
           </button>
-          {isAuthenticated && freshIdea.length > 0 && (
+          {isAuthenticated && freshIdeas.length > 0 && (
             <button
               className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs"
               onClick={(e) => {
@@ -816,7 +855,7 @@ export default function DashboardInsights({
                 })
             : ""}
           {ideaType === "fresh"
-            ? freshIdea?.map((idea, index) => {
+            ? freshIdeas?.map((idea, index) => {
                 return (
                   <div className="flex pb-3" key={index}>
                     <div className="flex justify-between gap-5 w-full">
@@ -879,12 +918,12 @@ export default function DashboardInsights({
                         className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                         onClick={(e) => {
                           console.log(idea);
-                          const updatedIdeas = freshIdea.map((el, elIndex) =>
+                          const updatedIdeas = freshIdeas.map((el, elIndex) =>
                             elIndex === index
                               ? { ...el, used: el.used === 1 ? 0 : 1 }
                               : el
                           );
-                          setFreshIdea(updatedIdeas);
+                          setFreshIdeas(updatedIdeas);
                           handleInputClick(idea?.idea, idea?.article_id, e);
                         }}
                         checked={idea?.used}
