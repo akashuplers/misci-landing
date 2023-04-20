@@ -151,6 +151,15 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                                     "height": "331"
                                                                 },
                                                                 "children": []
+                                                            },
+                                                            {
+                                                                "tag": "SPAN",
+                                                                "attributes": {
+                                                                    "style": "font-size: 8pt;"
+                                                                },
+                                                                "children": [
+                                                                    "Image Source"
+                                                                ]
                                                             }
                                                         ]
                                                     }
