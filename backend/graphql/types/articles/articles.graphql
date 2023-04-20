@@ -32,6 +32,7 @@ type Blog {
     ideas: BlogIdeas
     tags: [String]
     references: [UrlObj]
+    freshIdeasReferences: [UrlObj]
     pythonRespTime: Float
     respTime: Float
     imageSrc: String
