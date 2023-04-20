@@ -37,6 +37,7 @@ export default function TinyMCEEditor({
   blogData: dataIncoming,
   blogData,
   isPublished,
+  ref,
 }) {
   const [updatedText, setEditorText] = useState(editorText);
   const [saveLoad, setSaveLoad] = useState(false);
@@ -49,7 +50,7 @@ export default function TinyMCEEditor({
   const [text, setText] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const [option, setOption] = useState("blog");
-  const [imageURL, setImageURL] = useState("");
+  const [imageURL, setImageURL] = useState();
   const [isalert, setAlert] = useState(false);
   const [load, setLoad] = useState(false);
 
@@ -93,7 +94,7 @@ export default function TinyMCEEditor({
 
       console.log("token", getToken);
 
-      const jsonDoc = htmlToJson(updatedText).children;
+      const jsonDoc = htmlToJson(updatedText, imageURL).children;
       const formatedJSON = { children: [...jsonDoc] };
       UpdateBlog({
         variables: {
@@ -102,6 +103,7 @@ export default function TinyMCEEditor({
             blog_id: blog_id,
             platform: option === "blog" ? "wordpress" : option,
             imageUrl: imageURL,
+            imageSrc: imageURL ? null : imageURL,
           },
         },
         context: {
@@ -121,7 +123,7 @@ export default function TinyMCEEditor({
           //console.log(err);
         })
         .finally(() => {
-          toast.success("Saved!!", {
+          toast.success("Updated & Saved!!", {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,

@@ -128,7 +128,8 @@ export default function dashboard({ query }) {
       };
 
       const graphql = JSON.stringify({
-        query: "query FetchBlog($fetchBlogId: String!) {\n  fetchBlog(id: $fetchBlogId) {\n    _id\n    article_id\n    references {\n        url\n        source    \n    }\n    ideas {\n      blog_id\n      ideas {\n        used\n        idea\n        article_id\n        name\n        reference {\n            type\n            link\n            id\n        }\n      }\n      freshIdeas {\n        used\n        idea\n        article_id\n        name\n        reference {\n            type\n            link\n            id\n        }\n      }\n    }\n    publish_data {\n      tiny_mce_data {\n        children\n        tag\n      }\n      published_date\n      published\n      platform\n      creation_date\n    }\n  }\n  trendingTopics\n  increment\n}",
+        query:
+          "query FetchBlog($fetchBlogId: String!) {\n  fetchBlog(id: $fetchBlogId) {\n    _id\n    article_id\n    references {\n        url\n        source    \n    }\n    ideas {\n      blog_id\n      ideas {\n        used\n        idea\n        article_id\n        name\n        reference {\n            type\n            link\n            id\n        }\n      }\n      freshIdeas {\n        used\n        idea\n        article_id\n        name\n        reference {\n            type\n            link\n            id\n        }\n      }\n    }\n    publish_data {\n      tiny_mce_data {\n        children\n        tag\n      }\n      published_date\n      published\n      platform\n      creation_date\n    }\n  }\n  trendingTopics\n  increment\n}",
         variables: { fetchBlogId: bid },
       });
 
@@ -141,10 +142,10 @@ export default function dashboard({ query }) {
       };
 
       axios(config)
-        .then(response => response.data.data)
-        .then(data => {
+        .then((response) => response.data.data)
+        .then((data) => {
           console.log("fetchblog ", data);
-          
+
           setBlogData(data.fetchBlog);
           setIdeas(data.fetchBlog.ideas.ideas);
           setRefrence(data.fetchBlog.references);
@@ -182,7 +183,6 @@ export default function dashboard({ query }) {
 
           setRefrence(data.generate.references);
 
-
           setPyResTime(data.generate.pythonRespTime);
           setNdResTime(data.generate.respTime);
 
@@ -209,28 +209,35 @@ export default function dashboard({ query }) {
   }, []);
 
   useEffect(() => {
-    console.log("===restime===")
-    console.log(pyResTime, ndResTime)
-    console.log("===restime===")
-  },[pyResTime, ndResTime])
+    console.log("===restime===");
+    console.log(pyResTime, ndResTime);
+    console.log("===restime===");
+  }, [pyResTime, ndResTime]);
 
   return (
     <>
       <Layout>
         <div className="flex divide-x">
-          <div style={{
-            zIndex: '10',
-            position: 'absolute',
-            background: 'white',
-            border: '1px solid black',
-            width: '200px',
-            top: '2%',
-            left: '50%',
-            transform: 'translateX(-30%)',
-            fontSize:'0.75rem'
-          }}>
-            <span>Python Response Time : {(pyResTime*60).toFixed(2) ?? ""}sec</span><br/>
-            <span>Node Response Time : {(ndResTime*60).toFixed(2) ?? ""}sec</span>
+          <div
+            style={{
+              zIndex: "10",
+              position: "absolute",
+              background: "white",
+              border: "1px solid black",
+              width: "200px",
+              top: "2%",
+              left: "50%",
+              transform: "translateX(-30%)",
+              fontSize: "0.75rem",
+            }}
+          >
+            <span>
+              Python Response Time : {(pyResTime * 60).toFixed(2) ?? ""}sec
+            </span>
+            <br />
+            <span>
+              Node Response Time : {(ndResTime * 60).toFixed(2) ?? ""}sec
+            </span>
           </div>
           <div className="w-[65%] relative">
             <TinyMCEEditor
@@ -245,7 +252,6 @@ export default function dashboard({ query }) {
           <DashboardInsights
             loading={loading}
             ideas={ideas}
-
             tags={tags}
             setTags={setTags}
             setEditorText={setEditorText}
@@ -253,9 +259,8 @@ export default function dashboard({ query }) {
             setblog_id={setblog_id}
             setIdeas={setIdeas}
             blog_id={blog_id}
-            setPyResTime = {setPyResTime}
-            setNdResTime = {setNdResTime}
-
+            setPyResTime={setPyResTime}
+            setNdResTime={setNdResTime}
             reference={reference}
             setRefrence={reference}
           />

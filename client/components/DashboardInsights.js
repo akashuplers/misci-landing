@@ -14,6 +14,7 @@ import useStore from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import axios from "axios";
 import Link from "next/link";
+import { handleSave } from "./TinyMCEEditor";
 
 export default function DashboardInsights({
   loading,
@@ -352,7 +353,7 @@ export default function DashboardInsights({
         setType={setAuthneticationModalType}
         modalIsOpen={authenticationModalOpen}
         setModalIsOpen={setAuthenticationModalOpen}
-        handleSave={() => (window.location = "/")}
+        handleSave={() => (window.location = "/dashboard/" + blog_id)}
         bid={blog_id}
       />
       <div className="w-[35%] text-xs px-2" style={{ width: "40%" }}>
@@ -625,7 +626,7 @@ export default function DashboardInsights({
                                 target="_blank"
                                 style={{ color: "blue" }}
                               >
-                                Link 
+                                Link
                               </a>
                             ) : (
                               <Link
@@ -708,7 +709,7 @@ export default function DashboardInsights({
                                 target="_blank"
                                 style={{ color: "blue" }}
                               >
-                                Link 
+                                Link
                               </a>
                             ) : (
                               <Link
@@ -786,7 +787,7 @@ export default function DashboardInsights({
                               target="_blank"
                               style={{ color: "blue" }}
                             >
-                              Link 
+                              Link
                             </a>
                           ) : (
                             <Link
