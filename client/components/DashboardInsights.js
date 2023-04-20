@@ -121,9 +121,7 @@ export default function DashboardInsights({
       (el) => Object.values(el).indexOf(filterText) > -1
     );
     if (valueExists) {
-      setFilteredArray((prev) => [
-        ...prev.filter((el) => el.filterText !== filterText),
-      ]);
+      setFilteredArray((prev) => [...prev.filter((el) => el.filterText !== filterText)]);
       setRefClickCount((prev) => prev - 1);
     } else {
       setFilteredArray((prev) => [...prev, { filterText, criteria: "ref" }]);

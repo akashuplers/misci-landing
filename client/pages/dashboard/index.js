@@ -218,7 +218,7 @@ export default function dashboard({ query }) {
     <>
       <Layout>
         <div className="flex divide-x mb-6">
-          <div
+          {/* <div
             style={{
               zIndex: "10",
               position: "absolute",
@@ -238,7 +238,7 @@ export default function dashboard({ query }) {
             <span>
               Node Response Time : {(ndResTime * 60).toFixed(2) ?? ""}sec
             </span>
-          </div>
+          </div> */}
           <div className="w-[65%] relative">
             <TinyMCEEditor
               topic={topic}
