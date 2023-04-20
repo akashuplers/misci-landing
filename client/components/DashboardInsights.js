@@ -22,14 +22,17 @@ export default function DashboardInsights({
   ideas,
   setIdeas,
 
+  freshIdeas:oldFreshIdeas,
+
   blog_id,
   setblog_id,
 
   tags,
   setTags,
 
+  freshIdeasReferences,
   reference,
-  setRefrences,
+  setReferences,
 
   setBlogData,
   setEditorText,
@@ -37,6 +40,7 @@ export default function DashboardInsights({
   setPyResTime,
   setNdResTime,
 }) {
+  console.log(freshIdeasReferences,"freshhhhh")
   const [enabled, setEnabled] = useState(false);
 
   const [formInput, setformInput] = useState("");
@@ -47,7 +51,11 @@ export default function DashboardInsights({
   const [fileValid, setFileValid] = useState(false);
 
   const [ideaType, setIdeaType] = useState("used");
-  const [freshIdea, setFreshIdea] = useState([]);
+  const [freshIdeas, setFreshIdeas] = useState([]);
+
+  useEffect(() => {
+    setFreshIdeas(oldFreshIdeas)
+  },[oldFreshIdeas])
 
   const [newIdeaLoad, setNewIdeaLoad] = useState(false);
 
@@ -121,9 +129,7 @@ export default function DashboardInsights({
       (el) => Object.values(el).indexOf(filterText) > -1
     );
     if (valueExists) {
-      setFilteredArray((prev) => [
-        ...prev.filter((el) => el.filterText !== filterText),
-      ]);
+      setFilteredArray((prev) => [...prev.filter((el) => el.filterText !== filterText)]);
       setRefClickCount((prev) => prev - 1);
     } else {
       setFilteredArray((prev) => [...prev, { filterText, criteria: "ref" }]);
@@ -153,7 +159,6 @@ export default function DashboardInsights({
   useEffect(() => {
     setFilteredIdeas([]);
     setNotUniqueFilteredIdeas([]);
-    console.log(filteredArray);
 
     filteredArray.forEach((filterObject) =>
       ideas.forEach((idea) => {
@@ -176,7 +181,8 @@ export default function DashboardInsights({
     );
 
     // Create a new array from the Set object
-    const uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse);
+    let uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse)
+    uniqueFilteredArray = uniqueFilteredArray.sort((a,b) =>  a.reference.link.localeCompare(b.reference.link))
 
     // Add a new property to each idea calles citation number.
     var prevLink = uniqueFilteredArray[0]?.reference.link;
@@ -185,11 +191,6 @@ export default function DashboardInsights({
       if (idea.reference.link !== prevLink) {
         citationNumber++;
       }
-      console.log(
-        new URL(idea.reference.link).hostname,
-        new URL(prevLink).hostname,
-        citationNumber
-      );
       prevLink = idea.reference.link;
       idea.citationNumber = citationNumber;
 
@@ -203,6 +204,10 @@ export default function DashboardInsights({
   useEffect(() => {
     console.log(filteredArray);
     console.log(filteredIdeas);
+
+    /* Add the logic of numbers appearing on the sources */
+    filteredIdeas.forEach(idea => console.log(new URL(idea.reference.link).hostname))
+
   }, [filteredIdeas]);
 
   function handleRegenerate() {
@@ -271,7 +276,7 @@ export default function DashboardInsights({
         .finally(() => {
           setIdeaType("used");
           setRegenSelected([]);
-          setFreshIdea([]);
+          setFreshIdeas([]);
         });
     }
   }
@@ -340,7 +345,7 @@ export default function DashboardInsights({
       .then((response) => {
         setIdeaType("fresh");
         console.log(response.data);
-        setFreshIdea(response.data.data);
+        setFreshIdeas(response.data.data);
 
         setPyResTime(response.data.pythonRespTime);
         setNdResTime(response.data.respTime);
@@ -388,6 +393,25 @@ export default function DashboardInsights({
   var Gbid;
   if (typeof window !== "undefined") {
     Gbid = localStorage.getItem("Gbid");
+  }
+
+  function handleCitationFunction(link) {
+    let filtered;
+    // console.log(link)
+    reference.forEach((el,index) => {
+      // console.log(el)
+      if(el.url === link){
+        filtered = index;
+      }
+    })
+
+    if(filtered === 0 || filtered) {
+      return filtered + 1;
+    }
+    else {
+      console.log(link, reference, "search")
+      return null;
+    }
   }
 
   if (loading || regenLoading) return <LoaderScan />;
@@ -456,7 +480,8 @@ export default function DashboardInsights({
               <p className="pt-[0.65em] font-semibold">Sources</p>
             </div>
             <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll pt-[0.65em]">
-              {reference?.map((ref) => {
+              {ideaType === "used" ? 
+              reference?.map((ref,index) => {
                 return (
                   <div
                     className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
@@ -465,7 +490,7 @@ export default function DashboardInsights({
                   >
                     {ref.source}
                     <span
-                      className="!hidden"
+                      className=""
                       style={{
                         position: "absolute",
                         bottom: "70%",
@@ -481,10 +506,40 @@ export default function DashboardInsights({
                         zIndex: "100",
                         alignItems: "center",
                       }}
-                    ></span>
+                    >{index + 1}</span>
                   </div>
                 );
-              })}
+              }) : 
+              freshIdeasReferences?.map((ref,index) => {
+                console.log(ref)
+                return (
+                  <div
+                    className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
+                    //onClick={handleRefClick}
+                    data-url={ref.url}
+                  >
+                    {ref.source}
+                    <span
+                      className=""
+                      style={{
+                        position: "absolute",
+                        bottom: "70%",
+                        left: "92%",
+                        backgroundColor: "#4a3afe",
+                        color: "white",
+                        width: "14px",
+                        height: "14px",
+                        fontSize: "0.65rem",
+                        borderRadius: "100px",
+                        display: "flex",
+                        justifyContent: "center",
+                        zIndex: "100",
+                        alignItems: "center",
+                      }}
+                    >{index + 1}</span>
+                  </div>
+              )})
+              }
             </div>
           </div>
         )}
@@ -497,7 +552,7 @@ export default function DashboardInsights({
           >
             Used Idea(s)
           </button>
-          {isAuthenticated && (
+          {isAuthenticated && freshIdeas.length > 0 && (
             <button
               className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs"
               onClick={(e) => {
@@ -638,8 +693,6 @@ export default function DashboardInsights({
           {ideaType === "used"
             ? filteredIdeas.length > 0
               ? filteredIdeas?.map((idea, index) => {
-                  var citationNumber = 1;
-
                   return (
                     <div className="flex pb-3" key={index}>
                       <div className="flex justify-between gap-5 w-full">
@@ -663,7 +716,8 @@ export default function DashboardInsights({
                               .classList.add("hidden");
                           }}
                         >
-                          {idea.citationNumber}
+                          {/* {idea.citationNumber} */}
+                          {handleCitationFunction(idea.reference.link)}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{
@@ -746,7 +800,8 @@ export default function DashboardInsights({
                               .classList.add("hidden");
                           }}
                         >
-                          {idea?.reference?.type === "article" ? "[2]" : "[1]"}
+                          {/* {idea?.reference?.type === "article" ? "[2]" : "[1]"} */}
+                          {handleCitationFunction(idea.reference.link)}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{
@@ -800,7 +855,7 @@ export default function DashboardInsights({
                 })
             : ""}
           {ideaType === "fresh"
-            ? freshIdea?.map((idea, index) => {
+            ? freshIdeas?.map((idea, index) => {
                 return (
                   <div className="flex pb-3" key={index}>
                     <div className="flex justify-between gap-5 w-full">
@@ -863,12 +918,12 @@ export default function DashboardInsights({
                         className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                         onClick={(e) => {
                           console.log(idea);
-                          const updatedIdeas = freshIdea.map((el, elIndex) =>
+                          const updatedIdeas = freshIdeas.map((el, elIndex) =>
                             elIndex === index
                               ? { ...el, used: el.used === 1 ? 0 : 1 }
                               : el
                           );
-                          setFreshIdea(updatedIdeas);
+                          setFreshIdeas(updatedIdeas);
                           handleInputClick(idea?.idea, idea?.article_id, e);
                         }}
                         checked={idea?.used}
