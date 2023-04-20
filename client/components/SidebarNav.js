@@ -233,7 +233,7 @@ export default function Sidebar() {
         </Transition.Root>
 
         {/* Static sidebar for desktop */}
-        <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-[12rem] lg:flex-col z-20">
+        <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-[12.4rem] lg:flex-col z-20 ">
           {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-white">
             <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">

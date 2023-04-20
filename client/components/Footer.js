@@ -91,12 +91,15 @@ export default function Footer() {
     ],
   };
   return (
-    <footer className="mt-[5em]" aria-labelledby="footer-heading">
+    <footer
+      className="mt-[5em] border-solid border-2 p-2"
+      aria-labelledby="footer-heading"
+    >
       {/* <footer className="mt-24 sm:mt-56" aria-labelledby="footer-heading"> */}
       <h2 id="footer-heading" className="sr-only">
         Footer
       </h2>
-      <div className="mx-auto max-w-7xl px-6 pb-8 lg:px-8">
+      <div className="mx-auto max-w-7xl px-6 pb-8 lg:px-8 mt-12">
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-8">
             <img className="h-9" src="/lille_logo_new.png" alt="Company name" />

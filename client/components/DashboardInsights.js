@@ -426,7 +426,7 @@ export default function DashboardInsights({
         handleSave={() => (window.location = "/dashboard/" + blog_id)}
         bid={blog_id}
       />
-      <div className="w-[35%] text-xs px-2" style={{ width: "40%" }}>
+      <div className="w-[35%] text-xs px-2 mt-5" style={{ width: "40%" }}>
         <div className="flex justify-between gap-[1.25em]">
           <p className="font-normal w-[70%]">
             Regenerate your blog on the basis of selected used & fresh ideas.
@@ -683,7 +683,7 @@ export default function DashboardInsights({
           </>
         )}
         <div
-          className="overflow-y-scroll absolute px-2 mb-6 border-solid border-2 p-2"
+          className="overflow-y-scroll absolute px-2 mb-6 border-solid border-2 p-2 rounded"
           style={{
             marginRight: "0.5em",
             maxHeight: "82vh",

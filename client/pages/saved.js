@@ -181,10 +181,13 @@ export default function Saved() {
                     </Link>
                   </div>
                   <button className={`${styles.dateTag} mt-2`}>
-                    {new Date(blog?.date * 1000).toLocaleDateString("en-US", {
+                    {new Date(blog?.date * 1000).toLocaleString("en-US", {
+                      timeZone: "Asia/Kolkata",
                       month: "short",
                       day: "numeric",
                       year: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
                     })}
                   </button>
                   <p className="pointer-events-none mt-1 block truncate text-sm font-medium text-gray-900">
