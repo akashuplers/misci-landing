@@ -46,11 +46,14 @@ export const blogResolvers = {
                     url: string
                     source: string
                 }[] = []
-                let articleIds = [...blogDetails.article_id]
-                if(blogDetails) refUrls = await fetchArticleUrls({db, articleId: articleIds})
                 let freshIdeasArticle: string[] = []
-                blogIdeas?.freshIdeas?.forEach((idea: any) => idea.article_id ? freshIdeasArticle.push(idea.article_id) : false)
-                if(blogDetails) refUrlsFreshIdeas = await fetchArticleUrls({db, articleId: freshIdeasArticle})
+                console.log(blogDetails.article_id, blogDetails)
+                if(blogDetails.article_id) {
+                    let articleIds = [...blogDetails.article_id]
+                    if(blogDetails) refUrls = await fetchArticleUrls({db, articleId: articleIds})
+                    blogIdeas?.freshIdeas?.forEach((idea: any) => idea.article_id ? freshIdeasArticle.push(idea.article_id) : false)
+                    if(blogDetails) refUrlsFreshIdeas = await fetchArticleUrls({db, articleId: freshIdeasArticle})
+                }                
                 return {...blogDetails, ideas: {
                     ...blogIdeas,
                     ideas: updatedIdeas,
@@ -504,11 +507,13 @@ export const blogResolvers = {
                     url: string
                     source: string
                 }[] = []
-                let articleIdsFromAllIdeas = [...blog.article_id]
-                if(blog) refUrls = await fetchArticleUrls({db, articleId: articleIdsFromAllIdeas})
-                let freshIdeasArticle: string[] = []
-                blogIdeas?.freshIdeas?.forEach((idea: any) => idea.article_id ? freshIdeasArticle.push(idea.article_id) : false)
-                if(blogDetails) refUrlsFreshIdeas = await fetchArticleUrls({db, articleId: freshIdeasArticle})
+                if(blogDetails.article_id) {
+                    let articleIdsFromAllIdeas = [...blog.article_id]
+                    if(blog) refUrls = await fetchArticleUrls({db, articleId: articleIdsFromAllIdeas})
+                    let freshIdeasArticle: string[] = []
+                    blogIdeas?.freshIdeas?.forEach((idea: any) => idea.article_id ? freshIdeasArticle.push(idea.article_id) : false)
+                    if(blogDetails) refUrlsFreshIdeas = await fetchArticleUrls({db, articleId: freshIdeasArticle})
+                }
                 let endRequest = new Date()
                 let respTime = diff_minutes(endRequest, startRequest)
                 return {...blogDetails, ideas: blogIdeasDetails, references: refUrls, respTime, freshIdeasReferences:refUrlsFreshIdeas}
