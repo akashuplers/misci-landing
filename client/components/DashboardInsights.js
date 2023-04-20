@@ -164,10 +164,10 @@ export default function DashboardInsights({
     filteredArray.forEach((filterObject) =>
       ideas.forEach((idea) => {
         if (filterObject?.criteria === "tag") {
-          idea.idea.indexOf(filterObject?.filterText) >= 0 &&
+          idea?.idea?.indexOf(filterObject?.filterText) >= 0 &&
             setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
         } else if (filterObject?.criteria === "ref") {
-          idea.reference.link === filterObject?.filterText &&
+          idea?.reference?.link === filterObject?.filterText &&
             setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
         }
       })
@@ -183,16 +183,16 @@ export default function DashboardInsights({
 
     // Create a new array from the Set object
     let uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse)
-    uniqueFilteredArray = uniqueFilteredArray.sort((a,b) =>  a.reference.link.localeCompare(b.reference.link))
+    uniqueFilteredArray = uniqueFilteredArray.sort((a,b) =>  a?.reference?.link.localeCompare(b?.reference?.link))
 
     // Add a new property to each idea calles citation number.
-    var prevLink = uniqueFilteredArray[0]?.reference.link;
+    var prevLink = uniqueFilteredArray[0]?.reference?.link;
     var citationNumber = 1;
     uniqueFilteredArray.forEach((idea, index) => {
-      if (idea.reference.link !== prevLink) {
+      if (idea?.reference?.link !== prevLink) {
         citationNumber++;
       }
-      prevLink = idea.reference.link;
+      prevLink = idea?.reference?.link;
       idea.citationNumber = citationNumber;
 
       setFilteredIdeas((prev) => [...prev, idea]);
@@ -207,7 +207,7 @@ export default function DashboardInsights({
     console.log(filteredIdeas);
 
     /* Add the logic of numbers appearing on the sources */
-    filteredIdeas.forEach(idea => console.log(new URL(idea.reference.link).hostname))
+    filteredIdeas.forEach(idea => console.log(new URL(idea?.reference?.link).hostname))
 
   }, [filteredIdeas]);
 
@@ -716,7 +716,7 @@ export default function DashboardInsights({
                               .classList.add("hidden");
                           }}
                         >
-                          {handleCitationFunction(idea.reference.link)}
+                          {handleCitationFunction(idea?.reference?.link)}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{
@@ -800,7 +800,7 @@ export default function DashboardInsights({
                           }}
                         >
                           {/* {idea?.reference?.type === "article" ? "[2]" : "[1]"} */}
-                          {handleCitationFunction(idea.reference.link)}
+                          {handleCitationFunction(idea?.reference?.link)}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{
@@ -879,7 +879,7 @@ export default function DashboardInsights({
                               .classList.add("hidden");
                           }}
                         >
-                          {handleCitationFunction(idea.reference.link)}
+                          {handleCitationFunction(idea?.reference?.link)}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{
@@ -962,7 +962,7 @@ export default function DashboardInsights({
                               .classList.add("hidden");
                           }}
                         >
-                          {handleCitationFunction(idea.reference.link)}
+                          {handleCitationFunction(idea?.reference?.link)}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{
