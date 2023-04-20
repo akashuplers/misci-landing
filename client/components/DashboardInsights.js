@@ -137,11 +137,11 @@ export default function DashboardInsights({
     const used = document.querySelector(".idea-button.used")
 
     if(ideaType === "used"){
-      fresh.classList.remove("active");
-      used.classList.add("active");
+      fresh?.classList.remove("active");
+      used?.classList.add("active");
     }else if(ideaType === "fresh"){
-      fresh.classList.add("active");
-      used.classList.remove("active");
+      fresh?.classList.add("active");
+      used?.classList.remove("active");
     }
   },[ideaType])
 
