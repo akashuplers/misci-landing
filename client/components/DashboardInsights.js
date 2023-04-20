@@ -628,7 +628,7 @@ export default function DashboardInsights({
           </>
         )}
         <div
-          className="overflow-y-scroll absolute px-2 mb-6 border-solid border-2 p-2"
+          className="overflow-y-scroll absolute px-2 mb-6 border-solid border-2 p-2 rounded"
           style={{
             marginRight: "0.5em",
             maxHeight: "82vh",
