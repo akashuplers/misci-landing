@@ -217,7 +217,7 @@ export default function dashboard({ query }) {
   return (
     <>
       <Layout>
-        <div className="flex divide-x">
+        <div className="flex divide-x mb-6">
           <div
             style={{
               zIndex: "10",
