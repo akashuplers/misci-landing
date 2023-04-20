@@ -4,7 +4,7 @@
 /* eslint-disable react/jsx-key */
 import React, { useEffect, useState } from "react";
 import { Switch } from "@headlessui/react";
-import LoaderPlane from "./LoaderPlane";
+import LoaderScan from "./LoaderScan";
 import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
 import { jsonToHtml } from "../helpers/helper";
 import { useMutation, gql } from "@apollo/client";
@@ -92,45 +92,58 @@ export default function DashboardInsights({
 
   const [filteredIdeas, setFilteredIdeas] = useState([]);
   const [notUniquefilteredIdeas, setNotUniqueFilteredIdeas] = useState([]);
-  
+
   const [filteredArray, setFilteredArray] = useState([]);
 
-  function handleTagClick(e){
-    e.target.classList.toggle("active")
+  function handleTagClick(e) {
+    e.target.classList.toggle("active");
 
     /* Adding or removing the keywords to an array */
     const filterText = e.target.innerText;
-    setFilteredArray(prev => prev.find(el => Object.values(el).indexOf(filterText) > -1) ? [...prev.filter(el => el.filterText !== filterText)] : [...prev, {filterText,criteria : "tag"}])
+    setFilteredArray((prev) =>
+      prev.find((el) => Object.values(el).indexOf(filterText) > -1)
+        ? [...prev.filter((el) => el.filterText !== filterText)]
+        : [...prev, { filterText, criteria: "tag" }]
+    );
   }
 
-  function handleRefClick(e){
-    e.target.classList.toggle("active")
+  function handleRefClick(e) {
+    e.target.classList.toggle("active");
 
     /* Adding or removing the keywords to an array */
     const filterText = e.target.dataset.url;
-    setFilteredArray(prev => prev.find(el => Object.values(el).indexOf(filterText) > -1 )? [...prev.filter(el => el.filterText !== filterText)] : [...prev, {filterText, criteria : "ref"}])
+    setFilteredArray((prev) =>
+      prev.find((el) => Object.values(el).indexOf(filterText) > -1)
+        ? [...prev.filter((el) => el.filterText !== filterText)]
+        : [...prev, { filterText, criteria: "ref" }]
+    );
   }
-  
+
   // Adds the matched idea into notUniqueFilteredIdeas
   useEffect(() => {
     setFilteredIdeas([]);
     setNotUniqueFilteredIdeas([])
     console.log(filteredArray);
 
-    filteredArray.forEach(filterObject => ideas.forEach(idea => {
-      if(filterObject?.criteria === "tag"){
-        idea.idea.indexOf(filterObject?.filterText) >= 0 && setNotUniqueFilteredIdeas(prev => [...prev, idea])
-      } else if (filterObject?.criteria === "ref"){
-        idea.reference.link === filterObject?.filterText && setNotUniqueFilteredIdeas(prev => [...prev, idea])
-      }
-    }));
-
-  },[filteredArray])
+    filteredArray.forEach((filterObject) =>
+      ideas.forEach((idea) => {
+        if (filterObject?.criteria === "tag") {
+          idea.idea.indexOf(filterObject?.filterText) >= 0 &&
+            setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
+        } else if (filterObject?.criteria === "ref") {
+          idea.reference.link === filterObject?.filterText &&
+            setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
+        }
+      })
+    );
+  }, [filteredArray]);
 
   // We create a set so that the values are unique, and multiple ideas are not added
   useEffect(() => {
     // Create a new Set object from the array, which removes duplicates
-    const uniqueFilteredSet = new Set(notUniquefilteredIdeas.map(JSON.stringify));
+    const uniqueFilteredSet = new Set(
+      notUniquefilteredIdeas.map(JSON.stringify)
+    );
 
     // Create a new array from the Set object
     const uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse);
@@ -157,7 +170,7 @@ export default function DashboardInsights({
   useEffect(() => {
     console.log(filteredArray);
     console.log(filteredIdeas);
-  },[filteredIdeas])
+  }, [filteredIdeas]);
 
   function handleRegenerate() {
     console.log(regenSelected);
@@ -344,7 +357,7 @@ export default function DashboardInsights({
     Gbid = localStorage.getItem("Gbid");
   }
 
-  if (loading || regenLoading) return <LoaderPlane />;
+  if (loading || regenLoading) return <LoaderScan />;
 
   return (
     <>
@@ -457,119 +470,119 @@ export default function DashboardInsights({
           )}
         </div>
         {isAuthenticated && (
-            <>
-              <form onSubmit={postFormData} className="mb-4">
-                {newIdeaLoad ? (
-                  <ReactLoading
-                    type={"spin"}
-                    color={"#2563EB"}
-                    height={50}
-                    width={50}
-                    className={"mx-auto"}
-                  />
-                ) : (
-                  <div className="flex items-center gap-1 relative mb-[10px]">
-                    <label htmlFor="simple-search" className="sr-only">
-                      Search
-                    </label>
-                    <div className="relative w-full">
-                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <svg
-                          aria-hidden="true"
-                          className="w-5 h-5 text-gray-500 dark:text-gray-400"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                            clipRule="evenodd"
-                          ></path>
-                        </svg>
-                      </div>
-                      <input
-                        type="text"
-                        id="simple-search"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 py-[0.75em]"
-                        placeholder="To get Fresh Ideas upload topic, URL or File."
-                        required
-                        value={formInput}
-                        onChange={handleFormChange}
-                        style={{ fontSize: "1em" }}
-                        title="Enter keyword, URL or upload document"
-                      />
+          <>
+            <form onSubmit={postFormData} className="mb-4">
+              {newIdeaLoad ? (
+                <ReactLoading
+                  type={"spin"}
+                  color={"#2563EB"}
+                  height={50}
+                  width={50}
+                  className={"mx-auto"}
+                />
+              ) : (
+                <div className="flex items-center gap-1 relative mb-[10px]">
+                  <label htmlFor="simple-search" className="sr-only">
+                    Search
+                  </label>
+                  <div className="relative w-full">
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <svg
+                        aria-hidden="true"
+                        className="w-5 h-5 text-gray-500 dark:text-gray-400"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                          clipRule="evenodd"
+                        ></path>
+                      </svg>
                     </div>
-                    {hover ? (
-                      <>
-                        <div
-                          className="max-w-sm rounded overflow-hidden shadow-lg india r-0 bg-white mt-15"
-                          style={{
-                            zIndex: 9999,
-                            position: "absolute",
-                            right: "0",
-                          }}
-                        >
-                          upload a file
-                        </div>
-                      </>
-                    ) : (
-                      <></>
-                    )}
-                    <label
-                      className="cta-invert"
-                      style={{
-                        background: "none",
-                        color: "black",
-                        border: "1px solid #b3b3b3",
-                      }}
-                    >
-                      <input
-                        type="file"
-                        accept="application/pdf, .docx, .txt, .rtf, .png, .jpg, .jpeg, .gif"
-                        max-size="500000"
-                        onInput={handleFileUpload}
-                        style={{ display: "none" }}
-                      />
-                      <div onMouseEnter={onHover} onMouseLeave={onLeave}>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-6 h-6"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10.5 3.75a6 6 0 00-5.98 6.496A5.25 5.25 0 006.75 20.25H18a4.5 4.5 0 002.206-8.423 3.75 3.75 0 00-4.133-4.303A6.001 6.001 0 0010.5 3.75zm2.03 5.47a.75.75 0 00-1.06 0l-3 3a.75.75 0 101.06 1.06l1.72-1.72v4.94a.75.75 0 001.5 0v-4.94l1.72 1.72a.75.75 0 101.06-1.06l-3-3z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-
-                        <span className="sr-only">Upload</span>
+                    <input
+                      type="text"
+                      id="simple-search"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 py-[0.75em]"
+                      placeholder="To get Fresh Ideas upload topic, URL or File."
+                      required
+                      value={formInput}
+                      onChange={handleFormChange}
+                      style={{ fontSize: "1em" }}
+                      title="Enter keyword, URL or upload document"
+                    />
+                  </div>
+                  {hover ? (
+                    <>
+                      <div
+                        className="max-w-sm rounded overflow-hidden shadow-lg india r-0 bg-white mt-15"
+                        style={{
+                          zIndex: 9999,
+                          position: "absolute",
+                          right: "0",
+                        }}
+                      >
+                        upload a file
                       </div>
-                    </label>
-                    <button type="submit" className="cta-invert">
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                  <label
+                    className="cta-invert"
+                    style={{
+                      background: "none",
+                      color: "black",
+                      border: "1px solid #b3b3b3",
+                    }}
+                  >
+                    <input
+                      type="file"
+                      accept="application/pdf, .docx, .txt, .rtf, .png, .jpg, .jpeg, .gif"
+                      max-size="500000"
+                      onInput={handleFileUpload}
+                      style={{ display: "none" }}
+                    />
+                    <div onMouseEnter={onHover} onMouseLeave={onLeave}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
                         viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
+                        fill="currentColor"
                         className="w-6 h-6"
                       >
                         <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          fillRule="evenodd"
+                          d="M10.5 3.75a6 6 0 00-5.98 6.496A5.25 5.25 0 006.75 20.25H18a4.5 4.5 0 002.206-8.423 3.75 3.75 0 00-4.133-4.303A6.001 6.001 0 0010.5 3.75zm2.03 5.47a.75.75 0 00-1.06 0l-3 3a.75.75 0 101.06 1.06l1.72-1.72v4.94a.75.75 0 001.5 0v-4.94l1.72 1.72a.75.75 0 101.06-1.06l-3-3z"
+                          clipRule="evenodd"
                         />
                       </svg>
-                      <span className="sr-only">Search</span>
-                    </button>
-                  </div>
-                )}
-              </form>
-            </>
-          )}
+
+                      <span className="sr-only">Upload</span>
+                    </div>
+                  </label>
+                  <button type="submit" className="cta-invert">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-6 h-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span className="sr-only">Search</span>
+                  </button>
+                </div>
+              )}
+            </form>
+          </>
+        )}
         <div
           className="overflow-y-scroll absolute px-2"
           style={{

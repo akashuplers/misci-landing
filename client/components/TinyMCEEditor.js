@@ -51,6 +51,7 @@ export default function TinyMCEEditor({
   const [option, setOption] = useState("blog");
   const [imageURL, setImageURL] = useState("");
   const [isalert, setAlert] = useState(false);
+  const [load, setLoad] = useState(false);
 
   const onCopyText = () => {
     setIsCopied(true);
@@ -141,6 +142,13 @@ export default function TinyMCEEditor({
   };
 
   const [callBack, setCallBack] = useState();
+
+  useEffect(() => {
+    if (load) {
+      const inputElement = document.getElementsByClassName("tox-textfield");
+      inputElement[0].value = "Loading...";
+    }
+  }, [load]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -580,6 +588,7 @@ export default function TinyMCEEditor({
           </button>
         </div>
       )}
+
       <Editor
         value={updatedText || editorText}
         apiKey="aas0t2r78qalxl9x1wl2byv0fchtnoh13dlufm5ez5annbr2"
@@ -635,12 +644,15 @@ export default function TinyMCEEditor({
                   console.log("response.data", response.data);
                   console.log("imageURL", imageURL);
                   console.log("88", url);
+                  console.log("999", load);
+                  setLoad(false);
                   // Create a thumbnail of the uploaded image, with 150px width
                   cb(url, { title: response.type });
                 }
               };
 
               reader.onload = function () {
+                setLoad(true);
                 var id = "blobid" + new Date().getTime();
                 var blobCache =
                   window.tinymce.activeEditor.editorUpload.blobCache;
@@ -693,10 +705,7 @@ export default function TinyMCEEditor({
             };
 
             axios(config)
-              .then((response) => {
-                const data = response.data;
-                success(data.url);
-              })
+              .then((response) => {})
               .catch((error) => console.log("error", error));
           },
         }}
