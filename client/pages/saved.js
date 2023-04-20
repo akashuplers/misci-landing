@@ -120,7 +120,6 @@ export default function Saved() {
                       alt={blog.title}
                       className="pointer-events-none object-cover"
                     />
-
                     <Link href={"/dashboard/" + blog._id}>
                       <button
                         type="button"
@@ -180,8 +179,16 @@ export default function Saved() {
                         </button>
                       </button>
                     </Link>
+                    
                   </div>
-                  <p className="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">
+                  <button
+                      className={`${styles.dateTag} mt-2`}
+                    >
+                      {new Date(
+                          blog?.date * 1000
+                        ).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </button>
+                  <p className="pointer-events-none mt-1 block truncate text-sm font-medium text-gray-900">
                     {blog?.title}
                   </p>
                   <p className="pointer-events-none block text-sm font-medium text-gray-500">

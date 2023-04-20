@@ -384,8 +384,7 @@ export default function DashboardInsights({
       <div className="w-[35%] text-xs px-2" style={{ width: "40%" }}>
         <div className="flex justify-between gap-[1.25em]">
           <p className="font-normal w-[70%]">
-            Regenerate your article on the basis of selected keyword, URL or
-            uploaded document
+            Regenerate your blog on the basis of selected used & fresh ideas.
           </p>
           <button
             className="cta flex items-center gap-2 self-start !py-2"
