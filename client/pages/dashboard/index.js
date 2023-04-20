@@ -150,7 +150,7 @@ export default function dashboard({ query }) {
           setBlogData(data.fetchBlog);
           setIdeas(data.fetchBlog.ideas.ideas);
           setTags(data.fetchBlog.tags);
-          setFreshIdeasReferences(data.fetchBlog.freshIdeasReferences)
+          setFreshIdeasReferences(data?.fetchBlog?.idea?.freshIdeas)
           setReference(data.fetchBlog.references);
           setFreshIdeas(data.fetchBlog.idea.freshIdeas);
           setblog_id(data.fetchBlog._id);
@@ -218,7 +218,7 @@ export default function dashboard({ query }) {
     console.log("===restime===");
   }, [pyResTime, ndResTime]);
 
-
+console.log(freshIdeasReferences)
   return (
     <>
       <Layout>

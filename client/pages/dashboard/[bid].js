@@ -96,6 +96,8 @@ export default function Post() {
     }
   }, [meeData]);
 
+console.log(freshIdeasReferences)
+
   return (
     <>
       <Layout>
