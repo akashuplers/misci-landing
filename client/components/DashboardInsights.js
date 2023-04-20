@@ -108,21 +108,48 @@ export default function DashboardInsights({
     );
   }
 
+  const [refClickCount, setRefClickCount] = useState(1);
   function handleRefClick(e) {
+    setIdeaType("used")
     e.target.classList.toggle("active");
+    //const refCount = e.target.firstElementChild;
+
 
     /* Adding or removing the keywords to an array */
     const filterText = e.target.dataset.url;
-    setFilteredArray((prev) =>
-      prev.find((el) => Object.values(el).indexOf(filterText) > -1)
-        ? [...prev.filter((el) => el.filterText !== filterText)]
-        : [...prev, { filterText, criteria: "ref" }]
-    );
+
+    const valueExists = filteredArray.find((el) => Object.values(el).indexOf(filterText) > -1)
+    if(valueExists){
+      setFilteredArray(prev => [...prev.filter((el) => el.filterText !== filterText)]) 
+      setRefClickCount(prev => prev - 1);
+    }else{
+      setFilteredArray(prev => [...prev, { filterText, criteria: "ref" }]) 
+      setRefClickCount(prev => prev + 1);
+    }
+
+    // if(refCount != null){
+    //   refCount.classList.toggle("!hidden")
+    //   refCount.innerText = refClickCount
+    // }
   }
+
+  useEffect(()=>{
+    const fresh = document.querySelector(".idea-button.fresh");
+    const used = document.querySelector(".idea-button.used")
+
+    if(ideaType === "used"){
+      fresh?.classList.remove("active");
+      used?.classList.add("active");
+    }else if(ideaType === "fresh"){
+      fresh?.classList.add("active");
+      used?.classList.remove("active");
+    }
+  },[ideaType])
 
   // Adds the matched idea into notUniqueFilteredIdeas
   useEffect(() => {
-    setNotUniqueFilteredIdeas([]);
+    setFilteredIdeas([]);
+    setNotUniqueFilteredIdeas([])
     console.log(filteredArray);
 
     filteredArray.forEach((filterObject) =>
@@ -147,9 +174,22 @@ export default function DashboardInsights({
 
     // Create a new array from the Set object
     const uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse);
+    
+    // Add a new property to each idea calles citation number.
+    var prevLink = uniqueFilteredArray[0]?.reference.link;
+    var citationNumber = 1;
+    uniqueFilteredArray.forEach((idea,index) => {
+      if(idea.reference.link !== prevLink) {
+        citationNumber++;
+      }
+      console.log(new URL(idea.reference.link).hostname, new URL(prevLink).hostname, citationNumber)
+      prevLink = idea.reference.link
+      idea.citationNumber = citationNumber;
+      
+      setFilteredIdeas(prev => [...prev, idea])
+    })
 
-    setFilteredIdeas(uniqueFilteredArray);
-  }, [notUniquefilteredIdeas]);
+  },[notUniquefilteredIdeas])
 
   /*
   keep this for de-bugging
@@ -359,8 +399,7 @@ export default function DashboardInsights({
       <div className="w-[35%] text-xs px-2" style={{ width: "40%" }}>
         <div className="flex justify-between gap-[1.25em]">
           <p className="font-normal w-[70%]">
-            Regenerate your article on the basis of selected keyword, URL or
-            uploaded document
+            Regenerate your blog on the basis of selected used & fresh ideas.
           </p>
           <button
             className="cta flex items-center gap-2 self-start !py-2"
@@ -389,9 +428,9 @@ export default function DashboardInsights({
         {tags?.length > 0 && (
           <div>
             <div className="flex justify-between w-full items-center py-2">
-              <p className=" font-semibold">Filtering Keywords</p>
+              <p className="pt-[0.65em] font-semibold">Filtering Keywords</p>
             </div>
-            <div className="flex gap-[0.5em] flex-wrap max-h-[51px] overflow-y-scroll">
+            <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll pt-[0.65em]">
               {tags?.map((tag) => {
                 return (
                   <div
@@ -408,17 +447,32 @@ export default function DashboardInsights({
         {reference?.length > 0 && (
           <div>
             <div className="flex justify-between w-full items-center py-2">
-              <p className=" font-semibold">Sources</p>
+              <p className="pt-[0.65em] font-semibold">Sources</p>
             </div>
-            <div className="flex gap-[0.5em] flex-wrap max-h-[51px] overflow-y-scroll">
+            <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll pt-[0.65em]">
               {reference?.map((ref) => {
                 return (
                   <div
-                    className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta"
+                    className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
                     onClick={handleRefClick}
                     data-url={ref.url}
                   >
                     {ref.source}
+                    <span className="!hidden" style={{
+                      position: 'absolute',
+                      bottom: '70%',
+                      left: '92%',
+                      backgroundColor: '#4a3afe',
+                      color: 'white',
+                      width: '14px',
+                      height: '14px',
+                      fontSize: '0.65rem',
+                      borderRadius: '100px',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      zIndex: '100',
+                      alignItems: 'center'
+                    }}></span>
                   </div>
                 );
               })}
@@ -430,9 +484,7 @@ export default function DashboardInsights({
             className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs"
             onClick={(e) => {
               setIdeaType("used");
-              const sib = e.target.nextElementSibling;
-              sib?.classList.remove("active");
-              e.target.classList.add("active");
+              
             }}
           >
             Used Idea(s)
@@ -442,9 +494,7 @@ export default function DashboardInsights({
               className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs"
               onClick={(e) => {
                 setIdeaType("fresh");
-                const sib = e.target.previousElementSibling;
-                sib?.classList.remove("active");
-                e.target.classList.add("active");
+                
               }}
             >
               <img
@@ -581,6 +631,8 @@ export default function DashboardInsights({
           {ideaType === "used"
             ? filteredIdeas.length > 0
               ? filteredIdeas?.map((idea, index) => {
+                  var citationNumber = 1;
+
                   return (
                     <div className="flex pb-3" key={index}>
                       <div className="flex justify-between gap-5 w-full">
@@ -604,7 +656,7 @@ export default function DashboardInsights({
                               .classList.add("hidden");
                           }}
                         >
-                          {index + 1}
+                          {idea.citationNumber}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{

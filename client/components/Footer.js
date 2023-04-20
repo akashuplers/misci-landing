@@ -91,7 +91,7 @@ const footerNavigation = {
   ],
 };
   return (
-   <footer className="" aria-labelledby="footer-heading">
+   <footer className="mt-[5em]" aria-labelledby="footer-heading">
    {/* <footer className="mt-24 sm:mt-56" aria-labelledby="footer-heading"> */}
         <h2 id="footer-heading" className="sr-only">
           Footer
