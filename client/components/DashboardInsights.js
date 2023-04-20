@@ -513,7 +513,7 @@ export default function DashboardInsights({
           >
             Used Idea(s)
           </button>
-          {isAuthenticated && (
+          {isAuthenticated && freshIdea.length > 0 && (
             <button
               className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs"
               onClick={(e) => {
