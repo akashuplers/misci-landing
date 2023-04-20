@@ -107,16 +107,25 @@ export default function DashboardInsights({
     );
   }
 
+  const [refClickCount, setRefClickCount] = useState(1);
   function handleRefClick(e) {
     e.target.classList.toggle("active");
+    const refCount = e.target.firstElementChild;
+    refCount?.classList.toggle("!hidden")
+
 
     /* Adding or removing the keywords to an array */
     const filterText = e.target.dataset.url;
-    setFilteredArray((prev) =>
-      prev.find((el) => Object.values(el).indexOf(filterText) > -1)
-        ? [...prev.filter((el) => el.filterText !== filterText)]
-        : [...prev, { filterText, criteria: "ref" }]
-    );
+
+    const valueExists = filteredArray.find((el) => Object.values(el).indexOf(filterText) > -1)
+    if(valueExists){
+      setFilteredArray(prev => [...prev.filter((el) => el.filterText !== filterText)]) 
+      setRefClickCount(prev => prev - 1);
+    }else{
+      setFilteredArray(prev => [...prev, { filterText, criteria: "ref" }]) 
+      setRefClickCount(prev => prev + 1);
+    }
+    refCount.innerText = refClickCount
   }
 
   // Adds the matched idea into notUniqueFilteredIdeas
@@ -402,9 +411,9 @@ export default function DashboardInsights({
         {tags?.length > 0 && (
           <div>
             <div className="flex justify-between w-full items-center py-2">
-              <p className=" font-semibold">Filtering Keywords</p>
+              <p className="pt-[0.65em] font-semibold">Filtering Keywords</p>
             </div>
-            <div className="flex gap-[0.5em] flex-wrap max-h-[51px] overflow-y-scroll">
+            <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll pt-[0.65em]">
               {tags?.map((tag) => {
                 return (
                   <div
@@ -421,17 +430,32 @@ export default function DashboardInsights({
         {reference?.length > 0 && (
           <div>
             <div className="flex justify-between w-full items-center py-2">
-              <p className=" font-semibold">Sources</p>
+              <p className="pt-[0.65em] font-semibold">Sources</p>
             </div>
-            <div className="flex gap-[0.5em] flex-wrap max-h-[51px] overflow-y-scroll">
+            <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll pt-[0.65em]">
               {reference?.map((ref) => {
                 return (
                   <div
-                    className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta"
+                    className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
                     onClick={handleRefClick}
                     data-url={ref.url}
                   >
                     {ref.source}
+                    <span className="!hidden" style={{
+                      position: 'absolute',
+                      bottom: '70%',
+                      left: '92%',
+                      backgroundColor: '#4a3afe',
+                      color: 'white',
+                      width: '14px',
+                      height: '14px',
+                      fontSize: '0.65rem',
+                      borderRadius: '100px',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      zIndex: '100',
+                      alignItems: 'center'
+                    }}></span>
                   </div>
                 );
               })}
