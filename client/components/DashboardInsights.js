@@ -151,7 +151,6 @@ export default function DashboardInsights({
   useEffect(() => {
     setFilteredIdeas([]);
     setNotUniqueFilteredIdeas([]);
-    console.log(filteredArray);
 
     filteredArray.forEach((filterObject) =>
       ideas.forEach((idea) => {
@@ -176,9 +175,6 @@ export default function DashboardInsights({
     // Create a new array from the Set object
     let uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse)
     uniqueFilteredArray = uniqueFilteredArray.sort((a,b) =>  a.reference.link.localeCompare(b.reference.link))
-    console.log("----sex----");
-    console.log(uniqueFilteredArray);
-    console.log("----sex----");
 
     // Add a new property to each idea calles citation number.
     var prevLink = uniqueFilteredArray[0]?.reference.link;
@@ -187,11 +183,6 @@ export default function DashboardInsights({
       if (idea.reference.link !== prevLink) {
         citationNumber++;
       }
-      console.log(
-        new URL(idea.reference.link).hostname,
-        new URL(prevLink).hostname,
-        citationNumber
-      );
       prevLink = idea.reference.link;
       idea.citationNumber = citationNumber;
 
@@ -205,6 +196,10 @@ export default function DashboardInsights({
   useEffect(() => {
     console.log(filteredArray);
     console.log(filteredIdeas);
+
+    /* Add the logic of numbers appearing on the sources */
+    filteredIdeas.forEach(idea => console.log(new URL(idea.reference.link).hostname))
+
   }, [filteredIdeas]);
 
   function handleRegenerate() {
@@ -392,6 +387,25 @@ export default function DashboardInsights({
     Gbid = localStorage.getItem("Gbid");
   }
 
+  function handleCitationFunction(link) {
+    let filtered;
+    // console.log(link)
+    reference.forEach((el,index) => {
+      // console.log(el)
+      if(el.url === link){
+        filtered = index;
+      }
+    })
+
+    if(filtered === 0 || filtered) {
+      return filtered + 1;
+    }
+    else {
+      console.log(link, reference, "search")
+      return null;
+    }
+  }
+
   if (loading || regenLoading) return <LoaderScan />;
 
   return (
@@ -458,7 +472,7 @@ export default function DashboardInsights({
               <p className="pt-[0.65em] font-semibold">Sources</p>
             </div>
             <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll pt-[0.65em]">
-              {reference?.map((ref) => {
+              {reference?.map((ref,index) => {
                 return (
                   <div
                     className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
@@ -467,7 +481,7 @@ export default function DashboardInsights({
                   >
                     {ref.source}
                     <span
-                      className="!hidden"
+                      className=""
                       style={{
                         position: "absolute",
                         bottom: "70%",
@@ -483,7 +497,7 @@ export default function DashboardInsights({
                         zIndex: "100",
                         alignItems: "center",
                       }}
-                    ></span>
+                    >{index + 1}</span>
                   </div>
                 );
               })}
@@ -640,8 +654,6 @@ export default function DashboardInsights({
           {ideaType === "used"
             ? filteredIdeas.length > 0
               ? filteredIdeas?.map((idea, index) => {
-                  var citationNumber = 1;
-
                   return (
                     <div className="flex pb-3" key={index}>
                       <div className="flex justify-between gap-5 w-full">
@@ -665,7 +677,8 @@ export default function DashboardInsights({
                               .classList.add("hidden");
                           }}
                         >
-                          {idea.citationNumber}
+                          {/* {idea.citationNumber} */}
+                          {handleCitationFunction(idea.reference.link)}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{
@@ -748,7 +761,8 @@ export default function DashboardInsights({
                               .classList.add("hidden");
                           }}
                         >
-                          {idea?.reference?.type === "article" ? "[2]" : "[1]"}
+                          {/* {idea?.reference?.type === "article" ? "[2]" : "[1]"} */}
+                          {handleCitationFunction(idea.reference.link)}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{
