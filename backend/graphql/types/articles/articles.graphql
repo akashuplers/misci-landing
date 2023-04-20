@@ -34,6 +34,8 @@ type Blog {
     references: [UrlObj]
     pythonRespTime: Float
     respTime: Float
+    imageSrc: String
+    imageUrl: String
 }
 
 type UrlObj {
@@ -94,6 +96,7 @@ input UpdateBlogOptions {
     blog_id: String
     tinymce_json: TinyMceObjInput
     imageUrl: String
+    imageSrc: String
 }
 
 input RegenerateBlogOptions {

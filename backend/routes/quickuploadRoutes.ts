@@ -2,7 +2,7 @@ import { Python } from "../services/python"
 import { authMiddleware } from "../middleWare/authToken"
 import { fetchArticles } from "../repos"
 import { ObjectID } from "bson"
-import { fetchArticleById, fetchUsedBlogIdeasByIdea } from "../graphql/resolver/blogs/blogsRepo"
+import { fetchArticleById, fetchArticleUrls, fetchUsedBlogIdeasByIdea } from "../graphql/resolver/blogs/blogsRepo"
 import { diff_minutes } from "../utils/date"
 
 const express = require('express')
@@ -77,11 +77,17 @@ router.post('/url', authMiddleware, async (req: any, res: any) => {
                 })
             let endRequest = new Date()
             let respTime = diff_minutes(endRequest, startRequest)    
+            let refUrls: {
+                url: string
+                source: string
+            }[] = []
+            if(articleid) refUrls = await fetchArticleUrls({db, articleId: [articleid]})
             return res.status(200).send({
                 type: "SUCCESS",
                 data: freshIdeas,
                 respTime,
-                pythonRespTime
+                pythonRespTime,
+                references: refUrls
             })
         } else {
             return res.status(400).send({
@@ -167,13 +173,19 @@ router.post('/keyword', authMiddleware, async (req: any, res: any) => {
                     freshIdeas
                 }
             })
+        let refUrls: {
+            url: string
+            source: string
+        }[] = []    
+        if(articleIds) refUrls = await fetchArticleUrls({db, articleId: articleIds})
         let endRequest = new Date()
         let respTime = diff_minutes(endRequest, startRequest)        
         return res.status(200).send({
             type: "SUCCESS",
             data: freshIdeas,
             respTime,
-            pythonRespTime
+            pythonRespTime,
+            references: refUrls
         })
     }catch (e) {
         return res.status(400).send({
@@ -248,13 +260,19 @@ router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any
                         freshIdeas
                     }
                 })
+            let refUrls: {
+                url: string
+                source: string
+            }[] = []    
+            if(articleid) refUrls = await fetchArticleUrls({db, articleId: [articleid]})    
             let endRequest = new Date()
             let respTime = diff_minutes(endRequest, startRequest)      
             return res.status(200).send({
                 type: "SUCCESS",
                 data: freshIdeas,
                 respTime,
-                pythonRespTime
+                pythonRespTime,
+                references: refUrls
             })
         } else {
             return res.status(400).send({
