@@ -110,21 +110,24 @@ export default function DashboardInsights({
 
   const [refClickCount, setRefClickCount] = useState(1);
   function handleRefClick(e) {
-    setIdeaType("used")
+    setIdeaType("used");
     e.target.classList.toggle("active");
     //const refCount = e.target.firstElementChild;
-
 
     /* Adding or removing the keywords to an array */
     const filterText = e.target.dataset.url;
 
-    const valueExists = filteredArray.find((el) => Object.values(el).indexOf(filterText) > -1)
-    if(valueExists){
-      setFilteredArray(prev => [...prev.filter((el) => el.filterText !== filterText)]) 
-      setRefClickCount(prev => prev - 1);
-    }else{
-      setFilteredArray(prev => [...prev, { filterText, criteria: "ref" }]) 
-      setRefClickCount(prev => prev + 1);
+    const valueExists = filteredArray.find(
+      (el) => Object.values(el).indexOf(filterText) > -1
+    );
+    if (valueExists) {
+      setFilteredArray((prev) => [
+        ...prev.filter((el) => el.filterText !== filterText),
+      ]);
+      setRefClickCount((prev) => prev - 1);
+    } else {
+      setFilteredArray((prev) => [...prev, { filterText, criteria: "ref" }]);
+      setRefClickCount((prev) => prev + 1);
     }
 
     // if(refCount != null){
@@ -133,23 +136,23 @@ export default function DashboardInsights({
     // }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     const fresh = document.querySelector(".idea-button.fresh");
-    const used = document.querySelector(".idea-button.used")
+    const used = document.querySelector(".idea-button.used");
 
-    if(ideaType === "used"){
+    if (ideaType === "used") {
       fresh?.classList.remove("active");
       used?.classList.add("active");
-    }else if(ideaType === "fresh"){
+    } else if (ideaType === "fresh") {
       fresh?.classList.add("active");
       used?.classList.remove("active");
     }
-  },[ideaType])
+  }, [ideaType]);
 
   // Adds the matched idea into notUniqueFilteredIdeas
   useEffect(() => {
     setFilteredIdeas([]);
-    setNotUniqueFilteredIdeas([])
+    setNotUniqueFilteredIdeas([]);
     console.log(filteredArray);
 
     filteredArray.forEach((filterObject) =>
@@ -174,22 +177,25 @@ export default function DashboardInsights({
 
     // Create a new array from the Set object
     const uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse);
-    
+
     // Add a new property to each idea calles citation number.
     var prevLink = uniqueFilteredArray[0]?.reference.link;
     var citationNumber = 1;
-    uniqueFilteredArray.forEach((idea,index) => {
-      if(idea.reference.link !== prevLink) {
+    uniqueFilteredArray.forEach((idea, index) => {
+      if (idea.reference.link !== prevLink) {
         citationNumber++;
       }
-      console.log(new URL(idea.reference.link).hostname, new URL(prevLink).hostname, citationNumber)
-      prevLink = idea.reference.link
+      console.log(
+        new URL(idea.reference.link).hostname,
+        new URL(prevLink).hostname,
+        citationNumber
+      );
+      prevLink = idea.reference.link;
       idea.citationNumber = citationNumber;
-      
-      setFilteredIdeas(prev => [...prev, idea])
-    })
 
-  },[notUniquefilteredIdeas])
+      setFilteredIdeas((prev) => [...prev, idea]);
+    });
+  }, [notUniquefilteredIdeas]);
 
   /*
   keep this for de-bugging
@@ -458,21 +464,24 @@ export default function DashboardInsights({
                     data-url={ref.url}
                   >
                     {ref.source}
-                    <span className="!hidden" style={{
-                      position: 'absolute',
-                      bottom: '70%',
-                      left: '92%',
-                      backgroundColor: '#4a3afe',
-                      color: 'white',
-                      width: '14px',
-                      height: '14px',
-                      fontSize: '0.65rem',
-                      borderRadius: '100px',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      zIndex: '100',
-                      alignItems: 'center'
-                    }}></span>
+                    <span
+                      className="!hidden"
+                      style={{
+                        position: "absolute",
+                        bottom: "70%",
+                        left: "92%",
+                        backgroundColor: "#4a3afe",
+                        color: "white",
+                        width: "14px",
+                        height: "14px",
+                        fontSize: "0.65rem",
+                        borderRadius: "100px",
+                        display: "flex",
+                        justifyContent: "center",
+                        zIndex: "100",
+                        alignItems: "center",
+                      }}
+                    ></span>
                   </div>
                 );
               })}
@@ -484,7 +493,6 @@ export default function DashboardInsights({
             className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs"
             onClick={(e) => {
               setIdeaType("used");
-              
             }}
           >
             Used Idea(s)
@@ -494,7 +502,6 @@ export default function DashboardInsights({
               className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs"
               onClick={(e) => {
                 setIdeaType("fresh");
-                
               }}
             >
               <img
@@ -621,7 +628,7 @@ export default function DashboardInsights({
           </>
         )}
         <div
-          className="overflow-y-scroll absolute px-2"
+          className="overflow-y-scroll absolute px-2 mb-6 border-solid border-2 p-2"
           style={{
             marginRight: "0.5em",
             maxHeight: "82vh",
