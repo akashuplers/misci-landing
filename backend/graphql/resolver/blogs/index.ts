@@ -42,7 +42,9 @@ export const blogResolvers = {
                     url: string
                     source: string
                 }[] = []
-                if(blogDetails) refUrls = await fetchArticleUrls({db, blog: blogDetails})
+                let articleIds = [...blogDetails.article_id]
+                blogIdeas?.freshIdeas?.forEach((idea: any) => idea.article_id ? articleIds.push(idea.article_id) : false)
+                if(blogDetails) refUrls = await fetchArticleUrls({db, articleId: articleIds})
                 return {...blogDetails, ideas: {
                     ...blogIdeas,
                     ideas: updatedIdeas,
@@ -492,7 +494,9 @@ export const blogResolvers = {
                     url: string
                     source: string
                 }[] = []
-                if(blog) refUrls = await fetchArticleUrls({db, blog: blog})
+                let articleIdsFromAllIdeas = [...blog.article_id]
+                blogIdeas?.freshIdeas?.forEach((idea: any) => idea.article_id ? articleIds.push(idea.article_id) : false)
+                if(blog) refUrls = await fetchArticleUrls({db, articleId: articleIdsFromAllIdeas})
                 let endRequest = new Date()
                 let respTime = diff_minutes(endRequest, startRequest)
                 return {...blogDetails, ideas: blogIdeasDetails, references: refUrls, respTime}
