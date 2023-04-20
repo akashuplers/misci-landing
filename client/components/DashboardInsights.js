@@ -113,6 +113,7 @@ export default function DashboardInsights({
   
   // Adds the matched idea into notUniqueFilteredIdeas
   useEffect(() => {
+    setFilteredIdeas([]);
     setNotUniqueFilteredIdeas([])
     console.log(filteredArray);
 
@@ -133,8 +134,21 @@ export default function DashboardInsights({
 
     // Create a new array from the Set object
     const uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse);
+    
+    // Add a new property to each idea calles citation number.
+    var prevLink = uniqueFilteredArray[0]?.reference.link;
+    var citationNumber = 1;
+    uniqueFilteredArray.forEach((idea,index) => {
+      if(idea.reference.link !== prevLink) {
+        citationNumber++;
+      }
+      console.log(new URL(idea.reference.link).hostname, new URL(prevLink).hostname, citationNumber)
+      prevLink = idea.reference.link
+      idea.citationNumber = citationNumber;
+      
+      setFilteredIdeas(prev => [...prev, idea])
+    })
 
-    setFilteredIdeas(uniqueFilteredArray);
   },[notUniquefilteredIdeas])
 
   /*
@@ -567,6 +581,8 @@ export default function DashboardInsights({
           {ideaType === "used"
             ? filteredIdeas.length > 0
               ? filteredIdeas?.map((idea, index) => {
+                  var citationNumber = 1;
+
                   return (
                     <div className="flex pb-3" key={index}>
                       <div className="flex justify-between gap-5 w-full">
@@ -590,7 +606,7 @@ export default function DashboardInsights({
                               .classList.add("hidden");
                           }}
                         >
-                          {index + 1}
+                          {idea.citationNumber}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{
