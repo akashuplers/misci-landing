@@ -510,6 +510,7 @@ export const blogResolvers = {
             const tinymce_json = args.options.tinymce_json
             const platform = args.options.platform
             const imageUrl = args.options.imageUrl
+            const imageSrc = args.options.imageSrc
             const blogDetails = await fetchBlog({id: blogId, db})
             if(!blogDetails){
                 throw "@No blog found"
@@ -540,7 +541,8 @@ export const blogResolvers = {
                     status: blogDetails.status === 'published' ? blogDetails.status : "saved",
                     userId: new ObjectID(user.id),
                     updatedAt: getTimeStamp(),
-                    imageUrl: imageUrl && imageUrl.length && imageUrl !== blogDetails.imageUrl ? imageUrl : blogDetails.imageUrl
+                    imageUrl: imageUrl && imageUrl.length && imageUrl !== blogDetails.imageUrl ? imageUrl : blogDetails.imageUrl,
+                    imageSrc: imageSrc
                 }
             })
             const updatedBlog = await fetchBlog({id: blogId, db})

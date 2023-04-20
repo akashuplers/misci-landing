@@ -364,18 +364,26 @@ export const fetchArticleById = async ({
 
 export const fetchArticleUrls = async ({
     blog,
-    db
+    db,
+    articleId
 }: {
-    blog: any
+    blog?: any
     db: any
+    articleId?: string[]
 }) => {
     let urls : {
         url: string
         source: string
     }[] = []
-    if(blog && blog?.article_id?.length) {
+    if((blog && blog?.article_id?.length) || (articleId && articleId.length)) {
+        let filter = null
+        if(articleId && articleId.length) {
+            filter = {$in: articleId}
+        } else {
+            filter = {$in: blog?.article_id}
+        }
         const urlsData = await db.db("lilleArticles").collection('articles').find({
-            _id: {$in: blog?.article_id}
+            _id: filter
         }, {
             projection: {
                 "_id": 0,

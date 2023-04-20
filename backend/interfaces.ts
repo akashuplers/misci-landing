@@ -12,7 +12,8 @@ export interface UpdateBlogMutationArg {
     tinymce_json: String;
     blog_id: string;
     platform: String;
-    imageUrl?: String
+    imageUrl?: String;
+    imageSrc?: String;
 }
 
 export interface Ideas {
