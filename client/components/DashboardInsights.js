@@ -22,7 +22,7 @@ export default function DashboardInsights({
   ideas,
   setIdeas,
 
-  freshIdeas:oldFreshIdeas,
+  freshIdeas: oldFreshIdeas,
 
   blog_id,
   setblog_id,
@@ -43,19 +43,19 @@ export default function DashboardInsights({
   const [enabled, setEnabled] = useState(false);
 
   const [formInput, setformInput] = useState("");
-
+  const [freshIdeaFromKeyword, setFreshIdeaFromKeyword] = useState(false);
   const [urlValid, setUrlValid] = useState(false);
-
+  const [keywordFreshDashboard, setKeywordFreshDashboard] = useState([])
   const [file, setFile] = useState(null);
   const [fileValid, setFileValid] = useState(false);
 
   const [ideaType, setIdeaType] = useState("used");
   const [freshIdeas, setFreshIdeas] = useState([]);
-  const [freshFilteredIdeas, setFreshFilteredIdeas] = useState([])
+  const [freshFilteredIdeas, setFreshFilteredIdeas] = useState([]);
 
   useEffect(() => {
-    setFreshIdeas(oldFreshIdeas)
-  },[oldFreshIdeas])
+    setFreshIdeas(oldFreshIdeas);
+  }, [oldFreshIdeas]);
 
   const [newIdeaLoad, setNewIdeaLoad] = useState(false);
 
@@ -123,9 +123,13 @@ export default function DashboardInsights({
     /* Adding or removing the keywords to an array */
     const filterText = e.target.dataset.url;
 
-    const valueExists = filteredArray.find((el) => Object.values(el).indexOf(filterText) > -1);
+    const valueExists = filteredArray.find(
+      (el) => Object.values(el).indexOf(filterText) > -1
+    );
     if (valueExists) {
-      setFilteredArray((prev) => [...prev.filter((el) => el.filterText !== filterText)]);
+      setFilteredArray((prev) => [
+        ...prev.filter((el) => el.filterText !== filterText),
+      ]);
     } else {
       setFilteredArray((prev) => [...prev, { filterText, criteria: "ref" }]);
     }
@@ -138,8 +142,8 @@ export default function DashboardInsights({
     const tags = document.querySelectorAll(".tag-button.cta");
     const refButtons = document.querySelectorAll(".ref-button.cta");
 
-    tags?.forEach(tag => tag?.classList.remove("active"));
-    refButtons?.forEach(btn => btn?.classList.remove("active"));
+    tags?.forEach((tag) => tag?.classList.remove("active"));
+    refButtons?.forEach((btn) => btn?.classList.remove("active"));
 
     setFilteredArray([]);
 
@@ -159,7 +163,7 @@ export default function DashboardInsights({
 
     setNotUniqueFilteredIdeas([]);
 
-    if(ideaType === "used"){
+    if (ideaType === "used") {
       filteredArray.forEach((filterObject) =>
         ideas.forEach((idea) => {
           if (filterObject?.criteria === "tag") {
@@ -171,7 +175,7 @@ export default function DashboardInsights({
           }
         })
       );
-    }else if(ideaType === "fresh"){
+    } else if (ideaType === "fresh") {
       filteredArray.forEach((filterObject) =>
         freshIdeas.forEach((idea) => {
           if (filterObject?.criteria === "tag") {
@@ -184,7 +188,6 @@ export default function DashboardInsights({
         })
       );
     }
-
   }, [filteredArray]);
 
   // We create a set so that the values are unique, and multiple ideas are not added
@@ -195,8 +198,10 @@ export default function DashboardInsights({
     );
 
     // Create a new array from the Set object
-    let uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse)
-    uniqueFilteredArray = uniqueFilteredArray.sort((a,b) =>  a?.reference?.link.localeCompare(b?.reference?.link))
+    let uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse);
+    uniqueFilteredArray = uniqueFilteredArray.sort((a, b) =>
+      a?.reference?.link.localeCompare(b?.reference?.link)
+    );
 
     // Add a new property to each idea calles citation number.
     var prevLink = uniqueFilteredArray[0]?.reference?.link;
@@ -208,9 +213,9 @@ export default function DashboardInsights({
       prevLink = idea?.reference?.link;
       idea.citationNumber = citationNumber;
 
-      if(ideaType === "used"){
+      if (ideaType === "used") {
         setFilteredIdeas((prev) => [...prev, idea]);
-      }else if(ideaType === "fresh"){
+      } else if (ideaType === "fresh") {
         setFreshFilteredIdeas((prev) => [...prev, idea]);
       }
     });
@@ -360,10 +365,12 @@ export default function DashboardInsights({
         setIdeaType("fresh");
         console.log(response.data);
         setFreshIdeas(response.data.data);
-
+        setFreshIdeaFromKeyword(true);
+        setKeywordFreshDashboard(response.data.references)
         setPyResTime(response.data.pythonRespTime);
         setNdResTime(response.data.respTime);
-
+        console.log(freshIdeaFromKeyword);
+        console.log(freshIdeas);
         const fresh = document.querySelector(".idea-button.fresh");
         const used = document.querySelector(".idea-button.used");
 
@@ -411,34 +418,40 @@ export default function DashboardInsights({
 
   function handleCitationFunction(link) {
     let filtered;
-    // console.log(link)
-    if(ideaType === "used"){
-      reference.forEach((el,index) => {
-        // console.log(el)
-        if(el.url === link){
+    if (ideaType === "used") {
+      reference.forEach((el, index) => {
+        if (el.url === link) {
           filtered = index;
         }
-      })
-    }else if(ideaType === "fresh"){
-      freshIdeasReferences.forEach((el,index) => {
-        // console.log(el)
-        if(el.url === link){
-          filtered = index;
-        }
-      })
+      });
+    } else if (ideaType === "fresh") {
+      if (freshIdeaFromKeyword) {
+        freshIdeas.forEach((el, index) => {
+          if (el.reference.link === link) {
+            filtered = index;
+            console.log("ak", filtered, index)
+          }
+        });
+      } else {
+        freshIdeasReferences.forEach((el, index) => {
+          console.log("new", el);
+          if (el.url === link) {
+            filtered = index;
+          }
+        });
+      }
     }
 
-    if(filtered === 0 || filtered) {
+    if (filtered === 0 || filtered) {
       return filtered + 1;
-    }
-    else {
-      console.log(link, reference, "search")
+    } else {
+      console.log(link, reference, "search");
       return null;
     }
   }
 
   if (loading || regenLoading) return <LoaderScan />;
-
+console.log("freshReferences", freshIdeasReferences)
   return (
     <>
       <AuthenticationModal
@@ -503,65 +516,99 @@ export default function DashboardInsights({
               <p className="pt-[0.65em] font-semibold">Sources</p>
             </div>
             <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll pt-[0.65em]">
-              {ideaType === "used" ? 
-              reference?.map((ref,index) => {
-                return (
-                  <div
-                    className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
-                    onClick={handleRefClick}
-                    data-url={ref.url}
-                  >
-                    {ref.source}
-                    <span
-                      className=""
-                      style={{
-                        position: "absolute",
-                        bottom: "70%",
-                        left: "92%",
-                        backgroundColor: "#4a3afe",
-                        color: "white",
-                        width: "14px",
-                        height: "14px",
-                        fontSize: "0.65rem",
-                        borderRadius: "100px",
-                        display: "flex",
-                        justifyContent: "center",
-                        zIndex: "100",
-                        alignItems: "center",
-                      }}
-                    >{index + 1}</span>
-                  </div>
-                );
-              }) : 
-              freshIdeasReferences?.map((ref,index) => {
-                return (
-                  <div
-                    className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
-                    onClick={handleRefClick}
-                    data-url={ref.url}
-                  >
-                    {ref.source}
-                    <span
-                      className=""
-                      style={{
-                        position: "absolute",
-                        bottom: "70%",
-                        left: "92%",
-                        backgroundColor: "#4a3afe",
-                        color: "white",
-                        width: "14px",
-                        height: "14px",
-                        fontSize: "0.65rem",
-                        borderRadius: "100px",
-                        display: "flex",
-                        justifyContent: "center",
-                        zIndex: "100",
-                        alignItems: "center",
-                      }}
-                    >{index + 1}</span>
-                  </div>
-              )})
-              }
+              {ideaType === "used"
+                ? reference?.map((ref, index) => {
+                    return (
+                      <div
+                        className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
+                        onClick={handleRefClick}
+                        data-url={ref.url}
+                      >
+                        {ref.source}
+                        <span
+                          className=""
+                          style={{
+                            position: "absolute",
+                            bottom: "70%",
+                            left: "92%",
+                            backgroundColor: "#4a3afe",
+                            color: "white",
+                            width: "14px",
+                            height: "14px",
+                            fontSize: "0.65rem",
+                            borderRadius: "100px",
+                            display: "flex",
+                            justifyContent: "center",
+                            zIndex: "100",
+                            alignItems: "center",
+                          }}
+                        >
+                          {index + 1}
+                        </span>
+                      </div>
+                    );
+                  })
+                : !freshIdeaFromKeyword ? freshIdeasReferences?.map((ref, index) => {
+                    return (
+                      <div
+                        className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
+                        onClick={handleRefClick}
+                        data-url={ref.url}
+                      >
+                        {ref.source}
+                        <span
+                          className=""
+                          style={{
+                            position: "absolute",
+                            bottom: "70%",
+                            left: "92%",
+                            backgroundColor: "#4a3afe",
+                            color: "white",
+                            width: "14px",
+                            height: "14px",
+                            fontSize: "0.65rem",
+                            borderRadius: "100px",
+                            display: "flex",
+                            justifyContent: "center",
+                            zIndex: "100",
+                            alignItems: "center",
+                          }}
+                        >
+                          {index + 1}
+                        </span>
+                      </div>
+                    );
+                  }) : keywordFreshDashboard?.map((ref, index) => {
+                    return (
+                      <div
+                        className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
+                        onClick={handleRefClick}
+                        data-url={ref.url}
+                      >
+                        {ref.source}
+                        <span
+                          className=""
+                          style={{
+                            position: "absolute",
+                            bottom: "70%",
+                            left: "92%",
+                            backgroundColor: "#4a3afe",
+                            color: "white",
+                            width: "14px",
+                            height: "14px",
+                            fontSize: "0.65rem",
+                            borderRadius: "100px",
+                            display: "flex",
+                            justifyContent: "center",
+                            zIndex: "100",
+                            alignItems: "center",
+                          }}
+                        >
+                          {index + 1}
+                        </span>
+                      </div>
+                    );
+                  })}
             </div>
           </div>
         )}
@@ -872,7 +919,7 @@ export default function DashboardInsights({
                         />
                       </div>
                     </div>
-                  )
+                  );
                 })
             : ""}
           {ideaType === "fresh"
