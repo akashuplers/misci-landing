@@ -388,6 +388,7 @@ export const blogResolvers = {
                     regenerate: true,
                     title: blog.keyword,
                     imageUrl: imageUrl ? imageUrl : blog.imageUrl,
+                    imageSrc
                 })
                 let newData: any = []
                 blog.publish_data.forEach((data: any, index: any) => {
