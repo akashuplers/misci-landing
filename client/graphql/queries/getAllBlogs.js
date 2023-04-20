@@ -9,9 +9,9 @@ export const getAllBlogs = gql`
         description
         image
         tags
-        # date
         title
         status
+        date
       }
     }
   }

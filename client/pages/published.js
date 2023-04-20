@@ -124,7 +124,7 @@ export default function Saved() {
                     <img
                       src={blog.image}
                       alt={blog.title}
-                      className="pointer-events-none object-cover"
+                      className="pointer-events-none object-cover h-[185px] w-[280px]"
                     />
                     <Link
                       legacyBehavior
@@ -216,6 +216,16 @@ export default function Saved() {
                       </a>
                     </Link>
                   </div>
+                  <button className={`${styles.dateTag} mt-2`}>
+                    {new Date(blog?.date * 1000).toLocaleString("en-US", {
+                      timeZone: "Asia/Kolkata",
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
+                    })}
+                  </button>
                   <p className="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">
                     {blog?.title}
                   </p>

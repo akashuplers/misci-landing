@@ -14,6 +14,7 @@ import useStore from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import axios from "axios";
 import Link from "next/link";
+import { handleSave } from "./TinyMCEEditor";
 
 export default function DashboardInsights({
   loading,
@@ -21,14 +22,17 @@ export default function DashboardInsights({
   ideas,
   setIdeas,
 
+  freshIdeas:oldFreshIdeas,
+
   blog_id,
   setblog_id,
 
   tags,
   setTags,
 
+  freshIdeasReferences,
   reference,
-  setRefrences,
+  setReferences,
 
   setBlogData,
   setEditorText,
@@ -36,6 +40,7 @@ export default function DashboardInsights({
   setPyResTime,
   setNdResTime,
 }) {
+  console.log(freshIdeasReferences,"freshhhhh")
   const [enabled, setEnabled] = useState(false);
 
   const [formInput, setformInput] = useState("");
@@ -46,7 +51,11 @@ export default function DashboardInsights({
   const [fileValid, setFileValid] = useState(false);
 
   const [ideaType, setIdeaType] = useState("used");
-  const [freshIdea, setFreshIdea] = useState([]);
+  const [freshIdeas, setFreshIdeas] = useState([]);
+
+  useEffect(() => {
+    setFreshIdeas(oldFreshIdeas)
+  },[oldFreshIdeas])
 
   const [newIdeaLoad, setNewIdeaLoad] = useState(false);
 
@@ -107,22 +116,49 @@ export default function DashboardInsights({
     );
   }
 
+  const [refClickCount, setRefClickCount] = useState(1);
   function handleRefClick(e) {
+    setIdeaType("used");
     e.target.classList.toggle("active");
+    //const refCount = e.target.firstElementChild;
 
     /* Adding or removing the keywords to an array */
     const filterText = e.target.dataset.url;
-    setFilteredArray((prev) =>
-      prev.find((el) => Object.values(el).indexOf(filterText) > -1)
-        ? [...prev.filter((el) => el.filterText !== filterText)]
-        : [...prev, { filterText, criteria: "ref" }]
+
+    const valueExists = filteredArray.find(
+      (el) => Object.values(el).indexOf(filterText) > -1
     );
+    if (valueExists) {
+      setFilteredArray((prev) => [...prev.filter((el) => el.filterText !== filterText)]);
+      setRefClickCount((prev) => prev - 1);
+    } else {
+      setFilteredArray((prev) => [...prev, { filterText, criteria: "ref" }]);
+      setRefClickCount((prev) => prev + 1);
+    }
+
+    // if(refCount != null){
+    //   refCount.classList.toggle("!hidden")
+    //   refCount.innerText = refClickCount
+    // }
   }
+
+  useEffect(() => {
+    const fresh = document.querySelector(".idea-button.fresh");
+    const used = document.querySelector(".idea-button.used");
+
+    if (ideaType === "used") {
+      fresh?.classList.remove("active");
+      used?.classList.add("active");
+    } else if (ideaType === "fresh") {
+      fresh?.classList.add("active");
+      used?.classList.remove("active");
+    }
+  }, [ideaType]);
 
   // Adds the matched idea into notUniqueFilteredIdeas
   useEffect(() => {
+    setFilteredIdeas([]);
     setNotUniqueFilteredIdeas([]);
-    console.log(filteredArray);
 
     filteredArray.forEach((filterObject) =>
       ideas.forEach((idea) => {
@@ -145,9 +181,21 @@ export default function DashboardInsights({
     );
 
     // Create a new array from the Set object
-    const uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse);
+    let uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse)
+    uniqueFilteredArray = uniqueFilteredArray.sort((a,b) =>  a.reference.link.localeCompare(b.reference.link))
 
-    setFilteredIdeas(uniqueFilteredArray);
+    // Add a new property to each idea calles citation number.
+    var prevLink = uniqueFilteredArray[0]?.reference.link;
+    var citationNumber = 1;
+    uniqueFilteredArray.forEach((idea, index) => {
+      if (idea.reference.link !== prevLink) {
+        citationNumber++;
+      }
+      prevLink = idea.reference.link;
+      idea.citationNumber = citationNumber;
+
+      setFilteredIdeas((prev) => [...prev, idea]);
+    });
   }, [notUniquefilteredIdeas]);
 
   /*
@@ -156,6 +204,10 @@ export default function DashboardInsights({
   useEffect(() => {
     console.log(filteredArray);
     console.log(filteredIdeas);
+
+    /* Add the logic of numbers appearing on the sources */
+    filteredIdeas.forEach(idea => console.log(new URL(idea.reference.link).hostname))
+
   }, [filteredIdeas]);
 
   function handleRegenerate() {
@@ -224,7 +276,7 @@ export default function DashboardInsights({
         .finally(() => {
           setIdeaType("used");
           setRegenSelected([]);
-          setFreshIdea([]);
+          setFreshIdeas([]);
         });
     }
   }
@@ -293,7 +345,7 @@ export default function DashboardInsights({
       .then((response) => {
         setIdeaType("fresh");
         console.log(response.data);
-        setFreshIdea(response.data.data);
+        setFreshIdeas(response.data.data);
 
         setPyResTime(response.data.pythonRespTime);
         setNdResTime(response.data.respTime);
@@ -343,6 +395,25 @@ export default function DashboardInsights({
     Gbid = localStorage.getItem("Gbid");
   }
 
+  function handleCitationFunction(link) {
+    let filtered;
+    // console.log(link)
+    reference.forEach((el,index) => {
+      // console.log(el)
+      if(el.url === link){
+        filtered = index;
+      }
+    })
+
+    if(filtered === 0 || filtered) {
+      return filtered + 1;
+    }
+    else {
+      console.log(link, reference, "search")
+      return null;
+    }
+  }
+
   if (loading || regenLoading) return <LoaderScan />;
 
   return (
@@ -352,14 +423,13 @@ export default function DashboardInsights({
         setType={setAuthneticationModalType}
         modalIsOpen={authenticationModalOpen}
         setModalIsOpen={setAuthenticationModalOpen}
-        handleSave={() => (window.location = "/")}
+        handleSave={() => (window.location = "/dashboard/" + blog_id)}
         bid={blog_id}
       />
-      <div className="w-[35%] text-xs px-2" style={{ width: "40%" }}>
+      <div className="w-[35%] text-xs px-2 mt-5" style={{ width: "40%" }}>
         <div className="flex justify-between gap-[1.25em]">
           <p className="font-normal w-[70%]">
-            Regenerate your article on the basis of selected keyword, URL or
-            uploaded document
+            Regenerate your blog on the basis of selected used & fresh ideas.
           </p>
           <button
             className="cta flex items-center gap-2 self-start !py-2"
@@ -388,9 +458,9 @@ export default function DashboardInsights({
         {tags?.length > 0 && (
           <div>
             <div className="flex justify-between w-full items-center py-2">
-              <p className=" font-semibold">Filtering Keywords</p>
+              <p className="pt-[0.65em] font-semibold">Filtering Keywords</p>
             </div>
-            <div className="flex gap-[0.5em] flex-wrap max-h-[51px] overflow-y-scroll">
+            <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll pt-[0.65em]">
               {tags?.map((tag) => {
                 return (
                   <div
@@ -407,20 +477,69 @@ export default function DashboardInsights({
         {reference?.length > 0 && (
           <div>
             <div className="flex justify-between w-full items-center py-2">
-              <p className=" font-semibold">Sources</p>
+              <p className="pt-[0.65em] font-semibold">Sources</p>
             </div>
-            <div className="flex gap-[0.5em] flex-wrap max-h-[51px] overflow-y-scroll">
-              {reference?.map((ref) => {
+            <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll pt-[0.65em]">
+              {ideaType === "used" ? 
+              reference?.map((ref,index) => {
                 return (
                   <div
-                    className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta"
+                    className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
                     onClick={handleRefClick}
                     data-url={ref.url}
                   >
                     {ref.source}
+                    <span
+                      className=""
+                      style={{
+                        position: "absolute",
+                        bottom: "70%",
+                        left: "92%",
+                        backgroundColor: "#4a3afe",
+                        color: "white",
+                        width: "14px",
+                        height: "14px",
+                        fontSize: "0.65rem",
+                        borderRadius: "100px",
+                        display: "flex",
+                        justifyContent: "center",
+                        zIndex: "100",
+                        alignItems: "center",
+                      }}
+                    >{index + 1}</span>
                   </div>
                 );
-              })}
+              }) : 
+              freshIdeasReferences?.map((ref,index) => {
+                console.log(ref)
+                return (
+                  <div
+                    className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
+                    //onClick={handleRefClick}
+                    data-url={ref.url}
+                  >
+                    {ref.source}
+                    <span
+                      className=""
+                      style={{
+                        position: "absolute",
+                        bottom: "70%",
+                        left: "92%",
+                        backgroundColor: "#4a3afe",
+                        color: "white",
+                        width: "14px",
+                        height: "14px",
+                        fontSize: "0.65rem",
+                        borderRadius: "100px",
+                        display: "flex",
+                        justifyContent: "center",
+                        zIndex: "100",
+                        alignItems: "center",
+                      }}
+                    >{index + 1}</span>
+                  </div>
+              )})
+              }
             </div>
           </div>
         )}
@@ -429,21 +548,15 @@ export default function DashboardInsights({
             className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs"
             onClick={(e) => {
               setIdeaType("used");
-              const sib = e.target.nextElementSibling;
-              sib?.classList.remove("active");
-              e.target.classList.add("active");
             }}
           >
             Used Idea(s)
           </button>
-          {isAuthenticated && (
+          {isAuthenticated && freshIdeas.length > 0 && (
             <button
               className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs"
               onClick={(e) => {
                 setIdeaType("fresh");
-                const sib = e.target.previousElementSibling;
-                sib?.classList.remove("active");
-                e.target.classList.add("active");
               }}
             >
               <img
@@ -570,7 +683,7 @@ export default function DashboardInsights({
           </>
         )}
         <div
-          className="overflow-y-scroll absolute px-2"
+          className="overflow-y-scroll absolute px-2 mb-6 border-solid border-2 p-2 rounded"
           style={{
             marginRight: "0.5em",
             maxHeight: "82vh",
@@ -603,7 +716,8 @@ export default function DashboardInsights({
                               .classList.add("hidden");
                           }}
                         >
-                          {index + 1}
+                          {/* {idea.citationNumber} */}
+                          {handleCitationFunction(idea.reference.link)}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{
@@ -625,7 +739,7 @@ export default function DashboardInsights({
                                 target="_blank"
                                 style={{ color: "blue" }}
                               >
-                                Link 
+                                Link
                               </a>
                             ) : (
                               <Link
@@ -686,7 +800,8 @@ export default function DashboardInsights({
                               .classList.add("hidden");
                           }}
                         >
-                          {idea?.reference?.type === "article" ? "[2]" : "[1]"}
+                          {/* {idea?.reference?.type === "article" ? "[2]" : "[1]"} */}
+                          {handleCitationFunction(idea.reference.link)}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{
@@ -708,7 +823,7 @@ export default function DashboardInsights({
                                 target="_blank"
                                 style={{ color: "blue" }}
                               >
-                                Link 
+                                Link
                               </a>
                             ) : (
                               <Link
@@ -740,7 +855,7 @@ export default function DashboardInsights({
                 })
             : ""}
           {ideaType === "fresh"
-            ? freshIdea?.map((idea, index) => {
+            ? freshIdeas?.map((idea, index) => {
                 return (
                   <div className="flex pb-3" key={index}>
                     <div className="flex justify-between gap-5 w-full">
@@ -786,7 +901,7 @@ export default function DashboardInsights({
                               target="_blank"
                               style={{ color: "blue" }}
                             >
-                              Link 
+                              Link
                             </a>
                           ) : (
                             <Link
@@ -803,12 +918,12 @@ export default function DashboardInsights({
                         className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                         onClick={(e) => {
                           console.log(idea);
-                          const updatedIdeas = freshIdea.map((el, elIndex) =>
+                          const updatedIdeas = freshIdeas.map((el, elIndex) =>
                             elIndex === index
                               ? { ...el, used: el.used === 1 ? 0 : 1 }
                               : el
                           );
-                          setFreshIdea(updatedIdeas);
+                          setFreshIdeas(updatedIdeas);
                           handleInputClick(idea?.idea, idea?.article_id, e);
                         }}
                         checked={idea?.used}
