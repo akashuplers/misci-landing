@@ -504,7 +504,7 @@ export default function DashboardInsights({
             </div>
           </div>
         )}
-        <div className="flex py-2">
+        <div className="flex py-2 px-2">
           <button
             className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs"
             onClick={(e) => {
@@ -523,7 +523,10 @@ export default function DashboardInsights({
               setRegenSelected(arr);
             }}
           >
-            Used Idea(s)
+            Used Idea(s){" "}
+            <span className=" mx-auto bg-blue-200 text-xs p-2 font-bold text-sky-800 rounded-full">
+              {ideas?.length}
+            </span>
           </button>
           {isAuthenticated && (
             <button
@@ -537,7 +540,10 @@ export default function DashboardInsights({
                 className="w-5 h-5"
                 style={{ pointerEvents: "none" }}
               />
-              Fresh Idea(s)
+              Fresh Idea(s){" "}
+              <span className="mx-auto bg-blue-200 p-2 font-bold text-xs text-sky-800 rounded-full">
+                {freshIdea?.length}
+              </span>
             </button>
           )}
         </div>
@@ -673,7 +679,9 @@ export default function DashboardInsights({
                       <div className="flex justify-between gap-5 w-full">
                         <p>
                           {idea?.idea}{" "}
-                          <span className="italic">[{idea?.name}]</span>
+                          {idea?.name && (
+                            <span className="italic">[{idea?.name}]</span>
+                          )}
                         </p>
                         <a
                           style={{
@@ -759,7 +767,9 @@ export default function DashboardInsights({
                       <div className="flex justify-between gap-5 w-full">
                         <p>
                           {idea?.idea}{" "}
-                          <span className="italic">[{idea?.name}]</span>
+                          {idea?.name && (
+                            <span className="italic">[{idea?.name}]</span>
+                          )}
                         </p>
                         <a
                           style={{

@@ -341,7 +341,7 @@ export default function Sidebar() {
               <Bars3Icon className="h-6 w-6" aria-hidden="true" />
             </button>
           </div>
-          <main className="flex-1 bg-white">
+          <main className="flex-1 ">
             <div className="py-2 pb-4">
               <div className="mx-auto max-w-7xl px-2 flex relative">
                 <div className="pt-4">
