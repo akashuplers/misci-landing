@@ -204,11 +204,12 @@ export const blogResolvers = {
                                 }
                             }
                             keyword = article.keyword
-                            const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
-                            const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
-                            const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                            // const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                            // const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                            // const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                            const articleTags = article?._source?.driver || []
                             const name = article._source?.source?.name
-                            tags.push(...productsTags, ...organizationTags, ...personsTags)
+                            tags.push(...articleTags)
                             return {
                                 used_summaries: article._source.summary.slice(0, 5),
                                 name: name && name === "file" ? "note" : name,
@@ -366,10 +367,11 @@ export const blogResolvers = {
                             }
                         }
                         const name = article._source?.source?.name
-                        const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
-                        const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
-                        const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
-                        tags.push(...productsTags, ...organizationTags, ...personsTags)
+                        // const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                        // const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                        // const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                        const articleTags = article?._source?.driver || []
+                        tags.push(...articleTags)
                         return {
                             used_summaries: article._source.summary.slice(0, 5),
                             unused_summaries: article._source.summary.slice(5),
@@ -600,10 +602,11 @@ export const blogResolvers = {
                                 articles.map(async (id, index) => {
                                     const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
                                     const name = article._source?.source?.name
-                                    const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
-                                    const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
-                                    const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
-                                    tags.push(...productsTags, ...organizationTags, ...personsTags)
+                                    // const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                                    // const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                                    // const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                                    const articleTags = article?._source?.driver || []
+                                    tags.push(...articleTags)
                                     if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
                                         imageUrl = article.proImageLink
                                         imageSrc = article._source?.orig_url
