@@ -501,9 +501,10 @@ export default function DashboardInsights({
               <p className="pt-[0.65em] font-semibold">Filtering Keywords</p>
             </div>
             <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll pt-[0.65em]">
-              {tags?.map((tag) => {
+              {tags?.map((tag, i) => {
                 return (
                   <div
+                    key={i}
                     className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer tag-button cta"
                     onClick={(e) => handleTagClick(e)}
                   >
@@ -524,6 +525,7 @@ export default function DashboardInsights({
                 reference?.map((ref, index) => {
                   return (
                     <div
+                      key={index}
                       className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
                       onClick={handleRefClick}
                       data-url={ref.url}
@@ -559,6 +561,7 @@ export default function DashboardInsights({
               freshIdeasReferences?.map((ref, index) => {
                 return (
                   <div
+                    key={index}
                     className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
                     onClick={handleRefClick}
                     data-url={ref.url}
