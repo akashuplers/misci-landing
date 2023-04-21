@@ -15,7 +15,7 @@ Subscription.getInitialProps = ({ query }) => {
   return { query };
 };
 
-export default function Subscription({query}) {
+export default function Subscription({ query }) {
   const stripePromise = loadStripe(
     "pk_test_51KYwIFSI8Tkf3wUiAeZww7bVzcqwkbpXHHZsmqtPbZq12ey9Xy96mvA7KPpNQxVyiHbOPqcDm7BQwKdvZETRn4XU00FlHDBiq8"
   );
@@ -69,10 +69,35 @@ export default function Subscription({query}) {
     ]);
   }, []);
 
-console.log(currentPlan)
+  console.log(currentPlan);
   return (
     <Elements stripe={stripePromise}>
-      <div className="h-[100%]">
+      <div className="h-[100%] p-8">
+        <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
+          <svg
+            className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
+            viewBox="0 0 1155 678"
+          >
+            <path
+              fill="url(#45de2b6b-92d5-4d68-a6a0-9b9b2abad533)"
+              fillOpacity=".3"
+              d="M317.219 518.975L203.852 678 0 438.341l317.219 80.634 204.172-286.402c1.307 132.337 45.083 346.658 209.733 145.248C936.936 126.058 882.053-94.234 1031.02 41.331c119.18 108.451 130.68 295.337 121.53 375.223L855 299l21.173 362.054-558.954-142.079z"
+            />
+            <defs>
+              <linearGradient
+                id="45de2b6b-92d5-4d68-a6a0-9b9b2abad533"
+                x1="1155.49"
+                x2="-78.208"
+                y1=".177"
+                y2="474.645"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop stopColor="#9089FC" />
+                <stop offset={1} stopColor="#FF80B5" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
         <div>
           {clickOnSubscibe && (
             <div className="absolute left-0 right-0 bottom-0 top-0 bg-[#000000c7] z-20  text-white w-full h-full">
@@ -89,7 +114,7 @@ console.log(currentPlan)
                 <div className="text-[24px] font-bold leading-[28px] mb-[5%]">
                   Sign up & Pay
                 </div>
-                <div className="flex bg-[#ECECF4] items-center rounded-[59px] h-[63px] w-[350px] md:w-[370px] p-[10px] mb-[4%] space-x-[10px]">
+                <div className="flex bg-[#ffffff] items-center rounded-[59px] h-[63px] w-[350px] md:w-[370px] p-[10px] mb-[4%] space-x-[10px]">
                   {plans.length > 0 &&
                     plans.map((item, i) => {
                       return (
@@ -99,7 +124,7 @@ console.log(currentPlan)
                           className={`w-[33%]  text-[18px] font-medium cursor-pointer rounded-[55px] px-[19px] py-[8px] ${
                             currentPlan?.subscriptionType ===
                             item.subscriptionType
-                              ? "bg-[#3cc0f6] text-[#13213E]"
+                              ? "bg-[#3cc0f6] text-[#ffffff]"
                               : "bg-[#ECEDF5] text-[#13213E]"
                           }`}
                           // className="bg-[#3cc0f6] cursor-pointer rounded-[55px] px-[19px] py-[8px]"
@@ -113,7 +138,7 @@ console.log(currentPlan)
                 <div
                   style={{
                     background:
-                      "linear-gradient(157.47deg, #182735 14.91%, #15324E 96.07%)",
+                      "linear-gradient(157.47deg, #2edaff 14.91%, #15324E 96.07%)",
                     boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
                   }}
                   className="flex relative flex-col  rounded-[4px] text-[#ffffff] p-4 w-[306px] sm:w-[392px] md:h-[590px] h-[200px]"
@@ -202,5 +227,4 @@ console.log(currentPlan)
       </div>
     </Elements>
   );
-};
-
+}
