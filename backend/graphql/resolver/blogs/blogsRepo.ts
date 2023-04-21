@@ -28,13 +28,14 @@ export const fetchBlogIdeas = async ({id, db}: {
    return await db.db('lilleBlogs').collection('blogIdeas').findOne({blog_id: new ObjectID(id)})
 }
 
-export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null}: {
+export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null}: {
     db: any;
     text: String;
     regenerate: Boolean;
     title?: String | null;
     imageUrl?: String | null
     imageSrc?: String | null
+    ideasText?: String | null
 }) => {
     const chatgptApis = await db.db('admin').collection('chatGPT').findOne()
     let availableApi: any = null
@@ -49,8 +50,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
     let newsLetter: any = {
         linkedin: null,
         twitter: null,
-        wordpress: null,
-        image: null
+        wordpress: null
     }
     await (
         Promise.all(
@@ -58,12 +58,12 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                 try {
                     if(key === "wordpress") {
                         const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `
-                            ${regenerate ? `write a large blog for ${key} on topic ${title} with title and content using below points: \n ${text}` : `write a large blog for ${key} on  "${text}" with title and content`}
+                            ${regenerate ? `write a large blog for ${key} on topic ${title} using below points: \n ${text}` : `write a large blog for ${key} on  "${text}" with title and content`}
                         `, db}).textCompletion()
                         newsLetter = {...newsLetter, [key]: chatGPTText}
                     } else {
                         const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `
-                        ${regenerate ? `write a blog on topic ${title} for a ${key} using below points: \n ${text}` : `write a blog on "${text}" for a ${key}`}
+                        ${regenerate ? `write a blog on topic ${title} for ${key} ${key === 'linkedin' ? "linkedin post with tags under 3000 characters" : "twitter post with tags under 280 characters"} using below points: \n ${text}` : `write a blog on "${text}" for a ${key}`}
                         `, db}).textCompletion()
                         newsLetter = {...newsLetter, [key]: chatGPTText}
                     }
@@ -100,10 +100,10 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 break;
                             case "wordpress":
                                 // const title = newsLetter[key].slice(newsLetter[key].indexOf("Title:"), newsLetter[key].indexOf("Content:")).trim()
-                                const content = newsLetter[key].slice(newsLetter[key].indexOf("Content:"), newsLetter[key].length).trim()
-                                // console.log(content.split('Content:'))
-                                description = ((content.split('Content:')?.[1])?.replace("\n", ""))?.trimStart()
-                                usedIdeasArr = (content.split('Content:')[1])?.split('.')
+                                const content = newsLetter[key]
+                                console.log(newsLetter[key])
+                                description = (content?.replace("\n", ""))?.trimStart()
+                                usedIdeasArr = content?.split('.')
                                 return {
                                     published: false,
                                     published_date: false,
@@ -176,7 +176,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                 "tag": "P",
                                                 "attributes": {},
                                                 "children": [
-                                                    content.split('Content:')?.[1]
+                                                    content.length ? content : ideasText && ideasText.length ? ideasText : "Sorry, We were unable to generate the blog at this time, Please try again after some time or try with different topic."
                                                 ]
                                             }
                                         ]
