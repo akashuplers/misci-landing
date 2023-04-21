@@ -114,7 +114,7 @@ const CheckoutForm = ({ priceId, currentPlan, setClickOnSubscibe }) => {
           }
         })
         .catch((err) => console.log(err));*/
-      var response
+      var response;
       try {
         response = await axios({
           method: "post",
@@ -140,7 +140,6 @@ const CheckoutForm = ({ priceId, currentPlan, setClickOnSubscibe }) => {
       } catch (error) {
         console.log(error);
       }
- 
 
       console.log("*****", response);
     } catch (error) {
@@ -154,39 +153,47 @@ const CheckoutForm = ({ priceId, currentPlan, setClickOnSubscibe }) => {
       await axios
         .post(`${API_BASE_PATH}/auth/user/create`, payload)
         .then(() => {
-          axios.post(API_BASE_PATH + API_ROUTES.LOGIN_ENDPOINT, {email: payload.email, password: payload.password,}, {
-            headers: {
-              "Content-type": "application/json",
-            }
-          })
-          .then((response) => {
-            const data = response.data;
-            console.log(data);
-            if (data.success === false) {
-              alert("some error happened")
-              // toast.error(data.message, {
-              //   position: "top-center",
-              //   autoClose: 5000,
-              //   hideProgressBar: false,
-              //   closeOnClick: true,
-              //   pauseOnHover: true,
-              //   draggable: true,
-              //   progress: undefined,
-              //   theme: "light",
-              // });
-            } else if (data?.data?.accessToken) {
-              //redirectPageAfterLogin(data);
-              localStorage.setItem("token", JSON.stringify(data.data.accessToken));
-              if (window.location.pathname === "/subscription") {
-                window.location.href = "/dashboard";
-              } else {
-                window.location.reload();
+          axios
+            .post(
+              API_BASE_PATH + API_ROUTES.LOGIN_ENDPOINT,
+              { email: payload.email, password: payload.password },
+              {
+                headers: {
+                  "Content-type": "application/json",
+                },
               }
-            }
-          })
-          .catch((error) => {
-            console.error("Error: ", error);
-          })
+            )
+            .then((response) => {
+              const data = response.data;
+              console.log(data);
+              if (data.success === false) {
+                alert("some error happened");
+                // toast.error(data.message, {
+                //   position: "top-center",
+                //   autoClose: 5000,
+                //   hideProgressBar: false,
+                //   closeOnClick: true,
+                //   pauseOnHover: true,
+                //   draggable: true,
+                //   progress: undefined,
+                //   theme: "light",
+                // });
+              } else if (data?.data?.accessToken) {
+                //redirectPageAfterLogin(data);
+                localStorage.setItem(
+                  "token",
+                  JSON.stringify(data.data.accessToken)
+                );
+                if (window.location.pathname === "/subscription") {
+                  window.location.href = "/dashboard";
+                } else {
+                  window.location.reload();
+                }
+              }
+            })
+            .catch((error) => {
+              console.error("Error: ", error);
+            });
         });
       console.log("In create user");
       console.log("====================================");
@@ -242,9 +249,8 @@ const CheckoutForm = ({ priceId, currentPlan, setClickOnSubscibe }) => {
     <div
       style={{
         backdropFilter: "blur(10px)",
-        border: "2px solid white",
       }}
-      className={" py-3  px-4  rounded rounded-5 my-3"}
+      className={" py-3  px-4 w-[50%] mx-auto rounded rounded-5 my-3"}
     >
       <div className="px-4 mt-7">
         <h2 className="fw-bold text-4xl  my-2 ">Join us today 👋</h2>
@@ -518,7 +524,9 @@ const CheckoutForm = ({ priceId, currentPlan, setClickOnSubscibe }) => {
               </button>
             )}
             <button
-              type=""
+              onClick={() => {
+                window.location.href = "/pricing";
+              }}
               className="rounded-[4px] cursor-pointer  text-[16px] font-bold text-[#13213e] py-[20px] w-full"
             >
               <span className="opacity-[0.7]">Cancel</span>
