@@ -96,6 +96,8 @@ export default function Post() {
     }
   }, [meeData]);
 
+console.log(freshIdeasReferences)
+
   return (
     <>
       <Layout>
@@ -142,6 +144,8 @@ export default function Post() {
             setTags={setTags}
 
             freshIdeasReferences = {freshIdeasReferences}
+            setFreshIdeaReferences={setFreshIdeasReferences}
+
             reference={reference}
             setReference={setReference}
 

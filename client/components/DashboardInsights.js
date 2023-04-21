@@ -22,17 +22,14 @@ export default function DashboardInsights({
   ideas,
   setIdeas,
 
-  freshIdeas:oldFreshIdeas,
-
   blog_id,
   setblog_id,
 
   tags,
   setTags,
 
-  freshIdeasReferences,
   reference,
-  setReferences,
+  setRefrences,
 
   setBlogData,
   setEditorText,
@@ -50,12 +47,7 @@ export default function DashboardInsights({
   const [fileValid, setFileValid] = useState(false);
 
   const [ideaType, setIdeaType] = useState("used");
-  const [freshIdeas, setFreshIdeas] = useState([]);
-  const [freshFilteredIdeas, setFreshFilteredIdeas] = useState([])
-
-  useEffect(() => {
-    setFreshIdeas(oldFreshIdeas)
-  },[oldFreshIdeas])
+  const [freshIdea, setFreshIdea] = useState([]);
 
   const [newIdeaLoad, setNewIdeaLoad] = useState(false);
 
@@ -75,6 +67,23 @@ export default function DashboardInsights({
     setHover(false);
   };
 
+  useEffect(() => {
+    if (ideaType === "used") {
+      const arr = [];
+      ideas.forEach((idea) => {
+        if (idea?.used) {
+          const ideaObject = {
+            text: idea?.idea,
+            article_id: idea?.article_id,
+          };
+          arr.push(ideaObject);
+        }
+      });
+      setRegenSelected(arr);
+      console.log("<<<<<<<<", regenSelected);
+    }
+  }, []);
+
   function handleInputClick(idea, article_id, e) {
     const ideaObject = {
       text: idea,
@@ -91,7 +100,7 @@ export default function DashboardInsights({
     });
     if (check) return;
 
-    if (regenSelected?.length >= 5) {
+    if (regenSelected.length >= 5) {
       e.target.checked = false;
       return;
     }
@@ -116,32 +125,37 @@ export default function DashboardInsights({
     );
   }
 
+  const [refClickCount, setRefClickCount] = useState(1);
   function handleRefClick(e) {
+    setIdeaType("used");
     e.target.classList.toggle("active");
     //const refCount = e.target.firstElementChild;
 
     /* Adding or removing the keywords to an array */
     const filterText = e.target.dataset.url;
 
-    const valueExists = filteredArray.find((el) => Object.values(el).indexOf(filterText) > -1);
+    const valueExists = filteredArray.find(
+      (el) => Object.values(el).indexOf(filterText) > -1
+    );
     if (valueExists) {
-      setFilteredArray((prev) => [...prev.filter((el) => el.filterText !== filterText)]);
+      setFilteredArray((prev) => [
+        ...prev.filter((el) => el.filterText !== filterText),
+      ]);
+      setRefClickCount((prev) => prev - 1);
     } else {
       setFilteredArray((prev) => [...prev, { filterText, criteria: "ref" }]);
+      setRefClickCount((prev) => prev + 1);
     }
+
+    // if(refCount != null){
+    //   refCount.classList.toggle("!hidden")
+    //   refCount.innerText = refClickCount
+    // }
   }
 
   useEffect(() => {
     const fresh = document.querySelector(".idea-button.fresh");
     const used = document.querySelector(".idea-button.used");
-
-    const tags = document.querySelectorAll(".tag-button.cta");
-    const refButtons = document.querySelectorAll(".ref-button.cta");
-
-    tags?.forEach(tag => tag?.classList.remove("active"));
-    refButtons?.forEach(btn => btn?.classList.remove("active"));
-
-    setFilteredArray([]);
 
     if (ideaType === "used") {
       fresh?.classList.remove("active");
@@ -155,36 +169,20 @@ export default function DashboardInsights({
   // Adds the matched idea into notUniqueFilteredIdeas
   useEffect(() => {
     setFilteredIdeas([]);
-    setFreshFilteredIdeas([]);
-
     setNotUniqueFilteredIdeas([]);
+    console.log(filteredArray);
 
-    if(ideaType === "used"){
-      filteredArray.forEach((filterObject) =>
-        ideas.forEach((idea) => {
-          if (filterObject?.criteria === "tag") {
-            idea?.idea?.indexOf(filterObject?.filterText) >= 0 &&
-              setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-          } else if (filterObject?.criteria === "ref") {
-            idea?.reference?.link === filterObject?.filterText &&
-              setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-          }
-        })
-      );
-    }else if(ideaType === "fresh"){
-      filteredArray.forEach((filterObject) =>
-        freshIdeas.forEach((idea) => {
-          if (filterObject?.criteria === "tag") {
-            idea?.idea?.indexOf(filterObject?.filterText) >= 0 &&
-              setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-          } else if (filterObject?.criteria === "ref") {
-            idea?.reference?.link === filterObject?.filterText &&
-              setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-          }
-        })
-      );
-    }
-
+    filteredArray.forEach((filterObject) =>
+      ideas.forEach((idea) => {
+        if (filterObject?.criteria === "tag") {
+          idea.idea.indexOf(filterObject?.filterText) >= 0 &&
+            setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
+        } else if (filterObject?.criteria === "ref") {
+          idea.reference.link === filterObject?.filterText &&
+            setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
+        }
+      })
+    );
   }, [filteredArray]);
 
   // We create a set so that the values are unique, and multiple ideas are not added
@@ -195,24 +193,24 @@ export default function DashboardInsights({
     );
 
     // Create a new array from the Set object
-    let uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse)
-    uniqueFilteredArray = uniqueFilteredArray.sort((a,b) =>  a?.reference?.link.localeCompare(b?.reference?.link))
+    const uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse);
 
     // Add a new property to each idea calles citation number.
-    var prevLink = uniqueFilteredArray[0]?.reference?.link;
+    var prevLink = uniqueFilteredArray[0]?.reference.link;
     var citationNumber = 1;
     uniqueFilteredArray.forEach((idea, index) => {
-      if (idea?.reference?.link !== prevLink) {
+      if (idea.reference.link !== prevLink) {
         citationNumber++;
       }
-      prevLink = idea?.reference?.link;
+      console.log(
+        new URL(idea.reference.link).hostname,
+        new URL(prevLink).hostname,
+        citationNumber
+      );
+      prevLink = idea.reference.link;
       idea.citationNumber = citationNumber;
 
-      if(ideaType === "used"){
-        setFilteredIdeas((prev) => [...prev, idea]);
-      }else if(ideaType === "fresh"){
-        setFreshFilteredIdeas((prev) => [...prev, idea]);
-      }
+      setFilteredIdeas((prev) => [...prev, idea]);
     });
   }, [notUniquefilteredIdeas]);
 
@@ -225,8 +223,7 @@ export default function DashboardInsights({
   }, [filteredIdeas]);
 
   function handleRegenerate() {
-    console.log(regenSelected);
-    if (regenSelected?.length >= 1) {
+    if (regenSelected.length >= 1) {
       console.log(regenSelected);
       RegenerateBlog({
         variables: {
@@ -250,7 +247,7 @@ export default function DashboardInsights({
 
           // const aa = data.regenerateBlog.publish_data[2].tiny_mce_data;
           const aa = data.regenerateBlog.publish_data.find(
-            (pd) => pd.platform === "linkedin"
+            (pd) => pd.platform === "wordpress"
           ).tiny_mce_data;
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
@@ -290,7 +287,7 @@ export default function DashboardInsights({
         .finally(() => {
           setIdeaType("used");
           setRegenSelected([]);
-          setFreshIdeas([]);
+          setFreshIdea([]);
         });
     }
   }
@@ -359,7 +356,7 @@ export default function DashboardInsights({
       .then((response) => {
         setIdeaType("fresh");
         console.log(response.data);
-        setFreshIdeas(response.data.data);
+        setFreshIdea(response.data.data);
 
         setPyResTime(response.data.pythonRespTime);
         setNdResTime(response.data.respTime);
@@ -409,34 +406,6 @@ export default function DashboardInsights({
     Gbid = localStorage.getItem("Gbid");
   }
 
-  function handleCitationFunction(link) {
-    let filtered;
-    // console.log(link)
-    if(ideaType === "used"){
-      reference.forEach((el,index) => {
-        // console.log(el)
-        if(el.url === link){
-          filtered = index;
-        }
-      })
-    }else if(ideaType === "fresh"){
-      freshIdeasReferences.forEach((el,index) => {
-        // console.log(el)
-        if(el.url === link){
-          filtered = index;
-        }
-      })
-    }
-
-    if(filtered === 0 || filtered) {
-      return filtered + 1;
-    }
-    else {
-      console.log(link, reference, "search")
-      return null;
-    }
-  }
-
   if (loading || regenLoading) return <LoaderScan />;
 
   return (
@@ -449,7 +418,7 @@ export default function DashboardInsights({
         handleSave={() => (window.location = "/dashboard/" + blog_id)}
         bid={blog_id}
       />
-      <div className="w-[35%] text-xs px-2" style={{ width: "40%" }}>
+      <div className="w-[35%] text-xs px-2 mt-5" style={{ width: "40%" }}>
         <div className="flex justify-between gap-[1.25em]">
           <p className="font-normal w-[70%]">
             Regenerate your blog on the basis of selected used & fresh ideas.
@@ -503,8 +472,7 @@ export default function DashboardInsights({
               <p className="pt-[0.65em] font-semibold">Sources</p>
             </div>
             <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll pt-[0.65em]">
-              {ideaType === "used" ? 
-              reference?.map((ref,index) => {
+              {reference?.map((ref) => {
                 return (
                   <div
                     className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
@@ -513,7 +481,7 @@ export default function DashboardInsights({
                   >
                     {ref.source}
                     <span
-                      className=""
+                      className="!hidden"
                       style={{
                         position: "absolute",
                         bottom: "70%",
@@ -529,52 +497,38 @@ export default function DashboardInsights({
                         zIndex: "100",
                         alignItems: "center",
                       }}
-                    >{index + 1}</span>
+                    ></span>
                   </div>
                 );
-              }) : 
-              freshIdeasReferences?.map((ref,index) => {
-                return (
-                  <div
-                    className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
-                    onClick={handleRefClick}
-                    data-url={ref.url}
-                  >
-                    {ref.source}
-                    <span
-                      className=""
-                      style={{
-                        position: "absolute",
-                        bottom: "70%",
-                        left: "92%",
-                        backgroundColor: "#4a3afe",
-                        color: "white",
-                        width: "14px",
-                        height: "14px",
-                        fontSize: "0.65rem",
-                        borderRadius: "100px",
-                        display: "flex",
-                        justifyContent: "center",
-                        zIndex: "100",
-                        alignItems: "center",
-                      }}
-                    >{index + 1}</span>
-                  </div>
-              )})
-              }
+              })}
             </div>
           </div>
         )}
-        <div className="flex py-2">
+        <div className="flex py-2 px-2">
           <button
             className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs"
             onClick={(e) => {
               setIdeaType("used");
+              const arr = [];
+              ideas.forEach((idea) => {
+                if (idea?.used) {
+                  const ideaObject = {
+                    text: idea?.idea,
+                    article_id: idea?.article_id,
+                  };
+                  arr.push(ideaObject);
+                }
+              });
+
+              setRegenSelected(arr);
             }}
           >
-            Used Idea(s)
+            Used Idea(s){" "}
+            <span className=" mx-auto bg-blue-200 text-xs p-2 font-bold text-sky-800 rounded-full">
+              {ideas?.length}
+            </span>
           </button>
-          {isAuthenticated && freshIdeas?.length > 0 && (
+          {isAuthenticated && (
             <button
               className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs"
               onClick={(e) => {
@@ -586,7 +540,10 @@ export default function DashboardInsights({
                 className="w-5 h-5"
                 style={{ pointerEvents: "none" }}
               />
-              Fresh Idea(s)
+              Fresh Idea(s){" "}
+              <span className="mx-auto bg-blue-200 p-2 font-bold text-xs text-sky-800 rounded-full">
+                {freshIdea?.length}
+              </span>
             </button>
           )}
         </div>
@@ -705,7 +662,7 @@ export default function DashboardInsights({
           </>
         )}
         <div
-          className="overflow-y-scroll absolute px-2 mb-6 border-solid border-2 p-2"
+          className="overflow-y-scroll absolute px-2 mb-6 border-solid border-2 p-2 rounded"
           style={{
             marginRight: "0.5em",
             maxHeight: "82vh",
@@ -713,12 +670,19 @@ export default function DashboardInsights({
           }}
         >
           {ideaType === "used"
-            ? filteredIdeas?.length > 0
+            ? filteredIdeas.length > 0
               ? filteredIdeas?.map((idea, index) => {
+                  var citationNumber = 1;
+
                   return (
                     <div className="flex pb-3" key={index}>
                       <div className="flex justify-between gap-5 w-full">
-                        <p>{idea?.idea}</p>
+                        <p>
+                          {idea?.idea}{" "}
+                          {idea?.name && (
+                            <span className="italic">[{idea?.name}]</span>
+                          )}
+                        </p>
                         <a
                           style={{
                             color: "#4a3afe",
@@ -738,7 +702,7 @@ export default function DashboardInsights({
                               .classList.add("hidden");
                           }}
                         >
-                          {handleCitationFunction(idea?.reference?.link)}
+                          {idea.citationNumber}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{
@@ -801,7 +765,12 @@ export default function DashboardInsights({
                   return (
                     <div className="flex pb-3 usedIdeas" key={index}>
                       <div className="flex justify-between gap-5 w-full">
-                        <p>{idea?.idea}</p>
+                        <p>
+                          {idea?.idea}{" "}
+                          {idea?.name && (
+                            <span className="italic">[{idea?.name}]</span>
+                          )}
+                        </p>
                         <a
                           style={{
                             color: "#4a3afe",
@@ -821,8 +790,7 @@ export default function DashboardInsights({
                               .classList.add("hidden");
                           }}
                         >
-                          {/* {idea?.reference?.type === "article" ? "[2]" : "[1]"} */}
-                          {handleCitationFunction(idea?.reference?.link)}
+                          {idea?.reference?.type === "article" ? "[2]" : "[1]"}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{
@@ -860,7 +828,7 @@ export default function DashboardInsights({
                           type="checkbox"
                           className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                           checked={idea?.used}
-                          onClick={() => {
+                          onClick={(e) => {
                             console.log(idea);
                             const updatedIdeas = ideas.map((el, elIndex) =>
                               elIndex === index
@@ -868,175 +836,93 @@ export default function DashboardInsights({
                                 : el
                             );
                             setIdeas(updatedIdeas);
+                            handleInputClick(idea?.idea, idea?.article_id, e);
+                            console.log("}}}", regenSelected);
                           }}
                         />
                       </div>
                     </div>
-                  )
+                  );
                 })
             : ""}
           {ideaType === "fresh"
-            ? freshFilteredIdeas?.length > 0
-              ? freshFilteredIdeas?.map((idea, index) => {
-                  return (
-                    <div className="flex pb-3" key={index}>
-                      <div className="flex justify-between gap-5 w-full">
-                        <p>{idea?.idea}</p>
-                        <a
+            ? freshIdea?.map((idea, index) => {
+                return (
+                  <div className="flex pb-3" key={index}>
+                    <div className="flex justify-between gap-5 w-full">
+                      <p>{idea?.idea}</p>
+                      <a
+                        style={{
+                          color: "#4a3afe",
+                          alignSelf: "flex-start",
+                          position: "relative",
+                          marginLeft: "auto",
+                          cursor: "pointer",
+                        }}
+                        onMouseEnter={() => {
+                          document
+                            .querySelector(`.refrenceTooltip${index}`)
+                            .classList.remove("hidden");
+                        }}
+                        onMouseLeave={() => {
+                          document
+                            .querySelector(`.refrenceTooltip${index}`)
+                            .classList.add("hidden");
+                        }}
+                      >
+                        {idea?.reference?.type === "article" ? "[2]" : "[1]"}
+                        <div
+                          className={`hidden refrenceTooltip${index}`}
                           style={{
-                            color: "#4a3afe",
-                            alignSelf: "flex-start",
-                            position: "relative",
-                            marginLeft: "auto",
-                            cursor: "pointer",
-                          }}
-                          onMouseEnter={() => {
-                            document
-                              .querySelector(`.refrenceTooltip${index}`)
-                              .classList.remove("hidden");
-                          }}
-                          onMouseLeave={() => {
-                            document
-                              .querySelector(`.refrenceTooltip${index}`)
-                              .classList.add("hidden");
+                            position: "absolute",
+                            top: "100%",
+                            right: "0",
+                            border: "1px solid",
+                            color: "black",
+                            backgroundColor: "white",
+                            padding: "0.5em",
+                            borderRadius: "5px",
+                            zIndex: "1",
                           }}
                         >
-                          {handleCitationFunction(idea?.reference?.link)}
-                          <div
-                            className={`hidden refrenceTooltip${index}`}
-                            style={{
-                              position: "absolute",
-                              top: "100%",
-                              right: "0",
-                              border: "1px solid",
-                              color: "black",
-                              backgroundColor: "white",
-                              padding: "0.5em",
-                              borderRadius: "5px",
-                              zIndex: "1",
-                            }}
-                          >
-                            {idea?.name}{" "}
-                            {idea?.reference?.type === "article" ? (
-                              <a
-                                href={idea?.reference?.link}
-                                target="_blank"
-                                style={{ color: "blue" }}
-                              >
-                                Link
-                              </a>
-                            ) : (
-                              <Link
-                                href={`/dashboard/${idea?.reference?.id}`}
-                                target="_blank"
-                              >
-                                Link
-                              </Link>
-                            )}
-                          </div>
-                        </a>
-                        <input
-                          type="checkbox"
-                          className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                          checked={idea?.used}
-                          onClick={() => {
-                            const updatedIdeas = ideas.map((el) =>
-                              el.idea === idea.idea
-                                ? { ...el, used: el.used === 1 ? 0 : 1 }
-                                : el
-                            );
-                            setIdeas(updatedIdeas);
-
-                            const updatedFilteredIdeas = filteredIdeas.map(
-                              (el, elIndex) =>
-                                elIndex === index
-                                  ? { ...el, used: el.used === 1 ? 0 : 1 }
-                                  : el
-                            );
-                            setFilteredIdeas(updatedFilteredIdeas);
-                          }}
-                        />
-                      </div>
+                          {idea?.name}{" "}
+                          {idea?.reference?.type === "article" ? (
+                            <a
+                              href={idea?.reference?.link}
+                              target="_blank"
+                              style={{ color: "blue" }}
+                            >
+                              Link
+                            </a>
+                          ) : (
+                            <Link
+                              href={`/dashboard/${idea?.reference?.id}`}
+                              target="_blank"
+                            >
+                              Link
+                            </Link>
+                          )}
+                        </div>
+                      </a>
+                      <input
+                        type="checkbox"
+                        className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                        onClick={(e) => {
+                          console.log(idea);
+                          const updatedIdeas = freshIdea.map((el, elIndex) =>
+                            elIndex === index
+                              ? { ...el, used: el.used === 1 ? 0 : 1 }
+                              : el
+                          );
+                          setFreshIdea(updatedIdeas);
+                          handleInputClick(idea?.idea, idea?.article_id, e);
+                        }}
+                        checked={idea?.used}
+                      />
                     </div>
-                  );
-                })
-              : freshIdeas?.map((idea, index) => {
-                  return (
-                    <div className="flex pb-3" key={index}>
-                      <div className="flex justify-between gap-5 w-full">
-                        <p>{idea?.idea}</p>
-                        <a
-                          style={{
-                            color: "#4a3afe",
-                            alignSelf: "flex-start",
-                            position: "relative",
-                            marginLeft: "auto",
-                            cursor: "pointer",
-                          }}
-                          onMouseEnter={() => {
-                            document
-                              .querySelector(`.refrenceTooltip${index}`)
-                              .classList.remove("hidden");
-                          }}
-                          onMouseLeave={() => {
-                            document
-                              .querySelector(`.refrenceTooltip${index}`)
-                              .classList.add("hidden");
-                          }}
-                        >
-                          {handleCitationFunction(idea?.reference?.link)}
-                          <div
-                            className={`hidden refrenceTooltip${index}`}
-                            style={{
-                              position: "absolute",
-                              top: "100%",
-                              right: "0",
-                              border: "1px solid",
-                              color: "black",
-                              backgroundColor: "white",
-                              padding: "0.5em",
-                              borderRadius: "5px",
-                              zIndex: "1",
-                            }}
-                          >
-                            {idea?.name}{" "}
-                            {idea?.reference?.type === "article" ? (
-                              <a
-                                href={idea?.reference?.link}
-                                target="_blank"
-                                style={{ color: "blue" }}
-                              >
-                                Link
-                              </a>
-                            ) : (
-                              <Link
-                                href={`/dashboard/${idea?.reference?.id}`}
-                                target="_blank"
-                              >
-                                Link
-                              </Link>
-                            )}
-                          </div>
-                        </a>
-                        <input
-                          type="checkbox"
-                          className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                          onClick={(e) => {
-                            console.log(idea);
-                            const updatedIdeas = freshIdeas.map((el, elIndex) =>
-                              elIndex === index
-                                ? { ...el, used: el.used === 1 ? 0 : 1 }
-                                : el
-                            );
-                            setFreshIdeas(updatedIdeas);
-                            handleInputClick(idea?.idea, idea?.article_id, e);
-                          }}
-                          checked={idea?.used}
-                        />
-                      </div>
-                    </div>
-                  );
-                })
+                  </div>
+                );
+              })
             : ""}
         </div>
       </div>
