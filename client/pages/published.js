@@ -13,10 +13,12 @@ import { toast } from "react-toastify";
 import Modal from "react-modal";
 import { ToastContainer } from "react-toastify";
 import Link from "next/link";
+import { useApolloClient } from "@apollo/client";
 
 const PAGE_COUNT = 12;
 
 export default function Saved() {
+  const client = useApolloClient();
   const [pageSkip, setPageSkip] = useState(0);
   const [blog_id, setblog_id] = useState("");
   const [openModal, setOpenModal] = useState(false);
@@ -67,6 +69,7 @@ export default function Saved() {
   ];
 
   const handleDelete = () => {
+    setOpenModal(false);
     console.log("blog_id", blog_id);
     DeleteBlog({
       variables: {
@@ -96,9 +99,7 @@ export default function Saved() {
           progress: undefined,
           theme: "light",
         });
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
+        client.cache.evict({ blog_id: blog_id });
       });
   };
 

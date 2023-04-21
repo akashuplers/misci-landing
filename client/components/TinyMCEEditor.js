@@ -223,9 +223,10 @@ export default function TinyMCEEditor({
   };
 
   const handlePublish = () => {
-    const jsonData = htmlToJson(editorText)?.children[3]?.children[0];
+    const datafromapi = htmlToJson(editorText);
+    const jsonData = datafromapi?.children[3]?.children[0];
     setPublishLinkLoad(true);
-    console.log("req here");
+    console.log("req here", jsonData);
 
     const data = {
       token: linkedInAccessToken,
@@ -256,7 +257,30 @@ export default function TinyMCEEditor({
           theme: "light",
         });
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          toast.success(error.response.data, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          console.log(error.response.data); // log error response message
+          console.log(error.response.status); // log error status code
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log("Error", error.message);
+        }
+      });
   };
 
   function handleBlog(e) {
