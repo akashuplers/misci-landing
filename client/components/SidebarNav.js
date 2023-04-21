@@ -276,7 +276,7 @@ export default function Sidebar() {
               <div className="flex flex-shrink-0 pb-0 pt-4">
                 <Link
                   href="/upgrade"
-                  className="ml-6 inline-flex items-center rounded-md bg-[#4A3AFE] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  className="ml-6 inline-flex items-center rounded-md bg-[#4062FF] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   style={{
                     margin: "0em 0.5em",
                     width: "100%",
@@ -341,7 +341,7 @@ export default function Sidebar() {
               <Bars3Icon className="h-6 w-6" aria-hidden="true" />
             </button>
           </div>
-          <main className="flex-1 bg-white">
+          <main className="flex-1 ">
             <div className="py-2 pb-4">
               <div className="mx-auto max-w-7xl px-2 flex relative">
                 <div className="pt-4">
