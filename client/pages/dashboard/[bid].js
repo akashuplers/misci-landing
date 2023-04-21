@@ -144,6 +144,8 @@ console.log(freshIdeasReferences)
             setTags={setTags}
 
             freshIdeasReferences = {freshIdeasReferences}
+            setFreshIdeaReferences={setFreshIdeasReferences}
+
             reference={reference}
             setReference={setReference}
 
