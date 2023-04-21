@@ -92,7 +92,7 @@ export default function Footer() {
   };
   return (
     <footer
-      className="mt-[5em] border-solid border-2 p-2"
+      className="mt-[1em] border-solid border-2 "
       aria-labelledby="footer-heading"
     >
       {/* <footer className="mt-24 sm:mt-56" aria-labelledby="footer-heading"> */}
@@ -102,10 +102,15 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-6 pb-8 lg:px-8 mt-12">
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-8">
-            <img className="h-9" src="/lille_logo_new.png" alt="Company name" />
+            <img
+              className="h-12"
+              src="/lille_logo_new.png"
+              alt="Company name"
+            />
             <p className="text-sm leading-6 text-gray-600">
-              Making the world a better place through constructing elegant
-              hierarchies.
+              Streamline your content creation process with our website that
+              generates blog posts from URLs or uploaded files, providing
+              concise and informative content in no time.
             </p>
             <div className="flex space-x-6">
               {footerNavigation.social.map((item) => (
@@ -197,7 +202,7 @@ export default function Footer() {
         </div>
         <div className="mt-16 border-t border-gray-900/10 pt-8 sm:mt-20 lg:mt-24">
           <p className="text-xs leading-5 text-gray-500">
-            &copy; 2020 Your Company, Inc. All rights reserved.
+            &copy; 2023 Lille, Inc. All rights reserved.
           </p>
         </div>
       </div>
