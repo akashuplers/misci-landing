@@ -144,18 +144,17 @@ export default function dashboard({ query }) {
       };
 
       axios(config)
-        .then((response) => response.data.data)
-        .then((data) => {
-          console.log("fetchblog ", data);
-
+        .then((response) => {
+          const data = response?.data?.data;
+          console.log("fetchblog>>>> ", data);
           setBlogData(data.fetchBlog);
           setIdeas(data.fetchBlog.ideas.ideas);
           setTags(data.fetchBlog.tags);
           setFreshIdeasReferences(data?.fetchBlog?.freshIdeasReferences);
-          setReference(data.fetchBlog.references);
-          setFreshIdeas(data.fetchBlog.idea.freshIdeas);
-          setblog_id(data.fetchBlog._id);
-
+          setReference(data?.fetchBlog?.references);
+          setFreshIdeas(data?.fetchBlog?.idea?.freshIdeas);
+          setblog_id(data?.fetchBlog?._id);
+          console.log("nnububhj", data?.fetchBlog?.references);
           const aa = data.fetchBlog.publish_data.find(
             (pd) => pd.platform === "wordpress"
           ).tiny_mce_data;
@@ -163,11 +162,13 @@ export default function dashboard({ query }) {
           setEditorText(htmlDoc);
 
           const queryParams = router.query;
+          console.log("queryParams", queryParams);
           if (!queryParams.code) {
             localStorage.removeItem("bid");
             localStorage.removeItem("loginProcess");
           }
         })
+        .then((data) => {})
         .finally(() => {
           toast.success("LinkedIn SignUp Succesfull!!");
         })
