@@ -630,7 +630,7 @@ export default function TinyMCEEditor({
           plugins: "lists code table codesample link",
           menubar: false,
           statusbar: false,
-          height: "80vh",
+          height: "82vh",
           images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
           images_upload_credentials: true,
           plugins:
@@ -741,6 +741,7 @@ export default function TinyMCEEditor({
           // console.log(updatedText);
         }}
       />
+      <hr />
     </>
   );
 }
