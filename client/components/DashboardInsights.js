@@ -31,6 +31,8 @@ export default function DashboardInsights({
   setTags,
 
   freshIdeasReferences,
+  setFreshIdeaReferences,
+
   reference,
   setReferences,
 
@@ -43,9 +45,7 @@ export default function DashboardInsights({
   const [enabled, setEnabled] = useState(false);
 
   const [formInput, setformInput] = useState("");
-  const [freshIdeaFromKeyword, setFreshIdeaFromKeyword] = useState(false);
   const [urlValid, setUrlValid] = useState(false);
-  const [keywordFreshDashboard, setKeywordFreshDashboard] = useState([])
   const [file, setFile] = useState(null);
   const [fileValid, setFileValid] = useState(false);
 
@@ -223,11 +223,11 @@ export default function DashboardInsights({
 
   /*
   keep this for de-bugging
-  */
   useEffect(() => {
     console.log(filteredArray);
     console.log(filteredIdeas);
   }, [filteredIdeas]);
+  */
 
   function handleRegenerate() {
     console.log(regenSelected);
@@ -365,11 +365,10 @@ export default function DashboardInsights({
         setIdeaType("fresh");
         console.log(response.data);
         setFreshIdeas(response.data.data);
-        setFreshIdeaFromKeyword(true);
-        setKeywordFreshDashboard(response.data.references)
+        setFreshIdeaReferences(response.data.references)
+
         setPyResTime(response.data.pythonRespTime);
         setNdResTime(response.data.respTime);
-        console.log(freshIdeaFromKeyword);
         console.log(freshIdeas);
         const fresh = document.querySelector(".idea-button.fresh");
         const used = document.querySelector(".idea-button.used");
@@ -418,40 +417,33 @@ export default function DashboardInsights({
 
   function handleCitationFunction(link) {
     let filtered;
-    if (ideaType === "used") {
-      reference.forEach((el, index) => {
-        if (el.url === link) {
+    // console.log(link)
+    if(ideaType === "used"){
+      reference.forEach((el,index) => {
+        // console.log(el)
+        if(el.url === link){
           filtered = index;
         }
-      });
-    } else if (ideaType === "fresh") {
-      if (freshIdeaFromKeyword) {
-        freshIdeas.forEach((el, index) => {
-          if (el.reference.link === link) {
-            filtered = index;
-            console.log("ak", filtered, index)
-          }
-        });
-      } else {
-        freshIdeasReferences.forEach((el, index) => {
-          console.log("new", el);
-          if (el.url === link) {
-            filtered = index;
-          }
-        });
-      }
+      })
+    }else if(ideaType === "fresh"){
+      freshIdeasReferences.forEach((el,index) => {
+        console.log(el.url, link)
+        if(el.url === link){
+          filtered = index;
+        }
+      })
     }
 
-    if (filtered === 0 || filtered) {
+    if(filtered === 0 || filtered) {
       return filtered + 1;
-    } else {
-      console.log(link, reference, "search");
+    }
+    else {
+      // console.log(link, reference, "search")
       return null;
     }
   }
 
   if (loading || regenLoading) return <LoaderScan />;
-console.log("freshReferences", freshIdeasReferences)
   return (
     <>
       <AuthenticationModal
@@ -510,108 +502,84 @@ console.log("freshReferences", freshIdeasReferences)
             </div>
           </div>
         )}
-        {reference?.length > 0 && (
-          <div>
-            <div className="flex justify-between w-full items-center py-2">
-              <p className="pt-[0.65em] font-semibold">Sources</p>
-            </div>
-            <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll pt-[0.65em]">
-              {ideaType === "used"
-                ? reference?.map((ref, index) => {
-                    return (
-                      <div
-                        className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
-                        onClick={handleRefClick}
-                        data-url={ref.url}
-                      >
-                        {ref.source}
-                        <span
-                          className=""
-                          style={{
-                            position: "absolute",
-                            bottom: "70%",
-                            left: "92%",
-                            backgroundColor: "#4a3afe",
-                            color: "white",
-                            width: "14px",
-                            height: "14px",
-                            fontSize: "0.65rem",
-                            borderRadius: "100px",
-                            display: "flex",
-                            justifyContent: "center",
-                            zIndex: "100",
-                            alignItems: "center",
-                          }}
-                        >
-                          {index + 1}
-                        </span>
-                      </div>
-                    );
-                  })
-                : !freshIdeaFromKeyword ? freshIdeasReferences?.map((ref, index) => {
-                    return (
-                      <div
-                        className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
-                        onClick={handleRefClick}
-                        data-url={ref.url}
-                      >
-                        {ref.source}
-                        <span
-                          className=""
-                          style={{
-                            position: "absolute",
-                            bottom: "70%",
-                            left: "92%",
-                            backgroundColor: "#4a3afe",
-                            color: "white",
-                            width: "14px",
-                            height: "14px",
-                            fontSize: "0.65rem",
-                            borderRadius: "100px",
-                            display: "flex",
-                            justifyContent: "center",
-                            zIndex: "100",
-                            alignItems: "center",
-                          }}
-                        >
-                          {index + 1}
-                        </span>
-                      </div>
-                    );
-                  }) : keywordFreshDashboard?.map((ref, index) => {
-                    return (
-                      <div
-                        className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
-                        onClick={handleRefClick}
-                        data-url={ref.url}
-                      >
-                        {ref.source}
-                        <span
-                          className=""
-                          style={{
-                            position: "absolute",
-                            bottom: "70%",
-                            left: "92%",
-                            backgroundColor: "#4a3afe",
-                            color: "white",
-                            width: "14px",
-                            height: "14px",
-                            fontSize: "0.65rem",
-                            borderRadius: "100px",
-                            display: "flex",
-                            justifyContent: "center",
-                            zIndex: "100",
-                            alignItems: "center",
-                          }}
-                        >
-                          {index + 1}
-                        </span>
-                      </div>
-                    );
-                  })}
-            </div>
+        <div>
+          <div className="flex justify-between w-full items-center py-2">
+            <p className="pt-[0.65em] font-semibold">Sources</p>
           </div>
-        )}
+          <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll pt-[0.65em]">
+            {ideaType === "used" 
+              ? 
+                (
+                  reference?.length > 0 
+                  ?
+                    reference?.map((ref,index) => {
+                      return (
+                        <div
+                          className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
+                          onClick={handleRefClick}
+                          data-url={ref.url}
+                        >
+                          {ref.source}
+                          <span
+                            className=""
+                            style={{
+                              position: "absolute",
+                              bottom: "70%",
+                              left: "92%",
+                              backgroundColor: "#4a3afe",
+                              color: "white",
+                              width: "14px",
+                              height: "14px",
+                              fontSize: "0.65rem",
+                              borderRadius: "100px",
+                              display: "flex",
+                              justifyContent: "center",
+                              zIndex: "100",
+                              alignItems: "center",
+                            }}
+                          >{index + 1}</span>
+                        </div>
+                      );
+                    }) 
+                  : <div>Used Idea sources not found</div>
+                )
+              : 
+                (
+                  freshIdeasReferences?.length > 0 
+                  ?
+                    freshIdeasReferences?.map((ref,index) => {
+                      return (
+                        <div
+                          className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
+                          onClick={handleRefClick}
+                          data-url={ref.url}
+                        >
+                          {ref.source}
+                          <span
+                            className=""
+                            style={{
+                              position: "absolute",
+                              bottom: "70%",
+                              left: "92%",
+                              backgroundColor: "#4a3afe",
+                              color: "white",
+                              width: "14px",
+                              height: "14px",
+                              fontSize: "0.65rem",
+                              borderRadius: "100px",
+                              display: "flex",
+                              justifyContent: "center",
+                              zIndex: "100",
+                              alignItems: "center",
+                            }}
+                          >{index + 1}</span>
+                        </div>
+                    )})
+                  : <div>Fresh Idea sources not found</div>
+                )
+            }
+          </div>
+        </div>
         <div className="flex py-2">
           <button
             className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs"

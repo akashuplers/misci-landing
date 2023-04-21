@@ -150,7 +150,7 @@ export default function dashboard({ query }) {
           setBlogData(data.fetchBlog);
           setIdeas(data.fetchBlog.ideas.ideas);
           setTags(data.fetchBlog.tags);
-          setFreshIdeasReferences(data?.fetchBlog?.idea?.freshIdeas)
+          setFreshIdeasReferences(data?.fetchBlog?.freshIdeasReferences)
           setReference(data.fetchBlog.references);
           setFreshIdeas(data.fetchBlog.idea.freshIdeas);
           setblog_id(data.fetchBlog._id);
@@ -274,6 +274,8 @@ console.log(freshIdeasReferences)
             setNdResTime={setNdResTime}
 
             freshIdeasReferences = {freshIdeasReferences}
+            setFreshIdeaReferences={setFreshIdeasReferences}
+            
             reference={reference}
             setReference={setReference}
           />
