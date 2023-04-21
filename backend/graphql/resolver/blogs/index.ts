@@ -187,6 +187,7 @@ export const blogResolvers = {
             let imageSrc: string | null = null
             let article_ids: String[] = []
             let tags: String[] = []
+            let ideasText = ""
             let articlesData: any[] = []
             if(articleIds) {
                 articlesData = await (
@@ -222,13 +223,11 @@ export const blogResolvers = {
                 articlesData.forEach((data) => {
                     data.used_summaries.forEach((summary: string, index: number) => {
                         texts += `- ${summary}\n`
+                        ideasText += `${ideasText} `
                     })
                     article_ids.push(data.id)
                 })
             }
-            console.log(articlesData)
-            console.log(article_ids)
-            console.log(texts)
             try {
                 let uniqueTags: String[] = [];
                 tags.forEach((c) => {
@@ -242,7 +241,8 @@ export const blogResolvers = {
                     regenerate: !articlesData.length ? false: true,
                     imageUrl: imageUrl || process.env.PLACEHOLDER_IMAGE,
                     title: keyword,
-                    imageSrc
+                    imageSrc,
+                    ideasText
                 })
                 const finalBlogObj = {
                     article_id: articleIds,
@@ -589,6 +589,7 @@ export const blogResolvers = {
                         const userId = data.user_id
                         const articles = data.sequence_ids
                         let texts = ""
+                        let ideasText = ""
                         let keyword = null
                         let imageUrl: String | null = null
                         let imageSrc: string | null = null
@@ -626,6 +627,7 @@ export const blogResolvers = {
                         articlesData.forEach((data) => {
                             data.used_summaries.forEach((summary: string, index: number) => {
                                 texts += `- ${summary}\n`
+                                ideasText += `${ideasText} `
                             })
                             article_ids.push(data.id)
                         })
@@ -636,7 +638,8 @@ export const blogResolvers = {
                                 regenerate: true,
                                 title: articlesData[0]?.keyword,
                                 imageUrl,
-                                imageSrc
+                                imageSrc,
+                                ideasText
                             })
                             let uniqueTags: String[] = [];
                             tags.forEach((c) => {
