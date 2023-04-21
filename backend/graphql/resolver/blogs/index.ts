@@ -204,12 +204,11 @@ export const blogResolvers = {
                                 }
                             }
                             keyword = article.keyword
-                            // const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
-                            // const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
-                            // const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
-                            const articleTags = article?._source?.driver || []
+                            const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                            const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                            const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
                             const name = article._source?.source?.name
-                            tags.push(...articleTags)
+                            tags.push(...productsTags, ...organizationTags, ...personsTags)
                             return {
                                 used_summaries: article._source.summary.slice(0, 5),
                                 name: name && name === "file" ? "note" : name,
