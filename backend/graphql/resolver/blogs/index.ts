@@ -401,21 +401,20 @@ export const blogResolvers = {
                     imageSrc
                 })
                 let newData: any = []
-                updatedBlogs.map((data: any, index: any) => {
+                updatedBlogs.forEach((data: any, index: any) => {
                     const platformUpdatedDataIndex = (blog.publish_data).slice().reverse().findIndex((pd: any) => pd.platform === data.platform)
                     const finalPlatformIndex = platformUpdatedDataIndex >= 0 ? (blog.publish_data.length - 1) - platformUpdatedDataIndex : platformUpdatedDataIndex
                     const platformOldData = blog.publish_data[finalPlatformIndex]
-                    console.log(data, finalPlatformIndex)
                     if(platformOldData) {
                         if(!platformOldData.published) {
                             return blog.publish_data[finalPlatformIndex] = data
                         } else {
                             // console.log(data, data.published)
-                            return newData.push({...platformOldData})
+                            return blog.publish_data.push({...data})
                         }
                     }
                 })
-                if(newData.length) blog.publish_data = [...blog.publish_data, ...newData]
+                // if(newData.length) blog.publish_data = [...blog.publish_data, ...newData]
                 let newIdeas: any = []
                 ideas.forEach((newIdea) => {
                     // ** Code for retaining old ideas on regenerating uncommented if required
