@@ -286,7 +286,7 @@ export const publishBlog = async ({id, db, platform}: {
     platform: string
 }) => {
     console.log(platform)
-    return await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(id), "publish_data": {$elemMatch: {platform: platform, "published": false} } }, {
+    return await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(id), "publish_data": {$elemMatch: {platform: platform} } }, {
         $set: {
         "publish_data.$.published": true,
         "publish_data.$.published_date": getTimeStamp(),
