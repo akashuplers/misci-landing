@@ -329,13 +329,23 @@ export const blogResolvers = {
             
         },
         regenerateBlog: async (
-            parent: unknown, args: {options: ReGenerateBlogMutationArg}, {req, res, db, pubsub}: any
+            parent: unknown, args: {options: ReGenerateBlogMutationArg}, {req, res, db, pubsub, user}: any
         ) => {
+            if(!user) {
+                throw "@No authorization"
+            }
             let startRequest = new Date()
             console.log(args.options)
             const ideas = args.options.ideas, blogId = args.options.blog_id;
             const blog = await fetchBlog({db, id: blogId})
             const blogIdeas = await fetchBlogIdeas({db, id: blogId})
+            const userDetails = await fetchUser({id: blog.userId, db})
+            if(!userDetails) {
+                throw "@No user found"
+            }
+            if(userDetails.credits <= 0) {
+                throw "@Credit exhausted"
+            }
             let texts = ""
             let articleIds: String[] = []
             ideas.forEach((idea, index) => {
@@ -516,6 +526,8 @@ export const blogResolvers = {
                 if(blogDetails && freshIdeasArticle && freshIdeasArticle.length) refUrlsFreshIdeas = await fetchArticleUrls({db, articleId: freshIdeasArticle})
                 let endRequest = new Date()
                 let respTime = diff_minutes(endRequest, startRequest)
+                const updatedCredits = ((userDetails.credits || 25) - 1)
+                await updateUserCredit({id: userDetails._id, credit: updatedCredits, db})
                 return {...blogDetails, ideas: blogIdeasDetails, references: refUrls, respTime, freshIdeasReferences:refUrlsFreshIdeas}
             } catch(e: any) {
                 throw e
@@ -532,6 +544,7 @@ export const blogResolvers = {
             const platform = args.options.platform
             const imageUrl = args.options.imageUrl
             const imageSrc = args.options.imageSrc
+            const description = args.options.description
             const blogDetails = await fetchBlog({id: blogId, db})
             if(!blogDetails){
                 throw "@No blog found"
@@ -563,7 +576,8 @@ export const blogResolvers = {
                     userId: new ObjectID(user.id),
                     updatedAt: getTimeStamp(),
                     imageUrl: imageUrl && imageUrl.length && imageUrl !== blogDetails.imageUrl ? imageUrl : blogDetails.imageUrl,
-                    imageSrc: imageSrc
+                    imageSrc: imageSrc,
+                    description
                 }
             })
             const updatedBlog = await fetchBlog({id: blogId, db})
@@ -741,9 +755,6 @@ export const blogResolvers = {
             if(!blog) {
                 throw "@No blog found"
             }
-            const updatedCredits = ((userDetails.credits || 25) - 1)
-            await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(userDetails._id)}, {$set: {credits: updatedCredits}})
-            await updateUserCredit({id: user._id, credit: updatedCredits, db})
             await publishBlog({id: blog_id, db, platform: "wordpress"})
             return true
         },

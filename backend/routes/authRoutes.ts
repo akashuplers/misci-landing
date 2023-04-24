@@ -501,8 +501,6 @@ router.post('/linkedin/post', authMiddleware ,async (request: any, reply: any) =
           await fs.unlinkSync('test-image.png')
 
       const uin = "x-restli-id"
-      const updatedCredits = ((user.credits || 25) - 1)
-      await updateUserCredit({id: user._id, credit: updatedCredits, db})
       await publishBlog({id: options.blogId, db, platform: "linkedin"})
       return reply
       .status(200)
@@ -572,8 +570,6 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
         },
         data: JSON.stringify({"text": textBody})
     });
-    const updatedCredits = ((user.credits || 25) - 1)
-    await updateUserCredit({id: user._id, credit: updatedCredits, db})
     await publishBlog({id: options.blogId, db, platform: "twitter"})
     return reply.status(200).send({
       data: response.data
