@@ -428,20 +428,20 @@ export default function DashboardInsights({
     Gbid = localStorage.getItem("Gbid");
   }
 
-  function handleCitationFunction(link) {
+  function handleCitationFunction(source) {
     let filtered;
     // console.log(link)
     if (ideaType === "used") {
       reference.forEach((el, index) => {
-        // console.log(el)
-        if (el.url === link) {
+        console.log("elll", el, source);
+        if (el.source === source) {
           filtered = index;
         }
       });
     } else if (ideaType === "fresh") {
       freshIdeasReferences.forEach((el, index) => {
-        console.log(el.url, link);
-        if (el.url === link) {
+        // console.log(el.url, link);
+        if (el.source === source) {
           filtered = index;
         }
       });
@@ -779,7 +779,7 @@ export default function DashboardInsights({
                               .classList.add("hidden");
                           }}
                         >
-                          {handleCitationFunction(idea?.reference?.link)}
+                          {handleCitationFunction(idea?.name)}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{
@@ -868,7 +868,8 @@ export default function DashboardInsights({
                           }}
                         >
                           {/* {idea?.reference?.type === "article" ? "[2]" : "[1]"} */}
-                          {handleCitationFunction(idea?.reference?.link)}
+
+                          {handleCitationFunction(idea?.name)}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{
@@ -952,7 +953,7 @@ export default function DashboardInsights({
                               .classList.add("hidden");
                           }}
                         >
-                          {handleCitationFunction(idea?.reference?.link)}
+                          {handleCitationFunction(idea?.name)}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{
@@ -1038,7 +1039,7 @@ export default function DashboardInsights({
                               .classList.add("hidden");
                           }}
                         >
-                          {handleCitationFunction(idea?.reference?.link)}
+                          {handleCitationFunction(idea?.name)}
                           <div
                             className={`hidden refrenceTooltip${index}`}
                             style={{
