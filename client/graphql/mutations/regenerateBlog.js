@@ -1,5 +1,56 @@
 import { gql } from "@apollo/client";
 
 export const regenerateBlog = gql`
-  mutation Mutation($options: RegenerateBlogOptions!) {\n  regenerateBlog(options: $options) {\n    _id\n    publish_data {\n      tiny_mce_data {\n        tag\n        children\n      }\n      published_date\n      platform\n      published\n      creation_date\n    }\n    ideas {\n      blog_id\n      ideas {\n    name\n    used\n        idea\n        article_id\n  reference {\n type\n  link\n  id\n}    }\n    }\n    article_id\n  tags\n  references {\n url\n  source\n}\n  pythonRespTime\n   respTime\n }\n}
+  mutation Mutation($options: RegenerateBlogOptions!) {
+    regenerateBlog(options: $options) {
+      _id
+      publish_data {
+        tiny_mce_data {
+          tag
+          children
+        }
+        published_date
+        platform
+        published
+        creation_date
+      }
+      ideas {
+        blog_id
+        ideas {
+          name
+          used
+          idea
+          article_id
+          reference {
+            type
+            link
+            id
+          }
+        }
+        freshIdeas {
+          used
+          idea
+          article_id
+          name
+          reference {
+            type
+            link
+            id
+          }
+        }
+      }
+      article_id
+      tags
+      references {
+        url
+        source
+      }
+      freshIdeasReferences {
+        url
+        source
+      }
+      pythonRespTime
+      respTime
+    }
+  }
 `;

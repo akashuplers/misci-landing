@@ -21,8 +21,7 @@ export default function Post() {
   const router = useRouter();
   const { bid, isPublished } = router.query;
   const [reference, setReference] = useState([]);
-  const [freshIdeasReferences, setFreshIdeasReferences] = useState([])
-
+  const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
 
   // console.log("isPublished", isPublished);
   console.log("router.query", router.query);
@@ -44,22 +43,28 @@ export default function Post() {
   useEffect(() => {
     if (data == null) return;
 
-    console.log("fetchBlog ",data);
+    console.log("fetchBlog ", data);
     setBlogData(data.fetchBlog);
     setIdeas(data.fetchBlog.ideas.ideas);
     setTags(data.fetchBlog.tags);
-    setFreshIdeasReferences(data.fetchBlog.freshIdeasReferences)
-    setReference(data.fetchBlog.references)
-    setFreshIdeas(data.fetchBlog.ideas.freshIdeas)
+    setFreshIdeasReferences(data.fetchBlog.freshIdeasReferences);
+    setReference(data.fetchBlog.references);
+    setFreshIdeas(data.fetchBlog.ideas.freshIdeas);
     // setIsPublished(data?.fetchBlog?.publish_data[2]?.published);
 
     // const aa = data.generate.publish_data[2].tiny_mce_data;
-    const aa = data.fetchBlog.publish_data.find(
-      (pd) => pd.platform === "wordpress"
-    ).tiny_mce_data;
+    const newArray = data.fetchBlog.publish_data.filter(
+      (obj) => obj.platform === "wordpress"
+    );
+    var aa;
+    const arr = newArray.find((pd) => pd.published === false);
+    if (arr) {
+      aa = arr.tiny_mce_data;
+    } else {
+      aa = newArray[newArray.length - 1].tiny_mce_data;
+    }
     const htmlDoc = jsonToHtml(aa);
     setEditorText(htmlDoc);
-
   }, [data]);
 
   var getToken;
@@ -96,7 +101,7 @@ export default function Post() {
     }
   }, [meeData]);
 
-console.log(freshIdeasReferences)
+  console.log(freshIdeasReferences);
 
   return (
     <>
@@ -131,33 +136,26 @@ console.log(freshIdeasReferences)
               blog_id={bid}
               isPublished={isPublished}
               loading={loading}
-
             />
           </div>
           <DashboardInsights
             ideas={ideas}
             setIdeas={setIdeas}
-            
             freshIdeas={freshIdeas}
-
             tags={tags}
             setTags={setTags}
-
-            freshIdeasReferences = {freshIdeasReferences}
+            freshIdeasReferences={freshIdeasReferences}
             setFreshIdeaReferences={setFreshIdeasReferences}
-
             reference={reference}
             setReference={setReference}
-
             blog_id={bid}
-            
             loading={loading}
             setEditorText={setEditorText}
             setBlogData={setBlogData}
             // tags={data?.fetchBlog?.tags}
 
-            setPyResTime = {setPyResTime}
-            setNdResTime = {setNdResTime}
+            setPyResTime={setPyResTime}
+            setNdResTime={setNdResTime}
           />
         </div>
       </Layout>
