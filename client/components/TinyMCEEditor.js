@@ -313,10 +313,17 @@ export default function TinyMCEEditor({
     button.classList.add("active");
 
     // const aa = blogData?.publish_data[2].tiny_mce_data;
-    const aa = blogData?.publish_data?.find(
-      (pd) => pd.platform === "wordpress"
-    ).tiny_mce_data;
 
+    const newArray = blogData?.publish_data?.filter(
+      (obj) => obj.platform === "wordpress"
+    );
+    var aa;
+    const arr = newArray.find((pd) => pd.published === false);
+    if (arr) {
+      aa = arr.tiny_mce_data;
+    } else {
+      aa = newArray[newArray.length - 1].tiny_mce_data;
+    }
     const htmlDoc = jsonToHtml(aa);
 
     setEditorText(htmlDoc);

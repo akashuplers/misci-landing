@@ -155,9 +155,16 @@ export default function dashboard({ query }) {
           setFreshIdeas(data?.fetchBlog?.idea?.freshIdeas);
           setblog_id(data?.fetchBlog?._id);
           console.log("nnububhj", data?.fetchBlog?.references);
-          const aa = data.fetchBlog.publish_data.find(
-            (pd) => pd.platform === "wordpress"
-          ).tiny_mce_data;
+          const newArray = data.fetchBlog.publish_data.filter(
+            (obj) => obj.platform === "wordpress"
+          );
+          var aa;
+          const arr = newArray.find((pd) => pd.published === false);
+          if (arr) {
+            aa = arr.tiny_mce_data;
+          } else {
+            aa = newArray[newArray.length - 1].tiny_mce_data;
+          }
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
 
@@ -193,9 +200,16 @@ export default function dashboard({ query }) {
           setNdResTime(data.generate.respTime);
 
           // const aa = data.generate.publish_data[2].tiny_mce_data;
-          const aa = data.generate.publish_data.find(
-            (pd) => pd.platform === "wordpress"
-          ).tiny_mce_data;
+          const newArray = data.generate.publish_data.filter(
+            (obj) => obj.platform === "wordpress"
+          );
+          var aa;
+          const arr = newArray.find((pd) => pd.published === false);
+          if (arr) {
+            aa = arr.tiny_mce_data;
+          } else {
+            aa = newArray[newArray.length - 1].tiny_mce_data;
+          }
 
           setIdeas(data.generate.ideas.ideas);
           setblog_id(data.generate._id);
