@@ -222,16 +222,25 @@ export default function TinyMCEEditor({
     }
   };
 
+  const [image, setImage] = useState("");
+
   const handlePublish = () => {
-    const datafromapi = htmlToJson(editorText);
-    const jsonData = datafromapi?.children[3]?.children[0];
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = updatedText;
+    const textContent = tempDiv.textContent;
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(updatedText, "text/html");
+    const img = doc.querySelector("img");
+    const src = img.getAttribute("src");
+
     setPublishLinkLoad(true);
-    console.log("req here", jsonData);
 
     const data = {
       token: linkedInAccessToken,
       author: `urn:li:person:${authorId}`,
-      data: jsonData,
+      data: textContent,
+      image: src,
       blogId: blog_id,
     };
 
