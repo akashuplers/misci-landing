@@ -401,12 +401,18 @@ export const blogResolvers = {
                     imageSrc
                 })
                 let newData: any = []
-                blog.publish_data.forEach((data: any, index: any) => {
-                    const platformUpdatedData = updatedBlogs.find((pd: any) => pd.platform === data.platform)
-                    if(!data.published) {
-                        return blog.publish_data[index] = platformUpdatedData
-                    } else {
-                        return newData.push({...platformUpdatedData})
+                updatedBlogs.map((data: any, index: any) => {
+                    const platformUpdatedDataIndex = (blog.publish_data).slice().reverse().findIndex((pd: any) => pd.platform === data.platform)
+                    const finalPlatformIndex = platformUpdatedDataIndex >= 0 ? (blog.publish_data.length - 1) - platformUpdatedDataIndex : platformUpdatedDataIndex
+                    const platformOldData = blog.publish_data[finalPlatformIndex]
+                    console.log(data, finalPlatformIndex)
+                    if(platformOldData) {
+                        if(!platformOldData.published) {
+                            return blog.publish_data[finalPlatformIndex] = data
+                        } else {
+                            // console.log(data, data.published)
+                            return newData.push({...platformOldData})
+                        }
                     }
                 })
                 if(newData.length) blog.publish_data = [...blog.publish_data, ...newData]
@@ -530,6 +536,7 @@ export const blogResolvers = {
                 await updateUserCredit({id: userDetails._id, credit: updatedCredits, db})
                 return {...blogDetails, ideas: blogIdeasDetails, references: refUrls, respTime, freshIdeasReferences:refUrlsFreshIdeas}
             } catch(e: any) {
+                console.log(e)
                 throw e
             }
         },
