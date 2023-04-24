@@ -92,7 +92,19 @@ export default function TinyMCEEditor({
     if (getToken) {
       setSaveLoad(true);
 
-      console.log("token", getToken);
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = updatedText;
+      const elementsToRemove = tempDiv.querySelectorAll("h3");
+      for (let i = 0; i < elementsToRemove.length; i++) {
+        const element = elementsToRemove[i];
+        element.parentNode.removeChild(element);
+      }
+      const elementsToRemove2 = tempDiv.querySelectorAll("a");
+      for (let i = 0; i < elementsToRemove2.length; i++) {
+        const element = elementsToRemove2[i];
+        element.parentNode.removeChild(element);
+      }
+      const textContent = tempDiv.textContent;
 
       const jsonDoc = htmlToJson(updatedText, imageURL).children;
       const formatedJSON = { children: [...jsonDoc] };
@@ -104,6 +116,7 @@ export default function TinyMCEEditor({
             platform: option === "blog" ? "wordpress" : option,
             imageUrl: imageURL,
             imageSrc: imageURL ? null : imageURL,
+            description: textContent,
           },
         },
         context: {
@@ -123,7 +136,7 @@ export default function TinyMCEEditor({
           //console.log(err);
         })
         .finally(() => {
-          toast.success("Updated & Saved!!", {
+          toast.success("Saved!!", {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -300,10 +313,17 @@ export default function TinyMCEEditor({
     button.classList.add("active");
 
     // const aa = blogData?.publish_data[2].tiny_mce_data;
-    const aa = blogData?.publish_data?.find(
-      (pd) => pd.platform === "wordpress"
-    ).tiny_mce_data;
 
+    const newArray = blogData?.publish_data?.filter(
+      (obj) => obj.platform === "wordpress"
+    );
+    var aa;
+    const arr = newArray.find((pd) => pd.published === false);
+    if (arr) {
+      aa = arr.tiny_mce_data;
+    } else {
+      aa = newArray[newArray.length - 1].tiny_mce_data;
+    }
     const htmlDoc = jsonToHtml(aa);
 
     setEditorText(htmlDoc);

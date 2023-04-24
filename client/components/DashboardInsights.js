@@ -44,7 +44,7 @@ export default function DashboardInsights({
   const [urlValid, setUrlValid] = useState(false);
   const [file, setFile] = useState(null);
   const [fileValid, setFileValid] = useState(false);
-
+  const [arrUsed, setArrUsed] = useState([]);
   const [ideaType, setIdeaType] = useState("used");
   const [freshIdeas, setFreshIdeas] = useState([]);
   const [freshFilteredIdeas, setFreshFilteredIdeas] = useState([]);
@@ -70,23 +70,6 @@ export default function DashboardInsights({
   const onLeave = () => {
     setHover(false);
   };
-
-  useEffect(() => {
-    if (ideaType === "used") {
-      const arr = [];
-      ideas.forEach((idea) => {
-        if (idea?.used) {
-          const ideaObject = {
-            text: idea?.idea,
-            article_id: idea?.article_id,
-          };
-          arr.push(ideaObject);
-        }
-      });
-      setRegenSelected(arr);
-      console.log("<<<<<<<<", regenSelected);
-    }
-  }, []);
 
   function handleInputClick(idea, article_id, e) {
     const ideaObject = {
@@ -169,6 +152,10 @@ export default function DashboardInsights({
     }
   }, [ideaType]);
 
+  const handlesetRegenSelected = (newarr) => {
+    setRegenSelected(newarr);
+  };
+
   // Adds the matched idea into notUniqueFilteredIdeas
   useEffect(() => {
     setFilteredIdeas([]);
@@ -243,13 +230,17 @@ export default function DashboardInsights({
   */
 
   function handleRegenerate() {
-    console.log(regenSelected);
+    const newarr = [...arrUsed, ...regenSelected];
+    newarr.filter(
+      (obj, index, self) => index === self.findIndex((t) => t.text === obj.text)
+    );
+    console.log("888", newarr, arrUsed, regenSelected);
     if (regenSelected?.length >= 1) {
       console.log(regenSelected);
       RegenerateBlog({
         variables: {
           options: {
-            ideas: regenSelected,
+            ideas: newarr,
             blog_id: blog_id,
           },
         },
@@ -267,14 +258,22 @@ export default function DashboardInsights({
           setNdResTime(data.regenerateBlog.respTime);
 
           // const aa = data.regenerateBlog.publish_data[2].tiny_mce_data;
-          const aa = data.regenerateBlog.publish_data.find(
-            (pd) => pd.platform === "wordpress"
-          ).tiny_mce_data;
+
+          const newArray = data.regenerateBlog.publish_data.filter(
+            (obj) => obj.platform === "wordpress"
+          );
+          var aa;
+          const arr = newArray.find((pd) => pd.published === false);
+          if (arr) {
+            aa = arr.tiny_mce_data;
+          } else {
+            aa = newArray[newArray.length - 1].tiny_mce_data;
+          }
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
 
           console.log("Sucessfully re-generated the article");
-
+          setArrUsed([]);
           setRegenSelected([]);
           setblog_id(data.regenerateBlog._id);
 
@@ -330,6 +329,10 @@ export default function DashboardInsights({
       setFileValid(false);
     }
   }
+
+  const handleusedideas = (arr) => {
+    setArrUsed(arr);
+  };
 
   function postFormData(e) {
     // console.log("url " + formInput,"file " + fileValid,"urlvalid " + urlValid)
@@ -433,7 +436,7 @@ export default function DashboardInsights({
     // console.log(link)
     if (ideaType === "used") {
       reference.forEach((el, index) => {
-        console.log("elll", el, source);
+        // console.log("elll", el, source);
         if (el.source === source) {
           filtered = index;
         }
@@ -607,24 +610,25 @@ export default function DashboardInsights({
               {ideas?.length}
             </span>
           </button>
-          {isAuthenticated && freshIdeas?.length > 0 && (
-            <button
-              className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs"
-              onClick={(e) => {
-                setIdeaType("fresh");
-              }}
-            >
-              <img
-                src="/lightBulb.png"
-                className="w-5 h-5"
-                style={{ pointerEvents: "none" }}
-              />
-              Fresh Idea(s){" "}
+
+          <button
+            className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs"
+            onClick={(e) => {
+              setIdeaType("fresh");
+            }}
+          >
+            <img
+              src="/lightBulb.png"
+              className="w-5 h-5"
+              style={{ pointerEvents: "none" }}
+            />
+            Fresh Idea(s){" "}
+            {freshIdeas?.length > 0 && (
               <span className="mx-auto bg-blue-200 p-2 font-bold text-xs text-sky-800 rounded-full">
                 {freshIdeas?.length}
               </span>
-            </button>
-          )}
+            )}
+          </button>
         </div>
         {isAuthenticated && (
           <>
@@ -638,104 +642,106 @@ export default function DashboardInsights({
                   className={"mx-auto"}
                 />
               ) : (
-                <div className="flex items-center gap-1 relative mb-[10px]">
-                  <label htmlFor="simple-search" className="sr-only">
-                    Search
-                  </label>
-                  <div className="relative w-full">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <svg
-                        aria-hidden="true"
-                        className="w-5 h-5 text-gray-500 dark:text-gray-400"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                          clipRule="evenodd"
-                        ></path>
-                      </svg>
-                    </div>
-                    <input
-                      type="text"
-                      id="simple-search"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 py-[0.75em]"
-                      placeholder="To get Fresh Ideas upload topic, URL or File."
-                      required
-                      value={formInput}
-                      onChange={handleFormChange}
-                      style={{ fontSize: "1em" }}
-                      title="Enter keyword, URL or upload document"
-                    />
-                  </div>
-                  {hover ? (
-                    <>
-                      <div
-                        className="max-w-sm rounded overflow-hidden shadow-lg india r-0 bg-white mt-15"
-                        style={{
-                          zIndex: 9999,
-                          position: "absolute",
-                          right: "0",
-                        }}
-                      >
-                        upload a file
+                ideaType === "fresh" && (
+                  <div className="flex items-center gap-1 relative mb-[10px]">
+                    <label htmlFor="simple-search" className="sr-only">
+                      Search
+                    </label>
+                    <div className="relative w-full">
+                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg
+                          aria-hidden="true"
+                          className="w-5 h-5 text-gray-500 dark:text-gray-400"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                            clipRule="evenodd"
+                          ></path>
+                        </svg>
                       </div>
-                    </>
-                  ) : (
-                    <></>
-                  )}
-                  <label
-                    className="cta-invert"
-                    style={{
-                      background: "none",
-                      color: "black",
-                      border: "1px solid #b3b3b3",
-                    }}
-                  >
-                    <input
-                      type="file"
-                      accept="application/pdf, .docx, .txt, .rtf, .png, .jpg, .jpeg, .gif"
-                      max-size="500000"
-                      onInput={handleFileUpload}
-                      style={{ display: "none" }}
-                    />
-                    <div onMouseEnter={onHover} onMouseLeave={onLeave}>
+                      <input
+                        type="text"
+                        id="simple-search"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 py-[0.75em]"
+                        placeholder="To get Fresh Ideas upload topic, URL or File."
+                        required
+                        value={formInput}
+                        onChange={handleFormChange}
+                        style={{ fontSize: "1em" }}
+                        title="Enter keyword, URL or upload document"
+                      />
+                    </div>
+                    {hover ? (
+                      <>
+                        <div
+                          className="max-w-sm rounded overflow-hidden shadow-lg india r-0 bg-white mt-15"
+                          style={{
+                            zIndex: 9999,
+                            position: "absolute",
+                            right: "0",
+                          }}
+                        >
+                          upload a file
+                        </div>
+                      </>
+                    ) : (
+                      <></>
+                    )}
+                    <label
+                      className="cta-invert"
+                      style={{
+                        background: "none",
+                        color: "black",
+                        border: "1px solid #b3b3b3",
+                      }}
+                    >
+                      <input
+                        type="file"
+                        accept="application/pdf, .docx, .txt, .rtf, .png, .jpg, .jpeg, .gif"
+                        max-size="500000"
+                        onInput={handleFileUpload}
+                        style={{ display: "none" }}
+                      />
+                      <div onMouseEnter={onHover} onMouseLeave={onLeave}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="w-6 h-6"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10.5 3.75a6 6 0 00-5.98 6.496A5.25 5.25 0 006.75 20.25H18a4.5 4.5 0 002.206-8.423 3.75 3.75 0 00-4.133-4.303A6.001 6.001 0 0010.5 3.75zm2.03 5.47a.75.75 0 00-1.06 0l-3 3a.75.75 0 101.06 1.06l1.72-1.72v4.94a.75.75 0 001.5 0v-4.94l1.72 1.72a.75.75 0 101.06-1.06l-3-3z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+
+                        <span className="sr-only">Upload</span>
+                      </div>
+                    </label>
+                    <button type="submit" className="cta-invert">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
                         viewBox="0 0 24 24"
-                        fill="currentColor"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
                         className="w-6 h-6"
                       >
                         <path
-                          fillRule="evenodd"
-                          d="M10.5 3.75a6 6 0 00-5.98 6.496A5.25 5.25 0 006.75 20.25H18a4.5 4.5 0 002.206-8.423 3.75 3.75 0 00-4.133-4.303A6.001 6.001 0 0010.5 3.75zm2.03 5.47a.75.75 0 00-1.06 0l-3 3a.75.75 0 101.06 1.06l1.72-1.72v4.94a.75.75 0 001.5 0v-4.94l1.72 1.72a.75.75 0 101.06-1.06l-3-3z"
-                          clipRule="evenodd"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-
-                      <span className="sr-only">Upload</span>
-                    </div>
-                  </label>
-                  <button type="submit" className="cta-invert">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-6 h-6"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <span className="sr-only">Search</span>
-                  </button>
-                </div>
+                      <span className="sr-only">Search</span>
+                    </button>
+                  </div>
+                )
               )}
             </form>
           </>
@@ -745,6 +751,10 @@ export default function DashboardInsights({
           style={{
             marginRight: "0.5em",
             maxHeight: "82vh",
+            visibility:
+              ideaType === "fresh" && freshIdeas?.length > 0
+                ? "visible"
+                : "visible",
             height: "-webkit-fill-available",
           }}
         >
@@ -754,12 +764,7 @@ export default function DashboardInsights({
                   return (
                     <div className="flex pb-3" key={index}>
                       <div className="flex justify-between gap-5 w-full">
-                        <p>
-                          {idea?.idea}{" "}
-                          {idea?.name && (
-                            <span className="italic">[{idea?.name}]</span>
-                          )}
-                        </p>
+                        <p>{idea?.idea} </p>
                         <a
                           style={{
                             color: "#4a3afe",
@@ -842,12 +847,7 @@ export default function DashboardInsights({
                   return (
                     <div className="flex pb-3 usedIdeas" key={index}>
                       <div className="flex justify-between gap-5 w-full">
-                        <p>
-                          {idea?.idea}{" "}
-                          {idea?.name && (
-                            <span className="italic">[{idea?.name}]</span>
-                          )}
-                        </p>
+                        <p>{idea?.idea} </p>
                         <a
                           style={{
                             color: "#4a3afe",
@@ -915,8 +915,22 @@ export default function DashboardInsights({
                                 : el
                             );
                             setIdeas(updatedIdeas);
-                            handleInputClick(idea?.idea, idea?.article_id, e);
-                            console.log("}}}", regenSelected);
+                            const arr = [];
+                            for (
+                              let index = 0;
+                              index < updatedIdeas.length;
+                              index++
+                            ) {
+                              const element = updatedIdeas[index];
+                              if (element.used) {
+                                const ideaObject = {
+                                  text: element.idea,
+                                  article_id: element.article_id,
+                                };
+                                arr.push(ideaObject);
+                              }
+                            }
+                            handleusedideas(arr);
                           }}
                         />
                       </div>
@@ -931,9 +945,7 @@ export default function DashboardInsights({
                     <div className="flex pb-3" key={index}>
                       <div className="flex justify-between gap-5 w-full">
                         <p>{idea?.idea}</p>
-                        {idea?.name && (
-                          <span className="italic">[{idea?.name}]</span>
-                        )}
+
                         <a
                           style={{
                             color: "#4a3afe",
@@ -1017,9 +1029,7 @@ export default function DashboardInsights({
                     <div className="flex pb-3" key={index}>
                       <div className="flex justify-between gap-5 w-full">
                         <p>{idea?.idea}</p>
-                        {idea?.name && (
-                          <span className="italic">[{idea?.name}]</span>
-                        )}
+
                         <a
                           style={{
                             color: "#4a3afe",
