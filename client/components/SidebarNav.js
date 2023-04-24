@@ -88,6 +88,28 @@ export default function Sidebar() {
         Authorization: "Bearer " + getToken,
       },
     },
+    onError: ({ graphQLErrors, networkError, operation, forward }) => {
+      if (graphQLErrors) {
+        for (let err of graphQLErrors) {
+          switch (err.extensions.code) {
+            case "UNAUTHENTICATED":
+              localStorage.clear();
+              window.location.href = "/";
+          }
+        }
+      }
+      if (networkError) {
+        console.log(`[Network error]: ${networkError}`);
+        if (
+          `${networkError}` ===
+          "ServerError: Response not successful: Received status code 401"
+        ) {
+          console.log("8889");
+          localStorage.clear();
+          window.location.href = "/";
+        }
+      }
+    },
   });
   useEffect(() => {
     const regex = /^\/dashboard\/[6|4][a-zA-Z0-9]*$/;

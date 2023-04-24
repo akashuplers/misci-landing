@@ -37,6 +37,28 @@ export default function Home() {
         Authorization: "Bearer " + getToken,
       },
     },
+    onError: ({ graphQLErrors, networkError }) => {
+      if (graphQLErrors) {
+        for (let err of graphQLErrors) {
+          switch (err.extensions.code) {
+            case "UNAUTHENTICATED":
+              localStorage.clear();
+              window.location.href = "/";
+          }
+        }
+      }
+      if (networkError) {
+        console.log(`[Network error]: ${networkError}`);
+        if (
+          `${networkError}` ===
+          "ServerError: Response not successful: Received status code 401"
+        ) {
+          console.log("8889");
+          localStorage.clear();
+          window.location.href = "/";
+        }
+      }
+    },
   });
 
   const handleEnterKeyPress = (e: { key: string }) => {
@@ -117,7 +139,8 @@ export default function Home() {
           <div className="mx-auto max-w-2xl py-32 sm:py-30 lg:py-20">
             <div className="text-center">
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-                Generate <span className="newsletter">Newsletter</span> with <span style={{color:"#4a3afe"}}>Lille</span>
+                Generate <span className="newsletter">Newsletter</span> with{" "}
+                <span style={{ color: "#4a3afe" }}>Lille</span>
               </h1>
               <p className="mt-6 text-lg leading-8 text-gray-600">
                 Streamline your content creation process with our website that

@@ -38,7 +38,7 @@ axios.interceptors.response.use(
   (response) => {
     // Handle successful responses
     console.log("response : ", response);
-    if(response.status === 401){
+    if (response.status === 401) {
       console.log("User Not Unauthorized");
       localStorage.clear();
       window.location.href = "/";
@@ -58,7 +58,7 @@ axios.interceptors.response.use(
   (error) => {
     // Handle any response errors
     console.error("error response : ", error);
-    if(error.response.status === 401){
+    if (error.response.status === 401) {
       console.log("User Not Unauthorized");
       localStorage.clear();
       window.location.href = "/";
@@ -175,23 +175,31 @@ export default function App({ Component, pageProps }: AppProps) {
     );
 
     return forward(operation).map((response) => {
-      if (response.errors) {
-        // localStorage.clear();
-        // toast.success("Bad Request!!", {
-        //   position: "top-center",
-        //   autoClose: 5000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        //   theme: "light",
-        // });
-      }
+      // console.log("852");
+
+      // if (response.errors?.[0]?.extensions?.code === "UNAUTHENTICATED") {
+      //   window.location.href = "/";
+      //   localStorage.clear();
+      //   toast.success("Bad Request!!", {
+      //     position: "top-center",
+      //     autoClose: 5000,
+      //     hideProgressBar: false,
+      //     closeOnClick: true,
+      //     pauseOnHover: true,
+      //     draggable: true,
+      //     progress: undefined,
+      //     theme: "light",
+      //   });
+      // }
       console.log(`[GraphQL] Response: ${operation.operationName}`, response);
       return response;
     });
   });
+
+  // const client = new ApolloClient({
+  //   link: authLink.concat(link),
+  //   cache: new InMemoryCache(),
+  // });
 
   const client = new ApolloClient({
     link: authLink.concat(link),
