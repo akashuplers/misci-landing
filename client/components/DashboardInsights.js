@@ -930,6 +930,9 @@ export default function DashboardInsights({
                     <div className="flex pb-3" key={index}>
                       <div className="flex justify-between gap-5 w-full">
                         <p>{idea?.idea}</p>
+                        {idea?.name && (
+                          <span className="italic">[{idea?.name}]</span>
+                        )}
                         <a
                           style={{
                             color: "#4a3afe",
@@ -1013,6 +1016,9 @@ export default function DashboardInsights({
                     <div className="flex pb-3" key={index}>
                       <div className="flex justify-between gap-5 w-full">
                         <p>{idea?.idea}</p>
+                        {idea?.name && (
+                          <span className="italic">[{idea?.name}]</span>
+                        )}
                         <a
                           style={{
                             color: "#4a3afe",
