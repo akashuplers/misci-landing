@@ -122,7 +122,19 @@ export default function Settings() {
           "ServerError: Response not successful: Received status code 401"
         ) {
           localStorage.clear();
-          window.location.href = "/";
+          toast.error("Session Expired! Please Login Again..", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 3000);
         }
       }
     },

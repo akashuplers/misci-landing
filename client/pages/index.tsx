@@ -6,7 +6,7 @@ import LoaderPlane from "../components/LoaderPlane";
 import { useRouter } from "next/router";
 import useStore from "../store/store";
 import Layout from "../components/Layout";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { meeAPI } from "../graphql/querys/mee";
 import PreferencesModal from "../modals/PreferencesModal";
 
@@ -17,10 +17,14 @@ export default function Home() {
     }
   `;
   const { data, loading } = useQuery(keywords);
+  const [isauth, setIsauth] = useState(false);
   var getToken;
-  if (typeof window !== "undefined") {
-    getToken = localStorage.getItem("token");
-  }
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      getToken = localStorage.getItem("token");
+      if (getToken) setIsauth(true);
+    }
+  }, []);
 
   const [keyword, setkeyword] = useState("");
   const router = useRouter();
@@ -36,6 +40,42 @@ export default function Home() {
         "Content-Type": "application/json",
         Authorization: "Bearer " + getToken,
       },
+    },
+    onError: ({ graphQLErrors, networkError }) => {
+      if (graphQLErrors) {
+        for (let err of graphQLErrors) {
+          switch (err.extensions.code) {
+            case "UNAUTHENTICATED":
+              localStorage.clear();
+              window.location.href = "/";
+          }
+        }
+      }
+      if (networkError) {
+        console.log(`[Network error]: ${networkError}`);
+
+        if (
+          `${networkError}` ===
+            "ServerError: Response not successful: Received status code 401" &&
+          isauth
+        ) {
+          localStorage.clear();
+
+          toast.error("Session Expired! Please Login Again..", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        }
+      }
     },
   });
 
