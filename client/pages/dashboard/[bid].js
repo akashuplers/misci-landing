@@ -9,6 +9,7 @@ import PreferencesModal from "../../modals/PreferencesModal";
 import TinyMCEEditor from "../../components/TinyMCEEditor";
 import { jsonToHtml } from "../../helpers/helper";
 import { meeAPI } from "../../graphql/querys/mee";
+import { ToastContainer } from "react-toastify";
 
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
@@ -96,7 +97,19 @@ export default function Post() {
           "ServerError: Response not successful: Received status code 401"
         ) {
           localStorage.clear();
-          window.location.href = "/";
+          toast.error("Session Expired! Please Login Again..", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 3000);
         }
       }
     },
@@ -127,6 +140,7 @@ export default function Post() {
   return (
     <>
       <Layout>
+        <ToastContainer />
         <div className="flex divide-x">
           {pfmodal && (
             <PreferencesModal

@@ -20,6 +20,7 @@ import {
   AiOutlineTwitter,
 } from "react-icons/ai";
 import { useRouter } from "next/router";
+import { ToastContainer } from "react-toastify";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -105,7 +106,19 @@ export default function Sidebar() {
           "ServerError: Response not successful: Received status code 401"
         ) {
           localStorage.clear();
-          window.location.href = "/";
+          toast.error("Session Expired! Please Login Again..", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 3000);
         }
       }
     },
@@ -129,6 +142,7 @@ export default function Sidebar() {
 
   return (
     <>
+      <ToastContainer />
       <div>
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
