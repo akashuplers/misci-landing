@@ -8,9 +8,14 @@ const useStore = create((set) => ({
   keyword: "",
   tempId: {},
   isAuthenticated: false,
+  isSave: false,
+  setisSave: (isSave) => set({ isSave }),
   setKeyword: (keyword) => set({ keyword }),
   setIsAuthenticated: (isAuthenticated) => set({ isAuthenticated }),
   setCreditLeft: (creditLeft) => set({ creditLeft }),
+  updateisSave: () => {
+    set({ isSave: true });
+  },
   updateAuthentication: () => {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");
