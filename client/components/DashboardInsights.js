@@ -752,9 +752,8 @@ export default function DashboardInsights({
             marginRight: "0.5em",
             maxHeight: "82vh",
             visibility:
-              ideaType === "fresh" && freshIdeas?.length > 0
-                ? "visible"
-                : "visible",
+              ideaType === "fresh" && !freshIdeas ? "hidden" : "visible",
+
             height: "-webkit-fill-available",
           }}
         >

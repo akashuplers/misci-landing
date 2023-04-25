@@ -41,6 +41,27 @@ const CheckoutFormUpgrade = ({
         Authorization: "Bearer " + getToken,
       },
     },
+    onError: ({ graphQLErrors, networkError, operation, forward }) => {
+      if (graphQLErrors) {
+        for (let err of graphQLErrors) {
+          switch (err.extensions.code) {
+            case "UNAUTHENTICATED":
+              localStorage.clear();
+              window.location.href = "/";
+          }
+        }
+      }
+      if (networkError) {
+        console.log(`[Network error]: ${networkError}`);
+        if (
+          `${networkError}` ===
+          "ServerError: Response not successful: Received status code 401"
+        ) {
+          localStorage.clear();
+          window.location.href = "/";
+        }
+      }
+    },
   });
 
   const stripe = useStripe();
@@ -95,7 +116,9 @@ const CheckoutFormUpgrade = ({
       };
 
       axios
-        .post("https://maverick.lille.ai/stripe/upgrade", requestBody, { headers: myHeaders })
+        .post("https://maverick.lille.ai/stripe/upgrade", requestBody, {
+          headers: myHeaders,
+        })
         .then((res) => res.data)
         .then((data) => {
           console.log(data.data);
@@ -108,8 +131,9 @@ const CheckoutFormUpgrade = ({
           }
         })
         .catch((error) => {
-          const errorMessage = error.response.data.error && error.response.data.message;
-          if(errorMessage != null){
+          const errorMessage =
+            error.response.data.error && error.response.data.message;
+          if (errorMessage != null) {
             toast.error("Error : " + errorMessage, {
               position: "top-center",
               autoClose: 5000,
@@ -134,11 +158,18 @@ const CheckoutFormUpgrade = ({
       getToken = localStorage.getItem("token");
     }
 
-    axios.post("https://maverick.lille.ai/stripe/upgrade-confirm", {subscriptionId: subscriptionId} ,{headers : {
-      "Content-Type" : "application/json",
-      "Authorization" : "Bearer " + getToken
-    }})
-      .then(result => result.data)
+    axios
+      .post(
+        "https://maverick.lille.ai/stripe/upgrade-confirm",
+        { subscriptionId: subscriptionId },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + getToken,
+          },
+        }
+      )
+      .then((result) => result.data)
       .then((data) => {
         if (data.data === "Upgrade Confirmed!") {
           toast.success(data.data, {

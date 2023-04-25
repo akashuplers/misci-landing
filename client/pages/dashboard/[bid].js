@@ -9,6 +9,7 @@ import PreferencesModal from "../../modals/PreferencesModal";
 import TinyMCEEditor from "../../components/TinyMCEEditor";
 import { jsonToHtml } from "../../helpers/helper";
 import { meeAPI } from "../../graphql/querys/mee";
+import { ToastContainer } from "react-toastify";
 
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
@@ -79,6 +80,39 @@ export default function Post() {
         Authorization: "Bearer " + getToken,
       },
     },
+    onError: ({ graphQLErrors, networkError }) => {
+      if (graphQLErrors) {
+        for (let err of graphQLErrors) {
+          switch (err.extensions.code) {
+            case "UNAUTHENTICATED":
+              localStorage.clear();
+              window.location.href = "/";
+          }
+        }
+      }
+      if (networkError) {
+        console.log(`[Network error]: ${networkError}`);
+        if (
+          `${networkError}` ===
+          "ServerError: Response not successful: Received status code 401"
+        ) {
+          localStorage.clear();
+          toast.error("Session Expired! Please Login Again..", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 3000);
+        }
+      }
+    },
   });
 
   useEffect(() => {
@@ -106,6 +140,7 @@ export default function Post() {
   return (
     <>
       <Layout>
+        <ToastContainer />
         <div className="flex divide-x">
           {pfmodal && (
             <PreferencesModal
