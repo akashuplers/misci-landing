@@ -7,6 +7,7 @@ import {
   PlusCircleIcon,
   XMarkIcon,
   PaperAirplaneIcon,
+  ArrowRightOnRectangleIcon,
   Cog6ToothIcon,
 } from "@heroicons/react/24/outline";
 import { logout } from "../helpers/helper";
@@ -21,6 +22,7 @@ import {
 } from "react-icons/ai";
 import { useRouter } from "next/router";
 import { ToastContainer } from "react-toastify";
+import useStore from "@/store/store";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -34,6 +36,7 @@ export default function Sidebar() {
     getToken = localStorage.getItem("token");
     linkedInUserData = localStorage.getItem("linkedInAccessToken");
   }
+  const creditLeft = useStore((state) => state.creditLeft);
   const [url, setUrl] = useState("");
   const router = useRouter();
   const path = router.pathname;
@@ -41,6 +44,11 @@ export default function Sidebar() {
   useEffect(() => {
     setUrl(path);
   }, [path]);
+
+  const updateCredit = useStore((state) => state.updateCredit);
+  useEffect(() => {
+    updateCredit();
+  }, []);
 
   const navigation = [
     {
@@ -73,7 +81,7 @@ export default function Sidebar() {
     {
       name: "Logout",
       href: "/",
-      icon: PaperAirplaneIcon,
+      icon: ArrowRightOnRectangleIcon,
       current: false,
     },
   ];
@@ -478,7 +486,8 @@ export default function Sidebar() {
                             fill="#EEC800"
                           />
                         </svg>
-                        {25 - meeData?.me?.credits}/25 Credits used
+                        {console.log("creditLeft", creditLeft)}
+                        {25 - creditLeft}/25 Credits used
                       </div>
                     </div>
                   )}

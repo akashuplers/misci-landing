@@ -12,15 +12,24 @@
     box-shadow: 4px 9px 10px #00000061;
 }
 
-.publishContainer > * > h3{
+.publishContainer  h3{
     font-size: 1.5rem;
+    align-items: center;
 }
 
-.publishContainer > * > * > img{
+.publishContainer  a{
+    text-align: center;
+}
+
+.publishContainer  p{
+    align-items: center;
+}
+
+.publishContainer   img{
     border-radius: 10px;
     max-width: 70%;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    align-items: center;
+  
 }
 
 .publishContainer > *{
