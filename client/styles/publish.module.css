@@ -12,23 +12,35 @@
     box-shadow: 4px 9px 10px #00000061;
 }
 
+.publishContainer > null  {
+    align-items: center !important;
+}
+
+.publishContainer > null > span  {
+    align-items: center !important;
+}
+
+.publishContainer  null  {
+    align-items: center !important;
+}
+
 .publishContainer  h3{
     font-size: 1.5rem;
-    align-items: center;
+    align-items: center !important;
 }
 
 .publishContainer  a{
-    text-align: center;
+    text-align: center !important;
 }
 
 .publishContainer  p{
-    align-items: center;
+    align-items: center !important;
 }
 
 .publishContainer   img{
     border-radius: 10px;
     max-width: 70%;
-    align-items: center;
+    align-items: center !important;
   
 }
 
