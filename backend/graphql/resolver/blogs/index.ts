@@ -527,7 +527,7 @@ export const blogResolvers = {
                     let articleIdsFromAllIdeas = [...blog.article_id]
                     if(blog) refUrls = await fetchArticleUrls({db, articleId: articleIdsFromAllIdeas})
                 }
-                blogIdeas?.freshIdeas?.forEach((idea: any) => idea.article_id ? freshIdeasArticle.push(idea.article_id) : false)
+                blogIdeasDetails?.freshIdeas?.forEach((idea: any) => idea.article_id ? freshIdeasArticle.push(idea.article_id) : false)
                 if(blogDetails && freshIdeasArticle && freshIdeasArticle.length) refUrlsFreshIdeas = await fetchArticleUrls({db, articleId: freshIdeasArticle})
                 let endRequest = new Date()
                 let respTime = diff_minutes(endRequest, startRequest)
