@@ -53,6 +53,13 @@ const CheckoutFormUpgrade = ({
       }
       if (networkError) {
         console.log(`[Network error]: ${networkError}`);
+        if (
+          `${networkError}` ===
+          "ServerError: Response not successful: Received status code 401"
+        ) {
+          localStorage.clear();
+          window.location.href = "/";
+        }
       }
     },
   });
