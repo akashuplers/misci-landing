@@ -121,7 +121,6 @@ export default function Settings() {
           `${networkError}` ===
           "ServerError: Response not successful: Received status code 401"
         ) {
-          console.log("8889");
           localStorage.clear();
           window.location.href = "/";
         }
