@@ -3,6 +3,7 @@ import { Azure } from "../services/azure";
 import { ObjectID } from "bson";
 import { fetchUser } from "../graphql/resolver/blogs/blogsRepo";
 import { randomUUID } from "crypto";
+import { ChatGPT } from "../services/chatGPT";
 
 const getStream = require('into-stream')
 const express = require("express");
@@ -72,6 +73,93 @@ router.post('/static-blog', async (req: any, res: any) => {
     const {blog, ideas, imageUrl, tags, title, imageSource} = req.body
     const user = await fetchUser({db, id: "643fbcfcb18352c0d4c1596c"})
     console.log(blog, ideas, imageUrl)
+    const chatgptApis = await db.db('admin').collection('chatGPT').findOne()
+    let availableApi: any = null
+    if(chatgptApis) {
+        availableApi = chatgptApis.apis?.find((api: any) => !api.quotaFull)
+    } else {
+        throw "Something went wrong! Please connect with support team";
+    }
+    if(!availableApi) {
+        throw "Something went wrong! Please connect with support team";
+    }
+    const updatedBlog = await (
+        Promise.all(
+            blog.map(async (data: any) => {
+                if(data.platform === 'linkedin') {
+                    const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `write a blog on topic ${title} for linkedin post with tags under 3000 characters`, db}).textCompletion()
+                    return {
+                        published: false,
+                            published_date: false,
+                            platform: "linkedin",
+                            creation_date: Math.round(new Date().getTime() / 1000) ,
+                            tiny_mce_data: {
+                                "tag": "BODY",
+                                children: [
+                                    {
+                                        "tag": "P",
+                                        "attributes": {},
+                                        "children": [
+                                            chatGPTText
+                                        ]
+                                    },
+                                    {
+                                        "tag": "P",
+                                        "attributes": {},
+                                        "children": []
+                                    },
+                                    {
+                                        "tag": "P",
+                                        "attributes": {},
+                                        "children": [
+                                            {
+                                                "tag": "IMG",
+                                                "attributes": {
+                                                    "style": "display: block; margin-left: auto; margin-right: auto;",
+                                                    "src": imageUrl,
+                                                    "width": "441",
+                                                    "height": "305"
+                                                },
+                                                "children": []
+                                            }
+                                        ]
+                                    },
+                                ]
+                            }
+                    }
+                }else if(data.platform === 'twitter') {
+                    const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `write a blog on topic ${title} for twitter post with tags under 280 characters`, db}).textCompletion()
+                    return {
+                        published: false,
+                        published_date: false,
+                        platform: "twitter",
+                        creation_date: Math.round(new Date().getTime() / 1000) ,
+                        tiny_mce_data: {
+                            "tag": "BODY",
+                            children: [
+                                {
+                                    "tag": "P",
+                                    "attributes": {},
+                                    "children": [
+                                        chatGPTText
+                                    ]
+                                },
+                                {
+                                    "tag": "P",
+                                    "attributes": {},
+                                    "children": []
+                                }
+                            ]
+                        }
+                    }     
+                } else {
+                    return {
+                        ...data
+                    }
+                } 
+            })
+        )
+    )
     let urlsData: any[] = [] 
     let ideasArray: any[] = [] 
     ideas.forEach((data: any) => {
@@ -128,14 +216,15 @@ router.post('/static-blog', async (req: any, res: any) => {
     })
     const blogData = {
         article_id: articleIds,
-        publish_data: blog,
+        publish_data: updatedBlog,
         userId: new ObjectID(user._id),
         keyword: title,
         tags: tags.split(','),
         imageUrl,
         imageSource,
         data: getTimeStamp(),
-        updatedAt: getTimeStamp()
+        updatedAt: getTimeStamp(),
+        status: "draft"
     }
     const blogInserted = await db.db('lilleBlogs').collection('blogs').insertOne(blogData)
     await db.db('lilleBlogs').collection('blogIdeas').insertOne({
