@@ -105,6 +105,39 @@ export default function Settings() {
         Authorization: "Bearer " + getToken,
       },
     },
+    onError: ({ graphQLErrors, networkError }) => {
+      if (graphQLErrors) {
+        for (let err of graphQLErrors) {
+          switch (err.extensions.code) {
+            case "UNAUTHENTICATED":
+              localStorage.clear();
+              window.location.href = "/";
+          }
+        }
+      }
+      if (networkError) {
+        console.log(`[Network error]: ${networkError}`);
+        if (
+          `${networkError}` ===
+          "ServerError: Response not successful: Received status code 401"
+        ) {
+          localStorage.clear();
+          toast.error("Session Expired! Please Login Again..", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 3000);
+        }
+      }
+    },
   });
 
   useEffect(() => {
