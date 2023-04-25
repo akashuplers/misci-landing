@@ -48,6 +48,7 @@ export default function DashboardInsights({
   const [ideaType, setIdeaType] = useState("used");
   const [freshIdeas, setFreshIdeas] = useState([]);
   const [freshFilteredIdeas, setFreshFilteredIdeas] = useState([]);
+  const updateCredit = useStore((state) => state.updateCredit);
 
   useEffect(() => {
     setFreshIdeas(oldFreshIdeas);
@@ -234,9 +235,8 @@ export default function DashboardInsights({
     newarr.filter(
       (obj, index, self) => index === self.findIndex((t) => t.text === obj.text)
     );
-    console.log("888", newarr, arrUsed, regenSelected);
-    if (regenSelected?.length >= 1) {
-      console.log(regenSelected);
+    if (newarr?.length >= 1) {
+      console.log("888", newarr, arrUsed, regenSelected);
       RegenerateBlog({
         variables: {
           options: {
@@ -246,6 +246,7 @@ export default function DashboardInsights({
         },
         onCompleted: (data) => {
           console.log("regen", data);
+          updateCredit();
           setBlogData(data.regenerateBlog);
           setIdeas(data.regenerateBlog.ideas.ideas);
           setTags(data.regenerateBlog.tags);
@@ -747,7 +748,7 @@ export default function DashboardInsights({
           </>
         )}
         <div
-          className="overflow-y-scroll absolute px-2 mb-6 border-solid border-2 p-2 rounded"
+          className="overflow-y-scroll absolute px-2 mb-6 "
           style={{
             marginRight: "0.5em",
             maxHeight: "82vh",
