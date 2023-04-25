@@ -27,6 +27,7 @@ import {
 } from "react-share";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { toast, ToastContainer } from "react-toastify";
+import useStore from "../store/store";
 
 export default function TinyMCEEditor({
   topic,
@@ -53,6 +54,7 @@ export default function TinyMCEEditor({
   const [imageURL, setImageURL] = useState();
   const [isalert, setAlert] = useState(false);
   const [load, setLoad] = useState(false);
+  const isSave = useStore((state) => state.isSave);
 
   const onCopyText = () => {
     setIsCopied(true);
@@ -64,6 +66,10 @@ export default function TinyMCEEditor({
   useEffect(() => {
     setEditorText(editorText);
   }, [editorText]);
+
+  useEffect(() => {
+    if (isSave) handleSave();
+  }, [isSave]);
 
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);

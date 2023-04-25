@@ -48,6 +48,8 @@ export default function DashboardInsights({
   const [ideaType, setIdeaType] = useState("used");
   const [freshIdeas, setFreshIdeas] = useState([]);
   const [freshFilteredIdeas, setFreshFilteredIdeas] = useState([]);
+  const updateCredit = useStore((state) => state.updateCredit);
+  const updateisSave = useStore((state) => state.updateisSave);
 
   useEffect(() => {
     setFreshIdeas(oldFreshIdeas);
@@ -234,9 +236,8 @@ export default function DashboardInsights({
     newarr.filter(
       (obj, index, self) => index === self.findIndex((t) => t.text === obj.text)
     );
-    console.log("888", newarr, arrUsed, regenSelected);
-    if (regenSelected?.length >= 1) {
-      console.log(regenSelected);
+    if (newarr?.length >= 1) {
+      console.log("888", newarr, arrUsed, regenSelected);
       RegenerateBlog({
         variables: {
           options: {
@@ -246,9 +247,15 @@ export default function DashboardInsights({
         },
         onCompleted: (data) => {
           console.log("regen", data);
+          updateCredit();
           setBlogData(data.regenerateBlog);
           setIdeas(data.regenerateBlog.ideas.ideas);
           setTags(data.regenerateBlog.tags);
+          console.log(
+            "data?.regenerateBlog?.ideas?.freshIdeas",
+            data?.regenerateBlog?.ideas?.freshIdeas
+          );
+          setFreshIdeas(data?.regenerateBlog?.ideas?.freshIdeas);
           console.log(
             "asfgasfda ",
             data.regenerateBlog.pythonRespTime,
@@ -307,7 +314,7 @@ export default function DashboardInsights({
         .finally(() => {
           setIdeaType("used");
           setRegenSelected([]);
-          setFreshIdeas([]);
+          // setFreshIdeas([]);
         });
     }
   }
@@ -479,7 +486,10 @@ export default function DashboardInsights({
             onClick={
               isAuthenticated
                 ? handleRegenerate
-                : () => setAuthenticationModalOpen(true)
+                : () => {
+                    updateisSave();
+                    // setAuthenticationModalOpen(true);
+                  }
             }
           >
             <svg
@@ -594,7 +604,7 @@ export default function DashboardInsights({
                 );
               })
             ) : (
-              <div>Fresh Idea sources not found</div>
+              <div>Generate fresh ideas to see sources</div>
             )}
           </div>
         </div>
@@ -614,7 +624,10 @@ export default function DashboardInsights({
           <button
             className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs"
             onClick={(e) => {
-              setIdeaType("fresh");
+              if (isAuthenticated) setIdeaType("fresh");
+              else {
+                updateisSave();
+              }
             }}
           >
             <img
@@ -747,7 +760,7 @@ export default function DashboardInsights({
           </>
         )}
         <div
-          className="overflow-y-scroll absolute px-2 mb-6 border-solid border-2 p-2 rounded"
+          className="overflow-y-scroll absolute px-2 mb-6 "
           style={{
             marginRight: "0.5em",
             maxHeight: "82vh",

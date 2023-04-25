@@ -8,11 +8,11 @@
 }
 
 @font-face {
-  font-family: 'Georgia';
+  font-family: 'Work Sans';
   src: url('/fonts/reg.ttf') format('ttf')
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300&family=Jost:wght@300&family=Piazzolla:opsz,wght@8..30,200;8..30,300;8..30,400&family=Roboto:wght@300&family=Zen+Kurenaido&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@300&display=swap');
 
 :root {
   --ashokaBlue: #13345f;
@@ -87,6 +87,7 @@
   font-family: 'Piazzolla', serif;
   font-family: 'Roboto', sans-serif;
   font-family: 'Zen Kurenaido', sans-serif;
+  font-family: 'Work Sans', sans-serif;
 }
 
 /* width */

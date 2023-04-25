@@ -105,64 +105,72 @@ export default function Saved() {
         {loading ? (
           <LoaderScan />
         ) : (
-          <ul
-            role="list"
-            className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8 mx-[5%]"
-            style={{
-              listStyleType: "none",
-            }}
-          >
-            {data?.getAllBlogs.blogs.map((blog, index) => (
-              <>
-                <li key={blog._id} className="relative">
-                  <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 relative">
-                    <img
-                      src={blog.image}
-                      alt={blog.title}
-                      className="pointer-events-none object-cover h-[185px] w-[280px]"
-                    />
-                    <Link href={"/dashboard/" + blog._id}>
-                      <button
-                        type="button"
-                        className="absolute inset-0 focus:outline-none"
-                        onMouseEnter={(e) => {
-                          const delButton = document.querySelector(
-                            `#savedBlog${index}DelButton`
-                          );
-                          delButton.classList.remove("!hidden");
-                        }}
-                        onMouseLeave={(e) => {
-                          const delButton = document.querySelector(
-                            `#savedBlog${index}DelButton`
-                          );
-                          delButton.classList.add("!hidden");
-                        }}
-                      >
+          <>
+            {data?.getAllBlogs.blogs.length === 0 && (
+              <img
+                src="/noBlog/noSaved.png"
+                alt="No Blogs"
+                className="mx-auto h-[250px] w-[300px] mt-[20%]"
+              />
+            )}
+            <ul
+              role="list"
+              className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8 mx-[5%]"
+              style={{
+                listStyleType: "none",
+              }}
+            >
+              {data?.getAllBlogs.blogs.map((blog, index) => (
+                <>
+                  <li key={blog._id} className="relative">
+                    <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 relative">
+                      <img
+                        src={blog.image}
+                        alt={blog.title}
+                        className="pointer-events-none object-cover h-[185px] w-[280px]"
+                      />
+                      <Link href={"/dashboard/" + blog._id}>
                         <button
-                          className={`${styles.statusDelButton} ${styles.statusButton}`}
-                        >
-                          {blog?.status === "ir_generated"
-                            ? "DAILY FEED"
-                            : blog?.status.toUpperCase()}
-                        </button>
-                        <span className="sr-only">
-                          View details for {blog.title}
-                        </span>
-                        <button
-                          id={`savedBlog${index}DelButton`}
-                          className={`${styles.statusDelButton} !hidden ${styles.deleteButton}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            console.log(blog._id);
-                            setblog_id(blog._id);
-                            setOpenModal(true);
-                          }}
+                          type="button"
+                          className="absolute inset-0 focus:outline-none"
                           onMouseEnter={(e) => {
-                            e.stopPropagation();
+                            const delButton = document.querySelector(
+                              `#savedBlog${index}DelButton`
+                            );
+                            delButton.classList.remove("!hidden");
+                          }}
+                          onMouseLeave={(e) => {
+                            const delButton = document.querySelector(
+                              `#savedBlog${index}DelButton`
+                            );
+                            delButton.classList.add("!hidden");
                           }}
                         >
-                          {/* <svg
+                          <button
+                            className={`${styles.statusDelButton} ${styles.statusButton}`}
+                          >
+                            {blog?.status === "ir_generated"
+                              ? "DAILY FEED"
+                              : blog?.status.toUpperCase()}
+                          </button>
+                          <span className="sr-only">
+                            View details for {blog.title}
+                          </span>
+                          <button
+                            id={`savedBlog${index}DelButton`}
+                            className={`${styles.statusDelButton} !hidden ${styles.deleteButton}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              console.log(blog._id);
+                              setblog_id(blog._id);
+                              setOpenModal(true);
+                            }}
+                            onMouseEnter={(e) => {
+                              e.stopPropagation();
+                            }}
+                          >
+                            {/* <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 28 28"
@@ -176,33 +184,34 @@ export default function Saved() {
                             d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
                           />
                         </svg> */}
-                          DELETE
+                            DELETE
+                          </button>
                         </button>
-                      </button>
-                    </Link>
-                  </div>
-                  <button className={`${styles.dateTag} mt-2`}>
-                    {new Date(blog?.date * 1000).toLocaleString("en-US", {
-                      timeZone: "Asia/Kolkata",
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                      hour: "numeric",
-                      minute: "numeric",
-                    })}
-                  </button>
-                  <p className="pointer-events-none mt-1 block truncate text-sm font-medium text-gray-900">
-                    {blog?.title}
-                  </p>
-                  <p className="pointer-events-none block text-sm font-medium text-gray-500">
-                    {blog?.description?.length > 115
-                      ? blog?.description?.substring(0, 115) + "..."
-                      : blog.description}
-                  </p>
-                </li>
-              </>
-            ))}
-          </ul>
+                      </Link>
+                    </div>
+                    <button className={`${styles.dateTag} mt-2`}>
+                      {new Date(blog?.date * 1000).toLocaleString("en-US", {
+                        timeZone: "Asia/Kolkata",
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                      })}
+                    </button>
+                    <p className="pointer-events-none mt-1 block truncate text-sm font-medium text-gray-900">
+                      {blog?.title}
+                    </p>
+                    <p className="pointer-events-none block text-sm font-medium text-gray-500">
+                      {blog?.description?.length > 115
+                        ? blog?.description?.substring(0, 115) + "..."
+                        : blog.description}
+                    </p>
+                  </li>
+                </>
+              ))}
+            </ul>
+          </>
         )}
         {paginationArr.length > 1 && (
           <div
