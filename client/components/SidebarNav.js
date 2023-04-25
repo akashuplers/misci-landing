@@ -7,6 +7,7 @@ import {
   PlusCircleIcon,
   XMarkIcon,
   PaperAirplaneIcon,
+  ArrowRightOnRectangleIcon,
   Cog6ToothIcon,
 } from "@heroicons/react/24/outline";
 import { logout } from "../helpers/helper";
@@ -80,7 +81,7 @@ export default function Sidebar() {
     {
       name: "Logout",
       href: "/",
-      icon: PaperAirplaneIcon,
+      icon: ArrowRightOnRectangleIcon,
       current: false,
     },
   ];
