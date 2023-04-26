@@ -121,7 +121,7 @@ export default function DashboardInsights({
     //const refCount = e.target.firstElementChild;
 
     /* Adding or removing the keywords to an array */
-    console.log("e.target.dataset", e.target.dataset);
+    console.log("e.target.dataset", e.target.dataset, filteredArray);
     const filterText = e.target.dataset.source;
 
     const valueExists = filteredArray.find(
@@ -316,6 +316,7 @@ export default function DashboardInsights({
           setArrFresh([]);
           setArrUsed([]);
           setRegenSelected([]);
+          setFilteredArray([]);
           setblog_id(data.regenerateBlog._id);
 
           const button = document.querySelectorAll(".blog-toggle-button");
