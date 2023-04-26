@@ -41,16 +41,7 @@ router.post('/url', authMiddleware, async (req: any, res: any) => {
                     Promise.all(
                         freshIdeas.map(async (ideasData: any) => {
                             const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db, userId: user.id})
-                            if(ideaExistInBlog) {
-                                return {
-                                    ...ideasData,
-                                    reference: {
-                                        type: "blog",
-                                        link: null,
-                                        id: ideaExistInBlog._id
-                                    }
-                                }
-                            } else if(ideasData.article_id) {
+                            if(ideasData.article_id) {
                                 const article = await fetchArticleById({id: ideasData.article_id, db, userId: user.id})
                                 return {
                                     ...ideasData,
@@ -139,16 +130,7 @@ router.post('/keyword', authMiddleware, async (req: any, res: any) => {
                 Promise.all(
                     freshIdeas.map(async (ideasData: any) => {
                         const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db, userId: user.id})
-                        if(ideaExistInBlog) {
-                            return {
-                                ...ideasData,
-                                reference: {
-                                    type: "blog",
-                                    link: null,
-                                    id: ideaExistInBlog._id
-                                }
-                            }
-                        } else if(ideasData.article_id) {
+                        if(ideasData.article_id) {
                             const article = await fetchArticleById({id: ideasData.article_id, db, userId: user.id})
                             return {
                                 ...ideasData,
@@ -226,16 +208,7 @@ router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any
                     Promise.all(
                         freshIdeas.map(async (ideasData: any) => {
                             const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db, userId: user.id})
-                            if(ideaExistInBlog) {
-                                return {
-                                    ...ideasData,
-                                    reference: {
-                                        type: "blog",
-                                        link: null,
-                                        id: ideaExistInBlog._id
-                                    }
-                                }
-                            } else if(ideasData.article_id) {
+                            if(ideasData.article_id) {
                                 const article = await fetchArticleById({id: ideasData.article_id, db, userId: user.id})
                                 return {
                                     ...ideasData,
