@@ -91,11 +91,6 @@ export default function DashboardInsights({
     });
     if (check) return;
 
-    if (regenSelected?.length >= 5) {
-      e.target.checked = false;
-      return;
-    }
-
     setRegenSelected((prev) => [...prev, ideaObject]);
   }
 
@@ -285,11 +280,6 @@ export default function DashboardInsights({
           setTags(data.regenerateBlog.tags);
           setReferences(data.regenerateBlog.references);
           setFreshIdeaReferences(data.regenerateBlog.freshIdeasReferences);
-
-          console.log(
-            "data?.regenerateBlog?.ideas?.freshIdeas",
-            data?.regenerateBlog?.ideas?.freshIdeas
-          );
           setFreshIdeas(data?.regenerateBlog?.ideas?.freshIdeas);
           console.log(
             "asfgasfda ",
