@@ -45,6 +45,7 @@ export default function DashboardInsights({
   const [file, setFile] = useState(null);
   const [fileValid, setFileValid] = useState(false);
   const [arrUsed, setArrUsed] = useState([]);
+  const [arrFresh, setArrFresh] = useState([]);
   const [ideaType, setIdeaType] = useState("used");
   const [freshIdeas, setFreshIdeas] = useState([]);
   const [freshFilteredIdeas, setFreshFilteredIdeas] = useState([]);
@@ -236,7 +237,7 @@ export default function DashboardInsights({
   */
 
   function handleRegenerate() {
-    let newarr = [...arrUsed, ...regenSelected];
+    let newarr = [...arrUsed, ...regenSelected, ...arrFresh];
     if (newarr.length === 0 && filteredIdeas.length) {
       const arr = [];
       for (let index = 0; index < filteredIdeas.length; index++) {
@@ -299,6 +300,7 @@ export default function DashboardInsights({
           setEditorText(htmlDoc);
 
           console.log("Sucessfully re-generated the article");
+          setArrFresh([]);
           setArrUsed([]);
           setRegenSelected([]);
           setblog_id(data.regenerateBlog._id);
@@ -355,6 +357,10 @@ export default function DashboardInsights({
       setFileValid(false);
     }
   }
+
+  const handlefreshideas = (arr) => {
+    setArrFresh(arr);
+  };
 
   const handleusedideas = (arr) => {
     setArrUsed(arr);
@@ -1066,7 +1072,7 @@ export default function DashboardInsights({
                                 arr.push(ideaObject);
                               }
                             }
-                            handleusedideas(arr);
+                            handlefreshideas(arr);
                           }}
                         />
                       </div>
