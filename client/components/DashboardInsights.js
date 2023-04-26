@@ -319,6 +319,8 @@ export default function DashboardInsights({
           setArrUsed([]);
           setRegenSelected([]);
           setFilteredArray([]);
+          setFilteredIdeas([]);
+          setFreshFilteredIdeas([]);
           setblog_id(data.regenerateBlog._id);
 
           const button = document.querySelectorAll(".blog-toggle-button");
