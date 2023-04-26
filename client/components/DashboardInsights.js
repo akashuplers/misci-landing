@@ -237,7 +237,20 @@ export default function DashboardInsights({
   */
 
   function handleRegenerate() {
-    let newarr = [...arrUsed, ...regenSelected, ...arrFresh];
+    const arr = [];
+    if (arrUsed.length === 0) {
+      for (let index = 0; index < ideas.length; index++) {
+        const element = ideas[index];
+        if (element.used) {
+          const ideaObject = {
+            text: element.idea,
+            article_id: element.article_id,
+          };
+          arr.push(ideaObject);
+        }
+      }
+    }
+    let newarr = [...arrUsed, ...regenSelected, ...arrFresh, ...arr];
     if (newarr.length === 0 && filteredIdeas.length) {
       const arr = [];
       for (let index = 0; index < filteredIdeas.length; index++) {
