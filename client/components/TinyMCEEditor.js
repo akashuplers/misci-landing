@@ -55,7 +55,7 @@ export default function TinyMCEEditor({
   const [isalert, setAlert] = useState(false);
   const [load, setLoad] = useState(false);
   const [editingMode, setEditingMode] = useState(false);
-  const [iseditingMode, setisEditingMode] = useState(0);
+  var isEditing = true;
   const isSave = useStore((state) => state.isSave);
 
   const onCopyText = () => {
@@ -369,7 +369,9 @@ export default function TinyMCEEditor({
       <ToastContainer />
       <Modal
         isOpen={editingMode}
-        onRequestClose={() => setEditingMode(false)}
+        onRequestClose={() => {
+          setEditingMode(false);
+        }}
         ariaHideApp={false}
         className="w-[100%] sm:w-[38%] max-h-[95%]"
         style={{
@@ -693,6 +695,15 @@ export default function TinyMCEEditor({
               registerPageMouseUp(editor, throttledStore);
             }
           },
+          init_instance_callback: function (editor) {
+            editor.on("ExecCommand", function (e) {
+              console.log("The " + e.command + " command was fired.");
+              if (isEditing) {
+                setEditingMode(true);
+                isEditing = false;
+              }
+            });
+          },
           skin: "naked",
           icons: "small",
           toolbar_location: "bottom",
@@ -805,10 +816,6 @@ export default function TinyMCEEditor({
           },
         }}
         onEditorChange={(content, editor) => {
-          setisEditingMode(iseditingMode + 1);
-          if (iseditingMode === 1) {
-            setEditingMode(true);
-          }
           setEditorText(content);
           setSaveText("Save Now!");
           // console.log(updatedText);
