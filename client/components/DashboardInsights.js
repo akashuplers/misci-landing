@@ -119,7 +119,8 @@ export default function DashboardInsights({
     //const refCount = e.target.firstElementChild;
 
     /* Adding or removing the keywords to an array */
-    const filterText = e.target.dataset.url;
+    console.log("e.target.dataset", e.target.dataset);
+    const filterText = e.target.dataset.source;
 
     const valueExists = filteredArray.find(
       (el) => Object.values(el).indexOf(filterText) > -1
@@ -131,6 +132,8 @@ export default function DashboardInsights({
     } else {
       setFilteredArray((prev) => [...prev, { filterText, criteria: "ref" }]);
     }
+
+    console.log("setFilteredArray", filteredArray);
   }
 
   useEffect(() => {
@@ -172,7 +175,7 @@ export default function DashboardInsights({
             idea?.idea?.indexOf(filterObject?.filterText) >= 0 &&
               setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
           } else if (filterObject?.criteria === "ref") {
-            idea?.reference?.link === filterObject?.filterText &&
+            idea?.name === filterObject?.filterText &&
               setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
           }
         })
@@ -184,7 +187,7 @@ export default function DashboardInsights({
             idea?.idea?.indexOf(filterObject?.filterText) >= 0 &&
               setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
           } else if (filterObject?.criteria === "ref") {
-            idea?.reference?.link === filterObject?.filterText &&
+            idea?.name === filterObject?.filterText &&
               setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
           }
         })
@@ -202,17 +205,17 @@ export default function DashboardInsights({
     // Create a new array from the Set object
     let uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse);
     uniqueFilteredArray = uniqueFilteredArray.sort((a, b) =>
-      a?.reference?.link.localeCompare(b?.reference?.link)
+      a?.name.localeCompare(b?.name)
     );
 
     // Add a new property to each idea calles citation number.
-    var prevLink = uniqueFilteredArray[0]?.reference?.link;
+    var prevLink = uniqueFilteredArray[0]?.name;
     var citationNumber = 1;
     uniqueFilteredArray.forEach((idea, index) => {
-      if (idea?.reference?.link !== prevLink) {
+      if (idea?.name !== prevLink) {
         citationNumber++;
       }
-      prevLink = idea?.reference?.link;
+      prevLink = idea?.name;
       idea.citationNumber = citationNumber;
 
       if (ideaType === "used") {
@@ -541,7 +544,7 @@ export default function DashboardInsights({
                       key={index}
                       className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
                       onClick={handleRefClick}
-                      data-url={ref.url}
+                      data-source={ref.source}
                     >
                       {ref.source}
                       <span
@@ -577,7 +580,7 @@ export default function DashboardInsights({
                     key={index}
                     className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
                     onClick={handleRefClick}
-                    data-url={ref.url}
+                    data-source={ref.source}
                   >
                     {ref.source}
                     <span
