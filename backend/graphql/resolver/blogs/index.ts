@@ -343,7 +343,7 @@ export const blogResolvers = {
             if(!userDetails) {
                 throw "@No user found"
             }
-            if(userDetails.credits <= 0) {
+            if(!userDetails.paid && userDetails.credits <= 0) {
                 throw "@Credit exhausted"
             }
             let texts = ""
