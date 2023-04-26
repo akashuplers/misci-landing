@@ -17,6 +17,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createScanner } from "typescript";
 import ReactLoading from "react-loading";
+import useStore from "@/store/store";
 
 export default function AuthenticationModal({
   type,
@@ -60,60 +61,62 @@ export default function AuthenticationModal({
 
     console.log(loginData);
 
-    axios.post(API_BASE_PATH + API_ROUTES.LOGIN_ENDPOINT, loginData, {
-      headers: {
-        "Content-type": "application/json",
-      }
-    })
-    .then(response => response.data)
-    .then((response) => {
-      console.log(response)
-      if (response?.data?.accessToken) {
-        redirectPageAfterLogin(response?.data?.accessToken);
-        toast.success("Successfully Logged in", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-        return true;
-      }
-    })
-    .then((res) => {
-      if (res) {
-        setTimeout(() => setModalIsOpen(false), 3000);
-      }
-    })
-    .catch((error) => {
-      const errorMessage = !error.response.data.success && error.response.data.message;
-      if(errorMessage != null){
-        toast.error("Error : " + errorMessage, {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-        if (errorMessage === `Could not find account: ${loginData.email}`) {
-          setType("signup");
+    axios
+      .post(API_BASE_PATH + API_ROUTES.LOGIN_ENDPOINT, loginData, {
+        headers: {
+          "Content-type": "application/json",
+        },
+      })
+      .then((response) => response.data)
+      .then((response) => {
+        console.log(response);
+        if (response?.data?.accessToken) {
+          redirectPageAfterLogin(response?.data?.accessToken);
+          toast.success("Successfully Logged in", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          return true;
         }
-      }
-      console.error("Error : ", error.response);
-    })
-    .finally(() => {
-      setSubmitting(false);
-      setLoginFormData({
-        email: "",
-        password: "",
+      })
+      .then((res) => {
+        if (res) {
+          setTimeout(() => setModalIsOpen(false), 3000);
+        }
+      })
+      .catch((error) => {
+        const errorMessage =
+          !error.response.data.success && error.response.data.message;
+        if (errorMessage != null) {
+          toast.error("Error : " + errorMessage, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          if (errorMessage === `Could not find account: ${loginData.email}`) {
+            setType("signup");
+          }
+        }
+        console.error("Error : ", error.response);
+      })
+      .finally(() => {
+        setSubmitting(false);
+        setLoginFormData({
+          email: "",
+          password: "",
+        });
       });
-    });
 
     function redirectPageAfterLogin(accessToken) {
       localStorage.setItem(
@@ -128,24 +131,31 @@ export default function AuthenticationModal({
 
       const myHeaders = {
         "content-type": "application/json",
-        "Authorization": "Bearer " + getToken
+        Authorization: "Bearer " + getToken,
       };
 
       const raw = {
-        query: "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n prefFilled\n profileImage\n  }\n}"
+        query:
+          "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n prefFilled\n profileImage\n  }\n}",
       };
 
-      axios.post('https://maverick.lille.ai/graphql', raw, {
-          headers: myHeaders
+      axios
+        .post("https://maverick.lille.ai/graphql", raw, {
+          headers: myHeaders,
         })
-        .then(response => response.data)
-        .then(response => localStorage.setItem("userId", JSON.stringify(response.data.me._id).replace(/['"]+/g, "")))
-        .catch(error => console.error(error))
+        .then((response) => response.data)
+        .then((response) =>
+          localStorage.setItem(
+            "userId",
+            JSON.stringify(response.data.me._id).replace(/['"]+/g, "")
+          )
+        )
+        .catch((error) => console.error(error))
         .finally(() => {
-          if (window.location.pathname === '/dashboard') {
+          if (window.location.pathname === "/dashboard") {
             handleSave();
           } else {
-            window.location.href = '/';
+            window.location.href = "/";
           }
         });
       return;
@@ -192,32 +202,19 @@ export default function AuthenticationModal({
     }
     signUpFormData["tempUserId"] = tempid;
 
-    axios.post(API_BASE_PATH + API_ROUTES.CREATE_USER, signUpFormData, {
-      headers: {
-        "Content-type": "application/json",
-      }
-    })
-    .then(response => response.data)
-    .then(response => {
-      console.log(response)
-      if(response.error) return
-      handleLoginSubmit(event, signUpFormData.email, signUpFormData.password);
-      setModalIsOpen(false);
-      toast.success(response.message, {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    })
-    .catch((error) => {
-      const errorMessage = error.response.data.error && error.response.data.message;
-      if(errorMessage != null){
-        toast.error("Error : " + errorMessage, {
+    axios
+      .post(API_BASE_PATH + API_ROUTES.CREATE_USER, signUpFormData, {
+        headers: {
+          "Content-type": "application/json",
+        },
+      })
+      .then((response) => response.data)
+      .then((response) => {
+        console.log(response);
+        if (response.error) return;
+        handleLoginSubmit(event, signUpFormData.email, signUpFormData.password);
+        setModalIsOpen(false);
+        toast.success(response.message, {
           position: "top-center",
           autoClose: 5000,
           hideProgressBar: false,
@@ -227,23 +224,37 @@ export default function AuthenticationModal({
           progress: undefined,
           theme: "light",
         });
-        setType("login");
-      }
-      console.error("Error : ", error.response);
-    })
-    .finally(() => {
-      setSubmitting(false);
-      setSignUpFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        tempUserId: "",
+      })
+      .catch((error) => {
+        const errorMessage =
+          error.response.data.error && error.response.data.message;
+        if (errorMessage != null) {
+          toast.error("Error : " + errorMessage, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          setType("login");
+        }
+        console.error("Error : ", error.response);
+      })
+      .finally(() => {
+        setSubmitting(false);
+        setSignUpFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          password: "",
+          tempUserId: "",
+        });
+        setLoading(false);
       });
-      setLoading(false);
-    });
-  }
-
+  };
 
   const handleSignUpChange = (event) => {
     const { name, value } = event.target;
@@ -306,6 +317,7 @@ export default function AuthenticationModal({
     const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`;
     window.location = redirectUrl;
   };
+  const updateisSavefalse = useStore((state) => state.updateisSavefalse);
 
   const [loading, setLoading] = useState(false);
 
@@ -326,7 +338,10 @@ export default function AuthenticationModal({
       <ToastContainer />
       <Modal
         isOpen={modalIsOpen}
-        onRequestClose={closeModal}
+        onRequestClose={() => {
+          updateisSavefalse();
+          closeModal();
+        }}
         ariaHideApp={false}
         className="w-[100%] sm:w-[38%] max-h-[95%]"
         style={{
