@@ -239,8 +239,8 @@ export default function DashboardInsights({
   function handleRegenerate() {
     const arr = [];
     if (arrUsed.length === 0) {
-      for (let index = 0; index < ideas.length; index++) {
-        const element = ideas[index];
+      for (let index = 0; index < filteredIdeas.length; index++) {
+        const element = filteredIdeas[index];
         if (element.used) {
           const ideaObject = {
             text: element.idea,
