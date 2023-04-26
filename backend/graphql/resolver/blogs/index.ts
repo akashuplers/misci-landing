@@ -524,7 +524,7 @@ export const blogResolvers = {
                 }[] = []
                 let freshIdeasArticle: string[] = []
                 if(blogDetails.article_id) {
-                    let articleIdsFromAllIdeas = [...blog.article_id]
+                    let articleIdsFromAllIdeas = [...blogDetails.article_id]
                     if(blog) refUrls = await fetchArticleUrls({db, articleId: articleIdsFromAllIdeas})
                 }
                 blogIdeasDetails?.freshIdeas?.forEach((idea: any) => idea.article_id ? freshIdeasArticle.push(idea.article_id) : false)
