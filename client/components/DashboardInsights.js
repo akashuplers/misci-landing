@@ -45,6 +45,7 @@ export default function DashboardInsights({
   const [file, setFile] = useState(null);
   const [fileValid, setFileValid] = useState(false);
   const [arrUsed, setArrUsed] = useState([]);
+  const [arrFresh, setArrFresh] = useState([]);
   const [ideaType, setIdeaType] = useState("used");
   const [freshIdeas, setFreshIdeas] = useState([]);
   const [freshFilteredIdeas, setFreshFilteredIdeas] = useState([]);
@@ -74,6 +75,7 @@ export default function DashboardInsights({
   };
 
   function handleInputClick(idea, article_id, e) {
+    console.log("regenSelected", regenSelected);
     const ideaObject = {
       text: idea,
       article_id,
@@ -235,7 +237,21 @@ export default function DashboardInsights({
   */
 
   function handleRegenerate() {
-    const newarr = [...arrUsed, ...regenSelected];
+    let newarr = [...arrUsed, ...regenSelected, ...arrFresh];
+    if (newarr.length === 0 && filteredIdeas.length) {
+      const arr = [];
+      for (let index = 0; index < filteredIdeas.length; index++) {
+        const element = filteredIdeas[index];
+        if (element.used) {
+          const ideaObject = {
+            text: element.idea,
+            article_id: element.article_id,
+          };
+          arr.push(ideaObject);
+        }
+      }
+      newarr = arr;
+    }
     newarr.filter(
       (obj, index, self) => index === self.findIndex((t) => t.text === obj.text)
     );
@@ -254,6 +270,7 @@ export default function DashboardInsights({
           setBlogData(data.regenerateBlog);
           setIdeas(data.regenerateBlog.ideas.ideas);
           setTags(data.regenerateBlog.tags);
+
           console.log(
             "data?.regenerateBlog?.ideas?.freshIdeas",
             data?.regenerateBlog?.ideas?.freshIdeas
@@ -283,6 +300,7 @@ export default function DashboardInsights({
           setEditorText(htmlDoc);
 
           console.log("Sucessfully re-generated the article");
+          setArrFresh([]);
           setArrUsed([]);
           setRegenSelected([]);
           setblog_id(data.regenerateBlog._id);
@@ -339,6 +357,10 @@ export default function DashboardInsights({
       setFileValid(false);
     }
   }
+
+  const handlefreshideas = (arr) => {
+    setArrFresh(arr);
+  };
 
   const handleusedideas = (arr) => {
     setArrUsed(arr);
@@ -838,13 +860,6 @@ export default function DashboardInsights({
                           className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                           checked={idea?.used}
                           onClick={() => {
-                            const updatedIdeas = ideas.map((el) =>
-                              el.idea === idea.idea
-                                ? { ...el, used: el.used === 1 ? 0 : 1 }
-                                : el
-                            );
-                            setIdeas(updatedIdeas);
-
                             const updatedFilteredIdeas = filteredIdeas.map(
                               (el, elIndex) =>
                                 elIndex === index
@@ -852,6 +867,22 @@ export default function DashboardInsights({
                                   : el
                             );
                             setFilteredIdeas(updatedFilteredIdeas);
+                            const arr = [];
+                            for (
+                              let index = 0;
+                              index < updatedFilteredIdeas.length;
+                              index++
+                            ) {
+                              const element = updatedFilteredIdeas[index];
+                              if (element.used) {
+                                const ideaObject = {
+                                  text: element.idea,
+                                  article_id: element.article_id,
+                                };
+                                arr.push(ideaObject);
+                              }
+                            }
+                            handleusedideas(arr);
                           }}
                         />
                       </div>
@@ -1018,21 +1049,30 @@ export default function DashboardInsights({
                           type="checkbox"
                           className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                           checked={idea?.used}
-                          onClick={() => {
-                            const updatedIdeas = ideas.map((el) =>
-                              el.idea === idea.idea
-                                ? { ...el, used: el.used === 1 ? 0 : 1 }
-                                : el
-                            );
-                            setIdeas(updatedIdeas);
-
-                            const updatedFilteredIdeas = filteredIdeas.map(
+                          onClick={(e) => {
+                            const updatedFilteredIdeas = freshFilteredIdeas.map(
                               (el, elIndex) =>
                                 elIndex === index
                                   ? { ...el, used: el.used === 1 ? 0 : 1 }
                                   : el
                             );
-                            setFilteredIdeas(updatedFilteredIdeas);
+                            setFreshFilteredIdeas(updatedFilteredIdeas);
+                            const arr = [];
+                            for (
+                              let index = 0;
+                              index < updatedFilteredIdeas.length;
+                              index++
+                            ) {
+                              const element = updatedFilteredIdeas[index];
+                              if (element.used) {
+                                const ideaObject = {
+                                  text: element.idea,
+                                  article_id: element.article_id,
+                                };
+                                arr.push(ideaObject);
+                              }
+                            }
+                            handlefreshideas(arr);
                           }}
                         />
                       </div>
