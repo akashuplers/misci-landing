@@ -238,9 +238,9 @@ export default function DashboardInsights({
 
   function handleRegenerate() {
     const arr = [];
-    if (arrUsed.length === 0) {
-      for (let index = 0; index < filteredIdeas.length; index++) {
-        const element = filteredIdeas[index];
+    if (arrUsed.length === 0 && filteredIdeas.length === 0) {
+      for (let index = 0; index < ideas.length; index++) {
+        const element = ideas[index];
         if (element.used) {
           const ideaObject = {
             text: element.idea,
@@ -283,6 +283,8 @@ export default function DashboardInsights({
           setBlogData(data.regenerateBlog);
           setIdeas(data.regenerateBlog.ideas.ideas);
           setTags(data.regenerateBlog.tags);
+          setReferences(data.regenerateBlog.references);
+          setFreshIdeaReferences(data.regenerateBlog.freshIdeasReferences);
 
           console.log(
             "data?.regenerateBlog?.ideas?.freshIdeas",
