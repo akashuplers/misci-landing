@@ -969,7 +969,7 @@ export default function DashboardInsights({
               <>
                 {isAuthenticated && (
                   <>
-                    <form onSubmit={postFormData} className="mb-4 mt-2">
+                    <form onSubmit={postFormData} className="mb-4 mt-1">
                       {newIdeaLoad ? (
                         <ReactLoading
                           type={"spin"}
