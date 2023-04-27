@@ -125,7 +125,7 @@ export default function Navbar({ isOpen }) {
                       setAuthenticationModalOpen(true);
                       setAuthneticationModalType("signup");
                     }}
-                    className="ml-6 inline-flex items-center rounded-md bg-[#4A3AFE] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    className="ml-6 cta-invert"
                   >
                     Sign up for Free
                   </button>

@@ -560,7 +560,7 @@ export default function AuthenticationModal({
                 </div>
               </div>
               <button
-                className=" w-full py-3 font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center !mt-3"
+                className="w-full !mt-6 !py-3 cta-invert flex items-center justify-center gap-2"
                 type="submit"
                 disabled={submitting ? true : false}
               >
@@ -580,7 +580,7 @@ export default function AuthenticationModal({
                         d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
                       />
                     </svg>
-                    <span>{type === "login" ? "Login" : "Sign Up"}</span>
+                    {type === "login" ? "Login" : "Sign Up"}
                   </>
                 ) : (
                   <ReactLoading

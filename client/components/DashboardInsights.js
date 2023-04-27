@@ -543,13 +543,13 @@ export default function DashboardInsights({
         handleSave={() => (window.location = "/dashboard/" + blog_id)}
         bid={blog_id}
       />
-      <div className="w-[35%] text-xs px-2 mt-5" style={{ width: "40%" }}>
+      <div className="w-[35%] text-xs px-2" style={{ width: "40%" }}>
         <div className="flex justify-between gap-[1.25em]">
           <p className="font-normal w-[70%]">
             Regenerate your blog on the basis of selected used & fresh ideas.
           </p>
           <button
-            className="cta flex items-center gap-2 self-start !py-2"
+            className="cta flex items-center gap-2 self-start !py-2 !font-semibold  !text-sm"
             onClick={
               isAuthenticated
                 ? handleRegenerate
@@ -675,7 +675,7 @@ export default function DashboardInsights({
             )}
           </div>
         </div>
-        <div className="flex py-2">
+        <div className="flex py-2 relative gap-5">
           <button
             className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs"
             onClick={(e) => {
@@ -683,13 +683,13 @@ export default function DashboardInsights({
             }}
           >
             Used Idea(s){" "}
-            <span className=" mx-auto bg-blue-200 text-xs p-2 font-bold text-sky-800 rounded-full">
+            <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
               {ideas?.length}
             </span>
           </button>
 
           <button
-            className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs"
+            className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs realtive"
             onClick={(e) => {
               if (isAuthenticated) setIdeaType("fresh");
               else {
@@ -704,7 +704,7 @@ export default function DashboardInsights({
             />
             Fresh Idea(s){" "}
             {freshIdeas?.length > 0 && (
-              <span className="mx-auto bg-blue-200 p-2 font-bold text-xs text-sky-800 rounded-full">
+              <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
                 {freshIdeas?.length}
               </span>
             )}
