@@ -260,6 +260,13 @@ padding-bottom: 10px !important;
     position: relative;
 }
 
+.cta.ref-button.active,
+.cta.tag-button.active{
+  color: #4a3afe !important;
+  background: #d2cff6 !important ;
+  font-weight: 600;
+}
+
 .cta.idea-button.active::after, 
 .cta.blog-toggle-button.active::after{
     content: "";
