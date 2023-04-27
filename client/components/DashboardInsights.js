@@ -752,13 +752,12 @@ export default function DashboardInsights({
           </button>
         </div>
         <div
-          className="overflow-y-scroll absolute px-2 mb-6 "
+          className="overflow-y-scroll px-2 mb-6 "
           style={{
-            marginRight: "0.5em",
+            // marginRight: "0.5em",
             maxHeight: "82vh",
             visibility:
               ideaType === "fresh" && !freshIdeas ? "hidden" : "visible",
-
             height: "-webkit-fill-available",
           }}
         >
@@ -966,7 +965,7 @@ export default function DashboardInsights({
             : ""}
           {ideaType === "fresh" 
             && (
-              <>
+              <div className="w-full">
                 {isAuthenticated && (
                   <>
                     <form onSubmit={postFormData} className="mb-4 mt-1">
@@ -1268,7 +1267,7 @@ export default function DashboardInsights({
                         </div>
                       );
                 })}
-              </>
+              </div>
             )
           }
         </div>
