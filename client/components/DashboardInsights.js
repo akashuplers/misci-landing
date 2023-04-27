@@ -561,7 +561,7 @@ export default function DashboardInsights({
             Regenerate your blog on the basis of selected used & fresh ideas.
           </p>
           <button
-            className="cta flex items-center gap-2 self-start !py-2 !font-semibold  !text-sm"
+            className="cta flex items-center gap-2 self-start !py-2 !font-semibold"
             onClick={
               isAuthenticated
                 ? handleRegenerate
@@ -673,7 +673,16 @@ export default function DashboardInsights({
                 return (
                   <div
                     key={index}
-                    className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
+                    className="ref-button cta relative"
+                    style={{
+                      borderRadius: '100px',
+                      padding: '0.25em 0.75em',
+                      backgroundColor: '#e9e9e9',
+                      border: 'none',
+                      color: 'black',
+                      cursor: 'pointer',
+                      userSelect: 'none'
+                    }}
                     onClick={handleRefClick}
                     data-source={ref.source}
                   >
@@ -682,18 +691,19 @@ export default function DashboardInsights({
                       className=""
                       style={{
                         position: "absolute",
-                        bottom: "70%",
-                        left: "92%",
-                        backgroundColor: "#4a3afe",
-                        color: "white",
-                        width: "14px",
-                        height: "14px",
-                        fontSize: "0.65rem",
-                        borderRadius: "100px",
-                        display: "flex",
-                        justifyContent: "center",
-                        zIndex: "100",
-                        alignItems: "center",
+                          bottom: "65%",
+                          left: "90%",
+                          backgroundColor: "inherit",
+                          color: "inherit",
+                          width: "14px",
+                          height: "14px",
+                          fontSize: "0.65rem",
+                          fontWeight: "600",
+                          borderRadius: "100px",
+                          display: "flex",
+                          justifyContent: "center",
+                          zIndex: "100",
+                          alignItems: "center",
                       }}
                     >
                       {index + 1}
@@ -959,7 +969,7 @@ export default function DashboardInsights({
               <>
                 {isAuthenticated && (
                   <>
-                    <form onSubmit={postFormData} className="mb-4">
+                    <form onSubmit={postFormData} className="mb-4 mt-2">
                       {newIdeaLoad ? (
                         <ReactLoading
                           type={"spin"}
