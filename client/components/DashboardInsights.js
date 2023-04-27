@@ -532,6 +532,18 @@ export default function DashboardInsights({
     }
   }
 
+  function toTitleCase(str) {
+    let titleCase = "";
+    let words = str.toLowerCase().split(" ");
+
+    for (let i = 0; i < words.length; i++) {
+      let word = words[i];
+      titleCase += word.charAt(0).toUpperCase() + word.slice(1) + " ";
+    }
+
+    return titleCase.trim();
+  }
+
   if (loading || regenLoading) return <LoaderScan />;
   return (
     <>
@@ -580,15 +592,24 @@ export default function DashboardInsights({
             <div className="flex justify-between w-full items-center py-2">
               <p className="pt-[0.65em] font-semibold">Filtering Keywords</p>
             </div>
-            <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll pt-[0.65em]">
+            <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll !pb-0" style={{padding: '0.75em 0.25em'}}>
               {tags?.map((tag, i) => {
                 return (
                   <div
                     key={i}
-                    className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer tag-button cta"
+                    className="tag-button cta"
+                    style={{
+                      borderRadius: '100px',
+                      padding: '0.25em 0.75em',
+                      backgroundColor: '#e9e9e9',
+                      border: 'none',
+                      color: 'black',
+                      cursor: 'pointer',
+                      userSelect: 'none'
+                    }}
                     onClick={(e) => handleTagClick(e)}
                   >
-                    {tag}
+                    {toTitleCase(tag)}
                   </div>
                 );
               })}
@@ -599,14 +620,23 @@ export default function DashboardInsights({
           <div className="flex justify-between w-full items-center py-2">
             <p className="pt-[0.65em] font-semibold">Sources</p>
           </div>
-          <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll pt-[0.65em]">
+          <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0" style={{padding: '0.75em 0.5em'}}>
             {ideaType === "used" ? (
               reference?.length > 0 ? (
                 reference?.map((ref, index) => {
                   return (
                     <div
                       key={index}
-                      className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
+                      className="ref-button cta relative"
+                      style={{
+                        borderRadius: '100px',
+                        padding: '0.25em 0.75em',
+                        backgroundColor: '#e9e9e9',
+                        border: 'none',
+                        color: 'black',
+                        cursor: 'pointer',
+                        userSelect: 'none'
+                      }}
                       onClick={handleRefClick}
                       data-source={ref.source}
                     >
@@ -615,13 +645,14 @@ export default function DashboardInsights({
                         className=""
                         style={{
                           position: "absolute",
-                          bottom: "75%",
-                          left: "85%",
-                          backgroundColor: "#4a3afe",
-                          color: "white",
+                          bottom: "65%",
+                          left: "90%",
+                          backgroundColor: "inherit",
+                          color: "inherit",
                           width: "14px",
                           height: "14px",
                           fontSize: "0.65rem",
+                          fontWeight: "600",
                           borderRadius: "100px",
                           display: "flex",
                           justifyContent: "center",
