@@ -652,7 +652,7 @@ export const blogResolvers = {
                             article_ids.push(data.id)
                         })
                         try {
-                            const {updatedBlogs, description}: any = await blogGeneration({
+                            const {updatedBlogs, description, usedIdeasArr}: any = await blogGeneration({
                                 db,
                                 text: texts,
                                 regenerate: true,
@@ -681,12 +681,30 @@ export const blogResolvers = {
                                 updatedAt: getTimeStamp(),
                             }
                             let updatedIdeas: any = []
+                            if(!articlesData.length) {
+                                usedIdeasArr.forEach((idea: string) => updatedIdeas.push({
+                                    idea,
+                                    article_id: null,
+                                    reference: null,
+                                    used: 1,
+                                }))
+                            }
+                            articlesData.forEach((data) => {
+                                data.used_summaries.forEach((summary: string) => updatedIdeas.push({
+                                    idea: summary,
+                                    article_id: data.id,
+                                    reference: null,
+                                    name: data.name,
+                                    used: 1,
+                                }))
+                            })
                             articlesData.forEach((data) => {
                                 data.used_summaries.forEach((summary: string) => updatedIdeas.push({
                                     idea:summary,
                                     article_id: data.id,
                                     reference: null,
                                     used: 1,
+                                    name: data.name,
                                 }))
                                 // data.unused_summaries.forEach((summary: string) => updatedIdeas.push({
                                 //     idea:summary,
