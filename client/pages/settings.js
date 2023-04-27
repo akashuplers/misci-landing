@@ -617,9 +617,7 @@ export default function Settings() {
                                   style={{
                                     position: "absolute",
                                     right: "0",
-                                    bottom: "30px",
-                                    width: "80px",
-                                    height: "30px",
+                                    bottom: "30px"
                                   }}
                                   onClick={handleUpdate}
                                 >
