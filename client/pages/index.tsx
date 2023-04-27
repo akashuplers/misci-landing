@@ -155,7 +155,7 @@ export default function Home() {
             </svg>
           </div>
           <div className="mx-auto max-w-2xl py-32 sm:py-30 lg:py-20">
-            <div className="text-center">
+            <div className="text-center flex items-center justify-center flex-col">
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
                 Generate <span className="newsletter">Newsletter</span> with{" "}
                 <span style={{ color: "#4a3afe" }}>Lille</span>
@@ -166,12 +166,14 @@ export default function Home() {
                 concise and informative content in no time
               </p>
               <div className="p-4 mt-4">Try some of our trending topics</div>
-              {!loading ? (
-                <div className="grid grid-cols-3 gap-4 py-4">{updatedArr}</div>
-              ) : (
-                <LoaderPlane />
-              )}
-              <div className="mt-10 flex items-center justify-center gap-x-6">
+                {!loading ? (
+                  <div className="grid grid-cols-3 gap-4 py-4" style={{width:"110%"}}>{updatedArr}</div>
+                ) : (
+              <div style={{margin:'0 auto'}}>
+                  <LoaderPlane />
+              </div>
+                )}
+              <div className="mt-10 flex items-center justify-center gap-x-6 w-full">
                 <input
                   id="search"
                   name="search"
