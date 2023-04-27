@@ -326,11 +326,12 @@ export default function TinyMCEEditor({
       (obj) => obj.platform === "wordpress"
     );
     var aa;
-    const arr = newArray.find((pd) => pd.published === false);
+    const arr = newArray?.find((pd) => pd.published === false);
     if (arr) {
       aa = arr.tiny_mce_data;
     } else {
-      aa = newArray[newArray.length - 1].tiny_mce_data;
+      if(!newArray) return
+      aa = newArray[newArray?.length - 1].tiny_mce_data;
     }
     const htmlDoc = jsonToHtml(aa);
 

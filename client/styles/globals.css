@@ -209,7 +209,8 @@ padding-bottom: 10px !important;
 }
 
 .cta{
-    font-size: 0.85rem;
+    font-size: inherit;
+    font-weight: inherit;
     cursor: pointer;
     background-color: white ;
     color: #4a3afe;
@@ -223,10 +224,12 @@ padding-bottom: 10px !important;
 .cta.active{
     background-color: #4a3afe;
     color: white;
+    font-weight: 600;
 }
 
 .cta-invert{
-    font-size: 0.85rem;
+    font-size: inherit;
+    font-weight: inherit;
     cursor: pointer;
     background-color: #4a3afe;
     color: #ffffff;
@@ -257,16 +260,11 @@ padding-bottom: 10px !important;
     position: relative;
 }
 
-.cta.idea-button.active, 
-.cta.blog-toggle-button.active{
-    font-weight: 600;
-}
-
 .cta.idea-button.active::after, 
 .cta.blog-toggle-button.active::after{
     content: "";
     width: 100%;
-    height: 1px;
+    height: 2px;
     position: absolute;
     bottom: 0;
     left: 0;
