@@ -141,7 +141,7 @@ export default function Post() {
     <>
       <Layout>
         <ToastContainer />
-        <div className="flex divide-x">
+        <div className="flex">
           {pfmodal && (
             <PreferencesModal
               pfmodal={pfmodal}
