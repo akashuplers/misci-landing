@@ -310,7 +310,3 @@ padding-bottom: 10px !important;
   position: absolute;
   left: 0;
 }
-
-.divide-x > :not([hidden]) ~ :not([hidden]) {
-    z-index: -1;
-}

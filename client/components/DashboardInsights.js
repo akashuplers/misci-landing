@@ -555,7 +555,7 @@ export default function DashboardInsights({
         handleSave={() => (window.location = "/dashboard/" + blog_id)}
         bid={blog_id}
       />
-      <div className="w-[35%] text-xs px-2" style={{ width: "40%" }}>
+      <div className="w-[35%] text-xs px-2" style={{ width: "40%" , borderLeft:"2px solid #d2d2d2"}}>
         <div className="flex justify-between gap-[1.25em]">
           <p className="font-normal w-[70%]">
             Regenerate your blog on the basis of selected used & fresh ideas.
