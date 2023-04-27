@@ -16,6 +16,10 @@ const useStore = create((set) => ({
   updateisSave: () => {
     set({ isSave: true });
   },
+  updateisSavefalse: () => {
+    set({ isSave: false });
+    console.log("state changed");
+  },
   updateAuthentication: () => {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");

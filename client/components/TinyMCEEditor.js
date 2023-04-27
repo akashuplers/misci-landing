@@ -54,6 +54,8 @@ export default function TinyMCEEditor({
   const [imageURL, setImageURL] = useState();
   const [isalert, setAlert] = useState(false);
   const [load, setLoad] = useState(false);
+  const [editingMode, setEditingMode] = useState(false);
+  var isEditing = true;
   const isSave = useStore((state) => state.isSave);
 
   const onCopyText = () => {
@@ -366,6 +368,41 @@ export default function TinyMCEEditor({
     <>
       <ToastContainer />
       <Modal
+        isOpen={editingMode}
+        onRequestClose={() => {
+          setEditingMode(false);
+        }}
+        ariaHideApp={false}
+        className="w-[100%] sm:w-[38%] max-h-[95%]"
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0,0,0,0.5)",
+            zIndex: "9999",
+          },
+          content: {
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            right: "auto",
+            border: "none",
+            background: "white",
+
+            borderRadius: "8px",
+            maxWidth: "420px",
+            bottom: "",
+            zIndex: "999",
+            marginRight: "-50%",
+            transform: "translate(-50%, -50%)",
+            padding: "20px",
+            paddingBottom: "0px",
+          },
+        }}
+      >
+        <div className="pl-4 text-xl font-bold mb-5">
+          You are now in The Editor Mode!! 🥳
+        </div>
+      </Modal>
+      <Modal
         isOpen={openModal}
         onRequestClose={() => setOpenModal(false)}
         ariaHideApp={false}
@@ -649,7 +686,6 @@ export default function TinyMCEEditor({
           </button>
         </div>
       )}
-
       <Editor
         value={updatedText || editorText}
         apiKey="aas0t2r78qalxl9x1wl2byv0fchtnoh13dlufm5ez5annbr2"
@@ -658,6 +694,15 @@ export default function TinyMCEEditor({
             if (editor.inline) {
               registerPageMouseUp(editor, throttledStore);
             }
+          },
+          init_instance_callback: function (editor) {
+            editor.on("ExecCommand", function (e) {
+              console.log("The " + e.command + " command was fired.");
+              if (isEditing) {
+                setEditingMode(true);
+                isEditing = false;
+              }
+            });
           },
           skin: "naked",
           icons: "small",

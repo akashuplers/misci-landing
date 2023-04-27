@@ -91,11 +91,6 @@ export default function DashboardInsights({
     });
     if (check) return;
 
-    if (regenSelected?.length >= 5) {
-      e.target.checked = false;
-      return;
-    }
-
     setRegenSelected((prev) => [...prev, ideaObject]);
   }
 
@@ -121,7 +116,7 @@ export default function DashboardInsights({
     //const refCount = e.target.firstElementChild;
 
     /* Adding or removing the keywords to an array */
-    console.log("e.target.dataset", e.target.dataset);
+    console.log("e.target.dataset", e.target.dataset, filteredArray);
     const filterText = e.target.dataset.source;
 
     const valueExists = filteredArray.find(
@@ -237,7 +232,20 @@ export default function DashboardInsights({
   */
 
   function handleRegenerate() {
-    let newarr = [...arrUsed, ...regenSelected, ...arrFresh];
+    const arr = [];
+    if (arrUsed.length === 0 && filteredIdeas.length === 0) {
+      for (let index = 0; index < ideas.length; index++) {
+        const element = ideas[index];
+        if (element.used) {
+          const ideaObject = {
+            text: element.idea,
+            article_id: element.article_id,
+          };
+          arr.push(ideaObject);
+        }
+      }
+    }
+    let newarr = [...arrUsed, ...regenSelected, ...arrFresh, ...arr];
     if (newarr.length === 0 && filteredIdeas.length) {
       const arr = [];
       for (let index = 0; index < filteredIdeas.length; index++) {
@@ -270,11 +278,8 @@ export default function DashboardInsights({
           setBlogData(data.regenerateBlog);
           setIdeas(data.regenerateBlog.ideas.ideas);
           setTags(data.regenerateBlog.tags);
-
-          console.log(
-            "data?.regenerateBlog?.ideas?.freshIdeas",
-            data?.regenerateBlog?.ideas?.freshIdeas
-          );
+          setReferences(data.regenerateBlog.references);
+          setFreshIdeaReferences(data.regenerateBlog.freshIdeasReferences);
           setFreshIdeas(data?.regenerateBlog?.ideas?.freshIdeas);
           console.log(
             "asfgasfda ",
@@ -303,6 +308,9 @@ export default function DashboardInsights({
           setArrFresh([]);
           setArrUsed([]);
           setRegenSelected([]);
+          setFilteredArray([]);
+          setFilteredIdeas([]);
+          setFreshFilteredIdeas([]);
           setblog_id(data.regenerateBlog._id);
 
           const button = document.querySelectorAll(".blog-toggle-button");
