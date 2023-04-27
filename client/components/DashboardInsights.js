@@ -233,7 +233,10 @@ export default function DashboardInsights({
 
   function handleRegenerate() {
     const arr = [];
-    if (arrUsed.length === 0 && filteredIdeas.length === 0) {
+    if (
+      filteredArray.length !== 0 ||
+      (arrUsed.length === 0 && filteredIdeas.length === 0)
+    ) {
       for (let index = 0; index < ideas.length; index++) {
         const element = ideas[index];
         if (element.used) {
@@ -246,7 +249,11 @@ export default function DashboardInsights({
       }
     }
     let newarr = [...arrUsed, ...regenSelected, ...arrFresh, ...arr];
-    if (newarr.length === 0 && filteredIdeas.length) {
+    if (
+      newarr.length === 0 &&
+      filteredIdeas.length &&
+      filteredArray.length !== 0
+    ) {
       const arr = [];
       for (let index = 0; index < filteredIdeas.length; index++) {
         const element = filteredIdeas[index];
@@ -875,6 +882,27 @@ export default function DashboardInsights({
                                   : el
                             );
                             setFilteredIdeas(updatedFilteredIdeas);
+                            var ideasCopy = ideas;
+                            for (
+                              let index = 0;
+                              index < updatedFilteredIdeas.length;
+                              index++
+                            ) {
+                              const element = updatedFilteredIdeas[index];
+                              for (let i = 0; i < ideas.length; i++) {
+                                if (ideasCopy[i].idea === element.idea) {
+                                  console.log(
+                                    "999",
+                                    typeof ideasCopy[i].used,
+                                    typeof element.used,
+                                    ideasCopy[i].idea,
+                                    element.idea
+                                  );
+                                  // ideasCopy[i].used = element.used;
+                                }
+                              }
+                            }
+                            setIdeas(ideasCopy);
                             const arr = [];
                             for (
                               let index = 0;
