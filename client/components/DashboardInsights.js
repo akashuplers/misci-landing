@@ -233,10 +233,8 @@ export default function DashboardInsights({
 
   function handleRegenerate() {
     const arr = [];
-    if (
-      filteredArray.length !== 0 ||
-      (arrUsed.length === 0 && filteredIdeas.length === 0)
-    ) {
+    var flag = 0;
+    if (filteredArray.length === 0) {
       for (let index = 0; index < ideas.length; index++) {
         const element = ideas[index];
         if (element.used) {
@@ -247,8 +245,37 @@ export default function DashboardInsights({
           arr.push(ideaObject);
         }
       }
+      console.log("111", arr);
+      for (let index = 0; index < freshIdeas.length; index++) {
+        const element = freshIdeas[index];
+        if (element.used) {
+          const ideaObject = {
+            text: element.idea,
+            article_id: element.article_id,
+          };
+          arr.push(ideaObject);
+        }
+      }
+      flag = 1;
+      console.log("222", arr);
+    } else {
+      if (arrUsed.length === 0 && filteredIdeas.length === 0) {
+        for (let index = 0; index < ideas.length; index++) {
+          const element = ideas[index];
+          if (element.used) {
+            const ideaObject = {
+              text: element.idea,
+              article_id: element.article_id,
+            };
+            arr.push(ideaObject);
+          }
+        }
+      }
     }
-    let newarr = [...arrUsed, ...regenSelected, ...arrFresh, ...arr];
+    let newarr =
+      flag === 0
+        ? [...arrUsed, ...regenSelected, ...arrFresh, ...arr]
+        : [...arr];
     if (
       newarr.length === 0 &&
       filteredIdeas.length &&
@@ -271,7 +298,7 @@ export default function DashboardInsights({
       (obj, index, self) => index === self.findIndex((t) => t.text === obj.text)
     );
     if (newarr?.length >= 1) {
-      console.log("888", newarr, arrUsed, regenSelected);
+      console.log("888", newarr, arrUsed, regenSelected, arrFresh);
       RegenerateBlog({
         variables: {
           options: {
@@ -882,24 +909,16 @@ export default function DashboardInsights({
                                   : el
                             );
                             setFilteredIdeas(updatedFilteredIdeas);
-                            var ideasCopy = ideas;
-                            for (
-                              let index = 0;
-                              index < updatedFilteredIdeas.length;
-                              index++
-                            ) {
-                              const element = updatedFilteredIdeas[index];
-                              for (let i = 0; i < ideas.length; i++) {
-                                if (ideasCopy[i].idea === element.idea) {
-                                  console.log(
-                                    "999",
-                                    typeof ideasCopy[i].used,
-                                    typeof element.used,
-                                    ideasCopy[i].idea,
-                                    element.idea
-                                  );
-                                  // ideasCopy[i].used = element.used;
-                                }
+                            var ideasCopy = [];
+                            for (let i = 0; i < ideas.length; i++) {
+                              const element = ideas[i];
+                              const f = updatedFilteredIdeas.find(
+                                (pd) => pd.idea === element.idea
+                              );
+                              if (f) {
+                                ideasCopy.push(f);
+                              } else {
+                                ideasCopy.push(element);
                               }
                             }
                             setIdeas(ideasCopy);
@@ -1093,6 +1112,19 @@ export default function DashboardInsights({
                                   : el
                             );
                             setFreshFilteredIdeas(updatedFilteredIdeas);
+                            var ideasCopy = [];
+                            for (let i = 0; i < freshIdeas.length; i++) {
+                              const element = freshIdeas[i];
+                              const f = updatedFilteredIdeas.find(
+                                (pd) => pd.idea === element.idea
+                              );
+                              if (f) {
+                                ideasCopy.push(f);
+                              } else {
+                                ideasCopy.push(element);
+                              }
+                            }
+                            setFreshIdeas(ideasCopy);
                             const arr = [];
                             for (
                               let index = 0;
