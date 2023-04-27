@@ -259,7 +259,7 @@ export default function DashboardInsights({
       flag = 1;
       console.log("222", arr);
     } else {
-      if (arrUsed.length === 0 && filteredIdeas.length === 0) {
+      if (arrUsed.length === 0) {
         for (let index = 0; index < ideas.length; index++) {
           const element = ideas[index];
           if (element.used) {
