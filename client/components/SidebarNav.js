@@ -8,8 +8,8 @@ import {
   XMarkIcon,
   PaperAirplaneIcon,
   ArrowRightOnRectangleIcon,
-  Cog6ToothIcon,
 } from "@heroicons/react/24/outline";
+import { Cog6ToothIcon } from "@heroicons/react/24/solid";
 import { logout } from "../helpers/helper";
 import Link from "next/link";
 import Avatar from "react-avatar";
@@ -222,14 +222,14 @@ export default function Sidebar() {
                           className={classNames(
                             item.current
                               ? "bg-gray-100 text-gray-900"
-                              : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                              : "text-[#415A77] hover:bg-gray-50 hover:text-gray-900",
                             "group flex items-center rounded-md px-2 py-2 text-base font-medium"
                           )}
                         >
                           <item.icon
                             className={classNames(
                               item.current
-                                ? "text-gray-500"
+                                ? "text-[#415A77]"
                                 : "text-gray-400 group-hover:text-gray-500",
                               "mr-4 h-6 w-6 flex-shrink-0"
                             )}
@@ -251,11 +251,12 @@ export default function Sidebar() {
                         alignItems: "center",
                       }}
                     >
+                      UPGRADE
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         fill="currentColor"
-                        className="w-6 h-6"
+                        className="w-4 h-4"
                       >
                         <path
                           fillRule="evenodd"
@@ -263,7 +264,6 @@ export default function Sidebar() {
                           clipRule="evenodd"
                         />
                       </svg>
-                      UPGRADE
                     </Link>
                   </div>
                 </Dialog.Panel>
@@ -327,11 +327,12 @@ export default function Sidebar() {
                     alignItems: "center",
                   }}
                 >
+                  UPGRADE
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="currentColor"
-                    className="w-6 h-6"
+                    className="w-6 h-6 pl-2"
                   >
                     <path
                       fillRule="evenodd"
@@ -339,7 +340,6 @@ export default function Sidebar() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  UPGRADE
                 </Link>
               </div>
             )}
