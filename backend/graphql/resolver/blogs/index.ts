@@ -279,7 +279,6 @@ export const blogResolvers = {
                     updatedIdeas = await (
                         Promise.all(
                             updatedIdeas.map(async (ideasData: any) => {
-                                const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db, userId})
                                 if(ideasData.article_id) {
                                     const article = await fetchArticleById({id: ideasData.article_id, db, userId})
                                     return {
@@ -459,6 +458,26 @@ export const blogResolvers = {
                 if(newIdeas.length) blogIdeas.ideas = newIdeas
                 console.log(newIdeas, "newIdeas")
                 console.log(freshIdeas, "freshIdeas")
+                let freshIdeasTags: string[] = []
+                if(blogIdeas && blogIdeas?.freshIdeas?.length) {
+                    await  (
+                        Promise.all(
+                            blogIdeas.freshIdeas?.forEach(async (idea: any) => {
+                                const article = await db.db('lilleArticles').collection('articles').findOne({_id: idea.article_id})
+                                const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                                const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                                const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                                freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
+                            })
+                        )
+                    )
+                }
+                let uniqueFreshIdeasTags: String[] = [];
+                freshIdeasTags.forEach((c) => {
+                    if (!uniqueFreshIdeasTags.includes(c)) {
+                        uniqueFreshIdeasTags.push(c);
+                    }
+                });
                 await db.db('lilleBlogs').collection('blogs').updateOne({
                     _id: new ObjectID(blog._id)
                 }, {
@@ -468,6 +487,7 @@ export const blogResolvers = {
                         description,
                         article_id: articleIds,
                         tags: uniqueTags,
+                        freshIdeasTags: uniqueFreshIdeasTags,
                         imageUrl: imageUrl ? imageUrl : blog.imageUrl,
                         imageSrc,
                         updatedAt: getTimeStamp()

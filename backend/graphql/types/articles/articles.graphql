@@ -31,6 +31,7 @@ type Blog {
     publish_data: [PublishData]
     ideas: BlogIdeas
     tags: [String]
+    freshIdeasTags: [String]
     references: [UrlObj]
     freshIdeasReferences: [UrlObj]
     pythonRespTime: Float

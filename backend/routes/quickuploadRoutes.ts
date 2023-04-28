@@ -26,6 +26,12 @@ router.post('/url', authMiddleware, async (req: any, res: any) => {
         const name = article._source?.source?.name
         if(article) {
             let freshIdeas: any[] = []
+            let freshIdeasTags: string[] = []
+            const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+            const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+            const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+            const name = article._source?.source?.name
+            freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
             article?._source?.summary.forEach((summary: string, index: number) => {
                 if(index < 5) {
                     freshIdeas.push({
@@ -40,7 +46,6 @@ router.post('/url', authMiddleware, async (req: any, res: any) => {
                 freshIdeas = await (
                     Promise.all(
                         freshIdeas.map(async (ideasData: any) => {
-                            const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db, userId: user.id})
                             if(ideasData.article_id) {
                                 const article = await fetchArticleById({id: ideasData.article_id, db, userId: user.id})
                                 return {
@@ -60,12 +65,18 @@ router.post('/url', authMiddleware, async (req: any, res: any) => {
                     )
                 )
             }
-            if(blog_id)
+            if(blog_id){
+                await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(blog_id)}, {
+                    $set: {
+                        freshIdeasTags
+                    }
+                })
                 await db.db('lilleBlogs').collection('blogIdeas').updateOne({blog_id: new ObjectID(blog_id)}, {
                     $set: {
                         freshIdeas
                     }
                 })
+            }
             let endRequest = new Date()
             let respTime = diff_minutes(endRequest, startRequest)    
             let refUrls: {
@@ -78,7 +89,8 @@ router.post('/url', authMiddleware, async (req: any, res: any) => {
                 data: freshIdeas,
                 respTime,
                 pythonRespTime,
-                references: refUrls
+                references: refUrls,
+                freshIdeasTags: freshIdeasTags,
             })
         } else {
             return res.status(400).send({
@@ -107,10 +119,15 @@ router.post('/keyword', authMiddleware, async (req: any, res: any) => {
         let pythonEnd = new Date()
         let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
         let articlesData: any[] = []
+        let freshIdeasTags: string[] = []
         await (
             Promise.all(
                 articleIds?.map(async (id: string) => {
                     const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
+                    const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                    const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                    const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                    freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
                     const name = article._source?.source?.name
                     return (
                         article?._source?.summary?.forEach((summary: string, index: number) => index < 5 ? articlesData.push({
@@ -129,7 +146,6 @@ router.post('/keyword', authMiddleware, async (req: any, res: any) => {
             freshIdeas = await (
                 Promise.all(
                     freshIdeas.map(async (ideasData: any) => {
-                        const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db, userId: user.id})
                         if(ideasData.article_id) {
                             const article = await fetchArticleById({id: ideasData.article_id, db, userId: user.id})
                             return {
@@ -149,12 +165,18 @@ router.post('/keyword', authMiddleware, async (req: any, res: any) => {
                 )
             )
         }
-        if(blog_id)
+        if(blog_id){
+            await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(blog_id)}, {
+                $set: {
+                    freshIdeasTags
+                }
+            })
             await db.db('lilleBlogs').collection('blogIdeas').updateOne({blog_id: new ObjectID(blog_id)}, {
                 $set: {
                     freshIdeas
                 }
             })
+        }
         let refUrls: {
             url: string
             source: string
@@ -167,7 +189,8 @@ router.post('/keyword', authMiddleware, async (req: any, res: any) => {
             data: freshIdeas,
             respTime,
             pythonRespTime,
-            references: refUrls
+            references: refUrls,
+            freshIdeasTags
         })
     }catch (e) {
         return res.status(400).send({
@@ -193,6 +216,12 @@ router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any
         const name = article._source?.source?.name
         if(article) {
             let freshIdeas: any[] = []
+            let freshIdeasTags: string[] = []
+            const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+            const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+            const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+            const name = article._source?.source?.name
+            freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
             article?._source?.summary.forEach((summary: string, index: number) => {
                 if(index < 5) {
                     freshIdeas.push({
@@ -207,7 +236,6 @@ router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any
                 freshIdeas = await (
                     Promise.all(
                         freshIdeas.map(async (ideasData: any) => {
-                            const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db, userId: user.id})
                             if(ideasData.article_id) {
                                 const article = await fetchArticleById({id: ideasData.article_id, db, userId: user.id})
                                 return {
@@ -227,12 +255,18 @@ router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any
                     )
                 )
             }
-            if(blog_id)
+            if(blog_id){
+                await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(blog_id)}, {
+                    $set: {
+                        freshIdeasTags
+                    }
+                })
                 await db.db('lilleBlogs').collection('blogIdeas').updateOne({blog_id: new ObjectID(blog_id)}, {
                     $set: {
                         freshIdeas
                     }
                 })
+            }
             let refUrls: {
                 url: string
                 source: string
@@ -245,7 +279,8 @@ router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any
                 data: freshIdeas,
                 respTime,
                 pythonRespTime,
-                references: refUrls
+                references: refUrls,
+                freshIdeasTags
             })
         } else {
             return res.status(400).send({
