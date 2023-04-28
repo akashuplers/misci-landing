@@ -462,7 +462,7 @@ export const blogResolvers = {
                 if(blogIdeas && blogIdeas?.freshIdeas?.length) {
                     await  (
                         Promise.all(
-                            blogIdeas.freshIdeas?.forEach(async (idea: any) => {
+                            blogIdeas.freshIdeas.map(async (idea: any) => {
                                 const article = await db.db('lilleArticles').collection('articles').findOne({_id: idea.article_id})
                                 const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
                                 const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
