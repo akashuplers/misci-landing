@@ -747,7 +747,7 @@ export default function DashboardInsights({
             // marginRight: "0.5em",
             maxHeight: "82vh",
             height: "-webkit-fill-available",
-            maxHeight: "50vh",
+            maxHeight: "52vh",
           }}
         >
           {ideaType === "used"
