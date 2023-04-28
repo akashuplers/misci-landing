@@ -251,15 +251,16 @@ export default function Sidebar() {
                       ))}
                     </nav>
                   </div>
-                  <div className="flex flex-shrink-0 pb-0 pt-4">
+                  {/* <div className="flex flex-shrink-0 pb-0 pt-4">
                     <Link
                       href="/upgrade"
-                      className="ml-6 inline-flex items-center rounded-md bg-[#4A3AFE] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      className="ml-6 inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                       style={{
                         margin: "0em 0.5em",
                         width: "100%",
                         justifyContent: "center",
                         alignItems: "center",
+                        background: "var(--primary-blue)"
                       }}
                     >
                       UPGRADE
@@ -276,7 +277,7 @@ export default function Sidebar() {
                         />
                       </svg>
                     </Link>
-                  </div>
+                  </div> */}
                 </Dialog.Panel>
               </Transition.Child>
               <div className="w-14 flex-shrink-0">
@@ -326,7 +327,7 @@ export default function Sidebar() {
                 ))}
               </nav>
             </div>
-            {!meeData?.me?.paid && !meeLoading && (
+            {/* {!meeData?.me?.paid && !meeLoading && (
               <div className="flex flex-shrink-0 pb-0 pt-4">
                 <Link
                   href="/upgrade"
@@ -353,7 +354,7 @@ export default function Sidebar() {
                   </svg>
                 </Link>
               </div>
-            )}
+            )} */}
             <nav className="mt-5 space-y-1 bg-white px-2 pb-8">
               {navigation_bottom.map((item) => (
                 <Link
@@ -527,7 +528,7 @@ export default function Sidebar() {
                         src={meeData?.me?.profileImage}
                         round={true}
                       />
-                      {meeData?.me?.paid || (
+                      {/* {meeData?.me?.paid || (
                         <div
                           id="trialenddiv"
                           className="hidden"
@@ -548,7 +549,7 @@ export default function Sidebar() {
                         >
                           Upgrade Now!
                         </div>
-                      )}
+                      )} */}
                     </Link>
                   )}
                 </div>
