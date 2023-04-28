@@ -167,7 +167,7 @@ export default function Post() {
             <span>Python Response Time : {(pyResTime*60).toFixed(2) ?? ""}sec</span><br/>
             <span>Node Response Time : {(ndResTime*60).toFixed(2) ?? ""}sec</span>
           </div>
-          <div className="w-[65%] relative">
+          <div className="relative" style={{width : "var(--tinymce-width)"}}>
             <TinyMCEEditor
               isAuthenticated={true}
               editorText={editorText}
@@ -177,7 +177,7 @@ export default function Post() {
               loading={loading}
             />
           </div>
-          <div className="w-[35%] relative">
+          <div className="relative" style={{width : "var(--dashboardInsight-width)"}}>
             <DashboardInsights
               ideas={ideas}
               setIdeas={setIdeas}
