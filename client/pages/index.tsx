@@ -9,6 +9,7 @@ import Layout from "../components/Layout";
 import { toast, ToastContainer } from "react-toastify";
 import { meeAPI } from "../graphql/querys/mee";
 import PreferencesModal from "../modals/PreferencesModal";
+import TrialEndedModal from "../components/TrialEndedModal"
 
 export default function Home() {
   const keywords = gql`
@@ -128,6 +129,7 @@ export default function Home() {
             getToken={getToken}
           />
         )}
+        {!meeData?.me?.paid && meeData?.me?.credits === 25 && <TrialEndedModal/>}
         <div className={`relative px-6 pt-5 lg:px-8`}>
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
             <svg
