@@ -74,6 +74,7 @@ export class Python {
                 data : uploadData,
                 timeout: data.timeout || 0
             };
+            console.log(config)
             const pythonRes = await axios(config)
             console.log(pythonRes.data, pythonRes)
             return pythonRes.data
