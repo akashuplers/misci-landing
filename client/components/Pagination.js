@@ -16,8 +16,8 @@ const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
     }
 
     function getVisiblePages(currentPage, totalPages) {
-        let startPage = currentPage - 3;
-        let endPage = currentPage + 3;
+        let startPage = Math.max(1, currentPage - 3);
+        let endPage = Math.min(currentPage + 3, totalPages);
 
         if (startPage < 1) {
             startPage = 1;
@@ -29,7 +29,7 @@ const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
             startPage = totalPages - 6;
         }
 
-        return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).filter(num => num > 0);
+        return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
     }
 
     function handlePageClick(page) {
