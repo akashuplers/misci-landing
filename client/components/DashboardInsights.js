@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { Switch } from "@headlessui/react";
 import LoaderScan from "./LoaderScan";
@@ -103,7 +104,7 @@ export default function DashboardInsights({
     e.target.classList.toggle("active");
 
     /* Adding or removing the keywords to an array */
-    const filterText = e.target.innerText;
+    const filterText = e.target.dataset.tag;
     setFilteredArray((prev) =>
       prev.find((el) => Object.values(el).indexOf(filterText) > -1)
         ? [...prev.filter((el) => el.filterText !== filterText)]
@@ -165,31 +166,18 @@ export default function DashboardInsights({
 
     setNotUniqueFilteredIdeas([]);
 
-    if (ideaType === "used") {
-      filteredArray.forEach((filterObject) =>
-        ideas.forEach((idea) => {
-          if (filterObject?.criteria === "tag") {
-            idea?.idea?.indexOf(filterObject?.filterText) >= 0 &&
-              setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-          } else if (filterObject?.criteria === "ref") {
-            idea?.name === filterObject?.filterText &&
-              setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-          }
-        })
-      );
-    } else if (ideaType === "fresh") {
-      filteredArray.forEach((filterObject) =>
-        freshIdeas.forEach((idea) => {
-          if (filterObject?.criteria === "tag") {
-            idea?.idea?.indexOf(filterObject?.filterText) >= 0 &&
-              setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-          } else if (filterObject?.criteria === "ref") {
-            idea?.name === filterObject?.filterText &&
-              setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-          }
-        })
-      );
-    }
+    const arr = ideaType === "used" ? ideas : freshIdeas
+
+    filteredArray.forEach((filterObject) =>
+      arr.forEach((idea) => {
+        const searchObject = filterObject?.filterText
+        if (filterObject?.criteria === "tag") {
+          idea?.idea?.includes(searchObject) && setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
+        } else if (filterObject?.criteria === "ref") {
+          idea?.name === searchObject && setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
+        }
+      })
+    );
   }, [filteredArray]);
 
   // We create a set so that the values are unique, and multiple ideas are not added
@@ -246,7 +234,7 @@ export default function DashboardInsights({
         }
       }
       console.log("111", arr);
-      for (let index = 0; index < freshIdeas.length; index++) {
+      for (let index = 0; index < freshIdeas?.length; index++) {
         const element = freshIdeas[index];
         if (element.used) {
           const ideaObject = {
@@ -533,6 +521,7 @@ export default function DashboardInsights({
   }
 
   function toTitleCase(str) {
+    if(!str) return;
     let titleCase = "";
     let words = str.toLowerCase().split(" ");
 
@@ -555,7 +544,7 @@ export default function DashboardInsights({
         handleSave={() => (window.location = "/dashboard/" + blog_id)}
         bid={blog_id}
       />
-      <div className="w-[35%] text-xs px-2" style={{ width: "40%" , borderLeft:"2px solid #d2d2d2"}}>
+      <div className="text-xs px-2" style={{borderLeft:"2px solid #d2d2d2"}}>
         <div className="flex justify-between gap-[1.25em]">
           <p className="font-normal w-[70%]">
             Regenerate your blog on the basis of selected used & fresh ideas.
@@ -592,7 +581,7 @@ export default function DashboardInsights({
             <div className="flex justify-between w-full items-center py-2">
               <p className="pt-[0.65em] font-semibold">Filtering Keywords</p>
             </div>
-            <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll !pb-0" style={{padding: '0.75em 0.25em'}}>
+            <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0" style={{padding: '0.75em 0.25em'}}>
               {tags?.map((tag, i) => {
                 return (
                   <div
@@ -607,9 +596,10 @@ export default function DashboardInsights({
                       cursor: 'pointer',
                       userSelect: 'none'
                     }}
-                    onClick={(e) => handleTagClick(e)}
+                    onClick={handleTagClick}
+                    data-tag={tag}
                   >
-                    {toTitleCase(tag)}
+                    {tag.toUpperCase()}
                   </div>
                 );
               })}
@@ -656,7 +646,7 @@ export default function DashboardInsights({
                           borderRadius: "100px",
                           display: "flex",
                           justifyContent: "center",
-                          zIndex: "100",
+                          zIndex: "1",
                           alignItems: "center",
                         }}
                       >
@@ -702,7 +692,7 @@ export default function DashboardInsights({
                           borderRadius: "100px",
                           display: "flex",
                           justifyContent: "center",
-                          zIndex: "100",
+                          zIndex: "1",
                           alignItems: "center",
                       }}
                     >
@@ -752,13 +742,12 @@ export default function DashboardInsights({
           </button>
         </div>
         <div
-          className="overflow-y-scroll px-2 mb-6 "
+          className="overflow-y-scroll px-2"
           style={{
             // marginRight: "0.5em",
             maxHeight: "82vh",
-            visibility:
-              ideaType === "fresh" && !freshIdeas ? "hidden" : "visible",
             height: "-webkit-fill-available",
+            maxHeight: "50vh",
           }}
         >
           {ideaType === "used"
@@ -1016,7 +1005,7 @@ export default function DashboardInsights({
                                 <div
                                   className="max-w-sm rounded overflow-hidden shadow-lg india r-0 bg-white mt-15"
                                   style={{
-                                    zIndex: 9999,
+                                    zIndex: 1,
                                     position: "absolute",
                                     right: "0",
                                   }}

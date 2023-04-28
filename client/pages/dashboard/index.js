@@ -238,7 +238,7 @@ export default function dashboard({ query }) {
   return (
     <>
       <Layout>
-        <div className="flex mb-6">
+        <div className="flex mb-6 h-[88vh]">
           {/* <div
             style={{
               zIndex: "10",
@@ -270,24 +270,26 @@ export default function dashboard({ query }) {
               blog_id={blog_id}
             />
           </div>
-          <DashboardInsights
-            ideas={ideas}
-            setIdeas={setIdeas}
-            tags={tags}
-            setTags={setTags}
-            blog_id={blog_id}
-            setblog_id={setblog_id}
-            loading={loading}
-            freshIdeas={freshIdeas}
-            setEditorText={setEditorText}
-            setBlogData={setBlogData}
-            setPyResTime={setPyResTime}
-            setNdResTime={setNdResTime}
-            freshIdeasReferences={freshIdeasReferences}
-            setFreshIdeaReferences={setFreshIdeasReferences}
-            reference={reference}
-            setReference={setReference}
-          />
+          <div className="w-[35%] relative">
+            <DashboardInsights
+              ideas={ideas}
+              setIdeas={setIdeas}
+              tags={tags}
+              setTags={setTags}
+              blog_id={blog_id}
+              setblog_id={setblog_id}
+              loading={loading}
+              freshIdeas={freshIdeas}
+              setEditorText={setEditorText}
+              setBlogData={setBlogData}
+              setPyResTime={setPyResTime}
+              setNdResTime={setNdResTime}
+              freshIdeasReferences={freshIdeasReferences}
+              setFreshIdeaReferences={setFreshIdeasReferences}
+              reference={reference}
+              setReference={setReference}
+            />
+          </div>
         </div>
       </Layout>
     </>

@@ -276,9 +276,9 @@ export default function Sidebar() {
         </Transition.Root>
 
         {/* Static sidebar for desktop */}
-        <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-[12.4rem] lg:flex-col z-20 ">
+        <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-[12.4rem] lg:flex-col z-20 " >
           {/* Sidebar component, swap this element with another sidebar if you like */}
-          <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-white">
+          <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200">
             <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
               <Link href="/">
                 <div className="flex flex-shrink-0 items-center justify-center px-4">
@@ -373,7 +373,7 @@ export default function Sidebar() {
             </nav>
           </div>
         </div>
-        <div className="flex flex-1 flex-col lg:pl-[12rem] w-full fixed top-0 z-10">
+        <div className="flex flex-1 flex-col lg:pl-[12.5rem] h-[11vh] w-full fixed top-0 z-10" >
           <div className="sticky top-0 z-10 bg-white pl-1 pt-1 sm:pl-3 sm:pt-3 lg:hidden">
             <button
               type="button"

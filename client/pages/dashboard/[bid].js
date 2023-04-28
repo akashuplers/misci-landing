@@ -173,25 +173,26 @@ export default function Post() {
               loading={loading}
             />
           </div>
-          <DashboardInsights
-            ideas={ideas}
-            setIdeas={setIdeas}
-            freshIdeas={freshIdeas}
-            tags={tags}
-            setTags={setTags}
-            freshIdeasReferences={freshIdeasReferences}
-            setFreshIdeaReferences={setFreshIdeasReferences}
-            reference={reference}
-            setReference={setReference}
-            blog_id={bid}
-            loading={loading}
-            setEditorText={setEditorText}
-            setBlogData={setBlogData}
-            // tags={data?.fetchBlog?.tags}
-
-            setPyResTime={setPyResTime}
-            setNdResTime={setNdResTime}
-          />
+          <div className="w-[35%] relative">
+            <DashboardInsights
+              ideas={ideas}
+              setIdeas={setIdeas}
+              freshIdeas={freshIdeas}
+              tags={tags}
+              setTags={setTags}
+              freshIdeasReferences={freshIdeasReferences}
+              setFreshIdeaReferences={setFreshIdeasReferences}
+              reference={reference}
+              setReference={setReference}
+              blog_id={bid}
+              loading={loading}
+              setEditorText={setEditorText}
+              setBlogData={setBlogData}
+              // tags={data?.fetchBlog?.tags}
+              setPyResTime={setPyResTime}
+              setNdResTime={setNdResTime}
+            />
+          </div>
         </div>
       </Layout>
     </>
