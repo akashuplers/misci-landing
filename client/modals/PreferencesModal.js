@@ -154,11 +154,20 @@ export default function PreferencesModal({ pfmodal, setPFModal, getToken }) {
           Select at least 3 topics of your interest so that we can provide daily
           blogs
         </p>
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1 py-4">
           {prefKeyword.map((keyword, index) => {
             return (
               <span
-                className="cta"
+                className="cta preference"
+                style={{
+                  borderRadius: '100px',
+                  padding: '0.25em 0.75em',
+                  backgroundColor: '#e9e9e9',
+                  border: 'none',
+                  color: 'black',
+                  cursor: 'pointer',
+                  userSelect: 'none'
+                }}
                 key={index}
                 onClick={(e) => handlePrefClick(e, setSelectedPrefKeyword)}
               >
@@ -168,7 +177,7 @@ export default function PreferencesModal({ pfmodal, setPFModal, getToken }) {
           })}
         </div>
         <button
-          className={`self-end px-4 py-2 mt-4 text-sm font-semibold text-white bg-indigo-600 rounded-md`}
+          className={`cta-invert`}
           style={{
             width: "100px",
             height: "40px",

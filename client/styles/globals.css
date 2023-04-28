@@ -268,7 +268,8 @@ padding-bottom: 10px !important;
 }
 
 .cta.ref-button.active,
-.cta.tag-button.active{
+.cta.tag-button.active,
+.cta.preference.active{
   color: var(--primary-blue) !important;
   background: #d2cff6 !important ;
   font-weight: 600;
