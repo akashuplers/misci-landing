@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import "@/styles/globals.css";
 import axios from "axios";
 import type { AppProps } from "next/app";
@@ -95,6 +96,7 @@ export default function App({ Component, pageProps }: AppProps) {
     "/public/[bid]",
   ];
 
+
   useEffect(() => {
     axios
       .get(API_BASE_PATH + API_ROUTES.TEMP_ID, {
@@ -122,6 +124,7 @@ export default function App({ Component, pageProps }: AppProps) {
       setIsAuthenticated(true);
     }
   }, []);
+
 
   /*useEffect(() => {
     if (
