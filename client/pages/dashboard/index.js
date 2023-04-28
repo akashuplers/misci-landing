@@ -30,6 +30,7 @@ export default function dashboard({ query }) {
   const [ideas, setIdeas] = useState([]);
   const [freshIdeas, setFreshIdeas] = useState([]);
   const [tags, setTags] = useState([]);
+  const [freshIdeaTags, setFreshIdeaTags] = useState([]);
   const [blog_id, setblog_id] = useState("");
   const [editorText, setEditorText] = useState("");
   const [blogData, setBlogData] = useState([]);
@@ -150,6 +151,7 @@ export default function dashboard({ query }) {
           setBlogData(data.fetchBlog);
           setIdeas(data.fetchBlog.ideas.ideas);
           setTags(data.fetchBlog.tags);
+          setFreshIdeaTags(data.fetchBlog.freshIdeasTags);
           setFreshIdeasReferences(data?.fetchBlog?.freshIdeasReferences);
           setReference(data?.fetchBlog?.references);
           setFreshIdeas(data?.fetchBlog?.idea?.freshIdeas);
@@ -274,18 +276,26 @@ export default function dashboard({ query }) {
             <DashboardInsights
               ideas={ideas}
               setIdeas={setIdeas}
+              
               tags={tags}
               setTags={setTags}
+
+              freshIdeaTags = {freshIdeaTags}
+
               blog_id={blog_id}
               setblog_id={setblog_id}
+
               loading={loading}
-              freshIdeas={freshIdeas}
               setEditorText={setEditorText}
               setBlogData={setBlogData}
+
               setPyResTime={setPyResTime}
               setNdResTime={setNdResTime}
+
+              freshIdeas={freshIdeas}
               freshIdeasReferences={freshIdeasReferences}
               setFreshIdeaReferences={setFreshIdeasReferences}
+
               reference={reference}
               setReference={setReference}
             />
