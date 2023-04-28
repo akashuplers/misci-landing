@@ -34,6 +34,9 @@ export default function Post() {
   // const [isPublished, setIsPublished] = useState(false);
   const [ideas, setIdeas] = useState([]);
   const [freshIdeas, setFreshIdeas] = useState([]);
+
+  const [freshIdeaTags, setFreshIdeaTags] = useState([])
+
   const [editorText, setEditorText] = useState([]);
   const [tags, setTags] = useState([]);
   const [blogData, setBlogData] = useState([]);
@@ -48,6 +51,7 @@ export default function Post() {
     setBlogData(data.fetchBlog);
     setIdeas(data.fetchBlog.ideas.ideas);
     setTags(data.fetchBlog.tags);
+    setFreshIdeaTags(data.fetchBlog.freshIdeasTags);
     setFreshIdeasReferences(data.fetchBlog.freshIdeasReferences);
     setReference(data.fetchBlog.references);
     setFreshIdeas(data.fetchBlog.ideas.freshIdeas);
@@ -177,13 +181,19 @@ export default function Post() {
             <DashboardInsights
               ideas={ideas}
               setIdeas={setIdeas}
-              freshIdeas={freshIdeas}
+
               tags={tags}
               setTags={setTags}
+
+              freshIdeaTags = {freshIdeaTags}
+
+              freshIdeas={freshIdeas}
               freshIdeasReferences={freshIdeasReferences}
               setFreshIdeaReferences={setFreshIdeasReferences}
+
               reference={reference}
               setReference={setReference}
+
               blog_id={bid}
               loading={loading}
               setEditorText={setEditorText}

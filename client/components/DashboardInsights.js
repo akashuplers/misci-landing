@@ -27,6 +27,8 @@ export default function DashboardInsights({
   tags,
   setTags,
 
+  freshIdeaTags: oldFreshIdeaTags,
+
   freshIdeasReferences,
   setFreshIdeaReferences,
 
@@ -48,7 +50,10 @@ export default function DashboardInsights({
   const [arrUsed, setArrUsed] = useState([]);
   const [arrFresh, setArrFresh] = useState([]);
   const [ideaType, setIdeaType] = useState("used");
+
   const [freshIdeas, setFreshIdeas] = useState([]);
+  const [freshIdeaTags, setFreshIdeaTags] = useState([]);
+
   const [freshFilteredIdeas, setFreshFilteredIdeas] = useState([]);
   const updateCredit = useStore((state) => state.updateCredit);
   const updateisSave = useStore((state) => state.updateisSave);
@@ -56,6 +61,11 @@ export default function DashboardInsights({
   useEffect(() => {
     setFreshIdeas(oldFreshIdeas);
   }, [oldFreshIdeas]);
+
+  useEffect(() => {
+    setFreshIdeaTags(oldFreshIdeaTags);
+  }, [oldFreshIdeaTags]);
+
 
   const [newIdeaLoad, setNewIdeaLoad] = useState(false);
 
@@ -444,6 +454,7 @@ export default function DashboardInsights({
         console.log(response.data);
         setFreshIdeas(response.data.data);
         setFreshIdeaReferences(response.data.references);
+        setFreshIdeaTags(response.data.freshIdeasTags)
 
         setPyResTime(response.data.pythonRespTime);
         setNdResTime(response.data.respTime);
@@ -582,27 +593,52 @@ export default function DashboardInsights({
               <p className="pt-[0.65em] font-semibold">Filtering Keywords</p>
             </div>
             <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0" style={{padding: '0.75em 0.25em'}}>
-              {tags?.map((tag, i) => {
-                return (
-                  <div
-                    key={i}
-                    className="tag-button cta"
-                    style={{
-                      borderRadius: '100px',
-                      padding: '0.25em 0.75em',
-                      backgroundColor: '#e9e9e9',
-                      border: 'none',
-                      color: 'black',
-                      cursor: 'pointer',
-                      userSelect: 'none'
-                    }}
-                    onClick={handleTagClick}
-                    data-tag={tag}
-                  >
-                    {tag.toUpperCase()}
-                  </div>
-                );
-              })}
+              {ideaType === "used" 
+                ? tags?.map((tag, i) => {
+                    return (
+                      <div
+                        key={i}
+                        className="tag-button cta"
+                        style={{
+                          borderRadius: '100px',
+                          padding: '0.25em 0.75em',
+                          backgroundColor: '#e9e9e9',
+                          border: 'none',
+                          color: 'black',
+                          cursor: 'pointer',
+                          userSelect: 'none'
+                        }}
+                        onClick={handleTagClick}
+                        data-tag={tag}
+                      >
+                        {tag.toUpperCase()}
+                      </div>
+                    );
+                  })
+                : freshIdeaTags?.length > 0
+                  ? freshIdeaTags?.map((tag, i) => {
+                      return (
+                        <div
+                          key={i}
+                          className="tag-button cta"
+                          style={{
+                            borderRadius: '100px',
+                            padding: '0.25em 0.75em',
+                            backgroundColor: '#e9e9e9',
+                            border: 'none',
+                            color: 'black',
+                            cursor: 'pointer',
+                            userSelect: 'none'
+                          }}
+                          onClick={handleTagClick}
+                          data-tag={tag}
+                        >
+                          {tag.toUpperCase()}
+                        </div>
+                      );
+                    })
+                  : "Generate fresh ideas to see tags"
+              }
             </div>
           </div>
         )}
@@ -747,7 +783,7 @@ export default function DashboardInsights({
             // marginRight: "0.5em",
             maxHeight: "82vh",
             height: "-webkit-fill-available",
-            maxHeight: "52vh",
+            maxHeight: "50vh",
           }}
         >
           {ideaType === "used"
