@@ -45,6 +45,17 @@ export default function Sidebar() {
     setUrl(path);
   }, [path]);
 
+  const [topBarStyle, setTopBarStyle] = useState({});
+  useEffect(() => {
+    const pathname = router.pathname.split("/")[1];
+    console.log(pathname);
+    if(router.pathname === "/") {
+      setTopBarStyle({});
+      return
+    }
+    setTopBarStyle({backgroundColor : "white"});
+  },[router])
+
   const updateCredit = useStore((state) => state.updateCredit);
   useEffect(() => {
     updateCredit();
@@ -373,8 +384,8 @@ export default function Sidebar() {
             </nav>
           </div>
         </div>
-        <div className="flex flex-1 flex-col lg:pl-[12.5rem] h-[11vh] w-full fixed top-0 z-10" >
-          <div className="sticky top-0 z-10 bg-white pl-1 pt-1 sm:pl-3 sm:pt-3 lg:hidden">
+        <div className="flex flex-1 flex-col lg:pl-[12.5rem] h-[11vh] w-full fixed top-0 z-10" style={topBarStyle}>
+          <div className="sticky top-0 z-10 pl-1 pt-1 sm:pl-3 sm:pt-3 lg:hidden">
             <button
               type="button"
               className="-ml-0.5 -mt-0.5 inline-flex h-12 w-12 items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
