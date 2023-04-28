@@ -103,7 +103,7 @@ export default function Saved() {
         {loading ? (
           <LoaderScan />
         ) : (
-          <div style={{padding : '1em 0'}} className="relative">
+          <div style={{padding : '1em 0 6em 0'}} className="relative">
             {data?.getAllBlogs.blogs.length === 0 && (
               <img
                 src="/noBlog/noSaved.png"
