@@ -149,7 +149,7 @@ export default function Post() {
               getToken={getToken}
             />
           )}
-          {/* <div style={{
+          <div style={{
             zIndex: '10',
             position: 'absolute',
             background: 'white',
@@ -162,7 +162,7 @@ export default function Post() {
           }}>
             <span>Python Response Time : {(pyResTime*60).toFixed(2) ?? ""}sec</span><br/>
             <span>Node Response Time : {(ndResTime*60).toFixed(2) ?? ""}sec</span>
-          </div> */}
+          </div>
           <div className="w-[65%] relative">
             <TinyMCEEditor
               isAuthenticated={true}
