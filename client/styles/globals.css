@@ -15,6 +15,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@300&display=swap');
 
 :root {
+  --sidebar-width : 12.5rem;
+  --topbar-height : 11vh;
+  --primary-blue : #4a3afe;
+
   --ashokaBlue: #13345f;
   --max-width: 1100px;
   --border-radius: 12px;
@@ -142,7 +146,8 @@ padding-bottom: 10px !important;
 }
 
 .authenticatedLayout{
-  width: calc(100vw - 12.5rem);
+  width: calc(100vw - var(--sidebar-width));
+  margin-top: var(--topbar-height);
   margin-left: auto;
 }
 
@@ -213,7 +218,7 @@ padding-bottom: 10px !important;
     font-weight: inherit;
     cursor: pointer;
     background-color: white ;
-    color: #4a3afe;
+    color: var(--primary-blue);
     border: 1px solid;
     padding: 0.5em 0.75em;
     border-radius: 6px;
@@ -222,7 +227,7 @@ padding-bottom: 10px !important;
     background-color: #efefef;
 }
 .cta.active{
-    background-color: #4a3afe;
+    background-color: var(--primary-blue);
     color: white;
     font-weight: 600;
 }
@@ -231,7 +236,7 @@ padding-bottom: 10px !important;
     font-size: inherit;
     font-weight: inherit;
     cursor: pointer;
-    background-color: #4a3afe;
+    background-color: var(--primary-blue);
     color: #ffffff;
     border: 1px solid;
     padding: 0.5em 0.75em;
@@ -262,7 +267,7 @@ padding-bottom: 10px !important;
 
 .cta.ref-button.active,
 .cta.tag-button.active{
-  color: #4a3afe !important;
+  color: var(--primary-blue) !important;
   background: #d2cff6 !important ;
   font-weight: 600;
 }
@@ -293,7 +298,7 @@ padding-bottom: 10px !important;
 }
 
 .pagination>ul>li.active{
-  background-color:#4a3afe;
+  background-color:var(--primary-blue);
   color: white;
 }
 
@@ -306,7 +311,7 @@ padding-bottom: 10px !important;
   height: 40px;
   width: 4px;
   border-radius: 0px 5px 5px 0px;
-  background-color: #4a3afe;
+  background-color: var(--primary-blue);
   position: absolute;
   left: 0;
 }
@@ -320,5 +325,5 @@ input[type='checkbox'], input[type='radio'] {
   cursor: pointer;
 }
 input[type='checkbox']:checked, input[type='radio']:checked {
-  background-color: #4a3afe;
+  background-color: var(--primary-blue);
 }

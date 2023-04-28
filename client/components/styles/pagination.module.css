@@ -33,7 +33,7 @@
 }
 
 .active{
-    background-color: #4a3afe;
+    background-color: var(--primary-blue);
     color: white;
-    border-color: #4a3afe !important;
+    border-color: var(--primary-blue) !important;
 }
