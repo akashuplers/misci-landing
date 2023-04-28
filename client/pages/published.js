@@ -133,7 +133,8 @@ export default function Saved() {
                       <img
                         src={blog.image}
                         alt={blog.title}
-                        className="pointer-events-none object-cover h-[185px] w-[280px]"
+                        className="pointer-events-none object-cover h-[150px] w-[280px]"
+                        style={{scale: '1.25'}}
                       />
                       <Link
                         legacyBehavior
