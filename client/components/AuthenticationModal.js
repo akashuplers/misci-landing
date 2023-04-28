@@ -42,6 +42,8 @@ export default function AuthenticationModal({
     password: "",
   });
 
+  const [forgotPassMail, setForgotPassMail] = useState("")
+
   const openModal = (url) => {
     setModalIsOpen(true);
   };
@@ -319,6 +321,25 @@ export default function AuthenticationModal({
   };
   const updateisSavefalse = useStore((state) => state.updateisSavefalse);
 
+  const [forgotPass, setForgotPass] = useState(false);
+
+  const handleForgotPass = (e) => {
+    e.preventDefault()
+   
+    axios({
+      method: 'post',
+      url: `${API_BASE_PATH}${API_ROUTES.FORGOT_PASSWORD}`,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+        "email": forgotPassMail
+      }
+    })
+      .then(response => console.log(response.data))
+      .catch(error => console.log('error', error));
+  }
+
   const [loading, setLoading] = useState(false);
 
   // if(loading) return <LoaderPlane/>
@@ -554,11 +575,54 @@ export default function AuthenticationModal({
                   </label>
                 </div>
                 <div>
-                  <a className="text-sm  font-medium text-indigo-600">
+                  <a 
+                    className="text-sm  font-medium text-indigo-600 cursor-pointer"
+                    onClick={e => setForgotPass(true)}>
                     Forgot Password?
                   </a>
                 </div>
               </div>
+              <Modal
+                isOpen={forgotPass}
+                ariaHideApp={false}
+                onRequestClose={() => {
+                  setForgotPass(false)
+                }}
+                className="w-[70%]"
+                style={{
+                  overlay: {
+                    backgroundColor: "rgba(0,0,0,0.4)",
+                    zIndex: "9999",
+                  },
+                  content: {
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    right: "auto",
+                    border: "none",
+                    background: "white",
+                    boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+                    borderRadius: "8px",
+                    // height: "75%",
+                    width: "50%",
+                    maxWidth: "450px",
+                    bottom: "",
+                    zIndex: "999",
+                    marginRight: "-50%",
+                    transform: "translate(-50%, -50%)",
+                    padding: "20px",
+                    paddingBottom: "0px",
+                  },
+                }}
+              >
+                <div>
+                  <h1>Forgot Password</h1>
+                  <form>
+                    <input type="email" value={forgotPassMail} onChange={e => setForgotPassMail(e.target.value)}/>
+                    <button onClick={handleForgotPass}>Submit</button>
+                  </form>
+                </div>
+              </Modal>
               <button
                 className="w-full !mt-6 !py-3 cta-invert flex items-center justify-center gap-2"
                 type="submit"
