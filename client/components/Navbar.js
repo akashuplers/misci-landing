@@ -96,7 +96,7 @@ export default function Navbar({ isOpen }) {
                   >
                     Pricing
                   </a> */}
-                  <Link
+                  {/* <Link
                     legacyBehavior
                     as={"/pricing"}
                     href={{
@@ -109,7 +109,7 @@ export default function Navbar({ isOpen }) {
                     >
                       Pricing
                     </p>
-                  </Link>
+                  </Link> */}
 
                   <button
                     onClick={() => {
