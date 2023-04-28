@@ -262,7 +262,7 @@ export default function dashboard({ query }) {
               Node Response Time : {(ndResTime * 60).toFixed(2) ?? ""}sec
             </span>
           </div>
-          <div className="w-[65%] relative">
+          <div className="relative" style={{width: "var(--tinymce-width)"}}>
             <TinyMCEEditor
               topic={topic}
               isAuthenticated={isAuthenticated}
@@ -272,7 +272,7 @@ export default function dashboard({ query }) {
               blog_id={blog_id}
             />
           </div>
-          <div className="w-[35%] relative">
+          <div className="relative" style={{width : "var(--dashboardInsight-width)"}}>
             <DashboardInsights
               ideas={ideas}
               setIdeas={setIdeas}
