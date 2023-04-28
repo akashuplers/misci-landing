@@ -109,7 +109,7 @@ export default function Saved() {
         {loading ? (
           <LoaderScan />
         ) : (
-          <>
+          <div style={{padding : '1em 0 6em 0'}} className="relative">
             {data?.getAllBlogs.blogs.length === 0 && (
               <img
                 src="/noBlog/noPublished.png"
@@ -246,9 +246,9 @@ export default function Saved() {
                 </>
               ))}
             </ul>
-          </>
+            <Pagination pageSkip={pageSkip} setPageSkip={setPageSkip} totalItems={data?.getAllBlogs.count}/> 
+          </div>
         )}
-        <Pagination pageSkip={pageSkip} setPageSkip={setPageSkip} totalItems={data?.getAllBlogs.count}/> 
         <Modal
           isOpen={openModal}
           onRequestClose={() => setOpenModal(false)}

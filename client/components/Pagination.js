@@ -10,7 +10,6 @@ const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
         getVisiblePages(currentPage, totalPages)
     );
 
-
     function onPageChange(page){
         setCurrentPage(page);
         setPageSkip(page - 1);
@@ -30,7 +29,7 @@ const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
             startPage = totalPages - 6;
         }
 
-        return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+        return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).filter(num => num > 0);
     }
 
     function handlePageClick(page) {
@@ -39,6 +38,7 @@ const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
         onPageChange(page);
     }    
 
+    if(totalPages <= 0) return null
     return (
         <div className={styles.paginationContainer}>
             <ul className={styles.pagination}>
