@@ -158,7 +158,7 @@ export default function Home() {
             <div className="text-center flex items-center justify-center flex-col">
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
                 Generate <span className="newsletter">Newsletter</span> with{" "}
-                <span style={{ color: "#4a3afe" }}>Lille</span>
+                <span style={{ color: "var(--primary-blue)" }}>Lille</span>
               </h1>
               <p className="mt-6 text-lg leading-8 text-gray-600">
                 Streamline your content creation process with our website that

@@ -18,7 +18,7 @@ export default function Layout({ children }) {
   return (
     <Fragment>
       {isAuthenticated ? <Sidebar/> : <Navbar isOpen={false}/>}
-      <div className={isAuthenticated && `mt-[11vh] authenticatedLayout`}>{children}</div>
+      <div className={isAuthenticated && `authenticatedLayout`}>{children}</div>
       {!isAuthenticated && <Footer/>}
     </Fragment>
   );

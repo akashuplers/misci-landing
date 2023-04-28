@@ -384,7 +384,11 @@ export default function Sidebar() {
             </nav>
           </div>
         </div>
-        <div className="flex flex-1 flex-col lg:pl-[12.5rem] h-[11vh] w-full fixed top-0 z-10" style={topBarStyle}>
+        <div className="flex flex-1 flex-col w-full fixed top-0 z-10" style={{
+          ...topBarStyle,
+          paddingLeft : "var(--sidebar-width)",
+          height : "var(--topbar-height)"
+        }}>
           <div className="sticky top-0 z-10 pl-1 pt-1 sm:pl-3 sm:pt-3 lg:hidden">
             <button
               type="button"

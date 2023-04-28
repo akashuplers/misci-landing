@@ -580,7 +580,7 @@ export default function DashboardInsights({
             >
               <path
                 d="M8 16C5.76667 16 3.875 15.225 2.325 13.675C0.775 12.125 0 10.2333 0 8C0 5.76667 0.775 3.875 2.325 2.325C3.875 0.775003 5.76667 3.4602e-06 8 3.4602e-06C9.15 3.4602e-06 10.25 0.237337 11.3 0.712003C12.35 1.18667 13.25 1.866 14 2.75V1C14 0.71667 14.096 0.479004 14.288 0.287004C14.48 0.0950036 14.7173 -0.000663206 15 3.4602e-06C15.2833 3.4602e-06 15.521 0.0960036 15.713 0.288004C15.905 0.480004 16.0007 0.717337 16 1V6C16 6.28334 15.904 6.521 15.712 6.713C15.52 6.905 15.2827 7.00067 15 7H10C9.71667 7 9.479 6.904 9.287 6.712C9.095 6.52 8.99933 6.28267 9 6C9 5.71667 9.096 5.479 9.288 5.287C9.48 5.095 9.71733 4.99934 10 5H13.2C12.6667 4.06667 11.9373 3.33334 11.012 2.8C10.0867 2.26667 9.08267 2 8 2C6.33333 2 4.91667 2.58334 3.75 3.75C2.58333 4.91667 2 6.33334 2 8C2 9.66667 2.58333 11.0833 3.75 12.25C4.91667 13.4167 6.33333 14 8 14C9.15 14 10.2127 13.6957 11.188 13.087C12.1633 12.4783 12.8923 11.666 13.375 10.65C13.4583 10.4667 13.596 10.3123 13.788 10.187C13.98 10.0617 14.1757 9.99934 14.375 10C14.7583 10 15.046 10.1333 15.238 10.4C15.43 10.6667 15.4507 10.9667 15.3 11.3C14.6667 12.7167 13.6917 13.8543 12.375 14.713C11.0583 15.5717 9.6 16.0007 8 16Z"
-                fill="#4A3AFE"
+                fill="var(--primary-blue)"
               />
             </svg>
             Regenerate
@@ -795,7 +795,7 @@ export default function DashboardInsights({
                         <p>{idea?.idea} </p>
                         <a
                           style={{
-                            color: "#4a3afe",
+                            color: "var(--primary-blue)",
                             alignSelf: "flex-start",
                             position: "relative",
                             marginLeft: "auto",
@@ -900,7 +900,7 @@ export default function DashboardInsights({
                         <p>{idea?.idea} </p>
                         <a
                           style={{
-                            color: "#4a3afe",
+                            color: "var(--primary-blue)",
                             alignSelf: "flex-start",
                             position: "relative",
                             marginLeft: "auto",
@@ -1116,7 +1116,7 @@ export default function DashboardInsights({
 
                             <a
                               style={{
-                                color: "#4a3afe",
+                                color: "var(--primary-blue)",
                                 alignSelf: "flex-start",
                                 position: "relative",
                                 marginLeft: "auto",
@@ -1222,7 +1222,7 @@ export default function DashboardInsights({
 
                             <a
                               style={{
-                                color: "#4a3afe",
+                                color: "var(--primary-blue)",
                                 alignSelf: "flex-start",
                                 position: "relative",
                                 marginLeft: "auto",
