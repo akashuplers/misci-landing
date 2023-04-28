@@ -5,7 +5,7 @@ import { ObjectID } from 'bson';
 import { blogGeneration, deleteBlog, fetchBlog, fetchBlogByUser, fetchBlogIdeas, fetchUser, publishBlog, updateUserCredit, deleteBlogIdeas, fetchUsedBlogIdeasByIdea, fetchArticleById, fetchArticleUrls } from './blogsRepo';
 import { Python } from '../../../services/python';
 import { diff_minutes, getTimeStamp } from '../../../utils/date';
-import { sendEmails } from 'utils/mailJetConfig';
+import { sendEmails } from '../../../utils/mailJetConfig';
 
 const SOMETHING_CHANGED_TOPIC = 'new_link';
 
