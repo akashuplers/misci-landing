@@ -748,7 +748,7 @@ router.post("/forgot-password", async (request: any, reply: any) => {
       return reply.status(400).send({ error: "Please fill in email field" });
     }
 
-    const user = await db.db("admin").collection("users").findOne({ email });
+    const user = await db.db("lilleAdmin").collection("users").findOne({ email });
     if (!user) {
       return reply
         .status(404)
@@ -764,7 +764,7 @@ router.post("/forgot-password", async (request: any, reply: any) => {
     // console.log("newAccessTkn :>> ", newAccessTkn);
 
     const updatedUser = await db
-      .db("admin")
+      .db("lilleAdmin")
       .collection("users")
       .findOneAndUpdate(
         { email },
@@ -803,7 +803,7 @@ router.post("/forgot-password", async (request: any, reply: any) => {
 router.post("/reset", async (request: any, reply: any) => {
   // const filter = { resetPasswordToken: request.body.token };
   const db = request.app.get('db')
-  const user = await db.db("admin").collection("users").findOne({
+  const user = await db.db("lilleAdmin").collection("users").findOne({
     resetPasswordToken: request.body.token,
   });
   // console.log("user :>> ", user);
@@ -839,7 +839,7 @@ router.post("/reset", async (request: any, reply: any) => {
       $set: { password: hashedPW, resetPasswordToken: undefined },
     };
     const updatePWRes = await db
-      .db("admin")
+      .db("lilleAdmin")
       .collection("users")
       .findOneAndUpdate(filter, updates, { returnOriginal: false });
     if (!updatePWRes) {

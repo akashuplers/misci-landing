@@ -5,6 +5,7 @@ import { ObjectID } from 'bson';
 import { blogGeneration, deleteBlog, fetchBlog, fetchBlogByUser, fetchBlogIdeas, fetchUser, publishBlog, updateUserCredit, deleteBlogIdeas, fetchUsedBlogIdeasByIdea, fetchArticleById, fetchArticleUrls } from './blogsRepo';
 import { Python } from '../../../services/python';
 import { diff_minutes, getTimeStamp } from '../../../utils/date';
+import { sendEmails } from 'utils/mailJetConfig';
 
 const SOMETHING_CHANGED_TOPIC = 'new_link';
 
@@ -553,6 +554,24 @@ export const blogResolvers = {
                 let respTime = diff_minutes(endRequest, startRequest)
                 const updatedCredits = ((userDetails.credits || 25) - 1)
                 await updateUserCredit({id: userDetails._id, credit: updatedCredits, db})
+                if(updatedCredits <= 0) {
+                    await sendEmails({
+                        to: [
+                          { Email: `akash.sharma@nowigence.com`, Name: `Akash Sharma` },
+                          { Email: `arvind.ajimal@nowigence.com`, Name: `Arvind Ajimal` },
+                          { Email: `subham.mahanta@nowigence.com`, Name: `Subham Mahanta` },
+                          { Email: `vashisth@adesignguy.co`, Name: `Vashisth Bhushan` }
+                        ],
+                        subject: "Credit Exhausted",
+                        textMsg: "",
+                        htmlMsg: `
+                            <p>Hello All,</p>
+                            <p>Credit has been exhausted for this below user</p>
+                            <p>User Name: ${userDetails.name} ${userDetails.lastName}</p>
+                            <p>User Email: ${userDetails.email}</p>
+                        `,
+                    });
+                }
                 return {...blogDetails, ideas: blogIdeasDetails, references: refUrls, respTime, freshIdeasReferences:refUrlsFreshIdeas}
             } catch(e: any) {
                 console.log(e)
