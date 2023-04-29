@@ -323,22 +323,32 @@ export default function AuthenticationModal({
 
   const [forgotPass, setForgotPass] = useState(false);
 
-  const handleForgotPass = (e) => {
-    e.preventDefault()
-   
-    axios({
-      method: 'post',
-      url: `${API_BASE_PATH}${API_ROUTES.FORGOT_PASSWORD}`,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      data: {
-        "email": forgotPassMail
+const handleForgotPass = (e) => {
+  e.preventDefault()
+
+  axios({
+    method: 'post',
+    url: `${API_BASE_PATH}${API_ROUTES.FORGOT_PASSWORD}`,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: {
+      "email": forgotPassMail
+    }
+  })
+    .then(response => {
+      if (response.data.message === 'success') {
+        toast.success('Password reset email sent successfully');
+      } else {
+        toast.error(response.data.message);
       }
     })
-      .then(response => console.log(response.data))
-      .catch(error => console.log('error', error));
-  }
+    .catch(error => {
+      console.log('error', error);
+      toast.error("User not found");
+    });
+}
+
 
   const [loading, setLoading] = useState(false);
 
@@ -582,7 +592,7 @@ export default function AuthenticationModal({
                   </a>
                 </div>
               </div>
-              <Modal
+<Modal
                 isOpen={forgotPass}
                 ariaHideApp={false}
                 onRequestClose={() => {
@@ -615,14 +625,41 @@ export default function AuthenticationModal({
                   },
                 }}
               >
-                <div>
-                  <h1>Forgot Password</h1>
-                  <form>
-                    <input type="email" value={forgotPassMail} onChange={e => setForgotPassMail(e.target.value)}/>
-                    <button onClick={handleForgotPass}>Submit</button>
-                  </form>
-                </div>
-              </Modal>
+  <div className="flex items-center justify-center h-full">
+    <div className="bg-white rounded-lg shadow-lg max-w-md w-full mx-4">
+      <h2 className="text-xl font-medium text-gray-800 mb-4">Forgot Password</h2>
+      <form className="px-4 pb-4">
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium mb-2" htmlFor="email">
+            Email Address
+          </label>
+          <input
+            className="w-full border-gray-300 rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+            id="email"
+            type="email"
+            value={forgotPassMail}
+            onChange={(e) => setForgotPassMail(e.target.value)}
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <button
+            className="text-indigo-600 font-medium inline-flex space-x-1 items-center cursor-pointer"
+            onClick={handleForgotPass}
+          >
+            Submit
+          </button>
+          <button
+            className="text-gray-600 hover:text-gray-800 font-medium focus:outline-none"
+            onClick={() => setForgotPass(false)}
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</Modal>
+
               <button
                 className="w-full !mt-6 !py-3 cta-invert flex items-center justify-center gap-2"
                 type="submit"
