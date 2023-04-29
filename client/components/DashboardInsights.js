@@ -4,6 +4,7 @@ import { Switch } from "@headlessui/react";
 import LoaderScan from "./LoaderScan";
 import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
 import { jsonToHtml } from "../helpers/helper";
+import { toast } from "react-toastify";
 import { useMutation, gql } from "@apollo/client";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import ReactLoading from "react-loading";
@@ -407,73 +408,74 @@ export default function DashboardInsights({
   };
 
   function postFormData(e) {
-    // console.log("url " + formInput,"file " + fileValid,"urlvalid " + urlValid)
-    e.preventDefault();
-    setNewIdeaLoad(true);
+  e.preventDefault();
+  setNewIdeaLoad(true);
 
-    let url = API_BASE_PATH;
-    var raw;
-    if (urlValid) {
-      url += API_ROUTES.URL_UPLOAD;
-      raw = {
-        url: formInput,
-        blog_id: blog_id,
-      };
-    } else if (fileValid) {
-      url += API_ROUTES.FILE_UPLOAD;
-      console.log(file);
-      raw = new FormData();
-      raw.append("file", file);
-      raw.append("blog_id", blog_id);
-    } else {
-      url += API_ROUTES.KEYWORD_UPLOAD;
-      raw = {
-        keyword: formInput,
-        blog_id: blog_id,
-      };
-    }
-
-    const myHeaders = {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+  let url = API_BASE_PATH;
+  let raw;
+  if (urlValid) {
+    url += API_ROUTES.URL_UPLOAD;
+    raw = {
+      url: formInput,
+      blog_id: blog_id,
     };
-
-    if (!fileValid) {
-      myHeaders["Content-Type"] = "application/json";
-    }
-
-    const config = {
-      method: "post",
-      url: url,
-      headers: myHeaders,
-      data: raw,
+  } else if (fileValid) {
+    url += API_ROUTES.FILE_UPLOAD;
+    raw = new FormData();
+    raw.append("file", file);
+    raw.append("blog_id", blog_id);
+  } else {
+    url += API_ROUTES.KEYWORD_UPLOAD;
+    raw = {
+      keyword: formInput,
+      blog_id: blog_id,
     };
-
-    axios(config)
-      .then((response) => {
-        setIdeaType("fresh");
-        console.log(response.data);
-        setFreshIdeas(response.data.data);
-        setFreshIdeaReferences(response.data.references);
-        setFreshIdeaTags(response.data.freshIdeasTags)
-
-        setPyResTime(response.data.pythonRespTime);
-        setNdResTime(response.data.respTime);
-        console.log(freshIdeas);
-        const fresh = document.querySelector(".idea-button.fresh");
-        const used = document.querySelector(".idea-button.used");
-
-        used.classList.remove("active");
-        fresh.classList.add("active");
-      })
-      .catch((error) => console.log("error", error))
-      .finally(() => {
-        setformInput("");
-        setFileValid(false);
-        setUrlValid(false);
-
-        setNewIdeaLoad(false);
-      });
   }
+
+  const myHeaders = {
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  };
+
+  if (!fileValid) {
+    myHeaders["Content-Type"] = "application/json";
+  }
+
+  const config = {
+    method: "post",
+    url: url,
+    headers: myHeaders,
+    data: raw,
+  };
+
+  axios(config)
+    .then((response) => {
+      setIdeaType("fresh");
+      console.log(response.data);
+      setFreshIdeas(response.data.data);
+      setFreshIdeaReferences(response.data.references);
+      setFreshIdeaTags(response.data.freshIdeasTags)
+
+      setPyResTime(response.data.pythonRespTime);
+      setNdResTime(response.data.respTime);
+      console.log(freshIdeas);
+      const fresh = document.querySelector(".idea-button.fresh");
+      const used = document.querySelector(".idea-button.used");
+
+      used.classList.remove("active");
+      fresh.classList.add("active");
+    })
+    .catch((error) => {
+      console.log("error", error);
+      toast.error(error.message);
+    })
+    .finally(() => {
+      setformInput("");
+      setFileValid(false);
+      setUrlValid(false);
+
+      setNewIdeaLoad(false);
+    });
+}
 
   useEffect(() => {
     var expression =
