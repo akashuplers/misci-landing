@@ -79,7 +79,6 @@ export const blogResolvers = {
                     }
                 } 
             }
-            console.log(baseMatch)
             const aggregate = [
                 {
                     $match : baseMatch
@@ -220,7 +219,6 @@ export const blogResolvers = {
                         })
                     )
                 )
-                console.log(tags)
                 articlesData.forEach((data) => {
                     data.used_summaries.forEach((summary: string, index: number) => {
                         texts += `- ${summary}\n`
@@ -352,7 +350,7 @@ export const blogResolvers = {
                 if(!articleIds.includes(idea.article_id)) articleIds.push(idea.article_id)
                 return texts += `${index+1} - ${idea.text} \n`
             })
-            console.log(articleIds)
+            console.log(articleIds, "articleIds")
             let articleNames = await db.db('lilleArticles').collection('articles').find({_id: {
                 $in: articleIds
             }}, {projection: {
@@ -365,27 +363,31 @@ export const blogResolvers = {
             await (
                 Promise.all(
                     articleIds.map(async (id: String, index: number) => {
-                        const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
-                        if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
-                            imageUrl = article.proImageLink
-                            imageSrc = article._source?.orig_url
-                        } else {
-                            if(index === (articleIds.length - 1) && !imageUrl) {
-                                imageUrl = (process.env.PLACEHOLDER_IMAGE || article.proImageLink)
-                                imageSrc = null
+                        if(id) {
+                            const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
+                            if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
+                                imageUrl = article.proImageLink
+                                imageSrc = article._source?.orig_url
+                            } else {
+                                if(index === (articleIds.length - 1) && !imageUrl) {
+                                    imageUrl = (process.env.PLACEHOLDER_IMAGE || article.proImageLink)
+                                    imageSrc = null
+                                }
                             }
-                        }
-                        const name = article._source?.source?.name
-                        const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
-                        const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
-                        const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
-                        tags.push(...productsTags, ...organizationTags, ...personsTags)
-                        return {
-                            used_summaries: article._source.summary.slice(0, 5),
-                            unused_summaries: article._source.summary.slice(5),
-                            keyword: article.keyword,
-                            name: name && name === "file" ? "note" : name,
-                            id
+                            const name = article._source?.source?.name
+                            const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                            const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                            const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                            tags.push(...productsTags, ...organizationTags, ...personsTags)
+                            return {
+                                used_summaries: article._source.summary.slice(0, 5),
+                                unused_summaries: article._source.summary.slice(5),
+                                keyword: article.keyword,
+                                name: name && name === "file" ? "note" : name,
+                                id
+                            }
+                        } else {
+                            return
                         }
                     })
                 )
