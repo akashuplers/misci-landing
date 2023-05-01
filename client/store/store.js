@@ -39,7 +39,7 @@ const useStore = create((set) => ({
       let config = {
         method: "post",
         maxBodyLength: Infinity,
-        url: "https://maverick.lille.ai/graphql",
+        url: API_BASE_PATH + API_ROUTES.GQL_PATH,
         headers: {
           "content-type": "application/json",
           Authorization: "Bearer " + token,

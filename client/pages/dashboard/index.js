@@ -12,6 +12,7 @@ import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
 import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
+import { API_BASE_PATH, API_ROUTES } from "../../constants/apiEndpoints";
 
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
@@ -41,6 +42,16 @@ export default function dashboard({ query }) {
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
 
   const keyword = useStore((state) => state.keyword);
+  useEffect(() => {
+    if (keyword === "") {
+      alert(
+        "Since you have refreshed the page,Therefore no keyword was passed. Please Generate the blog again!!"
+      );
+      window.location.href = "/";
+    }
+  }, []);
+
+  console.log("keyword", typeof keyword);
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
 
   if (typeof window !== "undefined") {
@@ -138,7 +149,7 @@ export default function dashboard({ query }) {
 
       const config = {
         method: "post",
-        url: "https://maverick.lille.ai/graphql",
+        url: API_BASE_PATH + API_ROUTES.GQL_PATH,
         headers: myHeaders,
         data: graphql,
         redirect: "follow",
@@ -262,7 +273,7 @@ export default function dashboard({ query }) {
               Node Response Time : {(ndResTime * 60).toFixed(2) ?? ""}sec
             </span>
           </div>
-          <div className="relative" style={{width: "var(--tinymce-width)"}}>
+          <div className="relative" style={{ width: "var(--tinymce-width)" }}>
             <TinyMCEEditor
               topic={topic}
               isAuthenticated={isAuthenticated}
@@ -272,30 +283,26 @@ export default function dashboard({ query }) {
               blog_id={blog_id}
             />
           </div>
-          <div className="relative" style={{width : "var(--dashboardInsight-width)"}}>
+          <div
+            className="relative"
+            style={{ width: "var(--dashboardInsight-width)" }}
+          >
             <DashboardInsights
               ideas={ideas}
               setIdeas={setIdeas}
-              
               tags={tags}
               setTags={setTags}
-
-              freshIdeaTags = {freshIdeaTags}
-
+              freshIdeaTags={freshIdeaTags}
               blog_id={blog_id}
               setblog_id={setblog_id}
-
               loading={loading}
               setEditorText={setEditorText}
               setBlogData={setBlogData}
-
               setPyResTime={setPyResTime}
               setNdResTime={setNdResTime}
-
               freshIdeas={freshIdeas}
               freshIdeasReferences={freshIdeasReferences}
               setFreshIdeaReferences={setFreshIdeasReferences}
-
               reference={reference}
               setReference={setReference}
             />

@@ -116,7 +116,7 @@ const CheckoutFormUpgrade = ({
       };
 
       axios
-        .post("https://maverick.lille.ai/stripe/upgrade", requestBody, {
+        .post(API_BASE_PATH + "/stripe/upgrade", requestBody, {
           headers: myHeaders,
         })
         .then((res) => res.data)
@@ -160,7 +160,7 @@ const CheckoutFormUpgrade = ({
 
     axios
       .post(
-        "https://maverick.lille.ai/stripe/upgrade-confirm",
+        API_BASE_PATH + "/stripe/upgrade-confirm",
         { subscriptionId: subscriptionId },
         {
           headers: {

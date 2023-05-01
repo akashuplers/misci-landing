@@ -10,7 +10,7 @@ import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { LinkedinLogin } from "../services/LinkedinLogin";
 import { signUpWithGoogle } from "../services/GoogleLogin";
 
-import ForgotPasswordModal from "../components/ForgotPasswordModal"
+import ForgotPasswordModal from "../components/ForgotPasswordModal";
 
 import { useRouter } from "next/router";
 import LoaderPlane from "./LoaderPlane";
@@ -142,7 +142,7 @@ export default function AuthenticationModal({
       };
 
       axios
-        .post("https://maverick.lille.ai/graphql", raw, {
+        .post(API_BASE_PATH + API_ROUTES.GQL_PATH, raw, {
           headers: myHeaders,
         })
         .then((response) => response.data)
@@ -322,7 +322,6 @@ export default function AuthenticationModal({
   const updateisSavefalse = useStore((state) => state.updateisSavefalse);
 
   const [forgotPass, setForgotPass] = useState(false);
-
 
   const [loading, setLoading] = useState(false);
 
@@ -559,15 +558,18 @@ export default function AuthenticationModal({
                   </label>
                 </div>
                 <div>
-                  <a 
+                  <a
                     className="text-sm  font-medium text-indigo-600 cursor-pointer"
-                    onClick={e => setForgotPass(true)}>
+                    onClick={(e) => setForgotPass(true)}
+                  >
                     Forgot Password?
                   </a>
                 </div>
               </div>
-              <ForgotPasswordModal forgotPass={forgotPass} setForgotPass={setForgotPass}/>
-              
+              <ForgotPasswordModal
+                forgotPass={forgotPass}
+                setForgotPass={setForgotPass}
+              />
 
               <button
                 className="w-full !mt-6 !py-3 cta-invert flex items-center justify-center gap-2"
