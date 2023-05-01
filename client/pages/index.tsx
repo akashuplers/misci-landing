@@ -9,7 +9,7 @@ import Layout from "../components/Layout";
 import { toast, ToastContainer } from "react-toastify";
 import { meeAPI } from "../graphql/querys/mee";
 import PreferencesModal from "../modals/PreferencesModal";
-import TrialEndedModal from "../components/TrialEndedModal"
+import TrialEndedModal from "../components/TrialEndedModal";
 
 export default function Home() {
   const keywords = gql`
@@ -129,7 +129,10 @@ export default function Home() {
             getToken={getToken}
           />
         )}
-        {!meeData?.me?.paid && meeData?.me?.credits === 25 && <TrialEndedModal/>}
+
+        {!meeData?.me?.paid && meeData?.me?.credits === 0 && (
+          <TrialEndedModal />
+        )}
         <div className={`relative px-6 pt-5 lg:px-8`}>
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
             <svg
@@ -168,13 +171,18 @@ export default function Home() {
                 concise and informative content in no time
               </p>
               <div className="p-4 mt-4">Try some of our trending topics</div>
-                {!loading ? (
-                  <div className="grid grid-cols-3 gap-4 py-4" style={{width:"110%"}}>{updatedArr}</div>
-                ) : (
-              <div style={{margin:'0 auto'}}>
+              {!loading ? (
+                <div
+                  className="grid grid-cols-3 gap-4 py-4"
+                  style={{ width: "110%" }}
+                >
+                  {updatedArr}
+                </div>
+              ) : (
+                <div style={{ margin: "0 auto" }}>
                   <LoaderPlane />
-              </div>
-                )}
+                </div>
+              )}
               <div className="mt-10 flex items-center justify-center gap-x-6 w-full">
                 <input
                   id="search"
@@ -196,9 +204,7 @@ export default function Home() {
                     query: { topic: keyword },
                   }}
                 >
-                  <a className="cta-invert">
-                    Generate
-                  </a>
+                  <a className="cta-invert">Generate</a>
                 </Link>
               </div>
             </div>
