@@ -62,8 +62,22 @@ export default function DashboardInsights({
 
   const isAuthenticated = useStore((state) => state.isAuthenticated);
 
-  const [RegenerateBlog, { data, loading: regenLoading, error }] =
-    useMutation(regenerateBlog);
+  var getToken;
+  if (typeof window !== "undefined") {
+    getToken = localStorage.getItem("token");
+  }
+
+  const [RegenerateBlog, { data, loading: regenLoading, error }] = useMutation(
+    regenerateBlog,
+    {
+      context: {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + getToken,
+        },
+      },
+    }
+  );
 
   const [hover, setHover] = useState(false);
   const onHover = () => {
