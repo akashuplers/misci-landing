@@ -1,4 +1,4 @@
-export const API_BASE_PATH = "https://maverick.lille.ai";
+export const API_BASE_PATH = "https://lille.ai";
 
 export const API_ROUTES = {
   TEMP_ID: "/auth/temp/user",
@@ -33,6 +33,6 @@ export const LINKEDIN_CLIENT_ID = '868bordkbw6hm6';
 
 export const LINKEDIN_CLIENT_SECRET = 'kOALvAhpSOkYx4MN';
 
-export const GQL_SUBSCRIPTION_ENDPOINT = "wss://maverick.lille.ai/graphql";
+export const GQL_SUBSCRIPTION_ENDPOINT = "wss://lille.ai/graphql";
 
 
