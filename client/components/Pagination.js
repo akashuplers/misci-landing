@@ -38,7 +38,7 @@ const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
         onPageChange(page);
     }    
 
-    if(totalPages <= 0) return null
+    if(totalPages <= 1) return null
     return (
         <div className={styles.paginationContainer}>
             <ul className={styles.pagination}>
