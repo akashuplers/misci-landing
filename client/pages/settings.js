@@ -21,6 +21,7 @@ import { useQuery } from "@apollo/client";
 import { meeAPI } from "../graphql/querys/mee";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import LoaderScan from "../components/LoaderScan";
+import ForgotPasswordModal from "../components/ForgotPasswordModal";
 import { useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import ReactLoading from "react-loading";
@@ -78,6 +79,8 @@ export default function Settings() {
     useState(true);
   const [autoUpdateApplicantDataEnabled, setAutoUpdateApplicantDataEnabled] =
     useState(false);
+
+  const [forgotPass, setForgotPass] = useState(false)
 
   const [linkedin, setlinkedin] = useState(false);
 
@@ -611,6 +614,18 @@ export default function Settings() {
                                 </div>
                               )}
                               <div>
+                                <span
+                                  className="reset-button cta"
+                                  style={{
+                                    position: "absolute",
+                                    left: "0",
+                                    bottom: "30px"
+                                  }}
+                                  onClick={() => setForgotPass(true)}
+                                >
+                                  Forgot Password
+                                </span>
+                                <ForgotPasswordModal forgotPass={forgotPass} setForgotPass={setForgotPass} email={meeData?.me?.email}/>
                                 <button
                                   type="button"
                                   className="update-button cta"
