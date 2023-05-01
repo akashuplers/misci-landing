@@ -280,7 +280,8 @@ router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any
                 respTime,
                 pythonRespTime,
                 references: refUrls,
-                freshIdeasTags
+                freshIdeasTags,
+                name: article._source.name
             })
         } else {
             return res.status(400).send({
