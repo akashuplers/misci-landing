@@ -698,6 +698,10 @@ export default function TinyMCEEditor({
           init_instance_callback: function (editor) {
             editor.on("ExecCommand", function (e) {
               console.log("The " + e.command + " command was fired.");
+              if (e.command === "mceImage") {
+                setAlert(true);
+                console.log("777");
+              }
               if (isEditing) {
                 setEditingMode(true);
                 isEditing = false;
@@ -727,6 +731,7 @@ export default function TinyMCEEditor({
           automatic_uploads: true,
           file_picker_types: "image",
           file_picker_callback: function (cb, value, meta) {
+            console.log("852");
             var input = document.createElement("input");
             input.setAttribute("type", "file");
             input.setAttribute("accept", "image/*");
