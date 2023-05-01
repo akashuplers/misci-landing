@@ -592,7 +592,7 @@ const handleForgotPass = (e) => {
                   </a>
                 </div>
               </div>
-<Modal
+              <Modal
                 isOpen={forgotPass}
                 ariaHideApp={false}
                 onRequestClose={() => {
@@ -625,40 +625,40 @@ const handleForgotPass = (e) => {
                   },
                 }}
               >
-  <div className="flex items-center justify-center h-full">
-    <div className="bg-white rounded-lg shadow-lg max-w-md w-full mx-4">
-      <h2 className="text-xl font-medium text-gray-800 mb-4">Forgot Password</h2>
-      <form className="px-4 pb-4">
-        <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-2" htmlFor="email">
-            Email Address
-          </label>
-          <input
-            className="w-full border-gray-300 rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-            id="email"
-            type="email"
-            value={forgotPassMail}
-            onChange={(e) => setForgotPassMail(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center justify-between">
-          <button
-            className="text-indigo-600 font-medium inline-flex space-x-1 items-center cursor-pointer"
-            onClick={handleForgotPass}
-          >
-            Submit
-          </button>
-          <button
-            className="text-gray-600 hover:text-gray-800 font-medium focus:outline-none"
-            onClick={() => setForgotPass(false)}
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</Modal>
+                <div className="flex items-center justify-center h-full">
+                  <div className="bg-white rounded-lg shadow-lg max-w-md w-full mx-4">
+                    <h2 className="text-xl font-medium text-gray-800 mb-4">Forgot Password</h2>
+                    <form className="px-4 pb-4">
+                      <div className="mb-4">
+                        <label className="block text-gray-700 font-medium mb-2" htmlFor="email">
+                          Email Address
+                        </label>
+                        <input
+                          className="w-full border-gray-300 rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+                          id="email"
+                          type="email"
+                          value={forgotPassMail}
+                          onChange={(e) => setForgotPassMail(e.target.value)}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <button
+                          className="text-indigo-600 font-medium inline-flex space-x-1 items-center cursor-pointer"
+                          onClick={handleForgotPass}
+                        >
+                          Submit
+                        </button>
+                        <button
+                          className="text-gray-600 hover:text-gray-800 font-medium focus:outline-none"
+                          onClick={() => setForgotPass(false)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </Modal>
 
               <button
                 className="w-full !mt-6 !py-3 cta-invert flex items-center justify-center gap-2"

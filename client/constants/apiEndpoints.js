@@ -13,7 +13,8 @@ export const API_ROUTES = {
   KEYWORD_UPLOAD: "/quickupload/keyword",
   FILE_UPLOAD: "/quickupload/file",
   IMAGE_UPLOAD : "/upload/image/base64",
-  FORGOT_PASSWORD : "/auth/forgot-password"
+  FORGOT_PASSWORD : "/auth/forgot-password",
+  RESET_PASSWORD : "/auth/reset"
 };
 
 export const LI_API_ENDPOINTS = {

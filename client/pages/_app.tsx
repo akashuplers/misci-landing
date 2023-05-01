@@ -94,6 +94,7 @@ export default function App({ Component, pageProps }: AppProps) {
     "/pricing",
     "/subscription",
     "/public/[bid]",
+    "/resetPass"
   ];
 
 
