@@ -461,26 +461,6 @@ export const blogResolvers = {
                 if(newIdeas.length) blogIdeas.ideas = newIdeas
                 console.log(newIdeas, "newIdeas")
                 console.log(freshIdeas, "freshIdeas")
-                let freshIdeasTags: string[] = []
-                if(blogIdeas && blogIdeas?.freshIdeas?.length) {
-                    await  (
-                        Promise.all(
-                            blogIdeas.freshIdeas.map(async (idea: any) => {
-                                const article = await db.db('lilleArticles').collection('articles').findOne({_id: idea.article_id})
-                                const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
-                                const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
-                                const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
-                                freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
-                            })
-                        )
-                    )
-                }
-                let uniqueFreshIdeasTags: String[] = [];
-                freshIdeasTags.forEach((c) => {
-                    if (!uniqueFreshIdeasTags.includes(c)) {
-                        uniqueFreshIdeasTags.push(c);
-                    }
-                });
                 await db.db('lilleBlogs').collection('blogs').updateOne({
                     _id: new ObjectID(blog._id)
                 }, {
@@ -490,7 +470,6 @@ export const blogResolvers = {
                         description,
                         article_id: articleIds,
                         tags: uniqueTags,
-                        freshIdeasTags: uniqueFreshIdeasTags,
                         imageUrl: imageUrl ? imageUrl : blog.imageUrl,
                         imageSrc,
                         updatedAt: getTimeStamp()
@@ -530,12 +509,39 @@ export const blogResolvers = {
                 })
                 let blogDetails = null
                 let blogIdeasDetails = null
+                let freshIdeasTags: string[] = []
+                if(blogIdeas._id){
+                    blogIdeasDetails = await fetchBlogIdeas({id: blogId, db})
+                    if(blogIdeasDetails && blogIdeasDetails?.freshIdeas?.length) {
+                        await  (
+                            Promise.all(
+                                blogIdeasDetails.freshIdeas.map(async (idea: any) => {
+                                    const article = await db.db('lilleArticles').collection('articles').findOne({_id: idea.article_id})
+                                    const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                                    const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                                    const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                                    freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
+                                })
+                            )
+                        )
+                    }
+                }
+                let uniqueFreshIdeasTags: String[] = [];
+                freshIdeasTags.forEach((c) => {
+                    if (!uniqueFreshIdeasTags.includes(c)) {
+                        uniqueFreshIdeasTags.push(c);
+                    }
+                });
+                await db.db('lilleBlogs').collection('blogs').updateOne({
+                    _id: new ObjectID(blog._id)
+                }, {
+                    $set: {
+                        freshIdeasTags: uniqueFreshIdeasTags
+                    }
+                })
                 if(blog){
                     const id: any = blog._id
                     blogDetails = await db.db('lilleBlogs').collection('blogs').findOne({_id: new ObjectID(id)})
-                }
-                if(blogIdeas._id){
-                    blogIdeasDetails = await fetchBlogIdeas({id: blogId, db})
                 }
                 let refUrls: {
                     url: string
