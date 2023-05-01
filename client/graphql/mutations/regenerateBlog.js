@@ -41,6 +41,7 @@ export const regenerateBlog = gql`
       }
       article_id
       tags
+      freshIdeasTags
       references {
         url
         source
