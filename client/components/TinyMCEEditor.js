@@ -7,7 +7,12 @@ import LoaderPlane from "./LoaderPlane";
 import { useMutation } from "@apollo/client";
 import AuthenticationModal from "./AuthenticationModal";
 import { useRouter } from "next/router";
-import { LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
+import {
+  API_BASE_PATH,
+  API_ROUTES,
+  LINKEDIN_CLIENT_ID,
+  LI_API_ENDPOINTS,
+} from "../constants/apiEndpoints";
 import ReactLoading from "react-loading";
 import Modal from "react-modal";
 import axios from "axios";
@@ -207,7 +212,7 @@ export default function TinyMCEEditor({
       // console.log("save and publish");
       axios({
         method: "post",
-        url: "https://maverick.lille.ai/graphql",
+        url: API_BASE_PATH + API_ROUTES.GQL_PATH,
         headers: {
           "content-type": "application/json",
           Authorization: "Bearer " + token,
@@ -243,13 +248,13 @@ export default function TinyMCEEditor({
     }
   };
 
-    const handlePublish = () => {
+  const handlePublish = () => {
     const tempDiv = document.createElement("div");
-    console.log(tempDiv)
+    console.log(tempDiv);
     tempDiv.innerHTML = updatedText;
-     
-  let textContent = tempDiv.textContent;
-  textContent = textContent.replace(/[^\w\s#]/gi, '');
+
+    let textContent = tempDiv.textContent;
+    textContent = textContent.replace(/[^\w\s#]/gi, "");
     const parser = new DOMParser();
     const doc = parser.parseFromString(updatedText, "text/html");
     const img = doc.querySelector("img");
@@ -266,7 +271,7 @@ export default function TinyMCEEditor({
     };
 
     axios
-      .post("https://maverick.lille.ai/auth/linkedin/post", data, {
+      .post(API_BASE_PATH + LI_API_ENDPOINTS.LI_POST, data, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -309,7 +314,6 @@ export default function TinyMCEEditor({
       });
   };
 
-
   function handleBlog(e) {
     setOption("blog");
     const siblingButton = document.querySelectorAll(".blog-toggle-button");
@@ -324,7 +328,7 @@ export default function TinyMCEEditor({
     if (arr) {
       aa = arr.tiny_mce_data;
     } else {
-      if(!newArray) return
+      if (!newArray) return;
       aa = newArray[newArray?.length - 1].tiny_mce_data;
     }
     const htmlDoc = jsonToHtml(aa);
@@ -573,7 +577,9 @@ export default function TinyMCEEditor({
           <div className="flex" style={{ gap: "0.25em", marginLeft: "auto" }}>
             <button
               className="cta"
-              onClick={() => { if (saveText === "Save Now!") handleSave() }}
+              onClick={() => {
+                if (saveText === "Save Now!") handleSave();
+              }}
             >
               {saveLoad ? (
                 <ReactLoading
@@ -590,7 +596,13 @@ export default function TinyMCEEditor({
               linkedInAccessToken ? (
                 <button
                   className="cta-invert"
-                  onClick={() => { if (publishLinkText === "Publish on Linkedin" || publishLinkText === "Published on Linkedin") handlePublish() }}
+                  onClick={() => {
+                    if (
+                      publishLinkText === "Publish on Linkedin" ||
+                      publishLinkText === "Published on Linkedin"
+                    )
+                      handlePublish();
+                  }}
                 >
                   {publishLinkLoad ? (
                     <ReactLoading
@@ -720,7 +732,7 @@ export default function TinyMCEEditor({
             var input = document.createElement("input");
             input.setAttribute("type", "file");
             input.setAttribute("accept", "image/*");
-            var url = `https://maverick.lille.ai/upload/image`;
+            var url = API_BASE_PATH + `/upload/image`;
             var xhr = new XMLHttpRequest();
             var fd = new FormData();
             xhr.open("POST", url, true);
@@ -796,7 +808,7 @@ export default function TinyMCEEditor({
 
             const config = {
               method: "post",
-              url: "https://maverick.lille.ai/upload/image",
+              url: API_BASE_PATH + "/upload/image",
               data: formdata,
             };
 
