@@ -136,7 +136,7 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
           };
 
           axios
-            .post("https://maverick.lille.ai/graphql", raw, {
+            .post(API_BASE_PATH + API_ROUTES.GQL_PATH, raw, {
               headers: myHeaders,
             })
             .then((response) => response.data)
@@ -159,13 +159,7 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
               if (window.location.pathname === "/") {
                 window.location.href = "/";
               } else {
-                if (
-                  window.location.href === "http://localhost:3000/dashboard" ||
-                  window.location.href ===
-                    "https://maverick.lille.ai/dashboard" ||
-                  window.location.href ===
-                    "https://pluaris-prod.vercel.app/dashboard"
-                ) {
+                if (window.location.pathname === "dashboard") {
                   handleSave();
                 } else {
                   window.location.href = "/dashboard";
@@ -195,12 +189,13 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
             handleLoginSubmit(signUpFormData.email);
           })
           .catch((error) => {
-            const errorMessage = error.response.data.error && error.response.data.message;
-            if(errorMessage == "User already exists"){
+            const errorMessage =
+              error.response.data.error && error.response.data.message;
+            if (errorMessage == "User already exists") {
               handleLoginSubmit(signUpFormData.email);
             }
             console.error("Error : ", error.response);
-          })  
+          });
       } else {
         setTimeout(() => {
           window.location.href = "/dashboard";

@@ -1,8 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { Switch } from "@headlessui/react";
 import LoaderScan from "./LoaderScan";
 import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
 import { jsonToHtml } from "../helpers/helper";
+import { toast } from "react-toastify";
 import { useMutation, gql } from "@apollo/client";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import ReactLoading from "react-loading";
@@ -26,6 +28,8 @@ export default function DashboardInsights({
   tags,
   setTags,
 
+  freshIdeaTags: oldFreshIdeaTags,
+
   freshIdeasReferences,
   setFreshIdeaReferences,
 
@@ -47,7 +51,10 @@ export default function DashboardInsights({
   const [arrUsed, setArrUsed] = useState([]);
   const [arrFresh, setArrFresh] = useState([]);
   const [ideaType, setIdeaType] = useState("used");
+
   const [freshIdeas, setFreshIdeas] = useState([]);
+  const [freshIdeaTags, setFreshIdeaTags] = useState([]);
+
   const [freshFilteredIdeas, setFreshFilteredIdeas] = useState([]);
   const updateCredit = useStore((state) => state.updateCredit);
   const updateisSave = useStore((state) => state.updateisSave);
@@ -55,6 +62,10 @@ export default function DashboardInsights({
   useEffect(() => {
     setFreshIdeas(oldFreshIdeas);
   }, [oldFreshIdeas]);
+
+  useEffect(() => {
+    setFreshIdeaTags(oldFreshIdeaTags);
+  }, [oldFreshIdeaTags]);
 
   const [newIdeaLoad, setNewIdeaLoad] = useState(false);
 
@@ -103,7 +114,7 @@ export default function DashboardInsights({
     e.target.classList.toggle("active");
 
     /* Adding or removing the keywords to an array */
-    const filterText = e.target.innerText;
+    const filterText = e.target.dataset.tag;
     setFilteredArray((prev) =>
       prev.find((el) => Object.values(el).indexOf(filterText) > -1)
         ? [...prev.filter((el) => el.filterText !== filterText)]
@@ -165,31 +176,20 @@ export default function DashboardInsights({
 
     setNotUniqueFilteredIdeas([]);
 
-    if (ideaType === "used") {
-      filteredArray.forEach((filterObject) =>
-        ideas.forEach((idea) => {
-          if (filterObject?.criteria === "tag") {
-            idea?.idea?.indexOf(filterObject?.filterText) >= 0 &&
-              setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-          } else if (filterObject?.criteria === "ref") {
-            idea?.name === filterObject?.filterText &&
-              setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-          }
-        })
-      );
-    } else if (ideaType === "fresh") {
-      filteredArray.forEach((filterObject) =>
-        freshIdeas.forEach((idea) => {
-          if (filterObject?.criteria === "tag") {
-            idea?.idea?.indexOf(filterObject?.filterText) >= 0 &&
-              setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-          } else if (filterObject?.criteria === "ref") {
-            idea?.name === filterObject?.filterText &&
-              setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-          }
-        })
-      );
-    }
+    const arr = ideaType === "used" ? ideas : freshIdeas;
+
+    filteredArray.forEach((filterObject) =>
+      arr.forEach((idea) => {
+        const searchObject = filterObject?.filterText;
+        if (filterObject?.criteria === "tag") {
+          idea?.idea?.includes(searchObject) &&
+            setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
+        } else if (filterObject?.criteria === "ref") {
+          idea?.name === searchObject &&
+            setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
+        }
+      })
+    );
   }, [filteredArray]);
 
   // We create a set so that the values are unique, and multiple ideas are not added
@@ -246,7 +246,7 @@ export default function DashboardInsights({
         }
       }
       console.log("111", arr);
-      for (let index = 0; index < freshIdeas.length; index++) {
+      for (let index = 0; index < freshIdeas?.length; index++) {
         const element = freshIdeas[index];
         if (element.used) {
           const ideaObject = {
@@ -312,6 +312,7 @@ export default function DashboardInsights({
           setBlogData(data.regenerateBlog);
           setIdeas(data.regenerateBlog.ideas.ideas);
           setTags(data.regenerateBlog.tags);
+          setFreshIdeaTags(data.regenerateBlog.freshIdeasTags);
           setReferences(data.regenerateBlog.references);
           setFreshIdeaReferences(data.regenerateBlog.freshIdeasReferences);
           setFreshIdeas(data?.regenerateBlog?.ideas?.freshIdeas);
@@ -409,12 +410,11 @@ export default function DashboardInsights({
   };
 
   function postFormData(e) {
-    // console.log("url " + formInput,"file " + fileValid,"urlvalid " + urlValid)
     e.preventDefault();
     setNewIdeaLoad(true);
 
     let url = API_BASE_PATH;
-    var raw;
+    let raw;
     if (urlValid) {
       url += API_ROUTES.URL_UPLOAD;
       raw = {
@@ -423,7 +423,6 @@ export default function DashboardInsights({
       };
     } else if (fileValid) {
       url += API_ROUTES.FILE_UPLOAD;
-      console.log(file);
       raw = new FormData();
       raw.append("file", file);
       raw.append("blog_id", blog_id);
@@ -456,6 +455,7 @@ export default function DashboardInsights({
         console.log(response.data);
         setFreshIdeas(response.data.data);
         setFreshIdeaReferences(response.data.references);
+        setFreshIdeaTags(response.data.freshIdeasTags);
 
         setPyResTime(response.data.pythonRespTime);
         setNdResTime(response.data.respTime);
@@ -466,7 +466,10 @@ export default function DashboardInsights({
         used.classList.remove("active");
         fresh.classList.add("active");
       })
-      .catch((error) => console.log("error", error))
+      .catch((error) => {
+        console.log("error", error);
+        toast.error(error.message);
+      })
       .finally(() => {
         setformInput("");
         setFileValid(false);
@@ -532,6 +535,19 @@ export default function DashboardInsights({
     }
   }
 
+  function toTitleCase(str) {
+    if (!str) return;
+    let titleCase = "";
+    let words = str.toLowerCase().split(" ");
+
+    for (let i = 0; i < words.length; i++) {
+      let word = words[i];
+      titleCase += word.charAt(0).toUpperCase() + word.slice(1) + " ";
+    }
+
+    return titleCase.trim();
+  }
+
   if (loading || regenLoading) return <LoaderScan />;
   return (
     <>
@@ -543,13 +559,13 @@ export default function DashboardInsights({
         handleSave={() => (window.location = "/dashboard/" + blog_id)}
         bid={blog_id}
       />
-      <div className="w-[35%] text-xs px-2 mt-5" style={{ width: "40%" }}>
+      <div className="text-xs px-2" style={{ borderLeft: "2px solid #d2d2d2" }}>
         <div className="flex justify-between gap-[1.25em]">
           <p className="font-normal w-[70%]">
             Regenerate your blog on the basis of selected used & fresh ideas.
           </p>
           <button
-            className="cta flex items-center gap-2 self-start !py-2"
+            className="cta flex items-center gap-2 self-start !py-2 !font-semibold"
             onClick={
               isAuthenticated
                 ? handleRegenerate
@@ -568,7 +584,7 @@ export default function DashboardInsights({
             >
               <path
                 d="M8 16C5.76667 16 3.875 15.225 2.325 13.675C0.775 12.125 0 10.2333 0 8C0 5.76667 0.775 3.875 2.325 2.325C3.875 0.775003 5.76667 3.4602e-06 8 3.4602e-06C9.15 3.4602e-06 10.25 0.237337 11.3 0.712003C12.35 1.18667 13.25 1.866 14 2.75V1C14 0.71667 14.096 0.479004 14.288 0.287004C14.48 0.0950036 14.7173 -0.000663206 15 3.4602e-06C15.2833 3.4602e-06 15.521 0.0960036 15.713 0.288004C15.905 0.480004 16.0007 0.717337 16 1V6C16 6.28334 15.904 6.521 15.712 6.713C15.52 6.905 15.2827 7.00067 15 7H10C9.71667 7 9.479 6.904 9.287 6.712C9.095 6.52 8.99933 6.28267 9 6C9 5.71667 9.096 5.479 9.288 5.287C9.48 5.095 9.71733 4.99934 10 5H13.2C12.6667 4.06667 11.9373 3.33334 11.012 2.8C10.0867 2.26667 9.08267 2 8 2C6.33333 2 4.91667 2.58334 3.75 3.75C2.58333 4.91667 2 6.33334 2 8C2 9.66667 2.58333 11.0833 3.75 12.25C4.91667 13.4167 6.33333 14 8 14C9.15 14 10.2127 13.6957 11.188 13.087C12.1633 12.4783 12.8923 11.666 13.375 10.65C13.4583 10.4667 13.596 10.3123 13.788 10.187C13.98 10.0617 14.1757 9.99934 14.375 10C14.7583 10 15.046 10.1333 15.238 10.4C15.43 10.6667 15.4507 10.9667 15.3 11.3C14.6667 12.7167 13.6917 13.8543 12.375 14.713C11.0583 15.5717 9.6 16.0007 8 16Z"
-                fill="#4A3AFE"
+                fill="var(--primary-blue)"
               />
             </svg>
             Regenerate
@@ -580,18 +596,55 @@ export default function DashboardInsights({
             <div className="flex justify-between w-full items-center py-2">
               <p className="pt-[0.65em] font-semibold">Filtering Keywords</p>
             </div>
-            <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll pt-[0.65em]">
-              {tags?.map((tag, i) => {
-                return (
-                  <div
-                    key={i}
-                    className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer tag-button cta"
-                    onClick={(e) => handleTagClick(e)}
-                  >
-                    {tag}
-                  </div>
-                );
-              })}
+            <div
+              className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
+              style={{ padding: "0.75em 0.25em" }}
+            >
+              {ideaType === "used"
+                ? tags?.map((tag, i) => {
+                    return (
+                      <div
+                        key={i}
+                        className="tag-button cta"
+                        style={{
+                          borderRadius: "100px",
+                          padding: "0.25em 0.75em",
+                          backgroundColor: "#e9e9e9",
+                          border: "none",
+                          color: "black",
+                          cursor: "pointer",
+                          userSelect: "none",
+                        }}
+                        onClick={handleTagClick}
+                        data-tag={tag}
+                      >
+                        {tag.toUpperCase()}
+                      </div>
+                    );
+                  })
+                : freshIdeaTags?.length > 0
+                ? freshIdeaTags?.map((tag, i) => {
+                    return (
+                      <div
+                        key={i}
+                        className="tag-button cta"
+                        style={{
+                          borderRadius: "100px",
+                          padding: "0.25em 0.75em",
+                          backgroundColor: "#e9e9e9",
+                          border: "none",
+                          color: "black",
+                          cursor: "pointer",
+                          userSelect: "none",
+                        }}
+                        onClick={handleTagClick}
+                        data-tag={tag}
+                      >
+                        {tag.toUpperCase()}
+                      </div>
+                    );
+                  })
+                : "Generate fresh ideas to see tags"}
             </div>
           </div>
         )}
@@ -599,14 +652,26 @@ export default function DashboardInsights({
           <div className="flex justify-between w-full items-center py-2">
             <p className="pt-[0.65em] font-semibold">Sources</p>
           </div>
-          <div className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-y-scroll pt-[0.65em]">
+          <div
+            className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
+            style={{ padding: "0.75em 0.5em" }}
+          >
             {ideaType === "used" ? (
               reference?.length > 0 ? (
                 reference?.map((ref, index) => {
                   return (
                     <div
                       key={index}
-                      className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
+                      className="ref-button cta relative"
+                      style={{
+                        borderRadius: "100px",
+                        padding: "0.25em 0.75em",
+                        backgroundColor: "#e9e9e9",
+                        border: "none",
+                        color: "black",
+                        cursor: "pointer",
+                        userSelect: "none",
+                      }}
                       onClick={handleRefClick}
                       data-source={ref.source}
                     >
@@ -615,17 +680,18 @@ export default function DashboardInsights({
                         className=""
                         style={{
                           position: "absolute",
-                          bottom: "70%",
-                          left: "92%",
-                          backgroundColor: "#4a3afe",
-                          color: "white",
+                          bottom: "65%",
+                          left: "90%",
+                          backgroundColor: "inherit",
+                          color: "inherit",
                           width: "14px",
                           height: "14px",
                           fontSize: "0.65rem",
+                          fontWeight: "600",
                           borderRadius: "100px",
                           display: "flex",
                           justifyContent: "center",
-                          zIndex: "100",
+                          zIndex: "1",
                           alignItems: "center",
                         }}
                       >
@@ -639,35 +705,46 @@ export default function DashboardInsights({
               )
             ) : freshIdeasReferences?.length > 0 ? (
               freshIdeasReferences?.map((ref, index) => {
-                return (
+                return ref.source !== "file" ? (
                   <div
                     key={index}
-                    className="bg-gray-300 rounded-full !text-xs !p-[0.2em] cursor-pointer ref-button cta relative"
+                    className="ref-button cta relative"
+                    style={{
+                      borderRadius: "100px",
+                      padding: "0.25em 0.75em",
+                      backgroundColor: "#e9e9e9",
+                      border: "none",
+                      color: "black",
+                      cursor: "pointer",
+                      userSelect: "none",
+                    }}
                     onClick={handleRefClick}
                     data-source={ref.source}
                   >
                     {ref.source}
                     <span
-                      className=""
                       style={{
                         position: "absolute",
-                        bottom: "70%",
-                        left: "92%",
-                        backgroundColor: "#4a3afe",
-                        color: "white",
+                        bottom: "65%",
+                        left: "90%",
+                        backgroundColor: "inherit",
+                        color: "inherit",
                         width: "14px",
                         height: "14px",
                         fontSize: "0.65rem",
+                        fontWeight: "600",
                         borderRadius: "100px",
                         display: "flex",
                         justifyContent: "center",
-                        zIndex: "100",
+                        zIndex: "1",
                         alignItems: "center",
                       }}
                     >
                       {index + 1}
                     </span>
                   </div>
+                ) : (
+                  <div>File upload does not contain sources. </div>
                 );
               })
             ) : (
@@ -675,7 +752,7 @@ export default function DashboardInsights({
             )}
           </div>
         </div>
-        <div className="flex py-2">
+        <div className="flex py-2 relative gap-5">
           <button
             className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs"
             onClick={(e) => {
@@ -683,13 +760,13 @@ export default function DashboardInsights({
             }}
           >
             Used Idea(s){" "}
-            <span className=" mx-auto bg-blue-200 text-xs p-2 font-bold text-sky-800 rounded-full">
+            <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
               {ideas?.length}
             </span>
           </button>
 
           <button
-            className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs"
+            className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs realtive"
             onClick={(e) => {
               if (isAuthenticated) setIdeaType("fresh");
               else {
@@ -704,137 +781,19 @@ export default function DashboardInsights({
             />
             Fresh Idea(s){" "}
             {freshIdeas?.length > 0 && (
-              <span className="mx-auto bg-blue-200 p-2 font-bold text-xs text-sky-800 rounded-full">
+              <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
                 {freshIdeas?.length}
               </span>
             )}
           </button>
         </div>
-        {isAuthenticated && (
-          <>
-            <form onSubmit={postFormData} className="mb-4">
-              {newIdeaLoad ? (
-                <ReactLoading
-                  type={"spin"}
-                  color={"#2563EB"}
-                  height={50}
-                  width={50}
-                  className={"mx-auto"}
-                />
-              ) : (
-                ideaType === "fresh" && (
-                  <div className="flex items-center gap-1 relative mb-[10px]">
-                    <label htmlFor="simple-search" className="sr-only">
-                      Search
-                    </label>
-                    <div className="relative w-full">
-                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <svg
-                          aria-hidden="true"
-                          className="w-5 h-5 text-gray-500 dark:text-gray-400"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                            clipRule="evenodd"
-                          ></path>
-                        </svg>
-                      </div>
-                      <input
-                        type="text"
-                        id="simple-search"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 py-[0.75em]"
-                        placeholder="To get Fresh Ideas upload topic, URL or File."
-                        required
-                        value={formInput}
-                        onChange={handleFormChange}
-                        style={{ fontSize: "1em" }}
-                        title="Enter keyword, URL or upload document"
-                      />
-                    </div>
-                    {hover ? (
-                      <>
-                        <div
-                          className="max-w-sm rounded overflow-hidden shadow-lg india r-0 bg-white mt-15"
-                          style={{
-                            zIndex: 9999,
-                            position: "absolute",
-                            right: "0",
-                          }}
-                        >
-                          upload a file
-                        </div>
-                      </>
-                    ) : (
-                      <></>
-                    )}
-                    <label
-                      className="cta-invert"
-                      style={{
-                        background: "none",
-                        color: "black",
-                        border: "1px solid #b3b3b3",
-                      }}
-                    >
-                      <input
-                        type="file"
-                        accept="application/pdf, .docx, .txt, .rtf, .png, .jpg, .jpeg, .gif"
-                        max-size="500000"
-                        onInput={handleFileUpload}
-                        style={{ display: "none" }}
-                      />
-                      <div onMouseEnter={onHover} onMouseLeave={onLeave}>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-6 h-6"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10.5 3.75a6 6 0 00-5.98 6.496A5.25 5.25 0 006.75 20.25H18a4.5 4.5 0 002.206-8.423 3.75 3.75 0 00-4.133-4.303A6.001 6.001 0 0010.5 3.75zm2.03 5.47a.75.75 0 00-1.06 0l-3 3a.75.75 0 101.06 1.06l1.72-1.72v4.94a.75.75 0 001.5 0v-4.94l1.72 1.72a.75.75 0 101.06-1.06l-3-3z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-
-                        <span className="sr-only">Upload</span>
-                      </div>
-                    </label>
-                    <button type="submit" className="cta-invert">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-6 h-6"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      <span className="sr-only">Search</span>
-                    </button>
-                  </div>
-                )
-              )}
-            </form>
-          </>
-        )}
         <div
-          className="overflow-y-scroll absolute px-2 mb-6 "
+          className="overflow-y-scroll px-2"
           style={{
-            marginRight: "0.5em",
+            // marginRight: "0.5em",
             maxHeight: "82vh",
-            visibility:
-              ideaType === "fresh" && !freshIdeas ? "hidden" : "visible",
-
             height: "-webkit-fill-available",
+            maxHeight: "50vh",
           }}
         >
           {ideaType === "used"
@@ -846,7 +805,7 @@ export default function DashboardInsights({
                         <p>{idea?.idea} </p>
                         <a
                           style={{
-                            color: "#4a3afe",
+                            color: "var(--primary-blue)",
                             alignSelf: "flex-start",
                             position: "relative",
                             marginLeft: "auto",
@@ -951,7 +910,7 @@ export default function DashboardInsights({
                         <p>{idea?.idea} </p>
                         <a
                           style={{
-                            color: "#4a3afe",
+                            color: "var(--primary-blue)",
                             alignSelf: "flex-start",
                             position: "relative",
                             marginLeft: "auto",
@@ -1039,193 +998,312 @@ export default function DashboardInsights({
                   );
                 })
             : ""}
-          {ideaType === "fresh"
-            ? freshFilteredIdeas?.length > 0
-              ? freshFilteredIdeas?.map((idea, index) => {
-                  return (
-                    <div className="flex pb-3" key={index}>
-                      <div className="flex justify-between gap-5 w-full">
-                        <p>{idea?.idea}</p>
-
-                        <a
-                          style={{
-                            color: "#4a3afe",
-                            alignSelf: "flex-start",
-                            position: "relative",
-                            marginLeft: "auto",
-                            cursor: "pointer",
-                          }}
-                          onMouseEnter={() => {
-                            document
-                              .querySelector(`.refrenceTooltip${index}`)
-                              .classList.remove("hidden");
-                          }}
-                          onMouseLeave={() => {
-                            document
-                              .querySelector(`.refrenceTooltip${index}`)
-                              .classList.add("hidden");
-                          }}
-                        >
-                          {handleCitationFunction(idea?.name)}
-                          <div
-                            className={`hidden refrenceTooltip${index}`}
+          {ideaType === "fresh" && (
+            <div className="w-full">
+              {isAuthenticated && (
+                <>
+                  <form onSubmit={postFormData} className="mb-4 mt-1">
+                    {newIdeaLoad ? (
+                      <ReactLoading
+                        type={"spin"}
+                        color={"#2563EB"}
+                        height={50}
+                        width={50}
+                        className={"mx-auto"}
+                      />
+                    ) : (
+                      ideaType === "fresh" && (
+                        <div className="flex items-center gap-1 relative mb-[10px]">
+                          <label htmlFor="simple-search" className="sr-only">
+                            Search
+                          </label>
+                          <div className="relative w-full">
+                            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                              <svg
+                                aria-hidden="true"
+                                className="w-5 h-5 text-gray-500 dark:text-gray-400"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                  clipRule="evenodd"
+                                ></path>
+                              </svg>
+                            </div>
+                            <input
+                              type="text"
+                              id="simple-search"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 py-[0.75em]"
+                              placeholder="To get Fresh Ideas upload topic, URL or File."
+                              required
+                              value={formInput}
+                              onChange={handleFormChange}
+                              style={{ fontSize: "1em" }}
+                              title="Enter keyword, URL or upload document"
+                            />
+                          </div>
+                          {hover ? (
+                            <>
+                              <div
+                                className="max-w-sm rounded overflow-hidden shadow-lg india r-0 bg-white mt-15"
+                                style={{
+                                  zIndex: 1,
+                                  position: "absolute",
+                                  right: "0",
+                                }}
+                              >
+                                upload a file
+                              </div>
+                            </>
+                          ) : (
+                            <></>
+                          )}
+                          <label
+                            className="cta-invert"
                             style={{
-                              position: "absolute",
-                              top: "100%",
-                              right: "0",
-                              border: "1px solid",
+                              background: "none",
                               color: "black",
-                              backgroundColor: "white",
-                              padding: "0.5em",
-                              borderRadius: "5px",
-                              zIndex: "1",
+                              border: "1px solid #b3b3b3",
                             }}
                           >
-                            {idea?.name}{" "}
-                            {idea?.reference?.type === "article" ? (
-                              <a
-                                href={idea?.reference?.link}
-                                target="_blank"
-                                style={{ color: "blue" }}
+                            <input
+                              type="file"
+                              accept="application/pdf, .docx, .txt, .rtf, .png, .jpg, .jpeg, .gif"
+                              max-size="500000"
+                              onInput={handleFileUpload}
+                              style={{ display: "none" }}
+                            />
+                            <div onMouseEnter={onHover} onMouseLeave={onLeave}>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                className="w-6 h-6"
                               >
-                                Link
-                              </a>
-                            ) : (
-                              <Link
-                                href={`/dashboard/${idea?.reference?.id}`}
-                                target="_blank"
-                              >
-                                Link
-                              </Link>
-                            )}
-                          </div>
-                        </a>
-                        <input
-                          type="checkbox"
-                          className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                          checked={idea?.used}
-                          onClick={(e) => {
-                            const updatedFilteredIdeas = freshFilteredIdeas.map(
-                              (el, elIndex) =>
-                                elIndex === index
-                                  ? { ...el, used: el.used === 1 ? 0 : 1 }
-                                  : el
-                            );
-                            setFreshFilteredIdeas(updatedFilteredIdeas);
-                            var ideasCopy = [];
-                            for (let i = 0; i < freshIdeas.length; i++) {
-                              const element = freshIdeas[i];
-                              const f = updatedFilteredIdeas.find(
-                                (pd) => pd.idea === element.idea
+                                <path
+                                  fillRule="evenodd"
+                                  d="M10.5 3.75a6 6 0 00-5.98 6.496A5.25 5.25 0 006.75 20.25H18a4.5 4.5 0 002.206-8.423 3.75 3.75 0 00-4.133-4.303A6.001 6.001 0 0010.5 3.75zm2.03 5.47a.75.75 0 00-1.06 0l-3 3a.75.75 0 101.06 1.06l1.72-1.72v4.94a.75.75 0 001.5 0v-4.94l1.72 1.72a.75.75 0 101.06-1.06l-3-3z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+
+                              <span className="sr-only">Upload</span>
+                            </div>
+                          </label>
+                          <button type="submit" className="cta-invert">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={1.5}
+                              stroke="currentColor"
+                              className="w-6 h-6"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                            <span className="sr-only">Search</span>
+                          </button>
+                        </div>
+                      )
+                    )}
+                  </form>
+                </>
+              )}
+              {freshFilteredIdeas?.length > 0
+                ? freshFilteredIdeas?.map((idea, index) => {
+                    return (
+                      <div className="flex pb-3" key={index}>
+                        <div className="flex justify-between gap-5 w-full">
+                          <p>{idea?.idea}</p>
+
+                          <a
+                            style={{
+                              color: "var(--primary-blue)",
+                              alignSelf: "flex-start",
+                              position: "relative",
+                              marginLeft: "auto",
+                              cursor: "pointer",
+                            }}
+                            onMouseEnter={() => {
+                              document
+                                .querySelector(`.refrenceTooltip${index}`)
+                                .classList.remove("hidden");
+                            }}
+                            onMouseLeave={() => {
+                              document
+                                .querySelector(`.refrenceTooltip${index}`)
+                                .classList.add("hidden");
+                            }}
+                          >
+                            {handleCitationFunction(idea?.name)}
+                            <div
+                              className={`hidden refrenceTooltip${index}`}
+                              style={{
+                                position: "absolute",
+                                top: "100%",
+                                right: "0",
+                                border: "1px solid",
+                                color: "black",
+                                backgroundColor: "white",
+                                padding: "0.5em",
+                                borderRadius: "5px",
+                                zIndex: "1",
+                              }}
+                            >
+                              {idea?.name}{" "}
+                              {idea?.reference?.type === "article" ? (
+                                <a
+                                  href={idea?.reference?.link}
+                                  target="_blank"
+                                  style={{ color: "blue" }}
+                                >
+                                  Link
+                                </a>
+                              ) : (
+                                <Link
+                                  href={`/dashboard/${idea?.reference?.id}`}
+                                  target="_blank"
+                                >
+                                  Link
+                                </Link>
+                              )}
+                            </div>
+                          </a>
+                          <input
+                            type="checkbox"
+                            className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                            checked={idea?.used}
+                            onClick={(e) => {
+                              const updatedFilteredIdeas =
+                                freshFilteredIdeas.map((el, elIndex) =>
+                                  elIndex === index
+                                    ? { ...el, used: el.used === 1 ? 0 : 1 }
+                                    : el
+                                );
+                              setFreshFilteredIdeas(updatedFilteredIdeas);
+                              var ideasCopy = [];
+                              for (let i = 0; i < freshIdeas.length; i++) {
+                                const element = freshIdeas[i];
+                                const f = updatedFilteredIdeas.find(
+                                  (pd) => pd.idea === element.idea
+                                );
+                                if (f) {
+                                  ideasCopy.push(f);
+                                } else {
+                                  ideasCopy.push(element);
+                                }
+                              }
+                              setFreshIdeas(ideasCopy);
+                              const arr = [];
+                              for (
+                                let index = 0;
+                                index < updatedFilteredIdeas.length;
+                                index++
+                              ) {
+                                const element = updatedFilteredIdeas[index];
+                                if (element.used) {
+                                  const ideaObject = {
+                                    text: element.idea,
+                                    article_id: element.article_id,
+                                  };
+                                  arr.push(ideaObject);
+                                }
+                              }
+                              handlefreshideas(arr);
+                            }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })
+                : freshIdeas?.map((idea, index) => {
+                    return (
+                      <div className="flex pb-3" key={index}>
+                        <div className="flex justify-between gap-5 w-full">
+                          <p>{idea?.idea}</p>
+
+                          <a
+                            style={{
+                              color: "var(--primary-blue)",
+                              alignSelf: "flex-start",
+                              position: "relative",
+                              marginLeft: "auto",
+                              cursor: "pointer",
+                            }}
+                            onMouseEnter={() => {
+                              document
+                                .querySelector(`.refrenceTooltip${index}`)
+                                .classList.remove("hidden");
+                            }}
+                            onMouseLeave={() => {
+                              document
+                                .querySelector(`.refrenceTooltip${index}`)
+                                .classList.add("hidden");
+                            }}
+                          >
+                            {handleCitationFunction(idea?.name)}
+                            <div
+                              className={`hidden refrenceTooltip${index}`}
+                              style={{
+                                position: "absolute",
+                                top: "100%",
+                                right: "0",
+                                border: "1px solid",
+                                color: "black",
+                                backgroundColor: "white",
+                                padding: "0.5em",
+                                borderRadius: "5px",
+                                zIndex: "1",
+                              }}
+                            >
+                              {idea?.name}{" "}
+                              {idea?.reference?.type === "article" ? (
+                                <a
+                                  href={idea?.reference?.link}
+                                  target="_blank"
+                                  style={{ color: "blue" }}
+                                >
+                                  Link
+                                </a>
+                              ) : (
+                                <Link
+                                  href={`/dashboard/${idea?.reference?.id}`}
+                                  target="_blank"
+                                >
+                                  Link
+                                </Link>
+                              )}
+                            </div>
+                          </a>
+                          <input
+                            type="checkbox"
+                            className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                            onClick={(e) => {
+                              console.log(idea);
+                              const updatedIdeas = freshIdeas.map(
+                                (el, elIndex) =>
+                                  elIndex === index
+                                    ? { ...el, used: el.used === 1 ? 0 : 1 }
+                                    : el
                               );
-                              if (f) {
-                                ideasCopy.push(f);
-                              } else {
-                                ideasCopy.push(element);
-                              }
-                            }
-                            setFreshIdeas(ideasCopy);
-                            const arr = [];
-                            for (
-                              let index = 0;
-                              index < updatedFilteredIdeas.length;
-                              index++
-                            ) {
-                              const element = updatedFilteredIdeas[index];
-                              if (element.used) {
-                                const ideaObject = {
-                                  text: element.idea,
-                                  article_id: element.article_id,
-                                };
-                                arr.push(ideaObject);
-                              }
-                            }
-                            handlefreshideas(arr);
-                          }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })
-              : freshIdeas?.map((idea, index) => {
-                  return (
-                    <div className="flex pb-3" key={index}>
-                      <div className="flex justify-between gap-5 w-full">
-                        <p>{idea?.idea}</p>
-
-                        <a
-                          style={{
-                            color: "#4a3afe",
-                            alignSelf: "flex-start",
-                            position: "relative",
-                            marginLeft: "auto",
-                            cursor: "pointer",
-                          }}
-                          onMouseEnter={() => {
-                            document
-                              .querySelector(`.refrenceTooltip${index}`)
-                              .classList.remove("hidden");
-                          }}
-                          onMouseLeave={() => {
-                            document
-                              .querySelector(`.refrenceTooltip${index}`)
-                              .classList.add("hidden");
-                          }}
-                        >
-                          {handleCitationFunction(idea?.name)}
-                          <div
-                            className={`hidden refrenceTooltip${index}`}
-                            style={{
-                              position: "absolute",
-                              top: "100%",
-                              right: "0",
-                              border: "1px solid",
-                              color: "black",
-                              backgroundColor: "white",
-                              padding: "0.5em",
-                              borderRadius: "5px",
-                              zIndex: "1",
+                              setFreshIdeas(updatedIdeas);
+                              handleInputClick(idea?.idea, idea?.article_id, e);
                             }}
-                          >
-                            {idea?.name}{" "}
-                            {idea?.reference?.type === "article" ? (
-                              <a
-                                href={idea?.reference?.link}
-                                target="_blank"
-                                style={{ color: "blue" }}
-                              >
-                                Link
-                              </a>
-                            ) : (
-                              <Link
-                                href={`/dashboard/${idea?.reference?.id}`}
-                                target="_blank"
-                              >
-                                Link
-                              </Link>
-                            )}
-                          </div>
-                        </a>
-                        <input
-                          type="checkbox"
-                          className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                          onClick={(e) => {
-                            console.log(idea);
-                            const updatedIdeas = freshIdeas.map((el, elIndex) =>
-                              elIndex === index
-                                ? { ...el, used: el.used === 1 ? 0 : 1 }
-                                : el
-                            );
-                            setFreshIdeas(updatedIdeas);
-                            handleInputClick(idea?.idea, idea?.article_id, e);
-                          }}
-                          checked={idea?.used}
-                        />
+                            checked={idea?.used}
+                          />
+                        </div>
                       </div>
-                    </div>
-                  );
-                })
-            : ""}
+                    );
+                  })}
+            </div>
+          )}
         </div>
       </div>
     </>
