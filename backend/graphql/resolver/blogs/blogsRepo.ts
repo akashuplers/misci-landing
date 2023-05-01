@@ -37,7 +37,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
     imageSrc?: String | null
     ideasText?: String | null
 }) => {
-    const chatgptApis = await db.db('admin').collection('chatGPT').findOne()
+    const chatgptApis = await db.db('lilleAdmin').collection('chatGPT').findOne()
     let availableApi: any = null
     if(chatgptApis) {
         availableApi = chatgptApis.apis?.find((api: any) => !api.quotaFull)

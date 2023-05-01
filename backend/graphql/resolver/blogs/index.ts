@@ -156,23 +156,6 @@ export const blogResolvers = {
                 throw "No keyword passed!"
             }
             const userId = args.options.user_id
-            const chatgptApis = await db.db('admin').collection('chatGPT').findOne()
-            await db.db('lilleAdmin').collection('activityLogs').insertOne({
-                userId,
-                activity: "Generate new",
-                data: {
-                    keyword
-                }
-            })
-            let availableApi: any = null
-            if(chatgptApis) {
-                availableApi = chatgptApis.apis?.find((api: any) => !api.quotaFull)
-            } else {
-                throw "Something went wrong! Please connect with support team";
-            }
-            if(!availableApi) {
-                throw "Something went wrong! Please connect with support team";
-            }
             let articleIds: any = null
             let pythonStart = new Date()
             try {
@@ -329,15 +312,14 @@ export const blogResolvers = {
         regenerateBlog: async (
             parent: unknown, args: {options: ReGenerateBlogMutationArg}, {req, res, db, pubsub, user}: any
         ) => {
-            if(!user) {
+            if(!user || !Object.keys(user).length) {
                 throw "@No authorization"
             }
             let startRequest = new Date()
-            console.log(args.options)
             const ideas = args.options.ideas, blogId = args.options.blog_id;
             const blog = await fetchBlog({db, id: blogId})
             const blogIdeas = await fetchBlogIdeas({db, id: blogId})
-            const userDetails = await fetchUser({id: blog.userId, db})
+            const userDetails = await fetchUser({id: user.id, db})
             if(!userDetails) {
                 throw "@No user found"
             }
@@ -574,7 +556,7 @@ export const blogResolvers = {
                         textMsg: "",
                         htmlMsg: `
                             <p>Hello All,</p>
-                            <p>Credit has been exhausted for this below user</p>
+                            <p>Credit has been exhausted for below user</p>
                             <p>User Name: ${userDetails.name} ${userDetails.lastName}</p>
                             <p>User Email: ${userDetails.email}</p>
                         `,
