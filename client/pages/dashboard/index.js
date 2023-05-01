@@ -12,6 +12,7 @@ import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
 import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
+import { API_BASE_PATH, API_ROUTES } from "../../constants/apiEndpoints";
 
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
@@ -30,6 +31,7 @@ export default function dashboard({ query }) {
   const [ideas, setIdeas] = useState([]);
   const [freshIdeas, setFreshIdeas] = useState([]);
   const [tags, setTags] = useState([]);
+  const [freshIdeaTags, setFreshIdeaTags] = useState([]);
   const [blog_id, setblog_id] = useState("");
   const [editorText, setEditorText] = useState("");
   const [blogData, setBlogData] = useState([]);
@@ -40,6 +42,17 @@ export default function dashboard({ query }) {
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
 
   const keyword = useStore((state) => state.keyword);
+  // useEffect(() => {
+  //   const queryParams = router.query;
+  //   if (!topic && !queryParams.code) {
+  //     alert(
+  //       "Since you have refreshed the page,Therefore no keyword was passed. Please Generate the blog again!!"
+  //     );
+  //     window.location.href = "/";
+  //   }
+  // }, []);
+
+  console.log("keyword", keyword, topic);
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
 
   if (typeof window !== "undefined") {
@@ -137,7 +150,7 @@ export default function dashboard({ query }) {
 
       const config = {
         method: "post",
-        url: "https://maverick.lille.ai/graphql",
+        url: API_BASE_PATH + API_ROUTES.GQL_PATH,
         headers: myHeaders,
         data: graphql,
         redirect: "follow",
@@ -150,6 +163,7 @@ export default function dashboard({ query }) {
           setBlogData(data.fetchBlog);
           setIdeas(data.fetchBlog.ideas.ideas);
           setTags(data.fetchBlog.tags);
+          setFreshIdeaTags(data.fetchBlog.freshIdeasTags);
           setFreshIdeasReferences(data?.fetchBlog?.freshIdeasReferences);
           setReference(data?.fetchBlog?.references);
           setFreshIdeas(data?.fetchBlog?.idea?.freshIdeas);
@@ -238,29 +252,31 @@ export default function dashboard({ query }) {
   return (
     <>
       <Layout>
-        <div className="flex divide-x mb-6">
-          {/* <div
-            style={{
-              zIndex: "10",
-              position: "absolute",
-              background: "white",
-              border: "1px solid black",
-              width: "200px",
-              top: "2%",
-              left: "50%",
-              transform: "translateX(-30%)",
-              fontSize: "0.75rem",
-            }}
-          >
-            <span>
-              Python Response Time : {(pyResTime * 60).toFixed(2) ?? ""}sec
-            </span>
-            <br />
-            <span>
-              Node Response Time : {(ndResTime * 60).toFixed(2) ?? ""}sec
-            </span>
-          </div> */}
-          <div className="w-[65%] relative">
+        <div className="flex mb-6 h-[88vh]">
+          {API_BASE_PATH === "https://maverick.lille.ai" && (
+            <div
+              style={{
+                zIndex: "10",
+                position: "absolute",
+                background: "white",
+                border: "1px solid black",
+                width: "200px",
+                top: "2%",
+                left: "50%",
+                transform: "translateX(-30%)",
+                fontSize: "0.75rem",
+              }}
+            >
+              <span>
+                Python Response Time : {(pyResTime * 60).toFixed(2) ?? ""}sec
+              </span>
+              <br />
+              <span>
+                Node Response Time : {(ndResTime * 60).toFixed(2) ?? ""}sec
+              </span>
+            </div>
+          )}
+          <div className="relative" style={{ width: "var(--tinymce-width)" }}>
             <TinyMCEEditor
               topic={topic}
               isAuthenticated={isAuthenticated}
@@ -270,24 +286,30 @@ export default function dashboard({ query }) {
               blog_id={blog_id}
             />
           </div>
-          <DashboardInsights
-            ideas={ideas}
-            setIdeas={setIdeas}
-            tags={tags}
-            setTags={setTags}
-            blog_id={blog_id}
-            setblog_id={setblog_id}
-            loading={loading}
-            freshIdeas={freshIdeas}
-            setEditorText={setEditorText}
-            setBlogData={setBlogData}
-            setPyResTime={setPyResTime}
-            setNdResTime={setNdResTime}
-            freshIdeasReferences={freshIdeasReferences}
-            setFreshIdeaReferences={setFreshIdeasReferences}
-            reference={reference}
-            setReference={setReference}
-          />
+          <div
+            className="relative"
+            style={{ width: "var(--dashboardInsight-width)" }}
+          >
+            <DashboardInsights
+              ideas={ideas}
+              setIdeas={setIdeas}
+              tags={tags}
+              setTags={setTags}
+              freshIdeaTags={freshIdeaTags}
+              blog_id={blog_id}
+              setblog_id={setblog_id}
+              loading={loading}
+              setEditorText={setEditorText}
+              setBlogData={setBlogData}
+              setPyResTime={setPyResTime}
+              setNdResTime={setNdResTime}
+              freshIdeas={freshIdeas}
+              freshIdeasReferences={freshIdeasReferences}
+              setFreshIdeaReferences={setFreshIdeasReferences}
+              reference={reference}
+              setReference={setReference}
+            />
+          </div>
         </div>
       </Layout>
     </>

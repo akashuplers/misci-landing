@@ -1,0 +1,40 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5em;
+    max-width: 400px;
+    overflow: hidden;
+    text-align: center;
+    padding-bottom: 12em;
+}
+
+.contact{
+    width: 100%;
+    border-radius: 100px;
+    background: #b4aeff;
+    color: var(--primary-blue);
+    padding: 0.5em 1em;
+    font-weight: 600;
+}
+
+.close{
+    margin-top: 10em;
+    align-self: flex-end;
+    padding: 0.5em 1.5em;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 8px;
+    background-color: #d9d9d9;
+
+    position: absolute;
+    bottom: 7%;
+    right: 7%;
+    z-index: 1;
+}
+
+.clock{
+   position: absolute;
+   top: 60%;
+}
