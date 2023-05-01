@@ -43,7 +43,7 @@ export default function dashboard({ query }) {
 
   const keyword = useStore((state) => state.keyword);
   useEffect(() => {
-    if (keyword === "") {
+    if (!topic) {
       alert(
         "Since you have refreshed the page,Therefore no keyword was passed. Please Generate the blog again!!"
       );
@@ -51,7 +51,7 @@ export default function dashboard({ query }) {
     }
   }, []);
 
-  console.log("keyword", typeof keyword);
+  console.log("keyword", keyword, topic);
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
 
   if (typeof window !== "undefined") {
