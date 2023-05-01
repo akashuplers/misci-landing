@@ -40,7 +40,20 @@ export default function dashboard({ query }) {
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
 
   const keyword = useStore((state) => state.keyword);
-  const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog);
+
+  var getToken;
+  if (typeof window !== "undefined") {
+    getToken = localStorage.getItem("token");
+  }
+
+  const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        ...(getToken && { Authorization: "Bearer " + getToken }),
+      },
+    },
+  });
 
   if (typeof window !== "undefined") {
     window.addEventListener("beforeunload", function (event) {
