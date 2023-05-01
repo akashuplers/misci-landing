@@ -47,7 +47,6 @@ export default function dashboard({ query }) {
       alert(
         "Since you have refreshed the page,Therefore no keyword was passed. Please Generate the blog again!!"
       );
-      window.location.href = "/";
     }
   }, []);
 
