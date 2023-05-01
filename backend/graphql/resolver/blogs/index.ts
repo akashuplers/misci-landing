@@ -148,7 +148,7 @@ export const blogResolvers = {
             return currentNumber
         },
         generate: async (
-            parent: unknown, args:{options: GenerateBlogMutationArg}, {req, res, db, pubsub}: any
+            parent: unknown, args:{options: GenerateBlogMutationArg}, {req, res, db, pubsub, user}: any
         ) => {
             let startRequest = new Date()
             let keyword = args.options.keyword
@@ -303,6 +303,29 @@ export const blogResolvers = {
                 if(blogDetails) refUrls = await fetchArticleUrls({db, blog: blogDetails})
                 let endRequest = new Date()
                 let respTime = diff_minutes(endRequest, startRequest)
+                if(user && Object.keys(user).length) {
+                    const userDetails = await fetchUser({id: user.id, db})
+                    const updatedCredits = ((userDetails.credits || 25) - 1)
+                    await updateUserCredit({id: userDetails._id, credit: updatedCredits, db})
+                    if(updatedCredits <= 0) {
+                        await sendEmails({
+                            to: [
+                            { Email: `akash.sharma@nowigence.com`, Name: `Akash Sharma` },
+                            { Email: `arvind.ajimal@nowigence.com`, Name: `Arvind Ajimal` },
+                            { Email: `subham.mahanta@nowigence.com`, Name: `Subham Mahanta` },
+                            { Email: `vashisth@adesignguy.co`, Name: `Vashisth Bhushan` }
+                            ],
+                            subject: "Credit Exhausted",
+                            textMsg: "",
+                            htmlMsg: `
+                                <p>Hello All,</p>
+                                <p>Credit has been exhausted for below user</p>
+                                <p>User Name: ${userDetails.name} ${userDetails.lastName}</p>
+                                <p>User Email: ${userDetails.email}</p>
+                            `,
+                        });
+                    }
+                }
                 return {...blogDetails, ideas: blogIdeasDetails, references: refUrls, pythonRespTime, respTime}
             } catch(e: any) {
                 throw e
