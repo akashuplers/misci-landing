@@ -37,39 +37,44 @@ export const signUpWithGoogle = (handleSave) => {
       };
       console.log(signUpFormData);
       const handleLoginSubmit = (email) => {
-        axios.post(API_BASE_PATH + API_ROUTES.SOCIAL_LOGIN_ENDPOINT, {email: email}, {
-          headers: {
-            "Content-type": "application/json",
-          }
-        })
-        .then((response) => {
-          const data = response.data;
-          console.log(data);
-          if (data?.data?.accessToken) {
-            toast.success("Successfully Logged in with Google", {
-              position: "top-center",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light"
-            });
-            redirectPageAfterLogin(data);
-            return true;
-          }
-        })
-        .catch((error) => {
-          console.error("Error: ", error);
-        })
-        .finally(() => {
-          // setSubmitting(false);
-          // setLoginFormData({
-          //   email: "",
-          //   password: "",
-          // });
-        });
+        axios
+          .post(
+            API_BASE_PATH + API_ROUTES.SOCIAL_LOGIN_ENDPOINT,
+            { email: email },
+            {
+              headers: {
+                "Content-type": "application/json",
+              },
+            }
+          )
+          .then((response) => {
+            const data = response.data;
+            console.log(data);
+            if (data?.data?.accessToken) {
+              toast.success("Successfully Logged in with Google", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+              redirectPageAfterLogin(data);
+              return true;
+            }
+          })
+          .catch((error) => {
+            console.error("Error: ", error);
+          })
+          .finally(() => {
+            // setSubmitting(false);
+            // setLoginFormData({
+            //   email: "",
+            //   password: "",
+            // });
+          });
 
         function redirectPageAfterLogin(data) {
           localStorage.setItem(
@@ -84,7 +89,7 @@ export const signUpWithGoogle = (handleSave) => {
 
           const myHeaders = {
             "content-type": "application/json",
-            "Authorization": "Bearer " + getToken
+            Authorization: "Bearer " + getToken,
           };
 
           var raw = {
@@ -92,57 +97,57 @@ export const signUpWithGoogle = (handleSave) => {
               "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  }\n}",
           };
 
-          axios.post('https://maverick.lille.ai/graphql', raw, {
-            headers: myHeaders
-          })
-          .then(response => response.data)
-          .then(response => {
-            // const json = JSON.parse(response);
-            console.log(response.data.me._id);
-            localStorage.setItem("userId", JSON.stringify(response.data.me._id).replace(/['"]+/g, ""));
-          })
-          .catch(error => console.error(error))
-          .finally(() => {
-            if (typeof window !== "undefined") {
-              const pass = localStorage.getItem("pass");
-              if (pass) {
-                localStorage.removeItem("pass");
+          axios
+            .post(API_BASE_PATH + API_ROUTES.GQL_PATH, raw, {
+              headers: myHeaders,
+            })
+            .then((response) => response.data)
+            .then((response) => {
+              // const json = JSON.parse(response);
+              console.log(response.data.me._id);
+              localStorage.setItem(
+                "userId",
+                JSON.stringify(response.data.me._id).replace(/['"]+/g, "")
+              );
+            })
+            .catch((error) => console.error(error))
+            .finally(() => {
+              if (typeof window !== "undefined") {
+                const pass = localStorage.getItem("pass");
+                if (pass) {
+                  localStorage.removeItem("pass");
+                }
               }
-            }
-            if (window.location.pathname === "/") {
-              window.location.href = "/";
-            } else {
-              if (
-                window.location.href === "http://localhost:3000/dashboard" ||
-                window.location.href ===
-                  "https://maverick.lille.ai/dashboard" ||
-                window.location.href ===
-                  "https://pluaris-prod.vercel.app/dashboard"
-              ) {
-                handleSave();
+              if (window.location.pathname === "/") {
+                window.location.href = "/";
               } else {
-                window.location.href = "/dashboard";
+                if (window.location.pathname === "dashboard") {
+                  handleSave();
+                } else {
+                  window.location.href = "/dashboard";
+                }
               }
-            }
-          });
+            });
           return;
         }
       };
-        axios.post(API_BASE_PATH + API_ROUTES.CREATE_USER, signUpFormData, {
+      axios
+        .post(API_BASE_PATH + API_ROUTES.CREATE_USER, signUpFormData, {
           headers: {
             "Content-type": "application/json",
           },
         })
-          .then(response => {
+        .then((response) => {
+          handleLoginSubmit(signUpFormData.email);
+        })
+        .catch((error) => {
+          const errorMessage =
+            error.response.data.error && error.response.data.message;
+          if (errorMessage == "User already exists") {
             handleLoginSubmit(signUpFormData.email);
-          })
-          .catch((error) => {
-            const errorMessage = error.response.data.error && error.response.data.message;
-            if(errorMessage == "User already exists"){
-              handleLoginSubmit(signUpFormData.email);
-            }
-            console.error("Error : ", error.response);
-          })
+          }
+          console.error("Error : ", error.response);
+        });
     })
     .catch((error) => {
       console.log(error.message);

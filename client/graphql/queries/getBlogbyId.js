@@ -14,6 +14,7 @@ export const getBlogbyId = gql`
         source    
     }
     tags
+    freshIdeasTags
     ideas {
       blog_id
       ideas {

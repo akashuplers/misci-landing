@@ -10,6 +10,8 @@ import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { LinkedinLogin } from "../services/LinkedinLogin";
 import { signUpWithGoogle } from "../services/GoogleLogin";
 
+import ForgotPasswordModal from "../components/ForgotPasswordModal";
+
 import { useRouter } from "next/router";
 import LoaderPlane from "./LoaderPlane";
 import { toast } from "react-toastify";
@@ -140,7 +142,7 @@ export default function AuthenticationModal({
       };
 
       axios
-        .post("https://maverick.lille.ai/graphql", raw, {
+        .post(API_BASE_PATH + API_ROUTES.GQL_PATH, raw, {
           headers: myHeaders,
         })
         .then((response) => response.data)
@@ -318,6 +320,8 @@ export default function AuthenticationModal({
     window.location = redirectUrl;
   };
   const updateisSavefalse = useStore((state) => state.updateisSavefalse);
+
+  const [forgotPass, setForgotPass] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
@@ -554,13 +558,21 @@ export default function AuthenticationModal({
                   </label>
                 </div>
                 <div>
-                  <a className="text-sm  font-medium text-indigo-600">
+                  <a
+                    className="text-sm  font-medium text-indigo-600 cursor-pointer"
+                    onClick={(e) => setForgotPass(true)}
+                  >
                     Forgot Password?
                   </a>
                 </div>
               </div>
+              <ForgotPasswordModal
+                forgotPass={forgotPass}
+                setForgotPass={setForgotPass}
+              />
+
               <button
-                className=" w-full py-3 font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center !mt-3"
+                className="w-full !mt-6 !py-3 cta-invert flex items-center justify-center gap-2"
                 type="submit"
                 disabled={submitting ? true : false}
               >
@@ -580,7 +592,7 @@ export default function AuthenticationModal({
                         d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
                       />
                     </svg>
-                    <span>{type === "login" ? "Login" : "Sign Up"}</span>
+                    {type === "login" ? "Login" : "Sign Up"}
                   </>
                 ) : (
                   <ReactLoading
