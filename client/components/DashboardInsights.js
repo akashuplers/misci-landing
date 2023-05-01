@@ -312,6 +312,7 @@ export default function DashboardInsights({
           setBlogData(data.regenerateBlog);
           setIdeas(data.regenerateBlog.ideas.ideas);
           setTags(data.regenerateBlog.tags);
+          setFreshIdeaTags(data.regenerateBlog.freshIdeasTags);
           setReferences(data.regenerateBlog.references);
           setFreshIdeaReferences(data.regenerateBlog.freshIdeasReferences);
           setFreshIdeas(data?.regenerateBlog?.ideas?.freshIdeas);
