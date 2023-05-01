@@ -803,6 +803,18 @@ router.post("/forgot-password", async (request: any, reply: any) => {
 router.post("/reset", async (request: any, reply: any) => {
   // const filter = { resetPasswordToken: request.body.token };
   const db = request.app.get('db')
+  if(!request.body.token) {
+    reply.status(400).send({
+      error: true,
+      message: "Token missing!",
+    });
+  }
+  if(!request.body.password) {
+    reply.status(400).send({
+      error: true,
+      message: "New password missing!",
+    });
+  }
   const user = await db.db("lilleAdmin").collection("users").findOne({
     resetPasswordToken: request.body.token,
   });
