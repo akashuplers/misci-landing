@@ -54,8 +54,10 @@ func StartProd() error {
 	os.Chdir("./backend")
 	err = sh.Run("pm2", "start", "npm", "--name", "'prod1'", "--", "run", "start")
 	err = sh.Run("pm2", "start", "npm", "--name", "'prod2'", "--", "run", "start1")
-	fmt.Println("Reloading Caddy...")
+	specialFmtForFrontend := fmt.Sprintf("frontend")
 	os.Chdir("../client")
+	err = sh.Run("pm2", "start", "npm", "--name", specialFmtForFrontend, "--", "run", "start")
+	fmt.Println("Reloading Caddy...")
 	err = sh.Run("caddy", "run", "--config", "../Caddyfile.prod")
 	defer os.Chdir("..")
 	return err
