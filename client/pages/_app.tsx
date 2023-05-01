@@ -3,6 +3,8 @@ import "@/styles/globals.css";
 import axios from "axios";
 import type { AppProps } from "next/app";
 import { useEffect, useLayoutEffect, useState } from "react";
+import Script from "next/script";
+import CookieConsent from "react-cookie-consent";
 
 import {
   ApolloClient,
@@ -94,9 +96,8 @@ export default function App({ Component, pageProps }: AppProps) {
     "/pricing",
     "/subscription",
     "/public/[bid]",
-    "/resetPass"
+    "/resetPass",
   ];
-
 
   useEffect(() => {
     axios
@@ -125,7 +126,6 @@ export default function App({ Component, pageProps }: AppProps) {
       setIsAuthenticated(true);
     }
   }, []);
-
 
   /*useEffect(() => {
     if (
@@ -210,12 +210,42 @@ export default function App({ Component, pageProps }: AppProps) {
     cache: new InMemoryCache(),
   });
 
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.innerHTML = `
+      (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window, document, "clarity", "script", "gx2upzxn6g");
+    `;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   if (isAuthenticated) {
     return (
       <>
         <ApolloProvider client={client}>
           <ToastContainer />
           <Component {...pageProps} />
+          <CookieConsent
+            location="bottom"
+            buttonText="I Understand"
+            cookieName="myAwesomeCookieName2"
+            style={{ background: "#2B373B" }}
+            buttonStyle={{ color: "#4e503b", fontSize: "13px" }}
+            expires={150}
+          >
+            This website uses cookies to enhance the user experience.{" "}
+            <span style={{ fontSize: "10px" }}>
+              We only use this for better feature development and any support
+              requirements that come up.
+            </span>
+          </CookieConsent>
         </ApolloProvider>
       </>
     );
@@ -225,6 +255,20 @@ export default function App({ Component, pageProps }: AppProps) {
         <ApolloProvider client={client}>
           <ToastContainer />
           <Component {...pageProps} />
+          <CookieConsent
+            location="bottom"
+            buttonText="I Understand"
+            cookieName="myAwesomeCookieName2"
+            style={{ background: "#2B373B" }}
+            buttonStyle={{ color: "#4e503b", fontSize: "13px" }}
+            expires={150}
+          >
+            This website uses cookies to enhance the user experience.{" "}
+            <span style={{ fontSize: "10px" }}>
+              We only use this for better feature development and any support
+              requirements that come up.
+            </span>
+          </CookieConsent>
         </ApolloProvider>
       </>
     );
