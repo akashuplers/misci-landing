@@ -45,6 +45,17 @@ export default function Sidebar() {
     setUrl(path);
   }, [path]);
 
+  const [topBarStyle, setTopBarStyle] = useState({});
+  useEffect(() => {
+    const pathname = router.pathname.split("/")[1];
+    console.log(pathname);
+    if(router.pathname === "/") {
+      setTopBarStyle({});
+      return
+    }
+    setTopBarStyle({backgroundColor : "white"});
+  },[router])
+
   const updateCredit = useStore((state) => state.updateCredit);
   useEffect(() => {
     updateCredit();
@@ -240,15 +251,16 @@ export default function Sidebar() {
                       ))}
                     </nav>
                   </div>
-                  <div className="flex flex-shrink-0 pb-0 pt-4">
+                  {/* <div className="flex flex-shrink-0 pb-0 pt-4">
                     <Link
                       href="/upgrade"
-                      className="ml-6 inline-flex items-center rounded-md bg-[#4A3AFE] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      className="ml-6 inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                       style={{
                         margin: "0em 0.5em",
                         width: "100%",
                         justifyContent: "center",
                         alignItems: "center",
+                        background: "var(--primary-blue)"
                       }}
                     >
                       UPGRADE
@@ -265,7 +277,7 @@ export default function Sidebar() {
                         />
                       </svg>
                     </Link>
-                  </div>
+                  </div> */}
                 </Dialog.Panel>
               </Transition.Child>
               <div className="w-14 flex-shrink-0">
@@ -276,9 +288,9 @@ export default function Sidebar() {
         </Transition.Root>
 
         {/* Static sidebar for desktop */}
-        <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-[12.4rem] lg:flex-col z-20 ">
+        <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-[12.4rem] lg:flex-col z-20 " >
           {/* Sidebar component, swap this element with another sidebar if you like */}
-          <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-white">
+          <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200">
             <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
               <Link href="/">
                 <div className="flex flex-shrink-0 items-center justify-center px-4">
@@ -315,7 +327,7 @@ export default function Sidebar() {
                 ))}
               </nav>
             </div>
-            {!meeData?.me?.paid && !meeLoading && (
+            {/* {!meeData?.me?.paid && !meeLoading && (
               <div className="flex flex-shrink-0 pb-0 pt-4">
                 <Link
                   href="/upgrade"
@@ -342,7 +354,7 @@ export default function Sidebar() {
                   </svg>
                 </Link>
               </div>
-            )}
+            )} */}
             <nav className="mt-5 space-y-1 bg-white px-2 pb-8">
               {navigation_bottom.map((item) => (
                 <Link
@@ -373,8 +385,12 @@ export default function Sidebar() {
             </nav>
           </div>
         </div>
-        <div className="flex flex-1 flex-col lg:pl-[12rem] w-full fixed top-0 z-10">
-          <div className="sticky top-0 z-10 bg-white pl-1 pt-1 sm:pl-3 sm:pt-3 lg:hidden">
+        <div className="flex flex-1 flex-col w-full fixed top-0 z-10" style={{
+          ...topBarStyle,
+          paddingLeft : "var(--sidebar-width)",
+          height : "var(--topbar-height)"
+        }}>
+          <div className="sticky top-0 z-10 pl-1 pt-1 sm:pl-3 sm:pt-3 lg:hidden">
             <button
               type="button"
               className="-ml-0.5 -mt-0.5 inline-flex h-12 w-12 items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
@@ -512,7 +528,7 @@ export default function Sidebar() {
                         src={meeData?.me?.profileImage}
                         round={true}
                       />
-                      {meeData?.me?.paid || (
+                      {/* {meeData?.me?.paid || (
                         <div
                           id="trialenddiv"
                           className="hidden"
@@ -533,7 +549,7 @@ export default function Sidebar() {
                         >
                           Upgrade Now!
                         </div>
-                      )}
+                      )} */}
                     </Link>
                   )}
                 </div>

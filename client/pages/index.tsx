@@ -9,6 +9,7 @@ import Layout from "../components/Layout";
 import { toast, ToastContainer } from "react-toastify";
 import { meeAPI } from "../graphql/querys/mee";
 import PreferencesModal from "../modals/PreferencesModal";
+import TrialEndedModal from "../components/TrialEndedModal";
 
 export default function Home() {
   const keywords = gql`
@@ -128,6 +129,10 @@ export default function Home() {
             getToken={getToken}
           />
         )}
+
+        {!meeData?.me?.paid && meeData?.me?.credits === 0 && (
+          <TrialEndedModal />
+        )}
         <div className={`relative px-6 pt-5 lg:px-8`}>
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
             <svg
@@ -155,10 +160,10 @@ export default function Home() {
             </svg>
           </div>
           <div className="mx-auto max-w-2xl py-32 sm:py-30 lg:py-20">
-            <div className="text-center">
+            <div className="text-center flex items-center justify-center flex-col">
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
                 Generate <span className="newsletter">Newsletter</span> with{" "}
-                <span style={{ color: "#4a3afe" }}>Lille</span>
+                <span style={{ color: "var(--primary-blue)" }}>Lille</span>
               </h1>
               <p className="mt-6 text-lg leading-8 text-gray-600">
                 Streamline your content creation process with our website that
@@ -167,11 +172,18 @@ export default function Home() {
               </p>
               <div className="p-4 mt-4">Try some of our trending topics</div>
               {!loading ? (
-                <div className="grid grid-cols-3 gap-4 py-4">{updatedArr}</div>
+                <div
+                  className="grid grid-cols-3 gap-4 py-4"
+                  style={{ width: "110%" }}
+                >
+                  {updatedArr}
+                </div>
               ) : (
-                <LoaderPlane />
+                <div style={{ margin: "0 auto" }}>
+                  <LoaderPlane />
+                </div>
               )}
-              <div className="mt-10 flex items-center justify-center gap-x-6">
+              <div className="mt-10 flex items-center justify-center gap-x-6 w-full">
                 <input
                   id="search"
                   name="search"
@@ -192,9 +204,7 @@ export default function Home() {
                     query: { topic: keyword },
                   }}
                 >
-                  <a className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                    Generate
-                  </a>
+                  <a className="cta-invert">Generate</a>
                 </Link>
               </div>
             </div>

@@ -8,6 +8,7 @@ import { getAllBlogs } from "../graphql/queries/getAllBlogs";
 import Head from "next/head";
 import { contextType } from "react-modal";
 import LoaderScan from "../components/LoaderScan";
+import Pagination from "../components/Pagination";
 import { deleteBlog } from "../graphql/mutations/deleteBlog";
 import { toast } from "react-toastify";
 import Modal from "react-modal";
@@ -54,9 +55,6 @@ export default function Saved() {
     { data: delteData, loading: delteLoading, error: delteError },
   ] = useMutation(deleteBlog);
 
-  var paginationArr = [];
-  for (var i = 1; i <= Math.ceil(data?.getAllBlogs.count / PAGE_COUNT); i++)
-    paginationArr.push(i);
 
   const files = [
     {
@@ -111,7 +109,7 @@ export default function Saved() {
         {loading ? (
           <LoaderScan />
         ) : (
-          <>
+          <div style={{padding : '1em 0 6em 0'}} className="relative">
             {data?.getAllBlogs.blogs.length === 0 && (
               <img
                 src="/noBlog/noPublished.png"
@@ -133,7 +131,8 @@ export default function Saved() {
                       <img
                         src={blog.image}
                         alt={blog.title}
-                        className="pointer-events-none object-cover h-[185px] w-[280px]"
+                        className="pointer-events-none object-cover h-[150px] w-[280px]"
+                        style={{scale: '1.25'}}
                       />
                       <Link
                         legacyBehavior
@@ -247,47 +246,7 @@ export default function Saved() {
                 </>
               ))}
             </ul>
-          </>
-        )}
-        {paginationArr.length > 1 && (
-          <div
-            className="pagination"
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: "2em",
-              paddingBottom: "2em",
-            }}
-          >
-            <ul
-              style={{
-                display: "flex",
-                gap: "2em",
-                listStyleType: "none",
-              }}
-            >
-              {paginationArr.map((el, index) => (
-                <li
-                  style={{
-                    border: "1px solid",
-                    width: "30px",
-                    height: "30px",
-                    borderRadius: "50%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    cursor: "pointer",
-                  }}
-                  className={pageSkip === index ? "active" : ""}
-                  onClick={(e) => {
-                    setPageSkip(index);
-                  }}
-                >
-                  {el}
-                </li>
-              ))}
-            </ul>
+            <Pagination pageSkip={pageSkip} setPageSkip={setPageSkip} totalItems={data?.getAllBlogs.count}/> 
           </div>
         )}
         <Modal
