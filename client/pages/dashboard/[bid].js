@@ -10,6 +10,7 @@ import TinyMCEEditor from "../../components/TinyMCEEditor";
 import { jsonToHtml } from "../../helpers/helper";
 import { meeAPI } from "../../graphql/querys/mee";
 import { ToastContainer } from "react-toastify";
+import { API_BASE_PATH } from "../../constants/apiEndpoints";
 
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
@@ -153,30 +154,29 @@ export default function Post() {
               getToken={getToken}
             />
           )}
-          {typeof window !== "undefined" &&
-            window.location.origin === "https://maverick.lille.ai/" && (
-              <div
-                style={{
-                  zIndex: "10",
-                  position: "absolute",
-                  background: "white",
-                  border: "1px solid black",
-                  width: "200px",
-                  top: "2%",
-                  left: "50%",
-                  transform: "translateX(-30%)",
-                  fontSize: "0.75rem",
-                }}
-              >
-                <span>
-                  Python Response Time : {(pyResTime * 60).toFixed(2) ?? ""}sec
-                </span>
-                <br />
-                <span>
-                  Node Response Time : {(ndResTime * 60).toFixed(2) ?? ""}sec
-                </span>
-              </div>
-            )}
+          {API_BASE_PATH === "https://maverick.lille.ai" && (
+            <div
+              style={{
+                zIndex: "10",
+                position: "absolute",
+                background: "white",
+                border: "1px solid black",
+                width: "200px",
+                top: "2%",
+                left: "50%",
+                transform: "translateX(-30%)",
+                fontSize: "0.75rem",
+              }}
+            >
+              <span>
+                Python Response Time : {(pyResTime * 60).toFixed(2) ?? ""}sec
+              </span>
+              <br />
+              <span>
+                Node Response Time : {(ndResTime * 60).toFixed(2) ?? ""}sec
+              </span>
+            </div>
+          )}
           <div className="relative" style={{ width: "var(--tinymce-width)" }}>
             <TinyMCEEditor
               isAuthenticated={true}
