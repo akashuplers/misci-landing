@@ -429,17 +429,17 @@ export default function DashboardInsights({
 
     let url = API_BASE_PATH;
     let raw;
-    if (urlValid) {
+    if (fileValid) {
+      url += API_ROUTES.FILE_UPLOAD;
+      raw = new FormData();
+      raw.append("file", file);
+      raw.append("blog_id", blog_id);
+    } else if (urlValid) {
       url += API_ROUTES.URL_UPLOAD;
       raw = {
         url: formInput,
         blog_id: blog_id,
       };
-    } else if (fileValid) {
-      url += API_ROUTES.FILE_UPLOAD;
-      raw = new FormData();
-      raw.append("file", file);
-      raw.append("blog_id", blog_id);
     } else {
       url += API_ROUTES.KEYWORD_UPLOAD;
       raw = {
