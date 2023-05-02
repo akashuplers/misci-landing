@@ -58,12 +58,8 @@ export default function dashboard({ query }) {
 
   useEffect(() => {
     if (!topic && !bid && !loginProcess) {
-      setTimeout(() => {
-        alert(
-          "Since you refreshed the page,Keyword got null.Please generate the blog again!"
-        );
-        window.location.href = "/";
-      }, 15000);
+      alert("No Keyword Found...\nPlease generate the blog again!");
+      window.location.href = "/";
     }
   }, []);
 
