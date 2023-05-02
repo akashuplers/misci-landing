@@ -69,9 +69,22 @@ export default function Subscription({ query }) {
     ]);
   }, []);
 
+  const [processing, setProcessing] = useState(false);
+
   console.log(currentPlan);
   return (
     <Elements stripe={stripePromise}>
+      {processing && (
+        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
+          <div className="flex flex-col items-center">
+            <div className="loader mb-4"></div>
+            <p className="text-gray-100 text-lg text-center">
+              Processing... <br />
+              Please do not refresh.
+            </p>
+          </div>
+        </div>
+      )}
       <div className="h-[100%] p-8">
         <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
           <svg
@@ -220,11 +233,34 @@ export default function Subscription({ query }) {
                 currentPlan={currentPlan?.subscriptionType?.toLowerCase()}
                 priceId={priceId}
                 setClickOnSubscibe={setClickOnSubscibe}
+                setProcessing={setProcessing}
+                processing={processing}
               />
             </div>
           </div>
         </div>
       </div>
+      <style>{`
+              .loader {
+          border-top: 2px solid rgba(255, 255, 255, 0.2);
+          border-right: 2px solid rgba(255, 255, 255, 0.2);
+          border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+          border-left: 2px solid white;
+          animation: spin 1s linear infinite;
+          border-radius: 50%;
+          width: 24px;
+          height: 24px;
+        }
+
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
     </Elements>
   );
 }

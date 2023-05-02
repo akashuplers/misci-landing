@@ -83,6 +83,7 @@ const CheckoutFormUpgrade = ({
     setCheckForm(true);
     if (validateForm()) {
       setBtnClicked(true);
+      setClickOnSubscibe(true);
       subscribe(checkForm);
     }
     // call the backend to create subscription
@@ -214,9 +215,6 @@ const CheckoutFormUpgrade = ({
       } else {
         console.log("err", confirmPayment?.error);
       }
-
-      console.log("In confirm payment function");
-      toast.success("Success! Check your email for the invoice.");
     }
   };
 
