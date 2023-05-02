@@ -182,12 +182,11 @@ const CheckoutForm = ({ priceId, currentPlan, setClickOnSubscibe }) => {
                 //redirectPageAfterLogin(data);
                 localStorage.setItem(
                   "token",
-                  JSON.stringify(data.data.accessToken)
+                  JSON.stringify(data.data.accessToken).replace(/['"]+/g, "")
                 );
+
                 if (window.location.pathname === "/subscription") {
-                  window.location.href = "/dashboard";
-                } else {
-                  window.location.reload();
+                  window.location.href = "/";
                 }
               }
             })
