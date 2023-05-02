@@ -218,7 +218,11 @@ export default function dashboard({ query }) {
         },
         onCompleted: (data) => {
           console.log(data);
-          updateCredit();
+          var token;
+          if (typeof window !== "undefined") {
+            token = localStorage.getItem("token");
+          }
+          if (token) updateCredit();
           setBlogData(data.generate);
 
           setReference(data.generate.references);
