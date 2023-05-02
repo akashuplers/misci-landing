@@ -9,7 +9,13 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 
-const CheckoutForm = ({ priceId, currentPlan, setClickOnSubscibe }) => {
+const CheckoutForm = ({
+  priceId,
+  currentPlan,
+  setClickOnSubscibe,
+  setProcessing,
+  processing,
+}) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -24,7 +30,7 @@ const CheckoutForm = ({ priceId, currentPlan, setClickOnSubscibe }) => {
     tempCompanyId = localStorage.getItem("companyId");
   }
   const [error, setError] = useState(null);
-  const [processing, setProcessing] = useState("");
+
   const [disabled, setDisabled] = useState(true);
   const [formErrors, setFormErrors] = useState({
     firstName: "",
@@ -74,6 +80,7 @@ const CheckoutForm = ({ priceId, currentPlan, setClickOnSubscibe }) => {
     setCheckForm(true);
     if (validateForm()) {
       setBtnClicked(true);
+      setProcessing(true);
       subscribe(checkForm);
     }
     // call the backend to create subscription
@@ -176,18 +183,18 @@ const CheckoutForm = ({ priceId, currentPlan, setClickOnSubscibe }) => {
                 //   pauseOnHover: true,
                 //   draggable: true,
                 //   progress: undefined,
-                //   theme: "light",
+                //   theme: "light",setClickOnSubscibe
                 // });
               } else if (data?.data?.accessToken) {
                 //redirectPageAfterLogin(data);
+                setProcessing(false);
                 localStorage.setItem(
                   "token",
-                  JSON.stringify(data.data.accessToken)
+                  JSON.stringify(data.data.accessToken).replace(/['"]+/g, "")
                 );
+
                 if (window.location.pathname === "/subscription") {
-                  window.location.href = "/dashboard";
-                } else {
-                  window.location.reload();
+                  window.location.href = "/";
                 }
               }
             })
