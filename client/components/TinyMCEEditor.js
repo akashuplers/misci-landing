@@ -100,6 +100,11 @@ export default function TinyMCEEditor({
     if (getToken) {
       setSaveLoad(true);
 
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(updatedText, "text/html");
+      const img = doc.querySelector("img");
+      const src = img.getAttribute("src");
+
       const tempDiv = document.createElement("div");
       tempDiv.innerHTML = updatedText;
       const elementsToRemove = tempDiv.querySelectorAll("h3");
@@ -122,7 +127,7 @@ export default function TinyMCEEditor({
             tinymce_json: formatedJSON,
             blog_id: blog_id,
             platform: option === "blog" ? "wordpress" : option,
-            imageUrl: imageURL,
+            imageUrl: src,
             imageSrc: imageURL ? null : imageURL,
             description: textContent,
           },
@@ -242,8 +247,6 @@ export default function TinyMCEEditor({
         .catch((error) => console.log("error", error));
     }
   };
-
-  const [image, setImage] = useState("");
 
   const handlePublish = () => {
     const tempDiv = document.createElement("div");

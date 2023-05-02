@@ -40,11 +40,23 @@ export default function dashboard({ query }) {
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
 
   const keyword = useStore((state) => state.keyword);
+  const updateCredit = useStore((state) => state.updateCredit);
 
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
   }
+
+  useEffect(() => {
+    if (!topic) {
+      setTimeout(() => {
+        alert(
+          "Since you refreshed the page,Keyword got null.Please generate the blog again!"
+        );
+        window.location.href = "/";
+      }, 15000);
+    }
+  }, []);
 
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog, {
     context: {
@@ -205,6 +217,7 @@ export default function dashboard({ query }) {
         },
         onCompleted: (data) => {
           console.log(data);
+          updateCredit();
           setBlogData(data.generate);
 
           setReference(data.generate.references);
