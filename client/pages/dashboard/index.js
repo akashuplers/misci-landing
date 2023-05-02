@@ -42,11 +42,28 @@ export default function dashboard({ query }) {
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
 
   const keyword = useStore((state) => state.keyword);
+  const updateCredit = useStore((state) => state.updateCredit);
 
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
   }
+
+  var bid;
+  if (typeof window !== "undefined") {
+    bid = localStorage.getItem("bid");
+  }
+  var loginProcess;
+  if (typeof window !== "undefined") {
+    loginProcess = localStorage.getItem("loginProcess");
+  }
+
+  useEffect(() => {
+    if (!topic && !bid && !loginProcess) {
+      alert("No Keyword Found...\nPlease generate the blog again!");
+      window.location.href = "/";
+    }
+  }, []);
 
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog, {
     context: {
@@ -90,14 +107,6 @@ export default function dashboard({ query }) {
       getTempId = localStorage.getItem("tempId");
     }
 
-    var bid;
-    if (typeof window !== "undefined") {
-      bid = localStorage.getItem("bid");
-    }
-    var loginProcess;
-    if (typeof window !== "undefined") {
-      loginProcess = localStorage.getItem("loginProcess");
-    }
     if (bid && loginProcess) {
       /*var myHeaders = new Headers();
       myHeaders.append("content-type", "application/json");
@@ -189,6 +198,7 @@ export default function dashboard({ query }) {
           if (!queryParams.code) {
             localStorage.removeItem("bid");
             localStorage.removeItem("loginProcess");
+            localStorage.removeItem("pass");
           }
         })
         .then((data) => {})
@@ -208,6 +218,7 @@ export default function dashboard({ query }) {
         },
         onCompleted: (data) => {
           console.log(data);
+          updateCredit();
           setBlogData(data.generate);
 
           setReference(data.generate.references);
