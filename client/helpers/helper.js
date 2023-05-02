@@ -9,6 +9,7 @@ export const htmlToJson = (htmlString, imageURL) => {
     };
     for (let i = 0; i < node.attributes.length; i++) {
       const attribute = node.attributes[i];
+
       if (node.tagName === "A") {
         if (attribute.name === "href" && imageURL) {
           json.attributes[attribute.name] = "#";
