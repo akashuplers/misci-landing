@@ -73,17 +73,19 @@ export default function Upgrade() {
     <>
       <Layout>
         <Elements stripe={stripePromise}>
+          {clickOnSubscibe && (
+            <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
+              <div className="flex flex-col items-center">
+                <div className="loader mb-4"></div>
+                <p className="text-gray-100 text-lg text-center">
+                  Processing... <br />
+                  Please do not refresh.
+                </p>
+              </div>
+            </div>
+          )}
           <div className="h-[100%]">
             <div>
-              {clickOnSubscibe && (
-                <div className="absolute left-0 right-0 bottom-0 top-0 bg-[#000000c7] z-20  text-white w-full h-full">
-                  <div className="w-full h-full flex content-center items-center">
-                    <h1 className=" text-center m-auto text-3xl">
-                      Please wait payment is in Process
-                    </h1>
-                  </div>
-                </div>
-              )}
               <div className={" d-flex align-items-center py-10  md:py-5"}>
                 <div className="w-100 md:mx-5 d-flex justify-content-evenly text-dark flex flex-col md:flex-row px-8 sm:px-0">
                   <div className="w-50 flex flex-col content-center md:items-center  md:text-center">
