@@ -47,8 +47,17 @@ export default function dashboard({ query }) {
     getToken = localStorage.getItem("token");
   }
 
+  var bid;
+  if (typeof window !== "undefined") {
+    bid = localStorage.getItem("bid");
+  }
+  var loginProcess;
+  if (typeof window !== "undefined") {
+    loginProcess = localStorage.getItem("loginProcess");
+  }
+
   useEffect(() => {
-    if (!topic) {
+    if (!topic && !bid && !loginProcess) {
       setTimeout(() => {
         alert(
           "Since you refreshed the page,Keyword got null.Please generate the blog again!"
@@ -100,14 +109,6 @@ export default function dashboard({ query }) {
       getTempId = localStorage.getItem("tempId");
     }
 
-    var bid;
-    if (typeof window !== "undefined") {
-      bid = localStorage.getItem("bid");
-    }
-    var loginProcess;
-    if (typeof window !== "undefined") {
-      loginProcess = localStorage.getItem("loginProcess");
-    }
     if (bid && loginProcess) {
       /*var myHeaders = new Headers();
       myHeaders.append("content-type", "application/json");
@@ -198,6 +199,7 @@ export default function dashboard({ query }) {
           if (!queryParams.code) {
             localStorage.removeItem("bid");
             localStorage.removeItem("loginProcess");
+            localStorage.removeItem("pass");
           }
         })
         .then((data) => {})
