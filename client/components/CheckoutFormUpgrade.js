@@ -83,6 +83,7 @@ const CheckoutFormUpgrade = ({
     setCheckForm(true);
     if (validateForm()) {
       setBtnClicked(true);
+      setClickOnSubscibe(true);
       subscribe(checkForm);
     }
     // call the backend to create subscription
