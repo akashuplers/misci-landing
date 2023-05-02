@@ -34,7 +34,7 @@ export default function DashboardInsights({
   setFreshIdeaReferences,
 
   reference,
-  setReferences,
+  setReference,
 
   setBlogData,
   setEditorText,
@@ -327,7 +327,7 @@ export default function DashboardInsights({
           setIdeas(data.regenerateBlog.ideas.ideas);
           setTags(data.regenerateBlog.tags);
           setFreshIdeaTags(data.regenerateBlog.freshIdeasTags);
-          setReferences(data.regenerateBlog.references);
+          setReference(data.regenerateBlog.references);
           setFreshIdeaReferences(data.regenerateBlog.freshIdeasReferences);
           setFreshIdeas(data?.regenerateBlog?.ideas?.freshIdeas);
           console.log(
