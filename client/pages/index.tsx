@@ -200,7 +200,7 @@ export default function Home() {
                         </div>
                         <div className="mt-3 text-center sm:mt-5">
                           <h3 className="text-lg leading-6 font-medium text-gray-900">
-                            Sorry!! We are not mobile responsive yet..
+                            Please try on desktop, mobile version coming soon...
                           </h3>
                         </div>
                       </div>
