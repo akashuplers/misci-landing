@@ -721,7 +721,6 @@ export default function Settings() {
                                         right: "100px",
                                         bottom: "30px",
                                         width: "150px",
-                                        height: "30px",
                                       }}
                                       onClick={() => {
                                         localStorage.removeItem(
