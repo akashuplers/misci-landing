@@ -30,6 +30,7 @@ import {
   TelegramIcon,
   EmailIcon,
 } from "react-share";
+import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { toast, ToastContainer } from "react-toastify";
 import useStore from "../store/store";
@@ -640,7 +641,12 @@ export default function TinyMCEEditor({
                     color={"#2563EB"}
                   />
                 ) : (
-                  publishText
+                  <>
+                    <div className="flex">
+                      <PaperAirplaneIcon className="w-5 h-5 mr-1" />
+                      {publishText}
+                    </div>
+                  </>
                 )}
               </button>
             ) : (
