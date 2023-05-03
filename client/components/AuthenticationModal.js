@@ -383,7 +383,9 @@ export default function AuthenticationModal({
           <h1 className="text-4xl font-medium ">
             {type === "login" ? "Login" : "Sign Up"}
           </h1>
-          <p className="text-slate-500 ">Hi, Welcome back 👋</p>
+          {type === "login" && (
+            <p className="text-slate-500 ">Hi, Welcome back 👋</p>
+          )}
 
           <div className="mt-5">
             <div className="w-full flex justify-evenly gap-4">
@@ -557,14 +559,16 @@ export default function AuthenticationModal({
                     <p className="text-sm  pl-2 inline-block">Remember me</p>
                   </label>
                 </div>
-                <div>
-                  <a
-                    className="text-sm  font-medium text-indigo-600 cursor-pointer"
-                    onClick={(e) => setForgotPass(true)}
-                  >
-                    Forgot Password?
-                  </a>
-                </div>
+                {type === "login" && (
+                  <div>
+                    <a
+                      className="text-sm  font-medium text-indigo-600 cursor-pointer"
+                      onClick={(e) => setForgotPass(true)}
+                    >
+                      Forgot Password?
+                    </a>
+                  </div>
+                )}
               </div>
               <ForgotPasswordModal
                 forgotPass={forgotPass}
