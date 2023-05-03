@@ -254,7 +254,10 @@ export default function TinyMCEEditor({
     tempDiv.innerHTML = updatedText;
 
     let textContent = tempDiv.textContent;
-    textContent = textContent.replace(/[^\w\s#]/gi, "");
+    textContent = textContent.replace(
+      /[\(*\)\[\]\{\}<>@|~_]/gm,
+      (x) => "\\" + x
+    );
     const parser = new DOMParser();
     const doc = parser.parseFromString(updatedText, "text/html");
     const img = doc.querySelector("img");
@@ -690,7 +693,7 @@ export default function TinyMCEEditor({
       )}
       <Editor
         value={updatedText || editorText}
-        apiKey="aas0t2r78qalxl9x1wl2byv0fchtnoh13dlufm5ez5annbr2"
+        apiKey="0kt03nb5cl4361y3oq7tph038soi0wi7luc330kbyjy5whj2"
         init={{
           setup: (editor) => {
             if (editor.inline) {
