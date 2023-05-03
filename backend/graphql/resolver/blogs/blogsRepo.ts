@@ -61,7 +61,14 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                 try {
                     if(key === "wordpress") {
                         const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `
-                            ${regenerate ? `write a large blog for ${key} on topic ${title} using below points: \n ${text}` : `write a large blog for ${key} on  "${text}" with title and content`}
+                            ${regenerate ? `
+                            Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
+                            Tone is " Authoritative, informative, Persuasive"
+                            Limit is "900 words"
+                            Highlight the H1 & H2 tags
+                            Provide the conclusion at the end
+                            Ideas ${text}
+                            ` : `write a large blog for ${key} on  "${text}" with title and content`}
                         `, db}).textCompletion()
                         newsLetter = {...newsLetter, [key]: chatGPTText}
                     } else {
@@ -78,19 +85,6 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         )
     )
     try {
-        // const chatGPTImage = await new ChatGPT({apiKey: availableApi.key, text, db}).fetchImage()
-        // newsLetter = {...newsLetter, image: chatGPTImage}
-        // const base64 = await getBase64Image(newsLetter.image)
-        // let imageUrl: string | null = null
-        // try {
-        //     const blobName = `blogs/${new Date().getTime()}.jpeg`;
-        //     const {url} = await new Azure({
-        //         blobName
-        //     }).getBlogUrlFromBase(base64)
-        //     imageUrl = url
-        // }catch(e){
-        //     console.log(e, "error from azure")
-        // }
         delete newsLetter.image
         let usedIdeasArr: any = []
         let description = ""
@@ -104,31 +98,34 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                             case "wordpress":
                                 const refs = refUrls
                                 // const title = newsLetter[key].slice(newsLetter[key].indexOf("Title:"), newsLetter[key].indexOf("Content:")).trim()
-                                const content = newsLetter[key]
+                                const content = newsLetter[key]?.replace(/\n/g, "<br/>")
+                                let updatedContent = content?.replace("In conclusion, ", "<h3>Conclusions:</h3><br/>")
+                                updatedContent = updatedContent?.replace("H1: ", "")
+                                updatedContent = updatedContent?.replace("H2: ", "")
                                 description = (content?.replace("\n", ""))?.trimStart()
                                 usedIdeasArr = content?.split('.')
-                                const updatedContent = content?.split('. ')?.map((data: string) => {
-                                    let newText = data
-                                    let filteredSource = null
-                                    ideasArr.some((idea) => {
-                                        if(idea.idea && data) {
-                                            const similarity = natural.JaroWinklerDistance(data, idea.idea, true);
-                                            if(similarity > 0.7) {
-                                                filteredSource = refs?.findIndex((ref) => ref.id === idea.article_id)
-                                                console.log(data, idea.idea, idea.article_id, filteredSource, similarity, "similiary")
-                                                return true
-                                            } else {
-                                                return false
-                                            }
-                                        }else {
-                                            return false
-                                        }
-                                    })
-                                    if(filteredSource || filteredSource === 0) {
-                                        newText = `${data} [${filteredSource + 1}]` 
-                                    }
-                                    return newText
-                                })
+                                // const updatedContent = content?.split('. ')?.map((data: string) => {
+                                //     let newText = data
+                                //     let filteredSource = null
+                                //     ideasArr.some((idea) => {
+                                //         if(idea.idea && data) {
+                                //             const similarity = natural.JaroWinklerDistance(data, idea.idea, true);
+                                //             if(similarity > 0.7) {
+                                //                 filteredSource = refs?.findIndex((ref) => ref.id === idea.article_id)
+                                //                 // console.log(data, idea.idea, idea.article_id, filteredSource, similarity, "similiary")
+                                //                 return true
+                                //             } else {
+                                //                 return false
+                                //             }
+                                //         }else {
+                                //             return false
+                                //         }
+                                //     })
+                                //     if(filteredSource || filteredSource === 0) {
+                                //         newText = `${data} [${filteredSource + 1}]` 
+                                //     }
+                                //     return newText
+                                // })
                                 let references: any[] = []
                                 refUrls && refUrls.length && refUrls.forEach((data) => {
                                     references.push({
@@ -227,7 +224,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                 "tag": "P",
                                                 "attributes": {},
                                                 "children": [
-                                                    content.length ? content : ideasText && ideasText.length ? ideasText : "Sorry, We were unable to generate the blog at this time, Please try again after some time or try with different topic."
+                                                    updatedContent.length ? updatedContent : ideasText && ideasText.length ? ideasText : "Sorry, We were unable to generate the blog at this time, Please try again after some time or try with different topic."
                                                 ]
                                             },
                                             {
