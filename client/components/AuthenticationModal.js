@@ -559,14 +559,16 @@ export default function AuthenticationModal({
                     <p className="text-sm  pl-2 inline-block">Remember me</p>
                   </label>
                 </div>
-                <div>
-                  <a
-                    className="text-sm  font-medium text-indigo-600 cursor-pointer"
-                    onClick={(e) => setForgotPass(true)}
-                  >
-                    Forgot Password?
-                  </a>
-                </div>
+                {type === "login" && (
+                  <div>
+                    <a
+                      className="text-sm  font-medium text-indigo-600 cursor-pointer"
+                      onClick={(e) => setForgotPass(true)}
+                    >
+                      Forgot Password?
+                    </a>
+                  </div>
+                )}
               </div>
               <ForgotPasswordModal
                 forgotPass={forgotPass}
