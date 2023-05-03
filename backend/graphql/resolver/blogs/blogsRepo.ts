@@ -1,10 +1,8 @@
 import { ObjectID } from "bson";
-import { GenerateBlogMutationArg, ReGenerateBlogMutationArg } from "interfaces";
-import { getBase64Image } from "../../../utils/image";
 import { ChatGPT } from "../../../services/chatGPT";
-import { Azure } from "../../../services/azure";
 import { getTimeStamp } from "../../../utils/date";
 import { URL } from "url";
+const natural = require('natural');
 
 export const fetchBlog = async ({id, db}: {
     id: string;
@@ -28,7 +26,7 @@ export const fetchBlogIdeas = async ({id, db}: {
    return await db.db('lilleBlogs').collection('blogIdeas').findOne({blog_id: new ObjectID(id)})
 }
 
-export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null}: {
+export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = []}: {
     db: any;
     text: String;
     regenerate: Boolean;
@@ -36,6 +34,11 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
     imageUrl?: String | null
     imageSrc?: String | null
     ideasText?: String | null
+    ideasArr?: {
+        idea: string;
+        article_id: string;
+    }[]
+    refUrls?: any[]
 }) => {
     const chatgptApis = await db.db('lilleAdmin').collection('chatGPT').findOne()
     let availableApi: any = null
@@ -99,11 +102,59 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                             case "image":
                                 break;
                             case "wordpress":
+                                const refs = refUrls
                                 // const title = newsLetter[key].slice(newsLetter[key].indexOf("Title:"), newsLetter[key].indexOf("Content:")).trim()
                                 const content = newsLetter[key]
-                                console.log(newsLetter[key])
                                 description = (content?.replace("\n", ""))?.trimStart()
                                 usedIdeasArr = content?.split('.')
+                                const updatedContent = content?.split('. ')?.map((data: string) => {
+                                    let newText = data
+                                    let filteredSource = null
+                                    ideasArr.some((idea) => {
+                                        if(idea.idea && data) {
+                                            const similarity = natural.JaroWinklerDistance(data, idea.idea, true);
+                                            if(similarity > 0.7) {
+                                                filteredSource = refs?.findIndex((ref) => ref.id === idea.article_id)
+                                                console.log(data, idea.idea, idea.article_id, filteredSource, similarity, "similiary")
+                                                return true
+                                            } else {
+                                                return false
+                                            }
+                                        }else {
+                                            return false
+                                        }
+                                    })
+                                    if(filteredSource || filteredSource === 0) {
+                                        newText = `${data} [${filteredSource + 1}]` 
+                                    }
+                                    return newText
+                                })
+                                let references: any[] = []
+                                refUrls && refUrls.length && refUrls.forEach((data) => {
+                                    references.push({
+                                        "tag": "LI",
+                                        "attributes": {"style": "font-size: 10pt;"},
+                                        "children": [
+                                            {
+                                                "tag": "SPAN",
+                                                "attributes": {
+                                                    "style": "font-size: 10pt;"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "tag": "A",
+                                                        "attributes": {
+                                                            "href": data.url
+                                                        },
+                                                        "children": [
+                                                            data.url
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    })
+                                })
                                 return {
                                     published: false,
                                     published_date: false,
@@ -178,6 +229,29 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                 "children": [
                                                     content.length ? content : ideasText && ideasText.length ? ideasText : "Sorry, We were unable to generate the blog at this time, Please try again after some time or try with different topic."
                                                 ]
+                                            },
+                                            {
+                                                "tag": "P",
+                                                "attributes": {},
+                                                "children": []
+                                            },
+                                            {
+                                                "tag": "P",
+                                                "attributes": {},
+                                                "children": [
+                                                    {
+                                                        "tag": "STRONG",
+                                                        "attributes": {},
+                                                        "children": [
+                                                            "Refrences:-"
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "tag": "OL",
+                                                "attributes": {},
+                                                "children": references
                                             }
                                         ]
                                     }  
@@ -218,7 +292,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                             "children": []
                                                         }
                                                     ]
-                                                },
+                                                }
                                             ]
                                         }
                                 }
@@ -396,27 +470,30 @@ export const fetchArticleUrls = async ({
             _id: filter
         }, {
             projection: {
-                "_id": 0,
+                "_id": 1,
                 "_source.orig_url": 1,
                 "_source.source.name": 1
             }
         }).toArray()
         if(urlsData?.length) {
-            urlsData?.forEach((data: {_source: {orig_url: string, source: {name: string}}}) => {
+            urlsData?.forEach((data: {_source: {orig_url: string, source: {name: string}}, _id: string}) => {
                 console.log(data._source.source.name)
                 let urlObj: null | {
                     url: string
                     source: string
+                    id?: string
                 } = null
                 if(!data._source.source.name || (data._source.source.name && data._source.source.name === "Not Available")) {
                     urlObj = {
                         url : data?._source?.orig_url,
-                        source: new URL(data?._source?.orig_url).host
+                        source: new URL(data?._source?.orig_url).host,
+                        id: data._id
                     }
                 } else {
                     urlObj = {
                         url : data?._source?.orig_url,
-                        source: data._source.source.name
+                        source: data._source.source.name,
+                        id: data._id
                     }
                 }
                 urls.push(urlObj)
@@ -426,6 +503,7 @@ export const fetchArticleUrls = async ({
     let uniqueUrls : {
         url: string
         source: string
+        id?: string
     }[] = [];
     urls.forEach((c) => {
         const dupe = uniqueUrls.find((data: {
