@@ -169,6 +169,10 @@ export const blogResolvers = {
             let imageUrl: string | null = null
             let imageSrc: string | null = null
             let article_ids: String[] = []
+            let ideasArr: {
+                idea: string;
+                article_id: string;
+            }[] = []
             let tags: String[] = []
             let ideasText = ""
             let articlesData: any[] = []
@@ -205,7 +209,8 @@ export const blogResolvers = {
                 articlesData.forEach((data) => {
                     data.used_summaries.forEach((summary: string, index: number) => {
                         texts += `- ${summary}\n`
-                        ideasText += `${ideasText} `
+                        ideasText += `${summary} `
+                        ideasArr.push({idea: summary, article_id: data.id})
                     })
                     article_ids.push(data.id)
                 })
@@ -217,6 +222,11 @@ export const blogResolvers = {
                         uniqueTags.push(c);
                     }
                 });
+                let refUrls: {
+                    url: string
+                    source: string
+                }[] = []
+                if(articleIds && articleIds.length) refUrls = await fetchArticleUrls({db, articleId: articleIds})
                 const {usedIdeasArr, updatedBlogs, description}: any = await blogGeneration({
                     db,
                     text: !articlesData.length ? keyword : texts,
@@ -224,7 +234,9 @@ export const blogResolvers = {
                     imageUrl: imageUrl || process.env.PLACEHOLDER_IMAGE,
                     title: keyword,
                     imageSrc,
-                    ideasText
+                    ideasText,
+                    ideasArr,
+                    refUrls
                 })
                 const finalBlogObj = {
                     article_id: articleIds,
@@ -296,11 +308,6 @@ export const blogResolvers = {
                     const id: any = insertBlogIdeas.insertedId
                     blogIdeasDetails = await db.db('lilleBlogs').collection('blogIdeas').findOne({_id: new ObjectID(id)})
                 }
-                let refUrls: {
-                    url: string
-                    source: string
-                }[] = []
-                if(blogDetails) refUrls = await fetchArticleUrls({db, blog: blogDetails})
                 let endRequest = new Date()
                 let respTime = diff_minutes(endRequest, startRequest)
                 if(user && Object.keys(user).length) {
@@ -350,9 +357,14 @@ export const blogResolvers = {
                 throw "@Credit exhausted"
             }
             let texts = ""
-            let articleIds: String[] = []
+            let articleIds: string[] = []
+            let ideasArr: {
+                idea: string;
+                article_id: string;
+            }[] = []
             ideas.forEach((idea, index) => {
                 if(!articleIds.includes(idea.article_id)) articleIds.push(idea.article_id)
+                ideasArr.push({idea: idea.text, article_id: idea.article_id})
                 return texts += `${index+1} - ${idea.text} \n`
             })
             console.log(articleIds, "articleIds")
@@ -399,13 +411,19 @@ export const blogResolvers = {
             )
             // console.log(texts)
             try {
+                let refUrls: {
+                    url: string
+                    source: string
+                }[] = []
+                if(articleIds && articleIds.length) refUrls = await fetchArticleUrls({db, articleId: articleIds})
                 const {usedIdeasArr, updatedBlogs, description}: any = await blogGeneration({
                     db,
                     text: texts,
                     regenerate: true,
                     title: blog.keyword,
                     imageUrl: imageUrl ? imageUrl : blog.imageUrl,
-                    imageSrc
+                    imageSrc,
+                    refUrls
                 })
                 let newData: any = []
                 updatedBlogs.forEach((data: any, index: any) => {
@@ -548,19 +566,19 @@ export const blogResolvers = {
                     const id: any = blog._id
                     blogDetails = await db.db('lilleBlogs').collection('blogs').findOne({_id: new ObjectID(id)})
                 }
-                let refUrls: {
-                    url: string
-                    source: string
-                }[] = []
+                // let refUrls: {
+                //     url: string
+                //     source: string
+                // }[] = []
                 let refUrlsFreshIdeas: {
                     url: string
                     source: string
                 }[] = []
                 let freshIdeasArticle: string[] = []
-                if(blogDetails.article_id) {
-                    let articleIdsFromAllIdeas = [...blogDetails.article_id]
-                    if(blog) refUrls = await fetchArticleUrls({db, articleId: articleIdsFromAllIdeas})
-                }
+                // if(blogDetails.article_id) {
+                //     let articleIdsFromAllIdeas = [...blogDetails.article_id]
+                //     if(blog) refUrls = await fetchArticleUrls({db, articleId: articleIdsFromAllIdeas})
+                // }
                 blogIdeasDetails?.freshIdeas?.forEach((idea: any) => idea.article_id ? freshIdeasArticle.push(idea.article_id) : false)
                 if(blogDetails && freshIdeasArticle && freshIdeasArticle.length) refUrlsFreshIdeas = await fetchArticleUrls({db, articleId: freshIdeasArticle})
                 let endRequest = new Date()
