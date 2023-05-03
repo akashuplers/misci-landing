@@ -722,6 +722,11 @@ export const blogResolvers = {
                             article_ids.push(data.id)
                         })
                         try {
+                            let refUrls: {
+                                url: string
+                                source: string
+                            }[] = []
+                            if(articles && articles.length) refUrls = await fetchArticleUrls({db, articleId: articles})
                             const {updatedBlogs, description, usedIdeasArr}: any = await blogGeneration({
                                 db,
                                 text: texts,
@@ -729,7 +734,8 @@ export const blogResolvers = {
                                 title: articlesData[0]?.keyword,
                                 imageUrl,
                                 imageSrc,
-                                ideasText
+                                ideasText,
+                                refUrls
                             })
                             let uniqueTags: String[] = [];
                             tags.forEach((c) => {
