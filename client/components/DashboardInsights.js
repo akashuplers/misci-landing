@@ -816,7 +816,7 @@ export default function DashboardInsights({
                   return (
                     <div className="flex pb-3" key={index}>
                       <div className="flex justify-between gap-5 w-full">
-                        <p>{idea?.idea} </p>
+                        <p className="text-[13px]">{idea?.idea} </p>
                         <a
                           style={{
                             color: "var(--primary-blue)",
@@ -921,7 +921,7 @@ export default function DashboardInsights({
                   return (
                     <div className="flex pb-3 usedIdeas" key={index}>
                       <div className="flex justify-between gap-5 w-full">
-                        <p>{idea?.idea} </p>
+                        <p className="text-[13px]">{idea?.idea} </p>
                         <a
                           style={{
                             color: "var(--primary-blue)",
@@ -1135,7 +1135,7 @@ export default function DashboardInsights({
                     return (
                       <div className="flex pb-3" key={index}>
                         <div className="flex justify-between gap-5 w-full">
-                          <p>{idea?.idea}</p>
+                          <p className="text-[13px]">{idea?.idea}</p>
 
                           <a
                             style={{
@@ -1241,7 +1241,7 @@ export default function DashboardInsights({
                     return (
                       <div className="flex pb-3" key={index}>
                         <div className="flex justify-between gap-5 w-full">
-                          <p>{idea?.idea}</p>
+                          <p className="text-[13px]">{idea?.idea}</p>
 
                           <a
                             style={{

@@ -30,6 +30,7 @@ import {
   TelegramIcon,
   EmailIcon,
 } from "react-share";
+import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { toast, ToastContainer } from "react-toastify";
 import useStore from "../store/store";
@@ -259,7 +260,10 @@ export default function TinyMCEEditor({
     tempDiv.innerHTML = updatedText;
 
     let textContent = tempDiv.textContent;
-    textContent = textContent.replace(/[^\w\s#]/gi, "");
+    textContent = textContent.replace(
+      /[\(*\)\[\]\{\}<>@|~_]/gm,
+      (x) => "\\" + x
+    );
     const parser = new DOMParser();
     const doc = parser.parseFromString(updatedText, "text/html");
     const img = doc.querySelector("img");
@@ -640,7 +644,12 @@ export default function TinyMCEEditor({
                     color={"#2563EB"}
                   />
                 ) : (
-                  publishText
+                  <>
+                    <div className="flex">
+                      <PaperAirplaneIcon className="w-5 h-5 mr-1" />
+                      {publishText}
+                    </div>
+                  </>
                 )}
               </button>
             ) : (
@@ -695,7 +704,7 @@ export default function TinyMCEEditor({
       )}
       <Editor
         value={updatedText || editorText}
-        apiKey="aas0t2r78qalxl9x1wl2byv0fchtnoh13dlufm5ez5annbr2"
+        apiKey="0kt03nb5cl4361y3oq7tph038soi0wi7luc330kbyjy5whj2"
         init={{
           setup: (editor) => {
             if (editor.inline) {
