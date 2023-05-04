@@ -104,10 +104,10 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     "H1:":" ",
                                     "H2:":" ",
                                     "<p/><p/>":"<p/>",
-                                    
+                                    "Conclusions<p/>":"<h3>Conclusions</h3><p></p>",
                                 };
                                 let updatedContent = content?.replace("In conclusion, ", "<h3>Conclusions:</h3><p></p>")
-                                updatedContent = updatedContent.replace(/H1:|H2:|<p\s*\/?><p\s*\/?>/gi, function(matched: any){
+                                updatedContent = updatedContent.replace(/H1:|H2:|<p\s*\/?><p\s*\/?>|Conclusions<p\s*\/?>/gi, function(matched: any){
                                     return mapObj[matched];
                                 }); 
                                 // updatedContent = updatedContent?.replace("<p></p><p></p>", "<p></p>")
@@ -251,7 +251,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                         "tag": "STRONG",
                                                         "attributes": {},
                                                         "children": [
-                                                            "Refrences:-"
+                                                            "References:-"
                                                         ]
                                                     }
                                                 ]
