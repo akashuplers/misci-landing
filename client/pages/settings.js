@@ -65,6 +65,7 @@ export default function Settings() {
   const [tab, setTab] = useState("General");
   const [pref, setPref] = useState("");
   const [options, setOptions] = useState([]);
+  const [isFormat, setIsFormat] = useState(false);
 
   const tabs = [
     { name: "General", href: "#", current: tab === "General" },
@@ -744,7 +745,10 @@ export default function Settings() {
                               <h3 className="text-lg font-medium leading-6 text-gray-900">
                                 Daily Feed Preferences
                               </h3>
-                              <p>Please select max 3 preference.</p>
+                              <p className="max-w-2xl text-sm text-gray-500">
+                                Please select max 3 preferences(Use alphabets
+                                and numbers only).
+                              </p>
                             </div>
                             <div className="mt-6">
                               <dl className="divide-y divide-gray-200">
@@ -754,13 +758,30 @@ export default function Settings() {
                                 <CreatableSelect
                                   defaultValue={selectedOption}
                                   isMulti
+                                  onInputChange={(newValue) => {
+                                    let pattern = /^[a-zA-Z0-9]+$/;
+                                    if (pattern.test(newValue)) {
+                                      console.log(
+                                        "String contains only alphabets and numbers."
+                                      );
+                                      setIsFormat(false);
+                                    } else {
+                                      console.log(
+                                        "String contains other characters."
+                                      );
+                                      if (newValue || newValue.length === 0)
+                                        setIsFormat(true);
+                                    }
+                                  }}
                                   onChange={(o) => {
                                     setSelectedOption(o);
                                   }}
                                   options={options}
-                                  isOptionDisabled={() =>
-                                    selectedOption.length >= 3
-                                  }
+                                  isOptionDisabled={() => {
+                                    return (
+                                      isFormat || selectedOption.length >= 3
+                                    );
+                                  }}
                                 />
                               </dl>
                             </div>
