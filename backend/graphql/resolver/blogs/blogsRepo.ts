@@ -65,7 +65,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                             Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
                             Tone is " Authoritative, informative, Persuasive"
                             Limit is "900 words"
-                            Highlight the H1 & H2 tags
+                            Highlight the H1 & H2 html tags
                             Provide the conclusion at the end
                             Ideas ${text}
                             ` : `write a large blog for ${key} on  "${text}" with title and content`}
@@ -99,12 +99,14 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 const refs = refUrls
                                 // const title = newsLetter[key].slice(newsLetter[key].indexOf("Title:"), newsLetter[key].indexOf("Content:")).trim()
                                 const content = newsLetter[key]?.replace(/\n/g, "<br/>")
+                                console.log(content)
                                 const mapObj: any = {
                                     "H1:":" ",
                                     "H2:":" ",
+                                    "<br/><br/>":"<br/>",
                                 };
                                 let updatedContent = content?.replace("In conclusion, ", "<h3>Conclusions:</h3><br/>")
-                                updatedContent = updatedContent.replace(/H1:|H2:/gi, function(matched: any){
+                                updatedContent = updatedContent.replace(/H1:|H2:|<br\s*\/?><br\s*\/?>/gi, function(matched: any){
                                     return mapObj[matched];
                                 }); 
                                 updatedContent = updatedContent?.replace("<br/><br/>", "<br/>")
@@ -147,7 +149,8 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                     {
                                                         "tag": "A",
                                                         "attributes": {
-                                                            "href": data.url
+                                                            "href": data.url,
+                                                            "target": "_blank"
                                                         },
                                                         "children": [
                                                             data.url
