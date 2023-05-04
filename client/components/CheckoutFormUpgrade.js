@@ -409,9 +409,10 @@ const CheckoutFormUpgrade = ({
             </button>
           </form>
           <div className="text-[#606060] text-[14px] leading-[22px]">
-            Your personal data will be used to process your order, support your
-            experience throughout this website, and for other purposes described
-            in our privacy policy.
+            Your personal data will not be used however, your app usage data
+            will be used as feedback to support and make your experience better
+            throughout your journey with us. Also we advise to check out our
+            privacy policy.
           </div>
         </div>
       </div>
