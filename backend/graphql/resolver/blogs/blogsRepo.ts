@@ -98,18 +98,19 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                             case "wordpress":
                                 const refs = refUrls
                                 // const title = newsLetter[key].slice(newsLetter[key].indexOf("Title:"), newsLetter[key].indexOf("Content:")).trim()
-                                const content = newsLetter[key]?.replace(/\n/g, "<br/>")
+                                const content = newsLetter[key]?.replace(/\n/g, "<p/>")
                                 console.log(content)
                                 const mapObj: any = {
                                     "H1:":" ",
                                     "H2:":" ",
-                                    "<br/><br/>":"<br/>",
+                                    "<p/><p/>":"<p/>",
+                                    
                                 };
-                                let updatedContent = content?.replace("In conclusion, ", "<h3>Conclusions:</h3><br/>")
-                                updatedContent = updatedContent.replace(/H1:|H2:|<br\s*\/?><br\s*\/?>/gi, function(matched: any){
+                                let updatedContent = content?.replace("In conclusion, ", "<h3>Conclusions:</h3><p></p>")
+                                updatedContent = updatedContent.replace(/H1:|H2:|<p\s*\/?><p\s*\/?>/gi, function(matched: any){
                                     return mapObj[matched];
                                 }); 
-                                updatedContent = updatedContent?.replace("<br/><br/>", "<br/>")
+                                // updatedContent = updatedContent?.replace("<p></p><p></p>", "<p></p>")
                                 description = (newsLetter[key]?.replace("\n", ""))?.trimStart()
                                 usedIdeasArr = newsLetter[key]?.split('.')
                                 // const updatedContent = content?.split('. ')?.map((data: string) => {
