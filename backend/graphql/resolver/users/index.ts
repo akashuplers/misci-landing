@@ -65,38 +65,35 @@ export const usersResolver = {
                     .insertOne(preferences);
                 newKeys = keywords    
             } else {
-                const originalKeys = userPrefExists.questions?.map((question: any) => question.question1)
-                keywords?.forEach((key: any) => {
-                    if(!originalKeys.includes(key)) {
-                        console.log(key)
-                        newKeys.push(key)
-                    }
-                })
+                // const originalKeys = userPrefExists.questions?.map((question: any) => question.question1)
+                // keywords?.forEach((key: any) => {
+                //     if(!originalKeys.includes(key)) {
+                //         console.log(key)
+                //         newKeys.push(key)
+                //     }
+                // })
             }
             const filter = { user: new ObjectID(userDetails._id) };
-            await (Promise.all(
-                newKeys?.map( async (key: any) => {
-                const updatePrefToAdd: any = {
+            let updatePrefToAdd: any[] = []
+            keywords?.map( async (key: any) => {
+                updatePrefToAdd.push({
                     id: uuidv4(),
                     question1: key,
                     question2: "other",
                     type: "other"
-                };
-                const options = { returnOriginal: false };
-                const updateExsistingPref = {
-                    $addToSet: { 
-                        questions: updatePrefToAdd
-                    },
-                    $set: {
-                        prefFilled: true
-                    }
-                };
-                const updateUserPref = await db
-                    .db("lilleAdmin")
-                    .collection("preferences")
-                    .findOneAndUpdate(filter, updateExsistingPref, options);
-                })
-            ))    
+                });
+            })  
+            const options = { returnOriginal: false };
+            const updateExsistingPref = {
+                $set: {
+                    prefFilled: true,
+                    questions: updatePrefToAdd
+                }
+            };
+            const updateUserPref = await db
+                        .db("lilleAdmin")
+                        .collection("preferences")
+                        .findOneAndUpdate(filter, updateExsistingPref, options);
             return true
         }
     }
