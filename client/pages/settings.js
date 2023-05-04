@@ -742,8 +742,9 @@ export default function Settings() {
                           <div className="mt-10 divide-y divide-gray-200">
                             <div className="space-y-1">
                               <h3 className="text-lg font-medium leading-6 text-gray-900">
-                                Preferences
+                                Daily Feed Preferences
                               </h3>
+                              <p>Please select max 3 preference.</p>
                             </div>
                             <div className="mt-6">
                               <dl className="divide-y divide-gray-200">
