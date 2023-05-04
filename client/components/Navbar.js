@@ -37,7 +37,7 @@ export default function Navbar({ isOpen }) {
             <AuthenticationModal
               type={authenticationModalType}
               setType={setAuthneticationModalType}
-              modalIsOpen={authenticationModalOpen || isOpen}
+              modalIsOpen={authenticationModalOpen}
               setModalIsOpen={setAuthenticationModalOpen}
               handleSave={() => (window.location = "/")}
               bid={Gbid}
