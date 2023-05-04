@@ -61,7 +61,7 @@ axios.interceptors.response.use(
   (error) => {
     // Handle any response errors
     console.error("error response : ", error);
-    if (error.response.status === 401) {
+    if (error?.response?.status === 401) {
       console.log("User Not Unauthorized");
       localStorage.clear();
       window.location.href = "/";

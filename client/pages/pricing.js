@@ -188,10 +188,11 @@ export default function Pricing() {
                       Free
                     </p>
                     <p className="text-[44px] text-[#182735] leading-[112%] text-left font-bold">
-                      Unlimited Access for 14 Days
+                      Full Features Access with 25 Credits
                     </p>
                     <p className=" text-[#182735] text-left leading-[26px] text-[18px] font-medium mb-4">
-                      Have unlimited access of Summary & Drivers for 14 days
+                      Create and Regenerate blogs with free publishing on
+                      Lille.ai platform, LinkedIn and Twitter.
                     </p>
                   </div>
                   <div className="mt-4 mb-4 bg-gradient-to-r from-[#182735] to-transparent h-[2px]"></div>
@@ -256,7 +257,7 @@ export default function Pricing() {
                         srcset=""
                       /> */}
                       <p className=" text-[18px] font-medium mb-4">
-                        Unlimited Automation
+                        Unlimited ideas generation for blog generation
                       </p>
                     </div>
                     <div className="flex align-middle">
@@ -267,7 +268,7 @@ export default function Pricing() {
                         srcset=""
                       /> */}
                       <p className=" text-[18px] font-medium mb-4">
-                        24/7 hours support
+                        Create/Regenrate Unlimited Blogs
                       </p>
                     </div>
                     <div className="flex align-middle">
@@ -278,7 +279,7 @@ export default function Pricing() {
                         srcset=""
                       /> */}
                       <p className=" text-[18px] font-medium mb-4">
-                        Access of 50 Summaries
+                        Unlimited publishing on top social media platforms
                       </p>
                     </div>
                     <div className="flex align-middle">
@@ -289,7 +290,7 @@ export default function Pricing() {
                         srcset=""
                       /> */}
                       <p className=" text-[18px] font-medium mb-4">
-                        Create Unlimited Notes
+                        Customization possibilities, Talk to our support team
                       </p>
                     </div>
                     <div className="flex align-middle">
@@ -300,7 +301,7 @@ export default function Pricing() {
                         srcset=""
                       /> */}
                       <p className="text-[18px] font-medium mb-4">
-                        Unlimited access of Topic Monitoring
+                        {/* Unlimited access of Topic Monitoring */}
                       </p>
                     </div>
                   </div>
