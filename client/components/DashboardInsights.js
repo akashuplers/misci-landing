@@ -845,7 +845,7 @@ export default function DashboardInsights({
           </button>
           {ideaType === "fresh" && (
             <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full ml-4"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold px-2 rounded-full ml-1 text-xs h-8 mt-1"
               onClick={handleSelectAll}
             >
               Select All
