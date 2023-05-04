@@ -380,8 +380,24 @@ export default function AuthenticationModal({
       "
         >
           {/* shadow shadow-slate-300 */}
-          <h1 className="text-4xl font-medium ">
-            {type === "login" ? "Login" : "Sign Up"}
+          <button className="absolute right-[40px]" onClick={closeModal}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+          <h1 className="text-3xl font-bold p-4 text-center">
+            {type === "login" ? "Login" : "Create an account"}
           </h1>
           {type === "login" && (
             <p className="text-slate-500 ">Hi, Welcome back 👋</p>
