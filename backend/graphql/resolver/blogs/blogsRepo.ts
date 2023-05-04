@@ -100,8 +100,9 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 // const title = newsLetter[key].slice(newsLetter[key].indexOf("Title:"), newsLetter[key].indexOf("Content:")).trim()
                                 const content = newsLetter[key]?.replace(/\n/g, "<br/>")
                                 let updatedContent = content?.replace("In conclusion, ", "<h3>Conclusions:</h3><br/>")
-                                updatedContent = updatedContent?.replace("H1: ", "")
-                                updatedContent = updatedContent?.replace("H2: ", "")
+                                updatedContent = updatedContent?.replace("H1:", "")
+                                updatedContent = updatedContent?.replace("H2:", "")
+                                updatedContent = updatedContent?.replace("<br/><br/>", "<br/>")
                                 description = (content?.replace("\n", ""))?.trimStart()
                                 description = (description?.replace("<br/>", " "))?.trimStart()
                                 usedIdeasArr = content?.split('.')
@@ -237,6 +238,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                 "tag": "P",
                                                 "attributes": {},
                                                 "children": [
+                                                    refUrls && refUrls.length && 
                                                     {
                                                         "tag": "STRONG",
                                                         "attributes": {},

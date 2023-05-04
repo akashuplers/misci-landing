@@ -392,11 +392,14 @@ export const blogResolvers = {
                                 }
                             }
                             const name = article._source?.source?.name
-                            // const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
-                            // const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
-                            // const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
-                            // tags.push(...productsTags, ...organizationTags, ...personsTags)
-                            tags = article._source.driver
+                            if(article._source.driver) {
+                                tags = article._source.driver
+                            } else {
+                                const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                                const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                                const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                                tags.push(...productsTags, ...organizationTags, ...personsTags)
+                            }
                             return {
                                 used_summaries: article._source.summary.slice(0, 5),
                                 unused_summaries: article._source.summary.slice(5),
@@ -476,7 +479,7 @@ export const blogResolvers = {
                     )
                 })
                 let uniqueTags: String[] = [];
-                tags.forEach((c) => {
+                tags?.forEach((c) => {
                     if (!uniqueTags.includes(c)) {
                         uniqueTags.push(c);
                     }
@@ -541,17 +544,21 @@ export const blogResolvers = {
                             Promise.all(
                                 blogIdeasDetails.freshIdeas.map(async (idea: any) => {
                                     const article = await db.db('lilleArticles').collection('articles').findOne({_id: idea.article_id})
-                                    const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
-                                    const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
-                                    const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
-                                    freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
+                                    if(article._source.driver) {
+                                        freshIdeasTags = article._source.driver
+                                    } else {
+                                        const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                                        const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                                        const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                                        freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
+                                    }
                                 })
                             )
                         )
                     }
                 }
                 let uniqueFreshIdeasTags: String[] = [];
-                freshIdeasTags.forEach((c) => {
+                freshIdeasTags?.forEach((c) => {
                     if (!uniqueFreshIdeasTags.includes(c)) {
                         uniqueFreshIdeasTags.push(c);
                     }

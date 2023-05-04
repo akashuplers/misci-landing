@@ -66,7 +66,6 @@ export const usersResolver = {
                 newKeys = keywords    
             } else {
                 const originalKeys = userPrefExists.questions?.map((question: any) => question.question1)
-                console.log(originalKeys, keywords)
                 keywords?.forEach((key: any) => {
                     if(!originalKeys.includes(key)) {
                         console.log(key)
@@ -76,7 +75,7 @@ export const usersResolver = {
             }
             const filter = { user: new ObjectID(userDetails._id) };
             await (Promise.all(
-                keywords?.map( async (key: any) => {
+                newKeys?.map( async (key: any) => {
                 const updatePrefToAdd: any = {
                     id: uuidv4(),
                     question1: key,
