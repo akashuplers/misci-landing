@@ -7,6 +7,7 @@ import SwiperComponent from "../components/SwiperComponent";
 import styles from "../styles/price.module.css";
 import axios from "axios";
 import Footer from "../components/Footer";
+import AuthenticationModal from "../components/AuthenticationModal";
 
 const featuresData = [
   {
@@ -129,9 +130,19 @@ export default function Pricing() {
     }
   }, [plans]);
 
+  const [type, setType] = useState("signup");
+
   return (
     <>
       <div>
+        <AuthenticationModal
+          type={type}
+          setType={setType}
+          modalIsOpen={isOpen}
+          setModalIsOpen={setIsOpen}
+          handleSave={() => (window.location = "/")}
+          bid={""}
+        />
         <Navbar isOpen={isOpen} />
         <div className="flex flex-col">
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
