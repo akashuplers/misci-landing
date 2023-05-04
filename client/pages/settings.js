@@ -769,8 +769,7 @@ export default function Settings() {
                                       console.log(
                                         "String contains other characters."
                                       );
-                                      if (newValue || newValue.length === 0)
-                                        setIsFormat(true);
+                                      if (newValue) setIsFormat(true);
                                     }
                                   }}
                                   onChange={(o) => {
