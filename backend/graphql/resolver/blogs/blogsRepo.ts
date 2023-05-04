@@ -105,7 +105,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 updatedContent = updatedContent?.replace("<br/><br/>", "<br/>")
                                 description = (content?.replace("\n", ""))?.trimStart()
                                 description = (description?.replace("<br/>", " "))?.trimStart()
-                                usedIdeasArr = content?.split('.')
+                                usedIdeasArr = content?.replace("<br/>", " ")?.split('.')
                                 // const updatedContent = content?.split('. ')?.map((data: string) => {
                                 //     let newText = data
                                 //     let filteredSource = null
