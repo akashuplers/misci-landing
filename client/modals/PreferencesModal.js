@@ -58,8 +58,8 @@ export default function PreferencesModal({ pfmodal, setPFModal, getToken }) {
   const [selectedPrefKeyword, setSelectedPrefKeyword] = React.useState([]);
 
   function handlePref() {
-    if (selectedPrefKeyword.length <= 2) {
-      toast.error("Selected Minimum 3 Keywords", {
+    if (selectedPrefKeyword.length <= 0) {
+      toast.error("Selected Minimum 1 Keywords", {
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
@@ -117,8 +117,8 @@ export default function PreferencesModal({ pfmodal, setPFModal, getToken }) {
 
     if (check) return;
 
-    if (selectedPrefKeyword.length >= 7) {
-      toast.error("Max 7 keywords", {
+    if (selectedPrefKeyword.length >= 3) {
+      toast.error("Max 3 keywords", {
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
@@ -151,8 +151,8 @@ export default function PreferencesModal({ pfmodal, setPFModal, getToken }) {
       <div className="relative w-full max-w-2xl p-8 mx-auto bg-white rounded-lg shadow-lg">
         <h2 className="text-lg">Select topics of your interest</h2>
         <p className="text-sm text-gray-500 pb-5">
-          Select at least 3 topics of your interest so that we can provide daily
-          blogs
+          Select at least 1 topics of your interest so that we can provide daily
+          blogs.
         </p>
         <div className="flex flex-wrap gap-1 py-4">
           {prefKeyword.map((keyword, index) => {
@@ -160,13 +160,13 @@ export default function PreferencesModal({ pfmodal, setPFModal, getToken }) {
               <span
                 className="cta preference"
                 style={{
-                  borderRadius: '100px',
-                  padding: '0.25em 0.75em',
-                  backgroundColor: '#e9e9e9',
-                  border: 'none',
-                  color: 'black',
-                  cursor: 'pointer',
-                  userSelect: 'none'
+                  borderRadius: "100px",
+                  padding: "0.25em 0.75em",
+                  backgroundColor: "#e9e9e9",
+                  border: "none",
+                  color: "black",
+                  cursor: "pointer",
+                  userSelect: "none",
                 }}
                 key={index}
                 onClick={(e) => handlePrefClick(e, setSelectedPrefKeyword)}

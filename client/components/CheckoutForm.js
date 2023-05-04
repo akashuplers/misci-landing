@@ -193,9 +193,38 @@ const CheckoutForm = ({
                   JSON.stringify(data.data.accessToken).replace(/['"]+/g, "")
                 );
 
-                if (window.location.pathname === "/subscription") {
-                  window.location.href = "/";
+                var getToken;
+                if (typeof window !== "undefined") {
+                  getToken = localStorage.getItem("token");
                 }
+
+                const myHeaders = {
+                  "content-type": "application/json",
+                  Authorization: "Bearer " + getToken,
+                };
+
+                const raw = {
+                  query:
+                    "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n prefFilled\n profileImage\n  }\n}",
+                };
+
+                axios
+                  .post(API_BASE_PATH + API_ROUTES.GQL_PATH, raw, {
+                    headers: myHeaders,
+                  })
+                  .then((response) => response.data)
+                  .then((response) =>
+                    localStorage.setItem(
+                      "userId",
+                      JSON.stringify(response.data.me._id).replace(/['"]+/g, "")
+                    )
+                  )
+                  .catch((error) => console.error(error))
+                  .finally(() => {
+                    if (window.location.pathname === "/subscription") {
+                      window.location.href = "/";
+                    }
+                  });
               }
             })
             .catch((error) => {

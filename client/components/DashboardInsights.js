@@ -397,6 +397,49 @@ export default function DashboardInsights({
     }
   }
 
+  function handleSelectAll() {
+    if (freshFilteredIdeas?.length > 0) {
+      const updatedFilteredIdeas = freshFilteredIdeas.map((el, elIndex) => {
+        return { ...el, used: 1 };
+      });
+      setFreshFilteredIdeas(updatedFilteredIdeas);
+      console.log(
+        "updatedFilteredIdeas",
+        updatedFilteredIdeas,
+        freshFilteredIdeas
+      );
+      var ideasCopy = [];
+      for (let i = 0; i < freshIdeas.length; i++) {
+        const element = freshIdeas[i];
+        const f = updatedFilteredIdeas.find((pd) => pd.idea === element.idea);
+        if (f) {
+          ideasCopy.push(f);
+        } else {
+          ideasCopy.push(element);
+        }
+      }
+      setFreshIdeas(ideasCopy);
+      const arr = [];
+      for (let index = 0; index < updatedFilteredIdeas.length; index++) {
+        const element = updatedFilteredIdeas[index];
+        if (element.used) {
+          const ideaObject = {
+            text: element.idea,
+            article_id: element.article_id,
+          };
+          arr.push(ideaObject);
+        }
+      }
+      handlefreshideas(arr);
+    } else {
+      const updatedIdeas = freshIdeas.map((el, elIndex) => {
+        return { ...el, used: 1 };
+      });
+      setFreshIdeas(updatedIdeas);
+      setRegenSelected(updatedIdeas);
+    }
+  }
+
   function handleFileUpload({ target }) {
     setFileValid(true);
     setUrlValid(false);
@@ -800,6 +843,14 @@ export default function DashboardInsights({
               </span>
             )}
           </button>
+          {ideaType === "fresh" && (
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full ml-4"
+              onClick={handleSelectAll}
+            >
+              Select All
+            </button>
+          )}
         </div>
         <div
           className="overflow-y-scroll px-2"
