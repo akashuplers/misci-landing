@@ -525,7 +525,7 @@ export default function DashboardInsights({
       })
       .catch((error) => {
         console.log("error", error);
-        toast.error(error.message);
+        toast.error("Try again after sometime...");
       })
       .finally(() => {
         setformInput("");
@@ -848,8 +848,8 @@ export default function DashboardInsights({
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold px-2 rounded-full ml-1 text-xs h-8 mt-1"
               onClick={handleSelectAll}
               style={{
-                background: '#bfdbfe',
-                color: '#425985',
+                background: "#bfdbfe",
+                color: "#425985",
               }}
             >
               Select All
