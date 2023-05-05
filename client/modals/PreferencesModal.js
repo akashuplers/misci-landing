@@ -148,13 +148,13 @@ export default function PreferencesModal({ pfmodal, setPFModal, getToken }) {
         },
       }}
     >
-      <div className="relative w-full max-w-2xl p-8 mx-auto bg-white rounded-lg shadow-lg">
-        <h2 className="text-lg">Select topics of your interest</h2>
+      <div className="relative w-full p-8 mx-auto bg-white rounded-lg shadow-lg text-center flex flex-col justify-center items-center gap-2" style={{maxWidth: "45rem"}}>
+        <h2 className="text-xl font-bold">Select topics of your interest</h2>
         <p className="text-sm text-gray-500 pb-5">
           Select at least 1 topics of your interest so that we can provide daily
           blogs.
         </p>
-        <div className="flex flex-wrap gap-1 py-4">
+        <div className="flex flex-wrap gap-2 py-4">
           {prefKeyword.map((keyword, index) => {
             return (
               <span
@@ -181,6 +181,7 @@ export default function PreferencesModal({ pfmodal, setPFModal, getToken }) {
           style={{
             width: "100px",
             height: "40px",
+            marginLeft: 'auto'
           }}
           onClick={handlePref}
         >
