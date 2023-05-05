@@ -105,7 +105,7 @@ export const blogResolvers = {
                         tags: 1,
                         description: 1,
                         status: 1,
-                        data: "$updatedAt",
+                        date: "$updatedAt",
                     }
                 }
             ]).toArray()
