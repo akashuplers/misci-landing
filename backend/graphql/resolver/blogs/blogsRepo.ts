@@ -68,7 +68,14 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                             Highlight the H1 & H2 html tags
                             Provide the conclusion at the end
                             Ideas ${text}
-                            ` : `write a large blog for ${key} on  "${text}" with title and content`}
+                            ` : `
+                            Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
+                            Tone is " Authoritative, informative, Persuasive"
+                            Limit is "900 words"
+                            Highlight the H1 & H2 html tags
+                            Provide the conclusion at the end
+                            Topic is ${title}
+                            `}
                         `, db}).textCompletion()
                         newsLetter = {...newsLetter, [key]: chatGPTText}
                     } else {
@@ -99,20 +106,33 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 const refs = refUrls
                                 // const title = newsLetter[key].slice(newsLetter[key].indexOf("Title:"), newsLetter[key].indexOf("Content:")).trim()
                                 const content = newsLetter[key]?.replace(/\n/g, "<p/>")
-                                console.log(content)
                                 const mapObj: any = {
                                     "H1:":" ",
                                     "H2:":" ",
                                     "<p/><p/>":"<p/>",
-                                    "Conclusions<p/>":"<h3>Conclusions</h3><p></p>",
+                                    "Conclusions:<p/>":"<h3>Conclusions</h3><p></p>",
+                                    "Conclusion:<p/>":"<h3>Conclusions</h3><p></p>",
+                                    "Conclusion<p/>":"<h3>Conclusion</h3><p></p>",
+                                    "Conclusions<p/>":"<h3>Conclusion</h3><p></p>",
+                                    "<h1>":" ",
+                                    "Title:":" ",
+                                    "Introduction::":" ",
+                                    "</h1>":" ",
+                                    "<h2>":" ",
+                                    "</h2>":" ",
+                                    "\n":" ",
                                 };
                                 let updatedContent = content?.replace("In conclusion, ", "<h3>Conclusions:</h3><p></p>")
-                                updatedContent = updatedContent.replace(/H1:|H2:|<p\s*\/?><p\s*\/?>|Conclusions<p\s*\/?>/gi, function(matched: any){
+                                updatedContent = updatedContent.replace(/H1:|H2:|Title:|Introduction:|<p\s*\/?><p\s*\/?>|Conclusions:<p\s*\/?>|Conclusion:<p\s*\/?>|Conclusion<p\s*\/?>|Conclusions<p\s*\/?>/gi, function(matched: any){
+                                    console.log(matched,mapObj[matched], "matched")
                                     return mapObj[matched];
                                 }); 
                                 // updatedContent = updatedContent?.replace("<p></p><p></p>", "<p></p>")
-                                description = (newsLetter[key]?.replace("\n", ""))?.trimStart()
-                                usedIdeasArr = newsLetter[key]?.split('.')
+                                description = newsLetter[key].replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
+                                    return mapObj[matched];
+                                }); 
+                                // description = (newsLetter[key]?.replace("\n", ""))?.trimStart()
+                                usedIdeasArr = description?.split('.')
                                 // const updatedContent = content?.split('. ')?.map((data: string) => {
                                 //     let newText = data
                                 //     let filteredSource = null
