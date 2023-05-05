@@ -55,7 +55,6 @@ export default function Saved() {
     { data: delteData, loading: delteLoading, error: delteError },
   ] = useMutation(deleteBlog);
 
-
   const files = [
     {
       title: "IMG_4985.HEIC",
@@ -109,7 +108,7 @@ export default function Saved() {
         {loading ? (
           <LoaderScan />
         ) : (
-          <div style={{padding : '1em 0 6em 0'}} className="relative">
+          <div style={{ padding: "1em 0 6em 0" }} className="relative">
             {data?.getAllBlogs.blogs.length === 0 && (
               <img
                 src="/noBlog/noPublished.png"
@@ -132,7 +131,7 @@ export default function Saved() {
                         src={blog.image}
                         alt={blog.title}
                         className="pointer-events-none object-cover h-[150px] w-[280px]"
-                        style={{scale: '1.25'}}
+                        style={{ scale: "1.25" }}
                       />
                       <Link
                         legacyBehavior
@@ -246,7 +245,11 @@ export default function Saved() {
                 </>
               ))}
             </ul>
-            <Pagination pageSkip={pageSkip} setPageSkip={setPageSkip} totalItems={data?.getAllBlogs.count}/> 
+            <Pagination
+              pageSkip={pageSkip}
+              setPageSkip={setPageSkip}
+              totalItems={data?.getAllBlogs.count}
+            />
           </div>
         )}
         <Modal
@@ -266,37 +269,66 @@ export default function Saved() {
               right: "auto",
               border: "none",
               background: "white",
-              boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+              // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
               borderRadius: "8px",
-              height: "17%",
-              width: "80%",
-              maxWidth: "230px",
+              height: "280px",
+              // width: "100%",
+              maxWidth: "380px",
               bottom: "",
               zIndex: "999",
               marginRight: "-50%",
               transform: "translate(-50%, -50%)",
-              padding: "20px",
+              padding: "30px",
               paddingBottom: "0px",
             },
           }}
         >
-          <div className="pl-4 text-xl font-bold mb-5">Are You Sure ?</div>
           <button
-            class="mr-5 bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded"
-            onClick={() => {
-              handleDelete();
-            }}
+            className="absolute right-[35px]"
+            onClick={() => setOpenModal(false)}
           >
-            YES
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
           </button>
-          <button
-            class="ml-6 p-4 bg-transparent hover:bg-green-500 text-green-700 font-semibold hover:text-white py-2 px-4 border border-green-500 hover:border-transparent rounded"
-            onClick={() => {
-              setOpenModal(false);
-            }}
-          >
-            NO!
-          </button>
+          <div className="mx-auto pb-4">
+            <img className="mx-auto h-12" src="/info.png" />
+          </div>
+          <div className="mx-auto font-bold text-2xl pl-[25%]">
+            Are you sure
+          </div>
+          <p className="text-gray-500 text-base font-medium mt-4 mx-auto">
+            Are you sure you want to delete this Blog?
+          </p>
+          <div className="flex m-9">
+            <button
+              class="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
+              onClick={() => {
+                setOpenModal(false);
+              }}
+            >
+              No
+            </button>
+            <button
+              class="w-[240px]  bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded"
+              onClick={() => {
+                handleDelete();
+              }}
+            >
+              YES, Delete
+            </button>
+          </div>
         </Modal>
       </Layout>
     </>

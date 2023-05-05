@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { htmlToJson, jsonToHtml } from "../helpers/helper";
 import { updateBlog } from "../graphql/mutations/updateBlog";
@@ -45,6 +45,8 @@ export default function TinyMCEEditor({
   blogData,
   isPublished,
   ref,
+  option,
+  setOption,
 }) {
   const [updatedText, setEditorText] = useState(editorText);
   const [saveLoad, setSaveLoad] = useState(false);
@@ -56,13 +58,29 @@ export default function TinyMCEEditor({
   const [openModal, setOpenModal] = useState(false);
   const [text, setText] = useState("");
   const [isCopied, setIsCopied] = useState(false);
-  const [option, setOption] = useState("blog");
+
   const [imageURL, setImageURL] = useState();
   const [isalert, setAlert] = useState(false);
   const [load, setLoad] = useState(false);
   const [editingMode, setEditingMode] = useState(false);
   var isEditing = true;
   const isSave = useStore((state) => state.isSave);
+
+  useEffect(() => {
+    if (option === "linkedin-comeback") {
+      setOption("linkedin");
+      const siblingButton = document.querySelectorAll(".blog-toggle-button");
+      siblingButton.forEach((el) => el.classList.remove("active"));
+      const button = document.querySelector(".linkedin");
+      button?.classList?.add("active");
+      const aa = blogData?.publish_data?.find(
+        (pd) => pd.platform === "linkedin"
+      ).tiny_mce_data;
+      const htmlDoc = jsonToHtml(aa);
+      console.log("885", htmlDoc);
+      setEditorText(htmlDoc);
+    }
+  }, [option]);
 
   const onCopyText = () => {
     setIsCopied(true);
@@ -72,7 +90,7 @@ export default function TinyMCEEditor({
   };
 
   useEffect(() => {
-    setEditorText(editorText);
+    if (option !== "linkedin-comeback") setEditorText(editorText);
   }, [editorText]);
 
   useEffect(() => {
@@ -278,32 +296,19 @@ export default function TinyMCEEditor({
       image: src,
       blogId: blog_id,
     };
-
-    axios
-      .post(API_BASE_PATH + LI_API_ENDPOINTS.LI_POST, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-        setPublishLinkLoad(false);
-        setPublishLinkText("Published on Linkedin");
-        toast.success("Published on Linkedin", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-      })
-      .catch((error) => {
-        if (error.response) {
-          toast.error(error.response.data, {
+    try {
+      axios
+        .post(API_BASE_PATH + LI_API_ENDPOINTS.LI_POST, data, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          setPublishLinkLoad(false);
+          setPublishLinkText("Published on Linkedin");
+          toast.success("Published on Linkedin", {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -313,14 +318,32 @@ export default function TinyMCEEditor({
             progress: undefined,
             theme: "light",
           });
-          console.log(error.response.data);
-          console.log(error.response.status);
-        } else if (error.request) {
-          console.log(error.request);
-        } else {
-          console.log("Error", error.message);
-        }
-      });
+        })
+        .catch((error) => {
+          if (error.response) {
+            setPublishLinkLoad(false);
+            setPublishLinkText("Publish on Linkedin");
+            toast.error(error.response.data.message, {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+            console.log(error.response.data);
+            console.log(error.response.status);
+          } else if (error.request) {
+            console.log(error.request);
+          } else {
+            console.log("Error", error.message);
+          }
+        });
+    } catch (error) {
+      console.log("error", error.response.data.message);
+    }
   };
 
   function handleBlog(e) {
@@ -673,6 +696,39 @@ export default function TinyMCEEditor({
                 "Update"
               )}
             </button>
+            {option === "linkedin" ? (
+              linkedInAccessToken ? (
+                <button
+                  className="cta-invert"
+                  onClick={() => {
+                    if (
+                      publishLinkText === "Publish on Linkedin" ||
+                      publishLinkText === "Published on Linkedin"
+                    )
+                      handlePublish();
+                  }}
+                >
+                  {publishLinkLoad ? (
+                    <ReactLoading
+                      width={25}
+                      height={25}
+                      round={true}
+                      color={"#2563EB"}
+                    />
+                  ) : (
+                    publishLinkText
+                  )}
+                </button>
+              ) : (
+                <button className="cta-invert" onClick={handleconnectLinkedin}>
+                  Connect with Linkedin
+                </button>
+              )
+            ) : option === "twitter" ? (
+              <button className="cta-invert">Coming Soon...</button>
+            ) : (
+              <></>
+            )}
           </div>
         )}
       </div>

@@ -30,7 +30,7 @@ const TrialEndedModal = () => {
           subscription.
         </p>
         <a
-          href="mailto:support@nowigence.com"
+          href="mailto:info@nowigence.com"
           target="_blank"
           className={styles.contact}
         >

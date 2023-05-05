@@ -406,8 +406,11 @@ export default function AuthenticationModal({
           <div className="mt-5">
             <div className="w-full flex justify-evenly gap-4">
               <button
-                className="text-center p-5 border flex flex-col space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
+                className="text-center p-4 border flex flex-col space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
                 onClick={handleGoogleSignUp}
+                style={{
+                  borderColor : "#c9d0d9"
+                }}
               >
                 <img
                   src="https://www.svgrepo.com/show/355037/google.svg"
@@ -419,8 +422,11 @@ export default function AuthenticationModal({
               </span> */}
               </button>
               <button
-                className="text-center p-5 border flex flex-col space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
+                className="text-center p-4 border flex flex-col space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
                 onClick={handleLinkedinSignUp}
+                style={{
+                  borderColor : "#c9d0d9"
+                }}
               >
                 <img
                   src="https://www.svgrepo.com/show/448234/linkedin.svg"
@@ -457,7 +463,7 @@ export default function AuthenticationModal({
           <form
             action=""
             method="post"
-            className="my-10 mt-0  "
+            className="my-10 mt-0  authenticationModal"
             onSubmit={type === "login" ? handleLoginSubmit : handleSignUpSubmit}
           >
             <div className="flex flex-col space-y-5 mt-5">
@@ -474,7 +480,7 @@ export default function AuthenticationModal({
                       value={loginFormData.email}
                       onChange={handleLoginChange}
                       className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                      placeholder="Enter email address"
+                      placeholder="i.e. sahilgarg15@gmail.com"
                       required
                     />
                   </label>
@@ -491,7 +497,7 @@ export default function AuthenticationModal({
                       value={loginFormData.password}
                       onChange={handleLoginChange}
                       className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                      placeholder="Enter your password"
+                      placeholder="i.e. SahilGarg@15"
                       required
                     />
                   </label>
@@ -510,7 +516,7 @@ export default function AuthenticationModal({
                         value={signUpFormData.firstName}
                         onChange={handleSignUpChange}
                         className="border-black  w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                        placeholder="Enter First Name"
+                        placeholder="i.e. Sahil"
                         required
                       />
                     </label>
@@ -525,7 +531,7 @@ export default function AuthenticationModal({
                         value={signUpFormData.lastName}
                         onChange={handleSignUpChange}
                         className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                        placeholder="Enter Last Name"
+                        placeholder="i.e. Garg"
                         required
                       />
                     </label>
@@ -541,7 +547,7 @@ export default function AuthenticationModal({
                       value={signUpFormData.email}
                       onChange={handleSignUpChange}
                       className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                      placeholder="Enter email address"
+                      placeholder="i.e. sahilgarg15@gmail.com"
                       required
                     />
                   </label>
@@ -558,7 +564,7 @@ export default function AuthenticationModal({
                       value={signUpFormData.password}
                       onChange={handleSignUpChange}
                       className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                      placeholder="Enter your password"
+                      placeholder="i.e. SahilGarg@15"
                       required
                     />
                   </label>
@@ -572,7 +578,7 @@ export default function AuthenticationModal({
                       id="remember"
                       className="w-4 h-4 border-slate-300 focus:bg-indigo-600"
                     />
-                    <p className="text-sm  pl-2 inline-block">Remember me</p>
+                    <p className="text-sm  pl-2 inline-block !relative !top-0 !left-0">Remember me</p>
                   </label>
                 </div>
                 {type === "login" && (
