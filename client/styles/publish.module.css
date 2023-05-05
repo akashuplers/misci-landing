@@ -25,8 +25,11 @@
 }
 
 .publishContainer  h3{
-    font-size: 1.5rem;
-    
+    font-size: 1.5rem;   
+}
+.publishContainer  h3 > *{
+    text-align: center;
+    margin: 0 auto;
 }
 
 .publishContainer  h1{
