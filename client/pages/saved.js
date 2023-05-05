@@ -275,9 +275,9 @@ export default function Saved() {
           <p className="text-gray-500 text-base font-medium mt-4 mx-auto">
             Are you sure you want to delete this Blog?
           </p>
-          <div className="flex m-10">
+          <div className="flex m-9">
             <button
-              class="mr-4 w-[180px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
+              class="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
               onClick={() => {
                 setOpenModal(false);
               }}
@@ -285,12 +285,12 @@ export default function Saved() {
               No
             </button>
             <button
-              class=" bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded"
+              class="w-[240px]  bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded"
               onClick={() => {
                 handleDelete();
               }}
             >
-              YES,Delete
+              YES, Delete
             </button>
           </div>
         </Modal>
