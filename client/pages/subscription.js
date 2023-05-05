@@ -151,7 +151,7 @@ export default function Subscription({ query }) {
                 <div
                   style={{
                     background:
-                      "linear-gradient(157.47deg, #2edaff 14.91%, #15324E 96.07%)",
+                      "linear-gradient(157.47deg, #182735 14.91%, #15324E 96.07%)",
                     boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
                   }}
                   className="flex relative flex-col  rounded-[4px] text-[#ffffff] p-4 w-[306px] sm:w-[392px] md:h-[590px] h-[200px]"
@@ -169,7 +169,7 @@ export default function Subscription({ query }) {
                   </div>
                   <div className="h-[2px] mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px] hidden md:block"></div>
 
-                  <div className="flex  flex-col items-start justify-start mt-4 hidden md:block">
+                  <div className="flex  flex-col items-start justify-start mt-4 text-left">
                     <div className="flex align-middle">
                       {/* <img
                         className="h-[18px] mr-3"
@@ -178,7 +178,7 @@ export default function Subscription({ query }) {
                         srcset=""
                       /> */}
                       <p className=" text-[18px] font-medium mb-4">
-                        Unlimited Automation
+                        Unlimited ideas generation for blog generation
                       </p>
                     </div>
                     <div className="flex align-middle">
@@ -189,7 +189,7 @@ export default function Subscription({ query }) {
                         srcset=""
                       /> */}
                       <p className=" text-[18px] font-medium mb-4">
-                        24/7 hours support
+                        Create/Regenrate Unlimited Blogs
                       </p>
                     </div>
                     <div className="flex align-middle">
@@ -200,7 +200,7 @@ export default function Subscription({ query }) {
                         srcset=""
                       /> */}
                       <p className=" text-[18px] font-medium mb-4">
-                        Access of 50 Summaries
+                        Unlimited publishing on top social media platforms
                       </p>
                     </div>
                     <div className="flex align-middle">
@@ -211,18 +211,18 @@ export default function Subscription({ query }) {
                         srcset=""
                       /> */}
                       <p className=" text-[18px] font-medium mb-4">
-                        Create Unlimited Notes
+                        Customization possibilities, Talk to our support team
                       </p>
                     </div>
                     <div className="flex align-middle">
                       {/* <img
-                        className="h-[18px] mr-3"
+                        className="h-[18px]"
                         src={TickIcon}
                         alt=""
                         srcset=""
                       /> */}
-                      <p className=" text-[18px] font-medium mb-4">
-                        Unlimited access of Topic Monitoring
+                      <p className="text-[18px] font-medium mb-4">
+                        {/* Unlimited access of Topic Monitoring */}
                       </p>
                     </div>
                   </div>
