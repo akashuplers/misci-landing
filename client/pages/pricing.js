@@ -223,7 +223,7 @@ export default function Pricing() {
                 <div
                   style={{
                     background:
-                      "linear-gradient(157.47deg, #2edaff 14.91%, #15324E 96.07%)",
+                      "linear-gradient(157.47deg, #182735 14.91%, #15324E 96.07%)",
                     boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
                   }}
                   className="flex relative flex-col  rounded-[0.75rem] text-[#ffffff] p-4 w-[21rem] md:w-[392px] h-[600px]"
