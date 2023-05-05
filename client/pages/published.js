@@ -18,7 +18,13 @@ import { useApolloClient } from "@apollo/client";
 
 const PAGE_COUNT = 12;
 
-export default function Saved() {
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeunload", function (event) {
+    event.stopImmediatePropagation();
+  });
+}
+
+export default function Published() {
   const client = useApolloClient();
   const [pageSkip, setPageSkip] = useState(0);
   const [blog_id, setblog_id] = useState("");
