@@ -37,7 +37,7 @@ export default function dashboard({ query }) {
   const [blogData, setBlogData] = useState([]);
   const [pyResTime, setPyResTime] = useState(null);
   const [ndResTime, setNdResTime] = useState(null);
-
+  const [option, setOption] = useState("blog");
   const [reference, setReference] = useState([]);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
 
@@ -203,6 +203,7 @@ export default function dashboard({ query }) {
         })
         .then((data) => {})
         .finally(() => {
+          setOption("linkedin-comeback");
           toast.success("LinkedIn SignUp Succesfull!!");
         })
         .catch(function (error) {
@@ -301,6 +302,8 @@ export default function dashboard({ query }) {
               editorText={editorText}
               blogData={blogData}
               blog_id={blog_id}
+              option={option}
+              setOption={setOption}
             />
           </div>
           <div
