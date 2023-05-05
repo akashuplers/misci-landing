@@ -85,55 +85,38 @@ export const blogResolvers = {
                 },
             ]
             const blogLists = await db.db('lilleBlogs').collection('blogs').aggregate([
+                ...aggregate,
                 {
-                    $facet : {
-                        "pagination": [
-                            ...aggregate,
-                            {
-                                $project: {
-                                    _id: 1,
-                                    keyword: 1,
-                                    imageUrl: 1,
-                                    tags: 1,
-                                    description: 1,
-                                    status: 1,
-                                    updatedAt: 1,
-                                }
-                            },
-                            {
-                                $sort: {
-                                    updatedAt: -1
-                                }
-                            },
-                            {
-                                $limit: options.page_limit
-                            },
-                            {
-                                $skip: options.page_skip
-                            }
-                        ],
-                        "total": [
-                            ...aggregate,
-                            {
-                                $count: 'count'
-                            }
-                        ]
+                    $sort: {
+                        updatedAt: -1
+                    }
+                },
+                {
+                    $limit: options.page_limit
+                },
+                {
+                    $skip: options.page_skip
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        keyword: 1,
+                        image: "$imageUrl",
+                        tags: 1,
+                        description: 1,
+                        status: 1,
+                        updatedAt: 1,
                     }
                 }
             ]).toArray()
+            const blogCount = await db.db('lilleBlogs').collection('blogs').aggregate([
+                ...aggregate,
+                {
+                    $count: "count"
+                }
+            ]).toArray()
             if(blogLists.length) {
-                const updatedList = blogLists[0].pagination.map((blog: any) => {
-                    return {
-                        _id: blog._id,
-                        title: blog.keyword,
-                        description: blog.description,
-                        tags: (blog?.tags?.length && blog.tags) || [],
-                        image: blog.imageUrl || null,
-                        status: blog.status || null,
-                        date: blog.updatedAt || null
-                    }
-                })
-                return {blogs: updatedList, count: blogLists[0].total?.length ? blogLists[0].total[0].count : 0}
+                return {blogs: blogLists, count: blogCount.length && blogCount[0]?.count ? blogCount[0]?.count : 0}
             } else {
                 return {blogs: [], count: 0}
             }
