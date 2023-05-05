@@ -334,3 +334,23 @@ input[type='checkbox'], input[type='radio'] {
 input[type='checkbox']:checked, input[type='radio']:checked {
   background-color: var(--primary-blue);
 }
+
+.authenticationModal  label {
+  position: relative;
+}
+
+.authenticationModal  label > p{
+    position: absolute;
+    background: white;
+    font-size: 12px;
+    left: 10px;
+    top: -10px;
+}
+
+.authenticationModal label > input{
+  border: 1px solid #68686b;
+  font-size: 14px;
+}
+.authenticationModal label > input::placeholder{
+  color : #9b9a9c
+}
