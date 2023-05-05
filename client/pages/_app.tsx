@@ -39,6 +39,9 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   (response) => {
+
+    if(!localStorage.getItem('token')) return response;
+    
     // Handle successful responses
     console.log("response : ", response);
     if (response.status === 401) {
@@ -59,6 +62,9 @@ axios.interceptors.response.use(
     return response;
   },
   (error) => {
+
+    if(!localStorage.getItem('token')) return error;
+
     // Handle any response errors
     console.error("error response : ", error);
     if (error?.response?.status === 401) {
