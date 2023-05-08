@@ -794,11 +794,11 @@ export default function Settings() {
                           </div>
                         ) : (
                           <div className=" flex items-center justify-center bg-gray-100 h-[600px]">
-                            {/* <div className=" p-8 rounded-md">
+                            <div className=" p-8 rounded-md">
                               <p className="text-gray-800 text-lg font-medium text-center mt-4">
-                                Coming soon ...
+                                Upgrade to edit the daily feed preferences...
                               </p>
-                            </div> */}
+                            </div>
                             <div className="flex flex-shrink-0 pb-0 pt-4">
                               <Link
                                 href="/upgrade"
