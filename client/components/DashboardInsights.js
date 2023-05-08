@@ -13,6 +13,7 @@ import AuthenticationModal from "./AuthenticationModal";
 import axios from "axios";
 import Link from "next/link";
 import { handleSave } from "./TinyMCEEditor";
+import TrialEndedModal from "./TrialEndedModal";
 
 export default function DashboardInsights({
   loading,
@@ -54,7 +55,7 @@ export default function DashboardInsights({
 
   const [freshIdeas, setFreshIdeas] = useState([]);
   const [freshIdeaTags, setFreshIdeaTags] = useState([]);
-
+  const [creditModal, setCreditModal] = useState(false);
   const [freshFilteredIdeas, setFreshFilteredIdeas] = useState([]);
   const updateCredit = useStore((state) => state.updateCredit);
   const updateisSave = useStore((state) => state.updateisSave);
@@ -383,7 +384,11 @@ export default function DashboardInsights({
           target = undefined;
         },
         onError: (error) => {
-          console.error(error);
+          console.error("888888", error.message);
+          if (error.message === 'Unexpected error value: "@Credit exhausted"') {
+            toast.error("Credit exhausted");
+            setCreditModal(true);
+          }
         },
       })
         .catch((err) => {
@@ -616,6 +621,7 @@ export default function DashboardInsights({
         handleSave={() => (window.location = "/dashboard/" + blog_id)}
         bid={blog_id}
       />
+      {creditModal && <TrialEndedModal />}
       <div className="text-xs px-2" style={{ borderLeft: "2px solid #d2d2d2" }}>
         <div className="flex justify-between gap-[1.25em]">
           <p className="font-normal w-[70%]">
