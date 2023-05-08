@@ -532,7 +532,7 @@ export default function Sidebar() {
                         src={meeData?.me?.profileImage}
                         round={true}
                       />
-                      {/* {meeData?.me?.paid || (
+                      {meeData?.me?.paid || (
                         <div
                           id="trialenddiv"
                           className="hidden"
@@ -553,7 +553,7 @@ export default function Sidebar() {
                         >
                           Upgrade Now!
                         </div>
-                      )} */}
+                      )}
                     </Link>
                   )}
                 </div>
