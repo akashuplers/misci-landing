@@ -81,6 +81,7 @@ export default function Sidebar() {
       current: url === "/saved",
     },
   ];
+  console.log("hello");
 
   const navigation_bottom = [
     {
