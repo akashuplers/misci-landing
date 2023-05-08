@@ -276,7 +276,7 @@ export default function dashboard({ query }) {
   return (
     <>
       <Layout>
-        {creditModal && <TrialEndedModal />}
+        {creditModal && <TrialEndedModal setTrailModal={setCreditModal} />}
         <div className="flex mb-6 h-[88vh]">
           {API_BASE_PATH === "https://maverick.lille.ai" && (
             <div
