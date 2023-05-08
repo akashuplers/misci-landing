@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { API_BASE_PATH, API_ROUTES } from "../../constants/apiEndpoints";
+import TrialEndedModal from "../../components/TrialEndedModal";
 
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
@@ -40,6 +41,7 @@ export default function dashboard({ query }) {
   const [option, setOption] = useState("blog");
   const [reference, setReference] = useState([]);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
+  const [creditModal, setCreditModal] = useState(false);
 
   const keyword = useStore((state) => state.keyword);
   const updateCredit = useStore((state) => state.updateCredit);
@@ -252,7 +254,11 @@ export default function dashboard({ query }) {
           console.log("Sucessfully generated the article");
         },
         onError: (error) => {
-          console.log(error);
+          console.error("888888", error.message);
+          if (error.message === 'Unexpected error value: "@Credit exhausted"') {
+            toast.error("Credit exhausted");
+            setCreditModal(true);
+          }
         },
       }).catch((err) => {
         console.log(err);
@@ -270,6 +276,7 @@ export default function dashboard({ query }) {
   return (
     <>
       <Layout>
+        {creditModal && <TrialEndedModal />}
         <div className="flex mb-6 h-[88vh]">
           {API_BASE_PATH === "https://maverick.lille.ai" && (
             <div
