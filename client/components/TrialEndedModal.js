@@ -37,7 +37,7 @@ const TrialEndedModal = ({ setTrailModal }) => {
         >
           Contact Us
         </a>
-        {/* <div className="flex flex-shrink-0 pb-0 pt-4" style={{ zIndex: 100 }}>
+        <div className="flex flex-shrink-0 pb-0 pt-4" style={{ zIndex: 100 }}>
           <Link
             href="/upgrade"
             className="ml-6 inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -63,7 +63,7 @@ const TrialEndedModal = ({ setTrailModal }) => {
               />
             </svg>
           </Link>
-        </div> */}
+        </div>
         <button
           className={styles.close}
           onClick={() => {

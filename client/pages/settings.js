@@ -794,12 +794,12 @@ export default function Settings() {
                           </div>
                         ) : (
                           <div className=" flex items-center justify-center bg-gray-100 h-[600px]">
-                            <div className=" p-8 rounded-md">
+                            {/* <div className=" p-8 rounded-md">
                               <p className="text-gray-800 text-lg font-medium text-center mt-4">
                                 Coming soon ...
                               </p>
-                            </div>
-                            {/* <div className="flex flex-shrink-0 pb-0 pt-4">
+                            </div> */}
+                            <div className="flex flex-shrink-0 pb-0 pt-4">
                               <Link
                                 href="/upgrade"
                                 className="ml-6 inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -825,7 +825,7 @@ export default function Settings() {
                                   />
                                 </svg>
                               </Link>
-                            </div> */}
+                            </div>
                           </div>
                         )}
                       </div>
