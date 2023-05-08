@@ -34,6 +34,7 @@ import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { toast, ToastContainer } from "react-toastify";
 import useStore from "../store/store";
+import TrialEndedModal from "./TrialEndedModal";
 
 export default function TinyMCEEditor({
   topic,
@@ -58,13 +59,18 @@ export default function TinyMCEEditor({
   const [openModal, setOpenModal] = useState(false);
   const [text, setText] = useState("");
   const [isCopied, setIsCopied] = useState(false);
-
+  const [trailModal, setTrailModal] = useState(false);
   const [imageURL, setImageURL] = useState();
   const [isalert, setAlert] = useState(false);
   const [load, setLoad] = useState(false);
   const [editingMode, setEditingMode] = useState(false);
   var isEditing = true;
   const isSave = useStore((state) => state.isSave);
+  const creditLeft = useStore((state) => state.creditLeft);
+  const updateCredit = useStore((state) => state.updateCredit);
+  useEffect(() => {
+    updateCredit();
+  }, []);
 
   useEffect(() => {
     if (option === "linkedin-comeback") {
@@ -224,106 +230,98 @@ export default function TinyMCEEditor({
   };
 
   const handleSavePublish = () => {
-    let getToken;
-    if (typeof window !== "undefined") {
-      getToken = localStorage.getItem("token");
-    }
-    if (getToken) {
-      setPublishLoad(true);
-      const jsonDoc = htmlToJson(updatedText).children;
-      const formatedJSON = { children: [...jsonDoc] };
+    if (creditLeft === 0) {
+      setTrailModal(true);
+    } else {
+      let getToken;
+      if (typeof window !== "undefined") {
+        getToken = localStorage.getItem("token");
+      }
+      if (getToken) {
+        setPublishLoad(true);
+        const jsonDoc = htmlToJson(updatedText).children;
+        const formatedJSON = { children: [...jsonDoc] };
 
-      // console.log("save and publish");
-      axios({
-        method: "post",
-        url: API_BASE_PATH + API_ROUTES.GQL_PATH,
-        headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-        data: {
-          query:
-            "mutation SavePreferences($options: PublisOptions) {\n  publish(options: $options)\n}",
-          variables: {
-            options: {
-              blog_id: blog_id,
+        // console.log("save and publish");
+        axios({
+          method: "post",
+          url: API_BASE_PATH + API_ROUTES.GQL_PATH,
+          headers: {
+            "content-type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          data: {
+            query:
+              "mutation SavePreferences($options: PublisOptions) {\n  publish(options: $options)\n}",
+            variables: {
+              options: {
+                blog_id: blog_id,
+              },
             },
           },
-        },
-      })
-        .then((response) => {
-          if (response?.data?.data?.publish) {
-            toast.success("Published!!", {
-              position: "top-center",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            });
-            setOpenModal(true);
-            setPublishLoad(false);
-            setPublishText("Published!!");
-          }
         })
-        .catch((error) => console.log("error", error));
+          .then((response) => {
+            if (response?.data?.data?.publish) {
+              toast.success("Published!!", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+              setOpenModal(true);
+              setPublishLoad(false);
+              setPublishText("Published!!");
+            }
+          })
+          .catch((error) => console.log("error", error));
+      }
     }
   };
 
   const handlePublish = () => {
-    const tempDiv = document.createElement("div");
-    console.log(tempDiv);
-    tempDiv.innerHTML = updatedText;
+    if (creditLeft === 0) {
+      setTrailModal(true);
+    } else {
+      const tempDiv = document.createElement("div");
+      console.log(tempDiv);
+      tempDiv.innerHTML = updatedText;
 
-    let textContent = tempDiv.textContent;
-    textContent = textContent.replace(
-      /[\(*\)\[\]\{\}<>@|~_]/gm,
-      (x) => "\\" + x
-    );
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(updatedText, "text/html");
-    const img = doc.querySelector("img");
-    const src = img ? img.getAttribute("src") : null;
+      let textContent = tempDiv.textContent;
+      textContent = textContent.replace(
+        /[\(*\)\[\]\{\}<>@|~_]/gm,
+        (x) => "\\" + x
+      );
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(updatedText, "text/html");
+      const img = doc.querySelector("img");
+      const src = img ? img.getAttribute("src") : null;
 
-    setPublishLinkLoad(true);
+      setPublishLinkLoad(true);
 
-    const data = {
-      token: linkedInAccessToken,
-      author: `urn:li:person:${authorId}`,
-      data: textContent,
-      image: src,
-      blogId: blog_id,
-    };
-    try {
-      axios
-        .post(API_BASE_PATH + LI_API_ENDPOINTS.LI_POST, data, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        })
-        .then((response) => {
-          console.log(response.data);
-          setPublishLinkLoad(false);
-          setPublishLinkText("Published on Linkedin");
-          toast.success("Published on Linkedin", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
-        })
-        .catch((error) => {
-          if (error.response) {
+      const data = {
+        token: linkedInAccessToken,
+        author: `urn:li:person:${authorId}`,
+        data: textContent,
+        image: src,
+        blogId: blog_id,
+      };
+      try {
+        axios
+          .post(API_BASE_PATH + LI_API_ENDPOINTS.LI_POST, data, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          })
+          .then((response) => {
+            console.log(response.data);
             setPublishLinkLoad(false);
-            setPublishLinkText("Publish on Linkedin");
-            toast.error(error.response.data.message, {
+            setPublishLinkText("Published on Linkedin");
+            toast.success("Published on Linkedin", {
               position: "top-center",
               autoClose: 5000,
               hideProgressBar: false,
@@ -333,16 +331,32 @@ export default function TinyMCEEditor({
               progress: undefined,
               theme: "light",
             });
-            console.log(error.response.data);
-            console.log(error.response.status);
-          } else if (error.request) {
-            console.log(error.request);
-          } else {
-            console.log("Error", error.message);
-          }
-        });
-    } catch (error) {
-      console.log("error", error.response.data.message);
+          })
+          .catch((error) => {
+            if (error.response) {
+              setPublishLinkLoad(false);
+              setPublishLinkText("Publish on Linkedin");
+              toast.error(error.response.data.message, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+              console.log(error.response.data);
+              console.log(error.response.status);
+            } else if (error.request) {
+              console.log(error.request);
+            } else {
+              console.log("Error", error.message);
+            }
+          });
+      } catch (error) {
+        console.log("error", error.response.data.message);
+      }
     }
   };
 
@@ -396,6 +410,7 @@ export default function TinyMCEEditor({
   return (
     <>
       <ToastContainer />
+      {trailModal && <TrialEndedModal setTrailModal={setTrailModal} />}
       <Modal
         isOpen={editingMode}
         onRequestClose={() => {
