@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState, useMemo } from "react";
+import { Fragment, useEffect, useState, useMemo, useLayoutEffect } from "react";
 import {
   CardElement,
   useElements,
@@ -9,23 +9,42 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import CheckoutFormUpgrade from "../components/CheckoutFormUpgrade";
 import Layout from "../components/Layout";
+import axios from "axios";
+import { API_BASE_PATH } from "../constants/apiEndpoints";
 
 export default function Upgrade() {
   const stripePromise = loadStripe(
-    "pk_test_51KYwIFSI8Tkf3wUiAeZww7bVzcqwkbpXHHZsmqtPbZq12ey9Xy96mvA7KPpNQxVyiHbOPqcDm7BQwKdvZETRn4XU00FlHDBiq8"
+    "pk_live_bwfVzni2J7IZ7tLiBYfxs6dP00vedeE77c"
   );
-  const [plans, setPlans] = useState([]);
-
-  const [currentPlan, setCurrentPlan] = useState({
-    subscriptionType: "Yearly",
-    price: 1000,
-    priceId: "price_1MYowHSI8Tkf3wUilUfJbapv",
-  });
-
-  const [priceId, setPriceId] = useState("price_1MYowHSI8Tkf3wUilUfJbapv");
+  const [priceData, setPriceData] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
   const [clickOnSubscibe, setClickOnSubscibe] = useState(false);
 
+  useEffect(() => {
+    return async () => {
+      const pricesRes = await axios({
+        method: "get",
+        url: `${API_BASE_PATH}/stripe/prices`,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => res.data);
+
+      setPriceData(pricesRes.data.data);
+      console.log(pricesRes.data.data);
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log(priceData);
+  }, [priceData]);
+
+  const [plans, setPlans] = useState([]);
+  const [currentPlan, setCurrentPlan] = useState({});
+  const [priceId, setPriceId] = useState();
+
   const subscriptionPlan = (plan) => {
+    console.log(plan);
     let selectPriceData = "";
     if (plan.subscriptionType === "Quarterly") {
       selectPriceData = plans.filter((item) => {
@@ -43,30 +62,58 @@ export default function Upgrade() {
       });
       setPriceId(selectPriceData[0].priceId);
     }
-    console.log(priceId);
-    console.log(plan);
+
     setCurrentPlan(plan);
   };
 
   useEffect(() => {
-    setPlans([
-      {
-        subscriptionType: "Yearly",
-        price: 1000,
-        priceId: "price_1MYowHSI8Tkf3wUilUfJbapv",
-      },
-      {
-        subscriptionType: "Quarterly",
-        price: 200,
-        priceId: "price_1MXm6iSI8Tkf3wUitxemgTER",
-      },
-      {
-        subscriptionType: "Monthly",
-        price: 20,
-        priceId: "price_1MWfopSI8Tkf3wUiZeFpn6HI",
-      },
-    ]);
+    console.log(currentPlan);
+  }, [currentPlan]);
+
+  useLayoutEffect(() => {
+    const fetchPriceId = async () => {
+      const pricesRes = await axios({
+        method: "get",
+        url: `${API_BASE_PATH}/stripe/prices`,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => res.data);
+
+      console.log(pricesRes?.data, "pricesRes");
+      const updatedPricesArray = pricesRes?.data?.data?.map((price) => {
+        let type = null;
+        if (price.recurring.interval === "month") {
+          if (price.recurring.interval_count === 3) {
+            type = "Quarterly";
+          } else {
+            type = "Monthly";
+          }
+        }
+        if (price.recurring.interval === "year") {
+          type = "Yearly";
+        }
+        return {
+          subscriptionType: type,
+          price: price.unit_amount / 100,
+          priceId: price.id,
+        };
+      });
+      console.log(updatedPricesArray);
+      setPlans(updatedPricesArray);
+    };
+    fetchPriceId();
   }, []);
+
+  useEffect(() => {
+    if (plans && plans.length) setCurrentPlan(plans[0]);
+    if (plans.length > 0) {
+      const temp = plans.filter((item) => {
+        return item?.subscriptionType === "Yearly";
+      });
+      setPriceId(temp[0].priceId);
+    }
+  }, [plans]);
 
   console.log(currentPlan);
   return (
@@ -198,7 +245,7 @@ export default function Upgrade() {
                     currentPlan={currentPlan?.subscriptionType?.toLowerCase()}
                     priceId={priceId}
                     setClickOnSubscibe={setClickOnSubscibe}
-                    interval={currentPlan.subscriptionType}
+                    interval={currentPlan?.subscriptionType}
                   />
                 </div>
               </div>
