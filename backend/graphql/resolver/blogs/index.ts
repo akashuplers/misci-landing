@@ -620,7 +620,7 @@ export const blogResolvers = {
             const platform = args.options.platform
             const imageUrl = args.options.imageUrl
             const imageSrc = args.options.imageSrc
-            const description = args.options.description
+            const description = args.options.description && args.options.description.replace(/\n/gi, "")
             const blogDetails = await fetchBlog({id: blogId, db})
             if(!blogDetails){
                 throw "@No blog found"
@@ -690,10 +690,11 @@ export const blogResolvers = {
                                 articles.map(async (id, index) => {
                                     const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
                                     const name = article._source?.source?.name
-                                    const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
-                                    const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
-                                    const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
-                                    tags.push(...productsTags, ...organizationTags, ...personsTags)
+                                    // const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                                    // const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                                    // const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                                    // tags.push(...productsTags, ...organizationTags, ...personsTags)
+                                    tags = article._source.driver
                                     if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
                                         imageUrl = article.proImageLink
                                         imageSrc = article._source?.orig_url
