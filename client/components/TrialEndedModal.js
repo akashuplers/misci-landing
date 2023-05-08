@@ -4,7 +4,7 @@ import styles from "./styles/trial-ended-modal.module.css";
 import ReactModal from "react-modal";
 import Link from "next/link";
 
-const TrialEndedModal = () => {
+const TrialEndedModal = ({ setTrailModal }) => {
   const [open, setOpen] = useState(true);
 
   return (
@@ -66,7 +66,10 @@ const TrialEndedModal = () => {
         </div>
         <button
           className={styles.close}
-          onClick={() => setOpen((prev) => !prev)}
+          onClick={() => {
+            setOpen((prev) => !prev);
+            setTrailModal(false);
+          }}
         >
           CLOSE
         </button>
