@@ -18,7 +18,7 @@ Subscription.getInitialProps = ({ query }) => {
 
 export default function Subscription({ query }) {
   const stripePromise = loadStripe(
-    "pk_test_51KYwIFSI8Tkf3wUiAeZww7bVzcqwkbpXHHZsmqtPbZq12ey9Xy96mvA7KPpNQxVyiHbOPqcDm7BQwKdvZETRn4XU00FlHDBiq8"
+    "pk_live_bwfVzni2J7IZ7tLiBYfxs6dP00vedeE77c"
   );
   const [plans, setPlans] = useState([]);
 
