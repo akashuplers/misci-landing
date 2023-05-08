@@ -102,6 +102,7 @@ export default function Upgrade() {
       console.log(updatedPricesArray);
       setPlans(updatedPricesArray);
     };
+    setCurrentPlan(plans[0]);
     fetchPriceId();
   }, []);
 
