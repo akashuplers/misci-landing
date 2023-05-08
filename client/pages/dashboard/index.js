@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { API_BASE_PATH, API_ROUTES } from "../../constants/apiEndpoints";
+import TrialEndedModal from "../../components/TrialEndedModal";
 
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
@@ -37,16 +38,34 @@ export default function dashboard({ query }) {
   const [blogData, setBlogData] = useState([]);
   const [pyResTime, setPyResTime] = useState(null);
   const [ndResTime, setNdResTime] = useState(null);
-
+  const [option, setOption] = useState("blog");
   const [reference, setReference] = useState([]);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
+  const [creditModal, setCreditModal] = useState(false);
 
   const keyword = useStore((state) => state.keyword);
+  const updateCredit = useStore((state) => state.updateCredit);
 
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
   }
+
+  var bid;
+  if (typeof window !== "undefined") {
+    bid = localStorage.getItem("bid");
+  }
+  var loginProcess;
+  if (typeof window !== "undefined") {
+    loginProcess = localStorage.getItem("loginProcess");
+  }
+
+  useEffect(() => {
+    if (!topic && !bid && !loginProcess) {
+      alert("No Keyword Found...\nPlease generate the blog again!");
+      window.location.href = "/";
+    }
+  }, []);
 
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog, {
     context: {
@@ -90,14 +109,6 @@ export default function dashboard({ query }) {
       getTempId = localStorage.getItem("tempId");
     }
 
-    var bid;
-    if (typeof window !== "undefined") {
-      bid = localStorage.getItem("bid");
-    }
-    var loginProcess;
-    if (typeof window !== "undefined") {
-      loginProcess = localStorage.getItem("loginProcess");
-    }
     if (bid && loginProcess) {
       /*var myHeaders = new Headers();
       myHeaders.append("content-type", "application/json");
@@ -189,10 +200,12 @@ export default function dashboard({ query }) {
           if (!queryParams.code) {
             localStorage.removeItem("bid");
             localStorage.removeItem("loginProcess");
+            localStorage.removeItem("pass");
           }
         })
         .then((data) => {})
         .finally(() => {
+          setOption("linkedin-comeback");
           toast.success("LinkedIn SignUp Succesfull!!");
         })
         .catch(function (error) {
@@ -208,6 +221,11 @@ export default function dashboard({ query }) {
         },
         onCompleted: (data) => {
           console.log(data);
+          var token;
+          if (typeof window !== "undefined") {
+            token = localStorage.getItem("token");
+          }
+          if (token) updateCredit();
           setBlogData(data.generate);
 
           setReference(data.generate.references);
@@ -236,7 +254,11 @@ export default function dashboard({ query }) {
           console.log("Sucessfully generated the article");
         },
         onError: (error) => {
-          console.log(error);
+          console.error("888888", error.message);
+          if (error.message === 'Unexpected error value: "@Credit exhausted"') {
+            toast.error("Credit exhausted");
+            setCreditModal(true);
+          }
         },
       }).catch((err) => {
         console.log(err);
@@ -254,6 +276,7 @@ export default function dashboard({ query }) {
   return (
     <>
       <Layout>
+        {creditModal && <TrialEndedModal setTrailModal={setCreditModal} />}
         <div className="flex mb-6 h-[88vh]">
           {API_BASE_PATH === "https://maverick.lille.ai" && (
             <div
@@ -286,6 +309,8 @@ export default function dashboard({ query }) {
               editorText={editorText}
               blogData={blogData}
               blog_id={blog_id}
+              option={option}
+              setOption={setOption}
             />
           </div>
           <div

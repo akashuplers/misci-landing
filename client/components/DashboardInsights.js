@@ -13,6 +13,7 @@ import AuthenticationModal from "./AuthenticationModal";
 import axios from "axios";
 import Link from "next/link";
 import { handleSave } from "./TinyMCEEditor";
+import TrialEndedModal from "./TrialEndedModal";
 
 export default function DashboardInsights({
   loading,
@@ -34,7 +35,7 @@ export default function DashboardInsights({
   setFreshIdeaReferences,
 
   reference,
-  setReferences,
+  setReference,
 
   setBlogData,
   setEditorText,
@@ -54,7 +55,7 @@ export default function DashboardInsights({
 
   const [freshIdeas, setFreshIdeas] = useState([]);
   const [freshIdeaTags, setFreshIdeaTags] = useState([]);
-
+  const [creditModal, setCreditModal] = useState(false);
   const [freshFilteredIdeas, setFreshFilteredIdeas] = useState([]);
   const updateCredit = useStore((state) => state.updateCredit);
   const updateisSave = useStore((state) => state.updateisSave);
@@ -327,7 +328,7 @@ export default function DashboardInsights({
           setIdeas(data.regenerateBlog.ideas.ideas);
           setTags(data.regenerateBlog.tags);
           setFreshIdeaTags(data.regenerateBlog.freshIdeasTags);
-          setReferences(data.regenerateBlog.references);
+          setReference(data.regenerateBlog.references);
           setFreshIdeaReferences(data.regenerateBlog.freshIdeasReferences);
           setFreshIdeas(data?.regenerateBlog?.ideas?.freshIdeas);
           console.log(
@@ -383,7 +384,11 @@ export default function DashboardInsights({
           target = undefined;
         },
         onError: (error) => {
-          console.error(error);
+          console.error("888888", error.message);
+          if (error.message === 'Unexpected error value: "@Credit exhausted"') {
+            toast.error("Credit exhausted");
+            setCreditModal(true);
+          }
         },
       })
         .catch((err) => {
@@ -394,6 +399,49 @@ export default function DashboardInsights({
           setRegenSelected([]);
           // setFreshIdeas([]);
         });
+    }
+  }
+
+  function handleSelectAll() {
+    if (freshFilteredIdeas?.length > 0) {
+      const updatedFilteredIdeas = freshFilteredIdeas.map((el, elIndex) => {
+        return { ...el, used: 1 };
+      });
+      setFreshFilteredIdeas(updatedFilteredIdeas);
+      console.log(
+        "updatedFilteredIdeas",
+        updatedFilteredIdeas,
+        freshFilteredIdeas
+      );
+      var ideasCopy = [];
+      for (let i = 0; i < freshIdeas.length; i++) {
+        const element = freshIdeas[i];
+        const f = updatedFilteredIdeas.find((pd) => pd.idea === element.idea);
+        if (f) {
+          ideasCopy.push(f);
+        } else {
+          ideasCopy.push(element);
+        }
+      }
+      setFreshIdeas(ideasCopy);
+      const arr = [];
+      for (let index = 0; index < updatedFilteredIdeas.length; index++) {
+        const element = updatedFilteredIdeas[index];
+        if (element.used) {
+          const ideaObject = {
+            text: element.idea,
+            article_id: element.article_id,
+          };
+          arr.push(ideaObject);
+        }
+      }
+      handlefreshideas(arr);
+    } else {
+      const updatedIdeas = freshIdeas.map((el, elIndex) => {
+        return { ...el, used: 1 };
+      });
+      setFreshIdeas(updatedIdeas);
+      setRegenSelected(updatedIdeas);
     }
   }
 
@@ -429,17 +477,17 @@ export default function DashboardInsights({
 
     let url = API_BASE_PATH;
     let raw;
-    if (urlValid) {
+    if (fileValid) {
+      url += API_ROUTES.FILE_UPLOAD;
+      raw = new FormData();
+      raw.append("file", file);
+      raw.append("blog_id", blog_id);
+    } else if (urlValid) {
       url += API_ROUTES.URL_UPLOAD;
       raw = {
         url: formInput,
         blog_id: blog_id,
       };
-    } else if (fileValid) {
-      url += API_ROUTES.FILE_UPLOAD;
-      raw = new FormData();
-      raw.append("file", file);
-      raw.append("blog_id", blog_id);
     } else {
       url += API_ROUTES.KEYWORD_UPLOAD;
       raw = {
@@ -482,7 +530,7 @@ export default function DashboardInsights({
       })
       .catch((error) => {
         console.log("error", error);
-        toast.error(error.message);
+        toast.error("Try again after sometime...");
       })
       .finally(() => {
         setformInput("");
@@ -573,6 +621,7 @@ export default function DashboardInsights({
         handleSave={() => (window.location = "/dashboard/" + blog_id)}
         bid={blog_id}
       />
+      {creditModal && <TrialEndedModal setTrailModal={setCreditModal} />}
       <div className="text-xs px-2" style={{ borderLeft: "2px solid #d2d2d2" }}>
         <div className="flex justify-between gap-[1.25em]">
           <p className="font-normal w-[70%]">
@@ -800,6 +849,18 @@ export default function DashboardInsights({
               </span>
             )}
           </button>
+          {ideaType === "fresh" && (
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold px-2 rounded-full ml-1 text-xs h-8 mt-1"
+              onClick={handleSelectAll}
+              style={{
+                background: "#bfdbfe",
+                color: "#425985",
+              }}
+            >
+              Select All
+            </button>
+          )}
         </div>
         <div
           className="overflow-y-scroll px-2"
@@ -816,7 +877,7 @@ export default function DashboardInsights({
                   return (
                     <div className="flex pb-3" key={index}>
                       <div className="flex justify-between gap-5 w-full">
-                        <p>{idea?.idea} </p>
+                        <p className="text-[13px]">{idea?.idea} </p>
                         <a
                           style={{
                             color: "var(--primary-blue)",
@@ -921,7 +982,7 @@ export default function DashboardInsights({
                   return (
                     <div className="flex pb-3 usedIdeas" key={index}>
                       <div className="flex justify-between gap-5 w-full">
-                        <p>{idea?.idea} </p>
+                        <p className="text-[13px]">{idea?.idea} </p>
                         <a
                           style={{
                             color: "var(--primary-blue)",
@@ -1135,7 +1196,7 @@ export default function DashboardInsights({
                     return (
                       <div className="flex pb-3" key={index}>
                         <div className="flex justify-between gap-5 w-full">
-                          <p>{idea?.idea}</p>
+                          <p className="text-[13px]">{idea?.idea}</p>
 
                           <a
                             style={{
@@ -1241,7 +1302,7 @@ export default function DashboardInsights({
                     return (
                       <div className="flex pb-3" key={index}>
                         <div className="flex justify-between gap-5 w-full">
-                          <p>{idea?.idea}</p>
+                          <p className="text-[13px]">{idea?.idea}</p>
 
                           <a
                             style={{

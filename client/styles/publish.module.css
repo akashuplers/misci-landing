@@ -13,7 +13,7 @@
 }
 
 .publishContainer > null  {
-    align-items: center !important;
+    align-items: center ;
 }
 
 .publishContainer > null > span  {
@@ -21,20 +21,34 @@
 }
 
 .publishContainer  null  {
-    align-items: center !important;
+    align-items: center ;
 }
 
 .publishContainer  h3{
-    font-size: 1.5rem;
-    align-items: center !important;
+    font-size: 1.5rem;   
+}
+.publishContainer  h3 > *{
+    text-align: center;
+    margin: 0 auto;
 }
 
-.publishContainer  a{
+.publishContainer  h1{
+    font-weight: 600;
+    font-size: 22px;
+    padding: 10px 0px 10px
+}
+
+ .publishContainer a{
     text-align: center !important;
 }
 
+.publishContainer a[title="Source URL"] {
+  margin: auto;
+  text-align: center;
+}
+
 .publishContainer  p{
-    align-items: center !important;
+    /* align-items: center ; */
 }
 
 .publishContainer   img{
@@ -45,10 +59,11 @@
 }
 
 .publishContainer > *{
-    display: flex;
+     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 1em;
+    padding-top: 7px;
 }
 
 @media (min-width : 1024px){

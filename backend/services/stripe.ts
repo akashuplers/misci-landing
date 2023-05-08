@@ -51,6 +51,7 @@ export default class Stripe {
     async getPrices(){
         const prices = await stripe.prices.list({
             expand: ['data.product'],
+            product: process.env.STRIPE_PRODUCT_ID
         });
         console.log(prices)
         const updated = prices

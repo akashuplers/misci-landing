@@ -27,6 +27,10 @@ import { toast, ToastContainer } from "react-toastify";
 import ReactLoading from "react-loading";
 import fillerProfileImage from "../public/profile-filler.jpg";
 import axios from "axios";
+import CreatableSelect from "react-select/creatable";
+import { addPreferances } from "../graphql/mutations/addPreferances";
+import { useMutation } from "@apollo/client";
+import Link from "next/link";
 
 const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: false },
@@ -52,21 +56,23 @@ const secondaryNavigation = [
   { name: "Logout", href: "#", icon: ArrowLeftOnRectangleIcon },
 ];
 
-const tabs = [
-  { name: "General", href: "", current: true },
-  // { name: "Password", href: "#", current: false },
-  // { name: "Notifications", href: "#", current: false },
-  // { name: "Plan", href: "#", current: false },
-  // { name: "Billing", href: "#", current: false },
-  // { name: "Team Members", href: "#", current: false },
-];
-
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function Settings() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [tab, setTab] = useState("General");
+  const [pref, setPref] = useState("");
+  const [options, setOptions] = useState([]);
+  const [isFormat, setIsFormat] = useState(false);
+
+  const tabs = [
+    { name: "General", href: "#", current: tab === "General" },
+    { name: "Preference", href: "#", current: tab === "Preference" },
+  ];
+
+  const [selectedOption, setSelectedOption] = useState([]);
 
   const [updateProfileData, setUpdateProfileData] = useState({
     firstName: "",
@@ -80,9 +86,26 @@ export default function Settings() {
   const [autoUpdateApplicantDataEnabled, setAutoUpdateApplicantDataEnabled] =
     useState(false);
 
-  const [forgotPass, setForgotPass] = useState(false)
+  const [forgotPass, setForgotPass] = useState(false);
 
   const [linkedin, setlinkedin] = useState(false);
+
+  var token;
+  if (typeof window !== "undefined") {
+    token = localStorage.getItem("token");
+  }
+
+  const [AddPreferance, { loading: prefLoading }] = useMutation(
+    addPreferances,
+    {
+      context: {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      },
+    }
+  );
 
   useEffect(() => {
     var linkedInAccessToken;
@@ -150,6 +173,12 @@ export default function Settings() {
         lastName: meeData.me.lastName,
         profileImage: meeData.me.profileImage ?? fillerProfileImage.src,
       });
+      const arr = [];
+      meeData.me.prefData.map((value) =>
+        arr.push({ value: value, label: value, color: "#000000" })
+      );
+      setOptions(arr);
+      setSelectedOption(arr);
     }
   }, [meeData]);
 
@@ -209,6 +238,35 @@ export default function Settings() {
       })
       .catch((err) => console.error(err.message))
       .finally(() => setUpdateLoader(false));
+  };
+
+  const handleUpdatePref = () => {
+    const Prefrence = [];
+    selectedOption.map((o) => Prefrence.push(o.value));
+    AddPreferance({
+      variables: {
+        options: {
+          keywords: Prefrence,
+        },
+      },
+      onCompleted: (data) => {
+        toast.success("Preferences Saved!", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    }).catch((err) => {
+      console.log(err);
+    });
   };
 
   const [imageLoader, setImageLoader] = useState(false);
@@ -432,9 +490,9 @@ export default function Settings() {
                           <div className="border-b border-gray-200">
                             <nav className="-mb-px flex space-x-8">
                               {tabs.map((tab) => (
-                                <a
+                                <button
                                   key={tab.name}
-                                  href={tab.href}
+                                  onClick={() => setTab(tab.name)}
                                   className={classNames(
                                     tab.current
                                       ? "border-purple-500 text-purple-600"
@@ -443,237 +501,333 @@ export default function Settings() {
                                   )}
                                 >
                                   {tab.name}
-                                </a>
+                                </button>
                               ))}
                             </nav>
                           </div>
                         </div>
 
                         {/* Description list with inline editing */}
-                        <div className="mt-10 divide-y divide-gray-200">
-                          <div className="space-y-1">
-                            <h3 className="text-lg font-medium leading-6 text-gray-900">
-                              Profile
-                            </h3>
-                            <p className="max-w-2xl text-sm text-gray-500">
-                              This information will be displayed publicly so be
-                              careful what you share.
-                            </p>
-                          </div>
-                          <div className="mt-6">
-                            <dl className="divide-y divide-gray-200">
-                              <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
-                                <dt className="text-sm font-medium text-gray-500">
-                                  First Name
-                                </dt>
-                                <dd className="updateSettingsField firstName mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                  <input
-                                    type="text"
-                                    className="flex-grow"
-                                    value={updateProfileData.firstName}
-                                    onChange={handleInputChange}
-                                    name="firstName"
-                                    style={{
-                                      border: "none",
-                                      padding: "0 0.25em",
-                                    }}
-                                  />
-                                  {/* <span className="ml-4 flex-shrink-0">
-                                    <button
-                                      type="button"
-                                      className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-                                      onClick={handleUpdate}
-                                    >
-                                      Update
-                                    </button>
-                                  </span> */}
-                                </dd>
-                              </div>
-                              <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
-                                <dt className="text-sm font-medium text-gray-500">
-                                  Last Name
-                                </dt>
-                                <dd className="updateSettingsField lastName mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                  <input
-                                    type="text"
-                                    className="flex-grow"
-                                    value={updateProfileData.lastName}
-                                    onChange={handleInputChange}
-                                    name="lastName"
-                                    style={{
-                                      border: "none",
-                                      padding: "0 0.25em",
-                                    }}
-                                  />
-                                  {/* <span className="ml-4 flex-shrink-0">
-                                    <button
-                                      type="button"
-                                      className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-                                      onClick={handleUpdate}
-                                    >
-                                      Update
-                                    </button>
-                                  </span> */}
-                                </dd>
-                              </div>
-                              <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:pt-5">
-                                <dt className="text-sm font-medium text-gray-500">
-                                  Photo
-                                </dt>
-                                <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                  <div
-                                    class="profile-pic"
-                                    style={{ width: "100px", height: "100px" }}
-                                  >
-                                    {imageLoader ? (
-                                      <div style={{ margin: "0 auto" }}>
-                                        <ReactLoading
-                                          width={50}
-                                          height={100}
-                                          color={"#2563EB"}
-                                          type="spin"
-                                        />
-                                      </div>
-                                    ) : (
-                                      <>
-                                        <label
-                                          class="-label"
-                                          htmlFor="profileImageInput"
-                                        >
-                                          <span>Change Image</span>
-                                          <input
-                                            name="profileImage"
-                                            id="profileImageInput"
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={handleInputChange}
-                                          />
-                                        </label>
-                                        <img
-                                          src={updateProfileData.profileImage}
-                                          width="100"
-                                          id="profileImage"
-                                        />
-                                      </>
-                                    )}
-                                    <div
+                        {tab === "General" ? (
+                          <div className="mt-10 divide-y divide-gray-200">
+                            <div className="space-y-1">
+                              <h3 className="text-lg font-medium leading-6 text-gray-900">
+                                Profile
+                              </h3>
+                              <p className="max-w-2xl text-sm text-gray-500">
+                                This information will be displayed publicly so
+                                be careful what you share.
+                              </p>
+                            </div>
+                            <div className="mt-6">
+                              <dl className="divide-y divide-gray-200">
+                                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
+                                  <dt className="text-sm font-medium text-gray-500">
+                                    First Name
+                                  </dt>
+                                  <dd className="updateSettingsField firstName mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                    <input
+                                      type="text"
+                                      className="flex-grow"
+                                      value={updateProfileData.firstName}
+                                      onChange={handleInputChange}
+                                      name="firstName"
                                       style={{
-                                        position: "absolute",
-                                        top: "80%",
-                                        fontSize: "0.6rem",
-                                        background: "white",
-                                        color: "black",
-                                        width: "80%",
-                                        textAlign: "center",
-                                        fontWeight: "600",
+                                        border: "none",
+                                        padding: "0 0.25em",
+                                      }}
+                                    />
+                                    {/* <span className="ml-4 flex-shrink-0">
+                                    <button
+                                      type="button"
+                                      className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                                      onClick={handleUpdate}
+                                    >
+                                      Update
+                                    </button>
+                                  </span> */}
+                                  </dd>
+                                </div>
+                                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
+                                  <dt className="text-sm font-medium text-gray-500">
+                                    Last Name
+                                  </dt>
+                                  <dd className="updateSettingsField lastName mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                    <input
+                                      type="text"
+                                      className="flex-grow"
+                                      value={updateProfileData.lastName}
+                                      onChange={handleInputChange}
+                                      name="lastName"
+                                      style={{
+                                        border: "none",
+                                        padding: "0 0.25em",
+                                      }}
+                                    />
+                                    {/* <span className="ml-4 flex-shrink-0">
+                                    <button
+                                      type="button"
+                                      className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                                      onClick={handleUpdate}
+                                    >
+                                      Update
+                                    </button>
+                                  </span> */}
+                                  </dd>
+                                </div>
+                                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:pt-5">
+                                  <dt className="text-sm font-medium text-gray-500">
+                                    Photo
+                                  </dt>
+                                  <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                    <div
+                                      class="profile-pic"
+                                      style={{
+                                        width: "100px",
+                                        height: "100px",
                                       }}
                                     >
-                                      UPDATE
+                                      {imageLoader ? (
+                                        <div style={{ margin: "0 auto" }}>
+                                          <ReactLoading
+                                            width={50}
+                                            height={100}
+                                            color={"#2563EB"}
+                                            type="spin"
+                                          />
+                                        </div>
+                                      ) : (
+                                        <>
+                                          <label
+                                            class="-label"
+                                            htmlFor="profileImageInput"
+                                          >
+                                            <span>Change Image</span>
+                                            <input
+                                              name="profileImage"
+                                              id="profileImageInput"
+                                              type="file"
+                                              accept="image/*"
+                                              onChange={handleInputChange}
+                                            />
+                                          </label>
+                                          <img
+                                            src={updateProfileData.profileImage}
+                                            width="100"
+                                            id="profileImage"
+                                          />
+                                        </>
+                                      )}
+                                      <div
+                                        style={{
+                                          position: "absolute",
+                                          top: "80%",
+                                          fontSize: "0.6rem",
+                                          background: "white",
+                                          color: "black",
+                                          width: "80%",
+                                          textAlign: "center",
+                                          fontWeight: "600",
+                                        }}
+                                      >
+                                        UPDATE
+                                      </div>
                                     </div>
-                                  </div>
-                                </dd>
-                              </div>
-                              <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:pt-5">
-                                <dt className="text-sm font-medium text-gray-500">
-                                  Email
-                                </dt>
-                                <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                  <span className="flex-grow">
-                                    {meeData?.me?.email}
-                                  </span>
-                                </dd>
-                              </div>
-                              {meeData?.me?.paid && (
-                                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:border-b sm:border-gray-200 sm:py-5">
+                                  </dd>
+                                </div>
+                                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:pt-5">
                                   <dt className="text-sm font-medium text-gray-500">
-                                    Susbcription Details
+                                    Email
                                   </dt>
                                   <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                     <span className="flex-grow">
-                                      You are on a{" "}
-                                      <span style={{ fontWeight: "600" }}>
-                                        {meeData?.me?.interval}ly
-                                      </span>{" "}
-                                      plan <br />
-                                      Last Invoice Date :{" "}
-                                      <span style={{ fontWeight: "600" }}>
-                                        {new Date(
-                                          meeData?.me?.lastInvoicedDate * 1000
-                                        ).toLocaleDateString("in-IN")}
-                                      </span>{" "}
-                                      <br />
-                                      Next Invoice Date :{" "}
-                                      <span style={{ fontWeight: "600" }}>
-                                        {new Date(
-                                          meeData?.me?.upcomingInvoicedDate *
-                                            1000
-                                        ).toLocaleDateString("in-IN")}
-                                      </span>
+                                      {meeData?.me?.email}
                                     </span>
                                   </dd>
                                 </div>
-                              )}
-                              <div>
-                                <span
-                                  className="reset-button cta"
-                                  style={{
-                                    position: "absolute",
-                                    left: "0",
-                                    bottom: "30px"
-                                  }}
-                                  onClick={() => setForgotPass(true)}
-                                >
-                                  Forgot Password
-                                </span>
-                                <ForgotPasswordModal forgotPass={forgotPass} setForgotPass={setForgotPass} email={meeData?.me?.email}/>
-                                <button
-                                  type="button"
-                                  className="update-button cta"
-                                  style={{
-                                    position: "absolute",
-                                    right: "0",
-                                    bottom: "30px"
-                                  }}
-                                  onClick={handleUpdate}
-                                >
-                                  {updateLoader ? (
-                                    <ReactLoading
-                                      type={"spin"}
-                                      color={"#2563EB"}
-                                      height={15}
-                                      width={15}
-                                      className={"mx-auto"}
-                                    />
-                                  ) : (
-                                    "Update"
-                                  )}
-                                </button>
-                                {linkedin ? (
+                                {meeData?.me?.paid && (
+                                  <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:border-b sm:border-gray-200 sm:py-5">
+                                    <dt className="text-sm font-medium text-gray-500">
+                                      Susbcription Details
+                                    </dt>
+                                    <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                      <span className="flex-grow">
+                                        You are on a{" "}
+                                        <span style={{ fontWeight: "600" }}>
+                                          {meeData?.me?.interval}ly
+                                        </span>{" "}
+                                        plan <br />
+                                        Last Invoice Date :{" "}
+                                        <span style={{ fontWeight: "600" }}>
+                                          {new Date(
+                                            meeData?.me?.lastInvoicedDate * 1000
+                                          ).toLocaleDateString("in-IN")}
+                                        </span>{" "}
+                                        <br />
+                                        Next Invoice Date :{" "}
+                                        <span style={{ fontWeight: "600" }}>
+                                          {new Date(
+                                            meeData?.me?.upcomingInvoicedDate *
+                                              1000
+                                          ).toLocaleDateString("in-IN")}
+                                        </span>
+                                      </span>
+                                    </dd>
+                                  </div>
+                                )}
+                                <div>
+                                  <span
+                                    className="reset-button cta"
+                                    style={{
+                                      position: "absolute",
+                                      left: "0",
+                                      bottom: "30px",
+                                    }}
+                                    onClick={() => setForgotPass(true)}
+                                  >
+                                    Forgot Password
+                                  </span>
+                                  <ForgotPasswordModal
+                                    forgotPass={forgotPass}
+                                    setForgotPass={setForgotPass}
+                                    email={meeData?.me?.email}
+                                  />
                                   <button
+                                    type="button"
                                     className="update-button cta"
                                     style={{
                                       position: "absolute",
-                                      right: "100px",
+                                      right: "0",
                                       bottom: "30px",
-                                      width: "150px",
-                                      height: "30px",
                                     }}
-                                    onClick={() => {
-                                      localStorage.removeItem(
-                                        "linkedInAccessToken"
-                                      );
-                                      setlinkedin(false);
-                                    }}
+                                    onClick={handleUpdate}
                                   >
-                                    Logout Linkedin
+                                    {updateLoader ? (
+                                      <ReactLoading
+                                        type={"spin"}
+                                        color={"#2563EB"}
+                                        height={15}
+                                        width={15}
+                                        className={"mx-auto"}
+                                      />
+                                    ) : (
+                                      "Update"
+                                    )}
                                   </button>
-                                ) : (
-                                  <></>
-                                )}
-                              </div>
-                            </dl>
+                                  {linkedin ? (
+                                    <button
+                                      className="update-button cta p-4"
+                                      style={{
+                                        position: "absolute",
+                                        right: "100px",
+                                        bottom: "30px",
+                                        width: "150px",
+                                      }}
+                                      onClick={() => {
+                                        localStorage.removeItem(
+                                          "linkedInAccessToken"
+                                        );
+                                        setlinkedin(false);
+                                      }}
+                                    >
+                                      Logout Linkedin
+                                    </button>
+                                  ) : (
+                                    <></>
+                                  )}
+                                </div>
+                              </dl>
+                            </div>
                           </div>
-                        </div>
+                        ) : meeData?.me?.paid ? (
+                          <div className="mt-10 divide-y divide-gray-200">
+                            <div className="space-y-1">
+                              <h3 className="text-lg font-medium leading-6 text-gray-900">
+                                Daily Feed Preferences
+                              </h3>
+                              <p className="max-w-2xl text-sm text-gray-500">
+                                Please select max 3 preferences(Use alphabets
+                                and numbers only).
+                              </p>
+                            </div>
+                            <div className="mt-6">
+                              <dl className="divide-y divide-gray-200">
+                                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
+                                  <dd className="  mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0"></dd>
+                                </div>
+                                <CreatableSelect
+                                  defaultValue={selectedOption}
+                                  isMulti
+                                  onInputChange={(newValue) => {
+                                    let pattern = /^[a-zA-Z0-9]+$/;
+                                    if (pattern.test(newValue)) {
+                                      console.log(
+                                        "String contains only alphabets and numbers."
+                                      );
+                                      setIsFormat(false);
+                                    } else {
+                                      console.log(
+                                        "String contains other characters."
+                                      );
+                                      if (newValue) setIsFormat(true);
+                                    }
+                                  }}
+                                  onChange={(o) => {
+                                    setSelectedOption(o);
+                                  }}
+                                  options={options}
+                                  isOptionDisabled={() => {
+                                    return (
+                                      isFormat || selectedOption.length >= 3
+                                    );
+                                  }}
+                                />
+                              </dl>
+                            </div>
+                            <button
+                              type="button"
+                              className=" mt-5 rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                              onClick={handleUpdatePref}
+                            >
+                              Update Preferences
+                            </button>
+                          </div>
+                        ) : (
+                          <div className=" flex items-center justify-center bg-gray-100 h-[600px]">
+                            <div className=" p-8 rounded-md">
+                              <p className="text-gray-800 text-lg font-medium text-center mt-4">
+                                Coming soon ...
+                              </p>
+                            </div>
+                            {/* <div className="flex flex-shrink-0 pb-0 pt-4">
+                              <Link
+                                href="/upgrade"
+                                className="ml-6 inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                style={{
+                                  margin: "0em 0.5em",
+                                  width: "100%",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  background: "var(--primary-blue)",
+                                }}
+                              >
+                                UPGRADE
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 24 24"
+                                  fill="currentColor"
+                                  className="w-4 h-4"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              </Link>
+                            </div> */}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

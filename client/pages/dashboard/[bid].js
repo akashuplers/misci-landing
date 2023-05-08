@@ -24,6 +24,7 @@ export default function Post() {
   const { bid, isPublished } = router.query;
   const [reference, setReference] = useState([]);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
+  const [option, setOption] = useState("blog");
 
   // console.log("isPublished", isPublished);
   console.log("router.query", router.query);
@@ -185,6 +186,8 @@ export default function Post() {
               blog_id={bid}
               isPublished={isPublished}
               loading={loading}
+              option={option}
+              setOption={setOption}
             />
           </div>
           <div

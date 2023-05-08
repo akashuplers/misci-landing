@@ -15,6 +15,7 @@ type User {
     freeTrailEndsDate: String
     freeTrialDays: Int!
     subscriptionId: String
+    prefData: [String]
     credits: Int
     prefFilled: Boolean
     profileImage: String

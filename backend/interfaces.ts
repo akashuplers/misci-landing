@@ -18,8 +18,8 @@ export interface UpdateBlogMutationArg {
 }
 
 export interface Ideas {
-    text: String;
-    article_id: String;
+    text: string;
+    article_id: string;
 }
 
 export interface ReGenerateBlogMutationArg {

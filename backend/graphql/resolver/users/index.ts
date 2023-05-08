@@ -16,6 +16,10 @@ export const usersResolver = {
             .db("lilleAdmin")
             .collection("preferences")
             .findOne({ user: new ObjectID(user.id) });    
+            let prefData = null
+            if(userPref) {
+                prefData = userPref.questions?.map((question: any) => question.question1)
+            }
             const date1: any = new Date(userDetails.date);
             const date2: any = new Date();
             const diffTime = Math.abs(date2 - date1);
@@ -30,6 +34,7 @@ export const usersResolver = {
                 lastInvoicedDate: userDetails.lastInvoicedDate || false,
                 upcomingInvoicedDate: userDetails.upcomingInvoicedDate || false,
                 freeTrial: userDetails.freeTrial || false,
+                prefData: prefData || null,
                 freeTrailEndsDate: userDetails.freeTrailEndsDate,
                 freeTrialDays: (parseInt(process.env.FREE_TRIAL_END || '14') - totalDay),
                 prefFilled: userPref && userPref.prefFilled ? userPref.prefFilled : false,
@@ -60,39 +65,35 @@ export const usersResolver = {
                     .insertOne(preferences);
                 newKeys = keywords    
             } else {
-                const originalKeys = userPrefExists.questions?.map((question: any) => question.question1)
-                console.log(originalKeys, keywords)
-                keywords?.forEach((key: any) => {
-                    if(!originalKeys.includes(key)) {
-                        console.log(key)
-                        newKeys.push(key)
-                    }
-                })
+                // const originalKeys = userPrefExists.questions?.map((question: any) => question.question1)
+                // keywords?.forEach((key: any) => {
+                //     if(!originalKeys.includes(key)) {
+                //         console.log(key)
+                //         newKeys.push(key)
+                //     }
+                // })
             }
             const filter = { user: new ObjectID(userDetails._id) };
-            await (Promise.all(
-                keywords?.map( async (key: any) => {
-                const updatePrefToAdd: any = {
+            let updatePrefToAdd: any[] = []
+            keywords?.map( async (key: any) => {
+                updatePrefToAdd.push({
                     id: uuidv4(),
                     question1: key,
                     question2: "other",
                     type: "other"
-                };
-                const options = { returnOriginal: false };
-                const updateExsistingPref = {
-                    $addToSet: { 
-                        questions: updatePrefToAdd
-                    },
-                    $set: {
-                        prefFilled: true
-                    }
-                };
-                const updateUserPref = await db
-                    .db("lilleAdmin")
-                    .collection("preferences")
-                    .findOneAndUpdate(filter, updateExsistingPref, options);
-                })
-            ))    
+                });
+            })  
+            const options = { returnOriginal: false };
+            const updateExsistingPref = {
+                $set: {
+                    prefFilled: true,
+                    questions: updatePrefToAdd
+                }
+            };
+            const updateUserPref = await db
+                        .db("lilleAdmin")
+                        .collection("preferences")
+                        .findOneAndUpdate(filter, updateExsistingPref, options);
             return true
         }
     }

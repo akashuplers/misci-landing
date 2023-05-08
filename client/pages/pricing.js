@@ -7,6 +7,7 @@ import SwiperComponent from "../components/SwiperComponent";
 import styles from "../styles/price.module.css";
 import axios from "axios";
 import Footer from "../components/Footer";
+import AuthenticationModal from "../components/AuthenticationModal";
 
 const featuresData = [
   {
@@ -129,9 +130,19 @@ export default function Pricing() {
     }
   }, [plans]);
 
+  const [type, setType] = useState("signup");
+
   return (
     <>
       <div>
+        <AuthenticationModal
+          type={type}
+          setType={setType}
+          modalIsOpen={isOpen}
+          setModalIsOpen={setIsOpen}
+          handleSave={() => (window.location = "/")}
+          bid={""}
+        />
         <Navbar isOpen={isOpen} />
         <div className="flex flex-col">
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
@@ -188,10 +199,11 @@ export default function Pricing() {
                       Free
                     </p>
                     <p className="text-[44px] text-[#182735] leading-[112%] text-left font-bold">
-                      Unlimited Access for 14 Days
+                      Full Features Access with 25 Credits
                     </p>
                     <p className=" text-[#182735] text-left leading-[26px] text-[18px] font-medium mb-4">
-                      Have unlimited access of Summary & Drivers for 14 days
+                      Create and Regenerate blogs with free publishing on
+                      Lille.ai platform, LinkedIn and Twitter.
                     </p>
                   </div>
                   <div className="mt-4 mb-4 bg-gradient-to-r from-[#182735] to-transparent h-[2px]"></div>
@@ -211,7 +223,7 @@ export default function Pricing() {
                 <div
                   style={{
                     background:
-                      "linear-gradient(157.47deg, #2edaff 14.91%, #15324E 96.07%)",
+                      "linear-gradient(157.47deg, #182735 14.91%, #15324E 96.07%)",
                     boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
                   }}
                   className="flex relative flex-col  rounded-[0.75rem] text-[#ffffff] p-4 w-[21rem] md:w-[392px] h-[600px]"
@@ -256,7 +268,7 @@ export default function Pricing() {
                         srcset=""
                       /> */}
                       <p className=" text-[18px] font-medium mb-4">
-                        Unlimited Automation
+                        Unlimited ideas generation for blog generation
                       </p>
                     </div>
                     <div className="flex align-middle">
@@ -267,7 +279,7 @@ export default function Pricing() {
                         srcset=""
                       /> */}
                       <p className=" text-[18px] font-medium mb-4">
-                        24/7 hours support
+                        Create/Regenrate Unlimited Blogs
                       </p>
                     </div>
                     <div className="flex align-middle">
@@ -278,7 +290,7 @@ export default function Pricing() {
                         srcset=""
                       /> */}
                       <p className=" text-[18px] font-medium mb-4">
-                        Access of 50 Summaries
+                        Unlimited publishing on top social media platforms
                       </p>
                     </div>
                     <div className="flex align-middle">
@@ -289,7 +301,7 @@ export default function Pricing() {
                         srcset=""
                       /> */}
                       <p className=" text-[18px] font-medium mb-4">
-                        Create Unlimited Notes
+                        Customization possibilities, Talk to our support team
                       </p>
                     </div>
                     <div className="flex align-middle">
@@ -300,7 +312,7 @@ export default function Pricing() {
                         srcset=""
                       /> */}
                       <p className="text-[18px] font-medium mb-4">
-                        Unlimited access of Topic Monitoring
+                        {/* Unlimited access of Topic Monitoring */}
                       </p>
                     </div>
                   </div>
