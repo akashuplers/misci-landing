@@ -328,7 +328,7 @@ export default function Sidebar() {
                 ))}
               </nav>
             </div>
-            {/* {!meeData?.me?.paid && !meeLoading && (
+            {!meeData?.me?.paid && !meeLoading && (
               <div className="flex flex-shrink-0 pb-0 pt-4">
                 <Link
                   href="/upgrade"
@@ -355,7 +355,7 @@ export default function Sidebar() {
                   </svg>
                 </Link>
               </div>
-            )} */}
+            )}
             <nav className="mt-5 space-y-1 bg-white px-2 pb-8">
               {navigation_bottom.map((item) => (
                 <Link
