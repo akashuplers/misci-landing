@@ -149,16 +149,20 @@ const CheckoutForm = ({
             priceId: priceId,
           },
         });
-        const data = response.data;
-        console.log("85888", data.data);
-        console.log(data.data.status);
-        if (data.data.status === "requires_action") {
-          confirmPaymentFunction(data.data.clientSecret);
+        if (response?.data) {
+          const data = response.data;
+          console.log("85888", data.data);
+          console.log(data.data.status);
+          if (data.data.status === "requires_action") {
+            confirmPaymentFunction(data.data.clientSecret);
+          }
         }
       } catch (error) {
-        // console.log("9999", error.response.data.message);
+        console.log("9999", error.response.data.message);
+        console.log("9999", error.response);
         if (
-          error.response.data.message === "User already exist with this email!"
+          error?.response?.data?.message ===
+          "User already exist with this email!"
         ) {
           setProcessing(false);
           setDisabled(true);
@@ -178,9 +182,28 @@ const CheckoutForm = ({
         }
       }
 
-      console.log("*****", response);
+      if (
+        response?.response?.data?.message ===
+        "User already exist with this email!"
+      ) {
+        setProcessing(false);
+        setDisabled(true);
+        toast.error(
+          "Your account already exists with this email.\nPlease login to your account and Upgrade!",
+          {
+            position: "top-center",
+            autoClose: false,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          }
+        );
+      }
     } catch (error) {
-      console.log(error);
+      console.log("858", error);
     }
   };
 
