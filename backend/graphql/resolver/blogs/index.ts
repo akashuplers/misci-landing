@@ -139,6 +139,16 @@ export const blogResolvers = {
                 throw "No keyword passed!"
             }
             const userId = args.options.user_id
+            let userDetails = null
+            if(user && Object.keys(user).length) {
+                userDetails = await fetchUser({id: user.id, db})
+                if(!userDetails) {
+                    throw "@No user found"
+                }
+                if(!userDetails.paid && userDetails.credits <= 0) {
+                    throw "@Credit exhausted"
+                }
+            }
             let articleIds: any = null
             let pythonStart = new Date()
             try {
@@ -294,7 +304,6 @@ export const blogResolvers = {
                 let endRequest = new Date()
                 let respTime = diff_minutes(endRequest, startRequest)
                 if(user && Object.keys(user).length) {
-                    const userDetails = await fetchUser({id: user.id, db})
                     const updatedCredits = ((userDetails.credits || 25) - 1)
                     await updateUserCredit({id: userDetails._id, credit: updatedCredits, db})
                     if(updatedCredits <= 0) {
