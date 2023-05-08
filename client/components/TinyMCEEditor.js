@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { htmlToJson, jsonToHtml } from "../helpers/helper";
 import { updateBlog } from "../graphql/mutations/updateBlog";
@@ -30,9 +30,11 @@ import {
   TelegramIcon,
   EmailIcon,
 } from "react-share";
+import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { toast, ToastContainer } from "react-toastify";
 import useStore from "../store/store";
+import TrialEndedModal from "./TrialEndedModal";
 
 export default function TinyMCEEditor({
   topic,
@@ -44,6 +46,8 @@ export default function TinyMCEEditor({
   blogData,
   isPublished,
   ref,
+  option,
+  setOption,
 }) {
   const [updatedText, setEditorText] = useState(editorText);
   const [saveLoad, setSaveLoad] = useState(false);
@@ -55,13 +59,34 @@ export default function TinyMCEEditor({
   const [openModal, setOpenModal] = useState(false);
   const [text, setText] = useState("");
   const [isCopied, setIsCopied] = useState(false);
-  const [option, setOption] = useState("blog");
+  const [trailModal, setTrailModal] = useState(false);
   const [imageURL, setImageURL] = useState();
   const [isalert, setAlert] = useState(false);
   const [load, setLoad] = useState(false);
   const [editingMode, setEditingMode] = useState(false);
   var isEditing = true;
   const isSave = useStore((state) => state.isSave);
+  const creditLeft = useStore((state) => state.creditLeft);
+  const updateCredit = useStore((state) => state.updateCredit);
+  useEffect(() => {
+    updateCredit();
+  }, []);
+
+  useEffect(() => {
+    if (option === "linkedin-comeback") {
+      setOption("linkedin");
+      const siblingButton = document.querySelectorAll(".blog-toggle-button");
+      siblingButton.forEach((el) => el.classList.remove("active"));
+      const button = document.querySelector(".linkedin");
+      button?.classList?.add("active");
+      const aa = blogData?.publish_data?.find(
+        (pd) => pd.platform === "linkedin"
+      ).tiny_mce_data;
+      const htmlDoc = jsonToHtml(aa);
+      console.log("885", htmlDoc);
+      setEditorText(htmlDoc);
+    }
+  }, [option]);
 
   const onCopyText = () => {
     setIsCopied(true);
@@ -71,7 +96,7 @@ export default function TinyMCEEditor({
   };
 
   useEffect(() => {
-    setEditorText(editorText);
+    if (option !== "linkedin-comeback") setEditorText(editorText);
   }, [editorText]);
 
   useEffect(() => {
@@ -105,6 +130,11 @@ export default function TinyMCEEditor({
     if (getToken) {
       setSaveLoad(true);
 
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(updatedText, "text/html");
+      const img = doc.querySelector("img");
+      const src = img.getAttribute("src");
+
       const tempDiv = document.createElement("div");
       tempDiv.innerHTML = updatedText;
       const elementsToRemove = tempDiv.querySelectorAll("h3");
@@ -127,7 +157,7 @@ export default function TinyMCEEditor({
             tinymce_json: formatedJSON,
             blog_id: blog_id,
             platform: option === "blog" ? "wordpress" : option,
-            imageUrl: imageURL,
+            imageUrl: src,
             imageSrc: imageURL ? null : imageURL,
             description: textContent,
           },
@@ -200,36 +230,98 @@ export default function TinyMCEEditor({
   };
 
   const handleSavePublish = () => {
-    let getToken;
-    if (typeof window !== "undefined") {
-      getToken = localStorage.getItem("token");
-    }
-    if (getToken) {
-      setPublishLoad(true);
-      const jsonDoc = htmlToJson(updatedText).children;
-      const formatedJSON = { children: [...jsonDoc] };
+    if (creditLeft === 0) {
+      setTrailModal(true);
+    } else {
+      let getToken;
+      if (typeof window !== "undefined") {
+        getToken = localStorage.getItem("token");
+      }
+      if (getToken) {
+        setPublishLoad(true);
+        const jsonDoc = htmlToJson(updatedText).children;
+        const formatedJSON = { children: [...jsonDoc] };
 
-      // console.log("save and publish");
-      axios({
-        method: "post",
-        url: API_BASE_PATH + API_ROUTES.GQL_PATH,
-        headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-        data: {
-          query:
-            "mutation SavePreferences($options: PublisOptions) {\n  publish(options: $options)\n}",
-          variables: {
-            options: {
-              blog_id: blog_id,
+        // console.log("save and publish");
+        axios({
+          method: "post",
+          url: API_BASE_PATH + API_ROUTES.GQL_PATH,
+          headers: {
+            "content-type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          data: {
+            query:
+              "mutation SavePreferences($options: PublisOptions) {\n  publish(options: $options)\n}",
+            variables: {
+              options: {
+                blog_id: blog_id,
+              },
             },
           },
-        },
-      })
-        .then((response) => {
-          if (response?.data?.data?.publish) {
-            toast.success("Published!!", {
+        })
+          .then((response) => {
+            if (response?.data?.data?.publish) {
+              toast.success("Published!!", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+              setOpenModal(true);
+              setPublishLoad(false);
+              setPublishText("Published!!");
+            }
+          })
+          .catch((error) => console.log("error", error));
+      }
+    }
+  };
+
+  const handlePublish = () => {
+    if (creditLeft === 0) {
+      setTrailModal(true);
+    } else {
+      const tempDiv = document.createElement("div");
+      console.log(tempDiv);
+      tempDiv.innerHTML = updatedText;
+
+      let textContent = tempDiv.textContent;
+      textContent = textContent.replace(
+        /[\(*\)\[\]\{\}<>@|~_]/gm,
+        (x) => "\\" + x
+      );
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(updatedText, "text/html");
+      const img = doc.querySelector("img");
+      const src = img ? img.getAttribute("src") : null;
+
+      setPublishLinkLoad(true);
+
+      const data = {
+        token: linkedInAccessToken,
+        author: `urn:li:person:${authorId}`,
+        data: textContent,
+        image: src,
+        blogId: blog_id,
+      };
+      try {
+        axios
+          .post(API_BASE_PATH + LI_API_ENDPOINTS.LI_POST, data, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          })
+          .then((response) => {
+            console.log(response.data);
+            setPublishLinkLoad(false);
+            setPublishLinkText("Published on Linkedin");
+            toast.success("Published on Linkedin", {
               position: "top-center",
               autoClose: 5000,
               hideProgressBar: false,
@@ -239,82 +331,33 @@ export default function TinyMCEEditor({
               progress: undefined,
               theme: "light",
             });
-            setOpenModal(true);
-            setPublishLoad(false);
-            setPublishText("Published!!");
-          }
-        })
-        .catch((error) => console.log("error", error));
-    }
-  };
-
-  const handlePublish = () => {
-    const tempDiv = document.createElement("div");
-    console.log(tempDiv);
-    tempDiv.innerHTML = updatedText;
-
-    let textContent = tempDiv.textContent;
-    textContent = textContent.replace(
-      /[\(*\)\[\]\{\}<>@|~_]/gm,
-      (x) => "\\" + x
-    );
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(updatedText, "text/html");
-    const img = doc.querySelector("img");
-    const src = img ? img.getAttribute("src") : null;
-
-    setPublishLinkLoad(true);
-
-    const data = {
-      token: linkedInAccessToken,
-      author: `urn:li:person:${authorId}`,
-      data: textContent,
-      image: src,
-      blogId: blog_id,
-    };
-
-    axios
-      .post(API_BASE_PATH + LI_API_ENDPOINTS.LI_POST, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-        setPublishLinkLoad(false);
-        setPublishLinkText("Published on Linkedin");
-        toast.success("Published on Linkedin", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-      })
-      .catch((error) => {
-        if (error.response) {
-          toast.error(error.response.data, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
+          })
+          .catch((error) => {
+            if (error.response) {
+              setPublishLinkLoad(false);
+              setPublishLinkText("Publish on Linkedin");
+              toast.error(error.response.data.message, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+              console.log(error.response.data);
+              console.log(error.response.status);
+            } else if (error.request) {
+              console.log(error.request);
+            } else {
+              console.log("Error", error.message);
+            }
           });
-          console.log(error.response.data);
-          console.log(error.response.status);
-        } else if (error.request) {
-          console.log(error.request);
-        } else {
-          console.log("Error", error.message);
-        }
-      });
+      } catch (error) {
+        console.log("error", error.response.data.message);
+      }
+    }
   };
 
   function handleBlog(e) {
@@ -367,6 +410,7 @@ export default function TinyMCEEditor({
   return (
     <>
       <ToastContainer />
+      {trailModal && <TrialEndedModal setTrailModal={setTrailModal} />}
       <Modal
         isOpen={editingMode}
         onRequestClose={() => {
@@ -638,7 +682,12 @@ export default function TinyMCEEditor({
                     color={"#2563EB"}
                   />
                 ) : (
-                  publishText
+                  <>
+                    <div className="flex">
+                      <PaperAirplaneIcon className="w-5 h-5 mr-1" />
+                      {publishText}
+                    </div>
+                  </>
                 )}
               </button>
             ) : (
@@ -662,6 +711,39 @@ export default function TinyMCEEditor({
                 "Update"
               )}
             </button>
+            {option === "linkedin" ? (
+              linkedInAccessToken ? (
+                <button
+                  className="cta-invert"
+                  onClick={() => {
+                    if (
+                      publishLinkText === "Publish on Linkedin" ||
+                      publishLinkText === "Published on Linkedin"
+                    )
+                      handlePublish();
+                  }}
+                >
+                  {publishLinkLoad ? (
+                    <ReactLoading
+                      width={25}
+                      height={25}
+                      round={true}
+                      color={"#2563EB"}
+                    />
+                  ) : (
+                    publishLinkText
+                  )}
+                </button>
+              ) : (
+                <button className="cta-invert" onClick={handleconnectLinkedin}>
+                  Connect with Linkedin
+                </button>
+              )
+            ) : option === "twitter" ? (
+              <button className="cta-invert">Coming Soon...</button>
+            ) : (
+              <></>
+            )}
           </div>
         )}
       </div>

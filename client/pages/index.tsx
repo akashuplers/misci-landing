@@ -131,7 +131,7 @@ export default function Home() {
         )}
 
         {!meeData?.me?.paid && meeData?.me?.credits === 0 && (
-          <TrialEndedModal />
+          <TrialEndedModal setTrailModal={() => {}} />
         )}
         <div className={`relative px-6 pt-5 lg:px-8`}>
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
@@ -160,7 +160,54 @@ export default function Home() {
             </svg>
           </div>
           <div className="mx-auto max-w-2xl py-32 sm:py-30 lg:py-20">
-            <div className="text-center flex items-center justify-center flex-col">
+            <div className="text-center">
+              <div className="fixed z-10 inset-0 overflow-y-auto hidden not-responsive-message">
+                <div className="fixed z-10 inset-0 overflow-y-auto">
+                  <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                    <div
+                      className="fixed inset-0 transition-opacity"
+                      aria-hidden="true"
+                    >
+                      <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+                    </div>
+
+                    <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                      <div>
+                        <div
+                          className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100"
+                          onClick={() => {
+                            const element = document.querySelector<HTMLElement>(
+                              ".not-responsive-message"
+                            );
+                            if (element) {
+                              element.style.display = "none";
+                            }
+                          }}
+                        >
+                          <svg
+                            className="h-6 w-6 text-red-600"
+                            stroke="currentColor"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M15 19l-7-7 7-7"
+                            />
+                          </svg>
+                        </div>
+                        <div className="mt-3 text-center sm:mt-5">
+                          <h3 className="text-lg leading-6 font-medium text-gray-900">
+                            Please try on desktop, mobile version coming soon...
+                          </h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
                 Generate <span className="newsletter">Newsletter</span> with{" "}
                 <span style={{ color: "var(--primary-blue)" }}>Lille</span>
@@ -236,6 +283,28 @@ export default function Home() {
           </div>
         </div>
       </Layout>
+      <style>
+        {`
+          @media screen and (max-width: 767px) {
+            .not-responsive-message {
+            display: block;
+            }
+          }
+          .modal {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .modal-background {
+            opacity: 0.75;
+          }
+
+          .modal-content {
+            max-width: 640px;
+          }
+      `}
+      </style>
     </>
   );
 }

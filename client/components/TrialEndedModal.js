@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import styles from "./styles/trial-ended-modal.module.css";
 import ReactModal from "react-modal";
+import Link from "next/link";
 
-const TrialEndedModal = () => {
+const TrialEndedModal = ({ setTrailModal }) => {
   const [open, setOpen] = useState(true);
 
   return (
@@ -30,15 +31,45 @@ const TrialEndedModal = () => {
           subscription.
         </p>
         <a
-          href="mailto:support@nowigence.com"
+          href="mailto:info@nowigence.com"
           target="_blank"
           className={styles.contact}
         >
           Contact Us
         </a>
+        {/* <div className="flex flex-shrink-0 pb-0 pt-4" style={{ zIndex: 100 }}>
+          <Link
+            href="/upgrade"
+            className="ml-6 inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            style={{
+              margin: "0em 0.5em",
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+              background: "var(--primary-blue)",
+            }}
+          >
+            UPGRADE
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="w-4 h-4"
+            >
+              <path
+                fillRule="evenodd"
+                d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </Link>
+        </div> */}
         <button
           className={styles.close}
-          onClick={() => setOpen((prev) => !prev)}
+          onClick={() => {
+            setOpen((prev) => !prev);
+            setTrailModal(false);
+          }}
         >
           CLOSE
         </button>

@@ -85,55 +85,38 @@ export const blogResolvers = {
                 },
             ]
             const blogLists = await db.db('lilleBlogs').collection('blogs').aggregate([
+                ...aggregate,
                 {
-                    $facet : {
-                        "pagination": [
-                            ...aggregate,
-                            {
-                                $project: {
-                                    _id: 1,
-                                    keyword: 1,
-                                    imageUrl: 1,
-                                    tags: 1,
-                                    description: 1,
-                                    status: 1,
-                                    updatedAt: 1,
-                                }
-                            },
-                            {
-                                $sort: {
-                                    updatedAt: -1
-                                }
-                            },
-                            {
-                                $limit: options.page_limit
-                            },
-                            {
-                                $skip: options.page_skip
-                            }
-                        ],
-                        "total": [
-                            ...aggregate,
-                            {
-                                $count: 'count'
-                            }
-                        ]
+                    $sort: {
+                        updatedAt: -1
+                    }
+                },
+                {
+                    $limit: options.page_limit
+                },
+                {
+                    $skip: options.page_skip
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        keyword: 1,
+                        image: "$imageUrl",
+                        tags: 1,
+                        description: 1,
+                        status: 1,
+                        date: "$updatedAt",
                     }
                 }
             ]).toArray()
+            const blogCount = await db.db('lilleBlogs').collection('blogs').aggregate([
+                ...aggregate,
+                {
+                    $count: "count"
+                }
+            ]).toArray()
             if(blogLists.length) {
-                const updatedList = blogLists[0].pagination.map((blog: any) => {
-                    return {
-                        _id: blog._id,
-                        title: blog.keyword,
-                        description: blog.description,
-                        tags: (blog?.tags?.length && blog.tags) || [],
-                        image: blog.imageUrl || null,
-                        status: blog.status || null,
-                        date: blog.updatedAt || null
-                    }
-                })
-                return {blogs: updatedList, count: blogLists[0].total?.length ? blogLists[0].total[0].count : 0}
+                return {blogs: blogLists, count: blogCount.length && blogCount[0]?.count ? blogCount[0]?.count : 0}
             } else {
                 return {blogs: [], count: 0}
             }
@@ -156,6 +139,16 @@ export const blogResolvers = {
                 throw "No keyword passed!"
             }
             const userId = args.options.user_id
+            let userDetails = null
+            if(user && Object.keys(user).length) {
+                userDetails = await fetchUser({id: user.id, db})
+                if(!userDetails) {
+                    throw "@No user found"
+                }
+                if(!userDetails.paid && userDetails.credits <= 0) {
+                    throw "@Credit exhausted"
+                }
+            }
             let articleIds: any = null
             let pythonStart = new Date()
             try {
@@ -169,6 +162,10 @@ export const blogResolvers = {
             let imageUrl: string | null = null
             let imageSrc: string | null = null
             let article_ids: String[] = []
+            let ideasArr: {
+                idea: string;
+                article_id: string;
+            }[] = []
             let tags: String[] = []
             let ideasText = ""
             let articlesData: any[] = []
@@ -187,11 +184,11 @@ export const blogResolvers = {
                                 }
                             }
                             keyword = article.keyword
-                            const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
-                            const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
-                            const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                            // const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                            // const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                            // const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                            tags = article._source.driver
                             const name = article._source?.source?.name
-                            tags.push(...productsTags, ...organizationTags, ...personsTags)
                             return {
                                 used_summaries: article._source.summary.slice(0, 5),
                                 name: name && name === "file" ? "note" : name,
@@ -205,7 +202,8 @@ export const blogResolvers = {
                 articlesData.forEach((data) => {
                     data.used_summaries.forEach((summary: string, index: number) => {
                         texts += `- ${summary}\n`
-                        ideasText += `${ideasText} `
+                        ideasText += `${summary} `
+                        ideasArr.push({idea: summary, article_id: data.id})
                     })
                     article_ids.push(data.id)
                 })
@@ -217,6 +215,11 @@ export const blogResolvers = {
                         uniqueTags.push(c);
                     }
                 });
+                let refUrls: {
+                    url: string
+                    source: string
+                }[] = []
+                if(articleIds && articleIds.length) refUrls = await fetchArticleUrls({db, articleId: articleIds})
                 const {usedIdeasArr, updatedBlogs, description}: any = await blogGeneration({
                     db,
                     text: !articlesData.length ? keyword : texts,
@@ -224,7 +227,9 @@ export const blogResolvers = {
                     imageUrl: imageUrl || process.env.PLACEHOLDER_IMAGE,
                     title: keyword,
                     imageSrc,
-                    ideasText
+                    ideasText,
+                    ideasArr,
+                    refUrls
                 })
                 const finalBlogObj = {
                     article_id: articleIds,
@@ -296,15 +301,9 @@ export const blogResolvers = {
                     const id: any = insertBlogIdeas.insertedId
                     blogIdeasDetails = await db.db('lilleBlogs').collection('blogIdeas').findOne({_id: new ObjectID(id)})
                 }
-                let refUrls: {
-                    url: string
-                    source: string
-                }[] = []
-                if(blogDetails) refUrls = await fetchArticleUrls({db, blog: blogDetails})
                 let endRequest = new Date()
                 let respTime = diff_minutes(endRequest, startRequest)
                 if(user && Object.keys(user).length) {
-                    const userDetails = await fetchUser({id: user.id, db})
                     const updatedCredits = ((userDetails.credits || 25) - 1)
                     await updateUserCredit({id: userDetails._id, credit: updatedCredits, db})
                     if(updatedCredits <= 0) {
@@ -350,9 +349,14 @@ export const blogResolvers = {
                 throw "@Credit exhausted"
             }
             let texts = ""
-            let articleIds: String[] = []
+            let articleIds: string[] = []
+            let ideasArr: {
+                idea: string;
+                article_id: string;
+            }[] = []
             ideas.forEach((idea, index) => {
                 if(!articleIds.includes(idea.article_id)) articleIds.push(idea.article_id)
+                ideasArr.push({idea: idea.text, article_id: idea.article_id})
                 return texts += `${index+1} - ${idea.text} \n`
             })
             console.log(articleIds, "articleIds")
@@ -380,10 +384,14 @@ export const blogResolvers = {
                                 }
                             }
                             const name = article._source?.source?.name
-                            const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
-                            const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
-                            const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
-                            tags.push(...productsTags, ...organizationTags, ...personsTags)
+                            if(article._source.driver) {
+                                tags = article._source.driver
+                            } else {
+                                const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                                const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                                const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                                tags.push(...productsTags, ...organizationTags, ...personsTags)
+                            }
                             return {
                                 used_summaries: article._source.summary.slice(0, 5),
                                 unused_summaries: article._source.summary.slice(5),
@@ -399,13 +407,19 @@ export const blogResolvers = {
             )
             // console.log(texts)
             try {
+                let refUrls: {
+                    url: string
+                    source: string
+                }[] = []
+                if(articleIds && articleIds.length) refUrls = await fetchArticleUrls({db, articleId: articleIds})
                 const {usedIdeasArr, updatedBlogs, description}: any = await blogGeneration({
                     db,
                     text: texts,
                     regenerate: true,
                     title: blog.keyword,
                     imageUrl: imageUrl ? imageUrl : blog.imageUrl,
-                    imageSrc
+                    imageSrc,
+                    refUrls
                 })
                 let newData: any = []
                 updatedBlogs.forEach((data: any, index: any) => {
@@ -457,7 +471,7 @@ export const blogResolvers = {
                     )
                 })
                 let uniqueTags: String[] = [];
-                tags.forEach((c) => {
+                tags?.forEach((c) => {
                     if (!uniqueTags.includes(c)) {
                         uniqueTags.push(c);
                     }
@@ -522,17 +536,21 @@ export const blogResolvers = {
                             Promise.all(
                                 blogIdeasDetails.freshIdeas.map(async (idea: any) => {
                                     const article = await db.db('lilleArticles').collection('articles').findOne({_id: idea.article_id})
-                                    const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
-                                    const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
-                                    const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
-                                    freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
+                                    if(article._source.driver) {
+                                        freshIdeasTags = article._source.driver
+                                    } else {
+                                        const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                                        const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                                        const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                                        freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
+                                    }
                                 })
                             )
                         )
                     }
                 }
                 let uniqueFreshIdeasTags: String[] = [];
-                freshIdeasTags.forEach((c) => {
+                freshIdeasTags?.forEach((c) => {
                     if (!uniqueFreshIdeasTags.includes(c)) {
                         uniqueFreshIdeasTags.push(c);
                     }
@@ -548,19 +566,19 @@ export const blogResolvers = {
                     const id: any = blog._id
                     blogDetails = await db.db('lilleBlogs').collection('blogs').findOne({_id: new ObjectID(id)})
                 }
-                let refUrls: {
-                    url: string
-                    source: string
-                }[] = []
+                // let refUrls: {
+                //     url: string
+                //     source: string
+                // }[] = []
                 let refUrlsFreshIdeas: {
                     url: string
                     source: string
                 }[] = []
                 let freshIdeasArticle: string[] = []
-                if(blogDetails.article_id) {
-                    let articleIdsFromAllIdeas = [...blogDetails.article_id]
-                    if(blog) refUrls = await fetchArticleUrls({db, articleId: articleIdsFromAllIdeas})
-                }
+                // if(blogDetails.article_id) {
+                //     let articleIdsFromAllIdeas = [...blogDetails.article_id]
+                //     if(blog) refUrls = await fetchArticleUrls({db, articleId: articleIdsFromAllIdeas})
+                // }
                 blogIdeasDetails?.freshIdeas?.forEach((idea: any) => idea.article_id ? freshIdeasArticle.push(idea.article_id) : false)
                 if(blogDetails && freshIdeasArticle && freshIdeasArticle.length) refUrlsFreshIdeas = await fetchArticleUrls({db, articleId: freshIdeasArticle})
                 let endRequest = new Date()
@@ -602,7 +620,7 @@ export const blogResolvers = {
             const platform = args.options.platform
             const imageUrl = args.options.imageUrl
             const imageSrc = args.options.imageSrc
-            const description = args.options.description
+            const description = args.options.description && args.options.description.replace(/\n/gi, "")
             const blogDetails = await fetchBlog({id: blogId, db})
             if(!blogDetails){
                 throw "@No blog found"
@@ -672,10 +690,11 @@ export const blogResolvers = {
                                 articles.map(async (id, index) => {
                                     const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
                                     const name = article._source?.source?.name
-                                    const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
-                                    const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
-                                    const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
-                                    tags.push(...productsTags, ...organizationTags, ...personsTags)
+                                    // const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                                    // const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                                    // const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                                    // tags.push(...productsTags, ...organizationTags, ...personsTags)
+                                    tags = article._source.driver
                                     if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
                                         imageUrl = article.proImageLink
                                         imageSrc = article._source?.orig_url
@@ -704,6 +723,11 @@ export const blogResolvers = {
                             article_ids.push(data.id)
                         })
                         try {
+                            let refUrls: {
+                                url: string
+                                source: string
+                            }[] = []
+                            if(articles && articles.length) refUrls = await fetchArticleUrls({db, articleId: articles})
                             const {updatedBlogs, description, usedIdeasArr}: any = await blogGeneration({
                                 db,
                                 text: texts,
@@ -711,7 +735,8 @@ export const blogResolvers = {
                                 title: articlesData[0]?.keyword,
                                 imageUrl,
                                 imageSrc,
-                                ideasText
+                                ideasText,
+                                refUrls
                             })
                             let uniqueTags: String[] = [];
                             tags.forEach((c) => {

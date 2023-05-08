@@ -27,11 +27,14 @@ router.post('/url', authMiddleware, async (req: any, res: any) => {
         if(article) {
             let freshIdeas: any[] = []
             let freshIdeasTags: string[] = []
-            const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
-            const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
-            const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
-            const name = article._source?.source?.name
-            freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
+            if(article._source.driver) {
+                freshIdeasTags = article._source.driver
+            } else {
+                const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
+            }
             article?._source?.summary.forEach((summary: string, index: number) => {
                 if(index < 5) {
                     freshIdeas.push({
@@ -124,10 +127,14 @@ router.post('/keyword', authMiddleware, async (req: any, res: any) => {
             Promise.all(
                 articleIds?.map(async (id: string) => {
                     const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
-                    const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
-                    const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
-                    const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
-                    freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
+                    if(article._source.driver) {
+                        freshIdeasTags = article._source.driver
+                    } else {
+                        const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                        const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                        const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                        freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
+                    }
                     const name = article._source?.source?.name
                     return (
                         article?._source?.summary?.forEach((summary: string, index: number) => index < 5 ? articlesData.push({
@@ -217,11 +224,15 @@ router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any
         if(article) {
             let freshIdeas: any[] = []
             let freshIdeasTags: string[] = []
-            const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
-            const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
-            const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+            if(article._source.driver) {
+                freshIdeasTags = article._source.driver
+            } else {
+                const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
+            }
             const name = article._source?.source?.name
-            freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
             article?._source?.summary.forEach((summary: string, index: number) => {
                 if(index < 5) {
                     freshIdeas.push({
