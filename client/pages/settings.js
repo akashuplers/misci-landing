@@ -31,6 +31,7 @@ import CreatableSelect from "react-select/creatable";
 import { addPreferances } from "../graphql/mutations/addPreferances";
 import { useMutation } from "@apollo/client";
 import Link from "next/link";
+import Modal from "react-modal";
 
 const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: false },
@@ -66,6 +67,8 @@ export default function Settings() {
   const [pref, setPref] = useState("");
   const [options, setOptions] = useState([]);
   const [isFormat, setIsFormat] = useState(false);
+  const [modalOpen, setOpenModal] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   const tabs = [
     { name: "General", href: "#", current: tab === "General" },
@@ -183,6 +186,38 @@ export default function Settings() {
   }, [meeData]);
 
   console.log("meeData", meeData);
+
+  const handleCancel = () => {
+    setProcessing(true);
+    const axios = require("axios");
+    var getToken;
+    if (typeof window !== "undefined") {
+      getToken = localStorage.getItem("token");
+    }
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: API_BASE_PATH + "/stripe/cancel-subscription",
+      headers: {
+        Authorization: "Bearer " + getToken,
+      },
+    };
+    setOpenModal(false);
+    axios
+      .request(config)
+      .then((response) => {
+        toast.success(response.data.data);
+        console.log(response.data.data);
+
+        setProcessing(false);
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 2000);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const handleUpdate = (e) => {
     if (
@@ -347,6 +382,17 @@ export default function Settings() {
     <>
       <div>
         <ToastContainer />
+        {processing && (
+          <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
+            <div className="flex flex-col items-center">
+              <div className="loader mb-4"></div>
+              <p className="text-gray-100 text-lg text-center">
+                Processing... <br />
+                Please do not refresh.
+              </p>
+            </div>
+          </div>
+        )}
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
@@ -657,6 +703,12 @@ export default function Settings() {
                                           {meeData?.me?.interval}ly
                                         </span>{" "}
                                         plan <br />
+                                        <button
+                                          className="update-button cta p-4 absolute right-0"
+                                          onClick={() => setOpenModal(true)}
+                                        >
+                                          Cancel Subscription
+                                        </button>
                                         Last Invoice Date :{" "}
                                         <span style={{ fontWeight: "600" }}>
                                           {new Date(
@@ -832,6 +884,85 @@ export default function Settings() {
                     </div>
                   </div>
                 </div>
+                <Modal
+                  isOpen={modalOpen}
+                  onRequestClose={() => setOpenModal(false)}
+                  ariaHideApp={false}
+                  className="w-[100%] sm:w-[38%] max-h-[95%]"
+                  style={{
+                    overlay: {
+                      backgroundColor: "rgba(0,0,0,0.5)",
+                      zIndex: "9999",
+                    },
+                    content: {
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      right: "auto",
+                      border: "none",
+                      background: "white",
+                      // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+                      borderRadius: "8px",
+                      height: "400px",
+                      // width: "100%",
+                      maxWidth: "450px",
+                      bottom: "",
+                      zIndex: "999",
+                      marginRight: "-50%",
+                      transform: "translate(-50%, -50%)",
+                      padding: "30px",
+                      paddingBottom: "0px",
+                    },
+                  }}
+                >
+                  <button
+                    className="absolute right-[35px]"
+                    onClick={() => setOpenModal(false)}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-6 h-6"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                  <div className="mx-auto pb-4">
+                    <img className="mx-auto h-40" src="/cancelFrame.png" />
+                  </div>
+                  <div className="mx-auto font-bold text-2xl pl-[10%]">
+                    Cancel your Subscription?
+                  </div>
+                  <p className="text-gray-500 text-base font-medium mt-4 mx-auto pl-5">
+                    Are you sure? Please read our cancellation policy
+                    for more info.
+                  </p>
+                  <div className="flex m-6">
+                    <button
+                      class="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
+                      onClick={() => {
+                        setOpenModal(false);
+                      }}
+                    >
+                      Not Now
+                    </button>
+                    <button
+                      class="w-[240px]  bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded text-sm"
+                      onClick={() => {
+                        handleCancel();
+                      }}
+                    >
+                      Cancel Subscription
+                    </button>
+                  </div>
+                </Modal>
               </main>
             </div>
           </div>
