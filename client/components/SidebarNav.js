@@ -507,7 +507,8 @@ export default function Sidebar() {
                           />
                         </svg>
                         {console.log("creditLeft", creditLeft)}
-                        {25 - creditLeft}/25 Credits used
+                        {meeData?.me?.totalCredits - creditLeft}/
+                        {meeData?.me?.totalCredits} Credits used
                       </div>
                     </div>
                   )}
