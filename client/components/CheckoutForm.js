@@ -93,7 +93,7 @@ const CheckoutForm = ({
         window.location.href = "/";
       }}
     >
-      Close
+      Cancel
     </i>
   );
 
@@ -109,6 +109,21 @@ const CheckoutForm = ({
         },
       });
       console.log(paymentMethod);
+      if (paymentMethod?.error?.message) {
+        setProcessing(false);
+        setDisabled(true);
+        setBtnClicked(false);
+        toast.error(paymentMethod?.error?.message, {
+          position: "top-center",
+          autoClose: true,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
       /*const response = await fetch(`${API_BASE_PATH}/stripe/subscribe`, {
         method: "POST",
         headers: {
@@ -151,21 +166,19 @@ const CheckoutForm = ({
         });
         if (response?.data) {
           const data = response.data;
-          console.log("85888", data.data);
-          console.log(data.data.status);
+
           if (data.data.status === "requires_action") {
             confirmPaymentFunction(data.data.clientSecret);
           }
         }
       } catch (error) {
-        console.log("9999", error.response.data.message);
-        console.log("9999", error.response);
         if (
           error?.response?.data?.message ===
           "User already exist with this email!"
         ) {
           setProcessing(false);
           setDisabled(true);
+          setBtnClicked(false);
           toast.error(
             "Your account already exists with this email.\nPlease login to your account and Upgrade!",
             {
@@ -181,26 +194,62 @@ const CheckoutForm = ({
           );
         }
       }
-
+      console.log("9999", response?.status);
       if (
         response?.response?.data?.message ===
-        "User already exist with this email!"
+        "Your card has insufficient funds."
       ) {
         setProcessing(false);
         setDisabled(true);
-        toast.error(
-          "Your account already exists with this email.\nPlease login to your account and Upgrade!",
-          {
-            position: "top-center",
-            autoClose: false,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
+        setBtnClicked(false);
+        toast.error("Your card has insufficient funds.", {
+          position: "top-center",
+          autoClose: true,
+          hideProgressBar: false,
+
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      } else {
+        if (
+          response?.response?.data?.message ===
+          "User already exist with this email!"
+        ) {
+          setProcessing(false);
+          setDisabled(true);
+          setBtnClicked(false);
+          toast.error(
+            "Your account already exists with this email.\nPlease login to your account and Upgrade!",
+            {
+              position: "top-center",
+              autoClose: false,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            }
+          );
+        } else {
+          if (response?.response?.data?.message && response?.status !== 200) {
+            setProcessing(false);
+            setDisabled(true);
+            setBtnClicked(false);
+            toast.error(response?.response?.data?.message, {
+              position: "top-center",
+              autoClose: false,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
           }
-        );
+        }
       }
     } catch (error) {
       console.log("858", error);

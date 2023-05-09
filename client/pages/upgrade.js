@@ -11,11 +11,10 @@ import CheckoutFormUpgrade from "../components/CheckoutFormUpgrade";
 import Layout from "../components/Layout";
 import axios from "axios";
 import { API_BASE_PATH } from "../constants/apiEndpoints";
+import { STRIPE_PROMISE } from "@/constants";
 
 export default function Upgrade() {
-  const stripePromise = loadStripe(
-    "pk_live_bwfVzni2J7IZ7tLiBYfxs6dP00vedeE77c"
-  );
+  const stripePromise = loadStripe(STRIPE_PROMISE);
   const [priceData, setPriceData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [clickOnSubscibe, setClickOnSubscibe] = useState(false);

@@ -118,84 +118,113 @@ export default function TinyMCEEditor({
   ] = useMutation(updateBlog);
 
   const handleSave = async () => {
-    var getToken;
+    var getToken, ispaid, credits;
     if (typeof window !== "undefined") {
       window.addEventListener("beforeunload", (event) => {
         event.preventDefault();
         event.returnValue = null;
       });
+      ispaid = localStorage.getItem("ispaid");
       getToken = localStorage.getItem("token");
+      credits = localStorage.getItem("credits");
     }
+    console.log(
+      "****--",
+      ispaid === "true",
+      credits !== "0",
+      ispaid === "true" || credits !== "0"
+    );
+    if (ispaid === "true" || credits !== "0") {
+      if (getToken) {
+        setSaveLoad(true);
 
-    if (getToken) {
-      setSaveLoad(true);
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(updatedText, "text/html");
+        const img = doc.querySelector("img");
+        const src = img.getAttribute("src");
 
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(updatedText, "text/html");
-      const img = doc.querySelector("img");
-      const src = img.getAttribute("src");
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = updatedText;
+        const elementsToRemove = tempDiv.querySelectorAll("h3");
+        for (let i = 0; i < elementsToRemove.length; i++) {
+          const element = elementsToRemove[i];
+          element.parentNode.removeChild(element);
+        }
+        const elementsToRemove2 = tempDiv.querySelectorAll("a");
+        for (let i = 0; i < elementsToRemove2.length; i++) {
+          const element = elementsToRemove2[i];
+          element.parentNode.removeChild(element);
+        }
+        const textContent = tempDiv.textContent;
 
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = updatedText;
-      const elementsToRemove = tempDiv.querySelectorAll("h3");
-      for (let i = 0; i < elementsToRemove.length; i++) {
-        const element = elementsToRemove[i];
-        element.parentNode.removeChild(element);
-      }
-      const elementsToRemove2 = tempDiv.querySelectorAll("a");
-      for (let i = 0; i < elementsToRemove2.length; i++) {
-        const element = elementsToRemove2[i];
-        element.parentNode.removeChild(element);
-      }
-      const textContent = tempDiv.textContent;
-
-      const jsonDoc = htmlToJson(updatedText, imageURL).children;
-      const formatedJSON = { children: [...jsonDoc] };
-      UpdateBlog({
-        variables: {
-          options: {
-            tinymce_json: formatedJSON,
-            blog_id: blog_id,
-            platform: option === "blog" ? "wordpress" : option,
-            imageUrl: src,
-            imageSrc: imageURL ? null : imageURL,
-            description: textContent,
+        const jsonDoc = htmlToJson(updatedText, imageURL).children;
+        const formatedJSON = { children: [...jsonDoc] };
+        UpdateBlog({
+          variables: {
+            options: {
+              tinymce_json: formatedJSON,
+              blog_id: blog_id,
+              platform: option === "blog" ? "wordpress" : option,
+              imageUrl: src,
+              imageSrc: imageURL ? null : imageURL,
+              description: textContent,
+            },
           },
-        },
-        context: {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + getToken,
+          context: {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken,
+            },
           },
-        },
-      })
-        .then(() => {
-          console.log(">>", window.location);
-          if (window.location.pathname !== "/dashboard/" + blog_id)
-            window.location.href = "/dashboard/" + blog_id;
-          // router.push("/dashboard/" + blog_id);
         })
-        .catch((err) => {
-          //console.log(err);
-        })
-        .finally(() => {
-          toast.success("Saved!!", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
+          .then(() => {
+            console.log(">>", window.location);
+            if (window.location.pathname !== "/dashboard/" + blog_id)
+              window.location.href = "/dashboard/" + blog_id;
+            // router.push("/dashboard/" + blog_id);
+          })
+          .catch((err) => {
+            //console.log(err);
+          })
+          .finally(() => {
+            toast.success("Saved!!", {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+            setSaveLoad(false);
+            setSaveText("Saved!");
           });
-          setSaveLoad(false);
-          setSaveText("Saved!");
-        });
-      setAuthenticationModalOpen(false);
+        setAuthenticationModalOpen(false);
+      } else {
+        setAuthneticationModalType("signup");
+        setAuthenticationModalOpen(true);
+      }
     } else {
-      setAuthneticationModalType("signup");
-      setAuthenticationModalOpen(true);
+      if (!getToken) {
+        setAuthneticationModalType("signup");
+        setAuthenticationModalOpen(true);
+      } else {
+        toast.error("Looks like you don't have credit left..", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 3000);
+      }
     }
   };
 
