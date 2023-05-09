@@ -65,7 +65,7 @@ const TrialEndedModal = ({ setTrailModal, topic }) => {
             </svg>
           </Link>
         </div>
-        {topic === undefined ? (
+        {topic === null ? (
           <button
             className={styles.close}
             onClick={() => {
