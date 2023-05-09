@@ -439,7 +439,9 @@ export default function TinyMCEEditor({
   return (
     <>
       <ToastContainer />
-      {trailModal && <TrialEndedModal setTrailModal={setTrailModal} />}
+      {trailModal && (
+        <TrialEndedModal setTrailModal={setTrailModal} topic={null} />
+      )}
       <Modal
         isOpen={editingMode}
         onRequestClose={() => {
