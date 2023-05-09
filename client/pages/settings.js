@@ -935,13 +935,13 @@ export default function Settings() {
                     </svg>
                   </button>
                   <div className="mx-auto pb-4">
-                    <img className="mx-auto h-40" src="/cancelFrame.png" />
+                    <img className="mx-auto h-40" src="/Cancellation.svg" />
                   </div>
                   <div className="mx-auto font-bold text-2xl pl-[10%]">
                     Cancel your Subscription?
                   </div>
                   <p className="text-gray-500 text-base font-medium mt-4 mx-auto pl-5">
-                    Are you sure? Please read our cancellation policy
+                    Are you sure? Please read our <Link href="/cancellation-policy" className='font-bold' target="_blank">cancellation policy</Link>
                     for more info.
                   </p>
                   <div className="flex m-6">
