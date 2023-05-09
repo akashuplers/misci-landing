@@ -31,7 +31,7 @@ const useStore = create((set) => ({
   updateCredit: async () => {
     let data = JSON.stringify({
       query:
-        "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n  profileImage\n   interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  prefFilled\n }\n}",
+        "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n  profileImage\n   interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  prefFilled\n totalCredits\n }\n}",
     });
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");

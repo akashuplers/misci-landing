@@ -479,7 +479,7 @@ export default function Sidebar() {
                     gap: "2em",
                   }}
                 >
-                  {!meeData?.me?.isSubscribed && !meeLoading && (
+                  {!meeData?.me?.paid && !meeLoading && (
                     <div
                       className="flex text-center font-bold text-sm w-auto rounded border border-gray"
                       href="/settings"
@@ -507,7 +507,8 @@ export default function Sidebar() {
                           />
                         </svg>
                         {console.log("creditLeft", creditLeft)}
-                        {25 - creditLeft}/25 Credits used
+                        {meeData?.me?.totalCredits - creditLeft}/
+                        {meeData?.me?.totalCredits} Credits used
                       </div>
                     </div>
                   )}

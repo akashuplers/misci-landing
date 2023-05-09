@@ -11,15 +11,14 @@ import { Elements } from "@stripe/react-stripe-js";
 import { useLocation, useParams } from "react-router-dom";
 import CheckoutForm from "../components/CheckoutForm";
 import Navbar from "../components/Navbar";
+import { STRIPE_PROMISE } from "@/constants";
 
 Subscription.getInitialProps = ({ query }) => {
   return { query };
 };
 
 export default function Subscription({ query }) {
-  const stripePromise = loadStripe(
-    "pk_live_bwfVzni2J7IZ7tLiBYfxs6dP00vedeE77c"
-  );
+  const stripePromise = loadStripe(STRIPE_PROMISE);
   const [plans, setPlans] = useState([]);
 
   const [currentPlan, setCurrentPlan] = useState(JSON.parse(query.currentPlan));
