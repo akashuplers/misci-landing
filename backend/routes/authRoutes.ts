@@ -172,6 +172,7 @@ router.post("/user/create", async (req: any, res: any) => {
       data.isDemoUser = false;
       data.admin = 'N';
       data.name = data.firstName;
+      data.premium = false;
       // add the date
       data.date = new Date();
       if(data.tempUserId) {

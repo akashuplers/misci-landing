@@ -19,6 +19,7 @@ type User {
     credits: Int
     prefFilled: Boolean
     profileImage: String
+    totalCredits: Int
 }
 type Query {
     me: User!
