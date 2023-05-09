@@ -38,7 +38,9 @@ export const usersResolver = {
                 freeTrailEndsDate: userDetails.freeTrailEndsDate,
                 freeTrialDays: (parseInt(process.env.FREE_TRIAL_END || '14') - totalDay),
                 prefFilled: userPref && userPref.prefFilled ? userPref.prefFilled : false,
-                profileImage: userDetails.profileImage || null
+                profileImage: userDetails.profileImage || null,
+                premium: userDetails.premium || false,
+                totalCredits: userDetails.premium ? process.env.PREMIUM_CREDIT_COUNT : process.env.CREDIT_COUNT
             }
         }
     },
