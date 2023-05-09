@@ -131,7 +131,7 @@ export default function Home() {
         )}
 
         {!meeData?.me?.paid && meeData?.me?.credits === 0 && (
-          <TrialEndedModal setTrailModal={() => {}} />
+          <TrialEndedModal setTrailModal={() => {}} topic={null} />
         )}
         <div className={`relative px-6 pt-5 lg:px-8`}>
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">

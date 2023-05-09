@@ -621,7 +621,9 @@ export default function DashboardInsights({
         handleSave={() => (window.location = "/dashboard/" + blog_id)}
         bid={blog_id}
       />
-      {creditModal && <TrialEndedModal setTrailModal={setCreditModal} />}
+      {creditModal && (
+        <TrialEndedModal setTrailModal={setCreditModal} topic={null} />
+      )}
       <div className="text-xs px-2" style={{ borderLeft: "2px solid #d2d2d2" }}>
         <div className="flex justify-between gap-[1.25em]">
           <p className="font-normal w-[70%]">
