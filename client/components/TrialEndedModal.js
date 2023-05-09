@@ -4,7 +4,8 @@ import styles from "./styles/trial-ended-modal.module.css";
 import ReactModal from "react-modal";
 import Link from "next/link";
 
-const TrialEndedModal = ({ setTrailModal }) => {
+const TrialEndedModal = ({ setTrailModal, topic }) => {
+  console.log(";;", topic);
   const [open, setOpen] = useState(true);
 
   return (
@@ -64,15 +65,26 @@ const TrialEndedModal = ({ setTrailModal }) => {
             </svg>
           </Link>
         </div>
-        <button
-          className={styles.close}
-          onClick={() => {
-            setOpen((prev) => !prev);
-            setTrailModal(false);
-          }}
-        >
-          CLOSE
-        </button>
+        {topic === undefined ? (
+          <button
+            className={styles.close}
+            onClick={() => {
+              setOpen((prev) => !prev);
+              setTrailModal(false);
+            }}
+          >
+            CLOSE
+          </button>
+        ) : (
+          <button
+            className={styles.close}
+            onClick={() => {
+              window.location.href = "/";
+            }}
+          >
+            CLOSE
+          </button>
+        )}
         <svg
           className={styles.clock}
           xmlns="http://www.w3.org/2000/svg"
