@@ -69,9 +69,25 @@ export default function AuthenticationModal({
           "Content-type": "application/json",
         },
       })
-      .then((response) => response.data)
-      .then((response) => {
-        console.log(response);
+      .then((res) => {
+        const response = res.data;
+        console.log("res", res);
+        if (res?.response?.data?.message && res?.response?.status !== 200) {
+          const errorMessage = res.response.data.message;
+          toast.error("Error : " + errorMessage, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          if (errorMessage === `Could not find account: ${loginData.email}`) {
+            setType("signup");
+          }
+        }
         if (response?.data?.accessToken) {
           redirectPageAfterLogin(response?.data?.accessToken);
           toast.success("Successfully Logged in", {
@@ -94,7 +110,7 @@ export default function AuthenticationModal({
       })
       .catch((error) => {
         const errorMessage =
-          !error.response.data.success && error.response.data.message;
+          !error?.response?.data?.success && error?.response?.data?.message;
         if (errorMessage != null) {
           toast.error("Error : " + errorMessage, {
             position: "top-center",
@@ -146,12 +162,14 @@ export default function AuthenticationModal({
           headers: myHeaders,
         })
         .then((response) => response.data)
-        .then((response) =>
+        .then((response) => {
+          localStorage.setItem("ispaid", response.data.me.paid);
+          localStorage.setItem("credits", response.data.me.credits);
           localStorage.setItem(
             "userId",
             JSON.stringify(response.data.me._id).replace(/['"]+/g, "")
-          )
-        )
+          );
+        })
         .catch((error) => console.error(error))
         .finally(() => {
           if (window.location.pathname === "/dashboard") {
@@ -409,7 +427,7 @@ export default function AuthenticationModal({
                 className="text-center p-4 border flex flex-col space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
                 onClick={handleGoogleSignUp}
                 style={{
-                  borderColor : "#c9d0d9"
+                  borderColor: "#c9d0d9",
                 }}
               >
                 <img
@@ -425,7 +443,7 @@ export default function AuthenticationModal({
                 className="text-center p-4 border flex flex-col space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
                 onClick={handleLinkedinSignUp}
                 style={{
-                  borderColor : "#c9d0d9"
+                  borderColor: "#c9d0d9",
                 }}
               >
                 <img
@@ -578,7 +596,9 @@ export default function AuthenticationModal({
                       id="remember"
                       className="w-4 h-4 border-slate-300 focus:bg-indigo-600"
                     />
-                    <p className="text-sm  pl-2 inline-block !relative !top-0 !left-0">Remember me</p>
+                    <p className="text-sm  pl-2 inline-block !relative !top-0 !left-0">
+                      Remember me
+                    </p>
                   </label>
                 </div>
                 {type === "login" && (
