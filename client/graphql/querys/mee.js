@@ -23,6 +23,7 @@ export const meeAPI = gql`
       prefFilled
       profileImage
       prefData
+      totalCredits
     }
   }
 `;
