@@ -691,7 +691,7 @@ export default function Settings() {
                                     </span>
                                   </dd>
                                 </div>
-                                {meeData?.me?.paid && (
+                                {meeData?.me?.isSubscribed && (
                                   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:border-b sm:border-gray-200 sm:py-5">
                                     <dt className="text-sm font-medium text-gray-500">
                                       Susbcription Details
@@ -703,26 +703,41 @@ export default function Settings() {
                                           {meeData?.me?.interval}ly
                                         </span>{" "}
                                         plan <br />
-                                        <button
-                                          className="update-button cta p-4 absolute right-0"
-                                          onClick={() => setOpenModal(true)}
-                                        >
-                                          Cancel Subscription
-                                        </button>
-                                        Last Invoice Date :{" "}
-                                        <span style={{ fontWeight: "600" }}>
-                                          {new Date(
-                                            meeData?.me?.lastInvoicedDate * 1000
-                                          ).toLocaleDateString("in-IN")}
-                                        </span>{" "}
-                                        <br />
-                                        Next Invoice Date :{" "}
-                                        <span style={{ fontWeight: "600" }}>
-                                          {new Date(
-                                            meeData?.me?.upcomingInvoicedDate *
-                                              1000
-                                          ).toLocaleDateString("in-IN")}
-                                        </span>
+                                        {meeData?.me?.paid ? (
+                                          <>
+                                            <button
+                                              className="update-button cta p-4 absolute right-0"
+                                              onClick={() => setOpenModal(true)}
+                                            >
+                                              Cancel Subscription
+                                            </button>
+                                            Last Invoice Date :{" "}
+                                            <span style={{ fontWeight: "600" }}>
+                                              {new Date(
+                                                meeData?.me?.lastInvoicedDate *
+                                                  1000
+                                              ).toLocaleDateString("in-IN")}
+                                            </span>{" "}
+                                            <br />
+                                            Next Invoice Date :{" "}
+                                            <span style={{ fontWeight: "600" }}>
+                                              {new Date(
+                                                meeData?.me
+                                                  ?.upcomingInvoicedDate * 1000
+                                              ).toLocaleDateString("in-IN")}
+                                            </span>
+                                          </>
+                                        ) : (
+                                          <>
+                                            Last Date of Subscription :{" "}
+                                            <span style={{ fontWeight: "600" }}>
+                                              {new Date(
+                                                meeData?.me
+                                                  ?.upcomingInvoicedDate * 1000
+                                              ).toLocaleDateString("in-IN")}
+                                            </span>
+                                          </>
+                                        )}
                                       </span>
                                     </dd>
                                   </div>
@@ -791,7 +806,7 @@ export default function Settings() {
                               </dl>
                             </div>
                           </div>
-                        ) : meeData?.me?.paid ? (
+                        ) : meeData?.me?.isSubscribed ? (
                           <div className="mt-10 divide-y divide-gray-200">
                             <div className="space-y-1">
                               <h3 className="text-lg font-medium leading-6 text-gray-900">
@@ -941,7 +956,14 @@ export default function Settings() {
                     Cancel your Subscription?
                   </div>
                   <p className="text-gray-500 text-base font-medium mt-4 mx-auto pl-5">
-                    Are you sure? Please read our <Link href="/cancellation-policy" className='font-bold' target="_blank">cancellation policy</Link>
+                    Are you sure? Please read our{" "}
+                    <Link
+                      href="/cancellation-policy"
+                      className="font-bold"
+                      target="_blank"
+                    >
+                      cancellation policy
+                    </Link>
                     for more info.
                   </p>
                   <div className="flex m-6">
