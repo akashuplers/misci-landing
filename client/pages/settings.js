@@ -700,7 +700,7 @@ export default function Settings() {
                                       <span className="flex-grow">
                                         You are on a{" "}
                                         <span style={{ fontWeight: "600" }}>
-                                          {meeData?.me?.interval}ly
+                                          {meeData?.me?.interval}
                                         </span>{" "}
                                         plan <br />
                                         {meeData?.me?.paid ? (
