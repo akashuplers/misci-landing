@@ -700,7 +700,9 @@ export default function Settings() {
                                       <span className="flex-grow">
                                         You are on a{" "}
                                         <span style={{ fontWeight: "600" }}>
-                                          {meeData?.me?.interval}ly
+                                          {meeData?.me?.interval === "year"
+                                            ? meeData?.me?.interval + "ly"
+                                            : meeData?.me?.interval}
                                         </span>{" "}
                                         plan <br />
                                         {meeData?.me?.paid ? (
@@ -831,7 +833,10 @@ export default function Settings() {
                                       console.log(
                                         "String contains only alphabets and numbers."
                                       );
-                                      setIsFormat(false);
+
+                                      setIsFormat(
+                                        newValue.length > 100 || false
+                                      );
                                     } else {
                                       console.log(
                                         "String contains other characters."
