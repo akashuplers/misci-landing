@@ -163,7 +163,7 @@ export default function AuthenticationModal({
         })
         .then((response) => response.data)
         .then((response) => {
-          localStorage.setItem("ispaid", response.data.me.paid);
+          localStorage.setItem("ispaid", response.data.me.isSubscribed);
           localStorage.setItem("credits", response.data.me.credits);
           localStorage.setItem(
             "userId",
