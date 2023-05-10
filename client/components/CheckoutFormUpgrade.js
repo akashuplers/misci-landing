@@ -151,7 +151,7 @@ const CheckoutFormUpgrade = ({
               setDisabled(false);
               setBtnClicked(false);
               setClickOnSubscibe(false);
-              toast.error("Error : " + errorMessage, {
+              toast.error(errorMessage, {
                 position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
