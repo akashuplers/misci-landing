@@ -74,7 +74,7 @@ export default function AuthenticationModal({
         console.log("res", res);
         if (res?.response?.data?.message && res?.response?.status !== 200) {
           const errorMessage = res.response.data.message;
-          toast.error("Error : " + errorMessage, {
+          toast.error(errorMessage, {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -112,7 +112,7 @@ export default function AuthenticationModal({
         const errorMessage =
           !error?.response?.data?.success && error?.response?.data?.message;
         if (errorMessage != null) {
-          toast.error("Error : " + errorMessage, {
+          toast.error(errorMessage, {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -234,7 +234,7 @@ export default function AuthenticationModal({
         if (res?.response?.data?.message && res?.response?.status !== 200) {
           const errorMessage = res.response.data.message;
           if (res?.response?.data?.errors?.email) {
-            toast.error("Error : " + res?.response?.data?.errors?.email, {
+            toast.error(res?.response?.data?.errors?.email, {
               position: "top-center",
               autoClose: 5000,
               hideProgressBar: false,
@@ -245,7 +245,7 @@ export default function AuthenticationModal({
               theme: "light",
             });
           } else {
-            toast.error("Error : " + errorMessage, {
+            toast.error(errorMessage, {
               position: "top-center",
               autoClose: 5000,
               hideProgressBar: false,
@@ -282,7 +282,7 @@ export default function AuthenticationModal({
         const errorMessage =
           error?.response?.data?.error && error?.response?.data?.message;
         if (errorMessage != null) {
-          toast.error("Error : " + errorMessage, {
+          toast.error(errorMessage, {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
