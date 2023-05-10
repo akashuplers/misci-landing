@@ -826,7 +826,7 @@ export default function Settings() {
                                   defaultValue={selectedOption}
                                   isMulti
                                   onInputChange={(newValue) => {
-                                    let pattern = /^[a-zA-Z0-9]+$/;
+                                    let pattern = /^[a-zA-Z0-9\s]+$/;
                                     if (pattern.test(newValue)) {
                                       console.log(
                                         "String contains only alphabets and numbers."
@@ -962,7 +962,7 @@ export default function Settings() {
                       className="font-bold"
                       target="_blank"
                     >
-                      cancellation policy
+                      cancellation policy{" "}
                     </Link>
                     for more info.
                   </p>
