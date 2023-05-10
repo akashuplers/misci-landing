@@ -131,8 +131,9 @@ const CheckoutFormUpgrade = ({
           .post(API_BASE_PATH + "/stripe/upgrade", requestBody, {
             headers: myHeaders,
           })
-          .then((res) => res.data)
-          .then((data) => {
+          .then((res) => {
+            console.log(res, "888");
+            const data = res.data;
             console.log(data.data);
             console.log(data.data.status);
             if (data.data.status === "requires_action") {
@@ -143,9 +144,13 @@ const CheckoutFormUpgrade = ({
             }
           })
           .catch((error) => {
-            const errorMessage =
-              error.response.data.error && error.response.data.message;
+            console.log("error", error);
+            const errorMessage = error?.response?.data?.data;
             if (errorMessage != null) {
+              setProcessing(false);
+              setDisabled(false);
+              setBtnClicked(false);
+              setClickOnSubscibe(false);
               toast.error("Error : " + errorMessage, {
                 position: "top-center",
                 autoClose: 5000,
