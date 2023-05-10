@@ -228,26 +228,59 @@ export default function AuthenticationModal({
           "Content-type": "application/json",
         },
       })
-      .then((response) => response.data)
-      .then((response) => {
-        console.log(response);
-        if (response.error) return;
-        handleLoginSubmit(event, signUpFormData.email, signUpFormData.password);
-        setModalIsOpen(false);
-        toast.success(response.message, {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+      .then((res) => {
+        console.log("9998", res);
+        const response = res.data;
+        if (res?.response?.data?.message && res?.response?.status !== 200) {
+          const errorMessage = res.response.data.message;
+          if (res?.response?.data?.errors?.email) {
+            toast.error("Error : " + res?.response?.data?.errors?.email, {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+          } else {
+            toast.error("Error : " + errorMessage, {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+          }
+          if (errorMessage === `Could not find account: ${loginData.email}`) {
+            setType("signup");
+          }
+        } else {
+          handleLoginSubmit(
+            event,
+            signUpFormData.email,
+            signUpFormData.password
+          );
+          setModalIsOpen(false);
+          toast.success(response.message, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        }
       })
       .catch((error) => {
         const errorMessage =
-          error.response.data.error && error.response.data.message;
+          error?.response?.data?.error && error?.response?.data?.message;
         if (errorMessage != null) {
           toast.error("Error : " + errorMessage, {
             position: "top-center",
