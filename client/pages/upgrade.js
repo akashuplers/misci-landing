@@ -181,7 +181,7 @@ export default function Upgrade() {
                       </div>
                       <div className="h-[2px] mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px] hidden md:block"></div>
 
-                      <div className="flex  flex-col items-start justify-start mt-4 hidden md:block">
+                      <div className="flex  flex-col items-start justify-start mt-4 hidden md:block text-left">
                         <div className="flex align-middle">
                           {/* <img
                         className="h-[18px] mr-3"
@@ -190,7 +190,7 @@ export default function Upgrade() {
                         srcset=""
                       /> */}
                           <p className=" text-[18px] font-medium mb-4">
-                            Unlimited Automation
+                            Unlimited ideas generation for blog generation
                           </p>
                         </div>
                         <div className="flex align-middle">
@@ -201,7 +201,7 @@ export default function Upgrade() {
                         srcset=""
                       /> */}
                           <p className=" text-[18px] font-medium mb-4">
-                            24/7 hours support
+                            Create/Regenrate Unlimited Blogs
                           </p>
                         </div>
                         <div className="flex align-middle">
@@ -212,7 +212,7 @@ export default function Upgrade() {
                         srcset=""
                       /> */}
                           <p className=" text-[18px] font-medium mb-4">
-                            Access of 50 Summaries
+                            Unlimited publishing on top social media platforms
                           </p>
                         </div>
                         <div className="flex align-middle">
@@ -223,7 +223,8 @@ export default function Upgrade() {
                         srcset=""
                       /> */}
                           <p className=" text-[18px] font-medium mb-4">
-                            Create Unlimited Notes
+                            Customization possibilities, Talk to our support
+                            team
                           </p>
                         </div>
                         <div className="flex align-middle">
@@ -233,9 +234,9 @@ export default function Upgrade() {
                         alt=""
                         srcset=""
                       /> */}
-                          <p className=" text-[18px] font-medium mb-4">
+                          {/* <p className=" text-[18px] font-medium mb-4">
                             Unlimited access of Topic Monitoring
-                          </p>
+                          </p> */}
                         </div>
                       </div>
                     </div>

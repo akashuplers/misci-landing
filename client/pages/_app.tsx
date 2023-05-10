@@ -103,6 +103,7 @@ export default function App({ Component, pageProps }: AppProps) {
     "/subscription",
     "/public/[bid]",
     "/resetPass",
+    "/cancellation-policy"
   ];
 
   useEffect(() => {
