@@ -96,53 +96,70 @@ const CheckoutFormUpgrade = ({
         },
       });
       console.log(paymentMethod);
-      var getToken;
-      if (typeof window !== "undefined") {
-        getToken = localStorage.getItem("token");
-      }
-      const myHeaders = {
-        Authorization: `Bearer ${getToken}`,
-        "Content-Type": "application/json",
-      };
-
-      const requestBody = {
-        paymentMethodId: paymentMethod?.paymentMethod?.id,
-        priceId: priceId,
-        interval: interval,
-      };
-
-      axios
-        .post(API_BASE_PATH + "/stripe/upgrade", requestBody, {
-          headers: myHeaders,
-        })
-        .then((res) => res.data)
-        .then((data) => {
-          console.log(data.data);
-          console.log(data.data.status);
-          if (data.data.status === "requires_action") {
-            confirmPaymentFunction(
-              data.data.clientSecret,
-              data.data.subscriptionId
-            );
-          }
-        })
-        .catch((error) => {
-          const errorMessage =
-            error.response.data.error && error.response.data.message;
-          if (errorMessage != null) {
-            toast.error("Error : " + errorMessage, {
-              position: "top-center",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            });
-          }
-          console.error("Error : ", error.response);
+      if (paymentMethod?.error?.message) {
+        setProcessing(false);
+        setDisabled(false);
+        setBtnClicked(false);
+        setClickOnSubscibe(false);
+        toast.error(paymentMethod?.error?.message, {
+          position: "top-center",
+          autoClose: true,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
         });
+      } else {
+        var getToken;
+        if (typeof window !== "undefined") {
+          getToken = localStorage.getItem("token");
+        }
+        const myHeaders = {
+          Authorization: `Bearer ${getToken}`,
+          "Content-Type": "application/json",
+        };
+
+        const requestBody = {
+          paymentMethodId: paymentMethod?.paymentMethod?.id,
+          priceId: priceId,
+          interval: interval,
+        };
+
+        axios
+          .post(API_BASE_PATH + "/stripe/upgrade", requestBody, {
+            headers: myHeaders,
+          })
+          .then((res) => res.data)
+          .then((data) => {
+            console.log(data.data);
+            console.log(data.data.status);
+            if (data.data.status === "requires_action") {
+              confirmPaymentFunction(
+                data.data.clientSecret,
+                data.data.subscriptionId
+              );
+            }
+          })
+          .catch((error) => {
+            const errorMessage =
+              error.response.data.error && error.response.data.message;
+            if (errorMessage != null) {
+              toast.error("Error : " + errorMessage, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+            }
+            console.error("Error : ", error.response);
+          });
+      }
     } catch (error) {
       console.log(error);
     }
