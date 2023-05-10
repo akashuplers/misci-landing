@@ -543,8 +543,8 @@ export default function AuthenticationModal({
                       id="password"
                       name="password"
                       type="password"
-                      title="Password should be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number and a Special characters"
-                      pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).{8,}$"
+                      // title="Password should be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number and a Special characters"
+                      // pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).{8,}$"
                       value={loginFormData.password}
                       onChange={handleLoginChange}
                       className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
