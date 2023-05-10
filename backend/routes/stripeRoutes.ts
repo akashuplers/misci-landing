@@ -254,9 +254,21 @@ router.post('/cancel-subscription', authMiddleware, async (request: any, reply: 
     const db = request.app.get('db')
     const user = request.user;
     if(!user) throw "No user found!"
+    const userDetails = await db.db('lilleAdmin').collection('users').findOne({
+        _id: new ObjectID(user._id)
+    }, {
+        projection: {
+            _id: 1,
+            lastInvoicedDate: 1,
+            upcomingInvoicedDate: 1,
+            isSubscribed: 1,
+            paid: 1
+        }
+    })
     const latestSubsDetails = await db.db('lilleAdmin').collection('subscriptions').find({user: new ObjectID(user._id), subscriptionStatus: "active"}).sort({lastInvoicedDate: -1}).limit(1).toArray()
     try {
         const updatedSubs = await new Stripe().cancelSubscription(latestSubsDetails[0].subscriptionId)
+        const currentTimeStamp = getTimeStamp()
         console.log(updatedSubs, "from cancel")
         await db.db('lilleAdmin')
             .collection('subscriptions')
@@ -264,6 +276,15 @@ router.post('/cancel-subscription', authMiddleware, async (request: any, reply: 
         await db.db('lilleAdmin')
             .collection('users')
             .updateOne({_id: new ObjectID(latestSubsDetails[0].user)}, {$set: {paid: false}})
+        if(userDetails.isSubscribed && userDetails.upcomingInvoicedDate && currentTimeStamp > userDetails.upcomingInvoicedDate) {
+            console.log(`Cancelling subscription for user ${userDetails.email}`)
+            await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(userDetails._id)}, {
+                $set: {
+                    isSubscribed: false,
+                    freeTrial: true
+                }
+            })
+        }    
         const bodyText = await db.db('lilleAdmin').collection('emailTexts').findOne({type: "cancel_subscription"})
         await sendMail(user, "Subscription Canceled", bodyText.text)
         return reply.status(200).send({
