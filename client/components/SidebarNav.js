@@ -328,7 +328,7 @@ export default function Sidebar() {
                 ))}
               </nav>
             </div>
-            {!meeData?.me?.paid && !meeLoading && (
+            {!meeData?.me?.isSubscribed && !meeLoading && (
               <div className="flex flex-shrink-0 pb-0 pt-4">
                 <Link
                   href="/upgrade"
@@ -479,7 +479,7 @@ export default function Sidebar() {
                     gap: "2em",
                   }}
                 >
-                  {!meeData?.me?.paid && !meeLoading && (
+                  {!meeData?.me?.isSubscribed && !meeLoading && (
                     <div
                       className="flex text-center font-bold text-sm w-auto rounded border border-gray"
                       href="/settings"
