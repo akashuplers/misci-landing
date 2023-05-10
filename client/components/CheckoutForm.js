@@ -111,8 +111,9 @@ const CheckoutForm = ({
       console.log(paymentMethod);
       if (paymentMethod?.error?.message) {
         setProcessing(false);
-        setDisabled(true);
+        setDisabled(false);
         setBtnClicked(false);
+
         toast.error(paymentMethod?.error?.message, {
           position: "top-center",
           autoClose: true,
@@ -123,8 +124,8 @@ const CheckoutForm = ({
           progress: undefined,
           theme: "light",
         });
-      }
-      /*const response = await fetch(`${API_BASE_PATH}/stripe/subscribe`, {
+      } else {
+        /*const response = await fetch(`${API_BASE_PATH}/stripe/subscribe`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -147,107 +148,108 @@ const CheckoutForm = ({
           }
         })
         .catch((err) => console.log(err));*/
-      var response;
-      try {
-        response = await axios({
-          method: "post",
-          url: `${API_BASE_PATH}/stripe/subscribe`,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          data: {
-            paymentMethodId: paymentMethod?.paymentMethod?.id,
-            firstName: firstName,
-            lastName: lastName,
-            tempUserId: tempUserId,
-            email: email,
-            priceId: priceId,
-          },
-        });
-        if (response?.data) {
-          const data = response.data;
+        var response;
+        try {
+          response = await axios({
+            method: "post",
+            url: `${API_BASE_PATH}/stripe/subscribe`,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            data: {
+              paymentMethodId: paymentMethod?.paymentMethod?.id,
+              firstName: firstName,
+              lastName: lastName,
+              tempUserId: tempUserId,
+              email: email,
+              priceId: priceId,
+            },
+          });
+          if (response?.data) {
+            const data = response.data;
 
-          if (data.data.status === "requires_action") {
-            confirmPaymentFunction(data.data.clientSecret);
+            if (data.data.status === "requires_action") {
+              confirmPaymentFunction(data.data.clientSecret);
+            }
+          }
+        } catch (error) {
+          if (
+            error?.response?.data?.message ===
+            "User already exist with this email!"
+          ) {
+            setProcessing(false);
+            setDisabled(false);
+            setBtnClicked(false);
+            toast.error(
+              "Your account already exists with this email.\nPlease login to your account and Upgrade!",
+              {
+                position: "top-center",
+                autoClose: false,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              }
+            );
           }
         }
-      } catch (error) {
-        if (
-          error?.response?.data?.message ===
-          "User already exist with this email!"
-        ) {
-          setProcessing(false);
-          setDisabled(true);
-          setBtnClicked(false);
-          toast.error(
-            "Your account already exists with this email.\nPlease login to your account and Upgrade!",
-            {
-              position: "top-center",
-              autoClose: false,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            }
-          );
-        }
-      }
-      console.log("9999", response?.status);
-      if (
-        response?.response?.data?.message ===
-        "Your card has insufficient funds."
-      ) {
-        setProcessing(false);
-        setDisabled(true);
-        setBtnClicked(false);
-        toast.error("Your card has insufficient funds.", {
-          position: "top-center",
-          autoClose: true,
-          hideProgressBar: false,
-
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-      } else {
+        console.log("9999", response?.status);
         if (
           response?.response?.data?.message ===
-          "User already exist with this email!"
+          "Your card has insufficient funds."
         ) {
           setProcessing(false);
-          setDisabled(true);
+          setDisabled(false);
           setBtnClicked(false);
-          toast.error(
-            "Your account already exists with this email.\nPlease login to your account and Upgrade!",
-            {
-              position: "top-center",
-              autoClose: false,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            }
-          );
+          toast.error("Your card has insufficient funds.", {
+            position: "top-center",
+            autoClose: true,
+            hideProgressBar: false,
+
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
         } else {
-          if (response?.response?.data?.message && response?.status !== 200) {
+          if (
+            response?.response?.data?.message ===
+            "User already exist with this email!"
+          ) {
             setProcessing(false);
-            setDisabled(true);
+            setDisabled(false);
             setBtnClicked(false);
-            toast.error(response?.response?.data?.message, {
-              position: "top-center",
-              autoClose: false,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            });
+            toast.error(
+              "Your account already exists with this email.\nPlease login to your account and Upgrade!",
+              {
+                position: "top-center",
+                autoClose: false,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              }
+            );
+          } else {
+            if (response?.response?.data?.message && response?.status !== 200) {
+              setProcessing(false);
+              setDisabled(false);
+              setBtnClicked(false);
+              toast.error(response?.response?.data?.message, {
+                position: "top-center",
+                autoClose: false,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+            }
           }
         }
       }
