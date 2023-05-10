@@ -10,6 +10,16 @@ import { toast, ToastContainer } from "react-toastify";
 import { meeAPI } from "../graphql/querys/mee";
 import PreferencesModal from "../modals/PreferencesModal";
 import TrialEndedModal from "../components/TrialEndedModal";
+import TextTransition, { presets } from "react-text-transition";
+
+const TEXTS = [
+  "Newsletters",
+  "Linkedin Post ",
+  "Twitter Thread",
+  "Blog Posts",
+  "Medium Article",
+  "Reddit Article",
+];
 
 export default function Home() {
   const keywords = gql`
@@ -30,6 +40,15 @@ export default function Home() {
   const [keyword, setkeyword] = useState("");
   const router = useRouter();
   const setKeywordInStore = useStore((state) => state.setKeyword);
+  const [index, setIndex] = React.useState(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(
+      () => setIndex((index) => index + 1),
+      3000 // every 3 seconds
+    );
+    return () => clearTimeout(intervalId);
+  }, []);
 
   const {
     data: meeData,
@@ -159,7 +178,7 @@ export default function Home() {
               </defs>
             </svg>
           </div>
-          <div className="mx-auto max-w-2xl py-32 sm:py-30 lg:py-20">
+          <div className="mx-auto max-w-3xl py-32 sm:py-30 lg:py-20">
             <div className="text-center">
               <div className="fixed z-10 inset-0 overflow-y-auto hidden not-responsive-message">
                 <div className="fixed z-10 inset-0 overflow-y-auto">
@@ -208,9 +227,18 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-                Generate <span className="newsletter">Newsletter</span> with{" "}
-                <span style={{ color: "var(--primary-blue)" }}>Lille</span>
+              <h1 className="flex text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+                Generate{" "}
+                <TextTransition springConfig={presets.wobbly}>
+                  <span className="newsletter mx-4">
+                    {TEXTS[index % TEXTS.length]}
+                  </span>
+                </TextTransition>
+                with{" "}
+                <span style={{ color: "var(--primary-blue)" }} className="mx-2">
+                  {" "}
+                  Lille
+                </span>
               </h1>
               <p className="mt-6 text-lg leading-8 text-gray-600">
                 Streamline your content creation process with our website that
