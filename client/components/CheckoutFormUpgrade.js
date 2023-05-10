@@ -22,9 +22,7 @@ const CheckoutFormUpgrade = ({
   const [error, setError] = useState(null);
   const [processing, setProcessing] = useState("");
   const [disabled, setDisabled] = useState(true);
-  const [formErrors, setFormErrors] = useState({
-    firstName: "",
-  });
+  const [formErrors, setFormErrors] = useState({});
   const [checkForm, setCheckForm] = useState(false);
   var getToken;
   if (typeof window !== "undefined") {
@@ -70,9 +68,6 @@ const CheckoutFormUpgrade = ({
 
   const validateForm = () => {
     let errors = {};
-    if (!firstName) {
-      errors.firstName = "First name is required";
-    }
 
     setFormErrors(errors);
 
@@ -96,7 +91,7 @@ const CheckoutFormUpgrade = ({
         type: "card",
         card: elements?.getElement(CardElement),
         billing_details: {
-          name: firstName,
+          name: meeData?.me?.name,
           email: meeData?.me?.email,
         },
       });
@@ -240,10 +235,10 @@ const CheckoutFormUpgrade = ({
               <div className="flex space-x-2 mb-3">
                 {" "}
                 <div className="w-[50%]">
-                  <div className="fs-6 my-1 text-[#0A0D13] text-normal">
+                  {/* <div className="fs-6 my-1 text-[#0A0D13] text-normal">
                     Name on card
-                  </div>
-                  <div>
+                  </div> */}
+                  {/* <div>
                     <input
                       style={{
                         border: `2px solid ${
@@ -272,14 +267,14 @@ const CheckoutFormUpgrade = ({
                         {formErrors.firstName}
                       </span>
                     )}
-                    {/* {errors?.first && (
+                     {errors?.first && (
                           <span className={styles.error}>{errors?.first}</span>
-                        )} */}
-                  </div>
+                        )} 
+                  </div> */}
                 </div>
               </div>
 
-              <div className="mb-3 w-full">
+              <div className="mb-3 w-full mt-24">
                 <div className="fs-6 my-1">Card Number</div>
                 <div
                   style={{
@@ -406,12 +401,12 @@ const CheckoutFormUpgrade = ({
                   Subscribe
                 </button>
               )}
-              <button
+              {/* <button
                 type=""
                 className="rounded-[4px] cursor-pointer  text-[16px] font-bold text-[#13213e] py-[20px] w-full"
               >
                 <span className="opacity-[0.7]">Cancel</span>
-              </button>
+              </button> */}
             </form>
             <div className="text-[#606060] text-[14px] leading-[22px]">
               Your personal data will not be used however, your app usage data
