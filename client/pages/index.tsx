@@ -130,7 +130,7 @@ export default function Home() {
           />
         )}
 
-        {!meeData?.me?.paid && meeData?.me?.credits === 0 && (
+        {!meeData?.me?.isSubscribed && meeData?.me?.credits === 0 && (
           <TrialEndedModal setTrailModal={() => {}} topic={null} />
         )}
         <div className={`relative px-6 pt-5 lg:px-8`}>
