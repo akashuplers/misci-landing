@@ -962,7 +962,7 @@ export default function Settings() {
                       className="font-bold"
                       target="_blank"
                     >
-                      cancellation policy
+                      cancellation policy{" "}
                     </Link>
                     for more info.
                   </p>
