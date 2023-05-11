@@ -458,38 +458,24 @@ export default function TinyMCEEditor({
 
       const data = {
         token: twitterAccessToken,
-        text: textContent,
+        text: textContent.replace(/[\(\)\[\]\{\}<>@|]/g, (x) => "\\" + x),
         secret: twitterAccessTokenSecret,
         blogId: blog_id,
       };
-      try {
-        axios
-          .post(API_BASE_PATH + LI_API_ENDPOINTS.TW_POST, data, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          })
-          .then((response) => {
-            console.log(response.data);
-            setPublishTweetLoad(false);
-            setPublishTweetText("Published on Twitter");
-            toast.success("Published on Twitter", {
-              position: "top-center",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            });
-          })
-          .catch((error) => {
-            if (error.response) {
+      if (textContent.length < 180) {
+        try {
+          axios
+            .post(API_BASE_PATH + LI_API_ENDPOINTS.TW_POST, data, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            })
+            .then((response) => {
+              console.log(response.data);
               setPublishTweetLoad(false);
-              setPublishTweetText("Publish on Twitter");
-              toast.error(error.response.data.message, {
+              setPublishTweetText("Published on Twitter");
+              toast.success("Published on Twitter", {
                 position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -499,16 +485,36 @@ export default function TinyMCEEditor({
                 progress: undefined,
                 theme: "light",
               });
-              console.log(error.response.data);
-              console.log(error.response.status);
-            } else if (error.request) {
-              console.log(error.request);
-            } else {
-              console.log("Error", error.message);
-            }
-          });
-      } catch (error) {
-        console.log("error", error.response.data.message);
+            })
+            .catch((error) => {
+              if (error.response) {
+                setPublishTweetLoad(false);
+                setPublishTweetText("Publish on Twitter");
+                toast.error(error.response.data.message, {
+                  position: "top-center",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "light",
+                });
+                console.log(error.response.data);
+                console.log(error.response.status);
+              } else if (error.request) {
+                console.log(error.request);
+              } else {
+                console.log("Error", error.message);
+              }
+            });
+        } catch (error) {
+          console.log("error", error.response.data.message);
+        }
+      } else {
+        setPublishTweetLoad(false);
+        setPublishTweetText("Publish on Twitter");
+        toast.error("Only 180 Character allowed!");
       }
     }
   };
