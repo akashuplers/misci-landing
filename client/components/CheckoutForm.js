@@ -8,6 +8,7 @@ import {
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import Confetti from "react-confetti";
 
 const CheckoutForm = ({
   priceId,
