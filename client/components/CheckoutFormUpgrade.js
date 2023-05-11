@@ -10,6 +10,8 @@ import { toast, ToastContainer } from "react-toastify";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { meeAPI } from "../graphql/querys/mee";
 import { useQuery } from "@apollo/client";
+import Confetti from "react-confetti";
+import Modal from "react-modal";
 
 const CheckoutFormUpgrade = ({
   priceId,
@@ -24,6 +26,8 @@ const CheckoutFormUpgrade = ({
   const [disabled, setDisabled] = useState(true);
   const [formErrors, setFormErrors] = useState({});
   const [checkForm, setCheckForm] = useState(false);
+  const [confirmed, setconfirmed] = useState(false);
+
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -190,6 +194,7 @@ const CheckoutFormUpgrade = ({
       .then((result) => result.data)
       .then((data) => {
         if (data.data === "Upgrade Confirmed!") {
+          setconfirmed(true);
           toast.success(data.data, {
             position: "top-center",
             autoClose: 5000,
@@ -202,7 +207,7 @@ const CheckoutFormUpgrade = ({
           });
           setTimeout(() => {
             window.location.href = "/";
-          }, 3000);
+          }, 5000);
         } else {
           toast.error(data, {
             position: "top-center",
@@ -243,6 +248,61 @@ const CheckoutFormUpgrade = ({
   return (
     <>
       <ToastContainer />
+      {confirmed && (
+        <>
+          <Confetti />
+          <Modal
+            isOpen={true}
+            ariaHideApp={false}
+            className="w-[100%] sm:w-[38%] max-h-[95%]"
+            style={{
+              overlay: {
+                backgroundColor: "rgba(0,0,0,0.5)",
+                zIndex: "9999",
+              },
+              content: {
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                right: "auto",
+                border: "none",
+                background: "white",
+                // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+                borderRadius: "8px",
+                height: "400px",
+                // width: "100%",
+                maxWidth: "450px",
+                bottom: "",
+                zIndex: "999",
+                marginRight: "-50%",
+                transform: "translate(-50%, -50%)",
+                padding: "30px",
+                paddingBottom: "0px",
+              },
+            }}
+          >
+            <div className="mx-auto pb-4">
+              <img className="mx-auto h-40" src="/firework.png" />
+            </div>
+            <div className="ml-[15%] font-bold text-2xl pl-[10%] mt-9">
+              Congratulations 🥳
+            </div>
+            <p className="text-gray-500 ml-[15%] text-base font-medium mt-4 mx-auto pl-5 align-middle">
+              Your Subscription is now confirmed!!
+            </p>
+            <div className="ml-[25%] flex m-6">
+              <button
+                class="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
+                onClick={() => {
+                  window.location.href = "/";
+                }}
+              >
+                Let's Go!
+              </button>
+            </div>
+          </Modal>
+        </>
+      )}
       <div
         style={{
           backdropFilter: "blur(10px)",

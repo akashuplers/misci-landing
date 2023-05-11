@@ -8,6 +8,7 @@ import axios from "axios";
 import { LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { LinkedinLogin } from "../services/LinkedinLogin";
+import { TwitterLogin } from "../services/TwitterLogin";
 import { signUpWithGoogle } from "../services/GoogleLogin";
 
 import ForgotPasswordModal from "../components/ForgotPasswordModal";
@@ -336,13 +337,23 @@ export default function AuthenticationModal({
     const queryParams = router.query;
     var pass;
     pass = localStorage.getItem("pass");
+    console.log("bgukjbkn", queryParams);
     if (!pass) {
       if (queryParams.code && callBack) {
-        console.log("bgukjbkn");
         localStorage.setItem("pass", true);
 
         let code = queryParams.code;
         LinkedinLogin(code, setLoading, handleSave);
+        setLoading(true);
+      }
+      if (queryParams.oauth_token && queryParams.oauth_verifier) {
+        localStorage.setItem("pass", true);
+        TwitterLogin(
+          queryParams.oauth_verifier,
+          queryParams.oauth_token,
+          setLoading,
+          handleSave
+        );
         setLoading(true);
       }
     }
