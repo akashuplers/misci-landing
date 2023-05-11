@@ -197,7 +197,7 @@ export default function dashboard({ query }) {
 
           const queryParams = router.query;
           console.log("queryParams", queryParams);
-          if (!queryParams.code) {
+          if (!queryParams.code && !queryParams.oauth_token) {
             localStorage.removeItem("bid");
             localStorage.removeItem("loginProcess");
             localStorage.removeItem("pass");
@@ -206,7 +206,12 @@ export default function dashboard({ query }) {
         .then((data) => {})
         .finally(() => {
           setOption("linkedin-comeback");
-          toast.success("LinkedIn SignUp Succesfull!!");
+          const for_TW = localStorage.getItem("for_TW");
+          if (for_TW) {
+            toast.success("Twitter Integration Done!!");
+          } else {
+            toast.success("Linkedin Integration Done!!");
+          }
         })
         .catch(function (error) {
           console.log(error);

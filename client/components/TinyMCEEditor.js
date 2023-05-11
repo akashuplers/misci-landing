@@ -55,7 +55,10 @@ export default function TinyMCEEditor({
   const [publishLoad, setPublishLoad] = useState(false);
   const [publishText, setPublishText] = useState("Publish");
   const [publishLinkLoad, setPublishLinkLoad] = useState(false);
+  const [publishTweetLoad, setPublishTweetLoad] = useState(false);
   const [publishLinkText, setPublishLinkText] = useState("Publish on Linkedin");
+  const [publishTweetText, setPublishTweetText] =
+    useState("Publish on Twitter");
   const [openModal, setOpenModal] = useState(false);
   const [text, setText] = useState("");
   const [isCopied, setIsCopied] = useState(false);
@@ -106,10 +109,16 @@ export default function TinyMCEEditor({
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const router = useRouter();
-  let token, linkedInAccessToken, authorId;
+  let token,
+    linkedInAccessToken,
+    authorId,
+    twitterAccessToken,
+    twitterAccessTokenSecret;
   if (typeof window !== "undefined") {
     token = localStorage.getItem("token");
     linkedInAccessToken = localStorage.getItem("linkedInAccessToken");
+    twitterAccessToken = localStorage.getItem("twitterAccessToken");
+    twitterAccessTokenSecret = localStorage.getItem("twitterAccessTokenSecret");
     authorId = localStorage.getItem("authorId");
   }
   const [
@@ -140,8 +149,8 @@ export default function TinyMCEEditor({
 
         const parser = new DOMParser();
         const doc = parser.parseFromString(updatedText, "text/html");
-        const img = doc.querySelector("img");
-        const src = img.getAttribute("src");
+        const img = doc?.querySelector("img");
+        const src = img?.getAttribute("src");
 
         const tempDiv = document.createElement("div");
         tempDiv.innerHTML = updatedText;
@@ -254,8 +263,49 @@ export default function TinyMCEEditor({
   const handleconnectLinkedin = () => {
     localStorage.setItem("loginProcess", true);
     localStorage.setItem("bid", blog_id);
+    localStorage.removeItem("for_TW");
     const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`;
     window.location = redirectUrl;
+  };
+
+  const handleconnectTwitter = async () => {
+    localStorage.setItem("loginProcess", true);
+    localStorage.setItem("bid", blog_id);
+    localStorage.setItem("for_TW", true);
+
+    try {
+      let data = JSON.stringify({
+        callback: window.location.origin + "/dashboard",
+      });
+
+      let config = {
+        method: "post",
+        maxBodyLength: Infinity,
+        url: API_BASE_PATH + "/auth/twitter/request-token",
+        headers: {
+          Authorization: "",
+          "Content-Type": "application/json",
+        },
+        data: data,
+      };
+
+      axios
+        .request(config)
+        .then((response) => {
+          if (!response?.data?.error) {
+            const twitterToken = response?.data?.data;
+            const responseArray = twitterToken.split("&");
+            window.location.href = `https://api.twitter.com/oauth/authorize?${responseArray[0]}`;
+          } else {
+            console.log("Error", response.data.error, response?.data?.data);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleSavePublish = () => {
@@ -365,6 +415,80 @@ export default function TinyMCEEditor({
             if (error.response) {
               setPublishLinkLoad(false);
               setPublishLinkText("Publish on Linkedin");
+              toast.error(error.response.data.message, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+              console.log(error.response.data);
+              console.log(error.response.status);
+            } else if (error.request) {
+              console.log(error.request);
+            } else {
+              console.log("Error", error.message);
+            }
+          });
+      } catch (error) {
+        console.log("error", error.response.data.message);
+      }
+    }
+  };
+
+  const handleTwitterPublish = () => {
+    console.log("handleTwitterPublish");
+    if (creditLeft === 0) {
+      setTrailModal(true);
+    } else {
+      const tempDiv = document.createElement("div");
+      console.log(tempDiv);
+      tempDiv.innerHTML = updatedText;
+
+      let textContent = tempDiv.textContent;
+      textContent = textContent.replace(
+        /[\(*\)\[\]\{\}<>@|~_]/gm,
+        (x) => "\\" + x
+      );
+
+      setPublishTweetLoad(true);
+
+      const data = {
+        token: twitterAccessToken,
+        text: textContent,
+        secret: twitterAccessTokenSecret,
+        blogId: blog_id,
+      };
+      try {
+        axios
+          .post(API_BASE_PATH + LI_API_ENDPOINTS.TW_POST, data, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          })
+          .then((response) => {
+            console.log(response.data);
+            setPublishTweetLoad(false);
+            setPublishTweetText("Published on Twitter");
+            toast.success("Published on Twitter", {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+          })
+          .catch((error) => {
+            if (error.response) {
+              setPublishTweetLoad(false);
+              setPublishTweetText("Publish on Twitter");
               toast.error(error.response.data.message, {
                 position: "top-center",
                 autoClose: 5000,
@@ -699,7 +823,33 @@ export default function TinyMCEEditor({
                 </button>
               )
             ) : option === "twitter" ? (
-              <button className="cta-invert">Coming Soon...</button>
+              twitterAccessToken ? (
+                <button
+                  className="cta-invert"
+                  onClick={() => {
+                    if (
+                      publishTweetText === "Publish on Twitter" ||
+                      publishTweetText === "Published on Twitter"
+                    )
+                      handleTwitterPublish();
+                  }}
+                >
+                  {publishTweetLoad ? (
+                    <ReactLoading
+                      width={25}
+                      height={25}
+                      round={true}
+                      color={"#2563EB"}
+                    />
+                  ) : (
+                    publishTweetText
+                  )}
+                </button>
+              ) : (
+                <button className="cta-invert" onClick={handleconnectTwitter}>
+                  Connect Twitter
+                </button>
+              )
             ) : isAuthenticated ? (
               <button
                 className="cta-invert"
@@ -771,7 +921,33 @@ export default function TinyMCEEditor({
                 </button>
               )
             ) : option === "twitter" ? (
-              <button className="cta-invert">Coming Soon...</button>
+              twitterAccessToken ? (
+                <button
+                  className="cta-invert"
+                  onClick={() => {
+                    if (
+                      publishTweetText === "Publish on Twitter" ||
+                      publishTweetText === "Published on Twitter"
+                    )
+                      handleTwitterPublish();
+                  }}
+                >
+                  {publishTweetLoad ? (
+                    <ReactLoading
+                      width={25}
+                      height={25}
+                      round={true}
+                      color={"#2563EB"}
+                    />
+                  ) : (
+                    publishTweetText
+                  )}
+                </button>
+              ) : (
+                <button className="cta-invert" onClick={handleconnectTwitter}>
+                  Connect Twitter
+                </button>
+              )
             ) : (
               <></>
             )}
