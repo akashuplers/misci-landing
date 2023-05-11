@@ -577,15 +577,18 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
     })
   } catch(e) {
       if(e.response.status === 403) {
-          reply
+          return reply
           .status(e.response.status)
           .send({ error: true, message: e.response.data.detail });
       }
       if(e.response.status === 401) {
-        reply
+        return reply
         .status(e.response.status)
         .send({ error: true, message: "Unauthorized" });
       }
+      return reply
+        .status(e.response.status)
+        .send({ error: true, message: e?.response?.data?.errors?.length ? e?.response?.data?.errors?.[0].message : e.message});
   }
 })
 

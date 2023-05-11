@@ -80,7 +80,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                         newsLetter = {...newsLetter, [key]: chatGPTText}
                     } else {
                         const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `
-                        ${regenerate ? `write a blog on topic ${title} for ${key} ${key === 'linkedin' ? "linkedin post with tags under 3000 characters" : "twitter post with tags under 280 characters"} using below points: \n ${text}` : `write a blog on "${text}" for a ${key}`}
+                        ${regenerate ? `write a blog on topic ${title} for ${key} ${key === 'linkedin' ? "linkedin post with tags under 3000 characters" : "twitter post with tags under 280 characters"} using below points: \n ${text}` : `write a blog on "${text}" for a ${key === "linkedin" ? "linkedin within 3000 characters" : "twitter within 280 characters"}`}
                         `, db}).textCompletion()
                         newsLetter = {...newsLetter, [key]: chatGPTText}
                     }
