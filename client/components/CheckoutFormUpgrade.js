@@ -297,7 +297,7 @@ const CheckoutFormUpgrade = ({
                   window.location.href = "/";
                 }}
               >
-                Let's Go!
+                Let&#39;s Go!
               </button>
             </div>
           </Modal>
