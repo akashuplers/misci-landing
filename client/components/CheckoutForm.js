@@ -8,6 +8,7 @@ import {
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import Confetti from "react-confetti";
 
 const CheckoutForm = ({
   priceId,
@@ -21,6 +22,7 @@ const CheckoutForm = ({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [btnClicked, setBtnClicked] = useState(false);
+  const [confirmed, setconfirmed] = useState(false);
   var tempUserId;
   if (typeof window !== "undefined") {
     tempUserId = localStorage.getItem("tempId");
@@ -361,6 +363,7 @@ const CheckoutForm = ({
     } else {
       setClickOnSubscibe(false);
       if (!confirmPayment?.error?.message) {
+        setconfirmed(true);
         createUser({
           firstName: firstName,
           lastName: lastName,
@@ -388,6 +391,7 @@ const CheckoutForm = ({
   return (
     <>
       <ToastContainer closeButton={CloseButton} />
+      {confirmed && <Confetti />}
       <div
         style={{
           backdropFilter: "blur(10px)",
