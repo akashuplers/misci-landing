@@ -48,7 +48,9 @@ router.post("/user/login", async (req: any, res: any) => {
         const db = req.app.get('db')
         const { errors, isValid } = validateLoginInput(req.body);
         if (!isValid) {
-          return res.status(400).send(errors);
+          return res.status(400).send({
+            message: errors
+          });
         }
   
         const { email, password } = req.body;
