@@ -56,8 +56,9 @@ router.post('/webhook',  async (request: any, reply: any) => {
     //   // Then define and call a method to handle the subscription deleted.
     //   // handleSubscriptionDeleted(subscriptionDeleted);
     //   break;
-    case 'invoice.created':
-        console.log(event.data.object, 'invoice.created')
+    case 'invoice.paid':
+        console.log(event.data.object, 'invoice.paid')
+
         break;
     case 'customer.subscription.created':
         subscription = event.data.object;
@@ -76,6 +77,25 @@ router.post('/webhook',  async (request: any, reply: any) => {
         let product_id = object.plan.product
         let customer_object = await new Stripe().getCustomerDetails(customer_id)
         // console.log(subscription,event.data, "subscription")
+        if ('status' in previous_attributes
+              && previous_attributes.status === 'active'
+              && object.status === 'active') {
+            if("current_period_start" in previous_attributes && previous_attributes.current_period_start !== subscription.current_period_start) {
+                console.log("========== Renewing ===========")
+                await db.db('lilleAdmin').collection('users').updateOne({email: customer_object.email}, {
+                    $set: {
+                        isSubscribed: true,
+                        paid: true,
+                        interval: subscription.plan.interval === 'year' ? subscription.plan.interval : 
+                        subscription.plan.interval === 'month' && subscription.plan.interval_count === 1 ? "monthly" : "quarterly",
+                        lastInvoicedDate: subscription.current_period_start,
+                        upcomingInvoicedDate: subscription.current_period_end,
+                        credits: parseInt(process.env.PAID_CREDIT_COUNT || "200"),
+                        totalCredits: parseInt(process.env.PAID_CREDIT_COUNT || "200"),
+                    }
+                })
+            }    
+        }
         if ('status' in previous_attributes
               && previous_attributes.status === 'incomplete'
               && object.status === 'active') {
@@ -102,6 +122,9 @@ router.post('/webhook',  async (request: any, reply: any) => {
                     upcomingInvoicedDate: subscription.current_period_end,
                     freeTrial: false,
                     freeTrailEndsDate: null,
+                    credits: parseInt(process.env.PAID_CREDIT_COUNT || "200") + parseInt(userDetails.credits),
+                    totalCredits: parseInt(process.env.PAID_CREDIT_COUNT || "200") + parseInt(userDetails.credits),
+                    paymentsStarts: getTimeStamp()
                 }
             })
             if(mailSend) {
@@ -127,7 +150,8 @@ router.post('/webhook',  async (request: any, reply: any) => {
             await db.db('lilleAdmin').collection('subscriptions').updateOne({subscriptionId: subscription.id}, {$set: {
                 lastInvoicedDate: subscription.current_period_start,
                 upcomingInvoicedDate: subscription.current_period_end,
-                subscriptionStatus: object.status
+                subscriptionStatus: object.status,
+                paymentsStarts: null
             }})
         }
         if ('status' in previous_attributes &&
@@ -139,7 +163,13 @@ router.post('/webhook',  async (request: any, reply: any) => {
             }})
             await db.db('lilleAdmin').collection('users').updateOne({email: customer_object.email}, {
                 $set: {
-                    isSubscribed: false
+                    isSubscribed: false,
+                    freeTrial: true,
+                    paymentsStarts: null,
+                    lastInvoicedDate: null,
+                    upcomingInvoicedDate: null,
+                    credits: process.env.CREDIT_COUNT,
+                    totalCredits: process.env.CREDIT_COUNT
                 }
             })
         }
@@ -177,7 +207,7 @@ router.post('/upgrade', authMiddleware, async (request: any, reply: any) => {
             interval: data.interval.toLowerCase(),
             lastInvoicedDate: subscriptionDetails.current_period_start,
             upcomingInvoicedDate: subscriptionDetails.current_period_end
-          })
+        })
         const bodyText = await db.db('lilleAdmin').collection('emailTexts').findOne({type: "subscription"})
         return reply.status(200).send({
             data: {
@@ -217,11 +247,17 @@ router.post('/upgrade-confirm', authMiddleware, async (request: any, reply: any)
         if(!user) throw "No user found!"
         const subDetails = await db.db('lilleAdmin').collection('subscriptions').findOne({subscriptionId: subId})
         if(subDetails) {
+            const userDetails = await db.db('lilleAdmin').collection('users').findOne({
+                _id: new ObjectID(user._id)
+            })
             await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user._id)}, {
                 $set: {
                     isSubscribed: true,
                     lastInvoicedDate: subDetails.lastInvoicedDate,
-                    upcomingInvoicedDate: subDetails.upcomingInvoicedDate
+                    upcomingInvoicedDate: subDetails.upcomingInvoicedDate,
+                    // credits: parseInt(process.env.PAID_CREDIT_COUNT || "200") + parseInt(userDetails.credits),
+                    // totalCredits: parseInt(process.env.PAID_CREDIT_COUNT || "200") + parseInt(userDetails.credits),
+                    // paymentsStarts: getTimeStamp(),
                 }
             })
         }
@@ -281,7 +317,12 @@ router.post('/cancel-subscription', authMiddleware, async (request: any, reply: 
             await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(userDetails._id)}, {
                 $set: {
                     isSubscribed: false,
-                    freeTrial: true
+                    freeTrial: true,
+                    paymentsStarts: null,
+                    lastInvoicedDate: null,
+                    upcomingInvoicedDate: null,
+                    credits: process.env.CREDIT_COUNT,
+                    totalCredits: process.env.CREDIT_COUNT,
                 }
             })
         }    
@@ -322,7 +363,12 @@ router.get('/schedule/cancel-subscription', async (request: any, reply: any) => 
                         await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(sub.user)}, {
                             $set: {
                                 isSubscribed: false,
-                                freeTrial: true
+                                freeTrial: true,
+                                paymentsStarts: null,
+                                lastInvoicedDate: null,
+                                upcomingInvoicedDate: null,
+                                credits: process.env.CREDIT_COUNT,
+                                totalCredits: process.env.CREDIT_COUNT,
                             }
                         })
                     }
