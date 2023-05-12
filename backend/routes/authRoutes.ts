@@ -926,7 +926,7 @@ router.get('/add-monthly-credits', async (req: any, res: any) => {
         const paymentStarts = user?.paymentsStarts || null
         console.log(paymentStarts)
         if(paymentStarts) {
-          let paymentDate: any = new Date(paymentStarts);
+          let paymentDate: any = new Date(paymentStarts * 1000);
           let currentDate: any = new Date(getTimeStamp() * 1000);
           paymentDate = `${paymentDate.getMonth()+1}/${paymentDate.getDate()}/${paymentDate.getFullYear()}`
           currentDate = `${currentDate.getMonth()+1}/${currentDate.getDate()}/${currentDate.getFullYear()}`
@@ -946,7 +946,7 @@ router.get('/add-monthly-credits', async (req: any, res: any) => {
       })
     )
   )
-  return res.statue(200).send({
+  return res.status(200).send({
     message: "Monthly credit added"
   })
 })
