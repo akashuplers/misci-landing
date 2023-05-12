@@ -88,6 +88,19 @@ export default function TinyMCEEditor({
       const htmlDoc = jsonToHtml(aa);
       console.log("885", htmlDoc);
       setEditorText(htmlDoc);
+    } else {
+      if (option === "twitter-comeback") {
+        setOption("twitter");
+        const siblingButton = document.querySelectorAll(".blog-toggle-button");
+        siblingButton.forEach((el) => el.classList.remove("active"));
+        const button = document.querySelector(".twitter");
+        button?.classList?.add("active");
+        const aa = blogData?.publish_data?.find(
+          (pd) => pd.platform === "twitter"
+        ).tiny_mce_data;
+        const htmlDoc = jsonToHtml(aa);
+        setEditorText(htmlDoc);
+      }
     }
   }, [option]);
 
@@ -99,7 +112,12 @@ export default function TinyMCEEditor({
   };
 
   useEffect(() => {
-    if (option !== "linkedin-comeback") setEditorText(editorText);
+    if (
+      option !== "linkedin-comeback" &&
+      option !== "twitter-comeback" &&
+      option !== "twitter"
+    )
+      setEditorText(editorText);
   }, [editorText]);
 
   useEffect(() => {
@@ -449,20 +467,16 @@ export default function TinyMCEEditor({
       tempDiv.innerHTML = updatedText;
 
       let textContent = tempDiv.textContent;
-      textContent = textContent.replace(
-        /[\(*\)\[\]\{\}<>@|~_]/gm,
-        (x) => "\\" + x
-      );
 
       setPublishTweetLoad(true);
 
       const data = {
         token: twitterAccessToken,
-        text: textContent.replace(/[\(\)\[\]\{\}<>@|]/g, (x) => "\\" + x),
+        text: textContent,
         secret: twitterAccessTokenSecret,
         blogId: blog_id,
       };
-      if (textContent.length < 180) {
+      if (textContent.length < 280) {
         try {
           axios
             .post(API_BASE_PATH + LI_API_ENDPOINTS.TW_POST, data, {
@@ -514,7 +528,7 @@ export default function TinyMCEEditor({
       } else {
         setPublishTweetLoad(false);
         setPublishTweetText("Publish on Twitter");
-        toast.error("Only 180 Character allowed!");
+        toast.error("Only 280 Character allowed!");
       }
     }
   };
@@ -955,7 +969,26 @@ export default function TinyMCEEditor({
                 </button>
               )
             ) : (
-              <></>
+              <button
+                className="flex cta-invert"
+                onClick={() => setOpenModal(true)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4 h-4 mr-2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
+                  />
+                </svg>
+                Share
+              </button>
             )}
           </div>
         )}

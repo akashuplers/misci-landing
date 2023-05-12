@@ -205,12 +205,13 @@ export default function dashboard({ query }) {
         })
         .then((data) => {})
         .finally(() => {
-          setOption("linkedin-comeback");
           const for_TW = localStorage.getItem("for_TW");
           if (for_TW) {
             toast.success("Twitter Integration Done!!");
+            setOption("twitter-comeback");
           } else {
             toast.success("Linkedin Integration Done!!");
+            setOption("linkedin-comeback");
           }
         })
         .catch(function (error) {
