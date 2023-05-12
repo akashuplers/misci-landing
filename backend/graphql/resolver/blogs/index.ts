@@ -670,6 +670,7 @@ export const blogResolvers = {
         ) => {
             console.log(`Running IR Blog generation =====`)
             const pythonData = args.options
+            console.log(pythonData, "received data")
             let i = 0;
             await (async function loop() {
                 return new Promise(async (resolve) => {
@@ -775,21 +776,21 @@ export const blogResolvers = {
                                     used: 1,
                                 }))
                             })
-                            articlesData.forEach((data) => {
-                                data.used_summaries.forEach((summary: string) => updatedIdeas.push({
-                                    idea:summary,
-                                    article_id: data.id,
-                                    reference: null,
-                                    used: 1,
-                                    name: data.name,
-                                }))
-                                // data.unused_summaries.forEach((summary: string) => updatedIdeas.push({
-                                //     idea:summary,
-                                //     article_id: data.id,
-                                //     reference: null,
-                                //     used: 0,
-                                // }))
-                            })
+                            // articlesData.forEach((data) => {
+                            //     data.used_summaries.forEach((summary: string) => updatedIdeas.push({
+                            //         idea:summary,
+                            //         article_id: data.id,
+                            //         reference: null,
+                            //         used: 1,
+                            //         name: data.name,
+                            //     }))
+                            //     // data.unused_summaries.forEach((summary: string) => updatedIdeas.push({
+                            //     //     idea:summary,
+                            //     //     article_id: data.id,
+                            //     //     reference: null,
+                            //     //     used: 0,
+                            //     // }))
+                            // })
                             if(updatedIdeas && updatedIdeas.length) {
                                 updatedIdeas = await (
                                     Promise.all(
@@ -831,7 +832,7 @@ export const blogResolvers = {
                             }
                             resolve(setTimeout(loop, 60000))
                         } catch(e: any) {
-                            console.log(`Ending IR Blog generation with error ===== ${e}`)
+                            console.log(`Ending IR Blog generation with error ===== ${e}`, e)
                             resolve(setTimeout(loop, 60000))
                         }
                     }
