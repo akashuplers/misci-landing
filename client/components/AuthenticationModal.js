@@ -73,8 +73,10 @@ export default function AuthenticationModal({
       .then((res) => {
         const response = res.data;
         console.log("res", res);
-        if (res?.response?.data?.message && res?.response?.status !== 200) {
-          const errorMessage = res.response.data.message;
+        if (res?.response?.data && res?.response?.status !== 200) {
+          const errorMessage = res.response.data.message.email
+            ? res.response.data.message.email
+            : res.response.data.message;
           toast.error(errorMessage, {
             position: "top-center",
             autoClose: 5000,
