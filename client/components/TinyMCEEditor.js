@@ -88,6 +88,19 @@ export default function TinyMCEEditor({
       const htmlDoc = jsonToHtml(aa);
       console.log("885", htmlDoc);
       setEditorText(htmlDoc);
+    } else {
+      if (option === "twitter-comeback") {
+        setOption("twitter");
+        const siblingButton = document.querySelectorAll(".blog-toggle-button");
+        siblingButton.forEach((el) => el.classList.remove("active"));
+        const button = document.querySelector(".twitter");
+        button?.classList?.add("active");
+        const aa = blogData?.publish_data?.find(
+          (pd) => pd.platform === "twitter"
+        ).tiny_mce_data;
+        const htmlDoc = jsonToHtml(aa);
+        setEditorText(htmlDoc);
+      }
     }
   }, [option]);
 
@@ -99,7 +112,8 @@ export default function TinyMCEEditor({
   };
 
   useEffect(() => {
-    if (option !== "linkedin-comeback") setEditorText(editorText);
+    if (option !== "linkedin-comeback" && option !== "twitter-comeback")
+      setEditorText(editorText);
   }, [editorText]);
 
   useEffect(() => {

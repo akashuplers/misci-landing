@@ -92,6 +92,7 @@ export default function Settings() {
   const [forgotPass, setForgotPass] = useState(false);
 
   const [linkedin, setlinkedin] = useState(false);
+  const [twitter, settwitter] = useState(false);
 
   var token;
   if (typeof window !== "undefined") {
@@ -111,10 +112,12 @@ export default function Settings() {
   );
 
   useEffect(() => {
-    var linkedInAccessToken;
+    var linkedInAccessToken, twitterAccessToken;
     if (typeof window !== "undefined") {
       linkedInAccessToken = localStorage.getItem("linkedInAccessToken");
+      twitterAccessToken = localStorage.getItem("twitterAccessToken");
       if (linkedInAccessToken) setlinkedin(true);
+      if (twitterAccessToken) settwitter(true);
     }
   }, []);
 
@@ -796,10 +799,40 @@ export default function Settings() {
                                         localStorage.removeItem(
                                           "linkedInAccessToken"
                                         );
+                                        toast.success(
+                                          "Linkedin has been disconnected."
+                                        );
                                         setlinkedin(false);
                                       }}
                                     >
                                       Logout Linkedin
+                                    </button>
+                                  ) : (
+                                    <></>
+                                  )}
+                                  {twitter ? (
+                                    <button
+                                      className="update-button cta p-4"
+                                      style={{
+                                        position: "absolute",
+                                        right: "300px",
+                                        bottom: "30px",
+                                        width: "150px",
+                                      }}
+                                      onClick={() => {
+                                        localStorage.removeItem(
+                                          "twitterAccessToken"
+                                        );
+                                        localStorage.removeItem(
+                                          "twitterAccessTokenSecret"
+                                        );
+                                        settwitter(false);
+                                        toast.success(
+                                          "Twitter has been disconnected."
+                                        );
+                                      }}
+                                    >
+                                      Logout Twitter
                                     </button>
                                   ) : (
                                     <></>
