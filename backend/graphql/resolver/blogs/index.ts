@@ -695,7 +695,14 @@ export const blogResolvers = {
                                     // const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
                                     // const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
                                     // tags.push(...productsTags, ...organizationTags, ...personsTags)
-                                    tags = article._source.driver
+                                    if(article._source.driver) {
+                                        tags = article._source.driver
+                                    } else {
+                                        const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                                        const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                                        const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                                        tags.push(...productsTags, ...organizationTags, ...personsTags)
+                                    }
                                     if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
                                         imageUrl = article.proImageLink
                                         imageSrc = article._source?.orig_url
@@ -740,7 +747,7 @@ export const blogResolvers = {
                                 refUrls
                             })
                             let uniqueTags: String[] = [];
-                            tags.forEach((c) => {
+                            tags?.forEach((c) => {
                                 if (!uniqueTags.includes(c)) {
                                     uniqueTags.push(c);
                                 }
