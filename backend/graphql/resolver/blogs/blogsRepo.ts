@@ -133,28 +133,30 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 }); 
                                 // description = (newsLetter[key]?.replace("\n", ""))?.trimStart()
                                 usedIdeasArr = description?.split('.')
-                                // const updatedContent = content?.split('. ')?.map((data: string) => {
-                                //     let newText = data
-                                //     let filteredSource = null
-                                //     ideasArr.some((idea) => {
-                                //         if(idea.idea && data) {
-                                //             const similarity = natural.JaroWinklerDistance(data, idea.idea, true);
-                                //             if(similarity > 0.7) {
-                                //                 filteredSource = refs?.findIndex((ref) => ref.id === idea.article_id)
-                                //                 // console.log(data, idea.idea, idea.article_id, filteredSource, similarity, "similiary")
-                                //                 return true
-                                //             } else {
-                                //                 return false
-                                //             }
-                                //         }else {
-                                //             return false
-                                //         }
-                                //     })
-                                //     if(filteredSource || filteredSource === 0) {
-                                //         newText = `${data} [${filteredSource + 1}]` 
-                                //     }
-                                //     return newText
-                                // })
+                                updatedContent = updatedContent?.split('. ')?.map((data: string) => {
+                                    let newText = data
+                                    let filteredSource = null
+                                    ideasArr.some((idea) => {
+                                        if(idea.idea && data) {
+                                            const similarity = natural.JaroWinklerDistance(data, idea.idea, true);
+                                            console.log(similarity)
+                                            if(similarity > 0.7) {
+                                                filteredSource = refs?.findIndex((ref) => ref.id === idea.article_id)
+                                                // console.log(data, idea.idea, idea.article_id, filteredSource, similarity, "similiary")
+                                                return true
+                                            } else {
+                                                return false
+                                            }
+                                        }else {
+                                            return false
+                                        }
+                                    })
+                                    if(filteredSource || filteredSource === 0) {
+                                        newText = `${data} [${filteredSource + 1}] ` 
+                                    }
+                                    return newText
+                                })
+                                console.log(updatedContent)
                                 let references: any[] = []
                                 refUrls && refUrls.length && refUrls.forEach((data) => {
                                     references.push({
@@ -254,7 +256,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                 "tag": "P",
                                                 "attributes": {},
                                                 "children": [
-                                                    updatedContent.length ? updatedContent : ideasText && ideasText.length ? ideasText : "Sorry, We were unable to generate the blog at this time, Please try again after some time or try with different topic."
+                                                    updatedContent.length ? updatedContent.join("") : ideasText && ideasText.length ? ideasText : "Sorry, We were unable to generate the blog at this time, Please try again after some time or try with different topic."
                                                 ]
                                             },
                                             {
