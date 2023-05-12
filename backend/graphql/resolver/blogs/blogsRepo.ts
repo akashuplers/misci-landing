@@ -152,7 +152,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                         }
                                     })
                                     if(filteredSource || filteredSource === 0) {
-                                        newText = `${data} [${filteredSource + 1}] ` 
+                                        newText = `${data} <a href="${refs[filteredSource]?.url}" target="_blank" title="${filteredSource + 1} - ${refs[filteredSource]?.url}">[${filteredSource + 1}]</a>. ` 
                                     }
                                     return newText
                                 })
