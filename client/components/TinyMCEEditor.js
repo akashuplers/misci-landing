@@ -449,20 +449,16 @@ export default function TinyMCEEditor({
       tempDiv.innerHTML = updatedText;
 
       let textContent = tempDiv.textContent;
-      textContent = textContent.replace(
-        /[\(*\)\[\]\{\}<>@|~_]/gm,
-        (x) => "\\" + x
-      );
 
       setPublishTweetLoad(true);
 
       const data = {
         token: twitterAccessToken,
-        text: textContent.replace(/[\(\)\[\]\{\}<>@|]/g, (x) => "\\" + x),
+        text: textContent,
         secret: twitterAccessTokenSecret,
         blogId: blog_id,
       };
-      if (textContent.length < 180) {
+      if (textContent.length < 280) {
         try {
           axios
             .post(API_BASE_PATH + LI_API_ENDPOINTS.TW_POST, data, {
@@ -514,7 +510,7 @@ export default function TinyMCEEditor({
       } else {
         setPublishTweetLoad(false);
         setPublishTweetText("Publish on Twitter");
-        toast.error("Only 180 Character allowed!");
+        toast.error("Only 280 Character allowed!");
       }
     }
   };
