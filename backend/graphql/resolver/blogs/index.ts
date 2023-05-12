@@ -670,6 +670,7 @@ export const blogResolvers = {
         ) => {
             console.log(`Running IR Blog generation =====`)
             const pythonData = args.options
+            console.log(pythonData, "received data")
             let i = 0;
             await (async function loop() {
                 return new Promise(async (resolve) => {
@@ -694,7 +695,14 @@ export const blogResolvers = {
                                     // const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
                                     // const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
                                     // tags.push(...productsTags, ...organizationTags, ...personsTags)
-                                    tags = article._source.driver
+                                    if(article._source.driver) {
+                                        tags = article._source.driver
+                                    } else {
+                                        const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                                        const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                                        const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                                        tags.push(...productsTags, ...organizationTags, ...personsTags)
+                                    }
                                     if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
                                         imageUrl = article.proImageLink
                                         imageSrc = article._source?.orig_url
@@ -739,7 +747,7 @@ export const blogResolvers = {
                                 refUrls
                             })
                             let uniqueTags: String[] = [];
-                            tags.forEach((c) => {
+                            tags?.forEach((c) => {
                                 if (!uniqueTags.includes(c)) {
                                     uniqueTags.push(c);
                                 }
@@ -775,21 +783,21 @@ export const blogResolvers = {
                                     used: 1,
                                 }))
                             })
-                            articlesData.forEach((data) => {
-                                data.used_summaries.forEach((summary: string) => updatedIdeas.push({
-                                    idea:summary,
-                                    article_id: data.id,
-                                    reference: null,
-                                    used: 1,
-                                    name: data.name,
-                                }))
-                                // data.unused_summaries.forEach((summary: string) => updatedIdeas.push({
-                                //     idea:summary,
-                                //     article_id: data.id,
-                                //     reference: null,
-                                //     used: 0,
-                                // }))
-                            })
+                            // articlesData.forEach((data) => {
+                            //     data.used_summaries.forEach((summary: string) => updatedIdeas.push({
+                            //         idea:summary,
+                            //         article_id: data.id,
+                            //         reference: null,
+                            //         used: 1,
+                            //         name: data.name,
+                            //     }))
+                            //     // data.unused_summaries.forEach((summary: string) => updatedIdeas.push({
+                            //     //     idea:summary,
+                            //     //     article_id: data.id,
+                            //     //     reference: null,
+                            //     //     used: 0,
+                            //     // }))
+                            // })
                             if(updatedIdeas && updatedIdeas.length) {
                                 updatedIdeas = await (
                                     Promise.all(
@@ -831,7 +839,7 @@ export const blogResolvers = {
                             }
                             resolve(setTimeout(loop, 60000))
                         } catch(e: any) {
-                            console.log(`Ending IR Blog generation with error ===== ${e}`)
+                            console.log(`Ending IR Blog generation with error ===== ${e}`, e)
                             resolve(setTimeout(loop, 60000))
                         }
                     }
