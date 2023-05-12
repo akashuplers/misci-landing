@@ -186,6 +186,7 @@ router.post("/user/create", async (req: any, res: any) => {
       let user = null
       if(data.paid) {
         delete data._id;
+        data.credits = process.env.PAID_CREDIT_COUNT
         await db.db("lilleAdmin").collection("users").updateOne({
           email: data.email
         }, {
@@ -541,27 +542,27 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
   const options = request.body
   const body = options
   const secretKey: string = process.env.TWITTER_API_Key_Secret || "Hjy1ujvoQpHvYBRisBz3deCWKfjsH6peapdTLPx3p8eCKt43YU"
-  const accessToken = (body.token).split('=')[1]
-  const accessTokenSecret = (body.secret).split('=')[1]
-  const timeStamp = Math.round(Date.now() / 1000).toString();
-  const uuid = randomUUID()
-  const textBody = body.text
-  // Percent encodes base url
-  const encodedBaseURL = encodeURIfix(
-  `https://api.twitter.com/2/tweets`
-  );
-  const encodedParams = encodeURIfix(
-  `oauth_consumer_key=${process.env.TWITTER_API_KEY}&oauth_nonce=${uuid}&oauth_signature_method=HMAC-SHA1&oauth_timestamp=${timeStamp}&oauth_token=${accessToken}&oauth_version=1.0`
-  );
-  const oauth_signature = `POST&${encodedBaseURL}&${encodedParams}`
-  const signingKey = `${encodeURIfix(secretKey)}&${encodeURIfix(accessTokenSecret)}`;
-  // console.log(`oauth_consumer_key=${process.env.TWITTER_API_KEY}&oauth_nonce=${uuid}&oauth_signature_method=HMAC-SHA1&oauth_timestamp=${timeStamp}&oauth_token=${accessToken}&oauth_version=1.0`)
-  // console.log(signingKey)
-  // console.log(oauth_signature)
-  const hash = createHmac("sha1", signingKey)
-  .update(oauth_signature)
-  .digest("base64");
   try {
+    const accessToken = (body.token).split('=')[1]
+    const accessTokenSecret = (body.secret).split('=')[1]
+    const timeStamp = Math.round(Date.now() / 1000).toString();
+    const uuid = randomUUID()
+    const textBody = body.text
+    // Percent encodes base url
+    const encodedBaseURL = encodeURIfix(
+    `https://api.twitter.com/2/tweets`
+    );
+    const encodedParams = encodeURIfix(
+    `oauth_consumer_key=${process.env.TWITTER_API_KEY}&oauth_nonce=${uuid}&oauth_signature_method=HMAC-SHA1&oauth_timestamp=${timeStamp}&oauth_token=${accessToken}&oauth_version=1.0`
+    );
+    const oauth_signature = `POST&${encodedBaseURL}&${encodedParams}`
+    const signingKey = `${encodeURIfix(secretKey)}&${encodeURIfix(accessTokenSecret)}`;
+    // console.log(`oauth_consumer_key=${process.env.TWITTER_API_KEY}&oauth_nonce=${uuid}&oauth_signature_method=HMAC-SHA1&oauth_timestamp=${timeStamp}&oauth_token=${accessToken}&oauth_version=1.0`)
+    // console.log(signingKey)
+    // console.log(oauth_signature)
+    const hash = createHmac("sha1", signingKey)
+    .update(oauth_signature)
+    .digest("base64");
     const response = await axios({
         method: "POST",
         url: `https://api.twitter.com/2/tweets`,
@@ -576,6 +577,7 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
       data: response.data
     })
   } catch(e) {
+    console.log(e)
       if(e.response.status === 403) {
           return reply
           .status(e.response.status)
@@ -910,6 +912,42 @@ router.post("/logout",authMiddleware, async (request: any, reply: any) => {
 //   //   )
 //   // )
 // })
+router.get('/add-monthly-credits', async (req: any, res: any) => {
+  const db = req.app.get('db')
+  const subscribedUsers = await db.db('lilleAdmin').collection('users').find({
+    isSubscribed: true,
+    paid: true
+  }).toArray()
+  await (
+    Promise.all(
+      subscribedUsers.map(async (user: any) => {
+        const paymentStarts = user?.paymentsStarts || null
+        console.log(paymentStarts)
+        if(paymentStarts) {
+          let paymentDate: any = new Date(paymentStarts);
+          let currentDate: any = new Date(getTimeStamp() * 1000);
+          paymentDate = `${paymentDate.getMonth()+1}/${paymentDate.getDate()}/${paymentDate.getFullYear()}`
+          currentDate = `${currentDate.getMonth()+1}/${currentDate.getDate()}/${currentDate.getFullYear()}`
+          var difference = new Date(currentDate).getTime() - new Date(paymentDate).getTime();
+          let differenceInDays = difference / (1000 * 3600 * 24)
+          if(differenceInDays === 30) {
+            console.log(`======== Running monthly credit for user ${user.email} ==========`)
+            await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user._id)}, {
+              $set: {
+                credits: parseInt(process.env.PAID_CREDIT_COUNT || "200"),
+                totalCredits: parseInt(process.env.PAID_CREDIT_COUNT || "200")
+              }
+            })
+          }
+        }
+        return user
+      })
+    )
+  )
+  return res.statue(200).send({
+    message: "Monthly credit added"
+  })
+})
 router.put('/update-profile', authMiddleware, async (req: any, res: any) => {
   const db = req.app.get('db')
   const data = req.body
