@@ -59,6 +59,8 @@ export default function DashboardInsights({
   const [freshFilteredIdeas, setFreshFilteredIdeas] = useState([]);
   const updateCredit = useStore((state) => state.updateCredit);
   const updateisSave = useStore((state) => state.updateisSave);
+  const [toggle, setToggle] = useState(true);
+  const toggleClass = " transform translate-x-5";
 
   useEffect(() => {
     setFreshIdeas(oldFreshIdeas);
@@ -154,6 +156,9 @@ export default function DashboardInsights({
       ]);
     } else {
       setFilteredArray((prev) => [...prev, { filterText, criteria: "ref" }]);
+    }
+    if (!toggle) {
+      setToggle(!toggle);
     }
 
     console.log("setFilteredArray", filteredArray);
@@ -397,51 +402,97 @@ export default function DashboardInsights({
         .finally(() => {
           setIdeaType("used");
           setRegenSelected([]);
+          if (!toggle) {
+            setToggle(!toggle);
+          }
           // setFreshIdeas([]);
         });
     }
   }
 
   function handleSelectAll() {
-    if (freshFilteredIdeas?.length > 0) {
-      const updatedFilteredIdeas = freshFilteredIdeas.map((el, elIndex) => {
-        return { ...el, used: 1 };
-      });
-      setFreshFilteredIdeas(updatedFilteredIdeas);
-      console.log(
-        "updatedFilteredIdeas",
-        updatedFilteredIdeas,
-        freshFilteredIdeas
-      );
-      var ideasCopy = [];
-      for (let i = 0; i < freshIdeas.length; i++) {
-        const element = freshIdeas[i];
-        const f = updatedFilteredIdeas.find((pd) => pd.idea === element.idea);
-        if (f) {
-          ideasCopy.push(f);
-        } else {
-          ideasCopy.push(element);
+    if (toggle) {
+      if (freshFilteredIdeas?.length > 0) {
+        const updatedFilteredIdeas = freshFilteredIdeas.map((el, elIndex) => {
+          return { ...el, used: 1 };
+        });
+        setFreshFilteredIdeas(updatedFilteredIdeas);
+        console.log(
+          "updatedFilteredIdeas",
+          updatedFilteredIdeas,
+          freshFilteredIdeas
+        );
+        var ideasCopy = [];
+        for (let i = 0; i < freshIdeas.length; i++) {
+          const element = freshIdeas[i];
+          const f = updatedFilteredIdeas.find((pd) => pd.idea === element.idea);
+          if (f) {
+            ideasCopy.push(f);
+          } else {
+            ideasCopy.push(element);
+          }
         }
-      }
-      setFreshIdeas(ideasCopy);
-      const arr = [];
-      for (let index = 0; index < updatedFilteredIdeas.length; index++) {
-        const element = updatedFilteredIdeas[index];
-        if (element.used) {
-          const ideaObject = {
-            text: element.idea,
-            article_id: element.article_id,
-          };
-          arr.push(ideaObject);
+        setFreshIdeas(ideasCopy);
+        const arr = [];
+        for (let index = 0; index < updatedFilteredIdeas.length; index++) {
+          const element = updatedFilteredIdeas[index];
+          if (element.used) {
+            const ideaObject = {
+              text: element.idea,
+              article_id: element.article_id,
+            };
+            arr.push(ideaObject);
+          }
         }
+        handlefreshideas(arr);
+      } else {
+        const updatedIdeas = freshIdeas?.map((el, elIndex) => {
+          return { ...el, used: 1 };
+        });
+        setFreshIdeas(updatedIdeas);
+        setRegenSelected(updatedIdeas);
       }
-      handlefreshideas(arr);
     } else {
-      const updatedIdeas = freshIdeas.map((el, elIndex) => {
-        return { ...el, used: 1 };
-      });
-      setFreshIdeas(updatedIdeas);
-      setRegenSelected(updatedIdeas);
+      if (freshFilteredIdeas?.length > 0) {
+        const updatedFilteredIdeas = freshFilteredIdeas.map((el, elIndex) => {
+          return { ...el, used: 0 };
+        });
+        setFreshFilteredIdeas(updatedFilteredIdeas);
+        console.log(
+          "updatedFilteredIdeas",
+          updatedFilteredIdeas,
+          freshFilteredIdeas
+        );
+        var ideasCopy = [];
+        for (let i = 0; i < freshIdeas.length; i++) {
+          const element = freshIdeas[i];
+          const f = updatedFilteredIdeas.find((pd) => pd.idea === element.idea);
+          if (f) {
+            ideasCopy.push(f);
+          } else {
+            ideasCopy.push(element);
+          }
+        }
+        setFreshIdeas(ideasCopy);
+        const arr = [];
+        for (let index = 0; index < updatedFilteredIdeas.length; index++) {
+          const element = updatedFilteredIdeas[index];
+          if (element.used) {
+            const ideaObject = {
+              text: element.idea,
+              article_id: element.article_id,
+            };
+            arr.push(ideaObject);
+          }
+        }
+        handlefreshideas(arr);
+      } else {
+        const updatedIdeas = freshIdeas?.map((el, elIndex) => {
+          return { ...el, used: 0 };
+        });
+        setFreshIdeas(updatedIdeas);
+        setRegenSelected(updatedIdeas);
+      }
     }
   }
 
@@ -852,16 +903,24 @@ export default function DashboardInsights({
             )}
           </button>
           {ideaType === "fresh" && (
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold px-2 rounded-full ml-1 text-xs h-8 mt-1"
-              onClick={handleSelectAll}
-              style={{
-                background: "#bfdbfe",
-                color: "#425985",
-              }}
-            >
-              Select All
-            </button>
+            <>
+              <span className="mt-3 text-base ml-3">Select all </span>
+              <div
+                className="md:w-12 md:h-7 w-8 h-4 flex items-center bg-blue-400 rounded-full p-1 cursor-pointer mt-2"
+                onClick={() => {
+                  handleSelectAll();
+                  setToggle(!toggle);
+                }}
+              >
+                {/* Switch */}
+                <div
+                  className={
+                    "bg-black md:w-5 md:h-5 h-4 w-4 rounded-full shadow-md transform duration-300 ease-in-out" +
+                    (toggle ? null : toggleClass)
+                  }
+                ></div>
+              </div>
+            </>
           )}
         </div>
         <div
