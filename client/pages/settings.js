@@ -380,9 +380,16 @@ export default function Settings() {
   }
   const givenTimestamp = meeData?.me?.paymentsStarts;
   const currentDate = Date.now();
-  const differenceInMs = givenTimestamp - parseInt(currentDate);
+  const differenceInMs = givenTimestamp - parseInt(currentDate) / 1000;
   const daysLeft = Math.abs(Math.floor(differenceInMs / 86400000));
 
+  console.log(
+    "There are",
+    daysLeft,
+    currentDate / 1000,
+    givenTimestamp,
+    differenceInMs
+  );
   if (meeLoading) return <LoaderScan />;
 
   return (
@@ -749,15 +756,17 @@ export default function Settings() {
                                         )}
                                       </span>
                                     </dd>
-                                    <div
-                                      class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-2 w-[310%]"
-                                      role="alert"
-                                    >
-                                      <p>
-                                        Your credits will be renewed in the next{" "}
-                                        {daysLeft} days.
-                                      </p>
-                                    </div>
+                                    {meeData?.me?.paymentsStarts && (
+                                      <div
+                                        class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-2 w-[310%]"
+                                        role="alert"
+                                      >
+                                        <p>
+                                          Your credits will be renewed in the
+                                          next {daysLeft} day(s).
+                                        </p>
+                                      </div>
+                                    )}
                                   </div>
                                 )}
                                 <div>

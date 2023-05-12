@@ -66,7 +66,7 @@ export default function Upgrade() {
   };
 
   useEffect(() => {
-    console.log(currentPlan);
+    console.log("**", currentPlan);
   }, [currentPlan]);
 
   useLayoutEffect(() => {
@@ -85,6 +85,11 @@ export default function Upgrade() {
         if (price.recurring.interval === "month") {
           if (price.recurring.interval_count === 3) {
             type = "Quarterly";
+            setCurrentPlan({
+              subscriptionType: type,
+              price: price.unit_amount / 100,
+              priceId: price.id,
+            });
           } else {
             type = "Monthly";
           }
@@ -101,7 +106,7 @@ export default function Upgrade() {
       console.log(updatedPricesArray);
       setPlans(updatedPricesArray);
     };
-    setCurrentPlan(plans[0]);
+
     fetchPriceId();
   }, []);
 
