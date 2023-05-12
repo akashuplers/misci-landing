@@ -157,6 +157,9 @@ export default function DashboardInsights({
     } else {
       setFilteredArray((prev) => [...prev, { filterText, criteria: "ref" }]);
     }
+    if (!toggle) {
+      setToggle(!toggle);
+    }
 
     console.log("setFilteredArray", filteredArray);
   }

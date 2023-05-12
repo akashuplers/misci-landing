@@ -479,7 +479,7 @@ export default function Sidebar() {
                     gap: "2em",
                   }}
                 >
-                  {!meeData?.me?.isSubscribed && !meeLoading && (
+                  {!meeLoading && (
                     <div
                       className="flex text-center font-bold text-sm w-auto rounded border border-gray"
                       href="/settings"
