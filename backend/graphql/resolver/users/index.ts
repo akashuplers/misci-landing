@@ -40,7 +40,8 @@ export const usersResolver = {
                 prefFilled: userPref && userPref.prefFilled ? userPref.prefFilled : false,
                 profileImage: userDetails.profileImage || null,
                 premium: userDetails.premium || false,
-                totalCredits: userDetails.totalCredits ? userDetails.totalCredits : userDetails.premium ? userDetails.premium : process.env.CREDIT_COUNT
+                totalCredits: userDetails.totalCredits ? userDetails.totalCredits : userDetails.premium ? userDetails.premium : process.env.CREDIT_COUNT,
+                paymentsStarts: userDetails.paymentsStarts || null
             }
         }
     },
