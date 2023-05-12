@@ -24,6 +24,7 @@ export const meeAPI = gql`
       profileImage
       prefData
       totalCredits
+      paymentsStarts
     }
   }
 `;
