@@ -112,7 +112,11 @@ export default function TinyMCEEditor({
   };
 
   useEffect(() => {
-    if (option !== "linkedin-comeback" && option !== "twitter-comeback")
+    if (
+      option !== "linkedin-comeback" &&
+      option !== "twitter-comeback" &&
+      option !== "twitter"
+    )
       setEditorText(editorText);
   }, [editorText]);
 
