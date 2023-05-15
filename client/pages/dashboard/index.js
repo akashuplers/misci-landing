@@ -383,23 +383,14 @@ export default function dashboard({ query }) {
           },
         }}
       >
-        <div className="mx-auto pb-4">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-24 h-24 ml-[35%]"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
-            />
-          </svg>
+        <div className="mx-auto h-[150px] w-[100px]">
+          <img
+            className="h-[150px]"
+            src="/time-period-icon.svg"
+            alt="Timeout image"
+          ></img>
         </div>
-        <div className="mx-auto font-bold text-2xl pl-[35%]">Timeout</div>
+
         <p className="text-gray-500 text-base font-medium mt-4 mx-auto pl-5">
           We regret that it is taking more time to generate the blog right now,
           Please try again after some time...
