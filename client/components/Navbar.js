@@ -50,7 +50,7 @@ export default function Navbar({ isOpen }) {
                       <img
                         className="block h-12 w-auto"
                         src="/lille_logo_new.png"
-                        alt="Lille Logo"
+                        alt="Lille"
                       />
                     </Link>
                   </div>
