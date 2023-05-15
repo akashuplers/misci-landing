@@ -12,6 +12,7 @@ import PreferencesModal from "../modals/PreferencesModal";
 import TrialEndedModal from "../components/TrialEndedModal";
 import TextTransition, { presets } from "react-text-transition";
 import Head from "next/head";
+import Marquee from "react-fast-marquee";
 
 const TEXTS = [
   "Newsletters",
@@ -122,7 +123,7 @@ export default function Home() {
     >
       <div className="cursor-pointer flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-gray-100 shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
         <button className="cursor-pointer text-sm font-medium text-gray-900 cursor-auto">
-          {topic.length > 38 ? <marquee>{topic}</marquee> : topic}
+          {topic.length > 38 ? <Marquee>{topic}</Marquee> : topic}
         </button>
         <ArrowRightCircleIcon className="w-5 h-5 text-gray-400" />
       </div>
