@@ -148,7 +148,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Lille.ai</title>
+        <title>Lille</title>
         <meta
           name="description"
           content="Streamline your content creation process with our website that

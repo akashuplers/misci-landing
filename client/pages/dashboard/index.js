@@ -406,7 +406,7 @@ export default function dashboard({ query }) {
         </p>
         <div className="m-9 mx-auto">
           <button
-            class="w-[240px] ml-16 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded"
+            class="w-[240px] ml-16 bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 border border-indigo-700 rounded"
             onClick={() => {
               window.location.href = "/";
             }}
