@@ -78,7 +78,7 @@ export default function Home() {
 
         if (
           `${networkError}` ===
-          "ServerError: Response not successful: Received status code 401" &&
+            "ServerError: Response not successful: Received status code 401" &&
           isauth
         ) {
           localStorage.clear();
@@ -178,7 +178,7 @@ export default function Home() {
         )}
 
         {!meeData?.me?.isSubscribed && meeData?.me?.credits === 0 && (
-          <TrialEndedModal setTrailModal={() => { }} topic={null} />
+          <TrialEndedModal setTrailModal={() => {}} topic={null} />
         )}
         <div className={`relative px-6 pt-5 lg:px-8`}>
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
@@ -268,11 +268,11 @@ export default function Home() {
                   Lille
                 </span>
               </h1>
-              <p className="mt-6 text-lg leading-8 text-gray-600">
+              {/* <p className="mt-6 text-lg leading-8 text-gray-600">
                 Streamline your content creation process with our website that
                 generates blog posts from URLs or uploaded files, providing
                 concise and informative content in no time
-              </p>
+              </p> */}
               <div className="p-4 mt-4">Try some of our trending topics</div>
               {!loading ? (
                 <div
