@@ -188,7 +188,7 @@ router.post("/user/create", async (req: any, res: any) => {
       let user = null
       if(data.paid) {
         delete data._id;
-        data.credits = process.env.PAID_CREDIT_COUNT
+        // data.credits = process.env.PAID_CREDIT_COUNT
         await db.db("lilleAdmin").collection("users").updateOne({
           email: data.email
         }, {

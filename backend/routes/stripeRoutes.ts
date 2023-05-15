@@ -124,8 +124,8 @@ router.post('/webhook',  async (request: any, reply: any) => {
                     upcomingInvoicedDate: subscription.current_period_end,
                     freeTrial: false,
                     freeTrailEndsDate: null,
-                    credits: parseInt(newCredit?.monthly_credit || "200") + parseInt(userDetails.credits),
-                    totalCredits: parseInt(newCredit?.monthly_credit || "200") + parseInt(userDetails.credits),
+                    credits: parseInt(newCredit?.monthly_credit || "200") + parseInt(userDetails.credits || 0),
+                    totalCredits: parseInt(newCredit?.monthly_credit || "200") + parseInt(userDetails.credits || 0),
                     paymentsStarts: getTimeStamp()
                 }
             })
