@@ -82,6 +82,7 @@ router.post('/webhook',  async (request: any, reply: any) => {
               && object.status === 'active') {
             if("current_period_start" in previous_attributes && previous_attributes.current_period_start !== subscription.current_period_start) {
                 console.log("========== Renewing ===========")
+                const newCredit = await db.db('lilleAdmin').collection('config').findOne()
                 await db.db('lilleAdmin').collection('users').updateOne({email: customer_object.email}, {
                     $set: {
                         isSubscribed: true,
@@ -90,8 +91,8 @@ router.post('/webhook',  async (request: any, reply: any) => {
                         subscription.plan.interval === 'month' && subscription.plan.interval_count === 1 ? "monthly" : "quarterly",
                         lastInvoicedDate: subscription.current_period_start,
                         upcomingInvoicedDate: subscription.current_period_end,
-                        credits: parseInt(process.env.PAID_CREDIT_COUNT || "200"),
-                        totalCredits: parseInt(process.env.PAID_CREDIT_COUNT || "200"),
+                        credits: parseInt(newCredit?.monthly_credit || "200"),
+                        totalCredits: parseInt(newCredit?.monthly_credit || "200"),
                     }
                 })
             }    
@@ -112,6 +113,7 @@ router.post('/webhook',  async (request: any, reply: any) => {
             const userDetails = await db.db('lilleAdmin').collection('users').findOne({
                 email: customer_object.email
             })
+            const newCredit = await db.db('lilleAdmin').collection('config').findOne()
             await db.db('lilleAdmin').collection('users').updateOne({email: customer_object.email}, {
                 $set: {
                     isSubscribed: true,
@@ -122,8 +124,8 @@ router.post('/webhook',  async (request: any, reply: any) => {
                     upcomingInvoicedDate: subscription.current_period_end,
                     freeTrial: false,
                     freeTrailEndsDate: null,
-                    credits: parseInt(process.env.PAID_CREDIT_COUNT || "200") + parseInt(userDetails.credits),
-                    totalCredits: parseInt(process.env.PAID_CREDIT_COUNT || "200") + parseInt(userDetails.credits),
+                    credits: parseInt(newCredit?.monthly_credit || "200") + parseInt(userDetails.credits),
+                    totalCredits: parseInt(newCredit?.monthly_credit || "200") + parseInt(userDetails.credits),
                     paymentsStarts: getTimeStamp()
                 }
             })
