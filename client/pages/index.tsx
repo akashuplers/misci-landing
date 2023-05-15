@@ -123,7 +123,7 @@ export default function Home() {
     >
       <div className="cursor-pointer flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-gray-100 shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
         <button className="cursor-pointer text-sm font-medium text-gray-900 cursor-auto">
-          {topic.length > 38 ? (
+          {topic.length > 31 ? (
             <Marquee pauseOnHover={true} autoFill={false}>
               <div className="mx-4">{topic}</div>
             </Marquee>
