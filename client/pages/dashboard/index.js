@@ -14,6 +14,7 @@ import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { API_BASE_PATH, API_ROUTES } from "../../constants/apiEndpoints";
 import TrialEndedModal from "../../components/TrialEndedModal";
+import Modal from "react-modal";
 
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
@@ -42,6 +43,7 @@ export default function dashboard({ query }) {
   const [reference, setReference] = useState([]);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
   const [creditModal, setCreditModal] = useState(false);
+  const [modalOpen, setOpenModal] = useState(false);
 
   const keyword = useStore((state) => state.keyword);
   const updateCredit = useStore((state) => state.updateCredit);
@@ -260,10 +262,13 @@ export default function dashboard({ query }) {
           console.log("Sucessfully generated the article");
         },
         onError: (error) => {
-          console.error("888888", error.message);
           if (error.message === 'Unexpected error value: "@Credit exhausted"') {
             toast.error("Credit exhausted");
             setCreditModal(true);
+          } else {
+            if (error.message) {
+              setOpenModal(true);
+            }
           }
         },
       }).catch((err) => {
@@ -348,6 +353,69 @@ export default function dashboard({ query }) {
           </div>
         </div>
       </Layout>
+      <Modal
+        isOpen={modalOpen}
+        ariaHideApp={false}
+        className="w-[100%] sm:w-[38%] max-h-[95%]"
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0,0,0,0.5)",
+            zIndex: "9999",
+          },
+          content: {
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            right: "auto",
+            border: "none",
+            background: "white",
+            // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+            borderRadius: "8px",
+            height: "350px",
+            // width: "100%",
+            maxWidth: "450px",
+            bottom: "",
+            zIndex: "999",
+            marginRight: "-50%",
+            transform: "translate(-50%, -50%)",
+            padding: "30px",
+            paddingBottom: "0px",
+          },
+        }}
+      >
+        <div className="mx-auto pb-4">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-24 h-24 ml-[35%]"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+            />
+          </svg>
+        </div>
+        <div className="mx-auto font-bold text-2xl pl-[35%]">Timeout</div>
+        <p className="text-gray-500 text-base font-medium mt-4 mx-auto pl-5">
+          We regret that it is taking more time to generate the blog right now,
+          Please try again after some time...
+        </p>
+        <div className="m-9 mx-auto">
+          <button
+            class="w-[240px] ml-16 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded"
+            onClick={() => {
+              window.location.href = "/";
+            }}
+          >
+            Go Back
+          </button>
+          {/* <button class="w-[240px] ml-9 bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded text-sm"></button> */}
+        </div>
+      </Modal>
     </>
   );
 }
