@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
+import Head from "next/head";
 import Link from "next/link";
-import LoaderPlane from "../components/LoaderPlane";
 import { useRouter } from "next/router";
-import useStore from "../store/store";
+import React, { useEffect, useState } from "react";
+import Marquee from "react-fast-marquee";
+import TextTransition, { presets } from "react-text-transition";
+import { ToastContainer, toast } from "react-toastify";
 import Layout from "../components/Layout";
-import { toast, ToastContainer } from "react-toastify";
+import LoaderPlane from "../components/LoaderPlane";
+import TrialEndedModal from "../components/TrialEndedModal";
 import { meeAPI } from "../graphql/querys/mee";
 import PreferencesModal from "../modals/PreferencesModal";
-import TrialEndedModal from "../components/TrialEndedModal";
-import TextTransition, { presets } from "react-text-transition";
-import Head from "next/head";
-import Marquee from "react-fast-marquee";
+import useStore from "../store/store";
 
 const TEXTS = [
   "Newsletters",
@@ -78,7 +78,7 @@ export default function Home() {
 
         if (
           `${networkError}` ===
-            "ServerError: Response not successful: Received status code 401" &&
+          "ServerError: Response not successful: Received status code 401" &&
           isauth
         ) {
           localStorage.clear();
@@ -178,7 +178,7 @@ export default function Home() {
         )}
 
         {!meeData?.me?.isSubscribed && meeData?.me?.credits === 0 && (
-          <TrialEndedModal setTrailModal={() => {}} topic={null} />
+          <TrialEndedModal setTrailModal={() => { }} topic={null} />
         )}
         <div className={`relative px-6 pt-5 lg:px-8`}>
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
