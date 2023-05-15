@@ -12,7 +12,7 @@
   box-shadow: 4px 9px 10px #00000061;
 }
 
-.publishContainer > div > p > a[title] {
+.publishContainer a[title] {
   position: relative;
   font-size: 10px;
   top: -8px;
