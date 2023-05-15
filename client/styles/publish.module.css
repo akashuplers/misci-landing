@@ -29,24 +29,28 @@
 }
 
 .publishContainer div {
+  display: block;
   align-items: flex-start;
 }
 
 .publishContainer h2 {
   color: black;
+  display: block;
   font-size: 1.5rem;
 }
 .publishContainer h3 {
+  display: block;
   font-size: 1.5rem;
-  color: black;
 }
 .publishContainer h3 > * {
   text-align: center;
+  display: block;
   margin: 0 auto;
 }
 
 .publishContainer h1 {
   font-weight: 600;
+  display: block;
   font-size: 22px;
   padding: 10px 0px 10px;
 }
