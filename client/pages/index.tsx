@@ -11,6 +11,7 @@ import { meeAPI } from "../graphql/querys/mee";
 import PreferencesModal from "../modals/PreferencesModal";
 import TrialEndedModal from "../components/TrialEndedModal";
 import TextTransition, { presets } from "react-text-transition";
+import Head from "next/head";
 
 const TEXTS = [
   "Newsletters",
@@ -139,6 +140,26 @@ export default function Home() {
 
   return (
     <>
+      <Head>
+        <title>Lille.ai</title>
+        <meta
+          name="description"
+          content="Streamline your content creation process with our website that
+                generates blog posts from URLs or uploaded files, providing
+                concise and informative content in no time."
+        />
+        <meta
+          property="og:title"
+          content="Generate Blogs & Posts with Lille."
+        />
+        <meta
+          property="og:description"
+          content="Streamline your content creation process with our website that
+                generates blog posts from URLs or uploaded files, providing
+                concise and informative content in no time."
+        />
+        <meta property="og:image" content="/lille_logo_new.png" />
+      </Head>
       <Layout>
         <ToastContainer />
         {pfmodal && (
