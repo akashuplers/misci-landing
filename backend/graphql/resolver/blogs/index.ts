@@ -670,7 +670,7 @@ export const blogResolvers = {
         ) => {
             console.log(`Running IR Blog generation =====`)
             const pythonData = args.options
-            console.log(pythonData, "received data")
+            console.log(pythonData, "received data", getTimeStamp())
             let i = 0;
             await (async function loop() {
                 return new Promise(async (resolve) => {
