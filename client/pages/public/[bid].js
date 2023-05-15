@@ -54,18 +54,9 @@ export default function Post() {
       const modifiedHtml = tempElement.innerHTML;
       console.log(modifiedHtml);
       publishContainer.innerHTML = modifiedHtml;
-      document.querySelector('#publishContainer > div').style.alignItems = 'center';
-      const getRefPTag = document.querySelector('#publishContainer > div').children[document.querySelector('#publishContainer > div').childElementCount - 2];
-      getRefPTag.style.alignSelf = 'baseline';
-      getRefPTag.style.display = 'block';
-      const getRefOlTag = document.querySelector('#publishContainer > div').children[document.querySelector('#publishContainer > div').childElementCount - 1];
-      getRefOlTag.style.alignSelf = 'baseline';
-      getRefOlTag.style.display = 'block';
-      const anchorTags = publishContainer.querySelectorAll('a[title]');
-      console.log(anchorTags);
-      console.log('anchorTags');
-      
+
     }
+
   }, [data]);
 
   if (loading) return <LoaderPlane />;
