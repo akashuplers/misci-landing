@@ -920,6 +920,7 @@ router.get('/add-monthly-credits', async (req: any, res: any) => {
     isSubscribed: true,
     paid: true
   }).toArray()
+  const newCredit = await db.db('lilleAdmin').collection('config').findOne()
   await (
     Promise.all(
       subscribedUsers.map(async (user: any) => {
@@ -936,8 +937,8 @@ router.get('/add-monthly-credits', async (req: any, res: any) => {
             console.log(`======== Running monthly credit for user ${user.email} ==========`)
             await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user._id)}, {
               $set: {
-                credits: parseInt(process.env.PAID_CREDIT_COUNT || "200"),
-                totalCredits: parseInt(process.env.PAID_CREDIT_COUNT || "200")
+                credits: parseInt(newCredit?.monthly_credit || "200"),
+                totalCredits: parseInt(newCredit?.monthly_credit || "200")
               }
             })
           }
