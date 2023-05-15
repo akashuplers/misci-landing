@@ -1,45 +1,58 @@
-.publishContainer{
-    width: 80%;
-    max-width: 900px;
+.publishContainer {
+  width: 80%;
+  max-width: 900px;
 
-    padding: 2em;
-    margin: 0 auto;
-    margin-top: 5em;
-    margin-bottom: 3em;
+  padding: 2em;
+  margin: 0 auto;
+  margin-top: 5em;
+  margin-bottom: 3em;
 
-    background-color: #f0f0f0;
-    border-radius: 15px;
-    box-shadow: 4px 9px 10px #00000061;
+  background-color: #f0f0f0;
+  border-radius: 15px;
+  box-shadow: 4px 9px 10px #00000061;
 }
 
-.publishContainer > null  {
-    align-items: center ;
+.publishContainer > div > p > a[title] {
+  position: relative;
+  font-size: 10px;
+  top: -8px;
+  color: blue;
 }
 
-.publishContainer > null > span  {
-    align-items: center !important;
+.publishContainer a {
+  position: relative;
+  color: blue;
 }
 
-.publishContainer  null  {
-    align-items: center ;
+.publishContainer > div > span {
+  align-items: center !important;
 }
 
-.publishContainer  h3{
-    font-size: 1.5rem;   
-}
-.publishContainer  h3 > *{
-    text-align: center;
-    margin: 0 auto;
+.publishContainer div {
+  align-items: flex-start;
 }
 
-.publishContainer  h1{
-    font-weight: 600;
-    font-size: 22px;
-    padding: 10px 0px 10px
+.publishContainer h2 {
+  color: black;
+  font-size: 1.5rem;
+}
+.publishContainer h3 {
+  font-size: 1.5rem;
+  color: black;
+}
+.publishContainer h3 > * {
+  text-align: center;
+  margin: 0 auto;
 }
 
- .publishContainer a{
-    text-align: center !important;
+.publishContainer h1 {
+  font-weight: 600;
+  font-size: 22px;
+  padding: 10px 0px 10px;
+}
+
+.publishContainer a {
+  text-align: center !important;
 }
 
 .publishContainer a[title="Source URL"] {
@@ -47,28 +60,32 @@
   text-align: center;
 }
 
-.publishContainer  p{
-    /* align-items: center ; */
+.publishContainer p {
+  /* align-items: center ; */
+  display: block;
 }
 
-.publishContainer   img{
-    border-radius: 10px;
-    max-width: 70%;
-    align-items: center !important;
-  
+.publishContainer img {
+  border-radius: 10px;
+  max-width: 70%;
+  align-items: center !important;
 }
 
-.publishContainer > *{
-     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1em;
-    padding-top: 7px;
+.publishContainer > * {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1em;
+  padding-top: 7px;
 }
 
-@media (min-width : 1024px){
-    .publishContainer{
-        margin: 0 auto;
-        margin-bottom: 3em;
-    }
+@media (min-width: 1024px) {
+  .publishContainer {
+    margin: 0 auto;
+    margin-bottom: 3em;
+  }
+}
+
+.publishContainer h1 {
+  color: black;
 }
