@@ -19,24 +19,26 @@
   color: blue;
 }
 
-.publishContainer  a {
+.publishContainer a {
   position: relative;
   color: blue;
 }
-.publishContainer > null {
-  align-items: center;
-}
 
-.publishContainer > null > span {
+.publishContainer > div > span {
   align-items: center !important;
 }
 
-.publishContainer null {
-  align-items: center;
+.publishContainer div {
+  align-items: flex-start;
 }
 
+.publishContainer h2 {
+  color: black;
+  font-size: 1.5rem;
+}
 .publishContainer h3 {
   font-size: 1.5rem;
+  color: black;
 }
 .publishContainer h3 > * {
   text-align: center;
@@ -60,6 +62,7 @@
 
 .publishContainer p {
   /* align-items: center ; */
+  display: block;
 }
 
 .publishContainer img {
@@ -81,4 +84,8 @@
     margin: 0 auto;
     margin-bottom: 3em;
   }
+}
+
+.publishContainer h1 {
+  color: black;
 }
