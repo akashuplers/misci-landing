@@ -917,8 +917,7 @@ router.post("/logout",authMiddleware, async (request: any, reply: any) => {
 router.get('/add-monthly-credits', async (req: any, res: any) => {
   const db = req.app.get('db')
   const subscribedUsers = await db.db('lilleAdmin').collection('users').find({
-    isSubscribed: true,
-    _id: new ObjectID('640ececf2369c047dbe0b8ff')
+    isSubscribed: true
   }).toArray()
   const newCredit = await db.db('lilleAdmin').collection('config').findOne()
   await (
