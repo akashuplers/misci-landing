@@ -1,11 +1,9 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import { Fragment, useState } from "react";
-import { Dialog, Switch, Transition } from "@headlessui/react";
+import { useMutation, useQuery } from "@apollo/client";
+import { Dialog, Transition } from "@headlessui/react";
 import {
   ArrowLeftOnRectangleIcon,
-  Bars3BottomLeftIcon,
-  BellIcon,
   BriefcaseIcon,
   ChatBubbleOvalLeftEllipsisIcon,
   CogIcon,
@@ -15,23 +13,21 @@ import {
   UsersIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import Layout from "../components/Layout";
-import { useQuery } from "@apollo/client";
-import { meeAPI } from "../graphql/querys/mee";
-import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
-import LoaderScan from "../components/LoaderScan";
-import ForgotPasswordModal from "../components/ForgotPasswordModal";
-import { useEffect } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import ReactLoading from "react-loading";
-import fillerProfileImage from "../public/profile-filler.jpg";
 import axios from "axios";
-import CreatableSelect from "react-select/creatable";
-import { addPreferances } from "../graphql/mutations/addPreferances";
-import { useMutation } from "@apollo/client";
 import Link from "next/link";
+import { Fragment, useEffect, useState } from "react";
+import ReactLoading from "react-loading";
 import Modal from "react-modal";
+import CreatableSelect from "react-select/creatable";
+import { ToastContainer, toast } from "react-toastify";
+import ForgotPasswordModal from "../components/ForgotPasswordModal";
+import Layout from "../components/Layout";
+import LoaderScan from "../components/LoaderScan";
+import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import { addPreferances } from "../graphql/mutations/addPreferances";
+import { meeAPI } from "../graphql/querys/mee";
+import { formatDate, generateDateString } from "../helpers/helper";
+import fillerProfileImage from "../public/profile-filler.jpg";
 
 const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: false },
@@ -127,12 +123,7 @@ export default function Settings() {
   }
 
   const {
-    data: meeData,
-    loading: meeLoading,
-    error: meeError,
-  } = useQuery(meeAPI, {
-    context: {
-      headers: {
+    data: meeData, loading: meeLoading, error: meeError,} = useQuery(meeAPI, {context: {headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + getToken,
       },
@@ -378,19 +369,9 @@ export default function Settings() {
     const string = <span style={{ fontWeight: "600" }}>``</span>;
     return `You are on a ${string} plan`;
   }
-  const givenTimestamp = meeData?.me?.paymentsStarts;
-  const currentDate = Date.now();
-  const differenceInMs = givenTimestamp - parseInt(currentDate) / 1000;
-  const daysLeft = Math.abs(Math.floor(differenceInMs / 86400000));
 
-  console.log(
-    "There are",
-    daysLeft,
-    currentDate / 1000,
-    givenTimestamp,
-    differenceInMs
-  );
   if (meeLoading) return <LoaderScan />;
+  console.log(meeData?.me?.lastInvoicedDate * 1000);
 
   return (
     <>
@@ -729,28 +710,42 @@ export default function Settings() {
                                             </button>
                                             Last Invoice Date :{" "}
                                             <span style={{ fontWeight: "600" }}>
-                                              {new Date(
-                                                meeData?.me?.lastInvoicedDate *
-                                                  1000
-                                              ).toLocaleDateString("in-IN")}
+                                              {/* {new Date(
+                                                meeData?.me
+                                                  ?.lastInvoicedDate * 1000
+                                              ).toLocaleDateString("in-IN")} */}
+
+                                              {formatDate(
+                                                generateDateString(
+                                                  meeData?.me?.lastInvoicedDate
+                                                )
+                                              )}
                                             </span>{" "}
                                             <br />
                                             Next Invoice Date :{" "}
                                             <span style={{ fontWeight: "600" }}>
-                                              {new Date(
+                                              {/* {new Date(
                                                 meeData?.me
                                                   ?.upcomingInvoicedDate * 1000
-                                              ).toLocaleDateString("in-IN")}
+                                              ).toLocaleDateString("in-IN")} */}
+                                              {formatDate(
+                                                generateDateString(
+                                                  meeData?.me
+                                                    ?.upcomingInvoicedDate
+                                                )
+                                              )}
                                             </span>
                                           </>
                                         ) : (
                                           <>
                                             Last Date of Subscription :{" "}
                                             <span style={{ fontWeight: "600" }}>
-                                              {new Date(
-                                                meeData?.me
-                                                  ?.upcomingInvoicedDate * 1000
-                                              ).toLocaleDateString("in-IN")}
+                                              {formatDate(
+                                                generateDateString(
+                                                  meeData?.me
+                                                    ?.upcomingInvoicedDate
+                                                )
+                                              )}
                                             </span>
                                           </>
                                         )}
@@ -763,7 +758,8 @@ export default function Settings() {
                                       >
                                         <p>
                                           Your credits will be renewed in the
-                                          next {daysLeft} day(s).
+                                          next {meeData?.me?.creditRenewDay}{" "}
+                                          day(s).
                                         </p>
                                       </div>
                                     )}
@@ -870,8 +866,8 @@ export default function Settings() {
                                 Daily Feed Preferences
                               </h3>
                               <p className="max-w-2xl text-sm text-gray-500">
-                                Please select max 3 preferences(Use alphabets
-                                and numbers only).
+                                Max 3 preferences allowed (Use alphabets and
+                                numbers only).
                               </p>
                             </div>
                             <div className="mt-6">
@@ -1050,7 +1046,6 @@ export default function Settings() {
           </div>
         </div>
       </div>
-          
     </>
   );
 }

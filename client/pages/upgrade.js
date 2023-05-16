@@ -206,7 +206,7 @@ export default function Upgrade() {
                         srcset=""
                       /> */}
                           <p className=" text-[18px] font-medium mb-4">
-                            Create/Regenrate Unlimited Blogs
+                            Create/Regenerate blogs with your topics
                           </p>
                         </div>
                         <div className="flex align-middle">

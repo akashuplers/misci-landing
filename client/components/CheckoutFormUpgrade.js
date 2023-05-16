@@ -269,7 +269,7 @@ const CheckoutFormUpgrade = ({
                 background: "white",
                 // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
                 borderRadius: "8px",
-                height: "400px",
+                height: "450px",
                 // width: "100%",
                 maxWidth: "450px",
                 bottom: "",
@@ -289,6 +289,9 @@ const CheckoutFormUpgrade = ({
             </div>
             <p className="text-gray-500 ml-[15%] text-base font-medium mt-4 mx-auto pl-5 align-middle">
               Your Subscription is now confirmed!!
+            </p>
+            <p className="text-gray-500 ml-[15%] text-base font-medium mt-4 mx-auto pl-5 align-middle">
+              Account loaded with prescribed credits.
             </p>
             <div className="ml-[25%] flex m-6">
               <button
