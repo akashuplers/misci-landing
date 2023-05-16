@@ -860,8 +860,8 @@ export default function Settings() {
                                 Daily Feed Preferences
                               </h3>
                               <p className="max-w-2xl text-sm text-gray-500">
-                                Please select max 3 preferences(Use alphabets
-                                and numbers only).
+                                Max 3 preferences allowed (Use alphabets and
+                                numbers only).
                               </p>
                             </div>
                             <div className="mt-6">
