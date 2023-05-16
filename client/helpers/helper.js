@@ -72,3 +72,24 @@ export function logout(item) {
     window.location.href = "/";
   }
 }
+
+
+
+export function formatDate(dateString) {
+  const parts = dateString.split('/'); // Assuming the input date is in the format "day/month/year"
+  const day = parts[0];
+  const month = parts[1];
+  const year = parts[2];
+
+  // Mapping month number to month name
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  const monthName = months[parseInt(month, 10) - 1];
+
+  return `${day} ${monthName}, ${year}`;
+}
+export function generateDateString(invoice) {
+  return new Date(invoice * 1000).toLocaleDateString("in-IN");
+}

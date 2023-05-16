@@ -19,6 +19,9 @@
   color: blue;
 }
 
+.publishContainer ol {
+  gap: unset;
+}
 .publishContainer a {
   position: relative;
   color: blue;

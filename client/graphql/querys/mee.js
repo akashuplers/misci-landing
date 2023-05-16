@@ -25,6 +25,7 @@ export const meeAPI = gql`
       prefData
       totalCredits
       paymentsStarts
+      creditRenewDay
     }
   }
 `;
