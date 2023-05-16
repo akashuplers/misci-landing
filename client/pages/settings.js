@@ -123,12 +123,7 @@ export default function Settings() {
   }
 
   const {
-    data: meeData,
-    loading: meeLoading,
-    error: meeError,
-  } = useQuery(meeAPI, {
-    context: {
-      headers: {
+    data: meeData, loading: meeLoading, error: meeError,} = useQuery(meeAPI, {context: {headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + getToken,
       },
