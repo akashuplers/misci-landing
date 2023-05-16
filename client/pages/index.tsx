@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer";
 import { gql, useQuery } from "@apollo/client";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
 import Head from "next/head";
@@ -24,6 +25,14 @@ const TEXTS = [
 ];
 
 export default function Home() {
+  const isAuthenticated = useStore((state) => state.isAuthenticated);
+  const updateAuthentication = useStore((state) => state.updateAuthentication);
+
+
+  useEffect(() => {
+    updateAuthentication();
+  }, []);
+
   const keywords = gql`
     query keywords {
       trendingTopics
@@ -180,7 +189,7 @@ export default function Home() {
         {!meeData?.me?.isSubscribed && meeData?.me?.credits === 0 && (
           <TrialEndedModal setTrailModal={() => { }} topic={null} />
         )}
-        <div className={`relative px-6 pt-5 lg:px-8`}>
+        <div className={`relative px-6 pt-5 lg:px-8 ${!isAuthenticated && 'md:min-h-screen'}`}>
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
             <svg
               className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
@@ -338,6 +347,7 @@ export default function Home() {
             </svg>
           </div>
         </div>
+        {!isAuthenticated && <Footer />}
       </Layout>
       <style>
         {`
