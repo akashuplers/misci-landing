@@ -419,6 +419,7 @@ export const blogResolvers = {
                     title: blog.keyword,
                     imageUrl: imageUrl ? imageUrl : blog.imageUrl,
                     imageSrc,
+                    ideasArr,
                     refUrls
                 })
                 let newData: any = []
