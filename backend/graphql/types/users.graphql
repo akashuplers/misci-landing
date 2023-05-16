@@ -21,6 +21,7 @@ type User {
     prefFilled: Boolean
     profileImage: String
     totalCredits: Int
+    creditRenewDay: Int
 }
 type Query {
     me: User!
