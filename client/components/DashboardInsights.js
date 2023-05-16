@@ -60,7 +60,7 @@ export default function DashboardInsights({
   const updateCredit = useStore((state) => state.updateCredit);
   const updateisSave = useStore((state) => state.updateisSave);
   const [toggle, setToggle] = useState(true);
-  const toggleClass = " transform translate-x-5";
+  const toggleClass = " transform translate-x-3";
 
   useEffect(() => {
     setFreshIdeas(oldFreshIdeas);
@@ -904,9 +904,9 @@ export default function DashboardInsights({
           </button>
           {ideaType === "fresh" && (
             <>
-              <span className="mt-3 text-base ml-3">Select all </span>
+              <span className="mt-3 text-sm ml-3">Select all </span>
               <div
-                className="md:w-12 md:h-7 w-8 h-4 flex items-center bg-blue-400 rounded-full p-1 cursor-pointer mt-2"
+                className="md:w-10 md:h-5 w-7 h-2 flex items-center bg-blue-400 rounded-full p-1 cursor-pointer mt-3"
                 onClick={() => {
                   handleSelectAll();
                   setToggle(!toggle);
