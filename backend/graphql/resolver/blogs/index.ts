@@ -412,6 +412,7 @@ export const blogResolvers = {
                     source: string
                 }[] = []
                 if(articleIds && articleIds.length) refUrls = await fetchArticleUrls({db, articleId: articleIds})
+                let startChatGptRequest = new Date()
                 const {usedIdeasArr, updatedBlogs, description}: any = await blogGeneration({
                     db,
                     text: texts,
@@ -422,6 +423,9 @@ export const blogResolvers = {
                     ideasArr,
                     refUrls
                 })
+                let endChatGPTRequest = new Date()
+                let respChatgptTime = diff_minutes(endChatGPTRequest, startChatGptRequest)
+                console.log(respChatgptTime, "respChatgptTime")
                 let newData: any = []
                 updatedBlogs.forEach((data: any, index: any) => {
                     const platformUpdatedDataIndex = (blog.publish_data).slice().reverse().findIndex((pd: any) => pd.platform === data.platform)
