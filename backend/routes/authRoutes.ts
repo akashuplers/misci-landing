@@ -918,7 +918,7 @@ router.get('/add-monthly-credits', async (req: any, res: any) => {
   const db = req.app.get('db')
   const subscribedUsers = await db.db('lilleAdmin').collection('users').find({
     isSubscribed: true,
-    paid: true
+    _id: new ObjectID('640ececf2369c047dbe0b8ff')
   }).toArray()
   const newCredit = await db.db('lilleAdmin').collection('config').findOne()
   await (
@@ -936,7 +936,8 @@ router.get('/add-monthly-credits', async (req: any, res: any) => {
           console.log(now, "now")
           console.log( monthDuration, "duration")
           let differenceInDays = daysBetween(now, nextDate)
-          if(differenceInDays === 30) {
+          console.log( differenceInDays, "differenceInDays")
+          if(differenceInDays === 0 && monthDuration) {
             console.log(`======== Running monthly credit for user ${user.email} ==========`)
             await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user._id)}, {
               $set: {
