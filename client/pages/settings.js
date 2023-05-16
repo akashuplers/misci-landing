@@ -1,11 +1,9 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import { Fragment, useState } from "react";
-import { Dialog, Switch, Transition } from "@headlessui/react";
+import { useMutation, useQuery } from "@apollo/client";
+import { Dialog, Transition } from "@headlessui/react";
 import {
   ArrowLeftOnRectangleIcon,
-  Bars3BottomLeftIcon,
-  BellIcon,
   BriefcaseIcon,
   ChatBubbleOvalLeftEllipsisIcon,
   CogIcon,
@@ -13,25 +11,23 @@ import {
   HomeIcon,
   QuestionMarkCircleIcon,
   UsersIcon,
-  XMarkIcon,
+  XMarkIcon
 } from "@heroicons/react/24/outline";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import Layout from "../components/Layout";
-import { useQuery } from "@apollo/client";
-import { meeAPI } from "../graphql/querys/mee";
-import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
-import LoaderScan from "../components/LoaderScan";
-import ForgotPasswordModal from "../components/ForgotPasswordModal";
-import { useEffect } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import ReactLoading from "react-loading";
-import fillerProfileImage from "../public/profile-filler.jpg";
 import axios from "axios";
-import CreatableSelect from "react-select/creatable";
-import { addPreferances } from "../graphql/mutations/addPreferances";
-import { useMutation } from "@apollo/client";
 import Link from "next/link";
+import { Fragment, useEffect, useState } from "react";
+import ReactLoading from "react-loading";
 import Modal from "react-modal";
+import CreatableSelect from "react-select/creatable";
+import { ToastContainer, toast } from "react-toastify";
+import ForgotPasswordModal from "../components/ForgotPasswordModal";
+import Layout from "../components/Layout";
+import LoaderScan from "../components/LoaderScan";
+import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import { addPreferances } from "../graphql/mutations/addPreferances";
+import { meeAPI } from "../graphql/querys/mee";
+import { formatDate, generateDateString } from "../helpers/helper";
+import fillerProfileImage from "../public/profile-filler.jpg";
 
 const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: false },
@@ -380,6 +376,7 @@ export default function Settings() {
   }
 
   if (meeLoading) return <LoaderScan />;
+  console.log(meeData?.me?.lastInvoicedDate * 1000)
 
   return (
     <>
@@ -718,18 +715,26 @@ export default function Settings() {
                                             </button>
                                             Last Invoice Date :{" "}
                                             <span style={{ fontWeight: "600" }}>
-                                              {new Date(
-                                                meeData?.me?.lastInvoicedDate *
-                                                  1000
-                                              ).toLocaleDateString("in-IN")}
+                                              {/* {new Date(
+                                                meeData?.me
+                                                  ?.lastInvoicedDate * 1000
+                                              ).toLocaleDateString("in-IN")} */}
+
+                                              {
+                                                formatDate(generateDateString(meeData?.me?.lastInvoicedDate))
+                                              }
+
                                             </span>{" "}
                                             <br />
                                             Next Invoice Date :{" "}
                                             <span style={{ fontWeight: "600" }}>
-                                              {new Date(
+                                              {/* {new Date(
                                                 meeData?.me
                                                   ?.upcomingInvoicedDate * 1000
-                                              ).toLocaleDateString("in-IN")}
+                                              ).toLocaleDateString("in-IN")} */}
+                                              {
+                                                formatDate(generateDateString(meeData?.me?.upcomingInvoicedDate))
+                                              }
                                             </span>
                                           </>
                                         ) : (
@@ -1040,7 +1045,7 @@ export default function Settings() {
           </div>
         </div>
       </div>
-          
+
     </>
   );
 }
