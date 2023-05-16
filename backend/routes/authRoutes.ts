@@ -8,7 +8,7 @@ import { createAccessToken, createRefreshToken } from "../utils/accessToken";
 import { validateRegisterInput, validateLoginInput, validateUpdateInput } from "../validations/Validations";
 import { encodeURIfix } from "../utils/encode";
 import { authMiddleware } from "../middleWare/authToken";
-import { getTimeStamp } from "../utils/date";
+import { daysBetween, getTimeStamp, monthDiff } from "../utils/date";
 import { verify } from "jsonwebtoken";
 import { sendForgotPasswordEmail } from "../utils/mailJetConfig";
 import { fetchUser, publishBlog, updateUserCredit } from "../graphql/resolver/blogs/blogsRepo";
@@ -927,12 +927,15 @@ router.get('/add-monthly-credits', async (req: any, res: any) => {
         const paymentStarts = user?.paymentsStarts || null
         console.log(paymentStarts)
         if(paymentStarts) {
-          let paymentDate: any = new Date(paymentStarts * 1000);
-          let currentDate: any = new Date(getTimeStamp() * 1000);
-          paymentDate = `${paymentDate.getMonth()+1}/${paymentDate.getDate()}/${paymentDate.getFullYear()}`
-          currentDate = `${currentDate.getMonth()+1}/${currentDate.getDate()}/${currentDate.getFullYear()}`
-          var difference = new Date(currentDate).getTime() - new Date(paymentDate).getTime();
-          let differenceInDays = difference / (1000 * 3600 * 24)
+          const now = new Date();
+          const paymentStartDate: any = new Date(paymentStarts);
+          console.log(paymentStartDate)
+          const monthDuration = monthDiff(paymentStartDate, now)
+          const nextDate = new Date(paymentStartDate.setMonth(paymentStartDate.getMonth() + monthDuration + 1));
+          console.log(nextDate, "next")
+          console.log(now, "now")
+          console.log( monthDuration, "duration")
+          let differenceInDays = daysBetween(now, nextDate)
           if(differenceInDays === 30) {
             console.log(`======== Running monthly credit for user ${user.email} ==========`)
             await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user._id)}, {
