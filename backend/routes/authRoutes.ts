@@ -928,7 +928,7 @@ router.get('/add-monthly-credits', async (req: any, res: any) => {
         console.log(paymentStarts)
         if(paymentStarts) {
           const now = new Date();
-          const paymentStartDate: any = new Date(paymentStarts);
+          const paymentStartDate: any = new Date(paymentStarts * 1000);
           console.log(paymentStartDate)
           const monthDuration = monthDiff(paymentStartDate, now)
           const nextDate = new Date(paymentStartDate.setMonth(paymentStartDate.getMonth() + monthDuration + 1));
