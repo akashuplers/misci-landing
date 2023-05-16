@@ -77,9 +77,26 @@ const TrialEndedModal = ({ setTrailModal, topic }) => {
       <div
         className={`${styles.container} relative p-8 mx-auto bg-white rounded-xl shadow-lg`}
       >
-        <h3 className="font-bold text-lg">You have exhausted your prescribed credits</h3>
+        <h3 className="font-bold text-lg">
+          {
+            meeData && (meeData.me.isSubscribed === false ? (
+              'Your Trial Period has ended'
+            ) : (
+              'Your Credit has expired'
+            ))
+
+          }</h3>
         <p>
-          Thank you for using Lille. You have exhausted your prescribed credits. You will no longer be able to generate new Blogs. If you want to continue with our services, please upgrade to a paid plan.
+
+          {/* 
+        
+          */}
+          {` ${meeData && (meeData.me.isSubscribed === false ? (
+            `  Thank you for using Lille. You have exhausted your 25 free credits. You will no longer be able to generate new blogs. If you want to continue benefitting from lille's capabilities please upgrade to paid plan, if you have any queris please contact us.`
+          ) : (
+            `Thank you for using Lille. You have exhausted your prescribed credits. You will no longer be able to generate new Blogs. If you want to continue benefitting from lille's capabilities please upgrade to paid plan, if you have any queris please contact us.`
+          ))
+            }`}
         </p>
         <a
           href="mailto:info@nowigence.com"
@@ -90,7 +107,7 @@ const TrialEndedModal = ({ setTrailModal, topic }) => {
         </a>
 
         {
-          meeData && (meeData.me.paid === false ? (
+          meeData && (meeData.me.isSubscribed === false ? (
             <div className="flex flex-shrink-0 pb-0 pt-4" style={{ zIndex: 100 }}>
               <Link
                 href="/upgrade"
