@@ -122,7 +122,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     "</h2>":" ",
                                     "\n":" ",
                                 };
-                                let updatedContent = content?.replace("In conclusion, ", "<h3>Conclusions:</h3><p></p>")
+                                let updatedContent = content?.replace("In conclusion, ", "<p><h3>Conclusions:</h3></p>")
                                 updatedContent = updatedContent.replace(/H1:|H2:|Title:|Introduction:|<p\s*\/?><p\s*\/?>|Conclusions:<p\s*\/?>|Conclusion:<p\s*\/?>|Conclusion<p\s*\/?>|Conclusions<p\s*\/?>/gi, function(matched: any){
                                     console.log(matched,mapObj[matched], "matched")
                                     return mapObj[matched];
