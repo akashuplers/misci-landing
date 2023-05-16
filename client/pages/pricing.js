@@ -144,7 +144,7 @@ export default function Pricing() {
           bid={""}
         />
         <Navbar isOpen={isOpen} />
-        <div className="flex flex-col">
+        <div className="flex flex-col md:min-h-screen">
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
             <svg
               className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
