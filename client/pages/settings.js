@@ -11,7 +11,7 @@ import {
   HomeIcon,
   QuestionMarkCircleIcon,
   UsersIcon,
-  XMarkIcon
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Link from "next/link";
@@ -376,7 +376,7 @@ export default function Settings() {
   }
 
   if (meeLoading) return <LoaderScan />;
-  console.log(meeData?.me?.lastInvoicedDate * 1000)
+  console.log(meeData?.me?.lastInvoicedDate * 1000);
 
   return (
     <>
@@ -720,10 +720,11 @@ export default function Settings() {
                                                   ?.lastInvoicedDate * 1000
                                               ).toLocaleDateString("in-IN")} */}
 
-                                              {
-                                                formatDate(generateDateString(meeData?.me?.lastInvoicedDate))
-                                              }
-
+                                              {formatDate(
+                                                generateDateString(
+                                                  meeData?.me?.lastInvoicedDate
+                                                )
+                                              )}
                                             </span>{" "}
                                             <br />
                                             Next Invoice Date :{" "}
@@ -732,19 +733,24 @@ export default function Settings() {
                                                 meeData?.me
                                                   ?.upcomingInvoicedDate * 1000
                                               ).toLocaleDateString("in-IN")} */}
-                                              {
-                                                formatDate(generateDateString(meeData?.me?.upcomingInvoicedDate))
-                                              }
+                                              {formatDate(
+                                                generateDateString(
+                                                  meeData?.me
+                                                    ?.upcomingInvoicedDate
+                                                )
+                                              )}
                                             </span>
                                           </>
                                         ) : (
                                           <>
                                             Last Date of Subscription :{" "}
                                             <span style={{ fontWeight: "600" }}>
-                                              {new Date(
-                                                meeData?.me
-                                                  ?.upcomingInvoicedDate * 1000
-                                              ).toLocaleDateString("in-IN")}
+                                              {formatDate(
+                                                generateDateString(
+                                                  meeData?.me
+                                                    ?.upcomingInvoicedDate
+                                                )
+                                              )}
                                             </span>
                                           </>
                                         )}
@@ -1045,7 +1051,6 @@ export default function Settings() {
           </div>
         </div>
       </div>
-
     </>
   );
 }
