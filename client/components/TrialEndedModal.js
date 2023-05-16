@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import { toast } from "react-toastify";
-import styles from "./styles/trial-ended-modal.module.css";
-import ReactModal from "react-modal";
 import Link from "next/link";
+import { useState } from "react";
+import ReactModal from "react-modal";
+import styles from "./styles/trial-ended-modal.module.css";
 
 const TrialEndedModal = ({ setTrailModal, topic }) => {
   console.log(";;", topic);
@@ -24,12 +23,9 @@ const TrialEndedModal = ({ setTrailModal, topic }) => {
       <div
         className={`${styles.container} relative p-8 mx-auto bg-white rounded-xl shadow-lg`}
       >
-        <h3 className="font-bold text-lg">Your Trial has Ended</h3>
+        <h3 className="font-bold text-lg">You have exhausted your prescribed credits</h3>
         <p>
-          Thank you for using Lille. You have exhausted your 25 free credits.
-          You will no longer be able to generate new Blogs. If you want to
-          continue with our services, please contact our center to start a paid
-          subscription.
+          Thank you for using Lille. You have exhausted your prescribed credits. You will no longer be able to generate new Blogs. If you want to continue with our services, please upgrade to a paid plan.
         </p>
         <a
           href="mailto:info@nowigence.com"
