@@ -290,6 +290,9 @@ const CheckoutFormUpgrade = ({
             <p className="text-gray-500 ml-[15%] text-base font-medium mt-4 mx-auto pl-5 align-middle">
               Your Subscription is now confirmed!!
             </p>
+            <p className="text-gray-500 ml-[15%] text-base font-medium mt-4 mx-auto pl-5 align-middle">
+              Account loaded with prescribed credits.
+            </p>
             <div className="ml-[25%] flex m-6">
               <button
                 class="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
