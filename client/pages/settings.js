@@ -378,18 +378,7 @@ export default function Settings() {
     const string = <span style={{ fontWeight: "600" }}>``</span>;
     return `You are on a ${string} plan`;
   }
-  const givenTimestamp = meeData?.me?.paymentsStarts;
-  const currentDate = Date.now();
-  const differenceInMs = givenTimestamp - parseInt(currentDate) / 1000;
-  const daysLeft = Math.abs(Math.floor(differenceInMs / 86400000));
 
-  console.log(
-    "There are",
-    daysLeft,
-    currentDate / 1000,
-    givenTimestamp,
-    differenceInMs
-  );
   if (meeLoading) return <LoaderScan />;
 
   return (
@@ -763,7 +752,8 @@ export default function Settings() {
                                       >
                                         <p>
                                           Your credits will be renewed in the
-                                          next {daysLeft} day(s).
+                                          next {meeData?.me?.creditRenewDay}{" "}
+                                          day(s).
                                         </p>
                                       </div>
                                     )}
