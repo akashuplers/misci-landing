@@ -269,7 +269,7 @@ const CheckoutFormUpgrade = ({
                 background: "white",
                 // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
                 borderRadius: "8px",
-                height: "400px",
+                height: "450px",
                 // width: "100%",
                 maxWidth: "450px",
                 bottom: "",
