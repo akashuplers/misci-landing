@@ -194,7 +194,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                             } else {
                                                 checkHtmlTagSentences = data.text
                                             } 
-                                            if(checkHtmlTagSentences.length > 0) {
+                                            if(checkHtmlTagSentences && checkHtmlTagSentences.length > 0) {
                                                 const similarity = natural.JaroWinklerDistance(checkHtmlTagSentences, idea.idea, true);
                                                 console.log(checkHtmlTagSentences,similarity, "similarity" )
                                                 if(similarity > 0.7) {
