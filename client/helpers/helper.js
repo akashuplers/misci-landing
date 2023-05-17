@@ -93,3 +93,8 @@ export function formatDate(dateString) {
 export function generateDateString(invoice) {
   return new Date(invoice * 1000).toLocaleDateString("in-IN");
 }
+
+export function getCurrentDomain() {
+  console.log(window.location.hostname);
+  return window.location.origin;
+}
