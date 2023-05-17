@@ -215,7 +215,7 @@ export default function Home() {
               </defs>
             </svg>
           </div>
-          <div className="mx-auto max-w-3xl py-32 sm:py-30 lg:py-20">
+          <div className="mx-auto max-w-3xl flex py-32 sm:py-30 lg:py-20">
             <div className="text-center">
               <div className="fixed z-10 inset-0 overflow-y-auto hidden not-responsive-message">
                 <div className="fixed z-10 inset-0 overflow-y-auto">
@@ -286,7 +286,6 @@ export default function Home() {
               {!loading ? (
                 <div
                   className="grid grid-cols-3 gap-4 py-4"
-                  style={{ width: "110%" }}
                 >
                   {updatedArr}
                 </div>
@@ -295,7 +294,12 @@ export default function Home() {
                   <LoaderPlane />
                 </div>
               )}
-              <div className="mt-10 flex items-center justify-center gap-x-6 w-full">
+              <div
+                className={`
+                mt-10 flex items-center justify-center gap-x-6 
+                w-[100%] rounded-md`}
+              >
+
                 <input
                   id="search"
                   name="search"
@@ -316,8 +320,10 @@ export default function Home() {
                     query: { topic: keyword },
                   }}
                 >
-                  <a className="cta-invert"><p>Generate</p></a>
+                  <a className="cta-invert">Generate</a>
                 </Link>
+
+
               </div>
             </div>
           </div>
