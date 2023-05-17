@@ -87,7 +87,7 @@ export default function Home() {
 
         if (
           `${networkError}` ===
-            "ServerError: Response not successful: Received status code 401" &&
+          "ServerError: Response not successful: Received status code 401" &&
           isauth
         ) {
           localStorage.clear();
@@ -187,7 +187,7 @@ export default function Home() {
         )}
 
         {!meeData?.me?.isSubscribed && meeData?.me?.credits === 0 && (
-          <TrialEndedModal setTrailModal={() => {}} topic={null} />
+          <TrialEndedModal setTrailModal={() => { }} topic={null} />
         )}
         <div className={`relative px-6 pt-5 lg:px-8 ${!isAuthenticated && 'md:min-h-screen'}`}>
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
@@ -316,7 +316,7 @@ export default function Home() {
                     query: { topic: keyword },
                   }}
                 >
-                  <a className="cta-invert">Generate</a>
+                  <a className="cta-invert"><p>Generate</p></a>
                 </Link>
               </div>
             </div>
