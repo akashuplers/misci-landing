@@ -327,6 +327,7 @@ export const blogResolvers = {
                 }
                 return {...blogDetails, ideas: blogIdeasDetails, references: refUrls, pythonRespTime, respTime}
             } catch(e: any) {
+                console.log(e)
                 throw e
             }
             

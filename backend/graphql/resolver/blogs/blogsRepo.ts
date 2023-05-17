@@ -110,10 +110,10 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     "H1:":" ",
                                     "H2:":" ",
                                     "<p/><p/>":"<p/>",
-                                    "Conclusions:<p/>":"<h3>Conclusions</h3><p></p>",
-                                    "Conclusion:<p/>":"<h3>Conclusions</h3><p></p>",
-                                    "Conclusion<p/>":"<h3>Conclusion</h3><p></p>",
-                                    "Conclusions<p/>":"<h3>Conclusion</h3><p></p>",
+                                    "Conclusions:<p/>":"<h3>Conclusions</h3><p/>",
+                                    "Conclusion:<p/>":"<h3>Conclusions</h3><p/>",
+                                    "Conclusion<p/>":"<h3>Conclusion</h3><p/>",
+                                    "Conclusions<p/>":"<h3>Conclusion</h3><p/>",
                                     "<h1>":" ",
                                     "Title:":" ",
                                     "Introduction::":" ",
@@ -133,17 +133,77 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 }); 
                                 // description = (newsLetter[key]?.replace("\n", ""))?.trimStart()
                                 usedIdeasArr = description?.split('.')
-                                updatedContent = updatedContent?.split('. ')?.map((data: string) => {
-                                    let newText = data
+                                const htmlTagRegex = /<[^>]*>([^<]*)<\/[^>]*>/g; // Regular expression to match HTML tags
+                                const sentences = updatedContent.split('.').map((sentence: any) => {
+                                    // Check if the sentence is not wrapped in HTML tags
+                                    const matches = sentence.match(htmlTagRegex);
+                                    if(matches) {
+                                        return {
+                                            text: sentence,
+                                            no: true
+                                        }
+                                    }else {
+                                        return {
+                                            text: sentence,
+                                            no: false
+                                        }
+                                    }
+                                    // return !matches || matches.length === 0;
+                                });
+                                console.log(sentences, "updatedContentBefore")
+                                updatedContent = sentences?.map((data: any) => {
+                                    let newText = data.text
                                     let filteredSource = null
                                     ideasArr.some((idea) => {
-                                        if(idea.idea && data) {
-                                            const similarity = natural.JaroWinklerDistance(data, idea.idea, true);
-                                            console.log(similarity)
-                                            if(similarity > 0.7) {
-                                                filteredSource = refs?.findIndex((ref) => ref.id === idea.article_id)
-                                                // console.log(data, idea.idea, idea.article_id, filteredSource, similarity, "similiary")
-                                                return true
+                                        if(idea.idea) {
+                                            let checkHtmlTagSentences = null
+                                            if(data.no) {
+                                                function findTagIndices(sentence: string, tagName: string) {
+                                                    const openingTagRegex = new RegExp(`<${tagName}\\b[^>]*>`, 'i');
+                                                    const closingTagRegex = new RegExp(`<\/${tagName}\\b[^>]*>`, 'i');
+                                                  
+                                                    const openingTagMatch = sentence.match(openingTagRegex);
+                                                    const closingTagMatch = sentence.match(closingTagRegex);
+                                                  
+                                                    const startIndex = openingTagMatch ? openingTagMatch.index : -1;
+                                                    const endIndex = closingTagMatch && closingTagMatch.index? closingTagMatch.index + closingTagMatch[0].length - 1 : -1;
+                                                  
+                                                    return { startIndex, endIndex };
+                                                }
+                                                // const string = "<p></p><h2>What Are Your Chest Muscles?</h2><p></p>Before we dive into the 10 best chest exercises for building muscle, let’s take a quick look at the muscles that make up the chest"
+                                                const regex = /<[^>]*>([^<]*)<\/[^>]*>/g; 
+                                                data.text.split(".").forEach((sentence: any) => {
+                                                    // Check if the sentence is not wrapped in HTML tags
+                                                    const matches = sentence.match(regex);
+                                                    if(matches) {
+                                                        const h2Indeces = findTagIndices(sentence, 'h2')
+                                                        const h1Indeces = findTagIndices(sentence, 'h1')
+                                                        if(h2Indeces.endIndex > -1){
+                                                            checkHtmlTagSentences = sentence.substr(h2Indeces.endIndex + 1)
+                                                        } else if(h1Indeces.endIndex > -1) {
+                                                            checkHtmlTagSentences = sentence.substr(h1Indeces.endIndex + 1)
+                                                        } else {
+                                                            checkHtmlTagSentences = null
+                                                        } 
+                                                        return checkHtmlTagSentences
+                                                    }else {
+                                                        return false
+                                                    }
+                                                    // return !matches || matches.length === 0;
+                                                });
+                                            } else {
+                                                checkHtmlTagSentences = data.text
+                                            } 
+                                            if(checkHtmlTagSentences.length > 0) {
+                                                const similarity = natural.JaroWinklerDistance(checkHtmlTagSentences, idea.idea, true);
+                                                console.log(checkHtmlTagSentences,similarity, "similarity" )
+                                                if(similarity > 0.7) {
+                                                    filteredSource = refs?.findIndex((ref) => ref.id === idea.article_id)
+                                                    // console.log(data, idea.idea, idea.article_id, filteredSource, similarity, "similiary")
+                                                    return true
+                                                } else {
+                                                    return false
+                                                }
                                             } else {
                                                 return false
                                             }
@@ -152,11 +212,11 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                         }
                                     })
                                     if((filteredSource || filteredSource === 0) && refs[filteredSource]) {
-                                        newText = `${data} <a href="${refs[filteredSource]?.url}" target="_blank" title="${filteredSource + 1} - ${refs[filteredSource]?.url}">[${filteredSource + 1}]</a>. ` 
+                                        newText = `${data.text} <a href="${refs[filteredSource]?.url}" target="_blank" title="${filteredSource + 1} - ${refs[filteredSource]?.url}">[${filteredSource + 1}]</a>` 
                                     }
-                                    return newText
+                                    return newText.trim() + '. '
                                 })
-                                console.log(updatedContent)
+                                updatedContent = updatedContent.map((content: string) => content.replace("..", "."))
                                 let references: any[] = []
                                 refUrls && refUrls.length && refUrls.forEach((data) => {
                                     references.push({
