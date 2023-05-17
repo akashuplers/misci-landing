@@ -14,6 +14,21 @@ router.get("/prices", async (request: any, reply: any) => {
     })
 })
 
+router.get("/coffee-prices", async (request: any, reply: any) => {
+    const prices = await new Stripe().getPrices("prod_NuTPLfGIV9L4Ur")
+    return reply.status(200).send({
+        data: prices
+    })
+})
+
+router.post('/api/payment', async (request: any, reply: any) => {
+    console.log(request.body);
+    const body = request.body
+    const session = await new Stripe().getCheckoutSession(body)
+    return reply.status(303).json({ id: session.id });
+});
+
+
 
 router.post('/webhook',  async (request: any, reply: any) => {
     const db = request.app.get('db')
