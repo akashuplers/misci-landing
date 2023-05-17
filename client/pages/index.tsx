@@ -264,7 +264,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <h1 className="flex text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+              <h1 className="flex text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl">
                 Generate{" "}
                 <TextTransition springConfig={presets.wobbly}>
                   <span className="newsletter mx-4">
