@@ -179,10 +179,9 @@ export default function Home() {
     }
     if (meeData) {
       const credits = meeData?.me?.credits;
-      if (credits > 10 && credits < 11) {
+      if (credits <= 15 || meeData?.me?.publishCount === 1) {
         setShowContributionModal(true);
       }
-
 
     }
   }, [meeData]);
@@ -293,18 +292,24 @@ export default function Home() {
         }}
         // outside click close
         shouldCloseOnOverlayClick={true}
-        onRequestClose={() => setIsPayment(false)}
+        onRequestClose={() => setShowContributionModal(false)}
 
       >
-        <div>
+        <div className="flex flex-col items-center justify-center">
           {/* <h3>Buy me a coffee</h3> */}
           <h3 className="text-2xl font-bold text-left ">Buy me a coffee</h3>
 
         </div>
+        <div className="flex flex-col items-center justify-center mt-4">
+          <p className="text-sm text-gray-500 text-center">
+            If you like our product, please consider buying us a
+            cup of coffee.
+          </p>
+        </div>
         <div
-          className={`flex justify-around items-center  w-full bg-indigo-100 p-[10px] border-indigo-500 rounded-md`}
+          className={`flex justify-around items-center  w-full bg-indigo-100 p-[10px] border-indigo-500 rounded-md mt-[20px]`}
         >
-          <div className="flex items-center justify-center text-[40px]">
+          <div className="flex items-center justify-center text-[40px] ">
             ☕
           </div>
           <div>
@@ -312,12 +317,12 @@ export default function Home() {
           </div>
           {/* circle and numebr */}
 
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center ">
 
             {
 
               [1, 2, 5].map((item) => (
-                <div key={item} className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-indigo-500 text-white text-sm font-bold ml-[10px] hover:bg-indigo-700"
+                <div key={item} className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-indigo-500 text-white text-sm font-bold ml-[10px] hover:bg-indigo-700 cursor-pointer"
                   onClick={() => setMultiplier(item)}
                 >
 
@@ -329,10 +334,10 @@ export default function Home() {
 
             }
           </div>
-        </div>
+          </div>
         {/* button */}
         <button className="bg-indigo-500 text-white w-full py-2 mt-[20px] rounded-md hover:bg-indigo-700" onClick={handleCheckout}>
-          Contribute {`$ ${BASE_PRICE / 100 * multiplier}`}
+          Contribute {`$${BASE_PRICE / 100 * multiplier}`}
         </button>
 
       </Modal>
