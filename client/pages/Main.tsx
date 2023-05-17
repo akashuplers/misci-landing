@@ -2,9 +2,6 @@ import { getCurrentDomain } from '@/helpers/helper';
 import { loadStripe } from '@stripe/stripe-js';
 import { useState } from 'react';
 
-// @ts-ignore
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-
 const Main = () => {
   const [multiplier, setMultiplier] = useState(1);
 

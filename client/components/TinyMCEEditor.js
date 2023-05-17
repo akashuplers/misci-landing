@@ -376,6 +376,7 @@ export default function TinyMCEEditor({
           })
           .catch((error) => console.log("error", error));
       }
+      
     }
   };
 
