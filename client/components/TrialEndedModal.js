@@ -94,7 +94,7 @@ const TrialEndedModal = ({ setTrailModal, topic }) => {
           {` ${meeData && (meeData.me.isSubscribed === false ? (
             `  Thank you for using Lille. You have exhausted your 25 free credits. You will no longer be able to generate new blogs. If you want to continue benefitting from lille's capabilities please upgrade to paid plan, if you have any queris please contact us.`
           ) : (
-            `Thank you for using Lille. You have exhausted your prescribed credits. You will no longer be able to generate new Blogs. If you want to continue benefitting from lille's capabilities please upgrade to paid plan, if you have any queris please contact us.`
+            `Thank you for using Lille. You have exhausted your prescribed credits. You will no longer be able to generate new Blogs. If you want to continue benefitting from lille's capabilities please contact us.`
           ))
             }`}
         </p>
