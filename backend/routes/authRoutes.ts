@@ -920,36 +920,74 @@ router.get('/add-monthly-credits', async (req: any, res: any) => {
     isSubscribed: true
   }).toArray()
   const newCredit = await db.db('lilleAdmin').collection('config').findOne()
-  await (
-    Promise.all(
-      subscribedUsers.map(async (user: any) => {
-        const paymentStarts = user?.paymentsStarts || null
-        console.log(paymentStarts)
-        if(paymentStarts) {
-          const now = new Date();
-          const paymentStartDate: any = new Date(paymentStarts * 1000);
-          console.log(paymentStartDate)
-          const monthDuration = monthDiff(paymentStartDate, now)
-          const nextDate = new Date(paymentStartDate.setMonth(paymentStartDate.getMonth() + monthDuration + 1));
-          console.log(nextDate, "next")
-          console.log(now, "now")
-          console.log( monthDuration, "duration")
-          let differenceInDays = daysBetween(now, nextDate)
-          console.log( differenceInDays, "differenceInDays")
-          if(differenceInDays === 0 && monthDuration) {
-            console.log(`======== Running monthly credit for user ${user.email} ==========`)
-            await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user._id)}, {
-              $set: {
-                credits: parseInt(newCredit?.monthly_credit || "200"),
-                totalCredits: parseInt(newCredit?.monthly_credit || "200")
-              }
-            })
+  if(subscribedUsers && subscribedUsers.length) {
+    await (
+      Promise.all(
+        subscribedUsers.map(async (user: any) => {
+          const paymentStarts = user?.paymentsStarts || null
+          console.log(paymentStarts)
+          if(paymentStarts) {
+            const now = new Date();
+            const paymentStartDate: any = new Date(paymentStarts * 1000);
+            console.log(paymentStartDate)
+            const monthDuration = monthDiff(paymentStartDate, now)
+            const nextDate = new Date(paymentStartDate.setMonth(paymentStartDate.getMonth() + (monthDuration === 0 ? monthDuration + 1 : monthDuration)));
+            console.log(nextDate, "next")
+            console.log(now, "now")
+            console.log( monthDuration, "duration")
+            let differenceInDays = daysBetween(now, nextDate)
+            console.log( differenceInDays, "differenceInDays")
+            if(differenceInDays === 0 && monthDuration) {
+              console.log(`======== Running monthly credit for paid user ${user.email} ==========`)
+              await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user._id)}, {
+                $set: {
+                  credits: parseInt(newCredit?.monthly_credit || "200"),
+                  totalCredits: parseInt(newCredit?.monthly_credit || "200")
+                }
+              })
+            }
           }
-        }
-        return user
-      })
+          return user
+        })
+      )
     )
-  )
+  }
+  // const nonSubscribedUser = await db.db('lilleAdmin').collection('users').find({
+  //   isSubscribed: false,
+  //   paid: false
+  // }).toArray()
+  // if(nonSubscribedUser && nonSubscribedUser.length) {
+  //   await (
+  //     Promise.all(
+  //       subscribedUsers.map(async (user: any) => {
+  //         const createdAt = user?.date || null
+  //         console.log(createdAt)
+  //         if(createdAt) {
+  //           const now = new Date();
+  //           const createdAtDate: any = new Date(createdAt);
+  //           console.log(createdAtDate)
+  //           const monthDuration = monthDiff(createdAtDate, now)
+  //           const nextDate = new Date(createdAtDate.setMonth(createdAtDate.getMonth() + (monthDuration === 0 ? monthDuration + 1 : monthDuration)));
+  //           console.log(nextDate, "next")
+  //           console.log(now, "now")
+  //           console.log( monthDuration, "duration")
+  //           let differenceInDays = daysBetween(now, nextDate)
+  //           console.log( differenceInDays, "differenceInDays")
+  //           if(differenceInDays === 0 && monthDuration) {
+  //             console.log(`======== Running monthly credit for paid user ${user.email} ==========`)
+  //             await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user._id)}, {
+  //               $set: {
+  //                 credits: parseInt(newCredit?.monthly_credit || "200"),
+  //                 totalCredits: parseInt(newCredit?.monthly_credit || "200")
+  //               }
+  //             })
+  //           }
+  //         }
+  //         return user
+  //       })
+  //     )
+  //   )
+  // }
   return res.status(200).send({
     message: "Monthly credit added"
   })
