@@ -22,6 +22,7 @@ type User {
     profileImage: String
     totalCredits: Int
     creditRenewDay: Int
+    publishCount: Int
 }
 type Query {
     me: User!
