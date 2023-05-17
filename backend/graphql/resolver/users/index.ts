@@ -35,6 +35,10 @@ export const usersResolver = {
                 let differenceInDays = Math.floor(difference / (1000 * 3600 * 24))
                 userDetails.creditRenewDay = differenceInDays
             }
+            const publishCount = await db.db('lilleBlogs').collection('blogs').count({
+                userId: new ObjectID(userDetails._id),
+                status: "published"
+            })
             return {
                 ...userDetails,
                 subscribeStatus: subscriptionDetails && subscriptionDetails.length ? subscriptionDetails[0].subscriptionStatus : false,
@@ -53,7 +57,8 @@ export const usersResolver = {
                 premium: userDetails.premium || false,
                 totalCredits: userDetails.totalCredits ? userDetails.totalCredits : userDetails.premium ? userDetails.premium : process.env.CREDIT_COUNT,
                 paymentsStarts: userDetails.paymentsStarts || null,
-                creditRenewDay: userDetails.creditRenewDay || null
+                creditRenewDay: userDetails.creditRenewDay || null,
+                publishCount: publishCount || 0
             }
         }
     },
