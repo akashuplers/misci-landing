@@ -775,7 +775,7 @@ export default function TinyMCEEditor({
       )}
       <Editor
         value={updatedText || editorText}
-        apiKey="0kt03nb5cl4361y3oq7tph038soi0wi7luc330kbyjy5whj2"
+        apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
         init={{
           setup: (editor) => {
             if (editor.inline) {
