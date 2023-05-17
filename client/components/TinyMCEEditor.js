@@ -277,7 +277,6 @@ export default function TinyMCEEditor({
       }
     }
   }, []);
-
   const handleconnectLinkedin = () => {
     localStorage.setItem("loginProcess", true);
     localStorage.setItem("bid", blog_id);
