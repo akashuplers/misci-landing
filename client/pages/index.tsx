@@ -5,6 +5,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import Confetti from "react-confetti";
 import Marquee from "react-fast-marquee";
 import TextTransition, { presets } from "react-text-transition";
 import { ToastContainer, toast } from "react-toastify";
@@ -27,8 +28,8 @@ const TEXTS = [
 export default function Home() {
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const updateAuthentication = useStore((state) => state.updateAuthentication);
-
-
+  // check if url container ?payment=true
+  const [isPayment, setIsPayment] = useState(false);
   useEffect(() => {
     updateAuthentication();
   }, []);
@@ -52,6 +53,22 @@ export default function Home() {
   const router = useRouter();
   const setKeywordInStore = useStore((state) => state.setKeyword);
   const [index, setIndex] = React.useState(0);
+
+  useEffect(() => {
+    if (router.query.payment) {
+      setIsPayment(true);
+    }
+    const timeout = setTimeout(() => {
+      setIsPayment(false);
+      // remove ?payment=true from url
+      router.push("/", undefined, { shallow: true });
+    }, 5000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+
+  }, []);
 
   useEffect(() => {
     const intervalId = setInterval(
@@ -176,7 +193,16 @@ export default function Home() {
         />
         <meta property="og:image" content="/lille_logo_new.png" />
       </Head>
+      {
+        isPayment && <Confetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          recycle={false}
+          numberOfPieces={200}
+        />
+      }
       <Layout>
+
         <ToastContainer />
         {pfmodal && (
           <PreferencesModal
