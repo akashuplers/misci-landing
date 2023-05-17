@@ -66,7 +66,7 @@ export default function TinyMCEEditor({
   const [imageURL, setImageURL] = useState();
   const [isalert, setAlert] = useState(false);
   const [load, setLoad] = useState(false);
-  const [editingMode, setEditingMode] = useState(false);
+  // const [editingMode, setEditingMode] = useState(false);
   var isEditing = true;
   const isSave = useStore((state) => state.isSave);
   const creditLeft = useStore((state) => state.creditLeft);
@@ -277,7 +277,6 @@ export default function TinyMCEEditor({
       }
     }
   }, []);
-
   const handleconnectLinkedin = () => {
     localStorage.setItem("loginProcess", true);
     localStorage.setItem("bid", blog_id);
@@ -376,6 +375,7 @@ export default function TinyMCEEditor({
           })
           .catch((error) => console.log("error", error));
       }
+      
     }
   };
 
@@ -586,7 +586,7 @@ export default function TinyMCEEditor({
       {trailModal && (
         <TrialEndedModal setTrailModal={setTrailModal} topic={null} />
       )}
-      <Modal
+      {/* <Modal
         isOpen={editingMode}
         onRequestClose={() => {
           setEditingMode(false);
@@ -619,7 +619,7 @@ export default function TinyMCEEditor({
         <div className="pl-4 text-xl font-bold mb-5">
           You are now in The Editor Mode!! 🥳
         </div>
-      </Modal>
+      </Modal> */}
       <Modal
         isOpen={openModal}
         onRequestClose={() => setOpenModal(false)}
@@ -1021,7 +1021,7 @@ export default function TinyMCEEditor({
       )}
       <Editor
         value={updatedText || editorText}
-        apiKey="0kt03nb5cl4361y3oq7tph038soi0wi7luc330kbyjy5whj2"
+        apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
         init={{
           setup: (editor) => {
             if (editor.inline) {
@@ -1036,7 +1036,7 @@ export default function TinyMCEEditor({
                 console.log("777");
               }
               if (isEditing) {
-                setEditingMode(true);
+                // setEditingMode(true);
                 isEditing = false;
               }
             });
