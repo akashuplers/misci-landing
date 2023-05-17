@@ -48,10 +48,10 @@ export default class Stripe {
         return subscription
     }
 
-    async getPrices(){
+    async getPrices(productId: string | null = null){
         const prices = await stripe.prices.list({
             expand: ['data.product'],
-            product: process.env.STRIPE_PRODUCT_ID
+            product: productId ? productId : process.env.STRIPE_PRODUCT_ID
         });
         console.log(prices)
         const updated = prices
@@ -92,5 +92,10 @@ export default class Stripe {
 
     async getPaymentMethodDetails(id: string){
       return await stripe.paymentMethods.retrieve(id);
+    }
+
+    async getCheckoutSession(obj: any){
+      const session = await stripe.checkout.sessions.create(obj);
+      return session
     }
 }
