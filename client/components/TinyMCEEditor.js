@@ -66,7 +66,7 @@ export default function TinyMCEEditor({
   const [imageURL, setImageURL] = useState();
   const [isalert, setAlert] = useState(false);
   const [load, setLoad] = useState(false);
-  const [editingMode, setEditingMode] = useState(false);
+  // const [editingMode, setEditingMode] = useState(false);
   var isEditing = true;
   const isSave = useStore((state) => state.isSave);
   const creditLeft = useStore((state) => state.creditLeft);
@@ -586,7 +586,7 @@ export default function TinyMCEEditor({
       {trailModal && (
         <TrialEndedModal setTrailModal={setTrailModal} topic={null} />
       )}
-      <Modal
+      {/* <Modal
         isOpen={editingMode}
         onRequestClose={() => {
           setEditingMode(false);
@@ -619,7 +619,7 @@ export default function TinyMCEEditor({
         <div className="pl-4 text-xl font-bold mb-5">
           You are now in The Editor Mode!! 🥳
         </div>
-      </Modal>
+      </Modal> */}
       <Modal
         isOpen={openModal}
         onRequestClose={() => setOpenModal(false)}
@@ -1036,7 +1036,7 @@ export default function TinyMCEEditor({
                 console.log("777");
               }
               if (isEditing) {
-                setEditingMode(true);
+                // setEditingMode(true);
                 isEditing = false;
               }
             });
