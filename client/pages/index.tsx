@@ -21,7 +21,7 @@ import useStore from "../store/store";
 
 // @ts-ignore
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-
+const PAYMENT_PATH = "/?payment=true";
 const TEXTS = [
   "Newsletters",
   "Linkedin Post ",
@@ -63,11 +63,26 @@ export default function Home() {
   const [index, setIndex] = React.useState(0);
 
   useEffect(() => {
-    if (router.query.payment) {
+    console.log('ROUTER CHECK IF PAYMENT==TRUE');
+    console.log(router);
+    /* asPath "/?payment=true" */
+    if (router.asPath === PAYMENT_PATH) {
       setIsPayment(true);
+      toast.success("Payment Successful!", {
+        toastId: "payment-success",
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+
+      localStorage.setItem("payment", "true");
       const timeout = setTimeout(() => {
         setIsPayment(false);
-        // remove ?payment=true from zurl
         router.push("/", undefined, { shallow: true });
       }, 5000);
 
@@ -75,7 +90,7 @@ export default function Home() {
         clearTimeout(timeout);
       };
     }
-  }, []);
+  }, [router]);
 
 
 
@@ -178,10 +193,10 @@ export default function Home() {
     if (meeData?.me.prefFilled === false) {
       setPFModal(true);
     }
-    
+
     if (meeData) {
       const credits = meeData?.me?.credits;
-      if (credits <= 15 || meeData?.me?.publishCount === 1) {
+      if ((localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (credits === 15 || credits === 10 || meeData?.me?.publishCount === 1)) {
         setShowContributionModal(true);
       }
 
@@ -222,11 +237,9 @@ export default function Home() {
 
     const session = await res.json();
     console.log(session);
-    
     const result = await stripe.redirectToCheckout({
       sessionId: session.id,
     })
-    
 
   }
   const [windowWidth, setWindowWidth] = useState(0);
@@ -263,7 +276,7 @@ export default function Home() {
         isPayment && <Confetti
           width={windowWidth}
           recycle={false}
-          numberOfPieces={200}
+          numberOfPieces={2000}
         />
       }
       <Modal
