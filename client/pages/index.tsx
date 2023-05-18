@@ -67,7 +67,6 @@ export default function Home() {
       setIsPayment(true);
       const timeout = setTimeout(() => {
         setIsPayment(false);
-        // remove ?payment=true from zurl
         router.push("/", undefined, { shallow: true });
       }, 5000);
 
@@ -178,10 +177,10 @@ export default function Home() {
     if (meeData?.me.prefFilled === false) {
       setPFModal(true);
     }
-    
+
     if (meeData) {
       const credits = meeData?.me?.credits;
-      if (credits <= 15 || meeData?.me?.publishCount === 1) {
+      if (credits === 15 || credits === 10 || meeData?.me?.publishCount === 1) {
         setShowContributionModal(true);
       }
 
@@ -222,11 +221,11 @@ export default function Home() {
 
     const session = await res.json();
     console.log(session);
-    
+
     const result = await stripe.redirectToCheckout({
       sessionId: session.id,
     })
-    
+
 
   }
   const [windowWidth, setWindowWidth] = useState(0);
