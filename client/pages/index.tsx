@@ -178,6 +178,7 @@ export default function Home() {
     if (meeData?.me.prefFilled === false) {
       setPFModal(true);
     }
+    
     if (meeData) {
       const credits = meeData?.me?.credits;
       if (credits <= 15 || meeData?.me?.publishCount === 1) {
