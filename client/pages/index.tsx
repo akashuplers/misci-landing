@@ -68,6 +68,19 @@ export default function Home() {
     /* asPath "/?payment=true" */
     if (router.asPath === PAYMENT_PATH) {
       setIsPayment(true);
+      toast.success("Payment Successful!", {
+        toastId: "payment-success",
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+
+      localStorage.setItem("payment", "true");
       const timeout = setTimeout(() => {
         setIsPayment(false);
         router.push("/", undefined, { shallow: true });
@@ -183,7 +196,7 @@ export default function Home() {
 
     if (meeData) {
       const credits = meeData?.me?.credits;
-      if (credits === 15 || credits === 10 || meeData?.me?.publishCount === 1) {
+      if ((localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (credits === 15 || credits === 10 || meeData?.me?.publishCount === 1)) {
         setShowContributionModal(true);
       }
 
@@ -224,11 +237,9 @@ export default function Home() {
 
     const session = await res.json();
     console.log(session);
-
     const result = await stripe.redirectToCheckout({
       sessionId: session.id,
     })
-
 
   }
   const [windowWidth, setWindowWidth] = useState(0);
