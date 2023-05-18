@@ -694,7 +694,7 @@ export default function DashboardInsights({
             background: "white",
             // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
             borderRadius: "8px",
-            height: "350px",
+            height: "400px",
             // width: "100%",
             maxWidth: "450px",
             bottom: "",
@@ -702,7 +702,7 @@ export default function DashboardInsights({
             marginRight: "-50%",
             transform: "translate(-50%, -50%)",
             padding: "30px",
-            paddingBottom: "0px",
+            paddingBottom: "30px",
           },
         }}
       >
