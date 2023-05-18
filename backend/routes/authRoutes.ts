@@ -109,7 +109,8 @@ router.post("/user/login", async (req: any, res: any) => {
           timestamp: Math.round(new Date().getTime() / 1000),
         };
         if (ipAddress) data.ipAddress = ipAddress;
-  
+        // TODO: maybe add error state
+        await db.db("lilleAdmin").collection("loginLogs").insertOne(data);
   
         // DATA TO SIGN INTO JWT ACCESS TOKEN & REFRESH TOKEN
         const userObj = {
@@ -700,6 +701,7 @@ router.post("/user/social/login", async (req: any, res: any) => {
       date: today,
       timestamp: Math.round(new Date().getTime() / 1000),
     };
+    await db.db("lilleAdmin").collection("loginLogs").insertOne(data);
     if (ipAddress) data.ipAddress = ipAddress;
 
 
