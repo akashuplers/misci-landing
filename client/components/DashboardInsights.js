@@ -397,13 +397,13 @@ export default function DashboardInsights({
           } else {
             if (error.message) {
               console.log("error", error.message);
+              setOpen(true);
             }
           }
         },
       })
         .catch((err) => {
           console.error(err);
-          setOpen(true);
         })
         .finally(() => {
           setIdeaType("used");
