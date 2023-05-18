@@ -1,20 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react";
-import { Switch } from "@headlessui/react";
-import LoaderScan from "./LoaderScan";
-import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
-import { jsonToHtml } from "../helpers/helper";
-import { toast } from "react-toastify";
-import { useMutation, gql } from "@apollo/client";
-import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
-import ReactLoading from "react-loading";
-import useStore from "../store/store";
-import AuthenticationModal from "./AuthenticationModal";
+import { useMutation } from "@apollo/client";
 import axios from "axios";
 import Link from "next/link";
-import { handleSave } from "./TinyMCEEditor";
-import TrialEndedModal from "./TrialEndedModal";
+import React, { useEffect, useState } from "react";
+import ReactLoading from "react-loading";
 import Modal from "react-modal";
+import { toast } from "react-toastify";
+import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
+import { jsonToHtml } from "../helpers/helper";
+import useStore from "../store/store";
+import AuthenticationModal from "./AuthenticationModal";
+import LoaderScan from "./LoaderScan";
+import TrialEndedModal from "./TrialEndedModal";
 
 export default function DashboardInsights({
   loading,
@@ -53,7 +51,7 @@ export default function DashboardInsights({
   const [arrUsed, setArrUsed] = useState([]);
   const [arrFresh, setArrFresh] = useState([]);
   const [ideaType, setIdeaType] = useState("used");
-
+  const [regenerateData, setRegenerateData] = useState({});
   const [freshIdeas, setFreshIdeas] = useState([]);
   const [freshIdeaTags, setFreshIdeaTags] = useState([]);
   const [creditModal, setCreditModal] = useState(false);
@@ -330,25 +328,25 @@ export default function DashboardInsights({
         onCompleted: (data) => {
           console.log("regen", data);
           updateCredit();
-          setBlogData(data.regenerateBlog);
-          setIdeas(data.regenerateBlog.ideas.ideas);
-          setTags(data.regenerateBlog.tags);
-          setFreshIdeaTags(data.regenerateBlog.freshIdeasTags);
-          setReference(data.regenerateBlog.references);
-          setFreshIdeaReferences(data.regenerateBlog.freshIdeasReferences);
+          setBlogData(data?.regenerateBlog);
+          setIdeas(data?.regenerateBlog?.ideas?.ideas);
+          setTags(data?.regenerateBlog?.tags);
+          setFreshIdeaTags(data?.regenerateBlog?.freshIdeasTags);
+          setReference(data?.regenerateBlog?.references);
+          setFreshIdeaReferences(data?.regenerateBlog?.freshIdeasReferences);
           setFreshIdeas(data?.regenerateBlog?.ideas?.freshIdeas);
           console.log(
             "asfgasfda ",
-            data.regenerateBlog.pythonRespTime,
-            data.regenerateBlog.respTime
+            data?.regenerateBlog?.pythonRespTime,
+            data?.regenerateBlog?.respTime
           );
-          setPyResTime(data.regenerateBlog.pythonRespTime);
-          setNdResTime(data.regenerateBlog.respTime);
+          setPyResTime(data?.regenerateBlog?.pythonRespTime);
+          setNdResTime(data?.regenerateBlog?.respTime);
 
           // const aa = data.regenerateBlog.publish_data[2].tiny_mce_data;
 
-          const newArray = data.regenerateBlog.publish_data.filter(
-            (obj) => obj.platform === "wordpress"
+          const newArray = data?.regenerateBlog?.publish_data?.filter(
+            (obj) => obj?.platform === "wordpress"
           );
           var aa;
           const arr = newArray.find((pd) => pd.published === false);
@@ -367,27 +365,28 @@ export default function DashboardInsights({
           setFilteredArray([]);
           setFilteredIdeas([]);
           setFreshFilteredIdeas([]);
-          setblog_id(data.regenerateBlog._id);
+          // setblog_id(data.regenerateBlog._id);
 
           const button = document.querySelectorAll(".blog-toggle-button");
-          button.forEach((btn) => btn.classList.remove("active"));
+          button?.forEach((btn) => btn?.classList.remove("active"));
           Array.from(button).filter(
             (btn) =>
-              btn.classList.contains("wordpress") && btn.classList.add("active")
+              btn?.classList?.contains("wordpress") &&
+              btn?.classList?.add("active")
           );
 
           const fresh = document.querySelector(".idea-button.fresh");
           const used = document.querySelector(".idea-button.used");
 
-          used.classList.add("active");
-          fresh.classList.remove("active");
+          used?.classList?.add("active");
+          fresh?.classList?.remove("active");
 
           setFilteredArray([]);
           setFilteredIdeas([]);
           Array.from(document.querySelectorAll(".tag-button.active")).forEach(
-            (el) => el.classList.remove("active")
+            (el) => el?.classList?.remove("active")
           );
-          target = undefined;
+          // target = undefined;
         },
         onError: (error) => {
           console.error("888888", error.message);
@@ -696,7 +695,7 @@ export default function DashboardInsights({
             background: "white",
             // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
             borderRadius: "8px",
-            height: "350px",
+            height: "400px",
             // width: "100%",
             maxWidth: "450px",
             bottom: "",
@@ -704,7 +703,7 @@ export default function DashboardInsights({
             marginRight: "-50%",
             transform: "translate(-50%, -50%)",
             padding: "30px",
-            paddingBottom: "0px",
+            paddingBottom: "30px",
           },
         }}
       >
@@ -717,8 +716,9 @@ export default function DashboardInsights({
         </div>
 
         <p className="text-gray-500 text-base font-medium mt-4 mx-auto pl-5">
-          We regret that it is taking more time to generate the blog right now,
-          Please try again after some time...
+          We regret that it is taking more time to generate the blog right now.
+          We appreciate that you want to try our blog creation service and we
+          are eager to serve, only that we request you to try after some time.
         </p>
         <div className="m-9 mx-auto">
           <button
