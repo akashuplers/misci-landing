@@ -1026,7 +1026,7 @@ router.put('/update-profile', authMiddleware, async (req: any, res: any) => {
   return res.status(201).send({ errors: false, message: "Profile Updated!", data: userUpdatedDetails });
 })
 
-router.put('/save-user-support', authMiddleware, async (req: any, res: any) => {
+router.post('/save-user-support', authMiddleware, async (req: any, res: any) => {
   const db = req.app.get('db')
   const data = req.body
   const user = req.user
