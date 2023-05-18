@@ -37,6 +37,7 @@ export default function Home() {
   // check if url container ?payment=true
   const [isPayment, setIsPayment] = useState(false);
   const [showContributionModal, setShowContributionModal] = useState(false);
+  const [contributinoModalLoader, setContributionModalLoader] = useState(false);
   useEffect(() => {
     updateAuthentication();
   }, []);
@@ -177,6 +178,7 @@ export default function Home() {
     if (meeData?.me.prefFilled === false) {
       setPFModal(true);
     }
+    
     if (meeData) {
       const credits = meeData?.me?.credits;
       if (credits <= 15 || meeData?.me?.publishCount === 1) {
@@ -189,6 +191,7 @@ export default function Home() {
   const [multiplier, setMultiplier] = useState(1);
   const BASE_PRICE = 500;
   async function handleCheckout() {
+    setContributionModalLoader(true);
     const stripe: any = await stripePromise;
 
     const res = await fetch('https://maverick.lille.ai/stripe/api/payment', {
@@ -219,10 +222,12 @@ export default function Home() {
 
     const session = await res.json();
     console.log(session);
-
+    
     const result = await stripe.redirectToCheckout({
       sessionId: session.id,
-    });
+    })
+    
+
   }
   const [windowWidth, setWindowWidth] = useState(0);
   useEffect(() => {
@@ -303,7 +308,7 @@ export default function Home() {
         <div className="flex flex-col items-center justify-center mt-4">
           <p className="text-sm text-gray-500 text-center">
             If you like our product, please consider buying us a
-            cup of coffee.
+            cup of coffee.😊
           </p>
         </div>
         <div
@@ -322,7 +327,9 @@ export default function Home() {
             {
 
               [1, 2, 5].map((item) => (
-                <div key={item} className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-indigo-500 text-white text-sm font-bold ml-[10px] hover:bg-indigo-700 cursor-pointer"
+                <div key={item} className={`flex items-center justify-center w-[40px] h-[40px] rounded-full bg-indigo-500 text-white text-sm font-bold 
+                ml-[10px] hover:bg-indigo-700 cursor-pointer ${multiplier === item && 'bg-indigo-700 '}  
+                `}
                   onClick={() => setMultiplier(item)}
                 >
 
@@ -334,10 +341,36 @@ export default function Home() {
 
             }
           </div>
-          </div>
+        </div>
         {/* button */}
-        <button className="bg-indigo-500 text-white w-full py-2 mt-[20px] rounded-md hover:bg-indigo-700" onClick={handleCheckout}>
-          Contribute {`$${BASE_PRICE / 100 * multiplier}`}
+        <button className="bg-indigo-500 text-white w-full py-2 mt-[20px] rounded-md hover:bg-indigo-700 active:border-2 active:border-indigo-700 active:shadow-md" onClick={handleCheckout}>
+          <style>
+            {`
+            .loader {
+            border: 3px solid #ffffff; /* Light grey */ 
+            border-top: 3px solid rgb(99,  102,  241); /* Blue border on top */
+            border-radius: 50%; /* Rounded shape */
+            width: 30px; /* Width of the loader */
+            height: 30px; /* Height of the loader */
+            animation: spin 2s linear infinite; /* Animation to rotate the loader */
+        }
+
+            @keyframes spin {
+              0 % { transform: rotate(0deg); } /* Starting position of the rotation */
+              100% {transform: rotate(360deg); } /* Ending position of the rotation */
+            }
+          `}
+          </style>
+          {
+
+            contributinoModalLoader ? (
+              <div className="flex items-center justify-center">
+                <div className="loader"></div> {/* Add the loader class here */}
+              </div>
+            ) : (
+              <>Contribute us with {multiplier} cups for  <strong>{`$${BASE_PRICE / 100 * multiplier}`}</strong></>
+            )
+          }
         </button>
 
       </Modal>
