@@ -5,7 +5,7 @@ import { ObjectID } from "bson";
 import { randomUUID, createHmac } from "crypto";
 import { fileCreate } from "../utils/file";
 import { createAccessToken, createRefreshToken } from "../utils/accessToken";
-import { validateRegisterInput, validateLoginInput, validateUpdateInput } from "../validations/Validations";
+import { validateRegisterInput, validateLoginInput, validateUpdateInput, validateSupportInput } from "../validations/Validations";
 import { encodeURIfix } from "../utils/encode";
 import { authMiddleware } from "../middleWare/authToken";
 import { daysBetween, getTimeStamp, monthDiff } from "../utils/date";
@@ -1024,5 +1024,34 @@ router.put('/update-profile', authMiddleware, async (req: any, res: any) => {
   })
   const userUpdatedDetails = await fetchUser({id: user.id, db})
   return res.status(201).send({ errors: false, message: "Profile Updated!", data: userUpdatedDetails });
+})
+
+router.put('/save-user-support', authMiddleware, async (req: any, res: any) => {
+  const db = req.app.get('db')
+  const data = req.body
+  const user = req.user
+  if(!user) {
+    return res.status(401).send({
+      type: "ERROR",
+      message: "Not authorised!"
+    })
+  }
+  const userDetails = await fetchUser({id: user.id, db})
+  if(!userDetails) {
+    return res.status(401).send({
+      type: "ERROR",
+      message: "User not found!"
+    })
+  }
+  const { errors, isValid } = validateSupportInput(data);
+  if (!isValid)
+    return res
+      .status(400)
+      .send({ error: true, errors, message: "input errors" });
+  await db.db('lilleAdmin').collection('supports').insertOne({
+    _id: new ObjectID(user.id),
+    ...data
+  })
+  return res.status(201).send({ errors: false, message: "Support Data Added!" });
 })
 module.exports = router;

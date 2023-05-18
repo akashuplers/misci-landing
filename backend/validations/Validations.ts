@@ -90,3 +90,29 @@ export const validateUpdateInput = (data: any) => {
   };
 };
 
+
+export const validateSupportInput = (data: any) => {
+  interface CustValid {
+    checkoutSessionId?: string;
+    amount?: string;
+  }
+
+  let errors = <CustValid>{};
+
+  data.checkoutSessionId = !isEmpty(data.checkoutSessionId) ? data.checkoutSessionId : "";
+  data.amount = !isEmpty(data.amount) ? data.amount : "";
+
+  if (Validator.isEmpty(data.checkoutSessionId)) {
+    errors.checkoutSessionId = "Checkout Session Id is required";
+  }
+
+  if (Validator.isEmpty(data.amount)) {
+    errors.amount = "Amount is required";
+  }
+
+  return {
+    errors,
+    isValid: isEmpty(errors),
+  };
+};
+
