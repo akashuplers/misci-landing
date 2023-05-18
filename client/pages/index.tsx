@@ -196,7 +196,7 @@ export default function Home() {
 
     if (meeData) {
       const credits = meeData?.me?.credits;
-      if ((localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (credits === 15 || credits === 10 || meeData?.me?.publishCount === 1)) {
+      if ((localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10 || meeData?.me?.publishCount === 1)) {
         setShowContributionModal(true);
       }
 
@@ -209,6 +209,7 @@ export default function Home() {
     setContributionModalLoader(true);
     const stripe: any = await stripePromise;
 
+
     const res = await fetch('https://maverick.lille.ai/stripe/api/payment', {
       method: 'POST',
       headers: {
@@ -216,6 +217,7 @@ export default function Home() {
       },
       body: JSON.stringify(
         {
+          customer_email: meeData?.me?.email,
           "line_items": [
             {
               "price_data": {
