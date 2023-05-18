@@ -1049,7 +1049,7 @@ router.put('/save-user-support', authMiddleware, async (req: any, res: any) => {
       .status(400)
       .send({ error: true, errors, message: "input errors" });
   await db.db('lilleAdmin').collection('supports').insertOne({
-    _id: new ObjectID(user.id),
+    userId: new ObjectID(user.id),
     ...data
   })
   return res.status(201).send({ errors: false, message: "Support Data Added!" });
