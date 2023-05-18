@@ -80,7 +80,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                         newsLetter = {...newsLetter, [key]: chatGPTText}
                     } else {
                         const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `
-                        ${regenerate ? `write a blog on topic ${title} for ${key} ${key === 'linkedin' ? "linkedin post with tags under 3000 characters" : "twitter post with tags under 280 characters"} using below points: \n ${text}` : `write a blog on "${text}" for a ${key === "linkedin" ? "linkedin within 3000 characters" : "twitter within 280 characters"}`}
+                        ${regenerate ? `write a ${key === 'linkedin' ? 'post': 'tweet'} on topic ${title} for ${key === 'linkedin' ? "linkedin post with tags under 700 words" : "twitter post with tags under 280 characters"} using below points: \n ${text}` : `write a post on title "${text}" for a ${key === "linkedin" ? "linkedin within 900 characters" : "twitter within 280 characters"}`}
                         `, db}).textCompletion(chatgptApis.timeout)
                         newsLetter = {...newsLetter, [key]: chatGPTText}
                     }
@@ -197,7 +197,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                             if(checkHtmlTagSentences && checkHtmlTagSentences.length > 0) {
                                                 const similarity = natural.JaroWinklerDistance(checkHtmlTagSentences, idea.idea, true);
                                                 console.log(checkHtmlTagSentences,similarity, "similarity" )
-                                                if(similarity > 0.7) {
+                                                if(similarity > 0.67 && idea.article_id) {
                                                     filteredSource = refs?.findIndex((ref) => ref.id === idea.article_id)
                                                     // console.log(data, idea.idea, idea.article_id, filteredSource, similarity, "similiary")
                                                     return true
