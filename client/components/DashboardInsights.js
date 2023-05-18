@@ -53,7 +53,7 @@ export default function DashboardInsights({
   const [arrUsed, setArrUsed] = useState([]);
   const [arrFresh, setArrFresh] = useState([]);
   const [ideaType, setIdeaType] = useState("used");
-
+  const [regenerateData, setRegenerateData] = useState({});
   const [freshIdeas, setFreshIdeas] = useState([]);
   const [freshIdeaTags, setFreshIdeaTags] = useState([]);
   const [creditModal, setCreditModal] = useState(false);
@@ -330,25 +330,25 @@ export default function DashboardInsights({
         onCompleted: (data) => {
           console.log("regen", data);
           updateCredit();
-          setBlogData(data.regenerateBlog);
-          setIdeas(data.regenerateBlog.ideas.ideas);
-          setTags(data.regenerateBlog.tags);
-          setFreshIdeaTags(data.regenerateBlog.freshIdeasTags);
-          setReference(data.regenerateBlog.references);
-          setFreshIdeaReferences(data.regenerateBlog.freshIdeasReferences);
+          setBlogData(data?.regenerateBlog);
+          setIdeas(data?.regenerateBlog?.ideas?.ideas);
+          setTags(data?.regenerateBlog?.tags);
+          setFreshIdeaTags(data?.regenerateBlog?.freshIdeasTags);
+          setReference(data?.regenerateBlog?.references);
+          setFreshIdeaReferences(data?.regenerateBlog?.freshIdeasReferences);
           setFreshIdeas(data?.regenerateBlog?.ideas?.freshIdeas);
           console.log(
             "asfgasfda ",
-            data.regenerateBlog.pythonRespTime,
-            data.regenerateBlog.respTime
+            data?.regenerateBlog?.pythonRespTime,
+            data?.regenerateBlog?.respTime
           );
-          setPyResTime(data.regenerateBlog.pythonRespTime);
-          setNdResTime(data.regenerateBlog.respTime);
+          setPyResTime(data?.regenerateBlog?.pythonRespTime);
+          setNdResTime(data?.regenerateBlog?.respTime);
 
           // const aa = data.regenerateBlog.publish_data[2].tiny_mce_data;
 
-          const newArray = data.regenerateBlog.publish_data.filter(
-            (obj) => obj.platform === "wordpress"
+          const newArray = data?.regenerateBlog?.publish_data?.filter(
+            (obj) => obj?.platform === "wordpress"
           );
           var aa;
           const arr = newArray.find((pd) => pd.published === false);
@@ -367,27 +367,28 @@ export default function DashboardInsights({
           setFilteredArray([]);
           setFilteredIdeas([]);
           setFreshFilteredIdeas([]);
-          setblog_id(data.regenerateBlog._id);
+          // setblog_id(data.regenerateBlog._id);
 
           const button = document.querySelectorAll(".blog-toggle-button");
-          button.forEach((btn) => btn.classList.remove("active"));
+          button?.forEach((btn) => btn?.classList.remove("active"));
           Array.from(button).filter(
             (btn) =>
-              btn.classList.contains("wordpress") && btn.classList.add("active")
+              btn?.classList?.contains("wordpress") &&
+              btn?.classList?.add("active")
           );
 
           const fresh = document.querySelector(".idea-button.fresh");
           const used = document.querySelector(".idea-button.used");
 
-          used.classList.add("active");
-          fresh.classList.remove("active");
+          used?.classList?.add("active");
+          fresh?.classList?.remove("active");
 
           setFilteredArray([]);
           setFilteredIdeas([]);
           Array.from(document.querySelectorAll(".tag-button.active")).forEach(
-            (el) => el.classList.remove("active")
+            (el) => el?.classList?.remove("active")
           );
-          target = undefined;
+          // target = undefined;
         },
         onError: (error) => {
           console.error("888888", error.message);
