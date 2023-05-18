@@ -21,7 +21,7 @@ import useStore from "../store/store";
 
 // @ts-ignore
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-
+const PAYMENT_PATH = "/?payment=true";
 const TEXTS = [
   "Newsletters",
   "Linkedin Post ",
@@ -63,7 +63,10 @@ export default function Home() {
   const [index, setIndex] = React.useState(0);
 
   useEffect(() => {
-    if (router.query.payment) {
+    console.log('ROUTER CHECK IF PAYMENT==TRUE');
+    console.log(router);
+    /* asPath "/?payment=true" */
+    if (router.asPath === PAYMENT_PATH) {
       setIsPayment(true);
       const timeout = setTimeout(() => {
         setIsPayment(false);
@@ -74,7 +77,7 @@ export default function Home() {
         clearTimeout(timeout);
       };
     }
-  }, []);
+  }, [router]);
 
 
 
@@ -262,7 +265,7 @@ export default function Home() {
         isPayment && <Confetti
           width={windowWidth}
           recycle={false}
-          numberOfPieces={200}
+          numberOfPieces={2000}
         />
       }
       <Modal
