@@ -285,7 +285,6 @@ export const blogResolvers = {
                         )
                     )
                 }
-                console.log(updatedIdeas)
                 const insertBlog = await db.db('lilleBlogs').collection('blogs').insertOne(finalBlogObj)
                 const insertBlogIdeas = await db.db('lilleBlogs').collection('blogIdeas').insertOne({
                     blog_id: insertBlog.insertedId,
@@ -304,8 +303,9 @@ export const blogResolvers = {
                 let endRequest = new Date()
                 let respTime = diff_minutes(endRequest, startRequest)
                 if(user && Object.keys(user).length) {
-                    const updatedCredits = ((userDetails.credits || 25) - 1)
-                    await updateUserCredit({id: userDetails._id, credit: updatedCredits, db})
+                    const updateduser = await fetchUser({id: user.id, db})
+                    const updatedCredits = ((updateduser.credits || 25) - 1)
+                    await updateUserCredit({id: updateduser._id, credit: updatedCredits, db})
                     if(updatedCredits <= 0) {
                         await sendEmails({
                             to: [
@@ -319,8 +319,8 @@ export const blogResolvers = {
                             htmlMsg: `
                                 <p>Hello All,</p>
                                 <p>Credit has been exhausted for below user</p>
-                                <p>User Name: ${userDetails.name} ${userDetails.lastName}</p>
-                                <p>User Email: ${userDetails.email}</p>
+                                <p>User Name: ${updateduser.name} ${userDetails.lastName}</p>
+                                <p>User Email: ${updateduser.email}</p>
                             `,
                         });
                     }

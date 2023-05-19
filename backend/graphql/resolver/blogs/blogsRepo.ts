@@ -150,7 +150,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     }
                                     // return !matches || matches.length === 0;
                                 });
-                                console.log(sentences, "updatedContentBefore")
+                                // console.log(sentences, "updatedContentBefore")
                                 updatedContent = sentences?.map((data: any) => {
                                     let newText = data.text
                                     let filteredSource = null
@@ -196,7 +196,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                             } 
                                             if(checkHtmlTagSentences && checkHtmlTagSentences.length > 0) {
                                                 const similarity = natural.JaroWinklerDistance(checkHtmlTagSentences, idea.idea, true);
-                                                console.log(checkHtmlTagSentences,similarity, "similarity" )
+                                                // console.log(checkHtmlTagSentences,similarity, "similarity" )
                                                 if(similarity > 0.67 && idea.article_id) {
                                                     filteredSource = refs?.findIndex((ref) => ref.id === idea.article_id)
                                                     // console.log(data, idea.idea, idea.article_id, filteredSource, similarity, "similiary")
@@ -347,7 +347,13 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     }  
                                 }   
                             case "linkedin":
-                                const linkedinContent = newsLetter[key]?.replace(/\n/g, "<p/>")
+                                let linkedinContent = newsLetter[key]?.replace(/\n/g, "<p/>")
+                                const matchObj: any = {
+                                    "<p/><p/>":"<p/>",
+                                };
+                                linkedinContent = linkedinContent.replace(/<p\s*\/?><p\s*\/?>/gi, function(matched: any){
+                                    return matchObj[matched];
+                                }); 
                                 return {
                                     published: false,
                                         published_date: false,
