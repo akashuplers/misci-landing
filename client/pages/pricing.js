@@ -6,7 +6,6 @@ import Navbar from "../components/Navbar";
 import SwiperComponent from "../components/SwiperComponent";
 import styles from "../styles/price.module.css";
 import axios from "axios";
-import Footer from "../components/Footer";
 import AuthenticationModal from "../components/AuthenticationModal";
 
 const featuresData = [
