@@ -347,6 +347,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     }  
                                 }   
                             case "linkedin":
+                                const linkedinContent = newsLetter[key]?.replace(/\n/g, "<p/>")
                                 return {
                                     published: false,
                                         published_date: false,
@@ -359,7 +360,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                     "tag": "P",
                                                     "attributes": {},
                                                     "children": [
-                                                        newsLetter[key]
+                                                        linkedinContent
                                                     ]
                                                 },
                                                 {
