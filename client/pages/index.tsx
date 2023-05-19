@@ -63,10 +63,40 @@ export default function Home() {
   const [index, setIndex] = React.useState(0);
 
   useEffect(() => {
-    console.log('ROUTER CHECK IF PAYMENT==TRUE');
     console.log(router);
+    console.log('LOCAL STORERAGE');
+    console.log(localStorage);
     /* asPath "/?payment=true" */
     if (router.asPath === PAYMENT_PATH) {
+      console.log('ROUTER CHECK IF PAYMENT==TRUE');
+      console.log('USER CONTRIBUTION');
+      // console.log(userContribution);
+      if (localStorage.getItem('userContribution') !== null) {
+        var userContribution = JSON.parse(localStorage.getItem('userContribution') || '{}');
+        console.log('USER CONTRIBUTION IS NOT NULL');
+        console.log(userContribution);
+        // /auth/save-user-support
+        const SAVE_USER_SUPPORT_URL = 'https://maverick.lille.ai/auth/save-user-support';
+
+        const requestOptions = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem("token")
+          },
+          body: JSON.stringify(userContribution)
+        };
+        console.log('REQUEST OPTIONS');
+        fetch(SAVE_USER_SUPPORT_URL, requestOptions).then((response) => {
+          console.log('RESPONSE FROM SAVE USER SUPPORT');
+          console.log(response);
+          console.log(response.json());
+        }).catch((error) => {
+          console.log('ERROR FROM SAVE USER SUPPORT');
+          console.log(error);
+        }
+        );
+      }
       setIsPayment(true);
       toast.success("Payment Successful!", {
         toastId: "payment-success",
@@ -89,6 +119,9 @@ export default function Home() {
       return () => {
         clearTimeout(timeout);
       };
+    } else {
+      console.log('ROUTER CHECK IF PAYMENT==TRUE ELSE');
+      localStorage.removeItem("userContribution");
     }
   }, [router]);
 
@@ -151,15 +184,7 @@ export default function Home() {
     },
   });
 
-  const handleEnterKeyPress = (e: { key: string }) => {
-    if (e.key === "Enter") {
-      setKeywordInStore(keyword);
-      router.push({
-        pathname: "/dashboard",
-        query: { topic: keyword },
-      });
-    }
-  };
+
 
   const updatedArr = data?.trendingTopics?.map((topic: any, i: any) => (
     <Link
@@ -196,7 +221,8 @@ export default function Home() {
 
     if (meeData) {
       const credits = meeData?.me?.credits;
-      if ((localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10 || meeData?.me?.publishCount === 1)) {
+      const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10 || meeData?.me?.publishCount === 1);
+      if (SHOW_CONTRIBUTION_MODAL) {
         setShowContributionModal(true);
       }
 
@@ -206,6 +232,8 @@ export default function Home() {
   const [multiplier, setMultiplier] = useState(1);
   const BASE_PRICE = 500;
   async function handleCheckout() {
+    console.log('LOCAL STOAGE: ')
+    console.log(localStorage);
     setContributionModalLoader(true);
     const stripe: any = await stripePromise;
 
@@ -239,6 +267,15 @@ export default function Home() {
 
     const session = await res.json();
     console.log(session);
+
+    var userContribution = {
+      amount: BASE_PRICE * multiplier,
+      checkoutSessionId: session.id,
+    }
+    localStorage.setItem('userContribution', JSON.stringify(userContribution));
+    console.log('LOCAL STOAGE: ')
+    console.log(localStorage);
+    debugger;
     const result = await stripe.redirectToCheckout({
       sessionId: session.id,
     })
@@ -508,37 +545,7 @@ export default function Home() {
                   <LoaderPlane />
                 </div>
               )}
-              <div
-                className={`
-                mt-10 flex items-center justify-center gap-x-6 
-                w-[100%] rounded-md`}
-              >
-
-                <input
-                  id="search"
-                  name="search"
-                  className="block w-full rounded-md border-0 bg-white py-2.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
-                  placeholder="Search"
-                  type="search"
-                  onChange={(e) => {
-                    setkeyword(e.target.value);
-                    setKeywordInStore(e.target.value); // Update the keyword in the store
-                  }}
-                  onKeyPress={handleEnterKeyPress}
-                />
-                <Link
-                  legacyBehavior
-                  as={"/dashboard"}
-                  href={{
-                    pathname: "/dashboard",
-                    query: { topic: keyword },
-                  }}
-                >
-                  <a className="cta-invert">Generate</a>
-                </Link>
-
-
-              </div>
+              <AIInputComponent />
             </div>
           </div>
           <div className="absolute inset-x-0 top-[calc(100%-12rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
@@ -593,4 +600,62 @@ export default function Home() {
       </style>
     </>
   );
+}
+
+
+
+
+/* 
+TODO:
+
+1. Verification of user contribution and send to the server.
+2. Fix the auto scroll of text which a single letter is pressed for long time.
+3. Copy right. 
+
+*/
+
+const AIInputComponent = () => {
+  const [keyword, setkeyword] = useState("");
+  const router = useRouter();
+  const setKeywordInStore = useStore((state) => state.setKeyword);
+  const handleEnterKeyPress = (e: { key: string }) => {
+    if (e.key === "Enter") {
+      setKeywordInStore(keyword);
+      router.push({
+        pathname: "/dashboard",
+        query: { topic: keyword },
+      });
+    }
+  };
+  return <div
+    className={`
+  mt-10 flex items-center justify-center gap-x-6 
+  w-[100%] rounded-md`}
+  >
+
+    <input
+      id="search"
+      name="search"
+      className="block w-full rounded-md border-0 bg-white py-2.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+      placeholder="Search"
+      type="search"
+      onChange={(e) => {
+        setkeyword(e.target.value);
+        setKeywordInStore(e.target.value); // Update the keyword in the store
+      }}
+      onKeyPress={handleEnterKeyPress}
+    />
+    <Link
+      legacyBehavior
+      as={"/dashboard"}
+      href={{
+        pathname: "/dashboard",
+        query: { topic: keyword },
+      }}
+    >
+      <a className="cta-invert">Generate</a>
+    </Link>
+
+
+  </div>
 }
