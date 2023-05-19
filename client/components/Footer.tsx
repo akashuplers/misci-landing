@@ -34,7 +34,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="mt-4 text-center text-gray-400">
-        © 2023 Nowigence Inc.
+        Copyright © Nowigence, Inc. -  All Rights Reserved 2023
       </div>
     </footer>
   );
