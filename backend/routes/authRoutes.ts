@@ -10,7 +10,7 @@ import { encodeURIfix } from "../utils/encode";
 import { authMiddleware } from "../middleWare/authToken";
 import { daysBetween, getTimeStamp, monthDiff } from "../utils/date";
 import { verify } from "jsonwebtoken";
-import { sendForgotPasswordEmail } from "../utils/mailJetConfig";
+import { sendContributionEmail, sendForgotPasswordEmail } from "../utils/mailJetConfig";
 import { fetchUser, publishBlog, updateUserCredit } from "../graphql/resolver/blogs/blogsRepo";
 const express = require("express");
 const router = express.Router();
@@ -1051,6 +1051,21 @@ router.post('/save-user-support', authMiddleware, async (req: any, res: any) => 
   await db.db('lilleAdmin').collection('supports').insertOne({
     userId: new ObjectID(user.id),
     ...data
+  })
+  await sendContributionEmail({
+    email: userDetails.email,
+    userName: `${userDetails.name} ${userDetails.lastName}`,
+    htmlMsg: `<p>Dear ${userDetails.name} ${userDetails.lastName},</p>
+      <p></p>
+      <p>Thank you for buying us a coffee! </p>
+      <p>The Nowigence team appreciates the kind gesture of yours.</p>
+      <p>We are hopeful that your journey with Lille will be fruitful.</p>
+      <p></p>
+      <p>Thank You.</p> 
+      <p>Nowigence Team.</p>
+      <p>Nowigence, Inc.</p>
+    
+    `
   })
   return res.status(201).send({ errors: false, message: "Support Data Added!" });
 })
