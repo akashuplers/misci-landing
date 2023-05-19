@@ -236,8 +236,6 @@ export default function Home() {
     console.log(localStorage);
     setContributionModalLoader(true);
     const stripe: any = await stripePromise;
-
-
     const res = await fetch('https://maverick.lille.ai/stripe/api/payment', {
       method: 'POST',
       headers: {
@@ -610,8 +608,7 @@ TODO:
 
 1. Verification of user contribution and send to the server.
 2. Fix the auto scroll of text which a single letter is pressed for long time.
-3. Copy right. 
-
+3. Copy right 
 */
 
 const AIInputComponent = () => {
