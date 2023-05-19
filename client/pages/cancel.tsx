@@ -1,16 +1,16 @@
 import Image from "next/image";
+import Link from "next/link";
 import lillelogoLight from "../public/lille_logo_light.png";
 const CancelPage = () => {
     return (
         <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-r from-purple-500 to-indigo-500 p-5">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-8">Cancellation Successful</h1>
             {/* home button */}
-            <a href="/" className=" bg-indigo-500 text-white py-2 mt-[20px] rounded-md hover:bg-indigo-700 active:border-2 active:border-indigo-700 active:shadow-md
+            <Link href="/" className=" bg-indigo-500 text-white py-2 mt-[20px] rounded-md hover:bg-indigo-700 active:border-2 active:border-indigo-700 active:shadow-md
                 px-4 font-semibold text-sm md:text-base m-2
             ">
                 Go back to home
-
-            </a>
+            </Link>
             <p className="text-xl md:text-2xl text-white mb-16">{`We're sorry to see you go!`}</p>
             <Image
                 src={lillelogoLight}
