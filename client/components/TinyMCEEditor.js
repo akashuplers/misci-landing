@@ -1,41 +1,40 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from "react";
-import { Editor } from "@tinymce/tinymce-react";
-import { htmlToJson, jsonToHtml } from "../helpers/helper";
-import { updateBlog } from "../graphql/mutations/updateBlog";
-import LoaderPlane from "./LoaderPlane";
 import { useMutation } from "@apollo/client";
-import AuthenticationModal from "./AuthenticationModal";
+import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import { loadStripe } from "@stripe/stripe-js";
+import { Editor } from "@tinymce/tinymce-react";
+import axios from "axios";
 import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import ReactLoading from "react-loading";
+import Modal from "react-modal";
+import {
+  EmailIcon,
+  EmailShareButton,
+  FacebookIcon,
+  FacebookShareButton,
+  TelegramIcon,
+  TelegramShareButton,
+  TwitterIcon,
+  TwitterShareButton,
+  WhatsappIcon,
+  WhatsappShareButton,
+} from "react-share";
+import { ToastContainer, toast } from "react-toastify";
 import {
   API_BASE_PATH,
   API_ROUTES,
   LINKEDIN_CLIENT_ID,
   LI_API_ENDPOINTS,
 } from "../constants/apiEndpoints";
-import ReactLoading from "react-loading";
-import Modal from "react-modal";
-import axios from "axios";
-import {
-  FacebookShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
-  TelegramShareButton,
-  EmailShareButton,
-} from "react-share";
-import {
-  FacebookIcon,
-  TwitterIcon,
-  WhatsappIcon,
-  TelegramIcon,
-  EmailIcon,
-} from "react-share";
-import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import { toast, ToastContainer } from "react-toastify";
+import { updateBlog } from "../graphql/mutations/updateBlog";
+import { htmlToJson, jsonToHtml } from "../helpers/helper";
 import useStore from "../store/store";
+import AuthenticationModal from "./AuthenticationModal";
+import LoaderPlane from "./LoaderPlane";
 import TrialEndedModal from "./TrialEndedModal";
-
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 export default function TinyMCEEditor({
   topic,
   isAuthenticated,
@@ -324,7 +323,6 @@ export default function TinyMCEEditor({
       console.log(err);
     }
   };
-
   const handleSavePublish = () => {
     if (creditLeft === 0) {
       setTrailModal(true);
@@ -375,7 +373,7 @@ export default function TinyMCEEditor({
           })
           .catch((error) => console.log("error", error));
       }
-      
+
     }
   };
 
@@ -620,6 +618,7 @@ export default function TinyMCEEditor({
           You are now in The Editor Mode!! 🥳
         </div>
       </Modal> */}
+      
       <Modal
         isOpen={openModal}
         onRequestClose={() => setOpenModal(false)}
@@ -1149,7 +1148,7 @@ export default function TinyMCEEditor({
             };
 
             axios(config)
-              .then((response) => {})
+              .then((response) => { })
               .catch((error) => console.log("error", error));
           },
         }}
