@@ -273,7 +273,6 @@ export default function Home() {
     localStorage.setItem('userContribution', JSON.stringify(userContribution));
     console.log('LOCAL STOAGE: ')
     console.log(localStorage);
-    debugger;
     const result = await stripe.redirectToCheckout({
       sessionId: session.id,
     })
