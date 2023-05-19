@@ -106,7 +106,7 @@ export const validateSupportInput = (data: any) => {
     errors.checkoutSessionId = "Checkout Session Id is required";
   }
 
-  if (Validator.isEmpty(data.amount)) {
+  if (!data.amount) {
     errors.amount = "Amount is required";
   }
 
