@@ -1,12 +1,11 @@
-import { useLayoutEffect, useState } from "react";
-import { useEffect } from "react";
-import { API_BASE_PATH } from "../constants/apiEndpoints";
-import Link from "next/link";
-import Navbar from "../components/Navbar";
-import SwiperComponent from "../components/SwiperComponent";
-import styles from "../styles/price.module.css";
 import axios from "axios";
+import Link from "next/link";
+import { useEffect, useLayoutEffect, useState } from "react";
 import AuthenticationModal from "../components/AuthenticationModal";
+import Navbar from "../components/Navbar";
+import { API_BASE_PATH } from "../constants/apiEndpoints";
+import styles from "../styles/price.module.css";
+import Footer from "@/components/Footer";
 
 const featuresData = [
   {
@@ -246,12 +245,11 @@ export default function Pricing() {
                           <div
                             key={i}
                             onClick={() => subscriptionPlan(item)}
-                            className={`cursor-pointer rounded-[55px] px-[7.5px] md:px-[19px] py-[8px] ${
-                              currentPlan?.subscriptionType ===
-                              item.subscriptionType
+                            className={`cursor-pointer rounded-[55px] px-[7.5px] md:px-[19px] py-[8px] ${currentPlan?.subscriptionType ===
+                                item.subscriptionType
                                 ? "bg-[#3cc0f6] text-[#ffffff]"
                                 : "bg-[#ffffff] text-[#000000]"
-                            }`}
+                              }`}
                           >
                             {item.subscriptionType}
                           </div>
