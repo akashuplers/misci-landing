@@ -244,6 +244,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                         ]
                                     })
                                 })
+                                usedIdeasArr = usedIdeasArr.filter((text: string) => text.length > 5)
                                 return {
                                     published: false,
                                     published_date: false,
