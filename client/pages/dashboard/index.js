@@ -158,7 +158,8 @@ export default function dashboard({ query }) {
       localStorage.setItem("meDataMeCredits", meeData?.me?.credits);
       localStorage.setItem("meDataMePublishCount", meeData?.me.publishCount);
       localStorage.setItem("meDataisSubscribed", meeData?.me?.isSubscribed);
-
+      // meeData?.me?.email
+      localStorage.setItem('meDataMeEmail', meeData?.me?.email)
     }
   }, [meeData]);
   useEffect(() => {
