@@ -15,7 +15,7 @@ import { API_BASE_PATH, API_ROUTES } from "../../constants/apiEndpoints";
 import { generateBlog } from "../../graphql/mutations/generateBlog";
 import { meeAPI } from "../../graphql/querys/mee";
 import { getCurrentDomain, getCurrentHref, jsonToHtml } from "../../helpers/helper";
-import useStore , {useByMeCoffeModal }from "../../store/store"; // Add this import
+import useStore, { useByMeCoffeModal } from "../../store/store"; // Add this import
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 if (typeof window !== "undefined") {
@@ -302,7 +302,9 @@ export default function dashboard({ query }) {
           console.log('CREDITS : ' + credits);
           const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10 || Number(localStorage.getItem('meDataMePublishCount')) === 1);
           console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
-          setShowContributionModal(true);
+          if (SHOW_CONTRIBUTION_MODAL) {
+            setShowContributionModal(true);
+          }
           var token;
           if (typeof window !== "undefined") {
             token = localStorage.getItem("token");

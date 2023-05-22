@@ -74,7 +74,7 @@ export default function TinyMCEEditor({
   const updateCredit = useStore((state) => state.updateCredit);
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
   const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
-  
+
   useEffect(() => {
     updateCredit();
   }, []);
@@ -377,7 +377,16 @@ export default function TinyMCEEditor({
             }
 
             setTimeout(() => {
-              setShowContributionModal(true);
+              console.log('MEE DATA');
+              console.log(meeData);
+              console.log('HERE FOR SHOW CONTRIBUTION MODAL');
+              const credits = Number(localStorage.getItem('meDataMeCredits')) || 1;
+              console.log('CREDITS : ' + credits);
+              const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10 || Number(localStorage.getItem('meDataMePublishCount')) === 1);
+              console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
+              if (SHOW_CONTRIBUTION_MODAL) {
+                setShowContributionModal(true);
+              }
             }, 3000);
 
           })
@@ -630,7 +639,7 @@ export default function TinyMCEEditor({
           You are now in The Editor Mode!! 🥳
         </div>
       </Modal> */}
-  
+
       <Modal
         isOpen={openModal}
         onRequestClose={() => setOpenModal(false)}
