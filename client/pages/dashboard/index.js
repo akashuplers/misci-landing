@@ -263,7 +263,6 @@ export default function dashboard({ query }) {
           }
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
-
           const queryParams = router.query;
           console.log("queryParams", queryParams);
           if (!queryParams.code && !queryParams.oauth_token) {
@@ -550,7 +549,6 @@ export default function dashboard({ query }) {
                 `}
                   onClick={() => setMultiplier(item)}
                 >
-
                   {item}
                 </div>
 
@@ -586,7 +584,7 @@ export default function dashboard({ query }) {
                 <div className="loader"></div> {/* Add the loader class here */}
               </div>
             ) : (
-              <>Contribute us with {multiplier} cups for  <strong>{`$${BASE_PRICE / 100 * multiplier}`}</strong></>
+              <>Contribute us with {multiplier} {multiplier > 1 ? 'cups' : 'cup'} for  <strong>{`$${BASE_PRICE / 100 * multiplier}`}</strong></>
             )
           }
         </button>
