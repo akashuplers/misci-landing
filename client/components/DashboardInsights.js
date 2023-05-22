@@ -509,7 +509,7 @@ export default function DashboardInsights({
     setFile(target.files[0]);
     // console.log(file)
   }
-
+  
   function handleFormChange(e) {
     const value = e.target.value;
     setformInput(value);

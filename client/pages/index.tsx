@@ -30,6 +30,7 @@ const TEXTS = [
   "Medium Article",
   "Reddit Article",
 ];
+export const BASE_PRICE = 500;
 
 export default function Home() {
   const isAuthenticated = useStore((state) => state.isAuthenticated);
@@ -221,16 +222,15 @@ export default function Home() {
 
     if (meeData) {
       const credits = meeData?.me?.credits;
-      const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10 || meeData?.me?.publishCount === 1);
+      // var tempCredits = credits > 0;
+      const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10  || meeData?.me?.publishCount === 1);
       if (SHOW_CONTRIBUTION_MODAL) {
         setShowContributionModal(true);
       }
-
     }
   }, [meeData]);
 
   const [multiplier, setMultiplier] = useState(1);
-  const BASE_PRICE = 500;
   async function handleCheckout() {
     console.log('LOCAL STOAGE: ')
     console.log(localStorage);
