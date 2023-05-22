@@ -30,6 +30,7 @@ const TEXTS = [
   "Medium Article",
   "Reddit Article",
 ];
+export const BASE_PRICE = 500;
 
 export default function Home() {
   const isAuthenticated = useStore((state) => state.isAuthenticated);
@@ -221,23 +222,20 @@ export default function Home() {
 
     if (meeData) {
       const credits = meeData?.me?.credits;
-      const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10 || meeData?.me?.publishCount === 1);
+      // var tempCredits = credits > 0;
+      const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10  || meeData?.me?.publishCount === 1);
       if (SHOW_CONTRIBUTION_MODAL) {
         setShowContributionModal(true);
       }
-
     }
   }, [meeData]);
 
   const [multiplier, setMultiplier] = useState(1);
-  const BASE_PRICE = 500;
   async function handleCheckout() {
     console.log('LOCAL STOAGE: ')
     console.log(localStorage);
     setContributionModalLoader(true);
     const stripe: any = await stripePromise;
-
-
     const res = await fetch('https://maverick.lille.ai/stripe/api/payment', {
       method: 'POST',
       headers: {
@@ -275,7 +273,6 @@ export default function Home() {
     localStorage.setItem('userContribution', JSON.stringify(userContribution));
     console.log('LOCAL STOAGE: ')
     console.log(localStorage);
-    debugger;
     const result = await stripe.redirectToCheckout({
       sessionId: session.id,
     })
@@ -610,8 +607,7 @@ TODO:
 
 1. Verification of user contribution and send to the server.
 2. Fix the auto scroll of text which a single letter is pressed for long time.
-3. Copy right. 
-
+3. Copy right 
 */
 
 const AIInputComponent = () => {

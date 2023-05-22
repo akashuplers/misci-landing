@@ -1,16 +1,15 @@
-import { useRouter } from "next/router";
 import { useQuery } from "@apollo/client";
-import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
-import React, { useState, useEffect } from "react";
-import Layout from "../../components/Layout";
-import DashboardInsights from "../../components/DashboardInsights";
-import Navbar from "../../components/Navbar";
-import PreferencesModal from "../../modals/PreferencesModal";
-import TinyMCEEditor from "../../components/TinyMCEEditor";
-import { jsonToHtml } from "../../helpers/helper";
-import { meeAPI } from "../../graphql/querys/mee";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
+import DashboardInsights from "../../components/DashboardInsights";
+import Layout from "../../components/Layout";
+import TinyMCEEditor from "../../components/TinyMCEEditor";
 import { API_BASE_PATH } from "../../constants/apiEndpoints";
+import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
+import { meeAPI } from "../../graphql/querys/mee";
+import { jsonToHtml } from "../../helpers/helper";
+import PreferencesModal from "../../modals/PreferencesModal";
 
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {

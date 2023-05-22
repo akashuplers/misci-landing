@@ -1,40 +1,40 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from "react";
-import { Editor } from "@tinymce/tinymce-react";
-import { htmlToJson, jsonToHtml } from "../helpers/helper";
-import { updateBlog } from "../graphql/mutations/updateBlog";
-import LoaderPlane from "./LoaderPlane";
 import { useMutation } from "@apollo/client";
-import AuthenticationModal from "./AuthenticationModal";
+import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import { loadStripe } from "@stripe/stripe-js";
+import { Editor } from "@tinymce/tinymce-react";
+import axios from "axios";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import ReactLoading from "react-loading";
+import Modal from "react-modal";
+import {
+  EmailIcon,
+  EmailShareButton,
+  FacebookIcon,
+  FacebookShareButton,
+  TelegramIcon,
+  TelegramShareButton,
+  TwitterIcon,
+  TwitterShareButton,
+  WhatsappIcon,
+  WhatsappShareButton,
+} from "react-share";
+import { ToastContainer, toast } from "react-toastify";
 import {
   API_BASE_PATH,
   API_ROUTES,
   LINKEDIN_CLIENT_ID,
   LI_API_ENDPOINTS,
 } from "../constants/apiEndpoints";
-import ReactLoading from "react-loading";
-import Modal from "react-modal";
-import axios from "axios";
-import {
-  FacebookShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
-  TelegramShareButton,
-  EmailShareButton,
-} from "react-share";
-import {
-  FacebookIcon,
-  TwitterIcon,
-  WhatsappIcon,
-  TelegramIcon,
-  EmailIcon,
-} from "react-share";
-import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import { toast, ToastContainer } from "react-toastify";
-import useStore from "../store/store";
+import { updateBlog } from "../graphql/mutations/updateBlog";
+import { htmlToJson, jsonToHtml } from "../helpers/helper";
+import useStore, { useByMeCoffeModal } from "../store/store";
+import AuthenticationModal from "./AuthenticationModal";
+import LoaderPlane from "./LoaderPlane";
 import TrialEndedModal from "./TrialEndedModal";
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 export default function TinyMCEEditor({
   topic,
@@ -49,6 +49,7 @@ export default function TinyMCEEditor({
   option,
   setOption,
 }) {
+  const [multiplier, setMultiplier] = useState(1);
   const [updatedText, setEditorText] = useState(editorText);
   const [saveLoad, setSaveLoad] = useState(false);
   const [saveText, setSaveText] = useState("Save!");
@@ -71,6 +72,9 @@ export default function TinyMCEEditor({
   const isSave = useStore((state) => state.isSave);
   const creditLeft = useStore((state) => state.creditLeft);
   const updateCredit = useStore((state) => state.updateCredit);
+  const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
+  const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
+
   useEffect(() => {
     updateCredit();
   }, []);
@@ -324,7 +328,6 @@ export default function TinyMCEEditor({
       console.log(err);
     }
   };
-
   const handleSavePublish = () => {
     if (creditLeft === 0) {
       setTrailModal(true);
@@ -356,7 +359,7 @@ export default function TinyMCEEditor({
             },
           },
         })
-          .then((response) => {
+          .then(async (response) => {
             if (response?.data?.data?.publish) {
               toast.success("Published!!", {
                 position: "top-center",
@@ -372,12 +375,28 @@ export default function TinyMCEEditor({
               setPublishLoad(false);
               setPublishText("Published!!");
             }
+
+            setTimeout(() => {
+              console.log('MEE DATA');
+              console.log(meeData);
+              console.log('HERE FOR SHOW CONTRIBUTION MODAL');
+              const credits = Number(localStorage.getItem('meDataMeCredits')) || 1;
+              console.log('CREDITS : ' + credits);
+              const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10 || Number(localStorage.getItem('meDataMePublishCount')) === 1);
+              console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
+              if (SHOW_CONTRIBUTION_MODAL) {
+                setShowContributionModal(true);
+              }
+            }, 3000);
+
           })
+
           .catch((error) => console.log("error", error));
       }
-      
+
     }
   };
+
 
   const handlePublish = () => {
     if (creditLeft === 0) {
@@ -620,6 +639,7 @@ export default function TinyMCEEditor({
           You are now in The Editor Mode!! 🥳
         </div>
       </Modal> */}
+
       <Modal
         isOpen={openModal}
         onRequestClose={() => setOpenModal(false)}
@@ -628,7 +648,7 @@ export default function TinyMCEEditor({
         style={{
           overlay: {
             backgroundColor: "rgba(0,0,0,0.5)",
-            zIndex: "9999",
+            zIndex: "9998",
           },
           content: {
             position: "absolute",
@@ -1122,13 +1142,13 @@ export default function TinyMCEEditor({
           images_upload_handler: (blobInfo, success, failure) => {
             /*var formdata = new FormData();
             formdata.append("file", blobInfo.blob());
-
+  
             var requestOptions = {
               method: "POST",
               body: formdata,
               redirect: "follow",
             };
-
+  
             fetch("https://maverick.lille.ai/upload/image", requestOptions)
               // .then((response) => response.text())
               // .then((result) => {
@@ -1149,7 +1169,7 @@ export default function TinyMCEEditor({
             };
 
             axios(config)
-              .then((response) => {})
+              .then((response) => { })
               .catch((error) => console.log("error", error));
           },
         }}
