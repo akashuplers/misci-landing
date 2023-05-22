@@ -300,7 +300,7 @@ export default function dashboard({ query }) {
           console.log('HERE FOR SHOW CONTRIBUTION MODAL');
           const credits = Number(localStorage.getItem('meDataMeCredits')) || 1;
           console.log('CREDITS : ' + credits);
-          const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 20 || credits === 10 || Number(localStorage.getItem('meDataMePublishCount')) === 0) && !meeData?.me?.isSubscribed;
+          const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10 || Number(localStorage.getItem('meDataMePublishCount')) === 0) && !meeData?.me?.isSubscribed;
           console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
           if (SHOW_CONTRIBUTION_MODAL) {
             // setShowContributionModal(true);
