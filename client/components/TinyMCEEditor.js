@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { meeAPI } from "@/graphql/querys/mee";
 import { BASE_PRICE } from "@/pages";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { loadStripe } from "@stripe/stripe-js";
 import { Editor } from "@tinymce/tinymce-react";
@@ -30,7 +31,7 @@ import {
   LI_API_ENDPOINTS,
 } from "../constants/apiEndpoints";
 import { updateBlog } from "../graphql/mutations/updateBlog";
-import { htmlToJson, jsonToHtml } from "../helpers/helper";
+import { getCurrentDomain, getCurrentHref, htmlToJson, jsonToHtml } from "../helpers/helper";
 import useStore, { useByMeCoffeModal } from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import LoaderPlane from "./LoaderPlane";
@@ -77,6 +78,58 @@ export default function TinyMCEEditor({
   const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
   const [contributinoModalLoader, setContributionModalLoader] = useState(false);
 
+  var getToken;
+  if (typeof window !== "undefined") {
+    getToken = localStorage.getItem("token");
+  }
+  const {
+    data: meeData,
+    loading: meeLoading,
+    error: meeError,
+  } = useQuery(meeAPI, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken,
+      },
+    },
+    onError: ({ graphQLErrors, networkError }) => {
+      if (graphQLErrors) {
+        for (let err of graphQLErrors) {
+          switch (err.extensions.code) {
+            case "UNAUTHENTICATED":
+              localStorage.clear();
+              window.location.href = "/";
+          }
+        }
+      }
+      if (networkError) {
+        console.log(`[Network error]: ${networkError}`);
+
+        if (
+          `${networkError}` ===
+          "ServerError: Response not successful: Received status code 401" &&
+          isauth
+        ) {
+          localStorage.clear();
+
+          toast.error("Session Expired! Please Login Again..", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        }
+      }
+    },
+  });
   useEffect(() => {
     updateCredit();
   }, []);
@@ -378,12 +431,17 @@ export default function TinyMCEEditor({
               setPublishText("Published!!");
             }
 
+            var ll = Number(localStorage.getItem('meDataMePublishCount'))
+
+            console.log('PUBLISH COUNT');
+            console.log(Number(localStorage.getItem('meDataMePublishCount')));
             setTimeout(() => {
               console.log('MEE DATA');
               console.log('HERE FOR SHOW CONTRIBUTION MODAL');
-              const credits = Number(localStorage.getItem('meDataMeCredits')) || 1;
+              const credits = meeData?.me?.credits;
+
               console.log('CREDITS : ' + credits);
-              const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 20 || credits === 10 || Number(localStorage.getItem('meDataMePublishCount')) === 0) && localStorage.getItem("meDataisSubscribed") == 'false';
+              const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10 || meeData?.me.publishCount === 0) && !meeData?.me?.isSubscribed;
               console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
               if (SHOW_CONTRIBUTION_MODAL) {
                 setShowContributionModal(true);
