@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { toast } from "react-toastify";
 import DashboardInsights from "../../components/DashboardInsights";
@@ -14,8 +14,8 @@ import TrialEndedModal from "../../components/TrialEndedModal";
 import { API_BASE_PATH, API_ROUTES } from "../../constants/apiEndpoints";
 import { generateBlog } from "../../graphql/mutations/generateBlog";
 import { meeAPI } from "../../graphql/querys/mee";
-import { getCurrentDomain, jsonToHtml } from "../../helpers/helper";
-import useStore from "../../store/store"; // Add this import
+import { getCurrentDomain, getCurrentHref, jsonToHtml } from "../../helpers/helper";
+import useStore , {useByMeCoffeModal }from "../../store/store"; // Add this import
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 if (typeof window !== "undefined") {
@@ -46,12 +46,15 @@ export default function dashboard({ query }) {
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
   const [creditModal, setCreditModal] = useState(false);
   const [modalOpen, setOpenModal] = useState(false);
-  const [showContributionModal, setShowContributionModal] = useState(false);
+  const [runContributionModal, setRunContributionModal] = useState(0);
   const [contributinoModalLoader, setContributionModalLoader] = useState(false);
   const [multiplier, setMultiplier] = useState(1);
   const BASE_PRICE = 500;
   const keyword = useStore((state) => state.keyword);
   const updateCredit = useStore((state) => state.updateCredit);
+  const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
+  const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
+  // const [showContributionModal, setShowContributionModal] = useState(false);
 
 
   const {
@@ -152,6 +155,12 @@ export default function dashboard({ query }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (meeData) {
+      localStorage.setItem("meDataMeCredits", meeData?.me?.credits);
+      localStorage.setItem("meDataMePublishCount", meeData?.me.publishCount);
+    }
+  }, [meeData]);
   useEffect(() => {
     const getToken = localStorage.getItem("token");
     const Gbid = localStorage.getItem("Gbid");
@@ -285,6 +294,15 @@ export default function dashboard({ query }) {
         },
         onCompleted: (data) => {
           console.log(data);
+          // setRunContributionModal((prev) => prev++);
+          console.log('MEE DATA');
+          console.log(meeData);
+          console.log('HERE FOR SHOW CONTRIBUTION MODAL');
+          const credits = Number(localStorage.getItem('meDataMeCredits')) || 1;
+          console.log('CREDITS : ' + credits);
+          const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10 || Number(localStorage.getItem('meDataMePublishCount')) === 1);
+          console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
+          setShowContributionModal(true);
           var token;
           if (typeof window !== "undefined") {
             token = localStorage.getItem("token");
@@ -332,22 +350,22 @@ export default function dashboard({ query }) {
       });
     }
   }, []);
-  useEffect(() => {
-    console.log(meeData);
-    console.log('HERE FOR SHOW CONTRIBUTION MODAL');
-    if (meeData) {
-      const credits = meeData?.me?.credits;
-      const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10 || meeData?.me?.publishCount === 1);
-      if (SHOW_CONTRIBUTION_MODAL) {
-        setShowContributionModal(true);
-      }
-    }
-  }, [meeData]);
+  // useEffect(() => {
+  //   console.log('MEE DATA');
+  //   console.log(meeData);
+  //   console.log('HERE FOR SHOW CONTRIBUTION MODAL');
+  //   const credits = meeData?.me?.credits;
+  //   var tempCredits = credits > 0;
+  //   const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10 || tempCredits || meeData?.me?.publishCount === 1);
+  //   console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
+  //   setShowContributionModal(true);
+  // }, [runContributionModal, setRunContributionModal]);
   useEffect(() => {
     console.log("===restime===");
     console.log(pyResTime, ndResTime);
     console.log("===restime===");
   }, [pyResTime, ndResTime]);
+
   async function handleCheckout() {
     console.log('LOCAL STOAGE: ')
     console.log(localStorage);
@@ -374,7 +392,7 @@ export default function dashboard({ query }) {
             }
           ],
           "mode": "payment",
-          "success_url": getCurrentDomain() + "?payment=true",
+          "success_url": getCurrentHref() + '/' + blog_id,
           "cancel_url": getCurrentDomain() + "/cancel"
         }
       ), // Multiply by the multiplier (e.g., 500 * 1 = $5, 500 * 2 = $10, etc.)
@@ -391,7 +409,6 @@ export default function dashboard({ query }) {
     const result = await stripe.redirectToCheckout({
       sessionId: session.id,
     })
-
   }
   console.log(freshIdeasReferences);
   return (

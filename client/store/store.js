@@ -1,7 +1,7 @@
 // store.js
+import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 import axios from "axios";
 import create from "zustand";
-import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 
 const useStore = create((set) => ({
   creditLeft: "",
@@ -66,6 +66,14 @@ const useStore = create((set) => ({
       })
       .catch((err) => toast.error(err));
   },
+
 }));
 
 export default useStore;
+
+
+export const useByMeCoffeModal = create((set) => ({
+  isOpen: false,
+  toggleModal: () => set((state) => ({ isOpen: !state.isOpen })),
+}));
+
