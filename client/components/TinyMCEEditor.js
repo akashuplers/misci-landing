@@ -385,7 +385,7 @@ export default function TinyMCEEditor({
               console.log('CREDITS : ' + credits);
               const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 20 || credits === 10 || Number(localStorage.getItem('meDataMePublishCount')) === 0) && localStorage.getItem("meDataisSubscribed") == 'false';
               console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
-              if (true) {
+              if (SHOW_CONTRIBUTION_MODAL) {
                 setShowContributionModal(true);
               }
             }, 3000);
