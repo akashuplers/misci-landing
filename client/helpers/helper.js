@@ -98,3 +98,7 @@ export function getCurrentDomain() {
   console.log(window.location.hostname);
   return window.location.origin;
 }
+export function getCurrentHref() {
+  console.log(window.location.href);
+  return window.location.href
+}
