@@ -53,7 +53,7 @@ export default function dashboard({ query }) {
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
   const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
   // const [showContributionModal, setShowContributionModal] = useState(false);
-
+  const [isPublish, seIsPublish] = useState(false);
 
   const {
     data: meeData,
@@ -303,7 +303,7 @@ export default function dashboard({ query }) {
           const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 20 || credits === 10 || Number(localStorage.getItem('meDataMePublishCount')) === 0) && !meeData?.me?.isSubscribed;
           console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
           if (SHOW_CONTRIBUTION_MODAL) {
-            setShowContributionModal(true);
+            // setShowContributionModal(true);
           } 
           var token;
           if (typeof window !== "undefined") {
