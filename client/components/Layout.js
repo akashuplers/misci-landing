@@ -7,8 +7,7 @@ import Sidebar from "./SidebarNav";
 export default function Layout({ children }) {
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const updateAuthentication = useStore((state) => state.updateAuthentication);
-
-
+  
   useEffect(() => {
     updateAuthentication();
   }, []);
