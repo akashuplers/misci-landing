@@ -366,7 +366,7 @@ export default function TinyMCEEditor({
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,
-                pauseOnHover: true,
+                pauseOnHover:  true,
                 draggable: true,
                 progress: undefined,
                 theme: "light",
@@ -378,11 +378,10 @@ export default function TinyMCEEditor({
 
             setTimeout(() => {
               console.log('MEE DATA');
-              console.log(meeData);
               console.log('HERE FOR SHOW CONTRIBUTION MODAL');
               const credits = Number(localStorage.getItem('meDataMeCredits')) || 1;
               console.log('CREDITS : ' + credits);
-              const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10 || Number(localStorage.getItem('meDataMePublishCount')) === 1);
+              const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10 || Number(localStorage.getItem('meDataMePublishCount')) === 1) && localStorage.getItem("meDataisSubscribed") == 'false';
               console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
               if (SHOW_CONTRIBUTION_MODAL) {
                 setShowContributionModal(true);
