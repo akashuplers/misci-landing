@@ -1,28 +1,23 @@
 /* eslint-disable @next/next/no-img-element */
-import { Fragment, useEffect, useState } from "react";
+import useStore from "@/store/store";
+import { useQuery } from "@apollo/client";
 import { Dialog, Transition } from "@headlessui/react";
 import {
+  ArrowRightOnRectangleIcon,
   Bars3Icon,
   FolderIcon,
+  PaperAirplaneIcon,
   PlusCircleIcon,
   XMarkIcon,
-  PaperAirplaneIcon,
-  ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
-import { logout } from "../helpers/helper";
 import Link from "next/link";
-import Avatar from "react-avatar";
-import { useQuery } from "@apollo/client";
-import { meeAPI } from "../graphql/querys/mee";
-import {
-  AiFillCheckCircle,
-  AiOutlineLinkedin,
-  AiOutlineTwitter,
-} from "react-icons/ai";
 import { useRouter } from "next/router";
+import { Fragment, useEffect, useState } from "react";
+import Avatar from "react-avatar";
 import { ToastContainer } from "react-toastify";
-import useStore from "@/store/store";
+import { meeAPI } from "../graphql/querys/mee";
+import { logout } from "../helpers/helper";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -479,7 +474,7 @@ export default function Sidebar() {
                     gap: "2em",
                   }}
                 >
-                  {!meeLoading && (
+                  {!meeLoading && (!meeData?.me?.isSubscribed && meeData?.me?.paid == false) && (
                     <div
                       className="flex text-center font-bold text-sm w-auto rounded border border-gray"
                       href="/settings"
