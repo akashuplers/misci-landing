@@ -30,7 +30,7 @@ import {
   LI_API_ENDPOINTS,
 } from "../constants/apiEndpoints";
 import { updateBlog } from "../graphql/mutations/updateBlog";
-import { htmlToJson, jsonToHtml } from "../helpers/helper";
+import { getCurrentDomain, getCurrentHref, htmlToJson, jsonToHtml } from "../helpers/helper";
 import useStore, { useByMeCoffeModal } from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import LoaderPlane from "./LoaderPlane";
