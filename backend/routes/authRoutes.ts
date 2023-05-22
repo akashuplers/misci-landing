@@ -927,17 +927,19 @@ router.get('/add-monthly-credits', async (req: any, res: any) => {
       Promise.all(
         subscribedUsers.map(async (user: any) => {
           const paymentStarts = user?.paymentsStarts || null
-          console.log(paymentStarts)
           if(paymentStarts) {
             const now = new Date();
             const paymentStartDate: any = new Date(paymentStarts * 1000);
-            console.log(paymentStartDate)
             const monthDuration = monthDiff(paymentStartDate, now)
-            const nextDate = new Date(paymentStartDate.setMonth(paymentStartDate.getMonth() + (monthDuration === 0 ? monthDuration + 1 : monthDuration)));
+            let nextDate = new Date(paymentStartDate.setMonth(paymentStartDate.getMonth() + (monthDuration === 0 ? monthDuration + 1 : monthDuration)));
             console.log(nextDate, "next")
             console.log(now, "now")
-            console.log( monthDuration, "duration")
+            console.log( monthDuration, user, "duration")
             let differenceInDays = daysBetween(now, nextDate)
+            if(differenceInDays < 0) {
+              nextDate = new Date(paymentStartDate.setMonth(paymentStartDate.getMonth() + 1));
+              differenceInDays = daysBetween(now, nextDate)
+            }
             console.log( differenceInDays, "differenceInDays")
             if(differenceInDays === 0 && monthDuration) {
               console.log(`======== Running monthly credit for paid user ${user.email} ==========`)
