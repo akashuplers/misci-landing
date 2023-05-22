@@ -409,7 +409,7 @@ export default function TinyMCEEditor({
       },
       body: JSON.stringify(
         {
-          customer_email: meeData?.me?.email,
+          customer_email: localStorage.getItem('meDataMeEmail'),
           "line_items": [
             {
               "price_data": {
