@@ -31,7 +31,7 @@ import {
   LI_API_ENDPOINTS,
 } from "../constants/apiEndpoints";
 import { updateBlog } from "../graphql/mutations/updateBlog";
-import { getCurrentDomain, getCurrentHref, htmlToJson, jsonToHtml } from "../helpers/helper";
+import { getCurrentDashboardURL, getCurrentDomain, htmlToJson, jsonToHtml } from "../helpers/helper";
 import useStore, { useByMeCoffeModal } from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import LoaderPlane from "./LoaderPlane";
@@ -480,7 +480,7 @@ export default function TinyMCEEditor({
             }
           ],
           "mode": "payment",
-          "success_url": getCurrentHref() + '/' + blog_id,
+          "success_url": getCurrentDashboardURL() + '/' + blog_id + '/?payment=true',
           "cancel_url": getCurrentDomain() + "/cancel"
         }
       ), // Multiply by the multiplier (e.g., 500 * 1 = $5, 500 * 2 = $10, etc.)
