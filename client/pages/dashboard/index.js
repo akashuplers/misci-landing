@@ -53,6 +53,8 @@ export default function dashboard({ query }) {
   const updateCredit = useStore((state) => state.updateCredit);
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
   const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
+  const creditLeft = useStore((state) => state.creditLeft);
+
   // const [showContributionModal, setShowContributionModal] = useState(false);
   const [isPublish, seIsPublish] = useState(false);
   console.log('MEE DATA GET IN ZUSLAND');
@@ -170,7 +172,10 @@ export default function dashboard({ query }) {
       const credits = meeData?.me?.credits;
       const isSubs = meeData?.me?.isSubscribed;
       console.log('CREDITS : ' + credits);
-      const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 5) && !isSubs;
+      var userCredits = meeData?.me?.totalCredits - creditLeft - 1;
+      console.log('USER CREDITS: ' + userCredits);
+
+      const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (userCredits === 15 || userCredits === 5) && !isSubs;
       console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
       if (SHOW_CONTRIBUTION_MODAL) {
         setShowContributionModal(true);
