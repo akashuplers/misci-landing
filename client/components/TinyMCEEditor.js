@@ -31,7 +31,7 @@ import {
   LI_API_ENDPOINTS,
 } from "../constants/apiEndpoints";
 import { updateBlog } from "../graphql/mutations/updateBlog";
-import { getCurrentDomain, getCurrentHref, htmlToJson, jsonToHtml } from "../helpers/helper";
+import { getCurrentDashboardURL, getCurrentDomain, htmlToJson, jsonToHtml } from "../helpers/helper";
 import useStore, { useByMeCoffeModal } from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import LoaderPlane from "./LoaderPlane";
@@ -439,9 +439,8 @@ export default function TinyMCEEditor({
               console.log('MEE DATA');
               console.log('HERE FOR SHOW CONTRIBUTION MODAL');
               const credits = meeData?.me?.credits;
-
               console.log('CREDITS : ' + credits);
-              const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10 || meeData?.me.publishCount === 0) && !meeData?.me?.isSubscribed;
+              const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 19 || credits === 9 || meeData?.me.publishCount === 0) && !meeData?.me?.isSubscribed;
               console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
               if (SHOW_CONTRIBUTION_MODAL) {
                 setShowContributionModal(true);
@@ -481,7 +480,7 @@ export default function TinyMCEEditor({
             }
           ],
           "mode": "payment",
-          "success_url": getCurrentHref() + '/' + blog_id,
+          "success_url": getCurrentDashboardURL() + '/' + blog_id + '/?payment=true',
           "cancel_url": getCurrentDomain() + "/cancel"
         }
       ), // Multiply by the multiplier (e.g., 500 * 1 = $5, 500 * 2 = $10, etc.)
