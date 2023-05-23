@@ -102,3 +102,12 @@ export function getCurrentHref() {
   console.log(window.location.href);
   return window.location.href
 }
+export function getCurrentDashboardURL() {
+  const currentURL = window.location.href;
+  const dashboardIndex = currentURL.indexOf('/dashboard');
+  if (dashboardIndex !== -1) {
+    const dashboardURL = currentURL.substring(0, dashboardIndex + '/dashboard'.length);
+    return dashboardURL;
+  }
+  return null; // Return null if '/dashboard' is not found in the URL
+}
