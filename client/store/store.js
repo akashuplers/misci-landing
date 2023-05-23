@@ -77,3 +77,22 @@ export const useByMeCoffeModal = create((set) => ({
   toggleModal: () => set((state) => ({ isOpen: !state.isOpen })),
 }));
 
+
+export const MeeDataStore = create((set) => ({
+  meeData: {},
+  setmeeData: (meeData) => set({ meeData }),
+}));
+
+export const useUserData = () => {
+  const { meeData, setmeeData } = MeeDataStore();
+
+  const getUserData = () => meeData;
+
+  const updateUserData = (newUserData) => setmeeData(newUserData);
+
+  return {
+    meeData,
+    getUserData,
+    updateUserData,
+  };
+};
