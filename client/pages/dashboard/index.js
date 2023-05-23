@@ -170,7 +170,7 @@ export default function dashboard({ query }) {
       const credits = meeData?.me?.credits;
       const isSubs = meeData?.me?.isSubscribed;
       console.log('CREDITS : ' + credits);
-      const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10) && !isSubs;
+      const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 5) && !isSubs;
       console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
       if (SHOW_CONTRIBUTION_MODAL) {
         setShowContributionModal(true);
