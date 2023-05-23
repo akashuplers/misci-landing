@@ -119,6 +119,66 @@ export default function Post() {
       }
     },
   });
+  useEffect(() => {
+    console.log(router);
+    console.log('LOCAL STORERAGE');
+    console.log(localStorage);
+    /* asPath "/?payment=true" */
+    // query 
+    const query = router.query;
+    console.log('QUERY');
+    console.log(query);
+    console.log('ROUTER');
+    if (router.asPath === '/?payment=true') {
+      console.log('ROUTER CHECK IF PAYMENT==TRUE');
+      console.log('USER CONTRIBUTION');
+
+      // console.log(userContribution);
+      if (localStorage.getItem('userContribution') !== null) {
+        var userContribution = JSON.parse(localStorage.getItem('userContribution') || '{}');
+        console.log('USER CONTRIBUTION IS NOT NULL');
+        console.log(userContribution);
+        // /auth/save-user-support
+        const SAVE_USER_SUPPORT_URL = 'https://maverick.lille.ai/auth/save-user-support';
+
+        const requestOptions = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem("token")
+          },
+          body: JSON.stringify(userContribution)
+        };
+        console.log('REQUEST OPTIONS');
+        fetch(SAVE_USER_SUPPORT_URL, requestOptions).then((response) => {
+          console.log('RESPONSE FROM SAVE USER SUPPORT');
+          console.log(response);
+          console.log(response.json());
+        }).catch((error) => {
+          console.log('ERROR FROM SAVE USER SUPPORT');
+          console.log(error);
+        }
+        );
+      }
+      setIsPayment(true);
+      toast.success("Payment Successful!", {
+        toastId: "payment-success",
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+
+      localStorage.setItem("payment", "true");
+    } else {
+      console.log('ROUTER CHECK IF PAYMENT==TRUE ELSE');
+      localStorage.removeItem("userContribution");
+    }
+  }, [router]);
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {

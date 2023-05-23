@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -13,9 +13,8 @@ import TinyMCEEditor from "../../components/TinyMCEEditor";
 import TrialEndedModal from "../../components/TrialEndedModal";
 import { API_BASE_PATH, API_ROUTES } from "../../constants/apiEndpoints";
 import { generateBlog } from "../../graphql/mutations/generateBlog";
-import { meeAPI } from "../../graphql/querys/mee";
 import { jsonToHtml } from "../../helpers/helper";
-import useStore, { useByMeCoffeModal } from "../../store/store"; // Add this import
+import useStore, { useByMeCoffeModal, useUserData } from "../../store/store"; // Add this import
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 if (typeof window !== "undefined") {
@@ -54,57 +53,9 @@ export default function dashboard({ query }) {
   const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
   // const [showContributionModal, setShowContributionModal] = useState(false);
   const [isPublish, seIsPublish] = useState(false);
-
-  const {
-    data: meeData,
-    loading: meeLoading,
-    error: meeError,
-  } = useQuery(meeAPI, {
-    context: {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + getToken,
-      },
-    },
-    onError: ({ graphQLErrors, networkError }) => {
-      if (graphQLErrors) {
-        for (let err of graphQLErrors) {
-          switch (err.extensions.code) {
-            case "UNAUTHENTICATED":
-              localStorage.clear();
-              window.location.href = "/";
-          }
-        }
-      }
-      if (networkError) {
-        console.log(`[Network error]: ${networkError}`);
-
-        if (
-          `${networkError}` ===
-          "ServerError: Response not successful: Received status code 401" &&
-          isauth
-        ) {
-          localStorage.clear();
-
-          toast.error("Session Expired! Please Login Again..", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
-        }
-      }
-    },
-  });
-
-
+  const { meeData, getUserData, updateUserData } = useUserData();
+  console.log('MEE DATA GET IN ZUSLAND');
+  console.log(meeData);
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -294,12 +245,12 @@ export default function dashboard({ query }) {
         },
         onCompleted: (data) => {
           console.log(data);
-          // setRunContributionModal((prev) => prev++);
           console.log('MEE DATA');
           console.log(meeData);
           const credits = meeData?.me?.credits;
+          const isSubs = meeData?.me?.isSubscribed;
           console.log('CREDITS : ' + credits);
-          const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 19 || credits === 9) && !meeData?.me?.isSubscribed;
+          const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 19 || credits === 9) && !isSubs;
           console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
           if (SHOW_CONTRIBUTION_MODAL) {
             setShowContributionModal(true);
