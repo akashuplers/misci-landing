@@ -442,7 +442,8 @@ export default function TinyMCEEditor({
               console.log('CREDITS : ' + credits);
               var userCredits = meeData?.me?.totalCredits - creditLeft - 1;
               console.log('USER CREDITS: ' + userCredits);
-              const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (userCredits === 15 || userCredits === 5 || meeData?.me.publishCount === 0) && !meeData?.me?.isSubscribed;
+              userCredits = userCredits + 2;
+              const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (userCredits === 20 || userCredits === 10 || meeData?.me.publishCount === 0) && !meeData?.me?.isSubscribed;
               console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
               if (SHOW_CONTRIBUTION_MODAL) {
                 setShowContributionModal(true);
