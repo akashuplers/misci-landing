@@ -441,11 +441,11 @@ export default function DashboardInsights({
           // setRunContributionModal((prev) => prev++);
           console.log('MEE DATA');
           console.log('MEE DATA');
-          const credits = 19;
+          const credits = meeData?.me?.credits;
           console.log('CREDITS : ' + credits);
           const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 19 || credits === 9) && !meeData?.me?.isSubscribed;
           console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
-          if (true) {
+          if (SHOW_CONTRIBUTION_MODAL) {
             setShowContributionModal(true);
           }
         },
