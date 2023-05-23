@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useMutation } from "@apollo/client";
+import { meeAPI } from "@/graphql/querys/mee";
+import { useMutation, useQuery } from "@apollo/client";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -14,7 +15,7 @@ import TrialEndedModal from "../../components/TrialEndedModal";
 import { API_BASE_PATH, API_ROUTES } from "../../constants/apiEndpoints";
 import { generateBlog } from "../../graphql/mutations/generateBlog";
 import { jsonToHtml } from "../../helpers/helper";
-import useStore, { useByMeCoffeModal, useUserData } from "../../store/store"; // Add this import
+import useStore, { useByMeCoffeModal } from "../../store/store"; // Add this import
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 if (typeof window !== "undefined") {
@@ -29,6 +30,7 @@ dashboard.getInitialProps = ({ query }) => {
 
 export default function dashboard({ query }) {
   const { topic } = query;
+  // const topic = 'India in 2040 '
   const router = useRouter();
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const [ideas, setIdeas] = useState([]);
@@ -53,14 +55,60 @@ export default function dashboard({ query }) {
   const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
   // const [showContributionModal, setShowContributionModal] = useState(false);
   const [isPublish, seIsPublish] = useState(false);
-  const { meeData, getUserData, updateUserData } = useUserData();
   console.log('MEE DATA GET IN ZUSLAND');
-  console.log(meeData);
+
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
   }
+  const {
+    data: meeData,
+    loading: meeLoading,
+    error: meeError,
+  } = useQuery(meeAPI, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken,
+      },
+    },
+    onError: ({ graphQLErrors, networkError }) => {
+      if (graphQLErrors) {
+        for (let err of graphQLErrors) {
+          switch (err.extensions.code) {
+            case "UNAUTHENTICATED":
+              localStorage.clear();
+              window.location.href = "/";
+          }
+        }
+      }
+      if (networkError) {
+        console.log(`[Network error]: ${networkError}`);
 
+        if (
+          `${networkError}` ===
+          "ServerError: Response not successful: Received status code 401" &&
+          isAuthenticated
+        ) {
+          localStorage.clear();
+
+          toast.error("Session Expired! Please Login Again..", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        }
+      }
+    },
+  });
   var bid;
   if (typeof window !== "undefined") {
     bid = localStorage.getItem("bid");
@@ -76,6 +124,8 @@ export default function dashboard({ query }) {
       window.location.href = "/";
     }
   }, []);
+
+
 
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog, {
     context: {
@@ -113,6 +163,21 @@ export default function dashboard({ query }) {
       localStorage.setItem('meDataMeEmail', meeData?.me?.email)
     }
   }, [meeData]);
+  useEffect(() => {
+    if (loading == false) {
+      console.log('MEE DATA');
+      console.log(meeData);
+      const credits = meeData?.me?.credits;
+      const isSubs = meeData?.me?.isSubscribed;
+      console.log('CREDITS : ' + credits);
+      const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10) && !isSubs;
+      console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
+      if (SHOW_CONTRIBUTION_MODAL) {
+        setShowContributionModal(true);
+      }
+
+    }
+  }, [loading, meeData]);
   useEffect(() => {
     const getToken = localStorage.getItem("token");
     const Gbid = localStorage.getItem("Gbid");
@@ -245,16 +310,7 @@ export default function dashboard({ query }) {
         },
         onCompleted: (data) => {
           console.log(data);
-          console.log('MEE DATA');
-          console.log(meeData);
-          const credits = meeData?.me?.credits;
-          const isSubs = meeData?.me?.isSubscribed;
-          console.log('CREDITS : ' + credits);
-          const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 19 || credits === 9) && !isSubs;
-          console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
-          if (SHOW_CONTRIBUTION_MODAL) {
-            setShowContributionModal(true);
-          }
+
           var token;
           if (typeof window !== "undefined") {
             token = localStorage.getItem("token");
