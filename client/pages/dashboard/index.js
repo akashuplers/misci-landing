@@ -14,7 +14,7 @@ import TrialEndedModal from "../../components/TrialEndedModal";
 import { API_BASE_PATH, API_ROUTES } from "../../constants/apiEndpoints";
 import { generateBlog } from "../../graphql/mutations/generateBlog";
 import { meeAPI } from "../../graphql/querys/mee";
-import { getCurrentDomain, getCurrentHref, jsonToHtml } from "../../helpers/helper";
+import { jsonToHtml } from "../../helpers/helper";
 import useStore, { useByMeCoffeModal } from "../../store/store"; // Add this import
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
@@ -297,14 +297,13 @@ export default function dashboard({ query }) {
           // setRunContributionModal((prev) => prev++);
           console.log('MEE DATA');
           console.log(meeData);
-          console.log('HERE FOR SHOW CONTRIBUTION MODAL');
-          const credits = Number(localStorage.getItem('meDataMeCredits')) || 1;
+          const credits = meeData?.me?.credits;
           console.log('CREDITS : ' + credits);
-          const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10 || Number(localStorage.getItem('meDataMePublishCount')) === 0) && !meeData?.me?.isSubscribed;
+          const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 19 || credits === 9) && !meeData?.me?.isSubscribed;
           console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
           if (SHOW_CONTRIBUTION_MODAL) {
-            // setShowContributionModal(true);
-          } 
+            setShowContributionModal(true);
+          }
           var token;
           if (typeof window !== "undefined") {
             token = localStorage.getItem("token");
@@ -439,7 +438,7 @@ export default function dashboard({ query }) {
           </div>
         </div>
       </Layout>
-     
+
       <Modal
         isOpen={modalOpen}
         ariaHideApp={false}
