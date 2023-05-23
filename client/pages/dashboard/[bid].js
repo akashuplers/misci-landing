@@ -124,9 +124,15 @@ export default function Post() {
     console.log('LOCAL STORERAGE');
     console.log(localStorage);
     /* asPath "/?payment=true" */
+    // query 
+    const query = router.query;
+    console.log('QUERY');
+    console.log(query);
+    console.log('ROUTER');
     if (router.asPath === '/?payment=true') {
       console.log('ROUTER CHECK IF PAYMENT==TRUE');
       console.log('USER CONTRIBUTION');
+
       // console.log(userContribution);
       if (localStorage.getItem('userContribution') !== null) {
         var userContribution = JSON.parse(localStorage.getItem('userContribution') || '{}');
