@@ -261,6 +261,7 @@ export default function Post() {
             <div
               style={{
                 zIndex: "10",
+                display: "none",
                 position: "absolute",
                 background: "white",
                 border: "1px solid black",

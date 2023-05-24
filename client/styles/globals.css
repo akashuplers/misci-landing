@@ -367,6 +367,6 @@ input[type='checkbox']:checked, input[type='radio']:checked {
 
 .custom-spacing {
     margin: auto;
-    width: 67%;
+    width: 100%;
     gap: 15px;
 }
