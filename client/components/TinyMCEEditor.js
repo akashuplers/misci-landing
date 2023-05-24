@@ -436,14 +436,16 @@ export default function TinyMCEEditor({
             console.log('PUBLISH COUNT');
             console.log(Number(localStorage.getItem('meDataMePublishCount')));
             setTimeout(() => {
-              console.log('MEE DATA');
-              console.log('HERE FOR SHOW CONTRIBUTION MODAL');
-              const credits = meeData?.me?.credits;
-              console.log('CREDITS : ' + credits);
+              // console.log('MEE DATA');
+              // console.log('HERE FOR SHOW CONTRIBUTION MODAL');
+              // const credits = meeData?.me?.credits;
+              // console.log('CREDITS : ' + credits);
               var userCredits = meeData?.me?.totalCredits - creditLeft - 1;
               console.log('USER CREDITS: ' + userCredits);
               userCredits = userCredits + 2;
-              const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (userCredits === 20 || userCredits === 10 || meeData?.me.publishCount === 0) && !meeData?.me?.isSubscribed;
+              var userPublishCount = ll;
+              console.log('USER PUBLISH COUNT: ' + userPublishCount);
+              const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (userCredits === 20 || userCredits === 10 || userPublishCount === 0) && !meeData?.me?.isSubscribed;
               console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
               if (SHOW_CONTRIBUTION_MODAL) {
                 setShowContributionModal(true);
