@@ -932,17 +932,17 @@ router.get('/add-monthly-credits', async (req: any, res: any) => {
             const paymentStartDate: any = new Date(paymentStarts * 1000);
             const monthDuration = monthDiff(paymentStartDate, now)
             let nextDate = new Date(paymentStartDate.setMonth(paymentStartDate.getMonth() + (monthDuration === 0 ? monthDuration + 1 : monthDuration)));
-            console.log(nextDate, "next")
-            console.log(now, "now")
-            console.log( monthDuration, user, "duration")
             let differenceInDays = daysBetween(now, nextDate)
             if(differenceInDays < 0) {
               nextDate = new Date(paymentStartDate.setMonth(paymentStartDate.getMonth() + 1));
               differenceInDays = daysBetween(now, nextDate)
             }
-            console.log( differenceInDays, "differenceInDays")
             if(differenceInDays === 0 && monthDuration) {
               console.log(`======== Running monthly credit for paid user ${user.email} ==========`)
+              console.log(nextDate, "next")
+              console.log(now, "now")
+              console.log( monthDuration, user, "duration")
+              console.log( differenceInDays, "differenceInDays")
               await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user._id)}, {
                 $set: {
                   credits: parseInt(newCredit?.monthly_credit || "200"),

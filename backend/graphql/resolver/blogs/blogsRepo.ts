@@ -124,7 +124,6 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 };
                                 let updatedContent = content?.replace("In conclusion, ", "<p><h3>Conclusions:</h3></p>")
                                 updatedContent = updatedContent.replace(/H1:|H2:|Title:|Introduction:|<p\s*\/?><p\s*\/?>|Conclusions:<p\s*\/?>|Conclusion:<p\s*\/?>|Conclusion<p\s*\/?>|Conclusions<p\s*\/?>/gi, function(matched: any){
-                                    console.log(matched,mapObj[matched], "matched")
                                     return mapObj[matched];
                                 }); 
                                 // updatedContent = updatedContent?.replace("<p></p><p></p>", "<p></p>")
@@ -457,7 +456,6 @@ export const publishBlog = async ({id, db, platform}: {
     db: any,
     platform: string
 }) => {
-    console.log(platform)
     return await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(id), "publish_data": {$elemMatch: {platform: platform} } }, {
         $set: {
             "publish_data.$[elem].published": true,
