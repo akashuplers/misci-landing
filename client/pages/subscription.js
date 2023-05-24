@@ -53,18 +53,18 @@ export default function Subscription({ query }) {
     setPlans([
       {
         subscriptionType: "Yearly",
-        price: 1000,
-        priceId: "price_1MYowHSI8Tkf3wUilUfJbapv",
+        price: 149.95,
+        priceId: "price_1NBH8eSI8Tkf3wUiOSqVSG4o",
       },
       {
         subscriptionType: "Quarterly",
-        price: 200,
-        priceId: "price_1MXm6iSI8Tkf3wUitxemgTER",
+        price: 39.95,
+        priceId: "price_1NBH8eSI8Tkf3wUidr9GKmVa",
       },
       {
         subscriptionType: "Monthly",
-        price: 20,
-        priceId: "price_1MWfopSI8Tkf3wUiZeFpn6HI",
+        price: 15.95,
+        priceId: "price_1NBH8eSI8Tkf3wUid4TgFW5w",
       },
     ]);
   }, []);
@@ -164,9 +164,9 @@ export default function Subscription({ query }) {
                       </p>
                       <p className="text-[64px]  font-bold">
                         ${currentPlan?.price}
-                        <span className="text-[16px] leading-[26px] tracking-[0.5px] text-[#BFC2D9]">
+                        {/* <span className="text-[16px] leading-[26px] tracking-[0.5px] text-[#BFC2D9]">
                           /month
-                        </span>
+                        </span> */}
                       </p>
                     </div>
                     <div className="h-[2px] mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px] hidden md:block"></div>

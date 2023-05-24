@@ -232,9 +232,9 @@ export default function Pricing() {
                     </p>
                     <p className="text-[64px]  font-bold">
                       ${currentPlan?.price}
-                      <span className="text-[16px] leading-[26px] tracking-[0.5px] text-[#ffffff]">
+                      {/* <span className="text-[16px] leading-[26px] tracking-[0.5px] text-[#ffffff]">
                         /month
-                      </span>
+                      </span> */}
                     </p>
                   </div>
                   <div className=" mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px]"></div>

@@ -180,9 +180,9 @@ export default function Upgrade() {
                         </p>
                         <p className="text-[64px]  font-bold">
                           ${currentPlan?.price}
-                          <span className="text-[16px] leading-[26px] tracking-[0.5px] text-[#BFC2D9]">
+                          {/* <span className="text-[16px] leading-[26px] tracking-[0.5px] text-[#BFC2D9]">
                             /month
-                          </span>
+                          </span> */}
                         </p>
                       </div>
                       <div className="h-[2px] mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px] hidden md:block"></div>
