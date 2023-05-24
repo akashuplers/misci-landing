@@ -331,7 +331,11 @@ export default function Pricing() {
           </div>
         </div>
       </div>
-      <Footer />
+<div className="bg-blue-500 p-4 fixed bottom-1 left-1 z-50 mx-0 rounded-md shadow-md text-white max-w-lg  mt-10 text-center">
+  For enterprise usage inquiries please contact us at <a href="mailto:sales@lille.ai" className="underline">sales@lille.ai</a>
+</div>
+<Footer />
+
     </>
   );
 }
