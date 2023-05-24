@@ -258,7 +258,7 @@ export default function Home() {
           ],
           "mode": "payment",
           "success_url": getCurrentDomain() + "?payment=true",
-          "cancel_url": getCurrentDomain() + "/cancel"
+          "cancel_url": getCurrentDomain()
         }
       ), // Multiply by the multiplier (e.g., 500 * 1 = $5, 500 * 2 = $10, etc.)
     });

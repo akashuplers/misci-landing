@@ -1,7 +1,8 @@
 import { useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
+import ReactConfetti from "react-confetti";
+import { ToastContainer, toast } from "react-toastify";
 import DashboardInsights from "../../components/DashboardInsights";
 import Layout from "../../components/Layout";
 import TinyMCEEditor from "../../components/TinyMCEEditor";
@@ -17,6 +18,25 @@ if (typeof window !== "undefined") {
   });
 }
 
+
+// get the path of link in server
+
+// export const getServerSideProps = async (context) => {
+//   const { params } = context;
+//   console.log("CONTEXT");
+//   console.log(context);
+//   const { bid } = params;
+//   console.log(params);
+//   console.log('PARAMS');
+//   console.log(bid);
+
+//   return {
+//     props: { bid: bid }
+//   };
+// };
+
+
+
 export default function Post() {
   const [pfmodal, setPFModal] = useState(false);
   const router = useRouter();
@@ -24,7 +44,8 @@ export default function Post() {
   const [reference, setReference] = useState([]);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
   const [option, setOption] = useState("blog");
-
+  console.log('ROUTER QUERY');
+  console.log(router);
   // console.log("isPublished", isPublished);
   console.log("router.query", router.query);
   const { data, loading, error } = useQuery(getBlogbyId, {
@@ -44,7 +65,14 @@ export default function Post() {
 
   const [pyResTime, setPyResTime] = useState(null);
   const [ndResTime, setNdResTime] = useState(null);
+  const [isPayment, setIsPayment] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(0);
+  const [windowHeight, setWindowHeight] = useState(0);
+  useEffect(() => {
 
+    setWindowWidth(window.innerWidth);
+
+  }, []);
   useEffect(() => {
     if (data == null) return;
 
@@ -129,7 +157,10 @@ export default function Post() {
     console.log('QUERY');
     console.log(query);
     console.log('ROUTER');
-    if (router.asPath === '/?payment=true') {
+    const { payment } = router.query;
+    if (payment === 'true') {
+      // The "?payment=true" parameter is present in the URL
+      console.log('Payment is true');
       console.log('ROUTER CHECK IF PAYMENT==TRUE');
       console.log('USER CONTRIBUTION');
 
@@ -178,6 +209,8 @@ export default function Post() {
       console.log('ROUTER CHECK IF PAYMENT==TRUE ELSE');
       localStorage.removeItem("userContribution");
     }
+
+
   }, [router]);
 
   useEffect(() => {
@@ -206,6 +239,13 @@ export default function Post() {
     <>
       <Layout>
         <ToastContainer />
+        {
+          isPayment && <ReactConfetti
+            width={windowWidth}
+            recycle={false}
+            numberOfPieces={2000}
+          />
+        }
         <div className="flex">
           {pfmodal && (
             <PreferencesModal
