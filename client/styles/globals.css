@@ -370,3 +370,7 @@ input[type='checkbox']:checked, input[type='radio']:checked {
     width: 100%;
     gap: 15px;
 }
+
+a[aria-label="Powered by Tidio."] {
+  display: none !important;
+}
