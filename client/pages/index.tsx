@@ -28,17 +28,17 @@ const TEXTS = [
   "Linkedin Post",
   "Tweet thread",
   "Blog Posts",
-  "Medium Post",
-  "Reddit Post",
+  "Tweets",
+  "Newsletters",
 ];
 
 const TEXTS2 = [
-  "Linkedin Post",
+  "Linkedin ideas",
   "Twitter Thread",
   "Blog ideas",
-  "Medium Article",
-  "Reddit Article",
- "Newsletters"
+  "Fresh ideas",
+  "Blog ideas",
+  "Linkedin Post",
 ];
 export const BASE_PRICE = 100;
 
