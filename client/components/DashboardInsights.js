@@ -14,6 +14,7 @@ import useStore, { useByMeCoffeModal } from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import LoaderScan from "./LoaderScan";
 import TrialEndedModal from "./TrialEndedModal";
+import { ContributionCheck } from "../helpers/ContributionCheck";
 
 export default function DashboardInsights({
   loading,
@@ -439,8 +440,6 @@ export default function DashboardInsights({
             (el) => el?.classList?.remove("active")
           );
           console.log(data);
-          // setRunContributionModal((prev) => prev++);
-          console.log('MEE DATA');
           console.log('MEE DATA');
           console.log(meeData);
           const credits = meeData?.me?.credits;
@@ -448,14 +447,14 @@ export default function DashboardInsights({
           var userCredits = meeData?.me?.totalCredits - creditLeft - 1;
           console.log('USER CREDITS: ' + userCredits);
           userCredits = userCredits + 2;
-          const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (userCredits === 10 || userCredits === 10 ) && !meeData?.me?.isSubscribed;
+          const SHOW_CONTRIBUTION_MODAL = ContributionCheck(userCredits, meeData);
           console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
           if (SHOW_CONTRIBUTION_MODAL) {
             setShowContributionModal(true);
           }
         },
         onError: (error) => {
-          console.error("888888", error.message);
+          console.error("Credit Exhaust or any other error", error.message);
           if (error.message === 'Unexpected error value: "@Credit exhausted"') {
             toast.error("Credit exhausted");
             setCreditModal(true);
@@ -1569,3 +1568,4 @@ export default function DashboardInsights({
     </>
   );
 }
+
