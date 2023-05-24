@@ -90,6 +90,7 @@ export default function Upgrade() {
               price: price.unit_amount / 100,
               priceId: price.id,
             });
+            // console.log("currPlan", currentPlan, priceId)
           } else {
             type = "Monthly";
           }
@@ -120,7 +121,7 @@ export default function Upgrade() {
     }
   }, [plans]);
 
-  console.log(currentPlan);
+  console.log(currentPlan, priceId);
   return (
     <>
       <Layout>
@@ -249,7 +250,7 @@ export default function Upgrade() {
                   {/* Subscription Form */}
                   <CheckoutFormUpgrade
                     currentPlan={currentPlan?.subscriptionType?.toLowerCase()}
-                    priceId={priceId}
+                    priceId={currentPlan?.priceId}
                     setClickOnSubscibe={setClickOnSubscibe}
                     interval={currentPlan?.subscriptionType}
                   />
