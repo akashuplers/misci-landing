@@ -187,7 +187,7 @@ export const blogResolvers = {
                             // const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
                             // const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
                             // const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
-                            tags = article._source.driver
+                            tags.push(...article._source.driver)
                             const name = article._source?.source?.name
                             return {
                                 used_summaries: article._source.summary.slice(0, 5),
@@ -386,7 +386,7 @@ export const blogResolvers = {
                             }
                             const name = article._source?.source?.name
                             if(article._source.driver) {
-                                tags = article._source.driver
+                                tags.push(...article._source.driver)
                             } else {
                                 const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
                                 const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
@@ -543,7 +543,7 @@ export const blogResolvers = {
                                 blogIdeasDetails.freshIdeas.map(async (idea: any) => {
                                     const article = await db.db('lilleArticles').collection('articles').findOne({_id: idea.article_id})
                                     if(article._source.driver) {
-                                        freshIdeasTags = article._source.driver
+                                        freshIdeasTags.push(...article._source.driver)
                                     } else {
                                         const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
                                         const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
@@ -702,7 +702,7 @@ export const blogResolvers = {
                                     // const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
                                     // tags.push(...productsTags, ...organizationTags, ...personsTags)
                                     if(article._source.driver) {
-                                        tags = article._source.driver
+                                        tags.push(...article._source.driver)
                                     } else {
                                         const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
                                         const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
