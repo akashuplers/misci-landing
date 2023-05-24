@@ -751,7 +751,7 @@ export default function Settings() {
                                         )}
                                       </span>
                                     </dd>
-                                    {meeData?.me?.paymentsStarts && (
+                                    {meeData?.me?.paymentsStarts && meeData?.me?.paid && (
                                       <div
                                         class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-2 w-[310%]"
                                         role="alert"
