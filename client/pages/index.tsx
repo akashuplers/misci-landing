@@ -24,12 +24,21 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
 
 const PAYMENT_PATH = "/?payment=true";
 const TEXTS = [
-  "Newsletters",
-  "Linkedin Post ",
-  "Twitter Thread",
+  "Twitter Post",
+  "Linkedin Post",
+  "Tweet thread",
   "Blog Posts",
+  "Medium Post",
+  "Reddit Post",
+];
+
+const TEXTS2 = [
+  "Linkedin Post",
+  "Twitter Thread",
+  "Blog ideas",
   "Medium Article",
   "Reddit Article",
+ "Newsletters"
 ];
 export const BASE_PRICE = 100;
 
@@ -506,17 +515,20 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <h1 className="flex text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl">
+              <h1 className="flex text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
                 Generate{" "}
-                <TextTransition springConfig={presets.wobbly}>
-                  <span className="newsletter mx-4">
+                <TextTransition springConfig={presets.gentle}>
+                  <span className="newsletter">
                     {TEXTS[index % TEXTS.length]}
                   </span>
                 </TextTransition>
                 with{" "}
-                <span style={{ color: "var(--primary-blue)" }} className="mx-2">
-                  {" "}
-                  Lille
+                <span style={{ color: "var(--primary-blue)" }} className="">
+                  <TextTransition springConfig={presets.gentle}>
+                  <span className="newsletter">
+                    {TEXTS2[index % TEXTS2.length]}
+                  </span>
+                </TextTransition>
                 </span>
               </h1>
               {/* <p className="mt-6 text-lg leading-8 text-gray-600">
