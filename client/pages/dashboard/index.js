@@ -388,7 +388,7 @@ export default function dashboard({ query }) {
           <TrialEndedModal setTrailModal={setCreditModal} topic={topic} />
         )}
 
-        <div className=" mb-6 h-[88vh]">
+        <div className="flex mb-6 h-[88vh]">
           {API_BASE_PATH === "https://maverick.lille.ai" && (
             <div
               style={{
