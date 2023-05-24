@@ -31,7 +31,7 @@ import {
   LI_API_ENDPOINTS,
 } from "../constants/apiEndpoints";
 import { updateBlog } from "../graphql/mutations/updateBlog";
-import { getCurrentDashboardURL, getCurrentDomain, htmlToJson, jsonToHtml } from "../helpers/helper";
+import { getCurrentDashboardURL, htmlToJson, jsonToHtml } from "../helpers/helper";
 import useStore, { useByMeCoffeModal } from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import LoaderPlane from "./LoaderPlane";
@@ -436,13 +436,16 @@ export default function TinyMCEEditor({
             console.log('PUBLISH COUNT');
             console.log(Number(localStorage.getItem('meDataMePublishCount')));
             setTimeout(() => {
-              console.log('MEE DATA');
-              console.log('HERE FOR SHOW CONTRIBUTION MODAL');
-              const credits = meeData?.me?.credits;
-              console.log('CREDITS : ' + credits);
+              // console.log('MEE DATA');
+              // console.log('HERE FOR SHOW CONTRIBUTION MODAL');
+              // const credits = meeData?.me?.credits;
+              // console.log('CREDITS : ' + credits);
               var userCredits = meeData?.me?.totalCredits - creditLeft - 1;
               console.log('USER CREDITS: ' + userCredits);
-              const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (userCredits === 15 || userCredits === 5 || meeData?.me.publishCount === 0) && !meeData?.me?.isSubscribed;
+              userCredits = userCredits + 2;
+              var userPublishCount = ll;
+              console.log('USER PUBLISH COUNT: ' + userPublishCount);
+              const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (userCredits === 20 || userCredits === 10 || userPublishCount === 0) && !meeData?.me?.isSubscribed;
               console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
               if (SHOW_CONTRIBUTION_MODAL) {
                 setShowContributionModal(true);
@@ -483,7 +486,7 @@ export default function TinyMCEEditor({
           ],
           "mode": "payment",
           "success_url": getCurrentDashboardURL() + '/' + blog_id + '/?payment=true',
-          "cancel_url": getCurrentDomain() + "/cancel"
+          "cancel_url": getCurrentDashboardURL() + '/' + blog_id
         }
       ), // Multiply by the multiplier (e.g., 500 * 1 = $5, 500 * 2 = $10, etc.)
     });
