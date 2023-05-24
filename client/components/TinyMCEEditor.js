@@ -52,7 +52,9 @@ export default function TinyMCEEditor({
   setOption,
 }) {
   const [multiplier, setMultiplier] = useState(1);
+  const [contributionAmout, setContributionAmount] = useState(5);
   const [updatedText, setEditorText] = useState(editorText);
+
   const [saveLoad, setSaveLoad] = useState(false);
   const [saveText, setSaveText] = useState("Save!");
   const [publishLoad, setPublishLoad] = useState(false);
@@ -453,7 +455,6 @@ export default function TinyMCEEditor({
             }, 3000);
 
           })
-
           .catch((error) => console.log("error", error));
       }
 
@@ -479,21 +480,22 @@ export default function TinyMCEEditor({
                 "product_data": {
                   "name": "Contribution"
                 },
-                "unit_amount": BASE_PRICE * multiplier
+                "unit_amount": BASE_PRICE * multiplier * contributionAmout
               },
               "quantity": 1
             }
           ],
           "mode": "payment",
           "success_url": getCurrentDashboardURL() + '/' + blog_id + '/?payment=true',
-          "cancel_url": getCurrentDashboardURL() + '/' + blog_id
+          "cancel_url": getCurrentDashboardURL() + '/' + blog_id,
+          "billing_address_collection": 'auto'
         }
       ), // Multiply by the multiplier (e.g., 500 * 1 = $5, 500 * 2 = $10, etc.)
     });
     const session = await res.json();
     console.log(session);
     var userContribution = {
-      amount: BASE_PRICE * multiplier,
+      amount: multiplier * contributionAmout,
       checkoutSessionId: session.id,
     }
     localStorage.setItem('userContribution', JSON.stringify(userContribution));
@@ -846,7 +848,7 @@ export default function TinyMCEEditor({
                 <div className="loader"></div> {/* Add the loader class here */}
               </div>
             ) : (
-              <>Contribute us with {multiplier} {multiplier > 1 ? 'cups' : 'cup'} for  <strong>{`$${BASE_PRICE / 100 * multiplier}`}</strong></>
+              <>Contribute us with {multiplier} {multiplier > 1 ? 'cups' : 'cup'} for      <strong>{`$${(contributionAmout) * multiplier}`}</strong></>
             )
           }
         </button>
