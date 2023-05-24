@@ -265,7 +265,7 @@ export default function Pricing() {
                         srcset=""
                       /> */}
                       <p className=" text-[18px] font-medium mb-4">
-                        Unlimited ideas generation for blog generation
+                        Full Features Access with 200 Credits monthly validity
                       </p>
                     </div>
                     <div className="flex align-middle">
