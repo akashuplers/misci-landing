@@ -20,9 +20,8 @@ import PreferencesModal from "../modals/PreferencesModal";
 import useStore from "../store/store";
 
 // @ts-ignore
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-);
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+
 const PAYMENT_PATH = "/?payment=true";
 const TEXTS = [
   "Newsletters",
@@ -410,7 +409,7 @@ export default function Home() {
           ) : (
             <>
               Contribute us with {multiplier} cups for{" "}
-              <strong>{`$${(contributionAmout) * multiplier}`}</strong>
+              <strong>{`$${contributionAmout * multiplier}`}</strong>
             </>
           )}
         </button>
