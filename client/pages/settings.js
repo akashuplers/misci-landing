@@ -850,7 +850,7 @@ export default function Settings() {
                                         );
                                       }}
                                     >
-                                      Logout Twitter
+                                      Logout from Twitter
                                     </button>
                                   ) : (
                                     <></>

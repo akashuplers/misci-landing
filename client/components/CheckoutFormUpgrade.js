@@ -131,6 +131,8 @@ const CheckoutFormUpgrade = ({
           interval: interval,
         };
 
+        console.log('test body', requestBody)
+
         axios
           .post(API_BASE_PATH + "/stripe/upgrade", requestBody, {
             headers: myHeaders,
