@@ -388,12 +388,13 @@ export default function dashboard({ query }) {
           <TrialEndedModal setTrailModal={setCreditModal} topic={topic} />
         )}
 
-        <div className="flex mb-6 h-[88vh]">
+        <div className=" mb-6 h-[88vh]">
           {API_BASE_PATH === "https://maverick.lille.ai" && (
             <div
               style={{
                 zIndex: "10",
                 position: "absolute",
+                display: "none",
                 background: "white",
                 border: "1px solid black",
                 width: "200px",

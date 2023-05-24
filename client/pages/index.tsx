@@ -516,13 +516,13 @@ export default function Home() {
                 </div>
               </div>
               <h1 className="flex text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
-                Generate{" "}
+                Generate & Optimize{" "}
                 <TextTransition springConfig={presets.gentle}>
                   <span className="newsletter">
                     {TEXTS[index % TEXTS.length]}
                   </span>
                 </TextTransition>
-                with{" "}
+                using{" "}
                 <span style={{ color: "var(--primary-blue)" }} className="">
                   <TextTransition springConfig={presets.gentle}>
                   <span className="newsletter">
@@ -530,6 +530,7 @@ export default function Home() {
                   </span>
                 </TextTransition>
                 </span>
+                with Lille
               </h1>
               {/* <p className="mt-6 text-lg leading-8 text-gray-600">
                 Streamline your content creation process with our website that
