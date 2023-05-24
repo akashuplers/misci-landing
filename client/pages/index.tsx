@@ -219,15 +219,6 @@ export default function Home() {
     if (meeData?.me.prefFilled === false) {
       setPFModal(true);
     }
-
-    if (meeData) {
-      const credits = meeData?.me?.credits;
-      // var tempCredits = credits > 0;
-      const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 5 || meeData?.me?.publishCount === 1) && !meeData?.me?.isSubscribed
-      if (SHOW_CONTRIBUTION_MODAL) {
-        // setShowContributionModal(true);
-      }
-    }
   }, [meeData]);
 
   const [multiplier, setMultiplier] = useState(1);
