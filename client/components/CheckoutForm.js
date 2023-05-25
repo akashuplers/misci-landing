@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from "react";
 import {
   CardElement,
   useElements,
-  useStripe,
-  PaymentElement,
+  useStripe
 } from "@stripe/react-stripe-js";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
-import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import React, { useState } from "react";
 import Confetti from "react-confetti";
+import { ToastContainer, toast } from "react-toastify";
+import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 
 const CheckoutForm = ({
   priceId,
@@ -411,9 +410,8 @@ const CheckoutForm = ({
                   <div>
                     <input
                       style={{
-                        border: `2px solid ${
-                          formErrors.firstName ? "red" : "#96ABD4"
-                        }`,
+                        border: `2px solid ${formErrors.firstName ? "red" : "#96ABD4"
+                          }`,
                       }}
                       type="text"
                       required
@@ -447,9 +445,8 @@ const CheckoutForm = ({
                   <div>
                     <input
                       style={{
-                        border: `2px solid ${
-                          formErrors.lastName ? "red" : "#96ABD4"
-                        }`,
+                        border: `2px solid ${formErrors.lastName ? "red" : "#96ABD4"
+                          }`,
                       }}
                       type="text"
                       id="lastNameInput"
@@ -484,9 +481,8 @@ const CheckoutForm = ({
                   <div>
                     <input
                       style={{
-                        border: `2px solid ${
-                          formErrors.email ? "red" : "#96ABD4"
-                        }`,
+                        border: `2px solid ${formErrors.email ? "red" : "#96ABD4"
+                          }`,
                       }}
                       placeholder="i.e. davon@mail.com"
                       id="emailInput"
@@ -517,9 +513,8 @@ const CheckoutForm = ({
                   <div>
                     <input
                       style={{
-                        border: `2px solid ${
-                          formErrors.password ? "red" : "#96ABD4"
-                        }`,
+                        border: `2px solid ${formErrors.password ? "red" : "#96ABD4"
+                          }`,
                       }}
                       placeholder="**********"
                       type="password"
@@ -558,7 +553,7 @@ const CheckoutForm = ({
                   className={
                     " w-100 bg-none my-1 rounded rounded-1 px-2 py-1.5"
                   }
-                  // className=" rounded-[4px]"
+                // className=" rounded-[4px]"
                 >
                   <CardElement
                     className="noob"

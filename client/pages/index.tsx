@@ -250,7 +250,7 @@ export default function Home() {
             price_data: {
               currency: "usd",
               product_data: {
-                name: "Contribution",
+                name: "coffeeContribution",
               },
               unit_amount: BASE_PRICE * multiplier * contributionAmout,
             },
