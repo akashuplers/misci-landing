@@ -1,23 +1,44 @@
-import { Fragment, useEffect, useState, useMemo } from "react";
-import {
-  CardElement,
-  useElements,
-  useStripe,
-  PaymentElement,
-} from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
+import { STRIPE_PROMISE } from "@/constants";
 import { Elements } from "@stripe/react-stripe-js";
-
-import { useLocation, useParams } from "react-router-dom";
+import { loadStripe } from "@stripe/stripe-js";
+import axios from 'axios';
+import { useEffect, useState } from "react";
 import CheckoutForm from "../components/CheckoutForm";
 import Navbar from "../components/Navbar";
-import { STRIPE_PROMISE } from "@/constants";
+import { API_BASE_PATH } from "../constants/apiEndpoints";
+export const STRIPE_CONST_AMOUNT = 100;
+async function fetchDynamicPriceData() {
+  var priceData = [];
+  const response = await axios({
+    method: "get",
+    url: `${API_BASE_PATH}/stripe/prices`,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => res.data);
+  response.data.data.forEach((item) => {
+    const priceId = item.id;
+    // const planType = item.recurring.interval;
+    var planType = "";
+    if (item.recurring.interval === 'month' && item.recurring.interval_count === 3) {
+      planType = 'Quarterly';
+    } else {
+      planType = item.recurring.interval.charAt(0).toUpperCase() + item.recurring.interval.slice(1) + 'ly';
+    }
+    const amount = item.unit_amount / STRIPE_CONST_AMOUNT;
+    priceData.push({ priceId, subscriptionType: planType, price: amount });
+  });
+  console.log('PRICE DATA');
+  console.log(priceData);
+  return priceData;
+}
 
 Subscription.getInitialProps = ({ query }) => {
   return { query };
 };
 
 export default function Subscription({ query }) {
+
   const stripePromise = loadStripe(STRIPE_PROMISE);
   const [plans, setPlans] = useState([]);
 
@@ -50,23 +71,29 @@ export default function Subscription({ query }) {
   };
 
   useEffect(() => {
-    setPlans([
-      {
-        subscriptionType: "Yearly",
-        price: 149.95,
-        priceId: "price_1NBH8eSI8Tkf3wUiOSqVSG4o",
-      },
-      {
-        subscriptionType: "Quarterly",
-        price: 39.95,
-        priceId: "price_1NBH8eSI8Tkf3wUidr9GKmVa",
-      },
-      {
-        subscriptionType: "Monthly",
-        price: 15.95,
-        priceId: "price_1NBH8eSI8Tkf3wUid4TgFW5w",
-      },
-    ]);
+    fetchDynamicPriceData().then((res) => {
+      console.log('FETCH DATA RES');
+      console.log(res);
+      setPlans(res);
+    });
+
+    // setPlans([
+    //   {
+    //     subscriptionType: "Yearly",
+    //     price: 149.95,
+    //     priceId: "price_1NBH8eSI8Tkf3wUiOSqVSG4o",
+    //   },
+    //   {
+    //     subscriptionType: "Quarterly",
+    //     price: 39.95,
+    //     priceId: "price_1NBH8eSI8Tkf3wUidr9GKmVa",
+    //   },
+    //   {
+    //     subscriptionType: "Monthly",
+    //     price: 15.95,
+    //     priceId: "price_1NBH8eSI8Tkf3wUid4TgFW5w",
+    //   },
+    // ]);
   }, []);
 
   const [processing, setProcessing] = useState(false);
@@ -136,13 +163,12 @@ export default function Subscription({ query }) {
                           <div
                             key={i}
                             onClick={() => subscriptionPlan(item)}
-                            className={`w-[33%]  text-[18px] font-medium cursor-pointer rounded-[55px] px-[19px] py-[8px] ${
-                              currentPlan?.subscriptionType ===
+                            className={`w-[33%]  text-[18px] font-medium cursor-pointer rounded-[55px] px-[19px] py-[8px] ${currentPlan?.subscriptionType ===
                               item.subscriptionType
-                                ? "bg-[#3cc0f6] text-[#ffffff]"
-                                : "bg-[#ECEDF5] text-[#13213E]"
-                            }`}
-                            // className="bg-[#3cc0f6] cursor-pointer rounded-[55px] px-[19px] py-[8px]"
+                              ? "bg-[#3cc0f6] text-[#ffffff]"
+                              : "bg-[#ECEDF5] text-[#13213E]"
+                              }`}
+                          // className="bg-[#3cc0f6] cursor-pointer rounded-[55px] px-[19px] py-[8px]"
                           >
                             {item.subscriptionType}
                           </div>
@@ -180,7 +206,7 @@ export default function Subscription({ query }) {
                         srcset=""
                       /> */}
                         <p className=" text-[18px] font-medium mb-4">
-                        Full Features Access with 200 Credits monthly validity
+                          Full Features Access with 200 Credits monthly validity
                         </p>
                       </div>
                       <div className="flex align-middle">
