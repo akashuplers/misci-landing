@@ -22,8 +22,11 @@ export const meeAPI = gql`
       credits
       prefFilled
       profileImage
+      publishCount
       prefData
       totalCredits
+      paymentsStarts
+      creditRenewDay
     }
   }
 `;

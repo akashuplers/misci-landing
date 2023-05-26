@@ -36,7 +36,7 @@ export default function PreferencesModal({ pfmodal, setPFModal, getToken }) {
     "Online learning",
     "Simple weight loss techniques",
     "Plant Based diets",
-    "latest Technology Trends",
+    "Latest Technology Trends",
     "Job Oriented courses",
     "Benefits of keto Diet",
     "Survive the Climate Change",

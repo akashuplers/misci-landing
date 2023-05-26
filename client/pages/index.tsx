@@ -1,17 +1,55 @@
-import React, { useEffect, useState } from "react";
+import Footer from "@/components/Footer";
 import { gql, useQuery } from "@apollo/client";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
+import Head from "next/head";
 import Link from "next/link";
-import LoaderPlane from "../components/LoaderPlane";
 import { useRouter } from "next/router";
-import useStore from "../store/store";
+import React, { useEffect, useState } from "react";
+import Confetti from "react-confetti";
+import Marquee from "react-fast-marquee";
+import TextTransition, { presets } from "react-text-transition";
+import { ToastContainer, toast } from "react-toastify";
 import Layout from "../components/Layout";
-import { toast, ToastContainer } from "react-toastify";
+import LoaderPlane from "../components/LoaderPlane";
+import TrialEndedModal from "../components/TrialEndedModal";
 import { meeAPI } from "../graphql/querys/mee";
 import PreferencesModal from "../modals/PreferencesModal";
-import TrialEndedModal from "../components/TrialEndedModal";
+import useStore from "../store/store";
+
+// @ts-ignore
+
+const PAYMENT_PATH = "/?payment=true";
+const TEXTS = [
+  "Twitter  Post",
+  "Linkedin Post",
+  "Tweet  thread",
+  "Blog Posts",
+  "Tweets ",
+  "Newsletters",
+];
+
+const TEXTS2 = [
+  "Linkedin ideas",
+  "Twitter Thread",
+  "Blog ideas",
+  "Fresh ideas",
+  "Blog ideas",
+  "Linkedin Post",
+];
+export const BASE_PRICE = 100;
 
 export default function Home() {
+  const isAuthenticated = useStore((state) => state.isAuthenticated);
+  const updateAuthentication = useStore((state) => state.updateAuthentication);
+  // check if url container ?payment=true
+  const [isPayment, setIsPayment] = useState(false);
+  const [showContributionModal, setShowContributionModal] = useState(false);
+  const [contributinoModalLoader, setContributionModalLoader] = useState(false);
+  const [contributionAmout, setContributionAmount] = useState(5);
+  useEffect(() => {
+    updateAuthentication();
+  }, []);
+
   const keywords = gql`
     query keywords {
       trendingTopics
@@ -30,6 +68,82 @@ export default function Home() {
   const [keyword, setkeyword] = useState("");
   const router = useRouter();
   const setKeywordInStore = useStore((state) => state.setKeyword);
+  const [index, setIndex] = React.useState(0);
+
+  useEffect(() => {
+    console.log(router);
+    console.log("LOCAL STORERAGE");
+    console.log(localStorage);
+    /* asPath "/?payment=true" */
+    if (router.asPath === PAYMENT_PATH) {
+      console.log("ROUTER CHECK IF PAYMENT==TRUE");
+      console.log("USER CONTRIBUTION");
+      // console.log(userContribution);
+      if (localStorage.getItem("userContribution") !== null) {
+        var userContribution = JSON.parse(
+          localStorage.getItem("userContribution") || "{}"
+        );
+        console.log("USER CONTRIBUTION IS NOT NULL");
+        console.log(userContribution);
+        // /auth/save-user-support
+        const SAVE_USER_SUPPORT_URL =
+          "https://maverick.lille.ai/auth/save-user-support";
+
+        const requestOptions = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+          body: JSON.stringify(userContribution),
+        };
+        console.log("REQUEST OPTIONS");
+        fetch(SAVE_USER_SUPPORT_URL, requestOptions)
+          .then((response) => {
+            console.log("RESPONSE FROM SAVE USER SUPPORT");
+            console.log(response);
+            console.log(response.json());
+          })
+          .catch((error) => {
+            console.log("ERROR FROM SAVE USER SUPPORT");
+            console.log(error);
+          });
+      }
+      setIsPayment(true);
+      toast.success("Payment Successful!", {
+        toastId: "payment-success",
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+
+      localStorage.setItem("payment", "true");
+      const timeout = setTimeout(() => {
+        setIsPayment(false);
+        router.push("/", undefined, { shallow: true });
+      }, 5000);
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    } else {
+      console.log("ROUTER CHECK IF PAYMENT==TRUE ELSE");
+      localStorage.removeItem("userContribution");
+    }
+  }, [router]);
+
+  useEffect(() => {
+    const intervalId = setInterval(
+      () => setIndex((index) => index + 1),
+      3000 // every 3 seconds
+    );
+    return () => clearTimeout(intervalId);
+  }, []);
 
   const {
     data: meeData,
@@ -80,16 +194,6 @@ export default function Home() {
     },
   });
 
-  const handleEnterKeyPress = (e: { key: string }) => {
-    if (e.key === "Enter") {
-      setKeywordInStore(keyword);
-      router.push({
-        pathname: "/dashboard",
-        query: { topic: keyword },
-      });
-    }
-  };
-
   const updatedArr = data?.trendingTopics?.map((topic: any, i: any) => (
     <Link
       key={i}
@@ -102,7 +206,13 @@ export default function Home() {
     >
       <div className="cursor-pointer flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-gray-100 shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
         <button className="cursor-pointer text-sm font-medium text-gray-900 cursor-auto">
-          {topic}
+          {topic.length > 31 ? (
+            <Marquee pauseOnHover={true} autoFill={false}>
+              <div className="mx-4">{topic}</div>
+            </Marquee>
+          ) : (
+            topic
+          )}
         </button>
         <ArrowRightCircleIcon className="w-5 h-5 text-gray-400" />
       </div>
@@ -118,8 +228,39 @@ export default function Home() {
     }
   }, [meeData]);
 
+  const [multiplier, setMultiplier] = useState(1);
+
+  const [windowWidth, setWindowWidth] = useState(0);
+  useEffect(() => {
+    setWindowWidth(window.innerWidth);
+  }, []);
+
   return (
     <>
+      <Head>
+        <title>Lille</title>
+        <meta
+          name="description"
+          content="Streamline your content creation process with our website that
+                generates blog posts from URLs or uploaded files, providing
+                concise and informative content in no time."
+        />
+        <meta
+          property="og:title"
+          content="Generate Blogs & Posts with Lille."
+        />
+        <meta
+          property="og:description"
+          content="Streamline your content creation process with our website that
+                generates blog posts from URLs or uploaded files, providing
+                concise and informative content in no time."
+        />
+        <meta property="og:image" content="/lille_logo_new.png" />
+      </Head>
+      {isPayment && (
+        <Confetti width={windowWidth} recycle={false} numberOfPieces={2000} />
+      )}
+
       <Layout>
         <ToastContainer />
         {pfmodal && (
@@ -130,10 +271,14 @@ export default function Home() {
           />
         )}
 
-        {!meeData?.me?.paid && meeData?.me?.credits === 0 && (
-          <TrialEndedModal setTrailModal={() => {}} />
+        {!meeData?.me?.isSubscribed && meeData?.me?.credits === 0 && (
+          <TrialEndedModal setTrailModal={() => {}} topic={null} />
         )}
-        <div className={`relative px-6 pt-5 lg:px-8`}>
+        <div
+          className={`relative px-6 pt-5 lg:px-8 ${
+            !isAuthenticated && "md:min-h-screen"
+          }`}
+        >
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
             <svg
               className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
@@ -159,7 +304,7 @@ export default function Home() {
               </defs>
             </svg>
           </div>
-          <div className="mx-auto max-w-2xl py-32 sm:py-30 lg:py-20">
+          <div className="mx-auto max-w-3xl flex py-32 sm:py-30 lg:py-20">
             <div className="text-center">
               <div className="fixed z-10 inset-0 overflow-y-auto hidden not-responsive-message">
                 <div className="fixed z-10 inset-0 overflow-y-auto">
@@ -208,52 +353,42 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-                Generate <span className="newsletter">Newsletter</span> with{" "}
-                <span style={{ color: "var(--primary-blue)" }}>Lille</span>
-              </h1>
-              <p className="mt-6 text-lg leading-8 text-gray-600">
+              <div className="flex text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
+                Generate & Optimize{" "}
+                <TextTransition
+                  springConfig={presets.gentle}
+                  style={{
+                    margin: "0",
+                  }}
+                >
+                  <span className="newsletter">
+                    {TEXTS[index % TEXTS.length]}
+                  </span>
+                </TextTransition>
+                using{" "}
+                <span style={{ color: "var(--primary-blue)" }} className="">
+                  <TextTransition springConfig={presets.gentle}>
+                    <span className="newsletter">
+                      {TEXTS2[index % TEXTS2.length]}
+                    </span>
+                  </TextTransition>
+                </span>
+                with Lille
+              </div>
+              {/* <p className="mt-6 text-lg leading-8 text-gray-600">
                 Streamline your content creation process with our website that
                 generates blog posts from URLs or uploaded files, providing
                 concise and informative content in no time
-              </p>
+              </p> */}
               <div className="p-4 mt-4">Try some of our trending topics</div>
               {!loading ? (
-                <div
-                  className="grid grid-cols-3 gap-4 py-4"
-                  style={{ width: "110%" }}
-                >
-                  {updatedArr}
-                </div>
+                <div className="grid grid-cols-3 gap-4 py-4">{updatedArr}</div>
               ) : (
                 <div style={{ margin: "0 auto" }}>
                   <LoaderPlane />
                 </div>
               )}
-              <div className="mt-10 flex items-center justify-center gap-x-6 w-full">
-                <input
-                  id="search"
-                  name="search"
-                  className="block w-full rounded-md border-0 bg-white py-2.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
-                  placeholder="Search"
-                  type="search"
-                  onChange={(e) => {
-                    setkeyword(e.target.value);
-                    setKeywordInStore(e.target.value); // Update the keyword in the store
-                  }}
-                  onKeyPress={handleEnterKeyPress}
-                />
-                <Link
-                  legacyBehavior
-                  as={"/dashboard"}
-                  href={{
-                    pathname: "/dashboard",
-                    query: { topic: keyword },
-                  }}
-                >
-                  <a className="cta-invert">Generate</a>
-                </Link>
-              </div>
+              <AIInputComponent />
             </div>
           </div>
           <div className="absolute inset-x-0 top-[calc(100%-12rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
@@ -282,6 +417,7 @@ export default function Home() {
             </svg>
           </div>
         </div>
+        {!isAuthenticated && <Footer />}
       </Layout>
       <style>
         {`
@@ -308,3 +444,56 @@ export default function Home() {
     </>
   );
 }
+
+/* 
+TODO:
+
+1. Verification of user contribution and send to the server.
+2. Fix the auto scroll of text which a single letter is pressed for long time.
+3. Copy right 
+*/
+
+const AIInputComponent = () => {
+  const [keyword, setkeyword] = useState("");
+  const router = useRouter();
+  const setKeywordInStore = useStore((state) => state.setKeyword);
+  const handleEnterKeyPress = (e: { key: string }) => {
+    if (e.key === "Enter") {
+      setKeywordInStore(keyword);
+      router.push({
+        pathname: "/dashboard",
+        query: { topic: keyword },
+      });
+    }
+  };
+  return (
+    <div
+      className={`
+  mt-10 flex items-center justify-center gap-x-6 
+  w-[100%] rounded-md`}
+    >
+      <input
+        id="search"
+        name="search"
+        className="block w-full rounded-md border-0 bg-white py-2.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+        placeholder="Search"
+        type="search"
+        onChange={(e) => {
+          setkeyword(e.target.value);
+          setKeywordInStore(e.target.value); // Update the keyword in the store
+        }}
+        onKeyPress={handleEnterKeyPress}
+      />
+      <Link
+        legacyBehavior
+        as={"/dashboard"}
+        href={{
+          pathname: "/dashboard",
+          query: { topic: keyword },
+        }}
+      >
+        <a className="cta-invert">Generate</a>
+      </Link>
+    </div>
+  );
+};

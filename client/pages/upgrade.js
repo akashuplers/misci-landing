@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState, useMemo } from "react";
+import { Fragment, useEffect, useState, useMemo, useLayoutEffect } from "react";
 import {
   CardElement,
   useElements,
@@ -9,23 +9,41 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import CheckoutFormUpgrade from "../components/CheckoutFormUpgrade";
 import Layout from "../components/Layout";
+import axios from "axios";
+import { API_BASE_PATH } from "../constants/apiEndpoints";
+import { STRIPE_PROMISE } from "@/constants";
 
 export default function Upgrade() {
-  const stripePromise = loadStripe(
-    "pk_test_51KYwIFSI8Tkf3wUiAeZww7bVzcqwkbpXHHZsmqtPbZq12ey9Xy96mvA7KPpNQxVyiHbOPqcDm7BQwKdvZETRn4XU00FlHDBiq8"
-  );
-  const [plans, setPlans] = useState([]);
-
-  const [currentPlan, setCurrentPlan] = useState({
-    subscriptionType: "Yearly",
-    price: 1000,
-    priceId: "price_1MYowHSI8Tkf3wUilUfJbapv",
-  });
-
-  const [priceId, setPriceId] = useState("price_1MYowHSI8Tkf3wUilUfJbapv");
+  const stripePromise = loadStripe(STRIPE_PROMISE);
+  const [priceData, setPriceData] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
   const [clickOnSubscibe, setClickOnSubscibe] = useState(false);
 
+  useEffect(() => {
+    return async () => {
+      const pricesRes = await axios({
+        method: "get",
+        url: `${API_BASE_PATH}/stripe/prices`,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => res.data);
+
+      setPriceData(pricesRes.data.data);
+      console.log(pricesRes.data.data);
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log(priceData);
+  }, [priceData]);
+
+  const [plans, setPlans] = useState([]);
+  const [currentPlan, setCurrentPlan] = useState({});
+  const [priceId, setPriceId] = useState();
+
   const subscriptionPlan = (plan) => {
+    console.log(plan);
     let selectPriceData = "";
     if (plan.subscriptionType === "Quarterly") {
       selectPriceData = plans.filter((item) => {
@@ -43,32 +61,67 @@ export default function Upgrade() {
       });
       setPriceId(selectPriceData[0].priceId);
     }
-    console.log(priceId);
-    console.log(plan);
+
     setCurrentPlan(plan);
   };
 
   useEffect(() => {
-    setPlans([
-      {
-        subscriptionType: "Yearly",
-        price: 1000,
-        priceId: "price_1MYowHSI8Tkf3wUilUfJbapv",
-      },
-      {
-        subscriptionType: "Quarterly",
-        price: 200,
-        priceId: "price_1MXm6iSI8Tkf3wUitxemgTER",
-      },
-      {
-        subscriptionType: "Monthly",
-        price: 20,
-        priceId: "price_1MWfopSI8Tkf3wUiZeFpn6HI",
-      },
-    ]);
+    console.log("**", currentPlan);
+  }, [currentPlan]);
+
+  useLayoutEffect(() => {
+    const fetchPriceId = async () => {
+      const pricesRes = await axios({
+        method: "get",
+        url: `${API_BASE_PATH}/stripe/prices`,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => res.data);
+
+      console.log(pricesRes?.data, "pricesRes");
+      const updatedPricesArray = pricesRes?.data?.data?.map((price) => {
+        let type = null;
+        if (price.recurring.interval === "month") {
+          if (price.recurring.interval_count === 3) {
+            type = "Quarterly";
+            setCurrentPlan({
+              subscriptionType: type,
+              price: price.unit_amount / 100,
+              priceId: price.id,
+            });
+            // console.log("currPlan", currentPlan, priceId)
+          } else {
+            type = "Monthly";
+          }
+        }
+        if (price.recurring.interval === "year") {
+          type = "Yearly";
+        }
+        return {
+          subscriptionType: type,
+          price: price.unit_amount / 100,
+          priceId: price.id,
+        };
+      });
+      console.log(updatedPricesArray);
+      setPlans(updatedPricesArray);
+    };
+
+    fetchPriceId();
   }, []);
 
-  console.log(currentPlan);
+  useEffect(() => {
+    if (plans && plans.length) setCurrentPlan(plans[0]);
+    if (plans.length > 0) {
+      const temp = plans.filter((item) => {
+        return item?.subscriptionType === "Yearly";
+      });
+      setPriceId(temp[0].priceId);
+    }
+  }, [plans]);
+
+  console.log(currentPlan, priceId);
   return (
     <>
       <Layout>
@@ -127,14 +180,14 @@ export default function Upgrade() {
                         </p>
                         <p className="text-[64px]  font-bold">
                           ${currentPlan?.price}
-                          <span className="text-[16px] leading-[26px] tracking-[0.5px] text-[#BFC2D9]">
+                          {/* <span className="text-[16px] leading-[26px] tracking-[0.5px] text-[#BFC2D9]">
                             /month
-                          </span>
+                          </span> */}
                         </p>
                       </div>
                       <div className="h-[2px] mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px] hidden md:block"></div>
 
-                      <div className="flex  flex-col items-start justify-start mt-4 hidden md:block">
+                      <div className="flex  flex-col items-start justify-start mt-4 hidden md:block text-left">
                         <div className="flex align-middle">
                           {/* <img
                         className="h-[18px] mr-3"
@@ -143,7 +196,7 @@ export default function Upgrade() {
                         srcset=""
                       /> */}
                           <p className=" text-[18px] font-medium mb-4">
-                            Unlimited Automation
+                           Full Features Access with 200 Credits monthly validity
                           </p>
                         </div>
                         <div className="flex align-middle">
@@ -154,7 +207,7 @@ export default function Upgrade() {
                         srcset=""
                       /> */}
                           <p className=" text-[18px] font-medium mb-4">
-                            24/7 hours support
+                            Create/Regenerate blogs with your topics
                           </p>
                         </div>
                         <div className="flex align-middle">
@@ -165,7 +218,7 @@ export default function Upgrade() {
                         srcset=""
                       /> */}
                           <p className=" text-[18px] font-medium mb-4">
-                            Access of 50 Summaries
+                            Unlimited publishing on top social media platforms
                           </p>
                         </div>
                         <div className="flex align-middle">
@@ -176,7 +229,8 @@ export default function Upgrade() {
                         srcset=""
                       /> */}
                           <p className=" text-[18px] font-medium mb-4">
-                            Create Unlimited Notes
+                            Customization possibilities, Talk to our support
+                            team
                           </p>
                         </div>
                         <div className="flex align-middle">
@@ -186,9 +240,9 @@ export default function Upgrade() {
                         alt=""
                         srcset=""
                       /> */}
-                          <p className=" text-[18px] font-medium mb-4">
+                          {/* <p className=" text-[18px] font-medium mb-4">
                             Unlimited access of Topic Monitoring
-                          </p>
+                          </p> */}
                         </div>
                       </div>
                     </div>
@@ -196,9 +250,9 @@ export default function Upgrade() {
                   {/* Subscription Form */}
                   <CheckoutFormUpgrade
                     currentPlan={currentPlan?.subscriptionType?.toLowerCase()}
-                    priceId={priceId}
+                    priceId={currentPlan?.priceId}
                     setClickOnSubscibe={setClickOnSubscibe}
-                    interval={currentPlan.subscriptionType}
+                    interval={currentPlan?.subscriptionType}
                   />
                 </div>
               </div>

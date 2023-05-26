@@ -1,7 +1,7 @@
 // store.js
+import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 import axios from "axios";
 import create from "zustand";
-import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 
 const useStore = create((set) => ({
   creditLeft: "",
@@ -31,7 +31,7 @@ const useStore = create((set) => ({
   updateCredit: async () => {
     let data = JSON.stringify({
       query:
-        "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n  profileImage\n   interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  prefFilled\n }\n}",
+        "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n  profileImage\n   interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  prefFilled\n totalCredits\n }\n}",
     });
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");
@@ -66,6 +66,33 @@ const useStore = create((set) => ({
       })
       .catch((err) => toast.error(err));
   },
+
 }));
 
 export default useStore;
+
+
+export const useByMeCoffeModal = create((set) => ({
+  isOpen: false,
+  toggleModal: () => set((state) => ({ isOpen: !state.isOpen })),
+}));
+
+
+export const MeeDataStore = create((set) => ({
+  meeData: {},
+  setmeeData: (meeData) => set({ meeData }),
+}));
+
+export const useUserData = () => {
+  const { meeData, setmeeData } = MeeDataStore();
+
+  const getUserData = () => meeData;
+
+  const updateUserData = (newUserData) => setmeeData(newUserData);
+
+  return {
+    meeData,
+    getUserData,
+    updateUserData,
+  };
+};

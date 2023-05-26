@@ -24,7 +24,8 @@ export const LI_API_ENDPOINTS = {
   LI_POST: "/auth/linkedin/post",
   LI_ACCESS_TOKEN: "/auth/linkedin/token",
   LI_PROFILE: "/auth/linkedin/me",
-  TW_POST: "/auth/landing/twitter/post",
+  TW_PROFILE: "/auth/twitter/me",
+  TW_POST: "/auth/twitter/post",
 };
 
 export const LOCAL_STORAGE_KEYS = {

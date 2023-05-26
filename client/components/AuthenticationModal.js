@@ -8,6 +8,7 @@ import axios from "axios";
 import { LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { LinkedinLogin } from "../services/LinkedinLogin";
+import { TwitterLogin } from "../services/TwitterLogin";
 import { signUpWithGoogle } from "../services/GoogleLogin";
 
 import ForgotPasswordModal from "../components/ForgotPasswordModal";
@@ -69,9 +70,27 @@ export default function AuthenticationModal({
           "Content-type": "application/json",
         },
       })
-      .then((response) => response.data)
-      .then((response) => {
-        console.log(response);
+      .then((res) => {
+        const response = res.data;
+        console.log("res", res);
+        if (res?.response?.data && res?.response?.status !== 200) {
+          const errorMessage = res.response.data.message.email
+            ? res.response.data.message.email
+            : res.response.data.message;
+          toast.error(errorMessage, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          if (errorMessage === `Could not find account: ${loginData.email}`) {
+            setType("signup");
+          }
+        }
         if (response?.data?.accessToken) {
           redirectPageAfterLogin(response?.data?.accessToken);
           toast.success("Successfully Logged in", {
@@ -94,9 +113,9 @@ export default function AuthenticationModal({
       })
       .catch((error) => {
         const errorMessage =
-          !error.response.data.success && error.response.data.message;
+          !error?.response?.data?.success && error?.response?.data?.message;
         if (errorMessage != null) {
-          toast.error("Error : " + errorMessage, {
+          toast.error(errorMessage, {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -146,12 +165,14 @@ export default function AuthenticationModal({
           headers: myHeaders,
         })
         .then((response) => response.data)
-        .then((response) =>
+        .then((response) => {
+          localStorage.setItem("ispaid", response.data.me.isSubscribed);
+          localStorage.setItem("credits", response.data.me.credits);
           localStorage.setItem(
             "userId",
             JSON.stringify(response.data.me._id).replace(/['"]+/g, "")
-          )
-        )
+          );
+        })
         .catch((error) => console.error(error))
         .finally(() => {
           if (window.location.pathname === "/dashboard") {
@@ -210,28 +231,61 @@ export default function AuthenticationModal({
           "Content-type": "application/json",
         },
       })
-      .then((response) => response.data)
-      .then((response) => {
-        console.log(response);
-        if (response.error) return;
-        handleLoginSubmit(event, signUpFormData.email, signUpFormData.password);
-        setModalIsOpen(false);
-        toast.success(response.message, {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+      .then((res) => {
+        console.log("9998", res);
+        const response = res.data;
+        if (res?.response?.data?.message && res?.response?.status !== 200) {
+          const errorMessage = res.response.data.message;
+          if (res?.response?.data?.errors?.email) {
+            toast.error(res?.response?.data?.errors?.email, {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+          } else {
+            toast.error(errorMessage, {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+          }
+          if (errorMessage === `Could not find account: ${loginData.email}`) {
+            setType("signup");
+          }
+        } else {
+          handleLoginSubmit(
+            event,
+            signUpFormData.email,
+            signUpFormData.password
+          );
+          setModalIsOpen(false);
+          toast.success(response.message, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        }
       })
       .catch((error) => {
         const errorMessage =
-          error.response.data.error && error.response.data.message;
+          error?.response?.data?.error && error?.response?.data?.message;
         if (errorMessage != null) {
-          toast.error("Error : " + errorMessage, {
+          toast.error(errorMessage, {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -285,13 +339,23 @@ export default function AuthenticationModal({
     const queryParams = router.query;
     var pass;
     pass = localStorage.getItem("pass");
+    console.log("bgukjbkn", queryParams);
     if (!pass) {
       if (queryParams.code && callBack) {
-        console.log("bgukjbkn");
         localStorage.setItem("pass", true);
 
         let code = queryParams.code;
         LinkedinLogin(code, setLoading, handleSave);
+        setLoading(true);
+      }
+      if (queryParams.oauth_token && queryParams.oauth_verifier) {
+        localStorage.setItem("pass", true);
+        TwitterLogin(
+          queryParams.oauth_verifier,
+          queryParams.oauth_token,
+          setLoading,
+          handleSave
+        );
         setLoading(true);
       }
     }
@@ -409,7 +473,7 @@ export default function AuthenticationModal({
                 className="text-center p-4 border flex flex-col space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
                 onClick={handleGoogleSignUp}
                 style={{
-                  borderColor : "#c9d0d9"
+                  borderColor: "#c9d0d9",
                 }}
               >
                 <img
@@ -425,7 +489,7 @@ export default function AuthenticationModal({
                 className="text-center p-4 border flex flex-col space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
                 onClick={handleLinkedinSignUp}
                 style={{
-                  borderColor : "#c9d0d9"
+                  borderColor: "#c9d0d9",
                 }}
               >
                 <img
@@ -492,8 +556,8 @@ export default function AuthenticationModal({
                       id="password"
                       name="password"
                       type="password"
-                      title="Password should contain alphabet and number and should be between 8 to 20 characters"
-                      pattern="^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{8,20}$"
+                      // title="Password should be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number and a Special characters"
+                      // pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).{8,}$"
                       value={loginFormData.password}
                       onChange={handleLoginChange}
                       className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
@@ -559,8 +623,8 @@ export default function AuthenticationModal({
                       id="password"
                       name="password"
                       type="password"
-                      title="Password should contain alphabet and number and should be between 8 to 20 characters"
-                      pattern="^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{8,20}$"
+                      title="Password should be at least 8 characters long and contain at least one Uppercase letter, one lowercase letter, one number and a Special characters"
+                      pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).{8,}$"
                       value={signUpFormData.password}
                       onChange={handleSignUpChange}
                       className=" w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
@@ -578,7 +642,9 @@ export default function AuthenticationModal({
                       id="remember"
                       className="w-4 h-4 border-slate-300 focus:bg-indigo-600"
                     />
-                    <p className="text-sm  pl-2 inline-block !relative !top-0 !left-0">Remember me</p>
+                    <p className="text-sm  pl-2 inline-block !relative !top-0 !left-0">
+                      Remember me
+                    </p>
                   </label>
                 </div>
                 {type === "login" && (

@@ -1,40 +1,42 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from "react";
+import { meeAPI } from "@/graphql/querys/mee";
+import { BASE_PRICE } from "@/pages";
+import { useMutation, useQuery } from "@apollo/client";
+import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import { loadStripe } from "@stripe/stripe-js";
 import { Editor } from "@tinymce/tinymce-react";
-import { htmlToJson, jsonToHtml } from "../helpers/helper";
-import { updateBlog } from "../graphql/mutations/updateBlog";
-import LoaderPlane from "./LoaderPlane";
-import { useMutation } from "@apollo/client";
-import AuthenticationModal from "./AuthenticationModal";
+import axios from "axios";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import ReactLoading from "react-loading";
+import Modal from "react-modal";
+import {
+  EmailIcon,
+  EmailShareButton,
+  FacebookIcon,
+  FacebookShareButton,
+  TelegramIcon,
+  TelegramShareButton,
+  TwitterIcon,
+  TwitterShareButton,
+  WhatsappIcon,
+  WhatsappShareButton,
+} from "react-share";
+import { ToastContainer, toast } from "react-toastify";
 import {
   API_BASE_PATH,
   API_ROUTES,
   LINKEDIN_CLIENT_ID,
   LI_API_ENDPOINTS,
 } from "../constants/apiEndpoints";
-import ReactLoading from "react-loading";
-import Modal from "react-modal";
-import axios from "axios";
-import {
-  FacebookShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
-  TelegramShareButton,
-  EmailShareButton,
-} from "react-share";
-import {
-  FacebookIcon,
-  TwitterIcon,
-  WhatsappIcon,
-  TelegramIcon,
-  EmailIcon,
-} from "react-share";
-import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import { toast, ToastContainer } from "react-toastify";
-import useStore from "../store/store";
+import { updateBlog } from "../graphql/mutations/updateBlog";
+import { getCurrentDashboardURL, htmlToJson, jsonToHtml } from "../helpers/helper";
+import useStore, { useByMeCoffeModal } from "../store/store";
+import AuthenticationModal from "./AuthenticationModal";
+import LoaderPlane from "./LoaderPlane";
 import TrialEndedModal from "./TrialEndedModal";
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 export default function TinyMCEEditor({
   topic,
@@ -49,13 +51,19 @@ export default function TinyMCEEditor({
   option,
   setOption,
 }) {
+  const [multiplier, setMultiplier] = useState(1);
+  const [contributionAmout, setContributionAmount] = useState(5);
   const [updatedText, setEditorText] = useState(editorText);
+
   const [saveLoad, setSaveLoad] = useState(false);
   const [saveText, setSaveText] = useState("Save!");
   const [publishLoad, setPublishLoad] = useState(false);
   const [publishText, setPublishText] = useState("Publish");
   const [publishLinkLoad, setPublishLinkLoad] = useState(false);
+  const [publishTweetLoad, setPublishTweetLoad] = useState(false);
   const [publishLinkText, setPublishLinkText] = useState("Publish on Linkedin");
+  const [publishTweetText, setPublishTweetText] =
+    useState("Publish on Twitter");
   const [openModal, setOpenModal] = useState(false);
   const [text, setText] = useState("");
   const [isCopied, setIsCopied] = useState(false);
@@ -63,11 +71,67 @@ export default function TinyMCEEditor({
   const [imageURL, setImageURL] = useState();
   const [isalert, setAlert] = useState(false);
   const [load, setLoad] = useState(false);
-  const [editingMode, setEditingMode] = useState(false);
+  // const [editingMode, setEditingMode] = useState(false);
   var isEditing = true;
   const isSave = useStore((state) => state.isSave);
   const creditLeft = useStore((state) => state.creditLeft);
   const updateCredit = useStore((state) => state.updateCredit);
+  const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
+  const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
+  const [contributinoModalLoader, setContributionModalLoader] = useState(false);
+
+  var getToken;
+  if (typeof window !== "undefined") {
+    getToken = localStorage.getItem("token");
+  }
+  const {
+    data: meeData,
+    loading: meeLoading,
+    error: meeError,
+  } = useQuery(meeAPI, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken,
+      },
+    },
+    onError: ({ graphQLErrors, networkError }) => {
+      if (graphQLErrors) {
+        for (let err of graphQLErrors) {
+          switch (err.extensions.code) {
+            case "UNAUTHENTICATED":
+              localStorage.clear();
+              window.location.href = "/";
+          }
+        }
+      }
+      if (networkError) {
+        console.log(`[Network error]: ${networkError}`);
+
+        if (
+          `${networkError}` ===
+          "ServerError: Response not successful: Received status code 401" &&
+          isauth
+        ) {
+          localStorage.clear();
+
+          toast.error("Session Expired! Please Login Again..", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        }
+      }
+    },
+  });
   useEffect(() => {
     updateCredit();
   }, []);
@@ -85,6 +149,19 @@ export default function TinyMCEEditor({
       const htmlDoc = jsonToHtml(aa);
       console.log("885", htmlDoc);
       setEditorText(htmlDoc);
+    } else {
+      if (option === "twitter-comeback") {
+        setOption("twitter");
+        const siblingButton = document.querySelectorAll(".blog-toggle-button");
+        siblingButton.forEach((el) => el.classList.remove("active"));
+        const button = document.querySelector(".twitter");
+        button?.classList?.add("active");
+        const aa = blogData?.publish_data?.find(
+          (pd) => pd.platform === "twitter"
+        ).tiny_mce_data;
+        const htmlDoc = jsonToHtml(aa);
+        setEditorText(htmlDoc);
+      }
     }
   }, [option]);
 
@@ -96,7 +173,12 @@ export default function TinyMCEEditor({
   };
 
   useEffect(() => {
-    if (option !== "linkedin-comeback") setEditorText(editorText);
+    if (
+      option !== "linkedin-comeback" &&
+      option !== "twitter-comeback" &&
+      option !== "twitter"
+    )
+      setEditorText(editorText);
   }, [editorText]);
 
   useEffect(() => {
@@ -106,10 +188,16 @@ export default function TinyMCEEditor({
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const router = useRouter();
-  let token, linkedInAccessToken, authorId;
+  let token,
+    linkedInAccessToken,
+    authorId,
+    twitterAccessToken,
+    twitterAccessTokenSecret;
   if (typeof window !== "undefined") {
     token = localStorage.getItem("token");
     linkedInAccessToken = localStorage.getItem("linkedInAccessToken");
+    twitterAccessToken = localStorage.getItem("twitterAccessToken");
+    twitterAccessTokenSecret = localStorage.getItem("twitterAccessTokenSecret");
     authorId = localStorage.getItem("authorId");
   }
   const [
@@ -118,84 +206,113 @@ export default function TinyMCEEditor({
   ] = useMutation(updateBlog);
 
   const handleSave = async () => {
-    var getToken;
+    var getToken, ispaid, credits;
     if (typeof window !== "undefined") {
       window.addEventListener("beforeunload", (event) => {
         event.preventDefault();
         event.returnValue = null;
       });
+      ispaid = localStorage.getItem("ispaid");
       getToken = localStorage.getItem("token");
+      credits = localStorage.getItem("credits");
     }
+    console.log(
+      "****--",
+      ispaid === "true",
+      credits !== "0",
+      ispaid === "true" || credits !== "0"
+    );
+    if (ispaid === "true" || credits !== "0") {
+      if (getToken) {
+        setSaveLoad(true);
 
-    if (getToken) {
-      setSaveLoad(true);
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(updatedText, "text/html");
+        const img = doc?.querySelector("img");
+        const src = img?.getAttribute("src");
 
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(updatedText, "text/html");
-      const img = doc.querySelector("img");
-      const src = img.getAttribute("src");
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = updatedText;
+        const elementsToRemove = tempDiv.querySelectorAll("h3");
+        for (let i = 0; i < elementsToRemove.length; i++) {
+          const element = elementsToRemove[i];
+          element.parentNode.removeChild(element);
+        }
+        const elementsToRemove2 = tempDiv.querySelectorAll("a");
+        for (let i = 0; i < elementsToRemove2.length; i++) {
+          const element = elementsToRemove2[i];
+          element.parentNode.removeChild(element);
+        }
+        const textContent = tempDiv.textContent;
 
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = updatedText;
-      const elementsToRemove = tempDiv.querySelectorAll("h3");
-      for (let i = 0; i < elementsToRemove.length; i++) {
-        const element = elementsToRemove[i];
-        element.parentNode.removeChild(element);
-      }
-      const elementsToRemove2 = tempDiv.querySelectorAll("a");
-      for (let i = 0; i < elementsToRemove2.length; i++) {
-        const element = elementsToRemove2[i];
-        element.parentNode.removeChild(element);
-      }
-      const textContent = tempDiv.textContent;
-
-      const jsonDoc = htmlToJson(updatedText, imageURL).children;
-      const formatedJSON = { children: [...jsonDoc] };
-      UpdateBlog({
-        variables: {
-          options: {
-            tinymce_json: formatedJSON,
-            blog_id: blog_id,
-            platform: option === "blog" ? "wordpress" : option,
-            imageUrl: src,
-            imageSrc: imageURL ? null : imageURL,
-            description: textContent,
+        const jsonDoc = htmlToJson(updatedText, imageURL).children;
+        const formatedJSON = { children: [...jsonDoc] };
+        UpdateBlog({
+          variables: {
+            options: {
+              tinymce_json: formatedJSON,
+              blog_id: blog_id,
+              platform: option === "blog" ? "wordpress" : option,
+              imageUrl: src,
+              imageSrc: imageURL ? null : imageURL,
+              description: textContent,
+            },
           },
-        },
-        context: {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + getToken,
+          context: {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken,
+            },
           },
-        },
-      })
-        .then(() => {
-          console.log(">>", window.location);
-          if (window.location.pathname !== "/dashboard/" + blog_id)
-            window.location.href = "/dashboard/" + blog_id;
-          // router.push("/dashboard/" + blog_id);
         })
-        .catch((err) => {
-          //console.log(err);
-        })
-        .finally(() => {
-          toast.success("Saved!!", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
+          .then(() => {
+            console.log(">>", window.location);
+            if (window.location.pathname !== "/dashboard/" + blog_id)
+              window.location.href = "/dashboard/" + blog_id;
+            // router.push("/dashboard/" + blog_id);
+          })
+          .catch((err) => {
+            //console.log(err);
+          })
+          .finally(() => {
+            toast.success("Saved!!", {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+            setSaveLoad(false);
+            setSaveText("Saved!");
           });
-          setSaveLoad(false);
-          setSaveText("Saved!");
-        });
-      setAuthenticationModalOpen(false);
+        setAuthenticationModalOpen(false);
+      } else {
+        setAuthneticationModalType("signup");
+        setAuthenticationModalOpen(true);
+      }
     } else {
-      setAuthneticationModalType("signup");
-      setAuthenticationModalOpen(true);
+      if (!getToken) {
+        setAuthneticationModalType("signup");
+        setAuthenticationModalOpen(true);
+      } else {
+        toast.error("Looks like you don't have credit left..", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 3000);
+      }
     }
   };
 
@@ -221,14 +338,53 @@ export default function TinyMCEEditor({
       }
     }
   }, []);
-
   const handleconnectLinkedin = () => {
     localStorage.setItem("loginProcess", true);
     localStorage.setItem("bid", blog_id);
+    localStorage.removeItem("for_TW");
     const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`;
     window.location = redirectUrl;
   };
 
+  const handleconnectTwitter = async () => {
+    localStorage.setItem("loginProcess", true);
+    localStorage.setItem("bid", blog_id);
+    localStorage.setItem("for_TW", true);
+
+    try {
+      let data = JSON.stringify({
+        callback: window.location.origin + "/dashboard",
+      });
+
+      let config = {
+        method: "post",
+        maxBodyLength: Infinity,
+        url: API_BASE_PATH + "/auth/twitter/request-token",
+        headers: {
+          Authorization: "",
+          "Content-Type": "application/json",
+        },
+        data: data,
+      };
+
+      axios
+        .request(config)
+        .then((response) => {
+          if (!response?.data?.error) {
+            const twitterToken = response?.data?.data;
+            const responseArray = twitterToken.split("&");
+            window.location.href = `https://api.twitter.com/oauth/authorize?${responseArray[0]}`;
+          } else {
+            console.log("Error", response.data.error, response?.data?.data);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const handleSavePublish = () => {
     if (creditLeft === 0) {
       setTrailModal(true);
@@ -260,7 +416,7 @@ export default function TinyMCEEditor({
             },
           },
         })
-          .then((response) => {
+          .then(async (response) => {
             if (response?.data?.data?.publish) {
               toast.success("Published!!", {
                 position: "top-center",
@@ -276,11 +432,80 @@ export default function TinyMCEEditor({
               setPublishLoad(false);
               setPublishText("Published!!");
             }
+
+            var ll = Number(localStorage.getItem('meDataMePublishCount'))
+
+            console.log('PUBLISH COUNT');
+            console.log(Number(localStorage.getItem('meDataMePublishCount')));
+            setTimeout(() => {
+              // console.log('MEE DATA');
+              // console.log('HERE FOR SHOW CONTRIBUTION MODAL');
+              // const credits = meeData?.me?.credits;
+              // console.log('CREDITS : ' + credits);
+              var userCredits = meeData?.me?.totalCredits - creditLeft - 1;
+              console.log('USER CREDITS: ' + userCredits);
+              userCredits = userCredits + 2;
+              var userPublishCount =Number(meeData?.me?.publishCount);
+              console.log('pubb', userPublishCount)
+              console.log('USER PUBLISH COUNT: ' + userPublishCount);
+              const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (userCredits === 20 || userCredits === 10 || userPublishCount === 0) && !meeData?.me?.isSubscribed;
+              console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
+              if (SHOW_CONTRIBUTION_MODAL) {
+                setShowContributionModal(true);
+              }
+            }, 3000);
+
           })
           .catch((error) => console.log("error", error));
       }
+
     }
   };
+  async function handleCheckout() {
+    console.log('LOCAL STOAGE: ')
+    console.log(localStorage);
+    setContributionModalLoader(true);
+    const stripe = await stripePromise;
+    const res = await fetch('https://maverick.lille.ai/stripe/api/payment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(
+        {
+          customer_email: meeData?.me?.email,
+          "line_items": [
+            {
+              "price_data": {
+                "currency": 'usd',
+                "product_data": {
+                  "name": "coffeeContribution"
+                },
+                "unit_amount": BASE_PRICE * multiplier * contributionAmout
+              },
+              "quantity": 1
+            }
+          ],
+          "mode": "payment",
+          "success_url": getCurrentDashboardURL() + '/' + blog_id + '/?payment=true',
+          "cancel_url": getCurrentDashboardURL() + '/' + blog_id,
+          "billing_address_collection": 'auto'
+        }
+      ), // Multiply by the multiplier (e.g., 500 * 1 = $5, 500 * 2 = $10, etc.)
+    });
+    const session = await res.json();
+    console.log(session);
+    var userContribution = {
+      amount: multiplier * contributionAmout,
+      checkoutSessionId: session.id,
+    }
+    localStorage.setItem('userContribution', JSON.stringify(userContribution));
+    console.log('LOCAL STOAGE: ')
+    console.log(localStorage);
+    const result = await stripe.redirectToCheckout({
+      sessionId: session.id,
+    })
+  }
 
   const handlePublish = () => {
     if (creditLeft === 0) {
@@ -360,6 +585,82 @@ export default function TinyMCEEditor({
     }
   };
 
+  const handleTwitterPublish = () => {
+    console.log("handleTwitterPublish");
+    if (creditLeft === 0) {
+      setTrailModal(true);
+    } else {
+      const tempDiv = document.createElement("div");
+      console.log(tempDiv);
+      tempDiv.innerHTML = updatedText;
+
+      let textContent = tempDiv.textContent;
+
+      setPublishTweetLoad(true);
+
+      const data = {
+        token: twitterAccessToken,
+        text: textContent,
+        secret: twitterAccessTokenSecret,
+        blogId: blog_id,
+      };
+      if (textContent.length < 280) {
+        try {
+          axios
+            .post(API_BASE_PATH + LI_API_ENDPOINTS.TW_POST, data, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            })
+            .then((response) => {
+              console.log(response.data);
+              setPublishTweetLoad(false);
+              setPublishTweetText("Published on Twitter");
+              toast.success("Published on Twitter", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+            })
+            .catch((error) => {
+              if (error.response) {
+                setPublishTweetLoad(false);
+                setPublishTweetText("Publish on Twitter");
+                toast.error(error.response.data.message, {
+                  position: "top-center",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "light",
+                });
+                console.log(error.response.data);
+                console.log(error.response.status);
+              } else if (error.request) {
+                console.log(error.request);
+              } else {
+                console.log("Error", error.message);
+              }
+            });
+        } catch (error) {
+          console.log("error", error.response.data.message);
+        }
+      } else {
+        setPublishTweetLoad(false);
+        setPublishTweetText("Publish on Twitter");
+        toast.error("Only 280 Character allowed!");
+      }
+    }
+  };
+
   function handleBlog(e) {
     setOption("blog");
     const siblingButton = document.querySelectorAll(".blog-toggle-button");
@@ -410,8 +711,10 @@ export default function TinyMCEEditor({
   return (
     <>
       <ToastContainer />
-      {trailModal && <TrialEndedModal setTrailModal={setTrailModal} />}
-      <Modal
+      {trailModal && (
+        <TrialEndedModal setTrailModal={setTrailModal} topic={null} />
+      )}
+      {/* <Modal
         isOpen={editingMode}
         onRequestClose={() => {
           setEditingMode(false);
@@ -444,6 +747,113 @@ export default function TinyMCEEditor({
         <div className="pl-4 text-xl font-bold mb-5">
           You are now in The Editor Mode!! 🥳
         </div>
+      </Modal> */}
+      <Modal
+        isOpen={showContributionModal}
+        ariaHideApp={false}
+        className="w-[100%] sm:w-[38%] max-h-[95%]"
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0,0,0,0.5)",
+            zIndex: "9999",
+          },
+          content: {
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            right: "auto",
+            border: "none",
+            background: "white",
+            // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+            borderRadius: "8px",
+            // width: "100%",
+            maxWidth: "400px",
+            bottom: "",
+            zIndex: "999",
+            marginRight: "-50%",
+            transform: "translate(-50%, -50%)",
+            padding: "30px",
+            paddingBottom: "30px",
+          },
+
+        }}
+        // outside click close
+        shouldCloseOnOverlayClick={true}
+        onRequestClose={() => setShowContributionModal(false)}
+
+      >
+        <div className="flex flex-col items-center justify-center">
+          {/* <h3>Buy me a coffee</h3> */}
+          <h3 className="text-2xl font-bold text-left ">Buy me a coffee</h3>
+
+        </div>
+        <div className="flex flex-col items-center justify-center mt-4">
+          <p className="text-sm text-gray-500 text-center">
+            If you like our product, please consider buying us a
+            cup of coffee.😊
+          </p>
+        </div>
+        <div
+          className={`flex justify-around items-center  w-full bg-indigo-100 p-[10px] border-indigo-500 rounded-md mt-[20px]`}
+        >
+          <div className="flex items-center justify-center text-[40px] ">
+            ☕
+          </div>
+          <div>
+            <svg width="30" height="30" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.8536 2.85355C13.0488 2.65829 13.0488 2.34171 12.8536 2.14645C12.6583 1.95118 12.3417 1.95118 12.1464 2.14645L7.5 6.79289L2.85355 2.14645C2.65829 1.95118 2.34171 1.95118 2.14645 2.14645C1.95118 2.34171 1.95118 2.65829 2.14645 2.85355L6.79289 7.5L2.14645 12.1464C1.95118 12.3417 1.95118 12.6583 2.14645 12.8536C2.34171 13.0488 2.65829 13.0488 2.85355 12.8536L7.5 8.20711L12.1464 12.8536C12.3417 13.0488 12.6583 13.0488 12.8536 12.8536C13.0488 12.6583 13.0488 12.3417 12.8536 12.1464L8.20711 7.5L12.8536 2.85355Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+          </div>
+          {/* circle and numebr */}
+
+          <div className="flex items-center justify-center ">
+
+            {
+
+              [1, 2, 5].map((item) => (
+                <div key={item} className={`flex items-center justify-center w-[40px] h-[40px] rounded-full bg-indigo-500 text-white text-sm font-bold 
+                ml-[10px] hover:bg-indigo-700 cursor-pointer ${multiplier === item && 'bg-indigo-700 '}  
+                `}
+                  onClick={() => setMultiplier(item)}
+                >
+                  {item}
+                </div>
+
+              ))
+
+
+            }
+          </div>
+        </div>
+        {/* button */}
+        <button className="bg-indigo-500 text-white w-full py-2 mt-[20px] rounded-md hover:bg-indigo-700 active:border-2 active:border-indigo-700 active:shadow-md" onClick={handleCheckout}>
+          <style>
+            {`
+            .loader {
+            border: 3px solid #ffffff; /* Light grey */ 
+            border-top: 3px solid rgb(99,  102,  241); /* Blue border on top */
+            border-radius: 50%; /* Rounded shape */
+            width: 30px; /* Width of the loader */
+            height: 30px; /* Height of the loader */
+            animation: spin 2s linear infinite; /* Animation to rotate the loader */
+        }
+
+            @keyframes spin {
+              0 % { transform: rotate(0deg); } /* Starting position of the rotation */
+              100% {transform: rotate(360deg); } /* Ending position of the rotation */
+            }
+          `}
+          </style>
+          {
+
+            contributinoModalLoader ? (
+              <div className="flex items-center justify-center">
+                <div className="loader"></div> {/* Add the loader class here */}
+              </div>
+            ) : (
+              <>Contribute us with {multiplier} {multiplier > 1 ? 'cups' : 'cup'} for      <strong>{`$${(contributionAmout) * multiplier}`}</strong></>
+            )
+          }
+        </button>
+
       </Modal>
       <Modal
         isOpen={openModal}
@@ -453,7 +863,7 @@ export default function TinyMCEEditor({
         style={{
           overlay: {
             backgroundColor: "rgba(0,0,0,0.5)",
-            zIndex: "9999",
+            zIndex: "9998",
           },
           content: {
             position: "absolute",
@@ -668,7 +1078,33 @@ export default function TinyMCEEditor({
                 </button>
               )
             ) : option === "twitter" ? (
-              <button className="cta-invert">Coming Soon...</button>
+              twitterAccessToken ? (
+                <button
+                  className="cta-invert"
+                  onClick={() => {
+                    if (
+                      publishTweetText === "Publish on Twitter" ||
+                      publishTweetText === "Published on Twitter"
+                    )
+                      handleTwitterPublish();
+                  }}
+                >
+                  {publishTweetLoad ? (
+                    <ReactLoading
+                      width={25}
+                      height={25}
+                      round={true}
+                      color={"#2563EB"}
+                    />
+                  ) : (
+                    publishTweetText
+                  )}
+                </button>
+              ) : (
+                <button className="cta-invert" onClick={handleconnectTwitter}>
+                  Connect Twitter
+                </button>
+              )
             ) : isAuthenticated ? (
               <button
                 className="cta-invert"
@@ -740,9 +1176,54 @@ export default function TinyMCEEditor({
                 </button>
               )
             ) : option === "twitter" ? (
-              <button className="cta-invert">Coming Soon...</button>
+              twitterAccessToken ? (
+                <button
+                  className="cta-invert"
+                  onClick={() => {
+                    if (
+                      publishTweetText === "Publish on Twitter" ||
+                      publishTweetText === "Published on Twitter"
+                    )
+                      handleTwitterPublish();
+                  }}
+                >
+                  {publishTweetLoad ? (
+                    <ReactLoading
+                      width={25}
+                      height={25}
+                      round={true}
+                      color={"#2563EB"}
+                    />
+                  ) : (
+                    publishTweetText
+                  )}
+                </button>
+              ) : (
+                <button className="cta-invert" onClick={handleconnectTwitter}>
+                  Connect Twitter
+                </button>
+              )
             ) : (
-              <></>
+              <button
+                className="flex cta-invert"
+                onClick={() => setOpenModal(true)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4 h-4 mr-2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
+                  />
+                </svg>
+                Share
+              </button>
             )}
           </div>
         )}
@@ -790,7 +1271,7 @@ export default function TinyMCEEditor({
                 console.log("777");
               }
               if (isEditing) {
-                setEditingMode(true);
+                // setEditingMode(true);
                 isEditing = false;
               }
             });
@@ -876,13 +1357,13 @@ export default function TinyMCEEditor({
           images_upload_handler: (blobInfo, success, failure) => {
             /*var formdata = new FormData();
             formdata.append("file", blobInfo.blob());
-
+  
             var requestOptions = {
               method: "POST",
               body: formdata,
               redirect: "follow",
             };
-
+  
             fetch("https://maverick.lille.ai/upload/image", requestOptions)
               // .then((response) => response.text())
               // .then((result) => {
@@ -903,7 +1384,7 @@ export default function TinyMCEEditor({
             };
 
             axios(config)
-              .then((response) => {})
+              .then((response) => { })
               .catch((error) => console.log("error", error));
           },
         }}

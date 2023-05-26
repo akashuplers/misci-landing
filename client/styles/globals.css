@@ -355,3 +355,22 @@ input[type='checkbox']:checked, input[type='radio']:checked {
 .authenticationModal label > input::placeholder{
   color : #9b9a9c
 }
+
+.text-transition {
+    align-items: center; 
+    white-space: normal;
+    display: flex; 
+    height: 48px;
+    margin: auto; 
+    text-align: center;
+}
+
+.custom-spacing {
+    margin: auto;
+    width: 100%;
+    gap: 15px;
+}
+
+a[aria-label="Powered by Tidio."] {
+  display: none !important;
+}

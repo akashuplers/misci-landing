@@ -128,7 +128,7 @@ router.post('/keyword', authMiddleware, async (req: any, res: any) => {
                 articleIds?.map(async (id: string) => {
                     const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
                     if(article._source.driver) {
-                        freshIdeasTags = article._source.driver
+                        freshIdeasTags.push(...article._source.driver)
                     } else {
                         const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
                         const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []

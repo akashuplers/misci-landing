@@ -17,9 +17,12 @@ type User {
     subscriptionId: String
     prefData: [String]
     credits: Int
+    paymentsStarts: Int
     prefFilled: Boolean
     profileImage: String
     totalCredits: Int
+    creditRenewDay: Int
+    publishCount: Int
 }
 type Query {
     me: User!

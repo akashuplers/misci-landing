@@ -1,28 +1,23 @@
 /* eslint-disable @next/next/no-img-element */
-import { Fragment, useEffect, useState } from "react";
+import useStore from "@/store/store";
+import { useQuery } from "@apollo/client";
 import { Dialog, Transition } from "@headlessui/react";
 import {
+  ArrowRightOnRectangleIcon,
   Bars3Icon,
   FolderIcon,
+  PaperAirplaneIcon,
   PlusCircleIcon,
   XMarkIcon,
-  PaperAirplaneIcon,
-  ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
-import { logout } from "../helpers/helper";
 import Link from "next/link";
-import Avatar from "react-avatar";
-import { useQuery } from "@apollo/client";
-import { meeAPI } from "../graphql/querys/mee";
-import {
-  AiFillCheckCircle,
-  AiOutlineLinkedin,
-  AiOutlineTwitter,
-} from "react-icons/ai";
 import { useRouter } from "next/router";
+import { Fragment, useEffect, useState } from "react";
+import Avatar from "react-avatar";
 import { ToastContainer } from "react-toastify";
-import useStore from "@/store/store";
+import { meeAPI } from "../graphql/querys/mee";
+import { logout } from "../helpers/helper";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -81,6 +76,7 @@ export default function Sidebar() {
       current: url === "/saved",
     },
   ];
+  console.log("hello");
 
   const navigation_bottom = [
     {
@@ -251,7 +247,7 @@ export default function Sidebar() {
                       ))}
                     </nav>
                   </div>
-                  {/* <div className="flex flex-shrink-0 pb-0 pt-4">
+                  <div className="flex flex-shrink-0 pb-0 pt-4">
                     <Link
                       href="/upgrade"
                       className="ml-6 inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -277,7 +273,7 @@ export default function Sidebar() {
                         />
                       </svg>
                     </Link>
-                  </div> */}
+                  </div>
                 </Dialog.Panel>
               </Transition.Child>
               <div className="w-14 flex-shrink-0">
@@ -327,7 +323,7 @@ export default function Sidebar() {
                 ))}
               </nav>
             </div>
-            {/* {!meeData?.me?.paid && !meeLoading && (
+            {!meeData?.me?.isSubscribed && !meeLoading && (
               <div className="flex flex-shrink-0 pb-0 pt-4">
                 <Link
                   href="/upgrade"
@@ -354,7 +350,7 @@ export default function Sidebar() {
                   </svg>
                 </Link>
               </div>
-            )} */}
+            )}
             <nav className="mt-5 space-y-1 bg-white px-2 pb-8">
               {navigation_bottom.map((item) => (
                 <Link
@@ -478,7 +474,7 @@ export default function Sidebar() {
                     gap: "2em",
                   }}
                 >
-                  {!meeData?.me?.isSubscribed && !meeLoading && (
+                  {!meeLoading && (
                     <div
                       className="flex text-center font-bold text-sm w-auto rounded border border-gray"
                       href="/settings"
@@ -532,7 +528,7 @@ export default function Sidebar() {
                         src={meeData?.me?.profileImage}
                         round={true}
                       />
-                      {/* {meeData?.me?.paid || (
+                      {meeData?.me?.paid || (
                         <div
                           id="trialenddiv"
                           className="hidden"
@@ -553,7 +549,7 @@ export default function Sidebar() {
                         >
                           Upgrade Now!
                         </div>
-                      )} */}
+                      )}
                     </Link>
                   )}
                 </div>
