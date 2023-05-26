@@ -20,15 +20,17 @@ import PreferencesModal from "../modals/PreferencesModal";
 import useStore from "../store/store";
 
 // @ts-ignore
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+);
 
 const PAYMENT_PATH = "/?payment=true";
 const TEXTS = [
-  "Twitter Post",
+  "Twitter  Post",
   "Linkedin Post",
-  "Tweet thread",
+  "Tweet  thread",
   "Blog Posts",
-  "Tweets",
+  "Tweets ",
   "Newsletters",
 ];
 
@@ -515,9 +517,14 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <h1 className="flex text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
+              <div className="flex text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
                 Generate & Optimize{" "}
-                <TextTransition springConfig={presets.gentle}>
+                <TextTransition
+                  springConfig={presets.gentle}
+                  style={{
+                    margin: "0",
+                  }}
+                >
                   <span className="newsletter">
                     {TEXTS[index % TEXTS.length]}
                   </span>
@@ -525,13 +532,13 @@ export default function Home() {
                 using{" "}
                 <span style={{ color: "var(--primary-blue)" }} className="">
                   <TextTransition springConfig={presets.gentle}>
-                  <span className="newsletter">
-                    {TEXTS2[index % TEXTS2.length]}
-                  </span>
-                </TextTransition>
+                    <span className="newsletter">
+                      {TEXTS2[index % TEXTS2.length]}
+                    </span>
+                  </TextTransition>
                 </span>
                 with Lille
-              </h1>
+              </div>
               {/* <p className="mt-6 text-lg leading-8 text-gray-600">
                 Streamline your content creation process with our website that
                 generates blog posts from URLs or uploaded files, providing
