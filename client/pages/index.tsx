@@ -1,15 +1,12 @@
 import Footer from "@/components/Footer";
-import { getCurrentDomain } from "@/helpers/helper";
 import { gql, useQuery } from "@apollo/client";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
-import { loadStripe } from "@stripe/stripe-js";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import Confetti from "react-confetti";
 import Marquee from "react-fast-marquee";
-import Modal from "react-modal";
 import TextTransition, { presets } from "react-text-transition";
 import { ToastContainer, toast } from "react-toastify";
 import Layout from "../components/Layout";
@@ -20,9 +17,6 @@ import PreferencesModal from "../modals/PreferencesModal";
 import useStore from "../store/store";
 
 // @ts-ignore
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-);
 
 const PAYMENT_PATH = "/?payment=true";
 const TEXTS = [
@@ -235,50 +229,7 @@ export default function Home() {
   }, [meeData]);
 
   const [multiplier, setMultiplier] = useState(1);
-  async function handleCheckout() {
-    console.log("LOCAL STOAGE: ");
-    console.log(localStorage);
-    setContributionModalLoader(true);
-    const stripe: any = await stripePromise;
-    const res = await fetch("https://maverick.lille.ai/stripe/api/payment", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        customer_email: meeData?.me?.email,
-        line_items: [
-          {
-            price_data: {
-              currency: "usd",
-              product_data: {
-                name: "coffeeContribution",
-              },
-              unit_amount: BASE_PRICE * multiplier * contributionAmout,
-            },
-            quantity: 1,
-          },
-        ],
-        mode: "payment",
-        success_url: getCurrentDomain() + "?payment=true",
-        cancel_url: getCurrentDomain(),
-      }), // Multiply by the multiplier (e.g., 500 * 1 = $5, 500 * 2 = $10, etc.)
-    });
 
-    const session = await res.json();
-    console.log(session);
-
-    var userContribution = {
-      amount: contributionAmout * multiplier,
-      checkoutSessionId: session.id,
-    };
-    localStorage.setItem("userContribution", JSON.stringify(userContribution));
-    console.log("LOCAL STOAGE: ");
-    console.log(localStorage);
-    const result = await stripe.redirectToCheckout({
-      sessionId: session.id,
-    });
-  }
   const [windowWidth, setWindowWidth] = useState(0);
   useEffect(() => {
     setWindowWidth(window.innerWidth);
@@ -309,122 +260,7 @@ export default function Home() {
       {isPayment && (
         <Confetti width={windowWidth} recycle={false} numberOfPieces={2000} />
       )}
-      <Modal
-        isOpen={showContributionModal}
-        ariaHideApp={false}
-        className="w-[100%] sm:w-[38%] max-h-[95%]"
-        style={{
-          overlay: {
-            backgroundColor: "rgba(0,0,0,0.5)",
-            zIndex: "9999",
-          },
-          content: {
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            right: "auto",
-            border: "none",
-            background: "white",
-            // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
-            borderRadius: "8px",
-            // width: "100%",
-            maxWidth: "400px",
-            bottom: "",
-            zIndex: "999",
-            marginRight: "-50%",
-            transform: "translate(-50%, -50%)",
-            padding: "30px",
-            paddingBottom: "30px",
-          },
-        }}
-        // outside click close
-        shouldCloseOnOverlayClick={true}
-        onRequestClose={() => setShowContributionModal(false)}
-      >
-        <div className="flex flex-col items-center justify-center">
-          {/* <h3>Buy me a coffee</h3> */}
-          <h3 className="text-2xl font-bold text-left ">Buy me a coffee</h3>
-        </div>
-        <div className="flex flex-col items-center justify-center mt-4">
-          <p className="text-sm text-gray-500 text-center">
-            If you like our product, please consider buying us a cup of
-            coffee.😊
-          </p>
-        </div>
-        <div
-          className={`flex justify-around items-center  w-full bg-indigo-100 p-[10px] border-indigo-500 rounded-md mt-[20px]`}
-        >
-          <div className="flex items-center justify-center text-[40px] ">
-            ☕
-          </div>
-          <div>
-            <svg
-              width="30"
-              height="30"
-              viewBox="0 0 15 15"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12.8536 2.85355C13.0488 2.65829 13.0488 2.34171 12.8536 2.14645C12.6583 1.95118 12.3417 1.95118 12.1464 2.14645L7.5 6.79289L2.85355 2.14645C2.65829 1.95118 2.34171 1.95118 2.14645 2.14645C1.95118 2.34171 1.95118 2.65829 2.14645 2.85355L6.79289 7.5L2.14645 12.1464C1.95118 12.3417 1.95118 12.6583 2.14645 12.8536C2.34171 13.0488 2.65829 13.0488 2.85355 12.8536L7.5 8.20711L12.1464 12.8536C12.3417 13.0488 12.6583 13.0488 12.8536 12.8536C13.0488 12.6583 13.0488 12.3417 12.8536 12.1464L8.20711 7.5L12.8536 2.85355Z"
-                fill="currentColor"
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
-          </div>
-          {/* circle and numebr */}
 
-          <div className="flex items-center justify-center ">
-            {[1, 2, 5].map((item) => (
-              <div
-                key={item}
-                className={`flex items-center justify-center w-[40px] h-[40px] rounded-full bg-indigo-500 text-white text-sm font-bold 
-                ml-[10px] hover:bg-indigo-700 cursor-pointer ${
-                  multiplier === item && "bg-indigo-700 "
-                }  
-                `}
-                onClick={() => setMultiplier(item)}
-              >
-                {item}
-              </div>
-            ))}
-          </div>
-        </div>
-        {/* button */}
-        <button
-          className="bg-indigo-500 text-white w-full py-2 mt-[20px] rounded-md hover:bg-indigo-700 active:border-2 active:border-indigo-700 active:shadow-md"
-          onClick={handleCheckout}
-        >
-          <style>
-            {`
-            .loader {
-            border: 3px solid #ffffff; /* Light grey */ 
-            border-top: 3px solid rgb(99,  102,  241); /* Blue border on top */
-            border-radius: 50%; /* Rounded shape */
-            width: 30px; /* Width of the loader */
-            height: 30px; /* Height of the loader */
-            animation: spin 2s linear infinite; /* Animation to rotate the loader */
-        }
-
-            @keyframes spin {
-              0 % { transform: rotate(0deg); } /* Starting position of the rotation */
-              100% {transform: rotate(360deg); } /* Ending position of the rotation */
-            }
-          `}
-          </style>
-          {contributinoModalLoader ? (
-            <div className="flex items-center justify-center">
-              <div className="loader"></div> {/* Add the loader class here */}
-            </div>
-          ) : (
-            <>
-              Contribute us with {multiplier} cups for{" "}
-              <strong>{`$${contributionAmout * multiplier}`}</strong>
-            </>
-          )}
-        </button>
-      </Modal>
       <Layout>
         <ToastContainer />
         {pfmodal && (
