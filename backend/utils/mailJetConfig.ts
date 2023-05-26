@@ -109,6 +109,12 @@ interface ForgotPWArgs {
   token: string;
 }
 
+interface ContributeArgs {
+  email: string;
+  userName: string;
+  htmlMsg: string;
+}
+
 export const sendForgotPasswordEmail = async ({
   email,
   userName,
@@ -133,6 +139,32 @@ export const sendForgotPasswordEmail = async ({
         Variables: {
           url: `<a href="${process.env.PLUARIS_BASE_URL}/resetPass?token=${token}"><button style="color: white; background: #45b8d5; padding: 6px 15px; border: none; border-radius: 6px; cursor: pointer; box-shadow: 2px 2px 4px #323232;">Change Password</button></a>`,
         },
+      },
+    ],
+  });
+  return req;
+};
+
+export const sendContributionEmail = async ({
+  email,
+  userName,
+  htmlMsg
+}: ContributeArgs): Promise<any> => {
+  const req = await mjConn.post("send", { version: "v3.1" }).request({
+    Messages: [
+      {
+        From: {
+          Email: fromSender.email,
+          Name: fromSender.name,
+        },
+        To: [
+          {
+            Email: email,
+            Name: userName,
+          },
+        ],
+        Subject: `Thank You For Buying Coffee!`,
+        HTMLPart: htmlMsg,
       },
     ],
   });

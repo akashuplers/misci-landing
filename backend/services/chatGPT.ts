@@ -10,7 +10,7 @@ export class ChatGPT {
         this.apiKey = data.apiKey
         this.db = data.db
     }
-    async textCompletion () {
+    async textCompletion (timeout: number = 0) {
         const tokenizer = new GPT3Tokenizer({ type: 'gpt3' }); // or 'codex'
         const encoded: { bpe: number[]; text: string[] } = tokenizer.encode(this.text);
         var config: any = {
@@ -25,7 +25,8 @@ export class ChatGPT {
               "prompt": `${this.text}`,
               "temperature": 0,
               "max_tokens": 4096 - encoded.text?.length
-            }
+            },
+            timeout: timeout || 0
         };
         try {
             const res = await axios(config)

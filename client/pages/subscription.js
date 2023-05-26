@@ -1,25 +1,45 @@
-import { Fragment, useEffect, useState, useMemo } from "react";
-import {
-  CardElement,
-  useElements,
-  useStripe,
-  PaymentElement,
-} from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
+import { STRIPE_PROMISE } from "@/constants";
 import { Elements } from "@stripe/react-stripe-js";
-
-import { useLocation, useParams } from "react-router-dom";
+import { loadStripe } from "@stripe/stripe-js";
+import axios from 'axios';
+import { useEffect, useState } from "react";
 import CheckoutForm from "../components/CheckoutForm";
 import Navbar from "../components/Navbar";
+import { API_BASE_PATH } from "../constants/apiEndpoints";
+export const STRIPE_CONST_AMOUNT = 100;
+async function fetchDynamicPriceData() {
+  var priceData = [];
+  const response = await axios({
+    method: "get",
+    url: `${API_BASE_PATH}/stripe/prices`,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => res.data);
+  response.data.data.forEach((item) => {
+    const priceId = item.id;
+    // const planType = item.recurring.interval;
+    var planType = "";
+    if (item.recurring.interval === 'month' && item.recurring.interval_count === 3) {
+      planType = 'Quarterly';
+    } else {
+      planType = item.recurring.interval.charAt(0).toUpperCase() + item.recurring.interval.slice(1) + 'ly';
+    }
+    const amount = item.unit_amount / STRIPE_CONST_AMOUNT;
+    priceData.push({ priceId, subscriptionType: planType, price: amount });
+  });
+  console.log('PRICE DATA');
+  console.log(priceData);
+  return priceData;
+}
 
 Subscription.getInitialProps = ({ query }) => {
   return { query };
 };
 
 export default function Subscription({ query }) {
-  const stripePromise = loadStripe(
-    "pk_test_51KYwIFSI8Tkf3wUiAeZww7bVzcqwkbpXHHZsmqtPbZq12ey9Xy96mvA7KPpNQxVyiHbOPqcDm7BQwKdvZETRn4XU00FlHDBiq8"
-  );
+
+  const stripePromise = loadStripe(STRIPE_PROMISE);
   const [plans, setPlans] = useState([]);
 
   const [currentPlan, setCurrentPlan] = useState(JSON.parse(query.currentPlan));
@@ -51,23 +71,29 @@ export default function Subscription({ query }) {
   };
 
   useEffect(() => {
-    setPlans([
-      {
-        subscriptionType: "Yearly",
-        price: 1000,
-        priceId: "price_1MYowHSI8Tkf3wUilUfJbapv",
-      },
-      {
-        subscriptionType: "Quarterly",
-        price: 200,
-        priceId: "price_1MXm6iSI8Tkf3wUitxemgTER",
-      },
-      {
-        subscriptionType: "Monthly",
-        price: 20,
-        priceId: "price_1MWfopSI8Tkf3wUiZeFpn6HI",
-      },
-    ]);
+    fetchDynamicPriceData().then((res) => {
+      console.log('FETCH DATA RES');
+      console.log(res);
+      setPlans(res);
+    });
+
+    // setPlans([
+    //   {
+    //     subscriptionType: "Yearly",
+    //     price: 149.95,
+    //     priceId: "price_1NBH8eSI8Tkf3wUiOSqVSG4o",
+    //   },
+    //   {
+    //     subscriptionType: "Quarterly",
+    //     price: 39.95,
+    //     priceId: "price_1NBH8eSI8Tkf3wUidr9GKmVa",
+    //   },
+    //   {
+    //     subscriptionType: "Monthly",
+    //     price: 15.95,
+    //     priceId: "price_1NBH8eSI8Tkf3wUid4TgFW5w",
+    //   },
+    // ]);
   }, []);
 
   const [processing, setProcessing] = useState(false);
@@ -137,13 +163,12 @@ export default function Subscription({ query }) {
                           <div
                             key={i}
                             onClick={() => subscriptionPlan(item)}
-                            className={`w-[33%]  text-[18px] font-medium cursor-pointer rounded-[55px] px-[19px] py-[8px] ${
-                              currentPlan?.subscriptionType ===
+                            className={`w-[33%]  text-[18px] font-medium cursor-pointer rounded-[55px] px-[19px] py-[8px] ${currentPlan?.subscriptionType ===
                               item.subscriptionType
-                                ? "bg-[#3cc0f6] text-[#ffffff]"
-                                : "bg-[#ECEDF5] text-[#13213E]"
-                            }`}
-                            // className="bg-[#3cc0f6] cursor-pointer rounded-[55px] px-[19px] py-[8px]"
+                              ? "bg-[#3cc0f6] text-[#ffffff]"
+                              : "bg-[#ECEDF5] text-[#13213E]"
+                              }`}
+                          // className="bg-[#3cc0f6] cursor-pointer rounded-[55px] px-[19px] py-[8px]"
                           >
                             {item.subscriptionType}
                           </div>
@@ -165,9 +190,9 @@ export default function Subscription({ query }) {
                       </p>
                       <p className="text-[64px]  font-bold">
                         ${currentPlan?.price}
-                        <span className="text-[16px] leading-[26px] tracking-[0.5px] text-[#BFC2D9]">
+                        {/* <span className="text-[16px] leading-[26px] tracking-[0.5px] text-[#BFC2D9]">
                           /month
-                        </span>
+                        </span> */}
                       </p>
                     </div>
                     <div className="h-[2px] mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px] hidden md:block"></div>
@@ -181,7 +206,7 @@ export default function Subscription({ query }) {
                         srcset=""
                       /> */}
                         <p className=" text-[18px] font-medium mb-4">
-                          Unlimited ideas generation for blog generation
+                          Full Features Access with 200 Credits monthly validity
                         </p>
                       </div>
                       <div className="flex align-middle">
@@ -192,7 +217,7 @@ export default function Subscription({ query }) {
                         srcset=""
                       /> */}
                         <p className=" text-[18px] font-medium mb-4">
-                          Create/Regenrate Unlimited Blogs
+                          Create/Regenerate blogs with your topics
                         </p>
                       </div>
                       <div className="flex align-middle">

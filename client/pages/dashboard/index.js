@@ -1,19 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { useState, useEffect } from "react";
-import Layout from "../../components/Layout";
-import DashboardInsights from "../../components/DashboardInsights";
-import useStore from "../../store/store"; // Add this import
+import { meeAPI } from "@/graphql/querys/mee";
 import { useMutation, useQuery } from "@apollo/client";
+import { loadStripe } from "@stripe/stripe-js";
+import axios from "axios";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import Modal from "react-modal";
+import { toast } from "react-toastify";
+import DashboardInsights from "../../components/DashboardInsights";
+import Layout from "../../components/Layout";
 import TinyMCEEditor from "../../components/TinyMCEEditor";
+import TrialEndedModal from "../../components/TrialEndedModal";
+import { API_BASE_PATH, API_ROUTES } from "../../constants/apiEndpoints";
 import { generateBlog } from "../../graphql/mutations/generateBlog";
 import { jsonToHtml } from "../../helpers/helper";
-import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
-import { useRouter } from "next/router";
-import { ToastContainer, toast } from "react-toastify";
-import axios from "axios";
-import { API_BASE_PATH, API_ROUTES } from "../../constants/apiEndpoints";
-import TrialEndedModal from "../../components/TrialEndedModal";
+import useStore, { useByMeCoffeModal } from "../../store/store"; // Add this import
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
@@ -27,6 +30,7 @@ dashboard.getInitialProps = ({ query }) => {
 
 export default function dashboard({ query }) {
   const { topic } = query;
+  // const topic = 'India in 2040 '
   const router = useRouter();
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const [ideas, setIdeas] = useState([]);
@@ -42,15 +46,71 @@ export default function dashboard({ query }) {
   const [reference, setReference] = useState([]);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
   const [creditModal, setCreditModal] = useState(false);
-
+  const [modalOpen, setOpenModal] = useState(false);
+  const [multiplier, setMultiplier] = useState(1);
+  const BASE_PRICE = 500;
   const keyword = useStore((state) => state.keyword);
   const updateCredit = useStore((state) => state.updateCredit);
+  const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
+  const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
+  const creditLeft = useStore((state) => state.creditLeft);
+
+  // const [showContributionModal, setShowContributionModal] = useState(false);
+  const [isPublish, seIsPublish] = useState(false);
+  console.log('MEE DATA GET IN ZUSLAND');
 
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
   }
+  const {
+    data: meeData,
+    loading: meeLoading,
+    error: meeError,
+  } = useQuery(meeAPI, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken,
+      },
+    },
+    onError: ({ graphQLErrors, networkError }) => {
+      if (graphQLErrors) {
+        for (let err of graphQLErrors) {
+          switch (err.extensions.code) {
+            case "UNAUTHENTICATED":
+              localStorage.clear();
+              window.location.href = "/";
+          }
+        }
+      }
+      if (networkError) {
+        console.log(`[Network error]: ${networkError}`);
 
+        if (
+          `${networkError}` ===
+          "ServerError: Response not successful: Received status code 401" &&
+          isAuthenticated
+        ) {
+          localStorage.clear();
+
+          toast.error("Session Expired! Please Login Again..", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        }
+      }
+    },
+  });
   var bid;
   if (typeof window !== "undefined") {
     bid = localStorage.getItem("bid");
@@ -66,6 +126,8 @@ export default function dashboard({ query }) {
       window.location.href = "/";
     }
   }, []);
+
+
 
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog, {
     context: {
@@ -94,6 +156,33 @@ export default function dashboard({ query }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (meeData) {
+      localStorage.setItem("meDataMeCredits", meeData?.me?.credits);
+      localStorage.setItem("meDataMePublishCount", meeData?.me.publishCount);
+      localStorage.setItem("meDataisSubscribed", meeData?.me?.isSubscribed);
+      // meeData?.me?.email
+      localStorage.setItem('meDataMeEmail', meeData?.me?.email)
+    }
+  }, [meeData]);
+  useEffect(() => {
+    if (loading == false) {
+      console.log('MEE DATA');
+      console.log(meeData);
+      const credits = meeData?.me?.credits;
+      const isSubs = meeData?.me?.isSubscribed;
+      console.log('CREDITS : ' + credits);
+      var userCredits = meeData?.me?.totalCredits - creditLeft - 1;
+      console.log('USER CREDITS: ' + userCredits);
+      userCredits = userCredits + 2;
+      const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (userCredits === 20 || userCredits === 10) && !isSubs;
+      console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
+      if (SHOW_CONTRIBUTION_MODAL) {
+        setShowContributionModal(true);
+      }
+
+    }
+  }, [loading, meeData]);
   useEffect(() => {
     const getToken = localStorage.getItem("token");
     const Gbid = localStorage.getItem("Gbid");
@@ -194,19 +283,24 @@ export default function dashboard({ query }) {
           }
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
-
           const queryParams = router.query;
           console.log("queryParams", queryParams);
-          if (!queryParams.code) {
+          if (!queryParams.code && !queryParams.oauth_token) {
             localStorage.removeItem("bid");
             localStorage.removeItem("loginProcess");
             localStorage.removeItem("pass");
           }
         })
-        .then((data) => {})
+        .then((data) => { })
         .finally(() => {
-          setOption("linkedin-comeback");
-          toast.success("LinkedIn SignUp Succesfull!!");
+          const for_TW = localStorage.getItem("for_TW");
+          if (for_TW) {
+            toast.success("Twitter Integration Done!!");
+            setOption("twitter-comeback");
+          } else {
+            toast.success("Linkedin Integration Done!!");
+            setOption("linkedin-comeback");
+          }
         })
         .catch(function (error) {
           console.log(error);
@@ -221,6 +315,7 @@ export default function dashboard({ query }) {
         },
         onCompleted: (data) => {
           console.log(data);
+
           var token;
           if (typeof window !== "undefined") {
             token = localStorage.getItem("token");
@@ -254,10 +349,13 @@ export default function dashboard({ query }) {
           console.log("Sucessfully generated the article");
         },
         onError: (error) => {
-          console.error("888888", error.message);
           if (error.message === 'Unexpected error value: "@Credit exhausted"') {
             toast.error("Credit exhausted");
             setCreditModal(true);
+          } else {
+            if (error.message) {
+              setOpenModal(true);
+            }
           }
         },
       }).catch((err) => {
@@ -265,24 +363,38 @@ export default function dashboard({ query }) {
       });
     }
   }, []);
-
+  // useEffect(() => {
+  //   console.log('MEE DATA');
+  //   console.log(meeData);
+  //   console.log('HERE FOR SHOW CONTRIBUTION MODAL');
+  //   const credits = meeData?.me?.credits;
+  //   var tempCredits = credits > 0;
+  //   const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (credits === 15 || credits === 10 || tempCredits || meeData?.me?.publishCount === 1);
+  //   console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
+  //   setShowContributionModal(true);
+  // }, [runContributionModal, setRunContributionModal]);
   useEffect(() => {
     console.log("===restime===");
     console.log(pyResTime, ndResTime);
     console.log("===restime===");
   }, [pyResTime, ndResTime]);
 
+
   console.log(freshIdeasReferences);
   return (
     <>
       <Layout>
-        {creditModal && <TrialEndedModal setTrailModal={setCreditModal} />}
+        {creditModal && (
+          <TrialEndedModal setTrailModal={setCreditModal} topic={topic} />
+        )}
+
         <div className="flex mb-6 h-[88vh]">
           {API_BASE_PATH === "https://maverick.lille.ai" && (
             <div
               style={{
                 zIndex: "10",
                 position: "absolute",
+                display: "none",
                 background: "white",
                 border: "1px solid black",
                 width: "200px",
@@ -339,6 +451,62 @@ export default function dashboard({ query }) {
           </div>
         </div>
       </Layout>
+
+      <Modal
+        isOpen={modalOpen}
+        ariaHideApp={false}
+        className="w-[100%] sm:w-[38%] max-h-[95%]"
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0,0,0,0.5)",
+            zIndex: "9999",
+          },
+          content: {
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            right: "auto",
+            border: "none",
+            background: "white",
+            // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+            borderRadius: "8px",
+            height: "350px",
+            // width: "100%",
+            maxWidth: "450px",
+            bottom: "",
+            zIndex: "999",
+            marginRight: "-50%",
+            transform: "translate(-50%, -50%)",
+            padding: "30px",
+            paddingBottom: "0px",
+          },
+        }}
+      >
+        <div className="mx-auto h-[150px] w-[100px]">
+          <img
+            className="h-[150px]"
+            src="/time-period-icon.svg"
+            alt="Timeout image"
+          ></img>
+        </div>
+
+        <p className="text-gray-500 text-base font-medium mt-4 mx-auto pl-5">
+          We regret that it is taking more time to generate the blog right now,
+          Please try again after some time...
+        </p>
+        <div className="m-9 mx-auto">
+          <button
+            class="w-[240px] ml-16 bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 border border-indigo-700 rounded"
+            onClick={() => {
+              window.location.href = "/";
+            }}
+          >
+            Go Back
+          </button>
+          {/* <button class="w-[240px] ml-9 bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded text-sm"></button> */}
+        </div>
+      </Modal>
     </>
   );
+
 }

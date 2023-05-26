@@ -1,25 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, Fragment, useState } from "react";
-import Sidebar from "./SidebarNav";
+import { meeAPI } from "@/graphql/querys/mee";
+import { useQuery } from "@apollo/client";
+import { Fragment, useEffect } from "react";
+import { toast } from "react-toastify";
+import useStore, { MeeDataStore, useUserData } from "../store/store";
 import Navbar from "./Navbar";
-import Footer from "./Footer";
-import useStore from "../store/store";
-import { useRouter } from "next/router";
+import Sidebar from "./SidebarNav";
 
 export default function Layout({ children }) {
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const updateAuthentication = useStore((state) => state.updateAuthentication);
-
-
+  const { meeData, getUserData, updateUserData } = useUserData();
+  var getToken;
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      getToken = localStorage.getItem("token");
+    }
+  }, []);
+  
   useEffect(() => {
     updateAuthentication();
   }, []);
 
   return (
     <Fragment>
-      {isAuthenticated ? <Sidebar/> : <Navbar isOpen={false}/>}
+      {isAuthenticated ? <Sidebar /> : <Navbar isOpen={false} />}
       <div className={isAuthenticated && `authenticatedLayout`}>{children}</div>
-      {!isAuthenticated && <Footer/>}
     </Fragment>
   );
 }

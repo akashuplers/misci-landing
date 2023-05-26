@@ -1,22 +1,42 @@
-import { useRouter } from "next/router";
 import { useQuery } from "@apollo/client";
-import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
-import React, { useState, useEffect } from "react";
-import Layout from "../../components/Layout";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import ReactConfetti from "react-confetti";
+import { ToastContainer, toast } from "react-toastify";
 import DashboardInsights from "../../components/DashboardInsights";
-import Navbar from "../../components/Navbar";
-import PreferencesModal from "../../modals/PreferencesModal";
+import Layout from "../../components/Layout";
 import TinyMCEEditor from "../../components/TinyMCEEditor";
-import { jsonToHtml } from "../../helpers/helper";
-import { meeAPI } from "../../graphql/querys/mee";
-import { ToastContainer } from "react-toastify";
 import { API_BASE_PATH } from "../../constants/apiEndpoints";
+import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
+import { meeAPI } from "../../graphql/querys/mee";
+import { jsonToHtml } from "../../helpers/helper";
+import PreferencesModal from "../../modals/PreferencesModal";
+import Head from "next/head";
 
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
     event.stopImmediatePropagation();
   });
 }
+
+
+// get the path of link in server
+
+// export const getServerSideProps = async (context) => {
+//   const { params } = context;
+//   console.log("CONTEXT");
+//   console.log(context);
+//   const { bid } = params;
+//   console.log(params);
+//   console.log('PARAMS');
+//   console.log(bid);
+
+//   return {
+//     props: { bid: bid }
+//   };
+// };
+
+
 
 export default function Post() {
   const [pfmodal, setPFModal] = useState(false);
@@ -25,7 +45,8 @@ export default function Post() {
   const [reference, setReference] = useState([]);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
   const [option, setOption] = useState("blog");
-
+  console.log('ROUTER QUERY');
+  console.log(router);
   // console.log("isPublished", isPublished);
   console.log("router.query", router.query);
   const { data, loading, error } = useQuery(getBlogbyId, {
@@ -45,7 +66,14 @@ export default function Post() {
 
   const [pyResTime, setPyResTime] = useState(null);
   const [ndResTime, setNdResTime] = useState(null);
+  const [isPayment, setIsPayment] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(0);
+  const [windowHeight, setWindowHeight] = useState(0);
+  useEffect(() => {
 
+    setWindowWidth(window.innerWidth);
+
+  }, []);
   useEffect(() => {
     if (data == null) return;
 
@@ -120,6 +148,71 @@ export default function Post() {
       }
     },
   });
+  useEffect(() => {
+    console.log(router);
+    console.log('LOCAL STORERAGE');
+    console.log(localStorage);
+    /* asPath "/?payment=true" */
+    // query 
+    const query = router.query;
+    console.log('QUERY');
+    console.log(query);
+    console.log('ROUTER');
+    const { payment } = router.query;
+    if (payment === 'true') {
+      // The "?payment=true" parameter is present in the URL
+      console.log('Payment is true');
+      console.log('ROUTER CHECK IF PAYMENT==TRUE');
+      console.log('USER CONTRIBUTION');
+
+      // console.log(userContribution);
+      if (localStorage.getItem('userContribution') !== null) {
+        var userContribution = JSON.parse(localStorage.getItem('userContribution') || '{}');
+        console.log('USER CONTRIBUTION IS NOT NULL');
+        console.log(userContribution);
+        // /auth/save-user-support
+        const SAVE_USER_SUPPORT_URL = 'https://maverick.lille.ai/auth/save-user-support';
+
+        const requestOptions = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem("token")
+          },
+          body: JSON.stringify(userContribution)
+        };
+        console.log('REQUEST OPTIONS');
+        fetch(SAVE_USER_SUPPORT_URL, requestOptions).then((response) => {
+          console.log('RESPONSE FROM SAVE USER SUPPORT');
+          console.log(response);
+          console.log(response.json());
+        }).catch((error) => {
+          console.log('ERROR FROM SAVE USER SUPPORT');
+          console.log(error);
+        }
+        );
+      }
+      setIsPayment(true);
+      toast.success("Payment Successful!", {
+        toastId: "payment-success",
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+
+      localStorage.setItem("payment", "true");
+    } else {
+      console.log('ROUTER CHECK IF PAYMENT==TRUE ELSE');
+      localStorage.removeItem("userContribution");
+    }
+
+
+  }, [router]);
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -145,8 +238,17 @@ export default function Post() {
 
   return (
     <>
+ <Head><title>{blogData}</title><meta about="body">{blogData}</meta></Head>
       <Layout>
+       
         <ToastContainer />
+        {
+          isPayment && <ReactConfetti
+            width={windowWidth}
+            recycle={false}
+            numberOfPieces={2000}
+          />
+        }
         <div className="flex">
           {pfmodal && (
             <PreferencesModal
@@ -159,6 +261,7 @@ export default function Post() {
             <div
               style={{
                 zIndex: "10",
+                display: "none",
                 position: "absolute",
                 background: "white",
                 border: "1px solid black",

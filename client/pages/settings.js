@@ -1,11 +1,9 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import { Fragment, useState } from "react";
-import { Dialog, Switch, Transition } from "@headlessui/react";
+import { useMutation, useQuery } from "@apollo/client";
+import { Dialog, Transition } from "@headlessui/react";
 import {
   ArrowLeftOnRectangleIcon,
-  Bars3BottomLeftIcon,
-  BellIcon,
   BriefcaseIcon,
   ChatBubbleOvalLeftEllipsisIcon,
   CogIcon,
@@ -15,22 +13,21 @@ import {
   UsersIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import Layout from "../components/Layout";
-import { useQuery } from "@apollo/client";
-import { meeAPI } from "../graphql/querys/mee";
-import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
-import LoaderScan from "../components/LoaderScan";
-import ForgotPasswordModal from "../components/ForgotPasswordModal";
-import { useEffect } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import ReactLoading from "react-loading";
-import fillerProfileImage from "../public/profile-filler.jpg";
 import axios from "axios";
-import CreatableSelect from "react-select/creatable";
-import { addPreferances } from "../graphql/mutations/addPreferances";
-import { useMutation } from "@apollo/client";
 import Link from "next/link";
+import { Fragment, useEffect, useState } from "react";
+import ReactLoading from "react-loading";
+import Modal from "react-modal";
+import CreatableSelect from "react-select/creatable";
+import { ToastContainer, toast } from "react-toastify";
+import ForgotPasswordModal from "../components/ForgotPasswordModal";
+import Layout from "../components/Layout";
+import LoaderScan from "../components/LoaderScan";
+import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import { addPreferances } from "../graphql/mutations/addPreferances";
+import { meeAPI } from "../graphql/querys/mee";
+import { formatDate, generateDateString } from "../helpers/helper";
+import fillerProfileImage from "../public/profile-filler.jpg";
 
 const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: false },
@@ -66,6 +63,8 @@ export default function Settings() {
   const [pref, setPref] = useState("");
   const [options, setOptions] = useState([]);
   const [isFormat, setIsFormat] = useState(false);
+  const [modalOpen, setOpenModal] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   const tabs = [
     { name: "General", href: "#", current: tab === "General" },
@@ -89,6 +88,7 @@ export default function Settings() {
   const [forgotPass, setForgotPass] = useState(false);
 
   const [linkedin, setlinkedin] = useState(false);
+  const [twitter, settwitter] = useState(false);
 
   var token;
   if (typeof window !== "undefined") {
@@ -108,10 +108,12 @@ export default function Settings() {
   );
 
   useEffect(() => {
-    var linkedInAccessToken;
+    var linkedInAccessToken, twitterAccessToken;
     if (typeof window !== "undefined") {
       linkedInAccessToken = localStorage.getItem("linkedInAccessToken");
+      twitterAccessToken = localStorage.getItem("twitterAccessToken");
       if (linkedInAccessToken) setlinkedin(true);
+      if (twitterAccessToken) settwitter(true);
     }
   }, []);
 
@@ -121,12 +123,7 @@ export default function Settings() {
   }
 
   const {
-    data: meeData,
-    loading: meeLoading,
-    error: meeError,
-  } = useQuery(meeAPI, {
-    context: {
-      headers: {
+    data: meeData, loading: meeLoading, error: meeError,} = useQuery(meeAPI, {context: {headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + getToken,
       },
@@ -183,6 +180,38 @@ export default function Settings() {
   }, [meeData]);
 
   console.log("meeData", meeData);
+
+  const handleCancel = () => {
+    setProcessing(true);
+    const axios = require("axios");
+    var getToken;
+    if (typeof window !== "undefined") {
+      getToken = localStorage.getItem("token");
+    }
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: API_BASE_PATH + "/stripe/cancel-subscription",
+      headers: {
+        Authorization: "Bearer " + getToken,
+      },
+    };
+    setOpenModal(false);
+    axios
+      .request(config)
+      .then((response) => {
+        toast.success(response.data.data);
+        console.log(response.data.data);
+
+        setProcessing(false);
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 2000);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const handleUpdate = (e) => {
     if (
@@ -342,11 +371,23 @@ export default function Settings() {
   }
 
   if (meeLoading) return <LoaderScan />;
+  console.log(meeData?.me?.lastInvoicedDate * 1000);
 
   return (
     <>
       <div>
         <ToastContainer />
+        {processing && (
+          <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
+            <div className="flex flex-col items-center">
+              <div className="loader mb-4"></div>
+              <p className="text-gray-100 text-lg text-center">
+                Processing... <br />
+                Please do not refresh.
+              </p>
+            </div>
+          </div>
+        )}
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
@@ -645,7 +686,7 @@ export default function Settings() {
                                     </span>
                                   </dd>
                                 </div>
-                                {meeData?.me?.paid && (
+                                {meeData?.me?.isSubscribed && (
                                   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:border-b sm:border-gray-200 sm:py-5">
                                     <dt className="text-sm font-medium text-gray-500">
                                       Susbcription Details
@@ -654,25 +695,74 @@ export default function Settings() {
                                       <span className="flex-grow">
                                         You are on a{" "}
                                         <span style={{ fontWeight: "600" }}>
-                                          {meeData?.me?.interval}ly
+                                          {meeData?.me?.interval === "year"
+                                            ? meeData?.me?.interval + "ly"
+                                            : meeData?.me?.interval}
                                         </span>{" "}
                                         plan <br />
-                                        Last Invoice Date :{" "}
-                                        <span style={{ fontWeight: "600" }}>
-                                          {new Date(
-                                            meeData?.me?.lastInvoicedDate * 1000
-                                          ).toLocaleDateString("in-IN")}
-                                        </span>{" "}
-                                        <br />
-                                        Next Invoice Date :{" "}
-                                        <span style={{ fontWeight: "600" }}>
-                                          {new Date(
-                                            meeData?.me?.upcomingInvoicedDate *
-                                              1000
-                                          ).toLocaleDateString("in-IN")}
-                                        </span>
+                                        {meeData?.me?.paid ? (
+                                          <>
+                                            <button
+                                              className="update-button cta p-4 absolute right-0"
+                                              onClick={() => setOpenModal(true)}
+                                            >
+                                              Cancel Subscription
+                                            </button>
+                                            Last Invoice Date :{" "}
+                                            <span style={{ fontWeight: "600" }}>
+                                              {/* {new Date(
+                                                meeData?.me
+                                                  ?.lastInvoicedDate * 1000
+                                              ).toLocaleDateString("in-IN")} */}
+
+                                              {formatDate(
+                                                generateDateString(
+                                                  meeData?.me?.lastInvoicedDate
+                                                )
+                                              )}
+                                            </span>{" "}
+                                            <br />
+                                            Next Invoice Date :{" "}
+                                            <span style={{ fontWeight: "600" }}>
+                                              {/* {new Date(
+                                                meeData?.me
+                                                  ?.upcomingInvoicedDate * 1000
+                                              ).toLocaleDateString("in-IN")} */}
+                                              {formatDate(
+                                                generateDateString(
+                                                  meeData?.me
+                                                    ?.upcomingInvoicedDate
+                                                )
+                                              )}
+                                            </span>
+                                          </>
+                                        ) : (
+                                          <>
+                                            Last Date of Subscription :{" "}
+                                            <span style={{ fontWeight: "600" }}>
+                                              {formatDate(
+                                                generateDateString(
+                                                  meeData?.me
+                                                    ?.upcomingInvoicedDate
+                                                )
+                                              )}
+                                            </span>
+                                          </>
+                                        )}
                                       </span>
                                     </dd>
+                                    {meeData?.me?.paymentsStarts && meeData?.me?.paid && (
+                                      <div
+                                        class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-2 w-[310%]"
+                                        role="alert"
+                                      >
+                                        <p>
+                                          Your credits will be renewed in the
+                                          next {meeData?.me?.creditRenewDay}{" "}
+                                          day(s).
+                                        </p>
+                                      </div>
+                                    )}
                                   </div>
                                 )}
                                 <div>
@@ -727,6 +817,9 @@ export default function Settings() {
                                         localStorage.removeItem(
                                           "linkedInAccessToken"
                                         );
+                                        toast.success(
+                                          "Linkedin has been disconnected."
+                                        );
                                         setlinkedin(false);
                                       }}
                                     >
@@ -735,19 +828,46 @@ export default function Settings() {
                                   ) : (
                                     <></>
                                   )}
+                                  {twitter ? (
+                                    <button
+                                      className="update-button cta p-4"
+                                      style={{
+                                        position: "absolute",
+                                        right: "300px",
+                                        bottom: "30px",
+                                        width: "175px",
+                                      }}
+                                      onClick={() => {
+                                        localStorage.removeItem(
+                                          "twitterAccessToken"
+                                        );
+                                        localStorage.removeItem(
+                                          "twitterAccessTokenSecret"
+                                        );
+                                        settwitter(false);
+                                        toast.success(
+                                          "Twitter has been disconnected."
+                                        );
+                                      }}
+                                    >
+                                      Logout from Twitter
+                                    </button>
+                                  ) : (
+                                    <></>
+                                  )}
                                 </div>
                               </dl>
                             </div>
                           </div>
-                        ) : meeData?.me?.paid ? (
+                        ) : meeData?.me?.isSubscribed ? (
                           <div className="mt-10 divide-y divide-gray-200">
                             <div className="space-y-1">
                               <h3 className="text-lg font-medium leading-6 text-gray-900">
                                 Daily Feed Preferences
                               </h3>
                               <p className="max-w-2xl text-sm text-gray-500">
-                                Please select max 3 preferences(Use alphabets
-                                and numbers only).
+                                Max 3 preferences allowed (Use alphabets and
+                                numbers only).
                               </p>
                             </div>
                             <div className="mt-6">
@@ -759,12 +879,15 @@ export default function Settings() {
                                   defaultValue={selectedOption}
                                   isMulti
                                   onInputChange={(newValue) => {
-                                    let pattern = /^[a-zA-Z0-9]+$/;
+                                    let pattern = /^[a-zA-Z0-9\s]+$/;
                                     if (pattern.test(newValue)) {
                                       console.log(
                                         "String contains only alphabets and numbers."
                                       );
-                                      setIsFormat(false);
+
+                                      setIsFormat(
+                                        newValue.length > 100 || false
+                                      );
                                     } else {
                                       console.log(
                                         "String contains other characters."
@@ -796,10 +919,10 @@ export default function Settings() {
                           <div className=" flex items-center justify-center bg-gray-100 h-[600px]">
                             <div className=" p-8 rounded-md">
                               <p className="text-gray-800 text-lg font-medium text-center mt-4">
-                                Coming soon ...
+                                Upgrade to edit the daily feed preferences...
                               </p>
                             </div>
-                            {/* <div className="flex flex-shrink-0 pb-0 pt-4">
+                            <div className="flex flex-shrink-0 pb-0 pt-4">
                               <Link
                                 href="/upgrade"
                                 className="ml-6 inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -825,19 +948,104 @@ export default function Settings() {
                                   />
                                 </svg>
                               </Link>
-                            </div> */}
+                            </div>
                           </div>
                         )}
                       </div>
                     </div>
                   </div>
                 </div>
+                <Modal
+                  isOpen={modalOpen}
+                  onRequestClose={() => setOpenModal(false)}
+                  ariaHideApp={false}
+                  className="w-[100%] sm:w-[38%] max-h-[95%]"
+                  style={{
+                    overlay: {
+                      backgroundColor: "rgba(0,0,0,0.5)",
+                      zIndex: "9999",
+                    },
+                    content: {
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      right: "auto",
+                      border: "none",
+                      background: "white",
+                      // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+                      borderRadius: "8px",
+                      height: "400px",
+                      // width: "100%",
+                      maxWidth: "450px",
+                      bottom: "",
+                      zIndex: "999",
+                      marginRight: "-50%",
+                      transform: "translate(-50%, -50%)",
+                      padding: "30px",
+                      paddingBottom: "0px",
+                    },
+                  }}
+                >
+                  <button
+                    className="absolute right-[35px]"
+                    onClick={() => setOpenModal(false)}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-6 h-6"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                  <div className="mx-auto pb-4">
+                    <img className="mx-auto h-40" src="/Cancellation.svg" />
+                  </div>
+                  <div className="mx-auto font-bold text-2xl pl-[10%]">
+                    Cancel your Subscription?
+                  </div>
+                  <p className="text-gray-500 text-base font-medium mt-4 mx-auto pl-5">
+                    Are you sure? Please read our{" "}
+                    <Link
+                      href="/cancellation-policy"
+                      className="font-bold"
+                      target="_blank"
+                    >
+                      cancellation policy{" "}
+                    </Link>
+                    for more info.
+                  </p>
+                  <div className="flex m-6">
+                    <button
+                      class="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
+                      onClick={() => {
+                        setOpenModal(false);
+                      }}
+                    >
+                      Not Now
+                    </button>
+                    <button
+                      class="w-[240px]  bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded text-sm"
+                      onClick={() => {
+                        handleCancel();
+                      }}
+                    >
+                      Cancel Subscription
+                    </button>
+                  </div>
+                </Modal>
               </main>
             </div>
           </div>
         </div>
       </div>
-          
     </>
   );
 }

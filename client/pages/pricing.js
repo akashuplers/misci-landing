@@ -1,13 +1,11 @@
-import { useLayoutEffect, useState } from "react";
-import { useEffect } from "react";
-import { API_BASE_PATH } from "../constants/apiEndpoints";
-import Link from "next/link";
-import Navbar from "../components/Navbar";
-import SwiperComponent from "../components/SwiperComponent";
-import styles from "../styles/price.module.css";
 import axios from "axios";
-import Footer from "../components/Footer";
+import Link from "next/link";
+import { useEffect, useLayoutEffect, useState } from "react";
 import AuthenticationModal from "../components/AuthenticationModal";
+import Navbar from "../components/Navbar";
+import { API_BASE_PATH } from "../constants/apiEndpoints";
+import styles from "../styles/price.module.css";
+import Footer from "@/components/Footer";
 
 const featuresData = [
   {
@@ -144,7 +142,7 @@ export default function Pricing() {
           bid={""}
         />
         <Navbar isOpen={isOpen} />
-        <div className="flex flex-col">
+        <div className="flex flex-col md:min-h-screen">
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
             <svg
               className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
@@ -234,9 +232,9 @@ export default function Pricing() {
                     </p>
                     <p className="text-[64px]  font-bold">
                       ${currentPlan?.price}
-                      <span className="text-[16px] leading-[26px] tracking-[0.5px] text-[#ffffff]">
+                      {/* <span className="text-[16px] leading-[26px] tracking-[0.5px] text-[#ffffff]">
                         /month
-                      </span>
+                      </span> */}
                     </p>
                   </div>
                   <div className=" mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px]"></div>
@@ -247,12 +245,11 @@ export default function Pricing() {
                           <div
                             key={i}
                             onClick={() => subscriptionPlan(item)}
-                            className={`cursor-pointer rounded-[55px] px-[7.5px] md:px-[19px] py-[8px] ${
-                              currentPlan?.subscriptionType ===
-                              item.subscriptionType
+                            className={`cursor-pointer rounded-[55px] px-[7.5px] md:px-[19px] py-[8px] ${currentPlan?.subscriptionType ===
+                                item.subscriptionType
                                 ? "bg-[#3cc0f6] text-[#ffffff]"
                                 : "bg-[#ffffff] text-[#000000]"
-                            }`}
+                              }`}
                           >
                             {item.subscriptionType}
                           </div>
@@ -268,7 +265,7 @@ export default function Pricing() {
                         srcset=""
                       /> */}
                       <p className=" text-[18px] font-medium mb-4">
-                        Unlimited ideas generation for blog generation
+                        Full Features Access with 200 Credits monthly validity
                       </p>
                     </div>
                     <div className="flex align-middle">
@@ -279,7 +276,7 @@ export default function Pricing() {
                         srcset=""
                       /> */}
                       <p className=" text-[18px] font-medium mb-4">
-                        Create/Regenrate Unlimited Blogs
+                        Create/Regenerate blogs with your topics
                       </p>
                     </div>
                     <div className="flex align-middle">
@@ -334,7 +331,11 @@ export default function Pricing() {
           </div>
         </div>
       </div>
-      <Footer />
+<div className="bg-blue-500 p-4 fixed bottom-1 left-1 z-50 mx-0 rounded-md shadow-md text-white max-w-lg  mt-10 text-center">
+  For enterprise usage inquiries please contact us at <a href="mailto:sales@lille.ai" className="underline">sales@lille.ai</a>
+</div>
+<Footer />
+
     </>
   );
 }

@@ -10,6 +10,8 @@ import { toast, ToastContainer } from "react-toastify";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { meeAPI } from "../graphql/querys/mee";
 import { useQuery } from "@apollo/client";
+import Confetti from "react-confetti";
+import Modal from "react-modal";
 
 const CheckoutFormUpgrade = ({
   priceId,
@@ -22,10 +24,10 @@ const CheckoutFormUpgrade = ({
   const [error, setError] = useState(null);
   const [processing, setProcessing] = useState("");
   const [disabled, setDisabled] = useState(true);
-  const [formErrors, setFormErrors] = useState({
-    firstName: "",
-  });
+  const [formErrors, setFormErrors] = useState({});
   const [checkForm, setCheckForm] = useState(false);
+  const [confirmed, setconfirmed] = useState(false);
+
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -70,9 +72,6 @@ const CheckoutFormUpgrade = ({
 
   const validateForm = () => {
     let errors = {};
-    if (!firstName) {
-      errors.firstName = "First name is required";
-    }
 
     setFormErrors(errors);
 
@@ -96,58 +95,82 @@ const CheckoutFormUpgrade = ({
         type: "card",
         card: elements?.getElement(CardElement),
         billing_details: {
-          name: firstName,
+          name: meeData?.me?.name,
           email: meeData?.me?.email,
         },
       });
       console.log(paymentMethod);
-      var getToken;
-      if (typeof window !== "undefined") {
-        getToken = localStorage.getItem("token");
-      }
-      const myHeaders = {
-        Authorization: `Bearer ${getToken}`,
-        "Content-Type": "application/json",
-      };
-
-      const requestBody = {
-        paymentMethodId: paymentMethod?.paymentMethod?.id,
-        priceId: priceId,
-        interval: interval,
-      };
-
-      axios
-        .post(API_BASE_PATH + "/stripe/upgrade", requestBody, {
-          headers: myHeaders,
-        })
-        .then((res) => res.data)
-        .then((data) => {
-          console.log(data.data);
-          console.log(data.data.status);
-          if (data.data.status === "requires_action") {
-            confirmPaymentFunction(
-              data.data.clientSecret,
-              data.data.subscriptionId
-            );
-          }
-        })
-        .catch((error) => {
-          const errorMessage =
-            error.response.data.error && error.response.data.message;
-          if (errorMessage != null) {
-            toast.error("Error : " + errorMessage, {
-              position: "top-center",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            });
-          }
-          console.error("Error : ", error.response);
+      if (paymentMethod?.error?.message) {
+        setProcessing(false);
+        setDisabled(false);
+        setBtnClicked(false);
+        setClickOnSubscibe(false);
+        toast.error(paymentMethod?.error?.message, {
+          position: "top-center",
+          autoClose: true,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
         });
+      } else {
+        var getToken;
+        if (typeof window !== "undefined") {
+          getToken = localStorage.getItem("token");
+        }
+        const myHeaders = {
+          Authorization: `Bearer ${getToken}`,
+          "Content-Type": "application/json",
+        };
+
+        const requestBody = {
+          paymentMethodId: paymentMethod?.paymentMethod?.id,
+          priceId: priceId,
+          interval: interval,
+        };
+
+        console.log('test body', requestBody)
+
+        axios
+          .post(API_BASE_PATH + "/stripe/upgrade", requestBody, {
+            headers: myHeaders,
+          })
+          .then((res) => {
+            console.log(res, "888");
+            const data = res.data;
+            console.log(data.data);
+            console.log(data.data.status);
+            if (data.data.status === "requires_action") {
+              confirmPaymentFunction(
+                data.data.clientSecret,
+                data.data.subscriptionId
+              );
+            }
+          })
+          .catch((error) => {
+            console.log("error", error);
+            const errorMessage = error?.response?.data?.data;
+            if (errorMessage != null) {
+              setProcessing(false);
+              setDisabled(false);
+              setBtnClicked(false);
+              setClickOnSubscibe(false);
+              toast.error(errorMessage, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+            }
+            console.error("Error : ", error.response);
+          });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -173,6 +196,7 @@ const CheckoutFormUpgrade = ({
       .then((result) => result.data)
       .then((data) => {
         if (data.data === "Upgrade Confirmed!") {
+          setconfirmed(true);
           toast.success(data.data, {
             position: "top-center",
             autoClose: 5000,
@@ -185,7 +209,7 @@ const CheckoutFormUpgrade = ({
           });
           setTimeout(() => {
             window.location.href = "/";
-          }, 3000);
+          }, 5000);
         } else {
           toast.error(data, {
             position: "top-center",
@@ -226,6 +250,64 @@ const CheckoutFormUpgrade = ({
   return (
     <>
       <ToastContainer />
+      {confirmed && (
+        <>
+          <Confetti />
+          <Modal
+            isOpen={true}
+            ariaHideApp={false}
+            className="w-[100%] sm:w-[38%] max-h-[95%]"
+            style={{
+              overlay: {
+                backgroundColor: "rgba(0,0,0,0.5)",
+                zIndex: "9999",
+              },
+              content: {
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                right: "auto",
+                border: "none",
+                background: "white",
+                // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+                borderRadius: "8px",
+                height: "450px",
+                // width: "100%",
+                maxWidth: "450px",
+                bottom: "",
+                zIndex: "999",
+                marginRight: "-50%",
+                transform: "translate(-50%, -50%)",
+                padding: "30px",
+                paddingBottom: "0px",
+              },
+            }}
+          >
+            <div className="mx-auto pb-4">
+              <img className="mx-auto h-40" src="/firework.png" />
+            </div>
+            <div className="ml-[15%] font-bold text-2xl pl-[10%] mt-9">
+              Congratulations 🥳
+            </div>
+            <p className="text-gray-500 ml-[15%] text-base font-medium mt-4 mx-auto pl-5 align-middle">
+              Your Subscription is now confirmed!!
+            </p>
+            <p className="text-gray-500 ml-[15%] text-base font-medium mt-4 mx-auto pl-5 align-middle">
+              Account loaded with prescribed credits.
+            </p>
+            <div className="ml-[25%] flex m-6">
+              <button
+                class="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
+                onClick={() => {
+                  window.location.href = "/";
+                }}
+              >
+                Let&#39;s Go!
+              </button>
+            </div>
+          </Modal>
+        </>
+      )}
       <div
         style={{
           backdropFilter: "blur(10px)",
@@ -240,10 +322,10 @@ const CheckoutFormUpgrade = ({
               <div className="flex space-x-2 mb-3">
                 {" "}
                 <div className="w-[50%]">
-                  <div className="fs-6 my-1 text-[#0A0D13] text-normal">
+                  {/* <div className="fs-6 my-1 text-[#0A0D13] text-normal">
                     Name on card
-                  </div>
-                  <div>
+                  </div> */}
+                  {/* <div>
                     <input
                       style={{
                         border: `2px solid ${
@@ -272,14 +354,14 @@ const CheckoutFormUpgrade = ({
                         {formErrors.firstName}
                       </span>
                     )}
-                    {/* {errors?.first && (
+                     {errors?.first && (
                           <span className={styles.error}>{errors?.first}</span>
-                        )} */}
-                  </div>
+                        )} 
+                  </div> */}
                 </div>
               </div>
 
-              <div className="mb-3 w-full">
+              <div className="mb-3 w-full mt-24">
                 <div className="fs-6 my-1">Card Number</div>
                 <div
                   style={{
@@ -406,12 +488,12 @@ const CheckoutFormUpgrade = ({
                   Subscribe
                 </button>
               )}
-              <button
+              {/* <button
                 type=""
                 className="rounded-[4px] cursor-pointer  text-[16px] font-bold text-[#13213e] py-[20px] w-full"
               >
                 <span className="opacity-[0.7]">Cancel</span>
-              </button>
+              </button> */}
             </form>
             <div className="text-[#606060] text-[14px] leading-[22px]">
               Your personal data will not be used however, your app usage data

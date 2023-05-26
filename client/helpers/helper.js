@@ -72,3 +72,42 @@ export function logout(item) {
     window.location.href = "/";
   }
 }
+
+
+
+export function formatDate(dateString) {
+  const parts = dateString.split('/'); // Assuming the input date is in the format "day/month/year"
+  const day = parts[0];
+  const month = parts[1];
+  const year = parts[2];
+
+  // Mapping month number to month name
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  const monthName = months[parseInt(month, 10) - 1];
+
+  return `${day} ${monthName}, ${year}`;
+}
+export function generateDateString(invoice) {
+  return new Date(invoice * 1000).toLocaleDateString("in-IN");
+}
+
+export function getCurrentDomain() {
+  console.log(window.location.hostname);
+  return window.location.origin;
+}
+export function getCurrentHref() {
+  console.log(window.location.href);
+  return window.location.href
+}
+export function getCurrentDashboardURL() {
+  const currentURL = window.location.href;
+  const dashboardIndex = currentURL.indexOf('/dashboard');
+  if (dashboardIndex !== -1) {
+    const dashboardURL = currentURL.substring(0, dashboardIndex + '/dashboard'.length);
+    return dashboardURL;
+  }
+  return null; // Return null if '/dashboard' is not found in the URL
+}

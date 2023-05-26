@@ -145,7 +145,7 @@ export const blogResolvers = {
                 if(!userDetails) {
                     throw "@No user found"
                 }
-                if(!userDetails.paid && userDetails.credits <= 0) {
+                if(userDetails.credits <= 0) {
                     throw "@Credit exhausted"
                 }
             }
@@ -187,7 +187,7 @@ export const blogResolvers = {
                             // const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
                             // const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
                             // const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
-                            tags = article._source.driver
+                            tags.push(...article._source.driver)
                             const name = article._source?.source?.name
                             return {
                                 used_summaries: article._source.summary.slice(0, 5),
@@ -285,7 +285,6 @@ export const blogResolvers = {
                         )
                     )
                 }
-                console.log(updatedIdeas)
                 const insertBlog = await db.db('lilleBlogs').collection('blogs').insertOne(finalBlogObj)
                 const insertBlogIdeas = await db.db('lilleBlogs').collection('blogIdeas').insertOne({
                     blog_id: insertBlog.insertedId,
@@ -304,8 +303,9 @@ export const blogResolvers = {
                 let endRequest = new Date()
                 let respTime = diff_minutes(endRequest, startRequest)
                 if(user && Object.keys(user).length) {
-                    const updatedCredits = ((userDetails.credits || 25) - 1)
-                    await updateUserCredit({id: userDetails._id, credit: updatedCredits, db})
+                    const updateduser = await fetchUser({id: user.id, db})
+                    const updatedCredits = ((updateduser.credits || 25) - 1)
+                    await updateUserCredit({id: updateduser._id, credit: updatedCredits, db})
                     if(updatedCredits <= 0) {
                         await sendEmails({
                             to: [
@@ -319,14 +319,15 @@ export const blogResolvers = {
                             htmlMsg: `
                                 <p>Hello All,</p>
                                 <p>Credit has been exhausted for below user</p>
-                                <p>User Name: ${userDetails.name} ${userDetails.lastName}</p>
-                                <p>User Email: ${userDetails.email}</p>
+                                <p>User Name: ${updateduser.name} ${userDetails.lastName}</p>
+                                <p>User Email: ${updateduser.email}</p>
                             `,
                         });
                     }
                 }
                 return {...blogDetails, ideas: blogIdeasDetails, references: refUrls, pythonRespTime, respTime}
             } catch(e: any) {
+                console.log(e)
                 throw e
             }
             
@@ -345,7 +346,7 @@ export const blogResolvers = {
             if(!userDetails) {
                 throw "@No user found"
             }
-            if(!userDetails.paid && userDetails.credits <= 0) {
+            if(userDetails.credits <= 0) {
                 throw "@Credit exhausted"
             }
             let texts = ""
@@ -385,7 +386,7 @@ export const blogResolvers = {
                             }
                             const name = article._source?.source?.name
                             if(article._source.driver) {
-                                tags = article._source.driver
+                                tags.push(...article._source.driver)
                             } else {
                                 const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
                                 const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
@@ -412,6 +413,7 @@ export const blogResolvers = {
                     source: string
                 }[] = []
                 if(articleIds && articleIds.length) refUrls = await fetchArticleUrls({db, articleId: articleIds})
+                let startChatGptRequest = new Date()
                 const {usedIdeasArr, updatedBlogs, description}: any = await blogGeneration({
                     db,
                     text: texts,
@@ -419,8 +421,12 @@ export const blogResolvers = {
                     title: blog.keyword,
                     imageUrl: imageUrl ? imageUrl : blog.imageUrl,
                     imageSrc,
+                    ideasArr,
                     refUrls
                 })
+                let endChatGPTRequest = new Date()
+                let respChatgptTime = diff_minutes(endChatGPTRequest, startChatGptRequest)
+                console.log(respChatgptTime, "respChatgptTime")
                 let newData: any = []
                 updatedBlogs.forEach((data: any, index: any) => {
                     const platformUpdatedDataIndex = (blog.publish_data).slice().reverse().findIndex((pd: any) => pd.platform === data.platform)
@@ -537,7 +543,7 @@ export const blogResolvers = {
                                 blogIdeasDetails.freshIdeas.map(async (idea: any) => {
                                     const article = await db.db('lilleArticles').collection('articles').findOne({_id: idea.article_id})
                                     if(article._source.driver) {
-                                        freshIdeasTags = article._source.driver
+                                        freshIdeasTags.push(...article._source.driver)
                                     } else {
                                         const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
                                         const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
@@ -670,7 +676,7 @@ export const blogResolvers = {
         ) => {
             console.log(`Running IR Blog generation =====`)
             const pythonData = args.options
-            console.log(pythonData, "received data")
+            console.log(pythonData, "received data", getTimeStamp())
             let i = 0;
             await (async function loop() {
                 return new Promise(async (resolve) => {
@@ -696,7 +702,7 @@ export const blogResolvers = {
                                     // const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
                                     // tags.push(...productsTags, ...organizationTags, ...personsTags)
                                     if(article._source.driver) {
-                                        tags = article._source.driver
+                                        tags.push(...article._source.driver)
                                     } else {
                                         const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
                                         const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []

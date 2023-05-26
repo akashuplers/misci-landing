@@ -48,3 +48,26 @@ export function diff_minutes(dt2: Date, dt1: Date)
  return diff;
  
 }
+
+export const monthDiff = (d1: Date, d2: Date) => {
+  var months;
+  months = (d2.getFullYear() - d1.getFullYear()) * 12;
+  months -= d1.getMonth();
+  months += d2.getMonth();
+  return months <= 0 ? 0 : months;
+}
+
+export const daysBetween = (first: Date, second: Date)  => {
+
+  // Copy date parts of the timestamps, discarding the time parts.
+  var one = new Date(first.getFullYear(), first.getMonth(), first.getDate());
+  var two = new Date(second.getFullYear(), second.getMonth(), second.getDate());
+
+  // Do the math.
+  var millisecondsPerDay = 1000 * 60 * 60 * 24;
+  var millisBetween = two.getTime() - one.getTime();
+  var days = millisBetween / millisecondsPerDay;
+
+  // Round down.
+  return Math.floor(days);
+}

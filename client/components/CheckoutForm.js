@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
 import {
   CardElement,
   useElements,
-  useStripe,
-  PaymentElement,
+  useStripe
 } from "@stripe/react-stripe-js";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import React, { useState } from "react";
+import Confetti from "react-confetti";
+import { ToastContainer, toast } from "react-toastify";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 
 const CheckoutForm = ({
@@ -21,6 +21,7 @@ const CheckoutForm = ({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [btnClicked, setBtnClicked] = useState(false);
+  const [confirmed, setconfirmed] = useState(false);
   var tempUserId;
   if (typeof window !== "undefined") {
     tempUserId = localStorage.getItem("tempId");
@@ -93,7 +94,7 @@ const CheckoutForm = ({
         window.location.href = "/";
       }}
     >
-      Close
+      Cancel
     </i>
   );
 
@@ -109,7 +110,23 @@ const CheckoutForm = ({
         },
       });
       console.log(paymentMethod);
-      /*const response = await fetch(`${API_BASE_PATH}/stripe/subscribe`, {
+      if (paymentMethod?.error?.message) {
+        setProcessing(false);
+        setDisabled(false);
+        setBtnClicked(false);
+
+        toast.error(paymentMethod?.error?.message, {
+          position: "top-center",
+          autoClose: true,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      } else {
+        /*const response = await fetch(`${API_BASE_PATH}/stripe/subscribe`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -132,75 +149,110 @@ const CheckoutForm = ({
           }
         })
         .catch((err) => console.log(err));*/
-      var response;
-      try {
-        response = await axios({
-          method: "post",
-          url: `${API_BASE_PATH}/stripe/subscribe`,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          data: {
-            paymentMethodId: paymentMethod?.paymentMethod?.id,
-            firstName: firstName,
-            lastName: lastName,
-            tempUserId: tempUserId,
-            email: email,
-            priceId: priceId,
-          },
-        });
-        if (response?.data) {
-          const data = response.data;
-          console.log("85888", data.data);
-          console.log(data.data.status);
-          if (data.data.status === "requires_action") {
-            confirmPaymentFunction(data.data.clientSecret);
+        var response;
+        try {
+          response = await axios({
+            method: "post",
+            url: `${API_BASE_PATH}/stripe/subscribe`,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            data: {
+              paymentMethodId: paymentMethod?.paymentMethod?.id,
+              firstName: firstName,
+              lastName: lastName,
+              tempUserId: tempUserId,
+              email: email,
+              priceId: priceId,
+            },
+          });
+          if (response?.data) {
+            const data = response.data;
+
+            if (data.data.status === "requires_action") {
+              confirmPaymentFunction(data.data.clientSecret);
+            }
+          }
+        } catch (error) {
+          if (
+            error?.response?.data?.message ===
+            "User already exist with this email!"
+          ) {
+            setProcessing(false);
+            setDisabled(false);
+            setBtnClicked(false);
+            toast.error(
+              "Your account already exists with this email.\nPlease login to your account and Upgrade!",
+              {
+                position: "top-center",
+                autoClose: false,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              }
+            );
           }
         }
-      } catch (error) {
-        console.log("9999", error.response.data.message);
-        console.log("9999", error.response);
+        console.log("9999", response?.status);
         if (
-          error?.response?.data?.message ===
-          "User already exist with this email!"
+          response?.response?.data?.message ===
+          "Your card has insufficient funds."
         ) {
           setProcessing(false);
-          setDisabled(true);
-          toast.error(
-            "Your account already exists with this email.\nPlease login to your account and Upgrade!",
-            {
-              position: "top-center",
-              autoClose: false,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            }
-          );
-        }
-      }
-
-      if (
-        response?.response?.data?.message ===
-        "User already exist with this email!"
-      ) {
-        setProcessing(false);
-        setDisabled(true);
-        toast.error(
-          "Your account already exists with this email.\nPlease login to your account and Upgrade!",
-          {
+          setDisabled(false);
+          setBtnClicked(false);
+          toast.error("Your card has insufficient funds.", {
             position: "top-center",
-            autoClose: false,
+            autoClose: true,
             hideProgressBar: false,
-            closeOnClick: true,
+
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
             theme: "light",
+          });
+        } else {
+          if (
+            response?.response?.data?.message ===
+            "User already exist with this email!"
+          ) {
+            setProcessing(false);
+            setDisabled(false);
+            setBtnClicked(false);
+            toast.error(
+              "Your account already exists with this email.\nPlease login to your account and Upgrade!",
+              {
+                position: "top-center",
+                autoClose: false,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              }
+            );
+          } else {
+            if (response?.response?.data?.message && response?.status !== 200) {
+              setProcessing(false);
+              setDisabled(false);
+              setBtnClicked(false);
+              toast.error(response?.response?.data?.message, {
+                position: "top-center",
+                autoClose: false,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+            }
           }
-        );
+        }
       }
     } catch (error) {
       console.log("858", error);
@@ -310,6 +362,7 @@ const CheckoutForm = ({
     } else {
       setClickOnSubscibe(false);
       if (!confirmPayment?.error?.message) {
+        setconfirmed(true);
         createUser({
           firstName: firstName,
           lastName: lastName,
@@ -337,6 +390,7 @@ const CheckoutForm = ({
   return (
     <>
       <ToastContainer closeButton={CloseButton} />
+      {confirmed && <Confetti />}
       <div
         style={{
           backdropFilter: "blur(10px)",
@@ -356,9 +410,8 @@ const CheckoutForm = ({
                   <div>
                     <input
                       style={{
-                        border: `2px solid ${
-                          formErrors.firstName ? "red" : "#96ABD4"
-                        }`,
+                        border: `2px solid ${formErrors.firstName ? "red" : "#96ABD4"
+                          }`,
                       }}
                       type="text"
                       required
@@ -392,9 +445,8 @@ const CheckoutForm = ({
                   <div>
                     <input
                       style={{
-                        border: `2px solid ${
-                          formErrors.lastName ? "red" : "#96ABD4"
-                        }`,
+                        border: `2px solid ${formErrors.lastName ? "red" : "#96ABD4"
+                          }`,
                       }}
                       type="text"
                       id="lastNameInput"
@@ -429,9 +481,8 @@ const CheckoutForm = ({
                   <div>
                     <input
                       style={{
-                        border: `2px solid ${
-                          formErrors.email ? "red" : "#96ABD4"
-                        }`,
+                        border: `2px solid ${formErrors.email ? "red" : "#96ABD4"
+                          }`,
                       }}
                       placeholder="i.e. davon@mail.com"
                       id="emailInput"
@@ -462,9 +513,8 @@ const CheckoutForm = ({
                   <div>
                     <input
                       style={{
-                        border: `2px solid ${
-                          formErrors.password ? "red" : "#96ABD4"
-                        }`,
+                        border: `2px solid ${formErrors.password ? "red" : "#96ABD4"
+                          }`,
                       }}
                       placeholder="**********"
                       type="password"
@@ -503,7 +553,7 @@ const CheckoutForm = ({
                   className={
                     " w-100 bg-none my-1 rounded rounded-1 px-2 py-1.5"
                   }
-                  // className=" rounded-[4px]"
+                // className=" rounded-[4px]"
                 >
                   <CardElement
                     className="noob"

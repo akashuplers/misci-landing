@@ -18,6 +18,12 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "modals/PreferencesModal.js"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "modals/PreferencesModal.js",
+    "components/Footer.tsx"
+, "pages/pricing.js", "pages/dashboard/index.js"  ],
   "exclude": ["node_modules"]
 }

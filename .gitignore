@@ -40,6 +40,7 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+testBackend/
 
 # TypeScript v1 declaration files
 typings/
@@ -105,3 +106,6 @@ dist
 
 # static folder for DigitalOcean App Platform
 _static
+
+./testBackend
+

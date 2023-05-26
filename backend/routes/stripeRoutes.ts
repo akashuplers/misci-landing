@@ -14,6 +14,21 @@ router.get("/prices", async (request: any, reply: any) => {
     })
 })
 
+router.get("/coffee-prices", async (request: any, reply: any) => {
+    const prices = await new Stripe().getPrices("prod_NuTPLfGIV9L4Ur")
+    return reply.status(200).send({
+        data: prices
+    })
+})
+
+router.post('/api/payment', async (request: any, reply: any) => {
+    console.log(request.body);
+    const body = request.body
+    const session = await new Stripe().getCheckoutSession(body)
+    return reply.status(303).json({ id: session.id });
+});
+
+
 
 router.post('/webhook',  async (request: any, reply: any) => {
     const db = request.app.get('db')
@@ -56,8 +71,9 @@ router.post('/webhook',  async (request: any, reply: any) => {
     //   // Then define and call a method to handle the subscription deleted.
     //   // handleSubscriptionDeleted(subscriptionDeleted);
     //   break;
-    case 'invoice.created':
-        console.log(event.data.object, 'invoice.created')
+    case 'invoice.paid':
+        console.log(event.data.object, 'invoice.paid')
+
         break;
     case 'customer.subscription.created':
         subscription = event.data.object;
@@ -77,6 +93,26 @@ router.post('/webhook',  async (request: any, reply: any) => {
         let customer_object = await new Stripe().getCustomerDetails(customer_id)
         // console.log(subscription,event.data, "subscription")
         if ('status' in previous_attributes
+              && previous_attributes.status === 'active'
+              && object.status === 'active') {
+            if("current_period_start" in previous_attributes && previous_attributes.current_period_start !== subscription.current_period_start) {
+                console.log("========== Renewing ===========")
+                const newCredit = await db.db('lilleAdmin').collection('config').findOne()
+                await db.db('lilleAdmin').collection('users').updateOne({email: customer_object.email}, {
+                    $set: {
+                        isSubscribed: true,
+                        paid: true,
+                        interval: subscription.plan.interval === 'year' ? subscription.plan.interval : 
+                        subscription.plan.interval === 'month' && subscription.plan.interval_count === 1 ? "monthly" : "quarterly",
+                        lastInvoicedDate: subscription.current_period_start,
+                        upcomingInvoicedDate: subscription.current_period_end,
+                        credits: parseInt(newCredit?.monthly_credit || "200"),
+                        totalCredits: parseInt(newCredit?.monthly_credit || "200"),
+                    }
+                })
+            }    
+        }
+        if ('status' in previous_attributes
               && previous_attributes.status === 'incomplete'
               && object.status === 'active') {
             let mailSend = true    
@@ -92,6 +128,7 @@ router.post('/webhook',  async (request: any, reply: any) => {
             const userDetails = await db.db('lilleAdmin').collection('users').findOne({
                 email: customer_object.email
             })
+            const newCredit = await db.db('lilleAdmin').collection('config').findOne()
             await db.db('lilleAdmin').collection('users').updateOne({email: customer_object.email}, {
                 $set: {
                     isSubscribed: true,
@@ -102,6 +139,9 @@ router.post('/webhook',  async (request: any, reply: any) => {
                     upcomingInvoicedDate: subscription.current_period_end,
                     freeTrial: false,
                     freeTrailEndsDate: null,
+                    credits: parseInt(newCredit?.monthly_credit || "200") + parseInt(userDetails.credits || 0),
+                    totalCredits: parseInt(newCredit?.monthly_credit || "200") + parseInt(userDetails.credits || 0),
+                    paymentsStarts: getTimeStamp()
                 }
             })
             if(mailSend) {
@@ -127,7 +167,8 @@ router.post('/webhook',  async (request: any, reply: any) => {
             await db.db('lilleAdmin').collection('subscriptions').updateOne({subscriptionId: subscription.id}, {$set: {
                 lastInvoicedDate: subscription.current_period_start,
                 upcomingInvoicedDate: subscription.current_period_end,
-                subscriptionStatus: object.status
+                subscriptionStatus: object.status,
+                paymentsStarts: null
             }})
         }
         if ('status' in previous_attributes &&
@@ -139,7 +180,13 @@ router.post('/webhook',  async (request: any, reply: any) => {
             }})
             await db.db('lilleAdmin').collection('users').updateOne({email: customer_object.email}, {
                 $set: {
-                    isSubscribed: false
+                    isSubscribed: false,
+                    freeTrial: true,
+                    paymentsStarts: null,
+                    lastInvoicedDate: null,
+                    upcomingInvoicedDate: null,
+                    credits: process.env.CREDIT_COUNT,
+                    totalCredits: process.env.CREDIT_COUNT
                 }
             })
         }
@@ -177,7 +224,7 @@ router.post('/upgrade', authMiddleware, async (request: any, reply: any) => {
             interval: data.interval.toLowerCase(),
             lastInvoicedDate: subscriptionDetails.current_period_start,
             upcomingInvoicedDate: subscriptionDetails.current_period_end
-          })
+        })
         const bodyText = await db.db('lilleAdmin').collection('emailTexts').findOne({type: "subscription"})
         return reply.status(200).send({
             data: {
@@ -217,11 +264,17 @@ router.post('/upgrade-confirm', authMiddleware, async (request: any, reply: any)
         if(!user) throw "No user found!"
         const subDetails = await db.db('lilleAdmin').collection('subscriptions').findOne({subscriptionId: subId})
         if(subDetails) {
+            const userDetails = await db.db('lilleAdmin').collection('users').findOne({
+                _id: new ObjectID(user._id)
+            })
             await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user._id)}, {
                 $set: {
                     isSubscribed: true,
                     lastInvoicedDate: subDetails.lastInvoicedDate,
-                    upcomingInvoicedDate: subDetails.upcomingInvoicedDate
+                    upcomingInvoicedDate: subDetails.upcomingInvoicedDate,
+                    // credits: parseInt(process.env.PAID_CREDIT_COUNT || "200") + parseInt(userDetails.credits),
+                    // totalCredits: parseInt(process.env.PAID_CREDIT_COUNT || "200") + parseInt(userDetails.credits),
+                    // paymentsStarts: getTimeStamp(),
                 }
             })
         }
@@ -254,9 +307,21 @@ router.post('/cancel-subscription', authMiddleware, async (request: any, reply: 
     const db = request.app.get('db')
     const user = request.user;
     if(!user) throw "No user found!"
+    const userDetails = await db.db('lilleAdmin').collection('users').findOne({
+        _id: new ObjectID(user._id)
+    }, {
+        projection: {
+            _id: 1,
+            lastInvoicedDate: 1,
+            upcomingInvoicedDate: 1,
+            isSubscribed: 1,
+            paid: 1
+        }
+    })
     const latestSubsDetails = await db.db('lilleAdmin').collection('subscriptions').find({user: new ObjectID(user._id), subscriptionStatus: "active"}).sort({lastInvoicedDate: -1}).limit(1).toArray()
     try {
         const updatedSubs = await new Stripe().cancelSubscription(latestSubsDetails[0].subscriptionId)
+        const currentTimeStamp = getTimeStamp()
         console.log(updatedSubs, "from cancel")
         await db.db('lilleAdmin')
             .collection('subscriptions')
@@ -264,6 +329,20 @@ router.post('/cancel-subscription', authMiddleware, async (request: any, reply: 
         await db.db('lilleAdmin')
             .collection('users')
             .updateOne({_id: new ObjectID(latestSubsDetails[0].user)}, {$set: {paid: false}})
+        if(userDetails.isSubscribed && userDetails.upcomingInvoicedDate && currentTimeStamp > userDetails.upcomingInvoicedDate) {
+            console.log(`Cancelling subscription for user ${userDetails.email}`)
+            await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(userDetails._id)}, {
+                $set: {
+                    isSubscribed: false,
+                    freeTrial: true,
+                    paymentsStarts: null,
+                    lastInvoicedDate: null,
+                    upcomingInvoicedDate: null,
+                    credits: process.env.CREDIT_COUNT,
+                    totalCredits: process.env.CREDIT_COUNT,
+                }
+            })
+        }    
         const bodyText = await db.db('lilleAdmin').collection('emailTexts').findOne({type: "cancel_subscription"})
         await sendMail(user, "Subscription Canceled", bodyText.text)
         return reply.status(200).send({
@@ -301,7 +380,12 @@ router.get('/schedule/cancel-subscription', async (request: any, reply: any) => 
                         await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(sub.user)}, {
                             $set: {
                                 isSubscribed: false,
-                                freeTrial: true
+                                freeTrial: true,
+                                paymentsStarts: null,
+                                lastInvoicedDate: null,
+                                upcomingInvoicedDate: null,
+                                credits: process.env.CREDIT_COUNT,
+                                totalCredits: process.env.CREDIT_COUNT,
                             }
                         })
                     }

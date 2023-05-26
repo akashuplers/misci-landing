@@ -5,12 +5,12 @@ import { ObjectID } from "bson";
 import { randomUUID, createHmac } from "crypto";
 import { fileCreate } from "../utils/file";
 import { createAccessToken, createRefreshToken } from "../utils/accessToken";
-import { validateRegisterInput, validateLoginInput, validateUpdateInput } from "../validations/Validations";
+import { validateRegisterInput, validateLoginInput, validateUpdateInput, validateSupportInput } from "../validations/Validations";
 import { encodeURIfix } from "../utils/encode";
 import { authMiddleware } from "../middleWare/authToken";
-import { getTimeStamp } from "../utils/date";
+import { daysBetween, getTimeStamp, monthDiff } from "../utils/date";
 import { verify } from "jsonwebtoken";
-import { sendForgotPasswordEmail } from "../utils/mailJetConfig";
+import { sendContributionEmail, sendForgotPasswordEmail } from "../utils/mailJetConfig";
 import { fetchUser, publishBlog, updateUserCredit } from "../graphql/resolver/blogs/blogsRepo";
 const express = require("express");
 const router = express.Router();
@@ -48,7 +48,9 @@ router.post("/user/login", async (req: any, res: any) => {
         const db = req.app.get('db')
         const { errors, isValid } = validateLoginInput(req.body);
         if (!isValid) {
-          return res.status(400).send(errors);
+          return res.status(400).send({
+            message: errors
+          });
         }
   
         const { email, password } = req.body;
@@ -107,7 +109,8 @@ router.post("/user/login", async (req: any, res: any) => {
           timestamp: Math.round(new Date().getTime() / 1000),
         };
         if (ipAddress) data.ipAddress = ipAddress;
-  
+        // TODO: maybe add error state
+        await db.db("lilleAdmin").collection("loginLogs").insertOne(data);
   
         // DATA TO SIGN INTO JWT ACCESS TOKEN & REFRESH TOKEN
         const userObj = {
@@ -186,6 +189,7 @@ router.post("/user/create", async (req: any, res: any) => {
       let user = null
       if(data.paid) {
         delete data._id;
+        // data.credits = process.env.PAID_CREDIT_COUNT
         await db.db("lilleAdmin").collection("users").updateOne({
           email: data.email
         }, {
@@ -541,27 +545,27 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
   const options = request.body
   const body = options
   const secretKey: string = process.env.TWITTER_API_Key_Secret || "Hjy1ujvoQpHvYBRisBz3deCWKfjsH6peapdTLPx3p8eCKt43YU"
-  const accessToken = (body.token).split('=')[1]
-  const accessTokenSecret = (body.secret).split('=')[1]
-  const timeStamp = Math.round(Date.now() / 1000).toString();
-  const uuid = randomUUID()
-  const textBody = body.text
-  // Percent encodes base url
-  const encodedBaseURL = encodeURIfix(
-  `https://api.twitter.com/2/tweets`
-  );
-  const encodedParams = encodeURIfix(
-  `oauth_consumer_key=${process.env.TWITTER_API_KEY}&oauth_nonce=${uuid}&oauth_signature_method=HMAC-SHA1&oauth_timestamp=${timeStamp}&oauth_token=${accessToken}&oauth_version=1.0`
-  );
-  const oauth_signature = `POST&${encodedBaseURL}&${encodedParams}`
-  const signingKey = `${encodeURIfix(secretKey)}&${encodeURIfix(accessTokenSecret)}`;
-  // console.log(`oauth_consumer_key=${process.env.TWITTER_API_KEY}&oauth_nonce=${uuid}&oauth_signature_method=HMAC-SHA1&oauth_timestamp=${timeStamp}&oauth_token=${accessToken}&oauth_version=1.0`)
-  // console.log(signingKey)
-  // console.log(oauth_signature)
-  const hash = createHmac("sha1", signingKey)
-  .update(oauth_signature)
-  .digest("base64");
   try {
+    const accessToken = (body.token).split('=')[1]
+    const accessTokenSecret = (body.secret).split('=')[1]
+    const timeStamp = Math.round(Date.now() / 1000).toString();
+    const uuid = randomUUID()
+    const textBody = body.text
+    // Percent encodes base url
+    const encodedBaseURL = encodeURIfix(
+    `https://api.twitter.com/2/tweets`
+    );
+    const encodedParams = encodeURIfix(
+    `oauth_consumer_key=${process.env.TWITTER_API_KEY}&oauth_nonce=${uuid}&oauth_signature_method=HMAC-SHA1&oauth_timestamp=${timeStamp}&oauth_token=${accessToken}&oauth_version=1.0`
+    );
+    const oauth_signature = `POST&${encodedBaseURL}&${encodedParams}`
+    const signingKey = `${encodeURIfix(secretKey)}&${encodeURIfix(accessTokenSecret)}`;
+    // console.log(`oauth_consumer_key=${process.env.TWITTER_API_KEY}&oauth_nonce=${uuid}&oauth_signature_method=HMAC-SHA1&oauth_timestamp=${timeStamp}&oauth_token=${accessToken}&oauth_version=1.0`)
+    // console.log(signingKey)
+    // console.log(oauth_signature)
+    const hash = createHmac("sha1", signingKey)
+    .update(oauth_signature)
+    .digest("base64");
     const response = await axios({
         method: "POST",
         url: `https://api.twitter.com/2/tweets`,
@@ -576,16 +580,20 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
       data: response.data
     })
   } catch(e) {
+    console.log(e)
       if(e.response.status === 403) {
-          reply
+          return reply
           .status(e.response.status)
           .send({ error: true, message: e.response.data.detail });
       }
       if(e.response.status === 401) {
-        reply
+        return reply
         .status(e.response.status)
         .send({ error: true, message: "Unauthorized" });
       }
+      return reply
+        .status(e.response.status)
+        .send({ error: true, message: e?.response?.data?.errors?.length ? e?.response?.data?.errors?.[0].message : e.message});
   }
 })
 
@@ -693,6 +701,7 @@ router.post("/user/social/login", async (req: any, res: any) => {
       date: today,
       timestamp: Math.round(new Date().getTime() / 1000),
     };
+    await db.db("lilleAdmin").collection("loginLogs").insertOne(data);
     if (ipAddress) data.ipAddress = ipAddress;
 
 
@@ -907,6 +916,86 @@ router.post("/logout",authMiddleware, async (request: any, reply: any) => {
 //   //   )
 //   // )
 // })
+router.get('/add-monthly-credits', async (req: any, res: any) => {
+  const db = req.app.get('db')
+  const subscribedUsers = await db.db('lilleAdmin').collection('users').find({
+    isSubscribed: true
+  }).toArray()
+  const newCredit = await db.db('lilleAdmin').collection('config').findOne()
+  if(subscribedUsers && subscribedUsers.length) {
+    await (
+      Promise.all(
+        subscribedUsers.map(async (user: any) => {
+          const paymentStarts = user?.paymentsStarts || null
+          if(paymentStarts) {
+            const now = new Date();
+            const paymentStartDate: any = new Date(paymentStarts * 1000);
+            const monthDuration = monthDiff(paymentStartDate, now)
+            let nextDate = new Date(paymentStartDate.setMonth(paymentStartDate.getMonth() + (monthDuration === 0 ? monthDuration + 1 : monthDuration)));
+            let differenceInDays = daysBetween(now, nextDate)
+            if(differenceInDays < 0) {
+              nextDate = new Date(paymentStartDate.setMonth(paymentStartDate.getMonth() + 1));
+              differenceInDays = daysBetween(now, nextDate)
+            }
+            if(differenceInDays === 0 && monthDuration) {
+              console.log(`======== Running monthly credit for paid user ${user.email} ==========`)
+              console.log(nextDate, "next")
+              console.log(now, "now")
+              console.log( monthDuration, user, "duration")
+              console.log( differenceInDays, "differenceInDays")
+              await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user._id)}, {
+                $set: {
+                  credits: parseInt(newCredit?.monthly_credit || "200"),
+                  totalCredits: parseInt(newCredit?.monthly_credit || "200")
+                }
+              })
+            }
+          }
+          return user
+        })
+      )
+    )
+  }
+  // const nonSubscribedUser = await db.db('lilleAdmin').collection('users').find({
+  //   isSubscribed: false,
+  //   paid: false
+  // }).toArray()
+  // if(nonSubscribedUser && nonSubscribedUser.length) {
+  //   await (
+  //     Promise.all(
+  //       subscribedUsers.map(async (user: any) => {
+  //         const createdAt = user?.date || null
+  //         console.log(createdAt)
+  //         if(createdAt) {
+  //           const now = new Date();
+  //           const createdAtDate: any = new Date(createdAt);
+  //           console.log(createdAtDate)
+  //           const monthDuration = monthDiff(createdAtDate, now)
+  //           const nextDate = new Date(createdAtDate.setMonth(createdAtDate.getMonth() + (monthDuration === 0 ? monthDuration + 1 : monthDuration)));
+  //           console.log(nextDate, "next")
+  //           console.log(now, "now")
+  //           console.log( monthDuration, "duration")
+  //           let differenceInDays = daysBetween(now, nextDate)
+  //           console.log( differenceInDays, "differenceInDays")
+  //           if(differenceInDays === 0 && monthDuration) {
+  //             console.log(`======== Running monthly credit for paid user ${user.email} ==========`)
+  //             await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user._id)}, {
+  //               $set: {
+  //                 credits: parseInt(newCredit?.monthly_credit || "200"),
+  //                 totalCredits: parseInt(newCredit?.monthly_credit || "200")
+  //               }
+  //             })
+  //           }
+  //         }
+  //         return user
+  //       })
+  //     )
+  //   )
+  // }
+  return res.status(200).send({
+    message: "Monthly credit added"
+  })
+})
 router.put('/update-profile', authMiddleware, async (req: any, res: any) => {
   const db = req.app.get('db')
   const data = req.body
@@ -937,5 +1026,49 @@ router.put('/update-profile', authMiddleware, async (req: any, res: any) => {
   })
   const userUpdatedDetails = await fetchUser({id: user.id, db})
   return res.status(201).send({ errors: false, message: "Profile Updated!", data: userUpdatedDetails });
+})
+
+router.post('/save-user-support', authMiddleware, async (req: any, res: any) => {
+  const db = req.app.get('db')
+  const data = req.body
+  const user = req.user
+  if(!user) {
+    return res.status(401).send({
+      type: "ERROR",
+      message: "Not authorised!"
+    })
+  }
+  const userDetails = await fetchUser({id: user.id, db})
+  if(!userDetails) {
+    return res.status(401).send({
+      type: "ERROR",
+      message: "User not found!"
+    })
+  }
+  const { errors, isValid } = validateSupportInput(data);
+  if (!isValid)
+    return res
+      .status(400)
+      .send({ error: true, errors, message: "input errors" });
+  await db.db('lilleAdmin').collection('supports').insertOne({
+    userId: new ObjectID(user.id),
+    ...data
+  })
+  await sendContributionEmail({
+    email: userDetails.email,
+    userName: `${userDetails.name} ${userDetails.lastName}`,
+    htmlMsg: `<p>Dear ${userDetails.name} ${userDetails.lastName},</p>
+      <p></p>
+      <p>Thank you for buying us a coffee! </p>
+      <p>The Nowigence team appreciates the kind gesture of yours.</p>
+      <p>We are hopeful that your journey with Lille will be fruitful.</p>
+      <p></p>
+      <p>Thank You.</p> 
+      <p>Nowigence Team.</p>
+      <p>Nowigence, Inc.</p>
+    
+    `
+  })
+  return res.status(201).send({ errors: false, message: "Support Data Added!" });
 })
 module.exports = router;

@@ -1,5 +1,6 @@
 import { ObjectID } from "bson";
 import { PreferencesArgs } from "interfaces";
+import { monthDiff } from "../../../utils/date";
 import { v4 as uuidv4 } from "uuid";
 
 export const usersResolver = {
@@ -23,7 +24,21 @@ export const usersResolver = {
             const date1: any = new Date(userDetails.date);
             const date2: any = new Date();
             const diffTime = Math.abs(date2 - date1);
-            const totalDay = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+            const totalDay = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if(userDetails.paymentsStarts) {
+                const now = new Date();
+                let paymentStartDate: any = new Date(userDetails.paymentsStarts * 1000);
+                const monthDuration = monthDiff(paymentStartDate, now)
+                const nextDate = new Date(paymentStartDate.setMonth(paymentStartDate.getMonth() + monthDuration + 1));
+                console.log(nextDate, paymentStartDate, now, monthDuration, userDetails.paymentsStarts)
+                let difference = new Date(nextDate).getTime() - new Date(now).getTime();
+                let differenceInDays = Math.floor(difference / (1000 * 3600 * 24))
+                userDetails.creditRenewDay = differenceInDays
+            }
+            const publishCount = await db.db('lilleBlogs').collection('blogs').count({
+                userId: new ObjectID(userDetails._id),
+                status: "published"
+            })
             return {
                 ...userDetails,
                 subscribeStatus: subscriptionDetails && subscriptionDetails.length ? subscriptionDetails[0].subscriptionStatus : false,
@@ -40,7 +55,10 @@ export const usersResolver = {
                 prefFilled: userPref && userPref.prefFilled ? userPref.prefFilled : false,
                 profileImage: userDetails.profileImage || null,
                 premium: userDetails.premium || false,
-                totalCredits: userDetails.premium ? process.env.PREMIUM_CREDIT_COUNT : process.env.CREDIT_COUNT
+                totalCredits: userDetails.totalCredits ? userDetails.totalCredits : userDetails.premium ? userDetails.premium : process.env.CREDIT_COUNT,
+                paymentsStarts: userDetails.paymentsStarts || null,
+                creditRenewDay: userDetails.creditRenewDay || null,
+                publishCount: publishCount || 0
             }
         }
     },
