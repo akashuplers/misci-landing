@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer";
 import axios from "axios";
 import Link from "next/link";
 import { useEffect, useLayoutEffect, useState } from "react";
@@ -5,7 +6,6 @@ import AuthenticationModal from "../components/AuthenticationModal";
 import Navbar from "../components/Navbar";
 import { API_BASE_PATH } from "../constants/apiEndpoints";
 import styles from "../styles/price.module.css";
-import Footer from "@/components/Footer";
 
 const featuresData = [
   {
@@ -112,8 +112,14 @@ export default function Pricing() {
           priceId: price.id,
         };
       });
-      console.log(updatedPricesArray);
-      setPlans(updatedPricesArray);
+
+      const sortedPlans = updatedPricesArray.sort((a, b) => {
+        const order = ["Monthly", "Quarterly", "Yearly"];
+        return order.indexOf(a.subscriptionType) - order.indexOf(b.subscriptionType);
+      });
+
+      console.log(sortedPlans);
+      setPlans(sortedPlans);
     };
     fetchPriceId();
   }, []);
@@ -246,9 +252,9 @@ export default function Pricing() {
                             key={i}
                             onClick={() => subscriptionPlan(item)}
                             className={`cursor-pointer rounded-[55px] px-[7.5px] md:px-[19px] py-[8px] ${currentPlan?.subscriptionType ===
-                                item.subscriptionType
-                                ? "bg-[#3cc0f6] text-[#ffffff]"
-                                : "bg-[#ffffff] text-[#000000]"
+                              item.subscriptionType
+                              ? "bg-[#3cc0f6] text-[#ffffff]"
+                              : "bg-[#ffffff] text-[#000000]"
                               }`}
                           >
                             {item.subscriptionType}
@@ -331,10 +337,10 @@ export default function Pricing() {
           </div>
         </div>
       </div>
-<div className="bg-blue-500 p-4 fixed bottom-1 left-1 z-50 mx-0 rounded-md shadow-md text-white max-w-lg  mt-10 text-center">
-  For enterprise usage inquiries please contact us at <a href="mailto:sales@lille.ai" className="underline">sales@lille.ai</a>
-</div>
-<Footer />
+      <div className="bg-blue-500 p-4 fixed bottom-1 left-1 z-50 mx-0 rounded-md shadow-md text-white max-w-lg  mt-10 text-center">
+        For enterprise usage inquiries please contact us at <a href="mailto:sales@lille.ai" className="underline">sales@lille.ai</a>
+      </div>
+      <Footer />
 
     </>
   );
