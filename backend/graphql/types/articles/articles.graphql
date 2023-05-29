@@ -51,6 +51,7 @@ type PublishData {
     platform: String!
     creation_date: Int!
     tiny_mce_data: TinyMceObj!
+    threads: [String]
 }
 
 type BlogIdeas {
@@ -97,6 +98,7 @@ input UpdateBlogOptions {
     platform: String
     blog_id: String
     tinymce_json: TinyMceObjInput
+    threads: [String]
     imageUrl: String
     imageSrc: String
     description: String

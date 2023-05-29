@@ -526,6 +526,7 @@ router.post('/linkedin/post', authMiddleware ,async (request: any, reply: any) =
 })
 
 router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => {
+
   const db = request.app.get('db')
   const user = request.user
   if(!user) throw "No user found!"
@@ -551,6 +552,7 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
     const timeStamp = Math.round(Date.now() / 1000).toString();
     const uuid = randomUUID()
     const textBody = body.text
+    const textsArray = body.texts
     // Percent encodes base url
     const encodedBaseURL = encodeURIfix(
     `https://api.twitter.com/2/tweets`
@@ -566,7 +568,34 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
     const hash = createHmac("sha1", signingKey)
     .update(oauth_signature)
     .digest("base64");
-    const response = await axios({
+    let responses: any[] = []
+    let response: any = null
+    if(textsArray && textsArray.length) {
+      for (let [index, text] of textsArray.entries()) {
+        let params: any = {"text": text}
+        if(index > 0 && responses && responses.length) {
+          params = {
+            ...params, 
+            reply: {
+              in_reply_to_tweet_id: responses[index - 1].data.id
+            }
+          }
+        }
+        console.log(params)
+        const response = await axios({
+          method: "POST",
+          url: `https://api.twitter.com/2/tweets`,
+          headers: {
+          "Authorization":`OAuth oauth_consumer_key="${process.env.TWITTER_API_KEY}",oauth_token="${accessToken}",oauth_signature_method="HMAC-SHA1",oauth_timestamp="${timeStamp}",oauth_nonce="${uuid}",oauth_version="1.0",oauth_signature="${encodeURIComponent(hash)}"`,
+          "Content-Type": "application/json"
+          },
+          data: JSON.stringify(params)
+        });
+        responses.push(response.data)
+        // console.log(responses, "responses")
+      }
+    } else {
+      response = await axios({
         method: "POST",
         url: `https://api.twitter.com/2/tweets`,
         headers: {
@@ -574,10 +603,11 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
         "Content-Type": "application/json"
         },
         data: JSON.stringify({"text": textBody})
-    });
+      });
+    }
     await publishBlog({id: options.blogId, db, platform: "twitter"})
     return reply.status(200).send({
-      data: response.data
+      data: responses?.length ?  responses : response?.data
     })
   } catch(e) {
     console.log(e)
