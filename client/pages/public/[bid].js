@@ -51,10 +51,12 @@ export default function Post() {
         divElement.innerHTML = nullElement.innerHTML;
         nullElement.parentNode.replaceChild(divElement, nullElement);
       }
-      const modifiedHtml = tempElement.innerHTML;
+      var modifiedHtml = tempElement.innerHTML;
       console.log(modifiedHtml);
-      publishContainer.innerHTML = modifiedHtml;
-
+      const phraseToRemove = 'A placeholder image has been added, you can upload your own image.';
+      const modifiedString = modifiedHtml.replace(new RegExp(`<span[^>]*>${phraseToRemove}</span>`, 'g'), '');
+      console.log(modifiedString);
+      publishContainer.innerHTML = modifiedString;
     }
 
   }, [data]);
