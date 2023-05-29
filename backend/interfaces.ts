@@ -15,6 +15,7 @@ export interface UpdateBlogMutationArg {
     imageUrl?: String;
     imageSrc?: String;
     description?: String;
+    threads?: [String];
 }
 
 export interface Ideas {

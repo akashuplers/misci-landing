@@ -156,6 +156,12 @@ export const blogResolvers = {
             }catch(e){
                 console.log(e, "error from python")
             }
+            // articleIds = [
+            //     '832ab5a1-f957-11ed-90bc-0242c0a8f002',
+            //     '855094fa-f957-11ed-90bc-0242c0a8f002',
+            //     '86fb05bf-f957-11ed-90bc-0242c0a8f002',
+            //     '885d8e7b-f957-11ed-90bc-0242c0a8f002'
+            // ]
             let pythonEnd = new Date()
             let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
             let texts = ""
@@ -624,6 +630,7 @@ export const blogResolvers = {
             const blogId = args.options.blog_id
             const tinymce_json = args.options.tinymce_json
             const platform = args.options.platform
+            const threads = args.options.threads
             const imageUrl = args.options.imageUrl
             const imageSrc = args.options.imageSrc
             const description = args.options.description && args.options.description.replace(/\n/gi, "")
@@ -634,23 +641,41 @@ export const blogResolvers = {
             let updatedPublisData = blogDetails.publish_data.map((data: any) => {
                 if(platform === data.platform) {
                     if(!data.published) {
-                        return {
-                            ...data,
-                            tiny_mce_data: tinymce_json
+                        if(data.platform === 'twitter' && threads) {
+                            return {
+                                ...data,
+                                threads
+                            }
+                        } else {
+                            return {
+                                ...data,
+                                tiny_mce_data: tinymce_json
+                            }
                         }
                     } else {
-                        return {
-                            tiny_mce_data: tinymce_json,
-                            published: false,
-                            platform,
-                            published_date: false,
-                            creation_date: Math.round(new Date().getTime() / 1000) ,
+                        if(data.platform === 'twitter' && threads) {
+                            return {
+                                threads,
+                                published: false,
+                                platform,
+                                published_date: false,
+                                creation_date: Math.round(new Date().getTime() / 1000) ,
+                            }
+                        } else {
+                            return {
+                                tiny_mce_data: tinymce_json,
+                                published: false,
+                                platform,
+                                published_date: false,
+                                creation_date: Math.round(new Date().getTime() / 1000) ,
+                            }
                         }
                     }
                 } else {
                     return {...data}
                 }
             })
+            console.log(updatedPublisData)
             await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(blogId)}, {
                 $set: {
                     publish_data: updatedPublisData,
