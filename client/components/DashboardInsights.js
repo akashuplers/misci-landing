@@ -1272,7 +1272,7 @@ export default function DashboardInsights({
                       />
                     ) : (
                       ideaType === "fresh" && (
-                        <div className="flex items-center gap-1 relative mb-[10px]">
+                        <div className="flex items-center gap-1 relative mb-[10px] mt-5">
                           <label htmlFor="simple-search" className="sr-only">
                             Search
                           </label>
@@ -1314,7 +1314,7 @@ export default function DashboardInsights({
                                   right: "0",
                                 }}
                               >
-                                upload a file
+                                upload a file pdf, docx, txt formats allowed.
                               </div>
                             </>
                           ) : (
@@ -1335,7 +1335,8 @@ export default function DashboardInsights({
                               onInput={handleFileUpload}
                               style={{ display: "none" }}
                             />
-                            <div onMouseEnter={onHover} onMouseLeave={onLeave}>
+
+                            <div class="relative flex flex-col items-center group">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24"
@@ -1349,9 +1350,15 @@ export default function DashboardInsights({
                                 />
                               </svg>
 
-                              <span className="sr-only">Upload</span>
+                              <div class="absolute bottom-0 flex flex-col items-center hidden mb-6 group-hover:flex z-50 h-full min-w-[100px]">
+                                <span class="relative z-10 p-2 text-xs leading-none text-white whitespace-no-wrap bg-black shadow-lg w-full">
+                                  Upload a file. pdf, docx, txt formats allowed.
+                                </span>
+                                <div class="w-3 h-3 -mt-2 rotate-45 bg-black"></div>
+                              </div>
                             </div>
                           </label>
+
                           <button type="submit" className="cta-invert">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"

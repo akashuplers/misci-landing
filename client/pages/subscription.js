@@ -29,7 +29,15 @@ async function fetchDynamicPriceData() {
     priceData.push({ priceId, subscriptionType: planType, price: amount });
   });
   console.log('PRICE DATA');
+  
   console.log(priceData);
+  const sortedPlans = priceData.sort((a, b) => {
+    const order = ["Monthly", "Quarterly", "Yearly"];
+    return order.indexOf(a.subscriptionType) - order.indexOf(b.subscriptionType);
+  });
+
+  console.log(sortedPlans);
+  // setPlans(sortedPlans);
   return priceData;
 }
 
