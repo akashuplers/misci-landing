@@ -1,15 +1,16 @@
 import Image from "next/image";
-import {​​​​​​ FaLinkedin, FaTwitter }​​​​​​ from "react-icons/fa";
-const Footer = () => {​​​​​​
+import { FaLinkedin, FaTwitter } from "react-icons/fa";
+
+const Footer = () => {
   return (
     <footer className="bg-gray-800 text-white  py-2 px-20 bottom-0 w-full">
       <div className="flex items-center justify-between align-middle">
         <div>
           <Image
             src="/lille_logo_light.png"
-            style={​​​​​​{​​​​​​ filter: "drop-shadow(2px 4px 6px black" }​​​​​​}​​​​​​
-            width={​​​​​​100}​​​​​​
-            height={​​​​​​100}​​​​​​
+            style={{ filter: "drop-shadow(2px 4px 6px black" }}
+            width={100}
+            height={100}
             alt="Lille AI logo"
           />
         </div>
@@ -20,7 +21,7 @@ const Footer = () => {​​​​​​
             rel="noopener noreferrer"
             className="text-gray-400 hover:text-white transition-colors duration-300"
           >
-            <FaTwitter size={​​​​​​24}​​​​​​ />
+            <FaTwitter size={24} />
           </a>
           <a
             href="https://www.linkedin.com/company/lille-ai/"
@@ -28,7 +29,7 @@ const Footer = () => {​​​​​​
             rel="noopener noreferrer"
             className="text-gray-400 hover:text-white transition-colors duration-300"
           >
-            <FaLinkedin size={​​​​​​24}​​​​​​ />
+            <FaLinkedin size={24} />
           </a>
         </div>
       </div>
@@ -37,5 +38,6 @@ const Footer = () => {​​​​​​
       </div>
     </footer>
   );
-}​​​​​​;
+};
+
 export default Footer;
