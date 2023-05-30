@@ -1272,7 +1272,7 @@ export default function DashboardInsights({
                       />
                     ) : (
                       ideaType === "fresh" && (
-                        <div className="flex items-center gap-1 relative mb-[10px] mt-5">
+                        <div className="flex items-center gap-1 relative mb-[10px] mt-8">
                           <label htmlFor="simple-search" className="sr-only">
                             Search
                           </label>
