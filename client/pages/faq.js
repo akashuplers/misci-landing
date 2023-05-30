@@ -1,4 +1,4 @@
-import { useSpring, animated } from 'react-spring'
+ 
 import { useState } from 'react'
 
 const faqs = [
@@ -43,38 +43,30 @@ const faqs = [
       "answer": "Yes, customization possibilities are available. You can talk to our support team for more details on this. The generated content is designed to serve as a foundation which you can further refine to match your specific needs."
     }
 ]
-
 export default function FAQPage() {
-  const [openIndex, setOpenIndex] = useState(null);
-  
-  const handleAccordionClick = (index) => {
-    setOpenIndex((prevIndex) => (prevIndex === index ? null : index));
-  };
+  const [activeIndex, setActiveIndex] = useState(null);
+
   return (
-    <div className="w-full max-w-md p-4 m-auto mt-10">
+    <div className="max-w-md mx-auto my-10 bg-white p-4 shadow-md rounded-md">
       {faqs.map((faq, i) => (
-        <div key={i} className="mb-3 rounded overflow-hidden shadow">
-          <div 
-            className="px-6 py-3 bg-gray-200 cursor-pointer" 
-            onClick={
-                () => handleAccordionClick(i)
-            }
+        <div key={i} className="mb-4">
+          <h2
+            onClick={() => setActiveIndex(i)}
+            className={`cursor-pointer px-5 py-3 border-b ${
+              activeIndex === i ? 'font-semibold' : 'font-normal'
+            }`}
           >
-            <h3 className="text-lg">{faq.question}</h3>
-          </div>
-          <div className="overflow-hidden">
-            <animated.div
-              style={useSpring({
-                height: openIndex === i ? `${(faq.answer.length / 1.5) } px` : '0px',
-                overflow: 'hidden',
-                config: { tension: 220, friction: 20 },
-              })}
-            >
-              <p className="px-6 py-3 bg-white h-full">{faq.answer}</p>
-            </animated.div>
+            {faq.question}
+          </h2>
+          <div
+            className={`overflow-hidden transition-height duration-500 ease-in-out ${
+              activeIndex === i ? 'h-auto' : 'h-0'
+            }`}
+          >
+            <p className="px-5 py-3">{faq.answer}</p>
           </div>
         </div>
       ))}
     </div>
-  )
+  );
 }
