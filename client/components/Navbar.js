@@ -83,6 +83,22 @@ export default function Navbar({ isOpen }) {
                   >
                     Pricing
                   </a> */}
+                     
+                <Link
+                    legacyBehavior
+                    as={"/faq"}
+                    href={{
+                      pathname: "/faq",
+                    }}
+                  >
+                    <p
+                       className="ml-5 flex-shrink-0 rounded-full bg-white p-1  hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                       style={{ cursor: "pointer" }}
+                     >
+                        FAQs
+                     </p>
+                   </Link>
+
                   <Link
                     legacyBehavior
                     as={"/pricing"}
@@ -97,6 +113,9 @@ export default function Navbar({ isOpen }) {
                       Pricing
                     </p>
                   </Link>
+               
+
+
 
                   <button
                     onClick={() => {
