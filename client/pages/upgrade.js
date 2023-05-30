@@ -105,7 +105,12 @@ export default function Upgrade() {
         };
       });
       console.log(updatedPricesArray);
-      setPlans(updatedPricesArray);
+      const sortedPlans = updatedPricesArray.sort((a, b) => {
+        const order = ["Monthly", "Quarterly", "Yearly"];
+        return order.indexOf(a.subscriptionType) - order.indexOf(b.subscriptionType);
+      });
+    
+      setPlans(sortedPlans);
     };
 
     fetchPriceId();
