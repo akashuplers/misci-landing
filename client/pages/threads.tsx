@@ -83,19 +83,21 @@ const Thread = ({
 }) => {
   return (
     <div key={index} className="relative w-full min-w-[400px]">
-      <div className="flex flex-row w-full h-full bg-gray-100 opacity-50 rounded-md my-3 ">
-        <div className={`w-[10%] flex items-center justify-center`}>
+      <div className="flex flex-row w-full h-full  opacity-50 rounded-md my-3 ">
+        <div className={`w-[10%] flex items-start justify-center`}>
           <span>
             <p className="text-center">{index + 1} :</p>
           </span>
         </div>
         <div className={`w-[85%]`}>
           <TextareaAutosize
-            className="w-full h-full p-2 bg-transparent resize-none text-black overflow-auto border border-transparent focus:border-gray-900 hover:border-gray-900 rounded-md "
+            className="w-full h-full p-2 resize-none text-black overflow-auto border  border-gray-300 focus:border-gray-900 hover:border-gray-900 rounded-md "
             style={{
               wordWrap: "break-word",
               whiteSpace: "pre-wrap",
-              color: "black",
+              color: "#000000",
+              opacity: "1",
+              fontWeight: "500",
             }}
             placeholder="Type your thread here..."
             value={thread}
