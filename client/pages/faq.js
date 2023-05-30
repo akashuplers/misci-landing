@@ -1,4 +1,5 @@
  
+import Layout from '@/components/Layout';
 import { useState } from 'react'
 
 const faqs = [
@@ -46,8 +47,8 @@ const faqs = [
 export default function FAQPage() {
   const [activeIndex, setActiveIndex] = useState(null);
 
-  return (
-    <div className="max-w-md mx-auto my-10 bg-white p-4 shadow-md rounded-md">
+  return (<Layout>
+      <div className="max-w-3xl mx-auto my-10 bg-white p-4 shadow-md rounded-md">
       {faqs.map((faq, i) => (
         <div key={i} className="mb-4">
           <h2
@@ -68,5 +69,6 @@ export default function FAQPage() {
         </div>
       ))}
     </div>
+  </Layout>
   );
 }
