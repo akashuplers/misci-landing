@@ -81,12 +81,12 @@ export default function Sidebar() {
 
   const navigation_bottom = [
     {
-      name: "FAQ'a",
+      name: "FAQ's",
       href: "/faq",
       icon: QuestionMarkCircleIcon,
     },
     {
-      name: "Setting",
+      name: "Settings",
       href: "/settings",
       icon: Cog6ToothIcon,
       current: url === "/settings",
