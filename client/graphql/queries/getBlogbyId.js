@@ -45,6 +45,7 @@ export const getBlogbyId = gql`
         children
         tag
       }
+      threads
       published_date
       published
       platform

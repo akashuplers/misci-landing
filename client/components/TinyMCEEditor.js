@@ -11,6 +11,8 @@ import { useEffect, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import ReactLoading from "react-loading";
 import Modal from "react-modal";
+import TextareaAutosize from "react-textarea-autosize";
+
 import {
   EmailIcon,
   EmailShareButton,
@@ -79,7 +81,8 @@ export default function TinyMCEEditor({
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
   const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
   const [contributinoModalLoader, setContributionModalLoader] = useState(false);
-
+  const [showTwitterThreadUI, setShowTwitterThreadUI] = useState(false);
+  const [twitterThreadData, setTwitterThreadData] = useState([]);
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -445,7 +448,7 @@ export default function TinyMCEEditor({
               var userCredits = meeData?.me?.totalCredits - creditLeft - 1;
               console.log('USER CREDITS: ' + userCredits);
               userCredits = userCredits + 2;
-              var userPublishCount =Number(meeData?.me?.publishCount);
+              var userPublishCount = Number(meeData?.me?.publishCount);
               console.log('pubb', userPublishCount)
               console.log('USER PUBLISH COUNT: ' + userPublishCount);
               const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (userCredits === 20 || userCredits === 10 || userPublishCount === 0) && !meeData?.me?.isSubscribed;
@@ -679,6 +682,7 @@ export default function TinyMCEEditor({
       aa = newArray[newArray?.length - 1].tiny_mce_data;
     }
     const htmlDoc = jsonToHtml(aa);
+    // check
 
     setEditorText(htmlDoc);
   }
@@ -692,6 +696,7 @@ export default function TinyMCEEditor({
       (pd) => pd.platform === "linkedin"
     ).tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
+    setShowTwitterThreadUI(false);
     setEditorText(htmlDoc);
   }
   function handleTwitterBlog(e) {
@@ -702,9 +707,17 @@ export default function TinyMCEEditor({
     button.classList.add("active");
     const aa = blogData?.publish_data?.find(
       (pd) => pd.platform === "twitter"
-    ).tiny_mce_data;
-    const htmlDoc = jsonToHtml(aa);
+    );
+    const htmlDoc = jsonToHtml(aa.tiny_mce_data);
+    console.log('MOVEING TO ');
+    if (aa.threads === null || aa.threads === undefined || aa.threads.length === 0 || aa.threads == "") {
+      setShowTwitterThreadUI(false);
+    } else {
+      setTwitterThreadData(aa.threads);
+      setShowTwitterThreadUI(true);
+    }
     setEditorText(htmlDoc);
+
   }
 
   if (loading) return <LoaderPlane />;
@@ -1254,147 +1267,335 @@ export default function TinyMCEEditor({
           </button>
         </div>
       )}
-      <Editor
-        value={updatedText || editorText}
-        apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
-        init={{
-          setup: (editor) => {
-            if (editor.inline) {
-              registerPageMouseUp(editor, throttledStore);
-            }
-          },
-          init_instance_callback: function (editor) {
-            editor.on("ExecCommand", function (e) {
-              console.log("The " + e.command + " command was fired.");
-              if (e.command === "mceImage") {
-                setAlert(true);
-                console.log("777");
-              }
-              if (isEditing) {
-                // setEditingMode(true);
-                isEditing = false;
-              }
-            });
-          },
-          skin: "naked",
-          icons: "small",
-          toolbar_location: "bottom",
-          plugins: "lists code table codesample link",
-          menubar: false,
-          statusbar: false,
-          height: "82vh",
-          images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
-          images_upload_credentials: true,
-          plugins:
-            "preview casechange importcss tinydrive searchreplace save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount a11ychecker editimage help formatpainter permanentpen pageembed charmap mentions linkchecker emoticons advtable export footnotes mergetags",
-          menu: {
-            tc: {
-              title: "Comments",
-              items: "addcomment showcomments deleteallconversations",
-            },
-          },
-          toolbar:
-            "undo redo image| bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment | footnotes | mergetags",
-          image_title: true,
-          automatic_uploads: true,
-          file_picker_types: "image",
-          file_picker_callback: function (cb, value, meta) {
-            console.log("852");
-            var input = document.createElement("input");
-            input.setAttribute("type", "file");
-            input.setAttribute("accept", "image/*");
-            var url = API_BASE_PATH + `/upload/image`;
-            var xhr = new XMLHttpRequest();
-            var fd = new FormData();
-            xhr.open("POST", url, true);
 
-            input.onchange = function () {
-              var file = this.files[0];
-              var reader = new FileReader();
-              xhr.onload = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                  // File uploaded successfully
-                  var response = JSON.parse(xhr.responseText);
+      {
+        showTwitterThreadUI === false ?
+          <>
+            <Editor
+              value={updatedText || editorText}
+              apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
+              init={{
+                setup: (editor) => {
+                  if (editor.inline) {
+                    registerPageMouseUp(editor, throttledStore);
+                  }
+                },
+                init_instance_callback: function (editor) {
+                  editor.on("ExecCommand", function (e) {
+                    console.log("The " + e.command + " command was fired.");
+                    if (e.command === "mceImage") {
+                      setAlert(true);
+                      console.log("777");
+                    }
+                    if (isEditing) {
+                      // setEditingMode(true);
+                      isEditing = false;
+                    }
+                  });
+                },
+                skin: "naked",
+                icons: "small",
+                toolbar_location: "bottom",
+                plugins: "lists code table codesample link",
+                menubar: false,
+                statusbar: false,
+                height: "82vh",
+                images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
+                images_upload_credentials: true,
+                plugins:
+                  "preview casechange importcss tinydrive searchreplace save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount a11ychecker editimage help formatpainter permanentpen pageembed charmap mentions linkchecker emoticons advtable export footnotes mergetags",
+                menu: {
+                  tc: {
+                    title: "Comments",
+                    items: "addcomment showcomments deleteallconversations",
+                  },
+                },
+                toolbar:
+                  "undo redo image| bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment | footnotes | mergetags",
+                image_title: true,
+                automatic_uploads: true,
+                file_picker_types: "image",
+                file_picker_callback: function (cb, value, meta) {
+                  console.log("852");
+                  var input = document.createElement("input");
+                  input.setAttribute("type", "file");
+                  input.setAttribute("accept", "image/*");
+                  var url = API_BASE_PATH + `/upload/image`;
+                  var xhr = new XMLHttpRequest();
+                  var fd = new FormData();
+                  xhr.open("POST", url, true);
 
-                  // https://res.cloudinary.com/cloudName/image/upload/v1483481128/public_id.jpg
-                  var url = response.url;
-                  setImageURL(url);
-                  setAlert(true);
-                  console.log("response.data", response.data);
-                  console.log("imageURL", imageURL);
-                  console.log("88", url);
-                  console.log("999", load);
-                  setLoad(false);
-                  // Create a thumbnail of the uploaded image, with 150px width
-                  cb(url, { title: response.type });
-                }
-              };
+                  input.onchange = function () {
+                    var file = this.files[0];
+                    var reader = new FileReader();
+                    xhr.onload = function () {
+                      if (xhr.readyState === 4 && xhr.status === 200) {
+                        // File uploaded successfully
+                        var response = JSON.parse(xhr.responseText);
 
-              reader.onload = function () {
-                setLoad(true);
-                var id = "blobid" + new Date().getTime();
-                var blobCache =
-                  window.tinymce.activeEditor.editorUpload.blobCache;
-                var base64 = reader.result.split(",")[1];
+                        // https://res.cloudinary.com/cloudName/image/upload/v1483481128/public_id.jpg
+                        var url = response.url;
+                        setImageURL(url);
+                        setAlert(true);
+                        console.log("response.data", response.data);
+                        console.log("imageURL", imageURL);
+                        console.log("88", url);
+                        console.log("999", load);
+                        setLoad(false);
+                        // Create a thumbnail of the uploaded image, with 150px width
+                        cb(url, { title: response.type });
+                      }
+                    };
 
-                var blobInfo = blobCache.create(id, file, base64);
-                blobCache.add(blobInfo);
+                    reader.onload = function () {
+                      setLoad(true);
+                      var id = "blobid" + new Date().getTime();
+                      var blobCache =
+                        window.tinymce.activeEditor.editorUpload.blobCache;
+                      var base64 = reader.result.split(",")[1];
 
-                // call the callback and populate the Title field with the file name
+                      var blobInfo = blobCache.create(id, file, base64);
+                      blobCache.add(blobInfo);
 
-                // fd.append("upload_preset", unsignedUploadPreset);
-                // fd.append("path", "browser_upload");
-                fd.append("file", blobInfo.blob());
+                      // call the callback and populate the Title field with the file name
 
-                xhr.send(fd);
-              };
+                      // fd.append("upload_preset", unsignedUploadPreset);
+                      // fd.append("path", "browser_upload");
+                      fd.append("file", blobInfo.blob());
 
-              reader.readAsDataURL(file);
-            };
+                      xhr.send(fd);
+                    };
 
-            input.click();
-          },
-          images_upload_handler: (blobInfo, success, failure) => {
-            /*var formdata = new FormData();
-            formdata.append("file", blobInfo.blob());
-  
-            var requestOptions = {
-              method: "POST",
-              body: formdata,
-              redirect: "follow",
-            };
-  
-            fetch("https://maverick.lille.ai/upload/image", requestOptions)
-              // .then((response) => response.text())
-              // .then((result) => {
-              //   const data = JSON.parse(result);
-              //   success(data.url);
-              // })
-              .catch((error) => console.log("error", error));*/
+                    reader.readAsDataURL(file);
+                  };
 
-            console.log("Harsh test this block");
+                  input.click();
+                },
+                images_upload_handler: (blobInfo, success, failure) => {
+                  /*var formdata = new FormData();
+                  formdata.append("file", blobInfo.blob());
+        
+                  var requestOptions = {
+                    method: "POST",
+                    body: formdata,
+                    redirect: "follow",
+                  };
+        
+                  fetch("https://maverick.lille.ai/upload/image", requestOptions)
+                    // .then((response) => response.text())
+                    // .then((result) => {
+                    //   const data = JSON.parse(result);
+                    //   success(data.url);
+                    // })
+                    .catch((error) => console.log("error", error));*/
 
-            const formdata = new FormData();
-            formdata.append("file", blobInfo.blob());
+                  console.log("Harsh test this block");
 
-            const config = {
-              method: "post",
-              url: API_BASE_PATH + "/upload/image",
-              data: formdata,
-            };
+                  const formdata = new FormData();
+                  formdata.append("file", blobInfo.blob());
 
-            axios(config)
-              .then((response) => { })
-              .catch((error) => console.log("error", error));
-          },
-        }}
-        onEditorChange={(content, editor) => {
-          setEditorText(content);
-          setSaveText("Save Now!");
-          // console.log(updatedText);
-        }}
-      />
+                  const config = {
+                    method: "post",
+                    url: API_BASE_PATH + "/upload/image",
+                    data: formdata,
+                  };
+
+                  axios(config)
+                    .then((response) => { })
+                    .catch((error) => console.log("error", error));
+                },
+              }}
+              onEditorChange={(content, editor) => {
+                setEditorText(content);
+                setSaveText("Save Now!");
+                // console.log(updatedText);
+              }}
+            />
+          </>
+          :
+          <div>
+            Twitter thrad ui
+            <Threads threadData={twitterThreadData} />
+          </div>
+      }
+
       <hr />
     </>
   );
 }
+
+const Threads = ({ threadDatas }) => {
+  const [threadData, setthreadData] = useState(defaultThreadData);
+
+  const addTextArea = () => {
+    if (threadData.length < 20) {
+      setthreadData([...threadData, ""]);
+    }
+  };
+
+  const updateTextArea = (index, value) => {
+    const updatedThreads = [...threadData];
+    updatedThreads[index] = value;
+    setthreadData(updatedThreads);
+  };
+
+  const deleteThread = (index) => {
+    const updatedThreads = [...threadData];
+    updatedThreads.splice(index, 1);
+    setthreadData(updatedThreads);
+  };
+
+  const moveThreadUp = (index) => {
+    if (index > 0) {
+      const updatedThreads = [...threadData];
+      [updatedThreads[index - 1], updatedThreads[index]] = [
+        updatedThreads[index],
+        updatedThreads[index - 1],
+      ];
+      setthreadData(updatedThreads);
+    }
+  };
+
+  const moveThreadDown = (index) => {
+    if (index < threadData.length - 1) {
+      const updatedThreads = [...threadData];
+      [updatedThreads[index], updatedThreads[index + 1]] = [
+        updatedThreads[index + 1],
+        updatedThreads[index],
+      ];
+      setthreadData(updatedThreads);
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen py-2">
+      <div className="flex flex-col space-y-4 max-w-4xl">
+        {threadData.map((thread, index) => (
+          <Thread
+            key={index}
+            thread={thread}
+            threadData={threadData}
+            index={index}
+            addTextArea={addTextArea}
+            updateTextArea={updateTextArea}
+            moveThreadUp={moveThreadUp}
+            moveThreadDown={moveThreadDown}
+            deleteThread={deleteThread}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const Thread = ({
+  threadData,
+  thread,
+  index,
+  updateTextArea,
+  moveThreadUp,
+  moveThreadDown,
+  deleteThread,
+  addTextArea,
+}) => {
+  return (
+    <div key={index} className="relative w-full min-w-[400px]">
+      <div className="flex flex-row w-full h-full bg-gray-100 opacity-50 rounded-md my-3 ">
+        <div className={`w-[10%] flex items-center justify-center`}>
+          <span>
+            <p className="text-center">{index + 1} :</p>
+          </span>
+        </div>
+        <div className={`w-[85%]`}>
+          <TextareaAutosize
+            className="w-full h-full p-2 bg-transparent resize-none text-black overflow-auto border border-transparent focus:border-gray-900 hover:border-gray-900 rounded-md "
+            style={{
+              wordWrap: "break-word",
+              whiteSpace: "pre-wrap",
+              color: "black",
+            }}
+            placeholder="Type your thread here..."
+            value={thread}
+            minLength={1}
+            onChange={(e) => updateTextArea(index, e.target.value)}
+          />
+        </div>
+        <div className={`w-[10%] flex flex-col justify-around items-center`}>
+          {index > 0 && (
+            <button
+              className="text-red-500 hover:text-red-700 flex items-center justify-center"
+              onClick={() => deleteThread(index)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                />
+              </svg>
+            </button>
+          )}
+          {index > 0 && (
+            <button
+              className="text-gray-500 hover:text-gray-700 flex items-center justify-center"
+              onClick={() => moveThreadUp(index)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M4.5 15.75l7.5-7.5 7.5 7.5"
+                />
+              </svg>
+            </button>
+          )}
+          {index < threadData.length - 1 && (
+            <button
+              className="text-gray-500 hover:text-gray-700 flex items-center justify-center"
+              onClick={() => moveThreadDown(index)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+      {index === threadData.length - 1 && (
+        <div>
+          <button
+            onClick={addTextArea}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+          >
+            + Add Thread
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}; 
