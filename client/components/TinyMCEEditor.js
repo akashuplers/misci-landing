@@ -445,7 +445,7 @@ export default function TinyMCEEditor({
               var userCredits = meeData?.me?.totalCredits - creditLeft - 1;
               console.log('USER CREDITS: ' + userCredits);
               userCredits = userCredits + 2;
-              var userPublishCount =Number(meeData?.me?.publishCount);
+              var userPublishCount = Number(meeData?.me?.publishCount);
               console.log('pubb', userPublishCount)
               console.log('USER PUBLISH COUNT: ' + userPublishCount);
               const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (userCredits === 20 || userCredits === 10 || userPublishCount === 0) && !meeData?.me?.isSubscribed;
@@ -1229,9 +1229,7 @@ export default function TinyMCEEditor({
         )}
       </div>
       {isalert && (
-        <div className="p-2 text-xs">
-          Lille is not responsible for any images which are uploaded by you
-          which contains copyright infringement.
+        <div className="p-2 text-xs">Lille is not responsible for any images uploaded by you that  contain copyright infringement.
           <button
             onClick={() => {
               setAlert(false);
