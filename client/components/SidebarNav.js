@@ -18,6 +18,7 @@ import Avatar from "react-avatar";
 import { ToastContainer } from "react-toastify";
 import { meeAPI } from "../graphql/querys/mee";
 import { logout } from "../helpers/helper";
+import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -80,7 +81,12 @@ export default function Sidebar() {
 
   const navigation_bottom = [
     {
-      name: "Setting",
+      name: "FAQs",
+      href: "/faq",
+      icon: QuestionMarkCircleIcon,
+    },
+    {
+      name: "Settings",
       href: "/settings",
       icon: Cog6ToothIcon,
       current: url === "/settings",
