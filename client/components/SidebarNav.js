@@ -81,7 +81,7 @@ export default function Sidebar() {
 
   const navigation_bottom = [
     {
-      name: "FAQ's",
+      name: "FAQs",
       href: "/faq",
       icon: QuestionMarkCircleIcon,
     },
