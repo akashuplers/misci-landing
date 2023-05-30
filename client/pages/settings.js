@@ -123,45 +123,47 @@ export default function Settings() {
   }
 
   const {
-    data: meeData, loading: meeLoading, error: meeError,} = useQuery(meeAPI, {context: {headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + getToken,
+    data: meeData, loading: meeLoading, error: meeError, } = useQuery(meeAPI, {
+      context: {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + getToken,
+        },
       },
-    },
-    onError: ({ graphQLErrors, networkError }) => {
-      if (graphQLErrors) {
-        for (let err of graphQLErrors) {
-          switch (err.extensions.code) {
-            case "UNAUTHENTICATED":
-              localStorage.clear();
-              window.location.href = "/";
+      onError: ({ graphQLErrors, networkError }) => {
+        if (graphQLErrors) {
+          for (let err of graphQLErrors) {
+            switch (err.extensions.code) {
+              case "UNAUTHENTICATED":
+                localStorage.clear();
+                window.location.href = "/";
+            }
           }
         }
-      }
-      if (networkError) {
-        console.log(`[Network error]: ${networkError}`);
-        if (
-          `${networkError}` ===
-          "ServerError: Response not successful: Received status code 401"
-        ) {
-          localStorage.clear();
-          toast.error("Session Expired! Please Login Again..", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
-          setTimeout(() => {
-            window.location.href = "/";
-          }, 3000);
+        if (networkError) {
+          console.log(`[Network error]: ${networkError}`);
+          if (
+            `${networkError}` ===
+            "ServerError: Response not successful: Received status code 401"
+          ) {
+            localStorage.clear();
+            toast.error("Session Expired! Please Login Again..", {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+            setTimeout(() => {
+              window.location.href = "/";
+            }, 3000);
+          }
         }
-      }
-    },
-  });
+      },
+    });
 
   useEffect(() => {
     if (meeData != null) {
@@ -738,6 +740,8 @@ export default function Settings() {
                                           </>
                                         ) : (
                                           <>
+                                            <span class="text-red-500 py-2 rounded">Cancelled</span>
+                                            <br />
                                             Last Date of Subscription :{" "}
                                             <span style={{ fontWeight: "600" }}>
                                               {formatDate(
@@ -747,11 +751,12 @@ export default function Settings() {
                                                 )
                                               )}
                                             </span>
+
                                           </>
                                         )}
                                       </span>
                                     </dd>
-                                    {meeData?.me?.paymentsStarts && meeData?.me?.paid && (
+                                    {meeData?.me?.paymentsStarts && meeData?.me?.paid && meeData?.me?.interval !== "monthly" && (
                                       <div
                                         class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-2 w-[310%]"
                                         role="alert"
