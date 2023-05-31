@@ -597,17 +597,25 @@ export default function TinyMCEEditor({
       const tempDiv = document.createElement("div");
       console.log(tempDiv);
       tempDiv.innerHTML = updatedText;
-
-      let textContent = tempDiv.textContent;
-
-      setPublishTweetLoad(true);
-
-      const data = {
+      var data = {
         token: twitterAccessToken,
-        text: textContent,
         secret: twitterAccessTokenSecret,
         blogId: blog_id,
       };
+
+      // let textContent = tempDiv.textContent;
+      var textContent ;
+      if(showTwitterThreadUI ===true){
+        textContent = twitterThreadData;
+        data.texts = textContent;
+      }else{
+        textContent = tempDiv.textContent;
+        data.text = textContent;
+      }
+
+      setPublishTweetLoad(true);
+
+      
       if (textContent.length < 280) {
         try {
           axios
@@ -1304,7 +1312,7 @@ export default function TinyMCEEditor({
                 images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
                 images_upload_credentials: true,
                 plugins:
-                  "preview casechange importcss tinydrive searchreplace save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount a11ychecker editimage help formatpainter permanentpen pageembed charmap mentions linkchecker emoticons advtable export footnotes mergetags",
+                  "preview casechange importcss tinydrive searchreplace save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount  editimage help formatpainter permanentpen pageembed charmap emoticons advtable export mergetags",
                 menu: {
                   tc: {
                     title: "Comments",
@@ -1415,7 +1423,7 @@ export default function TinyMCEEditor({
           </>
           :
           <div>
-            <Threads threadDatas={twitterThreadData} />
+            <Threads threadData ={twitterThreadData} setthreadData={setTwitterThreadData} />
           </div>
       }
 
