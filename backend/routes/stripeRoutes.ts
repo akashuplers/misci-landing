@@ -33,70 +33,103 @@ router.post('/api/payment', async (request: any, reply: any) => {
 router.post('/webhook',  async (request: any, reply: any) => {
     const db = request.app.get('db')
     let event = request.body;
-    // Replace this endpoint secret with your endpoint's unique secret
-    // If you are testing with the CLI, find the secret by running 'stripe listen'
-    // If you are using an endpoint defined with the API or dashboard, look in your webhook settings
-    // at https://dashboard.stripe.com/webhooks
-    const endpointSecret = process.env.ENDPOINT_SECRET;
-    // Only verify the event if you have an endpoint secret defined.
-    // Otherwise use the basic event deserialized with JSON.parse
-    // if (endpointSecret) {
-    //   // Get the signature sent by Stripe
-    //   const signature = request.headers['stripe-signature'];
-    //   console.log(signature, request.body)
-    //   // let 
-    //   // if(signature) {
+    try {
+        // Replace this endpoint secret with your endpoint's unique secret
+        // If you are testing with the CLI, find the secret by running 'stripe listen'
+        // If you are using an endpoint defined with the API or dashboard, look in your webhook settings
+        // at https://dashboard.stripe.com/webhooks
+        const endpointSecret = process.env.ENDPOINT_SECRET;
+        // Only verify the event if you have an endpoint secret defined.
+        // Otherwise use the basic event deserialized with JSON.parse
+        // if (endpointSecret) {
+        //   // Get the signature sent by Stripe
+        //   const signature = request.headers['stripe-signature'];
+        //   console.log(signature, request.body)
+        //   // let 
+        //   // if(signature) {
 
-    //   // }
-    //   try {
-    //     event = stripe.webhooks.constructEvent(
-    //       request.body,
-    //       signature,
-    //       endpointSecret
-    //     );
-    //   } catch (err) {
-    //     console.log(`⚠️  Webhook signature verification failed.`, err.message);
-    //     return response.sendStatus(400);
-    //   }
-    // }
-    let subscription;
-    let status;
-    console.log(event.type, "type")
-    // Handle the event
-    switch (event.type) {
-    // case 'customer.subscription.deleted':
-    //   subscription = event.data.object;
-    //   status = subscription.status;
-    //   console.log(`Subscription status is ${status}.`);
-    //   // Then define and call a method to handle the subscription deleted.
-    //   // handleSubscriptionDeleted(subscriptionDeleted);
-    //   break;
-    case 'invoice.paid':
-        console.log(event.data.object, 'invoice.paid')
+        //   // }
+        //   try {
+        //     event = stripe.webhooks.constructEvent(
+        //       request.body,
+        //       signature,
+        //       endpointSecret
+        //     );
+        //   } catch (err) {
+        //     console.log(`⚠️  Webhook signature verification failed.`, err.message);
+        //     return response.sendStatus(400);
+        //   }
+        // }
+        let subscription;
+        let status;
+        console.log(event.type, "type")
+        // Handle the event
+        switch (event.type) {
+        // case 'customer.subscription.deleted':
+        //   subscription = event.data.object;
+        //   status = subscription.status;
+        //   console.log(`Subscription status is ${status}.`);
+        //   // Then define and call a method to handle the subscription deleted.
+        //   // handleSubscriptionDeleted(subscriptionDeleted);
+        //   break;
+        case 'invoice.paid':
+            console.log(event.data.object, 'invoice.paid')
 
-        break;
-    case 'customer.subscription.created':
-        subscription = event.data.object;
-        // console.log(subscription);
-        // console.log(event.data);
-        status = subscription.status;
-        // console.log(`Subscription status is ${status}.`);
-        // Then define and call a method to handle the subscription created.
-        // handleSubscriptionCreated(subscription);
-        break;
-    case 'customer.subscription.updated':
-        subscription = event.data.object;
-        status = subscription.status;
-        let { previous_attributes, object } = event.data
-        let customer_id = object.customer
-        let product_id = object.plan.product
-        let customer_object = await new Stripe().getCustomerDetails(customer_id)
-        // console.log(subscription,event.data, "subscription")
-        if ('status' in previous_attributes
-              && previous_attributes.status === 'active'
-              && object.status === 'active') {
-            if("current_period_start" in previous_attributes && previous_attributes.current_period_start !== subscription.current_period_start) {
-                console.log("========== Renewing ===========")
+            break;
+        case 'customer.subscription.created':
+            subscription = event.data.object;
+            // console.log(subscription);
+            // console.log(event.data);
+            status = subscription.status;
+            // console.log(`Subscription status is ${status}.`);
+            // Then define and call a method to handle the subscription created.
+            // handleSubscriptionCreated(subscription);
+            break;
+        case 'customer.subscription.updated':
+            subscription = event.data.object;
+            status = subscription.status;
+            let { previous_attributes, object } = event.data
+            let customer_id = object.customer
+            let product_id = object.plan.product
+            let customer_object = await new Stripe().getCustomerDetails(customer_id)
+            // console.log(subscription,event.data, "subscription")
+            if ('status' in previous_attributes
+                && previous_attributes.status === 'active'
+                && object.status === 'active') {
+                if("current_period_start" in previous_attributes && previous_attributes.current_period_start !== subscription.current_period_start) {
+                    console.log("========== Renewing ===========")
+                    const newCredit = await db.db('lilleAdmin').collection('config').findOne()
+                    await db.db('lilleAdmin').collection('users').updateOne({email: customer_object.email}, {
+                        $set: {
+                            isSubscribed: true,
+                            paid: true,
+                            interval: subscription.plan.interval === 'year' ? subscription.plan.interval : 
+                            subscription.plan.interval === 'month' && subscription.plan.interval_count === 1 ? "monthly" : "quarterly",
+                            lastInvoicedDate: subscription.current_period_start,
+                            upcomingInvoicedDate: subscription.current_period_end,
+                            credits: parseInt(newCredit?.monthly_credit || "200"),
+                            totalCredits: parseInt(newCredit?.monthly_credit || "200"),
+                        }
+                    })
+                }    
+            }
+            if ('status' in previous_attributes
+                && previous_attributes.status === 'incomplete'
+                && object.status === 'active') {
+                let mailSend = true    
+                const subscriptionDetails = await db.db('lilleAdmin').collection('subscriptions').findOne({subscriptionId: subscription.id})
+                if(subscriptionDetails && subscriptionDetails.subscriptionStatus === 'active') mailSend = false
+                await db.db('lilleAdmin').collection('subscriptions').updateOne({subscriptionId: subscription.id}, {$set: {
+                    subscriptionStatus: status,
+                    paymentStatus: "success",
+                    lastInvoicedDate: subscription.current_period_start,
+                    upcomingInvoicedDate: subscription.current_period_end
+                }})    
+                console.log(`Subscription status is ${status} from ${object.status}.`);
+                const userDetails = await db.db('lilleAdmin').collection('users').findOne({
+                    email: customer_object.email
+                })
+                console.log(`userDetails`, userDetails);
                 const newCredit = await db.db('lilleAdmin').collection('config').findOne()
                 await db.db('lilleAdmin').collection('users').updateOne({email: customer_object.email}, {
                     $set: {
@@ -106,99 +139,72 @@ router.post('/webhook',  async (request: any, reply: any) => {
                         subscription.plan.interval === 'month' && subscription.plan.interval_count === 1 ? "monthly" : "quarterly",
                         lastInvoicedDate: subscription.current_period_start,
                         upcomingInvoicedDate: subscription.current_period_end,
-                        credits: parseInt(newCredit?.monthly_credit || "200"),
-                        totalCredits: parseInt(newCredit?.monthly_credit || "200"),
+                        freeTrial: false,
+                        freeTrailEndsDate: null,
+                        credits: parseInt(newCredit?.monthly_credit || "200") + parseInt(userDetails?.credits || 0),
+                        totalCredits: parseInt(newCredit?.monthly_credit || "200") + parseInt(userDetails?.credits || 0),
+                        paymentsStarts: getTimeStamp()
                     }
                 })
-            }    
-        }
-        if ('status' in previous_attributes
-              && previous_attributes.status === 'incomplete'
-              && object.status === 'active') {
-            let mailSend = true    
-            const subscriptionDetails = await db.db('lilleAdmin').collection('subscriptions').findOne({subscriptionId: subscription.id})
-            if(subscriptionDetails && subscriptionDetails.subscriptionStatus === 'active') mailSend = false
-            await db.db('lilleAdmin').collection('subscriptions').updateOne({subscriptionId: subscription.id}, {$set: {
-                subscriptionStatus: status,
-                paymentStatus: "success",
-                lastInvoicedDate: subscription.current_period_start,
-                upcomingInvoicedDate: subscription.current_period_end
-            }})    
-            console.log(`Subscription status is ${status} from ${object.status}.`);
-            const userDetails = await db.db('lilleAdmin').collection('users').findOne({
-                email: customer_object.email
-            })
-            const newCredit = await db.db('lilleAdmin').collection('config').findOne()
-            await db.db('lilleAdmin').collection('users').updateOne({email: customer_object.email}, {
-                $set: {
-                    isSubscribed: true,
-                    paid: true,
-                    interval: subscription.plan.interval === 'year' ? subscription.plan.interval : 
-                    subscription.plan.interval === 'month' && subscription.plan.interval_count === 1 ? "monthly" : "quarterly",
-                    lastInvoicedDate: subscription.current_period_start,
-                    upcomingInvoicedDate: subscription.current_period_end,
-                    freeTrial: false,
-                    freeTrailEndsDate: null,
-                    credits: parseInt(newCredit?.monthly_credit || "200") + parseInt(userDetails.credits || 0),
-                    totalCredits: parseInt(newCredit?.monthly_credit || "200") + parseInt(userDetails.credits || 0),
-                    paymentsStarts: getTimeStamp()
+                if(mailSend) {
+                    const bodyText = await db.db('lilleAdmin').collection('emailTexts').findOne({type: "subscription"})
+                    await sendMail(userDetails, 'Subscribed!', bodyText.text)
                 }
-            })
-            if(mailSend) {
-                const bodyText = await db.db('lilleAdmin').collection('emailTexts').findOne({type: "subscription"})
-                await sendMail(userDetails, 'Subscribed!', bodyText.text)
             }
-        }
-        if (!previous_attributes.status && object.status === 'active') {
-            console.log(`Subscription status is ${status} from ${object.status}.`);
-            await db.db('lilleAdmin').collection('subscriptions').updateOne({subscriptionId: subscription.id}, {$set: {
-                lastInvoicedDate: subscription.current_period_start,
-                upcomingInvoicedDate: subscription.current_period_end
-            }})
-            await db.db('lilleAdmin').collection('users').updateOne({email: customer_object.email}, {
-                $set: {
+            if (!previous_attributes.status && object.status === 'active') {
+                console.log(`Subscription status is ${status} from ${object.status}.`);
+                await db.db('lilleAdmin').collection('subscriptions').updateOne({subscriptionId: subscription.id}, {$set: {
                     lastInvoicedDate: subscription.current_period_start,
                     upcomingInvoicedDate: subscription.current_period_end
-                }
-            })
+                }})
+                await db.db('lilleAdmin').collection('users').updateOne({email: customer_object.email}, {
+                    $set: {
+                        lastInvoicedDate: subscription.current_period_start,
+                        upcomingInvoicedDate: subscription.current_period_end
+                    }
+                })
+            }
+            if (previous_attributes.status && previous_attributes.status !== "canceled" && object.status === 'canceled') {
+                console.log(`Subscription ${subscription.id} status is ${object.status}.`);
+                await db.db('lilleAdmin').collection('subscriptions').updateOne({subscriptionId: subscription.id}, {$set: {
+                    lastInvoicedDate: subscription.current_period_start,
+                    upcomingInvoicedDate: subscription.current_period_end,
+                    subscriptionStatus: object.status,
+                    paymentsStarts: null
+                }})
+            }
+            if ('status' in previous_attributes &&
+            previous_attributes.status === 'active'
+            && object.status === 'past_due') {
+                console.log(`Subscription status is ${status} from ${object.status}.`);
+                await db.db('lilleAdmin').collection('subscriptions').updateOne({subscriptionId: subscription.id}, {$set: {
+                    subscriptionStatus: object.status
+                }})
+                await db.db('lilleAdmin').collection('users').updateOne({email: customer_object.email}, {
+                    $set: {
+                        isSubscribed: false,
+                        freeTrial: true,
+                        paymentsStarts: null,
+                        lastInvoicedDate: null,
+                        upcomingInvoicedDate: null,
+                        credits: process.env.CREDIT_COUNT,
+                        totalCredits: process.env.CREDIT_COUNT
+                    }
+                })
+            }
+            break;
+        default:
+            // Unexpected event type
+            console.log(`Unhandled event type ${event.type}.`);
         }
-        if (previous_attributes.status && previous_attributes.status !== "canceled" && object.status === 'canceled') {
-            console.log(`Subscription ${subscription.id} status is ${object.status}.`);
-            await db.db('lilleAdmin').collection('subscriptions').updateOne({subscriptionId: subscription.id}, {$set: {
-                lastInvoicedDate: subscription.current_period_start,
-                upcomingInvoicedDate: subscription.current_period_end,
-                subscriptionStatus: object.status,
-                paymentsStarts: null
-            }})
-        }
-        if ('status' in previous_attributes &&
-        previous_attributes.status === 'active'
-        && object.status === 'past_due') {
-            console.log(`Subscription status is ${status} from ${object.status}.`);
-            await db.db('lilleAdmin').collection('subscriptions').updateOne({subscriptionId: subscription.id}, {$set: {
-                subscriptionStatus: object.status
-            }})
-            await db.db('lilleAdmin').collection('users').updateOne({email: customer_object.email}, {
-                $set: {
-                    isSubscribed: false,
-                    freeTrial: true,
-                    paymentsStarts: null,
-                    lastInvoicedDate: null,
-                    upcomingInvoicedDate: null,
-                    credits: process.env.CREDIT_COUNT,
-                    totalCredits: process.env.CREDIT_COUNT
-                }
-            })
-        }
-        break;
-    default:
-        // Unexpected event type
-        console.log(`Unhandled event type ${event.type}.`);
+        return reply.status(200).send({
+            type: "SUCCESS",
+            message: "Webhook!!"
+        })
+    }catch(e) {
+        console.log(e, "error from stripe webhook")
+        console.log(event, "event from stripe webhook")
     }
-    return reply.status(200).send({
-        type: "SUCCESS",
-        message: "Webhook!!"
-    })
 })
 
 router.post('/upgrade', authMiddleware, async (request: any, reply: any) => {
