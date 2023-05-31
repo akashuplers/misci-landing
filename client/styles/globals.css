@@ -383,42 +383,7 @@ a[aria-label="Powered by Tidio."] {
     opacity: 1;
   }
 }
-@keyframes move-up {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(-100%);
-  }
-}
-
-@keyframes move-down {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(100%);
-  }
-}
-
-@keyframes fade-out {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
 
 .thread-item {
-  animation: move-up 0.3s ease-in-out;
-}
-
-.thread-item-delete {
-  animation: fade-out 0.3s ease-in-out, move-down 0.3s ease-in-out;
-  animation-fill-mode: forwards;
-}
-
-.hidden {
-  display: none;
+  animation: fade-in 0.5s ease-in-out;
 }
