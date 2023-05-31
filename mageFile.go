@@ -133,7 +133,7 @@ func ServerStart(server string) error {
 	fmt.Printf("Starting up %v Test Server...", server)
 	os.Chdir("./backend")
 	// err = sh.Run("pm2", "start", "npm", "--name", "'Merlin'", "--", "run", "start")
-	specialFmt := fmt.Sprintf("'" + server + "'")
+	// specialFmt := fmt.Sprintf("'" + server + "'")
 	// err = sh.Run("pm2", "start", "npm", "--name", specialFmt, "--", "run", "start")
 	err = sh.Run("pm2 start npm --name 'prod' -- run start")
 	specialFmtForFrontend := fmt.Sprintf("frontend")
