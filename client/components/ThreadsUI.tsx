@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 
-const Threads = ({ threadDatas}:any) => {
-    const [threadData, setthreadData] = useState(threadDatas);
+const Threads = ({ threadData, setthreadData}:any) => {
+    // const [threadData, setthreadData] = useState(threadData);
     console.log("THREADS DATA");
-    console.log(threadDatas);
+    console.log(threadData);
     const addTextArea = () => {
         if (threadData.length < 20) {
             setthreadData([...threadData, ""]);
