@@ -66,6 +66,7 @@ const Threads = ({ threadData, setthreadData }: any) => {
   );
 };
  
+const MAX_THREAD_COUNT = 280;
 
 const Thread = ({
     threadData,
@@ -89,6 +90,9 @@ const Thread = ({
 
     const animationStyle =
         index < threadData.length - 1 ? moveUpAnimation : moveDownAnimation;
+    const getCharCount = (text: string) => {
+        return text.length;
+    }
 
     return (
         <div
@@ -104,7 +108,7 @@ const Thread = ({
                         <p className="text-center">{index + 1} :</p>
                     </span>
                 </div>
-                <div className={`max-w-[90%] w-[90%] flex  border  border-gray-300 focus:border-gray-900 hover:border-gray-900 rounded-md justify-between`}>
+                <div className={`max-w-[90%] w-[90%] flex  border  rounded-md justify-between ${getCharCount(thread) > MAX_THREAD_COUNT  ? 'border-red-500 border-1 shadow-red-200 shadow-md focus:border-red-700 hover:border-red-700 ' : 'border-gray-300 focus:border-gray-900 hover:border-gray-900 '}`}>
                 <div className={`max-w-[95%] w-[95%]`}>
                     <TextareaAutosize
                         className="w-full min-h-full p-2  px-3 py-4 text-black overflow-auto  rounded-md"
@@ -118,7 +122,7 @@ const Thread = ({
                             outline: "none",
                             borderColor: 'transparent',
                             outlineColor: 'transparent',
-                            boxShadow: 'none',
+                            boxShadow: getCharCount(thread) > MAX_THREAD_COUNT  ? 'red' : 'none',
                         }}
                         placeholder="Type your thread here..."
                         value={thread}
