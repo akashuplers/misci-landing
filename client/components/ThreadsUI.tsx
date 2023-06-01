@@ -123,7 +123,7 @@ const Thread = ({
                             borderColor: 'transparent',
                             outlineColor: 'transparent',
                             boxShadow: getCharCount(thread) > MAX_THREAD_COUNT  ? 'red' : 'none',
-                        }}
+                        }}  
                         placeholder="Type your thread here..."
                         value={thread}
                         minLength={1}
