@@ -387,3 +387,8 @@ a[aria-label="Powered by Tidio."] {
 .thread-item {
   animation: fade-in 0.5s ease-in-out;
 }
+
+.thread-item textarea {
+  outline: none;
+  resize: none; /*remove the resize handle on the bottom right*/
+}
