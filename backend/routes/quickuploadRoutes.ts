@@ -137,7 +137,7 @@ router.post('/keyword', authMiddleware, async (req: any, res: any) => {
                     }
                     const name = article._source?.source?.name
                     return (
-                        article?._source?.summary?.forEach((summary: string, index: number) => index < 5 ? articlesData.push({
+                        article?._source?.summary?.forEach((summary: string, index: number) => index < 10 ? articlesData.push({
                             idea: summary,
                             article_id: id,
                             used: 0,
