@@ -11,6 +11,8 @@ import { useEffect, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import ReactLoading from "react-loading";
 import Modal from "react-modal";
+import TextareaAutosize from "react-textarea-autosize";
+
 import {
   EmailIcon,
   EmailShareButton,
@@ -36,6 +38,7 @@ import useStore, { useByMeCoffeModal } from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import LoaderPlane from "./LoaderPlane";
 import TrialEndedModal from "./TrialEndedModal";
+import Threads from "./ThreadsUI";
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 export default function TinyMCEEditor({
@@ -79,7 +82,8 @@ export default function TinyMCEEditor({
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
   const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
   const [contributinoModalLoader, setContributionModalLoader] = useState(false);
-
+  const [showTwitterThreadUI, setShowTwitterThreadUI] = useState(false);
+  const [twitterThreadData, setTwitterThreadData] = useState([]);
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -593,17 +597,25 @@ export default function TinyMCEEditor({
       const tempDiv = document.createElement("div");
       console.log(tempDiv);
       tempDiv.innerHTML = updatedText;
-
-      let textContent = tempDiv.textContent;
-
-      setPublishTweetLoad(true);
-
-      const data = {
+      var data = {
         token: twitterAccessToken,
-        text: textContent,
         secret: twitterAccessTokenSecret,
         blogId: blog_id,
       };
+
+      // let textContent = tempDiv.textContent;
+      var textContent ;
+      if(showTwitterThreadUI ===true){
+        textContent = twitterThreadData;
+        data.texts = textContent;
+      }else{
+        textContent = tempDiv.textContent;
+        data.text = textContent;
+      }
+
+      setPublishTweetLoad(true);
+
+      
       if (textContent.length < 280) {
         try {
           axios
@@ -679,6 +691,7 @@ export default function TinyMCEEditor({
       aa = newArray[newArray?.length - 1].tiny_mce_data;
     }
     const htmlDoc = jsonToHtml(aa);
+    // check
 
     setEditorText(htmlDoc);
   }
@@ -692,6 +705,7 @@ export default function TinyMCEEditor({
       (pd) => pd.platform === "linkedin"
     ).tiny_mce_data;
     const htmlDoc = jsonToHtml(aa);
+    setShowTwitterThreadUI(false);
     setEditorText(htmlDoc);
   }
   function handleTwitterBlog(e) {
@@ -702,9 +716,19 @@ export default function TinyMCEEditor({
     button.classList.add("active");
     const aa = blogData?.publish_data?.find(
       (pd) => pd.platform === "twitter"
-    ).tiny_mce_data;
-    const htmlDoc = jsonToHtml(aa);
+    );
+    const htmlDoc = jsonToHtml(aa.tiny_mce_data);
+    console.log('MOVEING TO ');
+    if (aa.threads === null || aa.threads === undefined || aa.threads.length === 0 || aa.threads == "") {
+      setShowTwitterThreadUI(false);
+    } else {
+      console.log("THREADS DATA");
+      console.log(aa.threads);
+       setTwitterThreadData(aa.threads);
+      setShowTwitterThreadUI(true);
+    }
     setEditorText(htmlDoc);
+
   }
 
   if (loading) return <LoaderPlane />;
@@ -1252,147 +1276,166 @@ export default function TinyMCEEditor({
           </button>
         </div>
       )}
-      <Editor
-        value={updatedText || editorText}
-        apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
-        init={{
-          setup: (editor) => {
-            if (editor.inline) {
-              registerPageMouseUp(editor, throttledStore);
-            }
-          },
-          init_instance_callback: function (editor) {
-            editor.on("ExecCommand", function (e) {
-              console.log("The " + e.command + " command was fired.");
-              if (e.command === "mceImage") {
-                setAlert(true);
-                console.log("777");
-              }
-              if (isEditing) {
-                // setEditingMode(true);
-                isEditing = false;
-              }
-            });
-          },
-          skin: "naked",
-          icons: "small",
-          toolbar_location: "bottom",
-          plugins: "lists code table codesample link",
-          menubar: false,
-          statusbar: false,
-          height: "82vh",
-          images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
-          images_upload_credentials: true,
-          plugins:
-          "preview casechange importcss tinydrive searchreplace save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount  editimage help formatpainter permanentpen pageembed charmap emoticons advtable export mergetags",
-          menu: {
-            tc: {
-              title: "Comments",
-              items: "addcomment showcomments deleteallconversations",
-            },
-          },
-          toolbar:
-            "undo redo image| bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment | footnotes | mergetags",
-          image_title: true,
-          automatic_uploads: true,
-          file_picker_types: "image",
-          file_picker_callback: function (cb, value, meta) {
-            console.log("852");
-            var input = document.createElement("input");
-            input.setAttribute("type", "file");
-            input.setAttribute("accept", "image/*");
-            var url = API_BASE_PATH + `/upload/image`;
-            var xhr = new XMLHttpRequest();
-            var fd = new FormData();
-            xhr.open("POST", url, true);
 
-            input.onchange = function () {
-              var file = this.files[0];
-              var reader = new FileReader();
-              xhr.onload = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                  // File uploaded successfully
-                  var response = JSON.parse(xhr.responseText);
+      {
+        showTwitterThreadUI === false ?
+          <>
+            <Editor
+              value={updatedText || editorText}
+              apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
+              init={{
+                setup: (editor) => {
+                  if (editor.inline) {
+                    registerPageMouseUp(editor, throttledStore);
+                  }
+                },
+                init_instance_callback: function (editor) {
+                  editor.on("ExecCommand", function (e) {
+                    console.log("The " + e.command + " command was fired.");
+                    if (e.command === "mceImage") {
+                      setAlert(true);
+                      console.log("777");
+                    }
+                    if (isEditing) {
+                      // setEditingMode(true);
+                      isEditing = false;
+                    }
+                  });
+                },
+                skin: "naked",
+                icons: "small",
+                toolbar_location: "bottom",
+                plugins: "lists code table codesample link",
+                menubar: false,
+                statusbar: false,
+                height: "82vh",
+                images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
+                images_upload_credentials: true,
+                plugins:
+                "preview casechange importcss tinydrive searchreplace save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount  editimage help formatpainter permanentpen pageembed charmap emoticons advtable export mergetags",
+                menu: {
+                  tc: {
+                    title: "Comments",
+                    items: "addcomment showcomments deleteallconversations",
+                  },
+                },
+                toolbar:
+                  "undo redo image| bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment | footnotes | mergetags",
+                image_title: true,
+                automatic_uploads: true,
+                file_picker_types: "image",
+                file_picker_callback: function (cb, value, meta) {
+                  console.log("852");
+                  var input = document.createElement("input");
+                  input.setAttribute("type", "file");
+                  input.setAttribute("accept", "image/*");
+                  var url = API_BASE_PATH + `/upload/image`;
+                  var xhr = new XMLHttpRequest();
+                  var fd = new FormData();
+                  xhr.open("POST", url, true);
 
-                  // https://res.cloudinary.com/cloudName/image/upload/v1483481128/public_id.jpg
-                  var url = response.url;
-                  setImageURL(url);
-                  setAlert(true);
-                  console.log("response.data", response.data);
-                  console.log("imageURL", imageURL);
-                  console.log("88", url);
-                  console.log("999", load);
-                  setLoad(false);
-                  // Create a thumbnail of the uploaded image, with 150px width
-                  cb(url, { title: response.type });
-                }
-              };
+                  input.onchange = function () {
+                    var file = this.files[0];
+                    var reader = new FileReader();
+                    xhr.onload = function () {
+                      if (xhr.readyState === 4 && xhr.status === 200) {
+                        // File uploaded successfully
+                        var response = JSON.parse(xhr.responseText);
 
-              reader.onload = function () {
-                setLoad(true);
-                var id = "blobid" + new Date().getTime();
-                var blobCache =
-                  window.tinymce.activeEditor.editorUpload.blobCache;
-                var base64 = reader.result.split(",")[1];
+                        // https://res.cloudinary.com/cloudName/image/upload/v1483481128/public_id.jpg
+                        var url = response.url;
+                        setImageURL(url);
+                        setAlert(true);
+                        console.log("response.data", response.data);
+                        console.log("imageURL", imageURL);
+                        console.log("88", url);
+                        console.log("999", load);
+                        setLoad(false);
+                        // Create a thumbnail of the uploaded image, with 150px width
+                        cb(url, { title: response.type });
+                      }
+                    };
 
-                var blobInfo = blobCache.create(id, file, base64);
-                blobCache.add(blobInfo);
+                    reader.onload = function () {
+                      setLoad(true);
+                      var id = "blobid" + new Date().getTime();
+                      var blobCache =
+                        window.tinymce.activeEditor.editorUpload.blobCache;
+                      var base64 = reader.result.split(",")[1];
 
-                // call the callback and populate the Title field with the file name
+                      var blobInfo = blobCache.create(id, file, base64);
+                      blobCache.add(blobInfo);
 
-                // fd.append("upload_preset", unsignedUploadPreset);
-                // fd.append("path", "browser_upload");
-                fd.append("file", blobInfo.blob());
+                      // call the callback and populate the Title field with the file name
 
-                xhr.send(fd);
-              };
+                      // fd.append("upload_preset", unsignedUploadPreset);
+                      // fd.append("path", "browser_upload");
+                      fd.append("file", blobInfo.blob());
 
-              reader.readAsDataURL(file);
-            };
+                      xhr.send(fd);
+                    };
 
-            input.click();
-          },
-          images_upload_handler: (blobInfo, success, failure) => {
-            /*var formdata = new FormData();
-            formdata.append("file", blobInfo.blob());
-  
-            var requestOptions = {
-              method: "POST",
-              body: formdata,
-              redirect: "follow",
-            };
-  
-            fetch("https://maverick.lille.ai/upload/image", requestOptions)
-              // .then((response) => response.text())
-              // .then((result) => {
-              //   const data = JSON.parse(result);
-              //   success(data.url);
-              // })
-              .catch((error) => console.log("error", error));*/
+                    reader.readAsDataURL(file);
+                  };
 
-            console.log("Harsh test this block");
+                  input.click();
+                },
+                images_upload_handler: (blobInfo, success, failure) => {
+                  /*var formdata = new FormData();
+                  formdata.append("file", blobInfo.blob());
+        
+                  var requestOptions = {
+                    method: "POST",
+                    body: formdata,
+                    redirect: "follow",
+                  };
+        
+                  fetch("https://maverick.lille.ai/upload/image", requestOptions)
+                    // .then((response) => response.text())
+                    // .then((result) => {
+                    //   const data = JSON.parse(result);
+                    //   success(data.url);
+                    // })
+                    .catch((error) => console.log("error", error));*/
 
-            const formdata = new FormData();
-            formdata.append("file", blobInfo.blob());
+                  console.log("Harsh test this block");
 
-            const config = {
-              method: "post",
-              url: API_BASE_PATH + "/upload/image",
-              data: formdata,
-            };
+                  const formdata = new FormData();
+                  formdata.append("file", blobInfo.blob());
 
-            axios(config)
-              .then((response) => { })
-              .catch((error) => console.log("error", error));
-          },
-        }}
-        onEditorChange={(content, editor) => {
-          setEditorText(content);
-          setSaveText("Save Now!");
-          // console.log(updatedText);
-        }}
-      />
+                  const config = {
+                    method: "post",
+                    url: API_BASE_PATH + "/upload/image",
+                    data: formdata,
+                  };
+
+                  axios(config)
+                    .then((response) => { })
+                    .catch((error) => console.log("error", error));
+                },
+              }}
+              onEditorChange={(content, editor) => {
+                setEditorText(content);
+                setSaveText("Save Now!");
+                // console.log(updatedText);
+              }}
+            />
+          </>
+          :
+          <div
+              // overflowscroll verticalscroll
+              style={{
+                height: "82vh",
+                overflowY: "scroll",
+                overflowX: "hidden",
+                padding: "0px 10px",
+              }}
+          >
+            <Threads threadData ={twitterThreadData} setthreadData={setTwitterThreadData} />
+          </div>
+      }
       <hr />
     </>
   );
 }
+ 
