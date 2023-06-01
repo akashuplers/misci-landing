@@ -196,9 +196,9 @@ export const blogResolvers = {
                             tags.push(...article._source.driver)
                             const name = article._source?.source?.name
                             return {
-                                used_summaries: article._source.summary.slice(0, 5),
+                                used_summaries: article._source.summary.slice(0, 10),
                                 name: name && name === "file" ? "note" : name,
-                                unused_summaries: article._source.summary.slice(5),
+                                unused_summaries: article._source.summary.slice(10),
                                 keyword: article.keyword,
                                 id
                             }
@@ -400,8 +400,8 @@ export const blogResolvers = {
                                 tags.push(...productsTags, ...organizationTags, ...personsTags)
                             }
                             return {
-                                used_summaries: article._source.summary.slice(0, 5),
-                                unused_summaries: article._source.summary.slice(5),
+                                used_summaries: article._source.summary.slice(0, 10),
+                                unused_summaries: article._source.summary.slice(10),
                                 keyword: article.keyword,
                                 name: name && name === "file" ? "note" : name,
                                 id
@@ -745,8 +745,8 @@ export const blogResolvers = {
                                     }
                                     keyword = article.keyword
                                     return {
-                                        used_summaries: article._source.summary.slice(0, 5),
-                                        unused_summaries: article._source.summary.slice(5),
+                                        used_summaries: article._source.summary.slice(0, 10),
+                                        unused_summaries: article._source.summary.slice(10),
                                         keyword: article.keyword,
                                         name: name && name === "file" ? "note" : name,
                                         id
