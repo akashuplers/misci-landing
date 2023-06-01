@@ -66,7 +66,10 @@ const Threads = ({ threadData, setthreadData }: any) => {
   );
 };
  
-
+const MAX_THREAD_COUNT = 280;
+function getCharCount (text: string){
+    return text.length;
+}
 const Thread = ({
     threadData,
     thread,
@@ -89,6 +92,7 @@ const Thread = ({
 
     const animationStyle =
         index < threadData.length - 1 ? moveUpAnimation : moveDownAnimation;
+    
 
     return (
         <div
@@ -104,7 +108,7 @@ const Thread = ({
                         <p className="text-center">{index + 1} :</p>
                     </span>
                 </div>
-                <div className={`max-w-[90%] w-[90%] flex  border  border-gray-300 focus:border-gray-900 hover:border-gray-900 rounded-md justify-between`}>
+                <div className={`max-w-[90%] w-[90%] flex  border  rounded-md justify-between ${getCharCount(thread) > MAX_THREAD_COUNT  ? 'border-red-500 border-1 shadow-red-200 shadow-md focus:border-red-700 hover:border-red-700 ' : 'border-gray-300 focus:border-gray-900 hover:border-gray-900 '}`}>
                 <div className={`max-w-[95%] w-[95%]`}>
                     <TextareaAutosize
                         className="w-full min-h-full p-2  px-3 py-4 text-black overflow-auto  rounded-md"
@@ -118,7 +122,7 @@ const Thread = ({
                             outline: "none",
                             borderColor: 'transparent',
                             outlineColor: 'transparent',
-                            boxShadow: 'none',
+                            boxShadow: getCharCount(thread) > MAX_THREAD_COUNT  ? 'red' : 'none',
                         }}
                         placeholder="Type your thread here..."
                         value={thread}
@@ -127,11 +131,18 @@ const Thread = ({
                             updateTextArea(index, e.target.value);
                         }}
                     />
+                     {
+                getCharCount(thread) > MAX_THREAD_COUNT && (
+                    <div className="text-red-500 text-left w-full flex items-center justify-start text-xs">
+                        <p className="text-center">Character limit {"("}{MAX_THREAD_COUNT}{")"} exceeded by {getCharCount(thread) - MAX_THREAD_COUNT} characters</p>
+                    </div>
+                )
+            }
                 </div>
                 <div
                     className={`w-[10%] flex flex-col justify-around items-center rounded-md `}
                 >
-                    {index > 0 && (
+                    {
                         <button
                             className={`text-red-700 hover:text-red-900 flex items-center justify-center transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-110 ${
                                 isHovering ? "" : "hidden"
@@ -153,7 +164,7 @@ const Thread = ({
                                 />
                             </svg>
                         </button>
-                    )}
+                    }
 
                     {index > 0 && (
                         <button
@@ -204,6 +215,7 @@ const Thread = ({
                 </div>
                 </div>
             </div>
+           
             {index === threadData.length - 1 && (
                 <div>
                     <button
