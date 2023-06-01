@@ -352,7 +352,7 @@ input[type='checkbox']:checked, input[type='radio']:checked {
   border: 1px solid #68686b;
   font-size: 14px;
 }
-.authenticationModal label > input::placeholder{ī
+.authenticationModal label > input::placeholder{
   color: #9b9a9c;
 }
 
