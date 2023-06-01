@@ -84,6 +84,7 @@ export default function TinyMCEEditor({
   const [contributinoModalLoader, setContributionModalLoader] = useState(false);
   const [showTwitterThreadUI, setShowTwitterThreadUI] = useState(false);
   const [twitterThreadData, setTwitterThreadData] = useState([]);
+  const[pauseTwitterPublish, setPauseTwitterPublish] = useState(false);
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -160,8 +161,10 @@ export default function TinyMCEEditor({
         siblingButton.forEach((el) => el.classList.remove("active"));
         const button = document.querySelector(".twitter");
         button?.classList?.add("active");
+        console.log("TWITTER COMEBACK");
+        console.log(blogData);
         const aa = blogData?.publish_data?.find(
-          (pd) => pd.platform === "twitter"
+          (pd) => pd?.platform === "twitter"
         );
         const htmlDoc = jsonToHtml(aa.tiny_mce_data);
         console.log('MOVEING TO AA');
@@ -261,7 +264,7 @@ export default function TinyMCEEditor({
 
         const jsonDoc = htmlToJson(updatedText, imageURL).children;
         const formatedJSON = { children: [...jsonDoc] };
-        const optionsForUpdate = {
+        var optionsForUpdate = {
           // tinymce_json: formatedJSON,
           blog_id: blog_id,
           platform: option === "blog" ? "wordpress" : option,
@@ -1120,7 +1123,7 @@ export default function TinyMCEEditor({
             ) : option === "twitter" ? (
               twitterAccessToken ? (
                 <button
-                  className="cta-invert"
+                  className="cta-invert disabled:opacity-50"
                   onClick={() => {
                     if (
                       publishTweetText === "Publish on Twitter" ||
@@ -1128,6 +1131,8 @@ export default function TinyMCEEditor({
                     )
                       handleTwitterPublish();
                   }}
+                  disabled={pauseTwitterPublish}
+
                 >
                   {publishTweetLoad ? (
                     <ReactLoading
@@ -1447,7 +1452,11 @@ export default function TinyMCEEditor({
                 padding: "0px 10px",
               }}
           >
-            <Threads threadData ={twitterThreadData} setthreadData={setTwitterThreadData} />
+            <Threads threadData ={twitterThreadData} setthreadData={setTwitterThreadData} 
+           
+           setPauseTwitterPublish={setPauseTwitterPublish} pauseTwitterPublish={pauseTwitterPublish}
+            
+            />
           </div>
       }
       <hr />
