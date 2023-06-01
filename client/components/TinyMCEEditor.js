@@ -1434,7 +1434,6 @@ export default function TinyMCEEditor({
             <Threads threadData ={twitterThreadData} setthreadData={setTwitterThreadData} />
           </div>
       }
-
       <hr />
     </>
   );
