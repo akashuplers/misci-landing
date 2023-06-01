@@ -251,16 +251,22 @@ export default function TinyMCEEditor({
 
         const jsonDoc = htmlToJson(updatedText, imageURL).children;
         const formatedJSON = { children: [...jsonDoc] };
+        const optionsForUpdate = {
+          // tinymce_json: formatedJSON,
+          blog_id: blog_id,
+          platform: option === "blog" ? "wordpress" : option,
+          imageUrl: src,
+          imageSrc: imageURL ? null : imageURL,
+          description: textContent,
+        }
+        if(showTwitterThreadUI ===true){
+          optionsForUpdate.threads = twitterThreadData;
+        }else{
+          optionsForUpdate.tinymce_json = formatedJSON;  
+        }
         UpdateBlog({
           variables: {
-            options: {
-              tinymce_json: formatedJSON,
-              blog_id: blog_id,
-              platform: option === "blog" ? "wordpress" : option,
-              imageUrl: src,
-              imageSrc: imageURL ? null : imageURL,
-              description: textContent,
-            },
+            options: optionsForUpdate,
           },
           context: {
             headers: {
