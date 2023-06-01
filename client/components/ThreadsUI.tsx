@@ -135,7 +135,7 @@ const Thread = ({
                 <div
                     className={`w-[10%] flex flex-col justify-around items-center rounded-md `}
                 >
-                    {index > 0 && (
+                    {
                         <button
                             className={`text-red-700 hover:text-red-900 flex items-center justify-center transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-110 ${
                                 isHovering ? "" : "hidden"
@@ -157,7 +157,7 @@ const Thread = ({
                                 />
                             </svg>
                         </button>
-                    )}
+                    }
 
                     {index > 0 && (
                         <button
