@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 
-const Threads = ({ threadData, setthreadData }: any) => {
+const Threads = ({ threadData, setthreadData, setPauseTwitterPublish }: any) => {
   // const [threadData, setthreadData] = useState(threadData);
   console.log("THREADS DATA");
   console.log(threadData);
@@ -59,6 +59,7 @@ const Threads = ({ threadData, setthreadData }: any) => {
             moveThreadUp={moveThreadUp}
             moveThreadDown={moveThreadDown}
             deleteThread={deleteThread}
+            setPauseTwitterPublish={setPauseTwitterPublish}
           />
         ))}
       </div>
@@ -79,6 +80,7 @@ const Thread = ({
     moveThreadDown,
     deleteThread,
     addTextArea,
+    setPauseTwitterPublish,
 }: any) => {
     const [isHovering, setIsHovering] = useState(false);
 
@@ -93,6 +95,15 @@ const Thread = ({
     const animationStyle =
         index < threadData.length - 1 ? moveUpAnimation : moveDownAnimation;
     
+    useEffect(() => {
+        if (getCharCount(thread) > MAX_THREAD_COUNT) {
+            setPauseTwitterPublish(true);
+        } else
+        {
+            setPauseTwitterPublish(false);
+        }
+    }
+    , [thread]);
 
     return (
         <div
