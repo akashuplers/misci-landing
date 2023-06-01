@@ -67,7 +67,9 @@ const Threads = ({ threadData, setthreadData }: any) => {
 };
  
 const MAX_THREAD_COUNT = 280;
-
+function getCharCount (text: string){
+    return text.length;
+}
 const Thread = ({
     threadData,
     thread,
@@ -90,9 +92,7 @@ const Thread = ({
 
     const animationStyle =
         index < threadData.length - 1 ? moveUpAnimation : moveDownAnimation;
-    const getCharCount = (text: string) => {
-        return text.length;
-    }
+    
 
     return (
         <div
@@ -131,6 +131,13 @@ const Thread = ({
                             updateTextArea(index, e.target.value);
                         }}
                     />
+                     {
+                getCharCount(thread) > MAX_THREAD_COUNT && (
+                    <div className="text-red-500 text-left w-full flex items-center justify-start text-xs">
+                        <p className="text-center">Character limit {"("}{MAX_THREAD_COUNT}{")"} exceeded by {getCharCount(thread) - MAX_THREAD_COUNT} characters</p>
+                    </div>
+                )
+            }
                 </div>
                 <div
                     className={`w-[10%] flex flex-col justify-around items-center rounded-md `}
@@ -208,6 +215,7 @@ const Thread = ({
                 </div>
                 </div>
             </div>
+           
             {index === threadData.length - 1 && (
                 <div>
                     <button
