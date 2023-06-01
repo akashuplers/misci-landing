@@ -50,7 +50,7 @@ type PublishData {
     published: Boolean
     platform: String!
     creation_date: Int!
-    tiny_mce_data: TinyMceObj!
+    tiny_mce_data: TinyMceObj
     threads: [String]
 }
 
