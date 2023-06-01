@@ -353,7 +353,7 @@ input[type='checkbox']:checked, input[type='radio']:checked {
   font-size: 14px;
 }
 .authenticationModal label > input::placeholder{
-  color : #9b9a9c
+  color: #9b9a9c;
 }
 
 .text-transition {
@@ -373,4 +373,22 @@ input[type='checkbox']:checked, input[type='radio']:checked {
 
 a[aria-label="Powered by Tidio."] {
   display: none !important;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.thread-item {
+  animation: fade-in 0.5s ease-in-out;
+}
+
+.thread-item textarea {
+  outline: none;
+  resize: none; /*remove the resize handle on the bottom right*/
 }
