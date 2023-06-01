@@ -162,8 +162,18 @@ export default function TinyMCEEditor({
         button?.classList?.add("active");
         const aa = blogData?.publish_data?.find(
           (pd) => pd.platform === "twitter"
-        ).tiny_mce_data;
-        const htmlDoc = jsonToHtml(aa);
+        );
+        const htmlDoc = jsonToHtml(aa.tiny_mce_data);
+        console.log('MOVEING TO AA');
+        console.log(aa);
+        if (aa.threads === null || aa.threads === undefined || aa.threads.length === 0 || aa.threads == "") {
+          setShowTwitterThreadUI(false);
+        } else {
+          console.log("THREADS DATA");
+          console.log(aa.threads);
+           setTwitterThreadData(aa.threads);
+           setShowTwitterThreadUI(true);
+        }
         setEditorText(htmlDoc);
       }
     }
@@ -697,8 +707,8 @@ export default function TinyMCEEditor({
       aa = newArray[newArray?.length - 1].tiny_mce_data;
     }
     const htmlDoc = jsonToHtml(aa);
+    setShowTwitterThreadUI(false);
     // check
-
     setEditorText(htmlDoc);
   }
   function handleLinkedinBlog(e) {
