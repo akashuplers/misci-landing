@@ -1422,7 +1422,15 @@ export default function TinyMCEEditor({
             />
           </>
           :
-          <div>
+          <div
+              // overflowscroll verticalscroll
+              style={{
+                height: "82vh",
+                overflowY: "scroll",
+                overflowX: "hidden",
+                padding: "0px 10px",
+              }}
+          >
             <Threads threadData ={twitterThreadData} setthreadData={setTwitterThreadData} />
           </div>
       }

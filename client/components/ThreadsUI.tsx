@@ -44,9 +44,9 @@ const Threads = ({ threadData, setthreadData}:any) => {
             setthreadData(updatedThreads);
         }
     };
-
+    
     return (
-        <div className="flex flex-col items-start justify-center min-h-screen py-2">
+        <div className="flex flex-col items-start justify-center max-h-fit py-2 overflow-auto">
             <div className="flex flex-col space-y-4 w-full">
                 {threadData.map((thread:any, index:number) => (
                     <Thread

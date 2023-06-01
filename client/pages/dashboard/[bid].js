@@ -238,7 +238,7 @@ export default function Post() {
 
   return (
     <>
- <Head><title>{blogData}</title><meta about="body">{blogData}</meta></Head>
+ {/* <Head><title>{blogData}</title><meta about="body">{blogData}</meta></Head> */}
       <Layout>
        
         <ToastContainer />
