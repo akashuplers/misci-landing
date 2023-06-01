@@ -150,7 +150,11 @@ const Thread = ({
                 )
             }
                 </div>
-                <div
+                {
+                    // if index is last then dont show
+                    index !== threadData.length - 1 && (
+                        <>
+                        <div
                     className={`w-[10%] flex flex-col justify-around items-center rounded-md `}
                 >
                     {
@@ -224,6 +228,10 @@ const Thread = ({
                         </button>
                     )}
                 </div>
+                        </>
+
+                    )
+                }
                 </div>
             </div>
            
