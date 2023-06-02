@@ -911,7 +911,7 @@ export default function TinyMCEEditor({
                 <div className="loader"></div> {/* Add the loader class here */}
               </div>
             ) : (
-              <>Contribute us with <strong> {multiplier}</strong> Cofffee </>
+              <>Contribute us with <strong> {multiplier}</strong> Coffee </>
             )
           }
         </button>
