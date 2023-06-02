@@ -684,7 +684,7 @@ export const blogResolvers = {
                     updatedAt: getTimeStamp(),
                     imageUrl: imageUrl && imageUrl.length && imageUrl !== blogDetails.imageUrl ? imageUrl : blogDetails.imageUrl,
                     imageSrc: imageSrc,
-                    description
+                    description: description || blogDetails.description
                 }
             })
             const updatedBlog = await fetchBlog({id: blogId, db})
