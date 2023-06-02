@@ -55,7 +55,7 @@ export default function TinyMCEEditor({
   setOption,
 }) {
   const [multiplier, setMultiplier] = useState(1);
-  const [contributionAmout, setContributionAmount] = useState(5);
+  const [contributionAmout, setContributionAmount] = useState(3);
   const [updatedText, setEditorText] = useState(editorText);
 
   const [saveLoad, setSaveLoad] = useState(false);
@@ -810,7 +810,7 @@ export default function TinyMCEEditor({
             // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
             borderRadius: "8px",
             // width: "100%",
-            maxWidth: "400px",
+            maxWidth: "450px",
             bottom: "",
             zIndex: "999",
             marginRight: "-50%",
@@ -840,7 +840,9 @@ export default function TinyMCEEditor({
           className={`flex justify-around items-center  w-full bg-indigo-100 p-[10px] border-indigo-500 rounded-md mt-[20px]`}
         >
           <div className="flex items-center justify-center text-[40px] ">
-            ☕
+            {
+              Array( multiplier) .fill(0).map((_, i) => (<>☕</>) )
+            }
           </div>
           <div>
             <svg width="30" height="30" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.8536 2.85355C13.0488 2.65829 13.0488 2.34171 12.8536 2.14645C12.6583 1.95118 12.3417 1.95118 12.1464 2.14645L7.5 6.79289L2.85355 2.14645C2.65829 1.95118 2.34171 1.95118 2.14645 2.14645C1.95118 2.34171 1.95118 2.65829 2.14645 2.85355L6.79289 7.5L2.14645 12.1464C1.95118 12.3417 1.95118 12.6583 2.14645 12.8536C2.34171 13.0488 2.65829 13.0488 2.85355 12.8536L7.5 8.20711L12.1464 12.8536C12.3417 13.0488 12.6583 13.0488 12.8536 12.8536C13.0488 12.6583 13.0488 12.3417 12.8536 12.1464L8.20711 7.5L12.8536 2.85355Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
@@ -1453,7 +1455,7 @@ export default function TinyMCEEditor({
               }}
           >
             <Threads threadData ={twitterThreadData} setthreadData={setTwitterThreadData} 
-           
+           isUserPaid={meeData?.me?.paid}
            setPauseTwitterPublish={setPauseTwitterPublish} pauseTwitterPublish={pauseTwitterPublish}
             
             />
