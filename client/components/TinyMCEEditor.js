@@ -55,7 +55,7 @@ export default function TinyMCEEditor({
   setOption,
 }) {
   const [multiplier, setMultiplier] = useState(1);
-  const [contributionAmout, setContributionAmount] = useState(3);
+  const [contributionAmout, setContributionAmount] = useState(1);
   const [updatedText, setEditorText] = useState(editorText);
 
   const [saveLoad, setSaveLoad] = useState(false);
@@ -825,7 +825,14 @@ export default function TinyMCEEditor({
         onRequestClose={() => setShowContributionModal(false)}
 
       >
-        <div className="flex flex-col items-center justify-center">
+         <button onClick={
+          () => {
+            setShowContributionModal(false);
+          }
+
+         } className="absolute top-3 right-3"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        <div className="flex flex-col items-center justify-center relative">
+       
           {/* <h3>Buy me a coffee</h3> */}
           <h3 className="text-2xl font-bold text-left ">Buy us a coffee</h3>
 
@@ -911,7 +918,7 @@ export default function TinyMCEEditor({
                 <div className="loader"></div> {/* Add the loader class here */}
               </div>
             ) : (
-              <>Contribute us with <strong> {multiplier}</strong> Coffee </>
+              <>Contribute us with <strong>${multiplier}</strong> Coffee{multiplier>1 && 's'} </>
             )
           }
         </button>
