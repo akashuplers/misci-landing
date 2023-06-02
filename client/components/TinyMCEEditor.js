@@ -827,7 +827,7 @@ export default function TinyMCEEditor({
       >
         <div className="flex flex-col items-center justify-center">
           {/* <h3>Buy me a coffee</h3> */}
-          <h3 className="text-2xl font-bold text-left ">Buy me a coffee</h3>
+          <h3 className="text-2xl font-bold text-left ">Buy us a coffee</h3>
 
         </div>
         <div className="flex flex-col items-center justify-center mt-4">
@@ -911,7 +911,7 @@ export default function TinyMCEEditor({
                 <div className="loader"></div> {/* Add the loader class here */}
               </div>
             ) : (
-              <>Contribute us with <strong> {multiplier * contributionAmout}</strong> Cofffee </>
+              <>Contribute us with <strong> {multiplier}</strong> Cofffee </>
             )
           }
         </button>
