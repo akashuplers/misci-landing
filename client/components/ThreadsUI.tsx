@@ -108,6 +108,7 @@ const Threads = ({
             .slice(threadData.length - 1)
             .map((thread: any, index: number) => (
               <Thread
+              key={index}
                 thread={thread}
                 threadData={threadData}
                 index={threadData.length - 1}
