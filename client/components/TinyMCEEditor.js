@@ -792,7 +792,7 @@ export default function TinyMCEEditor({
         </div>
       </Modal> */}
       <Modal
-        isOpen={true}
+        isOpen={showContributionModal}
         ariaHideApp={false}
         className="w-[100%] sm:w-[38%] max-h-[95%]"
         style={{
@@ -911,7 +911,7 @@ export default function TinyMCEEditor({
                 <div className="loader"></div> {/* Add the loader class here */}
               </div>
             ) : (
-              <>Contribute us with <strong> {multiplier * contributionAmout}</strong> {multiplier > 1 ? 'cups' : 'cup'} Cofffee </>
+              <>Contribute us with <strong> {multiplier * contributionAmout}</strong> Cofffee </>
             )
           }
         </button>
