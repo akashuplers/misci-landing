@@ -12,15 +12,24 @@ const Threads = ({
   const [hideAddThread, setHideAddThread] = useState(false);
   console.log(threadData);
   const addTextArea = () => {
-    if (threadData.length < 20) {
-      setthreadData([...threadData, ""]);
-    }
-  };
+      // setthreadData([...threadData, ""]);
+      // take the index
+      const lastIndex = threadData.length - 1;
+      const lastThread = threadData[lastIndex];
+      const updatedThreads = [...threadData];
+      updatedThreads[lastIndex] = "";
+      updatedThreads.push(lastThread);
+      setthreadData(updatedThreads);
+      };
 
   const updateTextArea = (index: number, value: number) => {
-    const updatedThreads = [...threadData];
+    if(index===threadData.length){
+
+    }else{
+      const updatedThreads = [...threadData];
     updatedThreads[index] = value;
     setthreadData(updatedThreads);
+    }
   };
 
   const deleteThread = (index: number) => {
@@ -217,6 +226,7 @@ const Thread = ({
               }}
               placeholder="Type your thread here..."
               value={thread}
+              readOnly={index === threadData.length - 1}
               minLength={1}
               onChange={(e) => {
                 updateTextArea(index, e.target.value);
