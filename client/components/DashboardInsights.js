@@ -566,14 +566,30 @@ export default function DashboardInsights({
     }
   }
 
-  function handleFileUpload({ target }) {
-    setFileValid(true);
-    setUrlValid(false);
+function handleFileUpload({ target }) {
+  setFileValid(true);
+  setUrlValid(false);
 
-    setformInput(target.files[0].name);
-    setFile(target.files[0]);
-    // console.log(file)
+  const file = target.files[0];
+  
+  // Check if file is defined
+  if (!file) {
+    toast.error('No file chosen');
+    return;
   }
+
+  const fileSizeMB = file.size / (1024 * 1024); // convert size to MB
+
+  if (fileSizeMB > 3) {
+    toast.error('File size cannot exceed 3MB');
+    return; // stop function execution after showing the error
+  }
+
+  setformInput(file.name);
+  console.log(file);
+  setFile(file);
+}
+
 
   function handleFormChange(e) {
     const value = e.target.value;
@@ -598,6 +614,7 @@ export default function DashboardInsights({
 
     let url = API_BASE_PATH;
     let raw;
+    console.log(raw)
     if (fileValid) {
       url += API_ROUTES.FILE_UPLOAD;
       raw = new FormData();
@@ -1279,6 +1296,21 @@ export default function DashboardInsights({
                             Search
                           </label>
                           <div className="relative w-full">
+                            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                              {/* <svg
+                                aria-hidden="true"
+                                className="w-5 h-5 text-gray-500 dark:text-gray-400"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                  clipRule="evenodd"
+                                ></path>
+                              </svg> */}
+                            </div>
                             <input
                               type="text"
                               id="simple-search"
@@ -1301,7 +1333,7 @@ export default function DashboardInsights({
                                   right: "0",
                                 }}
                               >
-                                upload a file pdf, docx, txt formats allowed.
+                                upload a file pdf, docx, txt formats allowed. Max file size &gt; 3MB
                               </div>
                             </>
                           ) : (
@@ -1354,7 +1386,7 @@ export default function DashboardInsights({
   
                                 }}
                                 >
-                                Upload a file. pdf, docx and txt formats allowed.
+                                Upload a file. pdf, docx and txt formats allowed. Max file size {'<'} 3MB
                                 </span>
                                 <div class="w-3 h-3 -mt-2 rotate-45 bg-black"></div>
                               </div>

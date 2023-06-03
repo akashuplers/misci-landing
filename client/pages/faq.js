@@ -40,8 +40,8 @@ const faqs =  [
     "answer": "Trending topics are popular subjects or themes that are currently relevant or widely discussed on the internet. Lille.ai suggests trending topics that you can use as inspiration for your content. These suggestions change dynamically and are not user-specific."
   },
   {
-    "question": "What is the daily feed?",
-    "answer": "When you sign up with Lille, we ask you to save your preferences, and these topics are used to fetch a daily feed of blogs for you in an automated way. These blogs are saved in the saved list and labeled as 'daily feed'. For paid users, there is the facility to edit, add new, or remove preferences from the settings page to customize the daily feed."
+    "question": "What is the maximum file size one can upload to get the fresh ideas?",
+    "answer": "Lille allows maximum 3MB files to be uploaded. One can upload files of formats .pdf, .docx and .txt to generate fresh ideas."
   },
   {
     "question": "Can I publish my content directly to social media platforms?",
@@ -56,28 +56,43 @@ const faqs =  [
 export default function FAQPage() {
   const [activeIndex, setActiveIndex] = useState(null);
 
-  return (<Layout>
-      <div className="max-w-3xl mx-auto my-10 bg-white p-4 shadow-md rounded-md">
+  return (
+  <Layout>
+    <div className="max-w-3xl mx-auto my-10 bg-white p-4 shadow-md rounded-md space-y-4">
       {faqs.map((faq, i) => (
-        <div key={i} className="mb-4">
-          <h2
-            onClick={() => setActiveIndex(i)}
-            className={`cursor-pointer px-5 py-3 border-b ${
-              activeIndex === i ? 'font-semibold' : 'font-normal'
-            }`}
-          >
-            {faq.question}
-          </h2>
-          <div
-            className={`overflow-hidden transition-height duration-500 ease-in-out ${
-              activeIndex === i ? 'h-auto' : 'h-0'
-            }`}
-          >
-            <p className="px-5 py-3">{faq.answer}</p>
-          </div>
-        </div>
+        <details
+          key={i}
+          className="group border-s-4 border-blue-500 bg-gray-50 p-6  [&_summary::-webkit-details-marker]:hidden"
+          open={activeIndex === i}
+          onClick={() => setActiveIndex(i)}
+        >
+          <summary className="flex cursor-pointer items-center justify-between gap-1.5">
+            <h2 className="text-lg font-medium text-gray-900 ">
+              {faq.question}
+            </h2>
+
+            <span className="shrink-0 rounded-full bg-white p-1.5 text-gray-900   sm:p-3">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 shrink-0 transition duration-300 group-open:-rotate-45"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </span>
+          </summary>
+
+          <p className="mt-4 leading-relaxed text-black ">
+            {faq.answer}
+          </p>
+        </details>
       ))}
     </div>
   </Layout>
-  );
+);
 }
