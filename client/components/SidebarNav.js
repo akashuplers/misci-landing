@@ -14,7 +14,7 @@ import {
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import Avatar from "react-avatar";
 import { ToastContainer } from "react-toastify";
 import { meeAPI } from "../graphql/querys/mee";
@@ -160,7 +160,16 @@ export default function Sidebar() {
       setTitle("Saved Blog");
     }
   }, []);
+  // ref={sideBarHeightRef}
 
+  // const sideBarHeightRef = useRef(null);
+
+  // useEffect(() => {wq
+  //   const elementHeight = sideBarHeightRef.current.offsetHeight;
+  //   console.log(elementHeight)
+  //   console.log("element height");
+  //   document.documentElement.style.setProperty('--my-mobile-sidebar-height', `${elementHeight + 50}px`);
+  // }, []);
   return (
     <>
       <ToastContainer />
@@ -420,7 +429,7 @@ export default function Sidebar() {
           className="flex flex-1 flex-col w-full fixed top-0 z-10 mobile_sidebar"
           style={{
             ...topBarStyle,
-            
+
           }}
         >
           <div className="sticky top-0 z-10 pl-1 pt-1 sm:pl-3 sm:pt-3 lg:hidden">
@@ -433,7 +442,7 @@ export default function Sidebar() {
               <Bars3Icon className="h-6 w-6" aria-hidden="true" />
             </button>
           </div>
-          <main className="flex-1 ">
+          <main className="flex-1" >
             <div className="py-2 pb-4">
               <div className="mx-auto max-w-7xl px-2 flex relative">
                 <div className="pt-4">
