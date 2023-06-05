@@ -137,8 +137,8 @@ export default function Pricing() {
   const [type, setType] = useState("signup");
 
   return (
-    <>
-      <div>
+    <div className="relative md:min-h-screen">
+      
         <AuthenticationModal
           type={type}
           setType={setType}
@@ -174,9 +174,9 @@ export default function Pricing() {
               </defs>
             </svg>
           </div>
-          <div className="relative top-0 h-auto">
+          <div className="relative h-auto">
             <div className="h-[500px] w-[100%]"></div>
-            <div className=" sm:h-[400px] sm:w-[100%]"></div>
+            <div className=" sm:h-[400px] sm:w  -[100%]"></div>
             {/* cards div */}
             <div className="absolute max-sm:top-[20%] sm:top-[15%] lg:top-[5%] sm:left-[0%] sm:right-[8%] w-full">
               <div
@@ -334,14 +334,15 @@ export default function Pricing() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+            
       </div>
+        </div>
       <div className="bg-blue-500 p-4 fixed bottom-1 left-1 z-50 mx-0 rounded-md shadow-md text-white max-w-lg  mt-10 text-center">
         For enterprise usage inquiries please contact us at <a href="mailto:sales@lille.ai" className="underline">sales@lille.ai</a>
       </div>
-      <Footer />
-
-    </>
+      <div className="">
+            <Footer />
+            </div>
+    </div>
   );
 }
