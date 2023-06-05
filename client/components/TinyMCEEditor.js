@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import ReactLoading from "react-loading";
 import Modal from "react-modal";
-import TextareaAutosize from "react-textarea-autosize";
 
 import {
   EmailIcon,
@@ -34,13 +33,15 @@ import {
 } from "../constants/apiEndpoints";
 import { updateBlog } from "../graphql/mutations/updateBlog";
 import { getCurrentDashboardURL, htmlToJson, jsonToHtml } from "../helpers/helper";
-import useStore, { useByMeCoffeModal } from "../store/store";
+import useStore, { useByMeCoffeModal, useTwitterThreadALertModal } from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import LoaderPlane from "./LoaderPlane";
-import TrialEndedModal from "./TrialEndedModal";
 import Threads from "./ThreadsUI";
+import TrialEndedModal from "./TrialEndedModal";
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
+const total_twitter_quota = 6;
+const remaining_twitter_quota = 2;
 export default function TinyMCEEditor({
   topic,
   isAuthenticated,
@@ -84,7 +85,16 @@ export default function TinyMCEEditor({
   const [contributinoModalLoader, setContributionModalLoader] = useState(false);
   const [showTwitterThreadUI, setShowTwitterThreadUI] = useState(false);
   const [twitterThreadData, setTwitterThreadData] = useState([]);
-  const[pauseTwitterPublish, setPauseTwitterPublish] = useState(false);
+  const [pauseTwitterPublish, setPauseTwitterPublish] = useState(false);
+  const {
+    isOpen: isTwitterThreadAlertOpen,
+    remaining_twitter_quota : remainingTwitterQuota,
+    total_twitter_quota : totalTwitterQuota,
+    isUserpaid: isUserPaidForTwitter,
+    toggleModal: toggleTwitterThreadAlertModal,
+    setOptions: setTwitterThreadAlertOption,
+  } = useTwitterThreadALertModal();
+
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -140,6 +150,12 @@ export default function TinyMCEEditor({
   useEffect(() => {
     updateCredit();
   }, []);
+  useEffect(() => {
+    if (meeData) {
+      setTwitterThreadAlertOption(remaining_twitter_quota, total_twitter_quota, meeData?.me?.paid)
+    }
+  }, [meeData])
+
 
   useEffect(() => {
     if (option === "linkedin-comeback") {
@@ -174,8 +190,8 @@ export default function TinyMCEEditor({
         } else {
           console.log("THREADS DATA");
           console.log(aa.threads);
-           setTwitterThreadData(aa.threads);
-           setShowTwitterThreadUI(true);
+          setTwitterThreadData(aa.threads);
+          setShowTwitterThreadUI(true);
         }
         setEditorText(htmlDoc);
       }
@@ -272,10 +288,10 @@ export default function TinyMCEEditor({
           imageSrc: imageURL ? null : imageURL,
           description: textContent,
         }
-        if(showTwitterThreadUI ===true){
+        if (showTwitterThreadUI === true) {
           optionsForUpdate.threads = twitterThreadData;
-        }else{
-          optionsForUpdate.tinymce_json = formatedJSON;  
+        } else {
+          optionsForUpdate.tinymce_json = formatedJSON;
         }
         UpdateBlog({
           variables: {
@@ -608,6 +624,10 @@ export default function TinyMCEEditor({
     }
   };
 
+  const handleTwitterAlertModal = (remaningQuota, totalTwitterQuota, isUserPaid) => {
+    toggleTwitterThreadAlertModal(false);
+  }
+
   const handleTwitterPublish = () => {
     console.log("handleTwitterPublish");
     if (creditLeft === 0) {
@@ -623,18 +643,18 @@ export default function TinyMCEEditor({
       };
 
       // let textContent = tempDiv.textContent;
-      var textContent ;
-      if(showTwitterThreadUI ===true){
+      var textContent;
+      if (showTwitterThreadUI === true) {
         textContent = twitterThreadData;
         data.texts = textContent;
-      }else{
+      } else {
         textContent = tempDiv.textContent;
         data.text = textContent;
       }
 
       setPublishTweetLoad(true);
+      handleTwitterAlertModal(remaining_twitter_quota, total_twitter_quota, false);
 
-      
       if (textContent.length < 280) {
         try {
           axios
@@ -743,7 +763,7 @@ export default function TinyMCEEditor({
     } else {
       console.log("THREADS DATA");
       console.log(aa.threads);
-       setTwitterThreadData(aa.threads);
+      setTwitterThreadData(aa.threads);
       setShowTwitterThreadUI(true);
     }
     setEditorText(htmlDoc);
@@ -825,14 +845,14 @@ export default function TinyMCEEditor({
         onRequestClose={() => setShowContributionModal(false)}
 
       >
-         <button onClick={
+        <button onClick={
           () => {
             setShowContributionModal(false);
           }
 
-         } className="absolute top-3 right-3"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        } className="absolute top-3 right-3"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg></button>
         <div className="flex flex-col items-center justify-center relative">
-       
+
           {/* <h3>Buy me a coffee</h3> */}
           <h3 className="text-2xl font-bold text-left ">Buy us a coffee</h3>
 
@@ -849,29 +869,29 @@ export default function TinyMCEEditor({
           <div className="flex items-center justify-center text-[40px] ">
             {
               multiplier < 5 ?
-              Array(multiplier).fill(0).map((_, i) => (<>☕</>))
-              :
-              <div 
-              
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                textAlign: "center",
-                fontSize: "40px",
+                Array(multiplier).fill(0).map((_, i) => (<>☕</>))
+                :
+                <div
 
-              }}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    textAlign: "center",
+                    fontSize: "40px",
 
-              
-              >
-              <div>☕☕</div>
-              <div>☕☕☕</div>
+                  }}
+
+
+                >
+                  <div>☕☕</div>
+                  <div>☕☕☕</div>
+                </div>
+
+            }
           </div>
-              
-}
-          </div>
-          
+
           {/* circle and numebr */}
 
           <div className="flex items-center justify-center ">
@@ -918,7 +938,7 @@ export default function TinyMCEEditor({
                 <div className="loader"></div> {/* Add the loader class here */}
               </div>
             ) : (
-              <>Contribute us with <strong>${multiplier}</strong> Coffee{multiplier>1 && 's'} </>
+              <>Contribute us with <strong>${multiplier}</strong> Coffee{multiplier > 1 && 's'} </>
             )
           }
         </button>
@@ -1101,6 +1121,18 @@ export default function TinyMCEEditor({
         )}
         {!isPublished ? (
           <div className="flex" style={{ gap: "0.25em", marginLeft: "auto" }}>
+            <button
+              onClick={() => {
+                if(twitterThreadData.length > total_twitter_quota) {
+                  handleTwitterAlertModal(remaining_twitter_quota, total_twitter_quota, true)
+                  return
+                }else{
+                alert("ALl Ok") 
+                }
+              }}
+            >
+              fake tw publish
+            </button>
             <button
               className="cta"
               onClick={() => {
@@ -1359,7 +1391,7 @@ export default function TinyMCEEditor({
                 images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
                 images_upload_credentials: true,
                 plugins:
-                "preview casechange importcss tinydrive searchreplace save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount  editimage help formatpainter permanentpen pageembed charmap emoticons advtable export mergetags",
+                  "preview casechange importcss tinydrive searchreplace save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount  editimage help formatpainter permanentpen pageembed charmap emoticons advtable export mergetags",
                 menu: {
                   tc: {
                     title: "Comments",
@@ -1470,18 +1502,18 @@ export default function TinyMCEEditor({
           </>
           :
           <div
-              // overflowscroll verticalscroll
-              style={{
-                height: "82vh",
-                overflowY: "scroll",
-                overflowX: "hidden",
-                padding: "0px 10px",
-              }}
+            // overflowscroll verticalscroll
+            style={{
+              height: "82vh",
+              overflowY: "scroll",
+              overflowX: "hidden",
+              padding: "0px 10px",
+            }}
           >
-            <Threads threadData ={twitterThreadData} setthreadData={setTwitterThreadData} 
-           isUserPaid={meeData?.me?.paid}
-           setPauseTwitterPublish={setPauseTwitterPublish} pauseTwitterPublish={pauseTwitterPublish}
-            
+            <Threads threadData={twitterThreadData} setthreadData={setTwitterThreadData}
+              isUserPaid={meeData?.me?.paid}
+              setPauseTwitterPublish={setPauseTwitterPublish} pauseTwitterPublish={pauseTwitterPublish}
+
             />
           </div>
       }
@@ -1489,4 +1521,3 @@ export default function TinyMCEEditor({
     </>
   );
 }
- 

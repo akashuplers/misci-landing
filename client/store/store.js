@@ -77,6 +77,25 @@ export const useByMeCoffeModal = create((set) => ({
   toggleModal: () => set((state) => ({ isOpen: !state.isOpen })),
 }));
 
+export const useTwitterThreadALertModal = create((set) => ({
+  isOpen: false,
+  // toggle takes two params, remaining_twitter_quota, total_twitter_quota, isUserpaid
+  remaining_twitter_quota: 0,
+  total_twitter_quota: 0,
+  isUserpaid: false,
+  toggleModal: (status) =>
+    set((state) => ({
+      isOpen: status,
+    })),
+
+  setOptions: (remaining_twitter_quota, total_twitter_quota, isUserpaid) =>
+    set((state) => ({
+      remaining_twitter_quota: remaining_twitter_quota,
+      total_twitter_quota: total_twitter_quota,
+      isUserpaid: isUserpaid,
+
+    })),
+}));
 
 export const MeeDataStore = create((set) => ({
   meeData: {},
