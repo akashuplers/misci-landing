@@ -151,11 +151,6 @@ padding-bottom: 10px !important;
   background: white !important;
 }
 
-.authenticatedLayout{
-  width: calc(100vw - var(--sidebar-width));
-  margin-top: var(--topbar-height);
-  margin-left: auto;
-}
 
 .sb-avatar.sb-avatar--text{
   width: 50px !important;
@@ -300,6 +295,39 @@ padding-bottom: 10px !important;
     right: 0;
     cursor: pointer;
 }
+
+@media only screen and (max-width: 768px) {
+  .updateSettingsField.firstName::after,
+  .updateSettingsField.lastName::after{
+      content: none;
+  }
+  
+}
+
+
+.authenticatedLayout{
+ padding-top: '60px';
+}
+
+/* for desktop */
+.mobile_sidebar{
+  padding-left: unset;
+  height: unset;
+}
+@media only screen and (min-width: 768px) {
+ 
+  .mobile_sidebar{
+    padding-left: var(--sidebar-width);
+    height: var(--topbar-height);
+  }
+  
+.authenticatedLayout{
+  width: calc(100vw - var(--sidebar-width));
+  margin-top: var(--topbar-height);
+  margin-left: auto;
+}
+}
+
 
 .sb-avatar__image{
   object-fit: cover;
