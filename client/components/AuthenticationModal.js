@@ -1,27 +1,41 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
-import { PlayPauseIcon } from "@heroicons/react/24/outline";
-import React, { useDebugValue, useState, useEffect } from "react";
-import Modal from "react-modal";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import Modal from "react-modal";
 
-import { LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
-import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import { API_BASE_PATH, API_ROUTES, LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
+import { signUpWithGoogle } from "../services/GoogleLogin";
 import { LinkedinLogin } from "../services/LinkedinLogin";
 import { TwitterLogin } from "../services/TwitterLogin";
-import { signUpWithGoogle } from "../services/GoogleLogin";
 
 import ForgotPasswordModal from "../components/ForgotPasswordModal";
 
-import { useRouter } from "next/router";
-import LoaderPlane from "./LoaderPlane";
-import { toast } from "react-toastify";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { createScanner } from "typescript";
-import ReactLoading from "react-loading";
 import useStore from "@/store/store";
+import { useRouter } from "next/router";
+import ReactLoading from "react-loading";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
+function IconClose() {
+  return (
+    <>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="w-6 h-6"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </>
+  )
+}
 export default function AuthenticationModal({
   type,
   setType,
@@ -411,7 +425,7 @@ export default function AuthenticationModal({
           closeModal();
         }}
         ariaHideApp={false}
-        className="w-[100%] sm:w-[38%] max-h-[95%]"
+        className="w-full sm:w-[38%] max-h-[95%]"
         style={{
           overlay: {
             backgroundColor: "rgba(0,0,0,0.5)",
@@ -426,8 +440,7 @@ export default function AuthenticationModal({
             background: "white",
             boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
             borderRadius: "8px",
-            // height: "75%",
-            width: "50%",
+            width: "90%", // Adjusted for responsiveness
             maxWidth: "450px",
             bottom: "",
             zIndex: "999",
@@ -445,20 +458,7 @@ export default function AuthenticationModal({
         >
           {/* shadow shadow-slate-300 */}
           <button className="absolute right-[40px]" onClick={closeModal}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-6 h-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            <IconClose />
           </button>
           <h1 className="text-3xl font-bold p-4 text-center">
             {type === "login" ? "Login" : "Create an account"}
@@ -497,33 +497,11 @@ export default function AuthenticationModal({
                   className="w-6 h-6"
                   alt=""
                 />
-                {/* <span className="p-4 py-2">
-                {type === "login" ? "Login with Google" : "Sign Up with Google"}
-              </span> */}
+
               </button>
             </div>
           </div>
-          {/*<div className="my-3 d-flex justify-content-center align-items-center">
-          <button
-            className="btn"
-            onClick={signUpWithGoogle}
-            aria-label="Sign in with Google"
-          >
-            <img width="50px" className="mx-2" src={google} />
-          </button>
-          <a
-            href={`https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`}
-            aria-label="Sign in with Linked-in"
-            className={styles.linkedin}
-          >
-            <img
-              width="50px"
-              src={linkedin}
-              className="mx-2"
-              alt="Linkedin"
-            />
-          </a>
-        </div>*/}
+
           <form
             action=""
             method="post"
@@ -670,20 +648,7 @@ export default function AuthenticationModal({
               >
                 {!submitting ? (
                   <>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-                      />
-                    </svg>
+                    <IconArrowLeftOnSquare />
                     {type === "login" ? "Login" : "Sign Up"}
                   </>
                 ) : (
@@ -709,20 +674,7 @@ export default function AuthenticationModal({
                 >
                   <span>{type === "login" ? "Register Now!" : "Sign In"}</span>
                   <span>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                      />
-                    </svg>
+                    <IconArrowTopRight />
                   </span>
                 </a>
               </p>
@@ -731,5 +683,40 @@ export default function AuthenticationModal({
         </div>
       </Modal>
     </>
+  );
+}
+
+function IconArrowLeftOnSquare() {
+  return <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-6 w-6"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth="2"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+  </svg>;
+}
+
+function IconArrowTopRight() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-4 w-4"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+      />
+    </svg>
   );
 }

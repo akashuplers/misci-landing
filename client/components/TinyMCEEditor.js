@@ -11,8 +11,8 @@ import { useEffect, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import ReactLoading from "react-loading";
 import Modal from "react-modal";
-import TextareaAutosize from "react-textarea-autosize";
 
+import { Tab } from "@headlessui/react";
 import {
   EmailIcon,
   EmailShareButton,
@@ -34,13 +34,15 @@ import {
 } from "../constants/apiEndpoints";
 import { updateBlog } from "../graphql/mutations/updateBlog";
 import { getCurrentDashboardURL, htmlToJson, jsonToHtml } from "../helpers/helper";
-import useStore, { useByMeCoffeModal } from "../store/store";
+import useStore, { useByMeCoffeModal, useTwitterThreadALertModal } from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import LoaderPlane from "./LoaderPlane";
-import TrialEndedModal from "./TrialEndedModal";
 import Threads from "./ThreadsUI";
+import TrialEndedModal from "./TrialEndedModal";
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
+const total_twitter_quota = 6;
+const remaining_twitter_quota = 2;
 export default function TinyMCEEditor({
   topic,
   isAuthenticated,
@@ -84,7 +86,17 @@ export default function TinyMCEEditor({
   const [contributinoModalLoader, setContributionModalLoader] = useState(false);
   const [showTwitterThreadUI, setShowTwitterThreadUI] = useState(false);
   const [twitterThreadData, setTwitterThreadData] = useState([]);
-  const[pauseTwitterPublish, setPauseTwitterPublish] = useState(false);
+  const [pauseTwitterPublish, setPauseTwitterPublish] = useState(false);
+  const {
+    isOpen: isTwitterThreadAlertOpen,
+    remaining_twitter_quota: remainingTwitterQuota,
+    total_twitter_quota: totalTwitterQuota,
+    isUserpaid: isUserPaidForTwitter,
+    toggleModal: toggleTwitterThreadAlertModal,
+    togggleShowInitailText: twitterThreadAlertToggleShowInitailText,
+    setOptions: setTwitterThreadAlertOption,
+  } = useTwitterThreadALertModal();
+
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -93,7 +105,9 @@ export default function TinyMCEEditor({
     data: meeData,
     loading: meeLoading,
     error: meeError,
+    refetch: meeRefetch,
   } = useQuery(meeAPI, {
+
     context: {
       headers: {
         "Content-Type": "application/json",
@@ -138,9 +152,22 @@ export default function TinyMCEEditor({
     },
   });
   useEffect(() => {
+    const intervalId = setInterval(() => {
+      meeRefetch(); // Call the refetch function to refresh the query
+    }, 2000);
+
+    return () => {
+      clearInterval(intervalId); // Clean up the interval on component unmount
+    };
+  }, [meeRefetch])
+  useEffect(() => {
     updateCredit();
   }, []);
-
+  useEffect(() => {
+    if (meeData) {
+      setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid)
+    }
+  }, [meeData]);
   useEffect(() => {
     if (option === "linkedin-comeback") {
       setOption("linkedin");
@@ -174,8 +201,8 @@ export default function TinyMCEEditor({
         } else {
           console.log("THREADS DATA");
           console.log(aa.threads);
-           setTwitterThreadData(aa.threads);
-           setShowTwitterThreadUI(true);
+          setTwitterThreadData(aa.threads);
+          setShowTwitterThreadUI(true);
         }
         setEditorText(htmlDoc);
       }
@@ -272,10 +299,10 @@ export default function TinyMCEEditor({
           imageSrc: imageURL ? null : imageURL,
           description: textContent,
         }
-        if(showTwitterThreadUI ===true){
+        if (showTwitterThreadUI === true) {
           optionsForUpdate.threads = twitterThreadData;
-        }else{
-          optionsForUpdate.tinymce_json = formatedJSON;  
+        } else {
+          optionsForUpdate.tinymce_json = formatedJSON;
         }
         UpdateBlog({
           variables: {
@@ -608,6 +635,10 @@ export default function TinyMCEEditor({
     }
   };
 
+  const handleTwitterAlertModal = (remaningQuota, totalTwitterQuota, isUserPaid) => {
+    setTwitterThreadAlertOption(remaningQuota, totalTwitterQuota, isUserPaid);
+  }
+
   const handleTwitterPublish = () => {
     console.log("handleTwitterPublish");
     if (creditLeft === 0) {
@@ -623,18 +654,36 @@ export default function TinyMCEEditor({
       };
 
       // let textContent = tempDiv.textContent;
-      var textContent ;
-      if(showTwitterThreadUI ===true){
+      var textContent;
+      if (showTwitterThreadUI === true) {
         textContent = twitterThreadData;
         data.texts = textContent;
-      }else{
+      } else {
         textContent = tempDiv.textContent;
         data.text = textContent;
       }
 
       setPublishTweetLoad(true);
+      meeRefetch();
+      // setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
+      console.log("twitter quota");
 
-      
+      console.log(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
+      if (twitterThreadData.length > meeData?.me?.remaining_twitter_quota + 1) {
+        toast.error(`We offer the capability of ${totalTwitterQuota} tweets in a ${totalTwitterQuota} thread at once. Please upgrade your account to improve this`, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        setPublishTweetLoad(false);
+        return
+      }
+
       if (textContent.length < 280) {
         try {
           axios
@@ -743,7 +792,7 @@ export default function TinyMCEEditor({
     } else {
       console.log("THREADS DATA");
       console.log(aa.threads);
-       setTwitterThreadData(aa.threads);
+      setTwitterThreadData(aa.threads);
       setShowTwitterThreadUI(true);
     }
     setEditorText(htmlDoc);
@@ -825,14 +874,14 @@ export default function TinyMCEEditor({
         onRequestClose={() => setShowContributionModal(false)}
 
       >
-         <button onClick={
+        <button onClick={
           () => {
             setShowContributionModal(false);
           }
 
-         } className="absolute top-3 right-3"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        } className="absolute top-3 right-3"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg></button>
         <div className="flex flex-col items-center justify-center relative">
-       
+
           {/* <h3>Buy me a coffee</h3> */}
           <h3 className="text-2xl font-bold text-left ">Buy us a coffee</h3>
 
@@ -849,29 +898,29 @@ export default function TinyMCEEditor({
           <div className="flex items-center justify-center text-[40px] ">
             {
               multiplier < 5 ?
-              Array(multiplier).fill(0).map((_, i) => (<>☕</>))
-              :
-              <div 
-              
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                textAlign: "center",
-                fontSize: "40px",
+                Array(multiplier).fill(0).map((_, i) => (<>☕</>))
+                :
+                <div
 
-              }}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    textAlign: "center",
+                    fontSize: "40px",
 
-              
-              >
-              <div>☕☕</div>
-              <div>☕☕☕</div>
+                  }}
+
+
+                >
+                  <div>☕☕</div>
+                  <div>☕☕☕</div>
+                </div>
+
+            }
           </div>
-              
-}
-          </div>
-          
+
           {/* circle and numebr */}
 
           <div className="flex items-center justify-center ">
@@ -918,12 +967,36 @@ export default function TinyMCEEditor({
                 <div className="loader"></div> {/* Add the loader class here */}
               </div>
             ) : (
-              <>Contribute us with <strong>${multiplier}</strong> Coffee{multiplier>1 && 's'} </>
+              <>Contribute us with <strong>${multiplier}</strong> Coffee{multiplier > 1 && 's'} </>
             )
           }
         </button>
 
       </Modal>
+      {isalert && (
+        <div className="p-2 text-xs">Lille is not responsible for any images uploaded by you that  contain copyright infringement.
+          <button
+            onClick={() => {
+              setAlert(false);
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-5 h-6 ml-2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </button>
+        </div>
+      )}
       <Modal
         isOpen={openModal}
         onRequestClose={() => setOpenModal(false)}
@@ -1024,164 +1097,92 @@ export default function TinyMCEEditor({
         handleSave={handleSave}
         bid={blog_id}
       />
-      <div
-        style={{
-          paddingBottom: "0.5em",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-        className="text-sm mx-2"
-      >
-        {isAuthenticated ? (
-          <div
-            style={{
-              display: "flex",
-              gap: "0.25em",
-            }}
-          >
+      <div className="block">
+        <div
+          style={{
+            paddingBottom: "0.5em",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+          className="text-sm mx-2 flex flex-wrap"
+        >
+          {isAuthenticated ? (
             <div
-              className="blog-toggle-button cta active wordpress flex gap-1 items-center"
-              onClick={handleBlog}
-            >
-              <svg
-                style={{ pointerEvents: "none" }}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 50 50"
-                width="19px"
-                height="19px"
-              >
-                <path d="M 30.398438 2 L 7 2 L 7 48 L 43 48 L 43 14.601563 Z M 15 28 L 31 28 L 31 30 L 15 30 Z M 35 36 L 15 36 L 15 34 L 35 34 Z M 35 24 L 15 24 L 15 22 L 35 22 Z M 30 15 L 30 4.398438 L 40.601563 15 Z" />
-              </svg>
-              Blog
-            </div>
-            <div
-              className="blog-toggle-button cta linkedin flex gap-1 items-center"
-              onClick={handleLinkedinBlog}
-            >
-              <svg
-                style={{ pointerEvents: "none" }}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 50 50"
-                width="20px"
-                height="20px"
-              >
-                <path
-                  fill="#0288D1"
-                  d="M42,37c0,2.762-2.238,5-5,5H11c-2.761,0-5-2.238-5-5V11c0-2.762,2.239-5,5-5h26c2.762,0,5,2.238,5,5V37z"
-                />
-                <path
-                  fill="#FFF"
-                  d="M12 19H17V36H12zM14.485 17h-.028C12.965 17 12 15.888 12 14.499 12 13.08 12.995 12 14.514 12c1.521 0 2.458 1.08 2.486 2.499C17 15.887 16.035 17 14.485 17zM36 36h-5v-9.099c0-2.198-1.225-3.698-3.192-3.698-1.501 0-2.313 1.012-2.707 1.99C24.957 25.543 25 26.511 25 27v9h-5V19h5v2.616C25.721 20.5 26.85 19 29.738 19c3.578 0 6.261 2.25 6.261 7.274L36 36 36 36z"
-                />
-              </svg>
-              Linkedin
-            </div>
-            <div
-              className="blog-toggle-button cta twitter flex gap-1 items-center"
-              onClick={handleTwitterBlog}
-            >
-              <svg
-                style={{ pointerEvents: "none" }}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 50 50"
-                width="20px"
-                height="20px"
-              >
-                <path
-                  fill="#03A9F4"
-                  d="M42,12.429c-1.323,0.586-2.746,0.977-4.247,1.162c1.526-0.906,2.7-2.351,3.251-4.058c-1.428,0.837-3.01,1.452-4.693,1.776C34.967,9.884,33.05,9,30.926,9c-4.08,0-7.387,3.278-7.387,7.32c0,0.572,0.067,1.129,0.193,1.67c-6.138-0.308-11.582-3.226-15.224-7.654c-0.64,1.082-1,2.349-1,3.686c0,2.541,1.301,4.778,3.285,6.096c-1.211-0.037-2.351-0.374-3.349-0.914c0,0.022,0,0.055,0,0.086c0,3.551,2.547,6.508,5.923,7.181c-0.617,0.169-1.269,0.263-1.941,0.263c-0.477,0-0.942-0.054-1.392-0.135c0.94,2.902,3.667,5.023,6.898,5.086c-2.528,1.96-5.712,3.134-9.174,3.134c-0.598,0-1.183-0.034-1.761-0.104C9.268,36.786,13.152,38,17.321,38c13.585,0,21.017-11.156,21.017-20.834c0-0.317-0.01-0.633-0.025-0.945C39.763,15.197,41.013,13.905,42,12.429"
-                />
-              </svg>
-              Twitter
-            </div>
-          </div>
-        ) : (
-          <div style={{ display: "none" }}></div>
-        )}
-        {!isPublished ? (
-          <div className="flex" style={{ gap: "0.25em", marginLeft: "auto" }}>
-            <button
-              className="cta"
-              onClick={() => {
-                if (saveText === "Save Now!") handleSave();
+              style={{
+                display: "flex",
+                gap: "0.25em",
               }}
             >
-              {saveLoad ? (
-                <ReactLoading
-                  width={25}
-                  height={25}
-                  round={true}
-                  color={"#2563EB"}
-                />
-              ) : (
-                saveText
-              )}
-            </button>
-            {option === "linkedin" ? (
-              linkedInAccessToken ? (
-                <button
-                  className="cta-invert"
-                  onClick={() => {
-                    if (
-                      publishLinkText === "Publish on Linkedin" ||
-                      publishLinkText === "Published on Linkedin"
-                    )
-                      handlePublish();
-                  }}
-                >
-                  {publishLinkLoad ? (
-                    <ReactLoading
-                      width={25}
-                      height={25}
-                      round={true}
-                      color={"#2563EB"}
-                    />
-                  ) : (
-                    publishLinkText
-                  )}
-                </button>
-              ) : (
-                <button className="cta-invert" onClick={handleconnectLinkedin}>
-                  Connect with Linkedin
-                </button>
-              )
-            ) : option === "twitter" ? (
-              twitterAccessToken ? (
-                <button
-                  className="cta-invert disabled:opacity-50"
-                  onClick={() => {
-                    if (
-                      publishTweetText === "Publish on Twitter" ||
-                      publishTweetText === "Published on Twitter"
-                    )
-                      handleTwitterPublish();
-                  }}
-                  disabled={pauseTwitterPublish}
-
-                >
-                  {publishTweetLoad ? (
-                    <ReactLoading
-                      width={25}
-                      height={25}
-                      round={true}
-                      color={"#2563EB"}
-                    />
-                  ) : (
-                    publishTweetText
-                  )}
-                </button>
-              ) : (
-                <button className="cta-invert" onClick={handleconnectTwitter}>
-                  Connect Twitter
-                </button>
-              )
-            ) : isAuthenticated ? (
-              <button
-                className="cta-invert"
-                onClick={publishText === "Publish" && handleSavePublish}
+              <div
+                className="blog-toggle-button cta active wordpress flex gap-1 items-center"
+                onClick={handleBlog}
               >
-                {publishLoad ? (
+                <svg
+                  style={{ pointerEvents: "none" }}
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 50 50"
+                  width="19px"
+                  height="19px"
+                >
+                  <path d="M 30.398438 2 L 7 2 L 7 48 L 43 48 L 43 14.601563 Z M 15 28 L 31 28 L 31 30 L 15 30 Z M 35 36 L 15 36 L 15 34 L 35 34 Z M 35 24 L 15 24 L 15 22 L 35 22 Z M 30 15 L 30 4.398438 L 40.601563 15 Z" />
+                </svg>
+                Blog
+              </div>
+              <div
+                className="blog-toggle-button cta linkedin flex gap-1 items-center"
+                onClick={handleLinkedinBlog}
+              >
+                <svg
+                  style={{ pointerEvents: "none" }}
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 50 50"
+                  width="20px"
+                  height="20px"
+                >
+                  <path
+                    fill="#0288D1"
+                    d="M42,37c0,2.762-2.238,5-5,5H11c-2.761,0-5-2.238-5-5V11c0-2.762,2.239-5,5-5h26c2.762,0,5,2.238,5,5V37z"
+                  />
+                  <path
+                    fill="#FFF"
+                    d="M12 19H17V36H12zM14.485 17h-.028C12.965 17 12 15.888 12 14.499 12 13.08 12.995 12 14.514 12c1.521 0 2.458 1.08 2.486 2.499C17 15.887 16.035 17 14.485 17zM36 36h-5v-9.099c0-2.198-1.225-3.698-3.192-3.698-1.501 0-2.313 1.012-2.707 1.99C24.957 25.543 25 26.511 25 27v9h-5V19h5v2.616C25.721 20.5 26.85 19 29.738 19c3.578 0 6.261 2.25 6.261 7.274L36 36 36 36z"
+                  />
+                </svg>
+                Linkedin
+              </div>
+              <div
+                className="blog-toggle-button cta twitter flex gap-1 items-center"
+                onClick={handleTwitterBlog}
+              >
+                <svg
+                  style={{ pointerEvents: "none" }}
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 50 50"
+                  width="20px"
+                  height="20px"
+                >
+                  <path
+                    fill="#03A9F4"
+                    d="M42,12.429c-1.323,0.586-2.746,0.977-4.247,1.162c1.526-0.906,2.7-2.351,3.251-4.058c-1.428,0.837-3.01,1.452-4.693,1.776C34.967,9.884,33.05,9,30.926,9c-4.08,0-7.387,3.278-7.387,7.32c0,0.572,0.067,1.129,0.193,1.67c-6.138-0.308-11.582-3.226-15.224-7.654c-0.64,1.082-1,2.349-1,3.686c0,2.541,1.301,4.778,3.285,6.096c-1.211-0.037-2.351-0.374-3.349-0.914c0,0.022,0,0.055,0,0.086c0,3.551,2.547,6.508,5.923,7.181c-0.617,0.169-1.269,0.263-1.941,0.263c-0.477,0-0.942-0.054-1.392-0.135c0.94,2.902,3.667,5.023,6.898,5.086c-2.528,1.96-5.712,3.134-9.174,3.134c-0.598,0-1.183-0.034-1.761-0.104C9.268,36.786,13.152,38,17.321,38c13.585,0,21.017-11.156,21.017-20.834c0-0.317-0.01-0.633-0.025-0.945C39.763,15.197,41.013,13.905,42,12.429"
+                  />
+                </svg>
+                Twitter
+              </div>w
+            </div>
+          ) : (
+            <div style={{ display: "none" }}></div>
+          )}
+          {!isPublished ? (
+            <div className="flex" style={{ gap: "0.25em", marginLeft: "auto" }}>
+
+              <button
+                className="cta"
+                onClick={() => {
+                  if (saveText === "Save Now!") handleSave();
+                }}
+              >
+                {saveLoad ? (
                   <ReactLoading
                     width={25}
                     height={25}
@@ -1189,287 +1190,338 @@ export default function TinyMCEEditor({
                     color={"#2563EB"}
                   />
                 ) : (
-                  <>
-                    <div className="flex">
-                      <PaperAirplaneIcon className="w-5 h-5 mr-1" />
-                      {publishText}
-                    </div>
-                  </>
+                  saveText
                 )}
               </button>
-            ) : (
-              <></>
-            )}
-          </div>
-        ) : (
-          <div className="flex" style={{ gap: "0.25em", marginLeft: "auto" }}>
-            <button
-              className="cta"
-              onClick={saveText === "Save Now!" && handleSave}
-            >
-              {saveLoad ? (
-                <ReactLoading
-                  width={25}
-                  height={25}
-                  round={true}
-                  color={"#2563EB"}
-                />
+              {option === "linkedin" ? (
+                linkedInAccessToken ? (
+                  <button
+                    className="cta-invert"
+                    onClick={() => {
+                      if (
+                        publishLinkText === "Publish on Linkedin" ||
+                        publishLinkText === "Published on Linkedin"
+                      )
+                        handlePublish();
+                    }}
+                  >
+                    {publishLinkLoad ? (
+                      <ReactLoading
+                        width={25}
+                        height={25}
+                        round={true}
+                        color={"#2563EB"}
+                      />
+                    ) : (
+                      publishLinkText
+                    )}
+                  </button>
+                ) : (
+                  <button className="cta-invert" onClick={handleconnectLinkedin}>
+                    Connect with Linkedin
+                  </button>
+                )
+              ) : option === "twitter" ? (
+                twitterAccessToken ? (
+                  <button
+                    className="cta-invert disabled:opacity-50"
+                    onClick={() => {
+                      if (
+                        publishTweetText === "Publish on Twitter" ||
+                        publishTweetText === "Published on Twitter"
+                      )
+                        handleTwitterPublish();
+                    }}
+                    disabled={pauseTwitterPublish}
+
+                  >
+                    {publishTweetLoad ? (
+                      <ReactLoading
+                        width={25}
+                        height={25}
+                        round={true}
+                        color={"#2563EB"}
+                      />
+                    ) : (
+                      publishTweetText
+                    )}
+                  </button>
+                ) : (
+                  <button className="cta-invert" onClick={handleconnectTwitter}>
+                    Connect Twitter
+                  </button>
+                )
+              ) : isAuthenticated ? (
+                <button
+                  className="cta-invert"
+                  onClick={publishText === "Publish" && handleSavePublish}
+                >
+                  {publishLoad ? (
+                    <ReactLoading
+                      width={25}
+                      height={25}
+                      round={true}
+                      color={"#2563EB"}
+                    />
+                  ) : (
+                    <>
+                      <div className="flex">
+                        <PaperAirplaneIcon className="w-5 h-5 mr-1" />
+                        {publishText}
+                      </div>
+                    </>
+                  )}
+                </button>
               ) : (
-                "Update"
+                <></>
               )}
-            </button>
-            {option === "linkedin" ? (
-              linkedInAccessToken ? (
-                <button
-                  className="cta-invert"
-                  onClick={() => {
-                    if (
-                      publishLinkText === "Publish on Linkedin" ||
-                      publishLinkText === "Published on Linkedin"
-                    )
-                      handlePublish();
-                  }}
-                >
-                  {publishLinkLoad ? (
-                    <ReactLoading
-                      width={25}
-                      height={25}
-                      round={true}
-                      color={"#2563EB"}
-                    />
-                  ) : (
-                    publishLinkText
-                  )}
-                </button>
-              ) : (
-                <button className="cta-invert" onClick={handleconnectLinkedin}>
-                  Connect with Linkedin
-                </button>
-              )
-            ) : option === "twitter" ? (
-              twitterAccessToken ? (
-                <button
-                  className="cta-invert"
-                  onClick={() => {
-                    if (
-                      publishTweetText === "Publish on Twitter" ||
-                      publishTweetText === "Published on Twitter"
-                    )
-                      handleTwitterPublish();
-                  }}
-                >
-                  {publishTweetLoad ? (
-                    <ReactLoading
-                      width={25}
-                      height={25}
-                      round={true}
-                      color={"#2563EB"}
-                    />
-                  ) : (
-                    publishTweetText
-                  )}
-                </button>
-              ) : (
-                <button className="cta-invert" onClick={handleconnectTwitter}>
-                  Connect Twitter
-                </button>
-              )
-            ) : (
+            </div>
+          ) : (
+            <div className="flex" style={{ gap: "0.25em", marginLeft: "auto" }}>
               <button
-                className="flex cta-invert"
-                onClick={() => setOpenModal(true)}
+                className="cta"
+                onClick={saveText === "Save Now!" && handleSave}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="w-4 h-4 mr-2"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
+                {saveLoad ? (
+                  <ReactLoading
+                    width={25}
+                    height={25}
+                    round={true}
+                    color={"#2563EB"}
                   />
-                </svg>
-                Share
+                ) : (
+                  "Update"
+                )}
               </button>
-            )}
-          </div>
-        )}
-      </div>
-      {isalert && (
-        <div className="p-2 text-xs">Lille is not responsible for any images uploaded by you that  contain copyright infringement.
-          <button
-            onClick={() => {
-              setAlert(false);
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-5 h-6 ml-2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </button>
+              {option === "linkedin" ? (
+                linkedInAccessToken ? (
+                  <button
+                    className="cta-invert"
+                    onClick={() => {
+                      if (
+                        publishLinkText === "Publish on Linkedin" ||
+                        publishLinkText === "Published on Linkedin"
+                      )
+                        handlePublish();
+                    }}
+                  >
+                    {publishLinkLoad ? (
+                      <ReactLoading
+                        width={25}
+                        height={25}
+                        round={true}
+                        color={"#2563EB"}
+                      />
+                    ) : (
+                      publishLinkText
+                    )}
+                  </button>
+                ) : (
+                  <button className="cta-invert" onClick={handleconnectLinkedin}>
+                    Connect with Linkedin
+                  </button>
+                )
+              ) : option === "twitter" ? (
+                twitterAccessToken ? (
+                  <button
+                    className="cta-invert"
+                    onClick={() => {
+                      if (
+                        publishTweetText === "Publish on Twitter" ||
+                        publishTweetText === "Published on Twitter"
+                      )
+                        handleTwitterPublish();
+                    }}
+                  >
+                    {publishTweetLoad ? (
+                      <ReactLoading
+                        width={25}
+                        height={25}
+                        round={true}
+                        color={"#2563EB"}
+                      />
+                    ) : (
+                      publishTweetText
+                    )}
+                  </button>
+                ) : (
+                  <button className="cta-invert" onClick={handleconnectTwitter}>
+                    Connect Twitter
+                  </button>
+                )
+              ) : (
+                <button
+                  className="flex cta-invert"
+                  onClick={() => setOpenModal(true)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-4 h-4 mr-2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
+                    />
+                  </svg>
+                  Share
+                </button>
+              )}
+            </div>
+          )}
         </div>
-      )}
 
-      {
-        showTwitterThreadUI === false ?
-          <>
-            <Editor
-              value={updatedText || editorText}
-              apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
-              init={{
-                setup: (editor) => {
-                  if (editor.inline) {
-                    registerPageMouseUp(editor, throttledStore);
-                  }
-                },
-                init_instance_callback: function (editor) {
-                  editor.on("ExecCommand", function (e) {
-                    console.log("The " + e.command + " command was fired.");
-                    if (e.command === "mceImage") {
-                      setAlert(true);
-                      console.log("777");
+
+        {
+          showTwitterThreadUI === false ?
+            <>
+              <Editor
+                value={updatedText || editorText}
+                apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
+                init={{
+                  setup: (editor) => {
+                    if (editor.inline) {
+                      registerPageMouseUp(editor, throttledStore);
                     }
-                    if (isEditing) {
-                      // setEditingMode(true);
-                      isEditing = false;
-                    }
-                  });
-                },
-                skin: "naked",
-                icons: "small",
-                toolbar_location: "bottom",
-                plugins: "lists code table codesample link",
-                menubar: false,
-                statusbar: false,
-                height: "82vh",
-                images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
-                images_upload_credentials: true,
-                plugins:
-                "preview casechange importcss tinydrive searchreplace save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount  editimage help formatpainter permanentpen pageembed charmap emoticons advtable export mergetags",
-                menu: {
-                  tc: {
-                    title: "Comments",
-                    items: "addcomment showcomments deleteallconversations",
                   },
-                },
-                toolbar:
-                  "undo redo image| bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment | footnotes | mergetags",
-                image_title: true,
-                automatic_uploads: true,
-                file_picker_types: "image",
-                file_picker_callback: function (cb, value, meta) {
-                  console.log("852");
-                  var input = document.createElement("input");
-                  input.setAttribute("type", "file");
-                  input.setAttribute("accept", "image/*");
-                  var url = API_BASE_PATH + `/upload/image`;
-                  var xhr = new XMLHttpRequest();
-                  var fd = new FormData();
-                  xhr.open("POST", url, true);
-
-                  input.onchange = function () {
-                    var file = this.files[0];
-                    var reader = new FileReader();
-                    xhr.onload = function () {
-                      if (xhr.readyState === 4 && xhr.status === 200) {
-                        // File uploaded successfully
-                        var response = JSON.parse(xhr.responseText);
-
-                        // https://res.cloudinary.com/cloudName/image/upload/v1483481128/public_id.jpg
-                        var url = response.url;
-                        setImageURL(url);
+                  init_instance_callback: function (editor) {
+                    editor.on("ExecCommand", function (e) {
+                      console.log("The " + e.command + " command was fired.");
+                      if (e.command === "mceImage") {
                         setAlert(true);
-                        console.log("response.data", response.data);
-                        console.log("imageURL", imageURL);
-                        console.log("88", url);
-                        console.log("999", load);
-                        setLoad(false);
-                        // Create a thumbnail of the uploaded image, with 150px width
-                        cb(url, { title: response.type });
+                        console.log("777");
                       }
+                      if (isEditing) {
+                        // setEditingMode(true);
+                        isEditing = false;
+                      }
+                    });
+                  },
+                  skin: "naked",
+                  icons: "small",
+                  toolbar_location: "bottom",
+                  plugins: "lists code table codesample link",
+                  menubar: false,
+                  statusbar: false,
+                  height: "82vh",
+                  images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
+                  images_upload_credentials: true,
+                  plugins:
+                    "preview casechange importcss tinydrive searchreplace save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount  editimage help formatpainter permanentpen pageembed charmap emoticons advtable export mergetags",
+                  menu: {
+                    tc: {
+                      title: "Comments",
+                      items: "addcomment showcomments deleteallconversations",
+                    },
+                  },
+                  toolbar:
+                    "undo redo image| bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment | footnotes | mergetags",
+                  image_title: true,
+                  automatic_uploads: true,
+                  file_picker_types: "image",
+                  file_picker_callback: function (cb, value, meta) {
+                    console.log("852");
+                    var input = document.createElement("input");
+                    input.setAttribute("type", "file");
+                    input.setAttribute("accept", "image/*");
+                    var url = API_BASE_PATH + `/upload/image`;
+                    var xhr = new XMLHttpRequest();
+                    var fd = new FormData();
+                    xhr.open("POST", url, true);
+
+                    input.onchange = function () {
+                      var file = this.files[0];
+                      var reader = new FileReader();
+                      xhr.onload = function () {
+                        if (xhr.readyState === 4 && xhr.status === 200) {
+                          // File uploaded successfully
+                          var response = JSON.parse(xhr.responseText);
+
+                          // https://res.cloudinary.com/cloudName/image/upload/v1483481128/public_id.jpg
+                          var url = response.url;
+                          setImageURL(url);
+                          setAlert(true);
+                          console.log("response.data", response.data);
+                          console.log("imageURL", imageURL);
+                          console.log("88", url);
+                          console.log("999", load);
+                          setLoad(false);
+                          // Create a thumbnail of the uploaded image, with 150px width
+                          cb(url, { title: response.type });
+                        }
+                      };
+
+                      reader.onload = function () {
+                        setLoad(true);
+                        var id = "blobid" + new Date().getTime();
+                        var blobCache =
+                          window.tinymce.activeEditor.editorUpload.blobCache;
+                        var base64 = reader.result.split(",")[1];
+
+                        var blobInfo = blobCache.create(id, file, base64);
+                        blobCache.add(blobInfo);
+
+                        // call the callback and populate the Title field with the file name
+
+                        // fd.append("upload_preset", unsignedUploadPreset);
+                        // fd.append("path", "browser_upload");
+                        fd.append("file", blobInfo.blob());
+
+                        xhr.send(fd);
+                      };
+
+                      reader.readAsDataURL(file);
                     };
 
-                    reader.onload = function () {
-                      setLoad(true);
-                      var id = "blobid" + new Date().getTime();
-                      var blobCache =
-                        window.tinymce.activeEditor.editorUpload.blobCache;
-                      var base64 = reader.result.split(",")[1];
+                    input.click();
+                  },
+                  images_upload_handler: (blobInfo, success, failure) => {
+                    /*var formdata = new FormData();
+                    formdata.append("file", blobInfo.blob());
+          
+                    var requestOptions = {
+                      method: "POST",
+                      body: formdata,
+                      redirect: "follow",
+                    };
+          
+                    fetch("https://maverick.lille.ai/upload/image", requestOptions)
+                      // .then((response) => response.text())
+                      // .then((result) => {
+                      //   const data = JSON.parse(result);
+                      //   success(data.url);
+                      // })
+                      .catch((error) => console.log("error", error));*/
 
-                      var blobInfo = blobCache.create(id, file, base64);
-                      blobCache.add(blobInfo);
+                    console.log("Harsh test this block");
 
-                      // call the callback and populate the Title field with the file name
+                    const formdata = new FormData();
+                    formdata.append("file", blobInfo.blob());
 
-                      // fd.append("upload_preset", unsignedUploadPreset);
-                      // fd.append("path", "browser_upload");
-                      fd.append("file", blobInfo.blob());
-
-                      xhr.send(fd);
+                    const config = {
+                      method: "post",
+                      url: API_BASE_PATH + "/upload/image",
+                      data: formdata,
                     };
 
-                    reader.readAsDataURL(file);
-                  };
-
-                  input.click();
-                },
-                images_upload_handler: (blobInfo, success, failure) => {
-                  /*var formdata = new FormData();
-                  formdata.append("file", blobInfo.blob());
-        
-                  var requestOptions = {
-                    method: "POST",
-                    body: formdata,
-                    redirect: "follow",
-                  };
-        
-                  fetch("https://maverick.lille.ai/upload/image", requestOptions)
-                    // .then((response) => response.text())
-                    // .then((result) => {
-                    //   const data = JSON.parse(result);
-                    //   success(data.url);
-                    // })
-                    .catch((error) => console.log("error", error));*/
-
-                  console.log("Harsh test this block");
-
-                  const formdata = new FormData();
-                  formdata.append("file", blobInfo.blob());
-
-                  const config = {
-                    method: "post",
-                    url: API_BASE_PATH + "/upload/image",
-                    data: formdata,
-                  };
-
-                  axios(config)
-                    .then((response) => { })
-                    .catch((error) => console.log("error", error));
-                },
-              }}
-              onEditorChange={(content, editor) => {
-                setEditorText(content);
-                setSaveText("Save Now!");
-                // console.log(updatedText);
-              }}
-            />
-          </>
-          :
-          <div
+                    axios(config)
+                      .then((response) => { })
+                      .catch((error) => console.log("error", error));
+                  },
+                }}
+                onEditorChange={(content, editor) => {
+                  setEditorText(content);
+                  setSaveText("Save Now!");
+                  // console.log(updatedText);
+                }}
+              />
+            </>
+            :
+            <div
               // overflowscroll verticalscroll
               style={{
                 height: "82vh",
@@ -1477,16 +1529,94 @@ export default function TinyMCEEditor({
                 overflowX: "hidden",
                 padding: "0px 10px",
               }}
-          >
-            <Threads threadData ={twitterThreadData} setthreadData={setTwitterThreadData} 
-           isUserPaid={meeData?.me?.paid}
-           setPauseTwitterPublish={setPauseTwitterPublish} pauseTwitterPublish={pauseTwitterPublish}
-            
-            />
-          </div>
-      }
-      <hr />
+            >
+              <Threads threadData={twitterThreadData} setthreadData={setTwitterThreadData}
+                isUserPaid={meeData?.me?.paid}
+                setPauseTwitterPublish={setPauseTwitterPublish} pauseTwitterPublish={pauseTwitterPublish}
+
+              />
+            </div>
+        }
+      </div>
+      <div className="flex lg:hidden">
+        <Tab.Group>
+          {/* bottom tab */}
+          <Tab.List className="flex space-x-1 rounded-xl bg-blue-900/20 p-1 fixed bottom-0 inset-x-0 mb-2 z-10 backdrop-filter backdrop-blur-lg bg-opacity-30">
+            {Object.keys(categories).map((category) => (
+              <Tab
+                key={category}
+                className={({ selected }) =>
+                  classNames(
+                    'w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700',
+                    'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2',
+                    selected
+                      ? 'bg-white shadow'
+                      : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'
+                  )
+                }
+              >
+                {category}
+              </Tab>
+            ))}
+          </Tab.List>
+        </Tab.Group>
+      </div>
     </>
   );
 }
- 
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ')
+}
+
+var categories = {
+  PublishBlog: [
+    {
+      id: 1,
+      title: 'Does drinking coffee make you smarter?',
+      date: '5h ago',
+      commentCount: 5,
+      shareCount: 2,
+    },
+    {
+      id: 2,
+      title: "So you've bought coffee... now what?",
+      date: '2h ago',
+      commentCount: 3,
+      shareCount: 2,
+    },
+  ],
+  GenerateBlog: [
+    {
+      id: 1,
+      title: 'Is tech making coffee better or worse?',
+      date: 'Jan 7',
+      commentCount: 29,
+      shareCount: 16,
+    },
+    {
+      id: 2,
+      title: 'The most innovative things happening in coffee',
+      date: 'Mar 19',
+      commentCount: 24,
+      shareCount: 12,
+    },
+  ],
+  SaveBlog: [
+    {
+      id: 1,
+      title: 'Is tech making coffee better or worse?',
+      date: 'Jan 7',
+      commentCount: 29,
+      shareCount: 16,
+    },
+    {
+      id: 2,
+      title: 'The most innovative things happening in coffee',
+      date: 'Mar 19',
+      commentCount: 24,
+      shareCount: 12,
+    },
+  ],
+
+}
