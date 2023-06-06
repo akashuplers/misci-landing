@@ -235,7 +235,8 @@ export const blogResolvers = {
                     imageSrc,
                     ideasText,
                     ideasArr,
-                    refUrls
+                    refUrls,
+                    userDetails
                 })
                 const finalBlogObj = {
                     article_id: articleIds,
@@ -428,7 +429,8 @@ export const blogResolvers = {
                     imageUrl: imageUrl ? imageUrl : blog.imageUrl,
                     imageSrc,
                     ideasArr,
-                    refUrls
+                    refUrls,
+                    userDetails
                 })
                 let endChatGPTRequest = new Date()
                 let respChatgptTime = diff_minutes(endChatGPTRequest, startChatGptRequest)
@@ -709,6 +711,7 @@ export const blogResolvers = {
                         const data = pythonData[i-1]
                         console.log(`running for data ${data.user_id}`)
                         const userId = data.user_id
+                        const userDetails = await fetchUser({id: userId, db})
                         const articles = data.sequence_ids
                         let texts = ""
                         let ideasText = ""
@@ -775,7 +778,8 @@ export const blogResolvers = {
                                 imageUrl,
                                 imageSrc,
                                 ideasText,
-                                refUrls
+                                refUrls,
+                                userDetails
                             })
                             let uniqueTags: String[] = [];
                             tags?.forEach((c) => {

@@ -1,6 +1,6 @@
 import { ObjectID } from "bson";
 import { PreferencesArgs } from "interfaces";
-import { monthDiff } from "../../../utils/date";
+import { diff_hours, monthDiff } from "../../../utils/date";
 import { v4 as uuidv4 } from "uuid";
 
 export const usersResolver = {
@@ -39,6 +39,9 @@ export const usersResolver = {
                 userId: new ObjectID(userDetails._id),
                 status: "published"
             })
+            const tweetsQuota = await db.db('lilleAdmin').collection('tweetsQuota').findOne({
+                userId: new ObjectID(userDetails._id)
+            })
             return {
                 ...userDetails,
                 subscribeStatus: subscriptionDetails && subscriptionDetails.length ? subscriptionDetails[0].subscriptionStatus : false,
@@ -58,7 +61,10 @@ export const usersResolver = {
                 totalCredits: userDetails.totalCredits ? userDetails.totalCredits : userDetails.premium ? process.env.PREMIUM_CREDIT_COUNT : process.env.CREDIT_COUNT,
                 paymentsStarts: userDetails.paymentsStarts || null,
                 creditRenewDay: userDetails.creditRenewDay || null,
-                publishCount: publishCount || 0
+                publishCount: publishCount || 0,
+                total_twitter_quota: tweetsQuota?.totalQuota || null,
+                remaining_twitter_quota: tweetsQuota?.remainingQuota || null,
+                hours_left_for_quota_renew: tweetsQuota?.date ? 24 - diff_hours(new Date(tweetsQuota?.date * 1000), new Date()) : null
             }
         }
     },
