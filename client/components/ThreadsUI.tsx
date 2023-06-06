@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 import { useTwitterThreadALertModal } from "@/store/store";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import TextareaAutosize from "react-textarea-autosize";
@@ -15,9 +16,12 @@ const Threads = ({
   const [hideAddThread, setHideAddThread] = useState(false);
   const {
     isOpen: isTwitterThreadAlertOpen,
-    remaining_twitter_quota,
-    total_twitter_quota,
+    remaining_twitter_quota: remainingTwitterQuota,
+    total_twitter_quota: totalTwitterQuota,
+    initailText,
     isUserpaid,
+    showInitailText,
+    textComponent, // component
     toggleModal,
   } = useTwitterThreadALertModal();
 
@@ -87,14 +91,18 @@ const Threads = ({
             <h1 className="text-2xl font-bold">📜</h1>
           </div>
           <div className="w-[90%] text-yellow-500">
-            <span>
-              We offer the capability of {total_twitter_quota} tweets in a
-              thread at once.
-              <a href="/pricing" className="underline">
-                Click here to upgrade
-              </a>{" "}
-              if you desire more than {total_twitter_quota} tweets.
-            </span>
+            {showInitailText ? (
+              <span>{initailText(totalTwitterQuota)}</span>
+            ) : (
+              <span>
+                We offer the capability of {totalTwitterQuota} tweets in a
+                thread at once.
+                <Link href="/pricing" className="underline">
+                  Click here to upgrade
+                </Link>
+                if you desire more than {totalTwitterQuota} tweets.
+              </span>
+            )}
           </div>
         </div>
       )}
@@ -158,16 +166,17 @@ const Threads = ({
                   isUserPaid={isUserPaid}
                 />
               ))}
-            {threadData.length > 1 && (
-              <div>
-                <button
-                  onClick={addTextArea}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                >
-                  + Add Thread
-                </button>
-              </div>
-            )}
+            {threadData.length > 0 &&
+              threadData.length - 1 < remainingTwitterQuota && (
+                <div>
+                  <button
+                    onClick={addTextArea}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                  >
+                    + Add Thread
+                  </button>
+                </div>
+              )}
           </div>
         </div>
       </DragDropContext>
