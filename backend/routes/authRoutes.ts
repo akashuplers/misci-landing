@@ -564,13 +564,13 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
       const currentDate = new Date()
       console.log(quota)
       console.log(diff_hours(new Date(quota.date * 1000), currentDate))
+      if(!quota.remainingQuota) {
+        return reply.status(400).send({
+          type: "ERROR",
+          message: "Your 24 hours tweet quota has been exahusted!"
+        })
+      }
       if(diff_hours(new Date(quota.date * 1000), currentDate) < 24) {
-        if(!quota.remainingQuota) {
-          return reply.status(400).send({
-            type: "ERROR",
-            message: "Your 24 hours tweet quota has been exahusted!"
-          })
-        }
         if(textsArray && textsArray.length && quota.remainingQuota < textsArray.length) {
           return reply.status(400).send({
             type: "ERROR",
