@@ -29,7 +29,10 @@ dashboard.getInitialProps = ({ query }) => {
 };
 
 export default function dashboard({ query }) {
-  const { topic } = query;
+  var { topic } = query;
+  // if (topic === undefined) {
+  //   topic = 'India in 2040'
+  // }
   // const topic = 'India in 2040 '
   const router = useRouter();
   const isAuthenticated = useStore((state) => state.isAuthenticated);
@@ -413,7 +416,7 @@ export default function dashboard({ query }) {
               </span>
             </div>
           )}
-          <div className="relative" style={{ width: "var(--tinymce-width)" }}>
+          <div className="relative tiny_mce_width">
             <TinyMCEEditor
               topic={topic}
               isAuthenticated={isAuthenticated}

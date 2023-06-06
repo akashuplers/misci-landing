@@ -3,9 +3,9 @@ import { FaLinkedin, FaTwitter } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-white  py-2 px-20 bottom-0 w-full">
-      <div className="flex items-center justify-between align-middle">
-        <div>
+    <footer className="sm:block hidden bg-gray-800 text-white py-2 px-4 sm:px-20 w-full bottom-0">
+      <div className="flex flex-col sm:flex-row items-center justify-between align-middle">
+        <div className="mb-4 sm:mb-0">
           <Image
             src="/lille_logo_light.png"
             style={{ filter: "drop-shadow(2px 4px 6px black" }}
@@ -34,7 +34,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="mt-4 text-center text-gray-400">
-        Copyright © Nowigence, Inc. -  All Rights Reserved 2023
+        © Nowigence, Inc. - All Rights Reserved 2023
       </div>
     </footer>
   );

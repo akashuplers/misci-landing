@@ -2,6 +2,7 @@
 import useStore from "@/store/store";
 import { useQuery } from "@apollo/client";
 import { Dialog, Transition } from "@headlessui/react";
+import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import {
   ArrowRightOnRectangleIcon,
   Bars3Icon,
@@ -13,12 +14,11 @@ import {
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import Avatar from "react-avatar";
 import { ToastContainer } from "react-toastify";
 import { meeAPI } from "../graphql/querys/mee";
 import { logout } from "../helpers/helper";
-import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -161,6 +161,15 @@ export default function Sidebar() {
     }
   }, []);
 
+  const sideBarHeightRef = useRef(null);
+
+  useEffect(() => {
+    const elementHeight = sideBarHeightRef.current.offsetHeight;
+    console.log(elementHeight)
+    console.log("element height");
+    document.documentElement.style.setProperty('--my-mobile-sidebar-height', `${elementHeight + 50}px`);
+  }, []);
+
   return (
     <>
       <ToastContainer />
@@ -279,7 +288,36 @@ export default function Sidebar() {
                         />
                       </svg>
                     </Link>
+
                   </div>
+                  <nav className="mt-5 space-y-1 bg-white px-2 pb-8">
+                    {navigation_bottom.map((item) => (
+                      <Link
+                        onClick={() => {
+                          logout(item);
+                        }}
+                        key={item.name}
+                        href={item.href}
+                        className={classNames(
+                          item.current
+                            ? "bg-gray-100 text-gray-900"
+                            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                          "group flex items-center rounded-md px-2 py-2 text-sm font-medium"
+                        )}
+                      >
+                        <item.icon
+                          className={classNames(
+                            item.current
+                              ? "text-gray-500"
+                              : "text-gray-400 group-hover:text-gray-500",
+                            "mr-3 h-6 w-6 flex-shrink-0"
+                          )}
+                          aria-hidden="true"
+                        />
+                        {item.name}
+                      </Link>
+                    ))}
+                  </nav>
                 </Dialog.Panel>
               </Transition.Child>
               <div className="w-14 flex-shrink-0">
@@ -388,11 +426,9 @@ export default function Sidebar() {
           </div>
         </div>
         <div
-          className="flex flex-1 flex-col w-full fixed top-0 z-10"
+          className="flex flex-1 flex-row lg:flex-col w-full fixed top-0 z-10 mobile_sidebar"
           style={{
             ...topBarStyle,
-            paddingLeft: "var(--sidebar-width)",
-            height: "var(--topbar-height)",
           }}
         >
           <div className="sticky top-0 z-10 pl-1 pt-1 sm:pl-3 sm:pt-3 lg:hidden">
@@ -405,7 +441,10 @@ export default function Sidebar() {
               <Bars3Icon className="h-6 w-6" aria-hidden="true" />
             </button>
           </div>
-          <main className="flex-1 ">
+          <main className="flex-1"
+            ref={sideBarHeightRef}
+
+          >
             <div className="py-2 pb-4">
               <div className="mx-auto max-w-7xl px-2 flex relative">
                 <div className="pt-4">
@@ -432,43 +471,6 @@ export default function Sidebar() {
                   <h1 className="text-2xl font-semibold text-gray-900 p-3">
                     {title}
                   </h1>
-
-                  {/* <div
-                    // className={styles.linkedInWrapper}
-                    style={{
-                      position: "absolute",
-                      right: "200px",
-                      height: "50px",
-                    }}
-                    onMouseEnter={() => {
-                      // setHover("linkedin");
-                    }}
-                    onMouseLeave={() => {
-                      // setHideHover();
-                    }}
-                  >
-                    <AiOutlineLinkedin
-                      size={35}
-                      // className={`${styles.icon} ${styles.linkedIn}`}
-
-                      onClick={() =>
-                        // handleHandleSocialLogin(SocialTypes.LINKEDIN)
-                        {}
-                      }
-                      onMouseEnter={() => {
-                        // setHover("linkedin");
-                      }}
-                      onMouseLeave={() => {
-                        // setHideHover();
-                      }}
-                    />
-                    {linkedInUserData ? (
-                      // <AiFillCheckCircle className={styles.checkLinkdedin} />
-                      <AiFillCheckCircle />
-                    ) : (
-                      ""
-                    )}
-                  </div> */}
                 </div>
                 <div
                   style={{
@@ -534,34 +536,11 @@ export default function Sidebar() {
                         src={meeData?.me?.profileImage}
                         round={true}
                       />
-                      {/* {meeData?.me?.paid || (
-                        <div
-                          id="trialenddiv"
-                          className="hidden"
-                          style={{
-                            border: "1px solid",
-                            fontSize: "0.65em",
-                            width: "max-content",
-                            borderRadius: "5px",
-                            textAlign: "center",
-                            padding: "0.25em 0.75em",
-                            position: "absolute",
-                            top: "105%",
-                            left: "50%",
-                            transform: "translateX(-50%)",
-                            zIndex: "100",
-                            backgroundColor: "#EEC800",
-                          }}
-                        >
-                          Upgrade Now!
-                        </div>
-                      )} */}
+
                     </Link>
                   )}
                 </div>
               </div>
-
-              {/* <div className="r-0  h-[50px] w-[50px] "></div> */}
             </div>
           </main>
         </div>
