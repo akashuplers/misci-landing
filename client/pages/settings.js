@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/alt-text */
-/* eslint-disable @next/next/no-img-element */
 import { useMutation, useQuery } from "@apollo/client";
 import { Dialog, Transition } from "@headlessui/react";
 import {
@@ -513,7 +511,7 @@ export default function Settings() {
             <div className="mx-auto flex flex-col lg:max-w-4xl">
               <main className="flex-1">
                 <div className="relative mx-auto max-w-4xl">
-                  <div className=" pb-16">
+                  <div className="p-4 lg:pb-16 mx-auto">
                     <div className="px-4 sm:px-6 lg:px-0">
                       <div className="pb-6">
                         {/* Tabs */}
@@ -583,15 +581,7 @@ export default function Settings() {
                                         padding: "0 0.25em",
                                       }}
                                     />
-                                    {/* <span className="ml-4 flex-shrink-0">
-                                    <button
-                                      type="button"
-                                      className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-                                      onClick={handleUpdate}
-                                    >
-                                      Update
-                                    </button>
-                                  </span> */}
+
                                   </dd>
                                 </div>
                                 <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
@@ -610,15 +600,7 @@ export default function Settings() {
                                         padding: "0 0.25em",
                                       }}
                                     />
-                                    {/* <span className="ml-4 flex-shrink-0">
-                                    <button
-                                      type="button"
-                                      className="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-                                      onClick={handleUpdate}
-                                    >
-                                      Update
-                                    </button>
-                                  </span> */}
+
                                   </dd>
                                 </div>
                                 <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:pt-5">
@@ -777,11 +759,10 @@ export default function Settings() {
                                       )}
                                   </div>
                                 )}
-                                <div>
+                                <div className="py-4 flex flex-col md:flex-row gap-4">
                                   <span
                                     className="reset-button cta"
                                     style={{
-                                      position: "absolute",
                                       left: "0",
                                       bottom: "30px",
                                     }}
@@ -798,7 +779,6 @@ export default function Settings() {
                                     type="button"
                                     className="update-button cta"
                                     style={{
-                                      position: "absolute",
                                       right: "0",
                                       bottom: "30px",
                                     }}
@@ -820,7 +800,6 @@ export default function Settings() {
                                     <button
                                       className="update-button cta p-4"
                                       style={{
-                                        position: "absolute",
                                         right: "100px",
                                         bottom: "30px",
                                         width: "150px",
@@ -844,7 +823,6 @@ export default function Settings() {
                                     <button
                                       className="update-button cta p-4"
                                       style={{
-                                        position: "absolute",
                                         right: "300px",
                                         bottom: "30px",
                                         width: "175px",

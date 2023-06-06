@@ -1,4 +1,6 @@
 import Footer from "@/components/Footer";
+import { Tab } from '@headlessui/react';
+import { CheckIcon, ChevronLeftIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import Link from "next/link";
 import { useEffect, useLayoutEffect, useState } from "react";
@@ -6,7 +8,6 @@ import AuthenticationModal from "../components/AuthenticationModal";
 import Navbar from "../components/Navbar";
 import { API_BASE_PATH } from "../constants/apiEndpoints";
 import styles from "../styles/price.module.css";
-
 const featuresData = [
   {
     // icon: Search,
@@ -29,6 +30,40 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
+const MonthlyPlans = [
+  {
+    name: 'Personal',
+    description: 'Perfect for side or hobby project',
+    price: '$10',
+    duration: '/ Month',
+    features: ['Upto 5 users', 'Collaboration features'],
+  },
+  {
+    name: 'Startup',
+    description: 'Perfect for small teams',
+    price: '$50',
+    duration: '/ Month',
+    features: [
+      'Upto 5 users',
+      'Collaboration features',
+      'Smart analytics',
+      '30-days free trial',
+    ],
+  },
+  {
+    name: 'Organization',
+    description: 'Perfect for organization',
+    price: '$70',
+    duration: '/ Month',
+    features: [
+      'Upto 5 users',
+      'Collaboration features',
+      'Smart analytics',
+      '30-days free trial',
+      'Contact Sales',
+    ],
+  },
+];
 export default function Pricing() {
   const [priceData, setPriceData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -135,10 +170,110 @@ export default function Pricing() {
   }, [plans]);
 
   const [type, setType] = useState("signup");
+  const [isMonthly, setIsMonthly] = useState(true);
 
+  let [categories] = useState({
+    Monthly: [
+      {
+        id: 1,
+        title: 'Does drinking coffee make you smarter?',
+        date: '5h ago',
+        commentCount: 5,
+        shareCount: 2,
+      },
+      {
+        id: 2,
+        title: "So you've bought coffee... now what?",
+        date: '2h ago',
+        commentCount: 3,
+        shareCount: 2,
+      },
+    ],
+    Yearly: [
+      {
+        id: 1,
+        title: 'Is tech making coffee better or worse?',
+        date: 'Jan 7',
+        commentCount: 29,
+        shareCount: 16,
+      },
+      {
+        id: 2,
+        title: 'The most innovative things happening in coffee',
+        date: 'Mar 19',
+        commentCount: 24,
+        shareCount: 12,
+      },
+    ],
+  })
+  function classNames(...classes) {
+    return classes.filter(Boolean).join(' ')
+  }
   return (
     <>
-      <div>
+      <div className="relative md:min-h-screen md:hidden">
+
+        <div>
+          <div>
+            {/* back button */}
+
+            <div className="w-full max-w-md px-2 py-16 sm:px-0">
+              {/* back button */}
+
+              <Tab.Group >
+
+                <Tab.List className="flex items-center justify-center">
+
+                  <div className="flex items-center justify-start">
+                    <Link href="/">
+                      <span className="inline-flex items-center text-sm font-medium text-gray-900">
+                        <ChevronLeftIcon className="-ml-1 mr-2 h-5 w-5 text-gray-500" aria-hidden="true" />
+                      </span>
+                    </Link>
+                  </div>
+                  <div className="flex rounded-full shadow-md px-4 py-1 items-center">
+                    {Object.keys(categories).map((category) => (
+                      <Tab
+                        key={category}
+                        className={({ selected }) =>
+                          classNames(
+                            'inline-flex items-center justify-center px-2.5 py-1.5 rounded-full text-xs font-medium leading-4',
+                            'ring-white ring-opacity-60 ring-offset-2 ring-purple-blue-400 focus:outline-none focus:ring-2',
+                            selected
+                              ? 'bg-purple-500 text-white shadow'
+                              : 'text-gray-500 hover:bg-white/[0.12] hover:text-white'
+                          )
+                        }
+                      >
+                        {category}
+                      </Tab>
+                    ))}
+                  </div>
+                </Tab.List>
+                <Tab.Panels className="mt-2">
+                  {Object.values(categories).map((posts, idx) => (
+                    <Tab.Panel
+                      key={idx}
+                      className={classNames(
+                        'rounded-xl bg-white p-3',
+                        'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2'
+                      )}
+                    >
+                      <PricingCards />
+                    </Tab.Panel>
+                  ))}
+                </Tab.Panels>
+              </Tab.Group>
+            </div>
+
+
+          </div>
+          <div>
+
+          </div>
+        </div>
+      </div>
+      <div className="relative md:min-h-screen hidden md:block">
         <AuthenticationModal
           type={type}
           setType={setType}
@@ -174,9 +309,9 @@ export default function Pricing() {
               </defs>
             </svg>
           </div>
-          <div className="relative top-0 h-auto">
+          <div className="relative h-auto">
             <div className="h-[500px] w-[100%]"></div>
-            <div className=" sm:h-[400px] sm:w-[100%]"></div>
+            <div className=" sm:h-[400px] sm:w  -[100%]"></div>
             {/* cards div */}
             <div className="absolute max-sm:top-[20%] sm:top-[15%] lg:top-[5%] sm:left-[0%] sm:right-[8%] w-full">
               <div
@@ -239,8 +374,8 @@ export default function Pricing() {
                     <p className="text-[64px]  font-bold">
                       ${currentPlan?.price}
                       {/* <span className="text-[16px] leading-[26px] tracking-[0.5px] text-[#ffffff]">
-                        /month
-                      </span> */}
+                  /month
+                </span> */}
                     </p>
                   </div>
                   <div className=" mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px]"></div>
@@ -265,55 +400,55 @@ export default function Pricing() {
                   <div className="flex  flex-col items-start justify-start mt-4">
                     <div className="flex align-middle">
                       {/* <img
-                        className="h-[18px] mr-3"
-                        src={TickIcon}
-                        alt=""
-                        srcset=""
-                      /> */}
+                  className="h-[18px] mr-3"
+                  src={TickIcon}
+                  alt=""
+                  srcset=""
+                /> */}
                       <p className=" text-[18px] font-medium mb-4">
                         Full Features Access with 200 Credits monthly validity
                       </p>
                     </div>
                     <div className="flex align-middle">
                       {/* <img
-                        className="h-[18px] mr-3"
-                        src={TickIcon}
-                        alt=""
-                        srcset=""
-                      /> */}
+                  className="h-[18px] mr-3"
+                  src={TickIcon}
+                  alt=""
+                  srcset=""
+                /> */}
                       <p className=" text-[18px] font-medium mb-4">
                         Create/Regenerate blogs with your topics
                       </p>
                     </div>
                     <div className="flex align-middle">
                       {/* <img
-                        className="h-[18px] mr-3"
-                        src={TickIcon}
-                        alt=""
-                        srcset=""
-                      /> */}
+                  className="h-[18px] mr-3"
+                  src={TickIcon}
+                  alt=""
+                  srcset=""
+                /> */}
                       <p className=" text-[18px] font-medium mb-4">
                         Unlimited publishing on top social media platforms
                       </p>
                     </div>
                     <div className="flex align-middle">
                       {/* <img
-                        className="h-[18px] mr-3"
-                        src={TickIcon}
-                        alt=""
-                        srcset=""
-                      /> */}
+                  className="h-[18px] mr-3"
+                  src={TickIcon}
+                  alt=""
+                  srcset=""
+                /> */}
                       <p className=" text-[18px] font-medium mb-4">
                         Customization possibilities, Talk to our support team
                       </p>
                     </div>
                     <div className="flex align-middle">
                       {/* <img
-                        className="h-[18px]"
-                        src={TickIcon}
-                        alt=""
-                        srcset=""
-                      /> */}
+                  className="h-[18px]"
+                  src={TickIcon}
+                  alt=""
+                  srcset=""
+                /> */}
                       <p className="text-[18px] font-medium mb-4">
                         {/* Unlimited access of Topic Monitoring */}
                       </p>
@@ -334,14 +469,58 @@ export default function Pricing() {
                 </div>
               </div>
             </div>
+
           </div>
         </div>
+        <div className="bg-blue-500 p-4 fixed bottom-1 left-1 z-50 mx-0 rounded-md shadow-md text-white max-w-lg  mt-10 text-center">
+          For enterprise usage inquiries please contact us at <a href="mailto:sales@lille.ai" className="underline">sales@lille.ai</a>
+        </div>
+        <div className="">
+          <Footer />
+        </div>
       </div>
-      <div className="bg-blue-500 p-4 fixed bottom-1 left-1 z-50 mx-0 rounded-md shadow-md text-white max-w-lg  mt-10 text-center">
-        For enterprise usage inquiries please contact us at <a href="mailto:sales@lille.ai" className="underline">sales@lille.ai</a>
-      </div>
-      <Footer />
-
     </>
+  );
+}
+
+
+
+function PricingCard({ plan }) {
+  return (
+    <div className="bg-white rounded-lg shadow-md p-6 h-full w-full">
+      <h3 className="text-lg font-semibold mb-2">{plan.name}</h3>
+      <p className="text-gray-500 text-sm mb-4">{plan.description}</p>
+      <div className="flex items-center mb-6">
+        <span className="text-5xl font-semibold">{plan.price}</span>
+        <span className="text-gray-500 text-sm ml-2">{plan.duration}</span>
+      </div>
+      <ul className="space-y-2">
+        {
+          plan.features.map((feature, i) => (
+            <li key={feature} className="flex items-center">
+              <CheckIcon className="h-4 w-4 text-purple-500" />
+              <span className="ml-2">{feature}</span>
+            </li>
+          ))
+        }
+
+
+      </ul>
+      <div className="w-full flex justify-center mt-6">
+        <button className="mt-6 border-2 w-full border-purple-500 text-purple-500 rounded-lg py-2 px-4 hover:bg-purple-500 hover:text-white transition-colors duration-300">
+          Upgrade
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function PricingCards() {
+  return (
+    <div className="flex flex-wrap w-full gap-3 mt-5">
+      {MonthlyPlans.map((plan) => (
+        <PricingCard key={plan.name} plan={plan} />
+      ))}
+    </div>
   );
 }

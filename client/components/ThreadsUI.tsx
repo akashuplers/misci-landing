@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable @next/next/no-html-link-for-pages */
+import { useTwitterThreadALertModal } from "@/store/store";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import TextareaAutosize from "react-textarea-autosize";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+
 const Threads = ({
   threadData,
   setthreadData,
@@ -10,25 +14,35 @@ const Threads = ({
   // const [threadData, setthreadData] = useState(threadData);
   console.log("THREADS DATA");
   const [hideAddThread, setHideAddThread] = useState(false);
+  const {
+    isOpen: isTwitterThreadAlertOpen,
+    remaining_twitter_quota: remainingTwitterQuota,
+    total_twitter_quota: totalTwitterQuota,
+    initailText,
+    isUserpaid,
+    showInitailText,
+    textComponent, // component
+    toggleModal,
+  } = useTwitterThreadALertModal();
+
   console.log(threadData);
   const addTextArea = () => {
-      // setthreadData([...threadData, ""]);
-      // take the index
-      const lastIndex = threadData.length - 1;
-      const lastThread = threadData[lastIndex];
-      const updatedThreads = [...threadData];
-      updatedThreads[lastIndex] = "";
-      updatedThreads.push(lastThread);
-      setthreadData(updatedThreads);
-      };
+    // setthreadData([...threadData, ""]);
+    // take the index
+    const lastIndex = threadData.length - 1;
+    const lastThread = threadData[lastIndex];
+    const updatedThreads = [...threadData];
+    updatedThreads[lastIndex] = "";
+    updatedThreads.push(lastThread);
+    setthreadData(updatedThreads);
+  };
 
   const updateTextArea = (index: number, value: number) => {
-    if(index===threadData.length){
-
-    }else{
+    if (index === threadData.length) {
+    } else {
       const updatedThreads = [...threadData];
-    updatedThreads[index] = value;
-    setthreadData(updatedThreads);
+      updatedThreads[index] = value;
+      setthreadData(updatedThreads);
     }
   };
 
@@ -62,7 +76,6 @@ const Threads = ({
   const handleDragEnd = (result: any) => {
     setHideAddThread(true);
     if (!result.destination) return;
-
     const updatedThreads = Array.from(threadData);
     const [removed] = updatedThreads.splice(result.source.index, 1);
     updatedThreads.splice(result.destination.index, 0, removed);
@@ -71,79 +84,103 @@ const Threads = ({
   };
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="flex flex-col items-start justify-center max-h-fit py-2 overflow-auto">
-        <div className="flex flex-col w-full">
-          <Droppable droppableId="threads">
-            {(provided) => (
-              <div {...provided.droppableProps} ref={provided.innerRef}>
-                {threadData
-                  .slice(0, threadData.length - 1)
-                  .map((thread: any, index: number) => (
-                    <Draggable
-                      key={index}
-                      draggableId={`thread-${index}`}
-                      index={index}
-                    >
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...(index !== threadData.length - 1 &&
-                            provided.dragHandleProps)}
-                        >
-                          <Thread
-                            thread={thread}
-                            threadData={threadData}
-                            index={index}
-                            addTextArea={addTextArea}
-                            updateTextArea={updateTextArea}
-                            moveThreadUp={moveThreadUp}
-                            moveThreadDown={moveThreadDown}
-                            deleteThread={deleteThread}
-                            setPauseTwitterPublish={setPauseTwitterPublish}
-                            setthreadData={setthreadData}
-                            isUserPaid={isUserPaid}
-                          />
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                {provided.placeholder}
-              </div>
+    <>
+      {isTwitterThreadAlertOpen && (
+        <div className="border-l-4 rounded-md bg-yellow-50 border-yellow-800 pl-4 flex items-center justify-between w-full py-2">
+          <div className="w-[10%]">
+            <h1 className="text-2xl font-bold">📜</h1>
+          </div>
+          <div className="w-[90%] text-yellow-500">
+            {showInitailText ? (
+              <span>{initailText(totalTwitterQuota)}</span>
+            ) : (
+              <span>
+                We offer the capability of {totalTwitterQuota} tweets in a
+                thread at once.
+                <Link href="/pricing" className="underline">
+                  Click here to upgrade
+                </Link>
+                if you desire more than {totalTwitterQuota} tweets.
+              </span>
             )}
-          </Droppable>
-          {threadData
-            .slice(threadData.length - 1)
-            .map((thread: any, index: number) => (
-              <Thread
-              key={index}
-                thread={thread}
-                threadData={threadData}
-                index={threadData.length - 1}
-                addTextArea={addTextArea}
-                updateTextArea={updateTextArea}
-                moveThreadUp={moveThreadUp}
-                moveThreadDown={moveThreadDown}
-                deleteThread={deleteThread}
-                setPauseTwitterPublish={setPauseTwitterPublish}
-                setthreadData={setthreadData}
-                isUserPaid={isUserPaid}
-              />
-            ))}
-          {threadData.length > 1 && (
-            <div>
-              <button
-                onClick={addTextArea}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-              >
-                + Add Thread
-              </button>
-            </div>
-          )}
+          </div>
         </div>
-      </div>
-    </DragDropContext>
+      )}
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <div className="flex flex-col items-start justify-center max-h-fit py-2 overflow-auto">
+          <div className="flex flex-col w-full">
+            <Droppable droppableId="threads">
+              {(provided) => (
+                <div {...provided.droppableProps} ref={provided.innerRef}>
+                  {threadData
+                    .slice(0, threadData.length - 1)
+                    .map((thread: any, index: number) => (
+                      <Draggable
+                        key={index}
+                        draggableId={`thread-${index}`}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...(index !== threadData.length - 1 &&
+                              provided.dragHandleProps)}
+                          >
+                            <Thread
+                              thread={thread}
+                              threadData={threadData}
+                              index={index}
+                              addTextArea={addTextArea}
+                              updateTextArea={updateTextArea}
+                              moveThreadUp={moveThreadUp}
+                              moveThreadDown={moveThreadDown}
+                              deleteThread={deleteThread}
+                              setPauseTwitterPublish={setPauseTwitterPublish}
+                              setthreadData={setthreadData}
+                              isUserPaid={isUserPaid}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+            {threadData
+              .slice(threadData.length - 1)
+              .map((thread: any, index: number) => (
+                <Thread
+                  key={index}
+                  thread={thread}
+                  threadData={threadData}
+                  index={threadData.length - 1}
+                  addTextArea={addTextArea}
+                  updateTextArea={updateTextArea}
+                  moveThreadUp={moveThreadUp}
+                  moveThreadDown={moveThreadDown}
+                  deleteThread={deleteThread}
+                  setPauseTwitterPublish={setPauseTwitterPublish}
+                  setthreadData={setthreadData}
+                  isUserPaid={isUserPaid}
+                />
+              ))}
+            {threadData.length > 0 &&
+              threadData.length - 1 < remainingTwitterQuota && (
+                <div>
+                  <button
+                    onClick={addTextArea}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                  >
+                    + Add Thread
+                  </button>
+                </div>
+              )}
+          </div>
+        </div>
+      </DragDropContext>
+    </>
   );
 };
 
@@ -245,7 +282,7 @@ const Thread = ({
           </div>
           {index !== threadData.length - 1 ? (
             <>
-               <div
+              <div
                 className={`w-[10%] flex flex-col justify-around items-center rounded-md `}
               >
                 {
@@ -272,10 +309,9 @@ const Thread = ({
                   </button>
                 }
               </div>
-              
             </>
           ) : (
-            <> 
+            <>
               {isUserPaid ? (
                 <>
                   <>
