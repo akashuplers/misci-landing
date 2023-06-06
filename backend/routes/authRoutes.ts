@@ -219,6 +219,13 @@ router.post("/user/create", async (req: any, res: any) => {
       }
       const userId = user?.insertedId || user._id
 
+      if(!data.paid) {
+        const userDetails = await db.db('lilleAdmin').collection('users').findOne({
+          _id: new ObjectID(user.insertedId)
+        })
+        assignTweetQuota(db, userDetails)  
+      }
+
       if (!userId)
         return res.status(500).send({
           error: true,
@@ -231,10 +238,6 @@ router.post("/user/create", async (req: any, res: any) => {
         email: data.email,
         id: user.insertedId
       });
-      const userDetails = await db.db('lilleAdmin').collection('users').findOne({
-        _id: new ObjectID(user.insertedId)
-      })
-      assignTweetQuota(db, userDetails)
 
       const isTokenInDB = db
         .db("lilleAdmin")
