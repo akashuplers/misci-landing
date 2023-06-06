@@ -204,8 +204,8 @@ export default function Home() {
         query: { topic: topic },
       }}
     >
-      <div className="cursor-pointer flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-gray-100 shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-        <button className="cursor-pointer text-sm font-medium text-gray-900 cursor-auto">
+      <div className="w-full cursor-pointer flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-gray-100 shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+        <button className="cursor-pointer text-sm font-medium text-gray-900">
           {topic.length > 31 ? (
             <Marquee pauseOnHover={true} autoFill={false}>
               <div className="mx-4">{topic}</div>
@@ -306,53 +306,7 @@ export default function Home() {
           </div>
           <div className="mx-auto max-w-3xl flex py-32 sm:py-30 lg:py-20">
             <div className="text-center">
-              <div className="fixed z-10 inset-0 overflow-y-auto hidden not-responsive-message">
-                <div className="fixed z-10 inset-0 overflow-y-auto">
-                  <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                    <div
-                      className="fixed inset-0 transition-opacity"
-                      aria-hidden="true"
-                    >
-                      <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-                    </div>
-
-                    <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                      <div>
-                        <div
-                          className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100"
-                          onClick={() => {
-                            const element = document.querySelector<HTMLElement>(
-                              ".not-responsive-message"
-                            );
-                            if (element) {
-                              element.style.display = "none";
-                            }
-                          }}
-                        >
-                          <svg
-                            className="h-6 w-6 text-red-600"
-                            stroke="currentColor"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M15 19l-7-7 7-7"
-                            />
-                          </svg>
-                        </div>
-                        <div className="mt-3 text-center sm:mt-5">
-                          <h3 className="text-lg leading-6 font-medium text-gray-900">
-                            Please try on desktop, mobile version coming soon...
-                          </h3>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+               
               <div className="flex text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
                 Generate & Optimize{" "}
                 <TextTransition
@@ -382,7 +336,7 @@ export default function Home() {
               </p> */}
               <div className="p-4 mt-4">Try some of our trending topics</div>
               {!loading ? (
-                <div className="grid grid-cols-3 gap-4 py-4">{updatedArr}</div>
+                <div className="flex flex-col  lg:grid grid-cols-3 gap-4 py-4">{updatedArr}</div>
               ) : (
                 <div style={{ margin: "0 auto" }}>
                   <LoaderPlane />
