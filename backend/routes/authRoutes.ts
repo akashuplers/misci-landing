@@ -648,7 +648,7 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
       userId: new ObjectID(userDetails._id),
     }
     const res = await db.db('lilleAdmin').collection('tweetsQuota').updateOne(
-      {_id: new ObjectID(userDetails._id)}, 
+      {userId: new ObjectID(userDetails._id)}, 
       {$set: updatedTweetsQuotaData}, 
       {upsert: true})
     console.log(res)
