@@ -88,12 +88,14 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                             const tweetQuota = await db.db('lilleAdmin').collection('tweetsQuota').findOne({
                                 userId: new ObjectID(userDetails._id)
                             })
-                            text = `Please act as an expert Twitter Post to write a Twitter Thread as seperate list using below rules:
-                            Topic of Thread is "${title}"
-                            Tweet length is less then 180 characters
-                            ${tweetQuota && `Tweet count should be ${tweetQuota.remainingQuota}`}
-                            `
-                            console.log(text, "text")
+                            if(tweetQuota && tweetQuota.remainingQuota > 0) {
+                                text = `Please act as an expert Twitter Post to write a Twitter Thread as seperate list using below rules:
+                                Topic of Thread is "${title}"
+                                Tweet length is less then 180 characters
+                                ${tweetQuota && `Tweet count should be ${tweetQuota.remainingQuota}`}
+                                `
+                                console.log(text, "text")
+                            }
                         }
                         const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text, db}).textCompletion(chatgptApis.timeout)
                         newsLetter = {...newsLetter, [key]: chatGPTText}
