@@ -23,6 +23,9 @@ type User {
     totalCredits: Int
     creditRenewDay: Int
     publishCount: Int
+    total_twitter_quota: Int
+    remaining_twitter_quota: Int
+    hours_left_for_quota_renew: Int
 }
 type Query {
     me: User!

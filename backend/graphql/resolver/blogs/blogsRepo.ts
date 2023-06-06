@@ -26,7 +26,7 @@ export const fetchBlogIdeas = async ({id, db}: {
    return await db.db('lilleBlogs').collection('blogIdeas').findOne({blog_id: new ObjectID(id)})
 }
 
-export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = []}: {
+export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null}: {
     db: any;
     text: String;
     regenerate: Boolean;
@@ -38,7 +38,8 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         idea: string;
         article_id: string;
     }[]
-    refUrls?: any[]
+    refUrls?: any[];
+    userDetails?: any
 }) => {
     const chatgptApis = await db.db('lilleAdmin').collection('chatGPT').findOne()
     let availableApi: any = null
@@ -84,8 +85,14 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                             text = `write a post on topic ${title} for linkedin post with tags under 700 words`
                         }
                         if(key === 'twitter') {
-                            text = `Please act as an expert Twitter Post to write a Twitter Thread as seperate list:
-                            Topic of Thread is "${title}"`
+                            const tweetQuota = await db.db('lilleAdmin').collection('tweetsQuota').findOne({
+                                userId: new ObjectID(userDetails._id)
+                            })
+                            text = `Please act as an expert Twitter Post to write a Twitter Thread as seperate list using below rules:
+                            Topic of Thread is "${title}"
+                            Tweet length is less then 180 characters
+                            ${tweetQuota && `Tweet count should be ${tweetQuota.remainingQuota}`}
+                            `
                             console.log(text, "text")
                         }
                         const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text, db}).textCompletion(chatgptApis.timeout)
@@ -620,4 +627,39 @@ export const fetchArticleUrls = async ({
         if(!dupe) uniqueUrls.push(c)
     });
     return uniqueUrls
+}
+
+
+export const assignTweetQuota = async (db: any, userDetails: any | false = false, quota: any | false = false) => {
+    if(userDetails) {
+        const configs = await db.db('lilleAdmin').collection('config').findOne()
+        const totalQuota = !userDetails.isSubscribed ? parseInt(configs?.tweetsQuota?.unpaid || "3") : parseInt(configs?.tweetsQuota?.paid || "6")
+        const updatedTweetsQuotaData = {
+            totalQuota,
+            remainingQuota: totalQuota,
+            date: getTimeStamp(),
+            userId: new ObjectID(userDetails._id),
+        }
+        console.log(updatedTweetsQuotaData)
+        const res = await db.db('lilleAdmin').collection('tweetsQuota').updateOne(
+            {userId: new ObjectID(userDetails._id)}, 
+            {$set: updatedTweetsQuotaData}, 
+            {upsert: true})
+        return res    
+    }
+    if(quota) {
+        const totalQuota = quota.totalQuota
+        const updatedTweetsQuotaData = {
+            totalQuota,
+            remainingQuota: totalQuota,
+            date: getTimeStamp(),
+            userId: new ObjectID(quota.userId),
+        }
+        console.log(updatedTweetsQuotaData, "update")
+        const res = await db.db('lilleAdmin').collection('tweetsQuota').updateOne(
+            {_id: new ObjectID(quota._id)}, 
+            {$set: updatedTweetsQuotaData}, 
+            {upsert: true})
+        return res
+    }
 }

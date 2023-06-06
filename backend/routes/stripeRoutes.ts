@@ -3,6 +3,7 @@ import {sendMail} from "../services/sendEmail"
 import { ObjectID } from "bson";
 import { getDateString, getTimeStamp } from "../utils/date";
 import { authMiddleware } from "../middleWare/authToken";
+import { assignTweetQuota } from "../graphql/resolver/blogs/blogsRepo";
 
 const express = require("express");
 const router = express.Router();
@@ -146,6 +147,7 @@ router.post('/webhook',  async (request: any, reply: any) => {
                         paymentsStarts: getTimeStamp()
                     }
                 })
+                assignTweetQuota(db, userDetails)
                 if(mailSend) {
                     const bodyText = await db.db('lilleAdmin').collection('emailTexts').findOne({type: "subscription"})
                     await sendMail(userDetails, 'Subscribed!', bodyText.text)

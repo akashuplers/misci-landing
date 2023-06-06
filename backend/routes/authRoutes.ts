@@ -8,10 +8,10 @@ import { createAccessToken, createRefreshToken } from "../utils/accessToken";
 import { validateRegisterInput, validateLoginInput, validateUpdateInput, validateSupportInput } from "../validations/Validations";
 import { encodeURIfix } from "../utils/encode";
 import { authMiddleware } from "../middleWare/authToken";
-import { daysBetween, getTimeStamp, monthDiff } from "../utils/date";
+import { daysBetween, diff_hours, getTimeStamp, monthDiff } from "../utils/date";
 import { verify } from "jsonwebtoken";
 import { sendContributionEmail, sendForgotPasswordEmail } from "../utils/mailJetConfig";
-import { fetchUser, publishBlog, updateUserCredit } from "../graphql/resolver/blogs/blogsRepo";
+import { assignTweetQuota, fetchUser, publishBlog, updateUserCredit } from "../graphql/resolver/blogs/blogsRepo";
 const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcrypt');
@@ -231,6 +231,10 @@ router.post("/user/create", async (req: any, res: any) => {
         email: data.email,
         id: user.insertedId
       });
+      const userDetails = await db.db('lilleAdmin').collection('users').findOne({
+        _id: new ObjectID(user.insertedId)
+      })
+      assignTweetQuota(db, userDetails)
 
       const isTokenInDB = db
         .db("lilleAdmin")
@@ -533,13 +537,13 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
   const userDetails = await fetchUser({id: user.id, db})
   if(!userDetails) {
     return reply.status(400).send({
-      type: "SUCCESS",
+      type: "ERROR",
       message: "No user found!"
     })
   }
   if(!userDetails.paid && parseInt(userDetails.credits) <= 0) {
     return reply.status(400).send({
-      type: "SUCCESS",
+      type: "ERROR",
       message: "No free credits left!"
     })
   }
@@ -553,6 +557,28 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
     const uuid = randomUUID()
     const textBody = body.text
     const textsArray = body.texts
+    const quota = await db.db('lilleAdmin').collection('tweetsQuota').findOne({
+      userId: new ObjectID(userDetails._id)
+    })
+    if(quota) {
+      const currentDate = new Date()
+      console.log(quota)
+      console.log(diff_hours(new Date(quota.date * 1000), currentDate))
+      if(diff_hours(new Date(quota.date * 1000), currentDate) < 8) {
+        if(!quota.remainingQuota) {
+          return reply.status(400).send({
+            type: "ERROR",
+            message: "Your 24 hours tweet quota has been exahusted!"
+          })
+        }
+        if(textsArray && textsArray.length && quota.remainingQuota < textsArray.length) {
+          return reply.status(400).send({
+            type: "ERROR",
+            message: "Your 24 hours tweet remaining quota is less then your tweets!"
+          })
+        }
+      }
+    } 
     // Percent encodes base url
     const encodedBaseURL = encodeURIfix(
     `https://api.twitter.com/2/tweets`
@@ -570,7 +596,9 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
     .digest("base64");
     let responses: any[] = []
     let response: any = null
-    if(textsArray && textsArray.length) {
+    let tweetLength = 0
+    if(textsArray && textsArray.length) {  
+      tweetLength = textsArray.length
       for (let [index, text] of textsArray.entries()) {
         let params: any = {"text": text}
         if(index > 0 && responses && responses.length) {
@@ -595,6 +623,7 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
         // console.log(responses, "responses")
       }
     } else {
+      tweetLength = 1
       response = await axios({
         method: "POST",
         url: `https://api.twitter.com/2/tweets`,
@@ -605,6 +634,21 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
         data: JSON.stringify({"text": textBody})
       });
     }
+    let updatedTweetsQuotaData;
+    const configs = await db.db('lilleAdmin').collection('config').findOne()
+    const totalQuota = !userDetails.isSubscribed ? parseInt(configs?.tweetsQuota?.unpaid || "3") : parseInt(configs?.tweetsQuota?.paid || "6")
+    const updatedQuota = !quota ? totalQuota - tweetLength : quota.remainingQuota - tweetLength
+    updatedTweetsQuotaData = {
+      totalQuota,
+      remainingQuota: updatedQuota,
+      date: !quota ? getTimeStamp() : quota.date,
+      userId: new ObjectID(userDetails._id),
+    }
+    const res = await db.db('lilleAdmin').collection('tweetsQuota').updateOne(
+      {_id: new ObjectID(userDetails._id)}, 
+      {$set: updatedTweetsQuotaData}, 
+      {upsert: true})
+    console.log(res)
     await publishBlog({id: options.blogId, db, platform: "twitter"})
     return reply.status(200).send({
       data: responses?.length ?  responses : response?.data
@@ -1101,4 +1145,70 @@ router.post('/save-user-support', authMiddleware, async (req: any, res: any) => 
   })
   return res.status(201).send({ errors: false, message: "Support Data Added!" });
 })
+
+router.get('/add-tweet-quota', async (req: any, res: any) => {
+  const db = req.app.get('db')
+  // const users: {_id: ObjectID, paid: Boolean, isSubscribed: Boolean}[] = await db.db('lilleAdmin').collection('users').find({}, {
+  //   projection: {
+  //     _id: 1,
+  //     paid: 1,
+  //     isSubscribed: 1
+  //   }
+  // }).toArray()
+  const quotaDataBefore24hours = await db.db('lilleAdmin').collection('tweetsQuota').find({"date":{
+    $lte: (new Date(Date.now() - (24*60*60 * 1000)).getTime()) / 1000
+  }}).toArray()
+  const quotaNotExist: {_id: ObjectID, paid: Boolean, isSubscribed: Boolean}[] = await db.db('lilleAdmin').collection('users').aggregate([
+    {
+      $lookup: {
+        from: "tweetsQuota",
+        localField: "_id",
+        foreignField: "userId",
+        as: "join"
+      }
+    },
+    {
+      $match: {
+        "join": {
+          $size: 0
+        }
+      }
+    },
+    {
+      $project: {
+        join: 0
+      }
+    }
+  ]).toArray()
+  if(quotaNotExist && quotaNotExist.length) {
+    await (
+      Promise.all(
+        quotaNotExist.map(async (user) => {
+          const quotaData = await db.db('lilleAdmin').collection('tweetsQuota').findOne({_id: new ObjectID(user._id)})
+          if(!quotaData){
+            console.log(`Adding new tweet quota for user ${user._id}`)
+            await assignTweetQuota(db, user, false)
+          }
+          return user
+        })
+      )
+    )
+  }
+  if(quotaDataBefore24hours && quotaDataBefore24hours.length) {
+    await (
+      Promise.all(
+        quotaDataBefore24hours.map(async (quota: any) => {
+          console.log(`Updating daily quota for user ${quota.userId}`)
+          const resp = await assignTweetQuota(db, false, quota)
+          return resp
+        })
+      )
+    )
+  }
+  return res.status(200).send({
+    type: "SUCCESS",
+    message: "Tweet Quota Checked!"
+  })
+})
+
 module.exports = router;
