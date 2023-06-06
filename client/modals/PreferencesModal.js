@@ -1,10 +1,9 @@
-import React from "react";
-import { toast } from "react-toastify";
-import ReactModal from "react-modal";
 import { useMutation } from "@apollo/client";
-import { addPreferances } from "../graphql/mutations/addPreferances";
-import LoaderPlane from "../components/LoaderPlane";
+import React from "react";
 import ReactLoading from "react-loading";
+import ReactModal from "react-modal";
+import { toast } from "react-toastify";
+import { addPreferances } from "../graphql/mutations/addPreferances";
 
 export default function PreferencesModal({ pfmodal, setPFModal, getToken }) {
   var token;
@@ -148,7 +147,7 @@ export default function PreferencesModal({ pfmodal, setPFModal, getToken }) {
         },
       }}
     >
-      <div className="relative w-full p-8 mx-auto bg-white rounded-lg shadow-lg text-center flex flex-col justify-center items-center gap-2" style={{maxWidth: "45rem"}}>
+      <div className="relative w-full p-8 mx-auto bg-white rounded-lg shadow-lg text-center hidden  lg:flex flex-col justify-center items-center gap-2" style={{ maxWidth: "45rem" }}>
         <h2 className="text-xl font-bold">Select topics of your interest</h2>
         <p className="text-sm text-gray-500 pb-5">
           Select at least 1 topics of your interest so that we can provide daily
@@ -176,6 +175,59 @@ export default function PreferencesModal({ pfmodal, setPFModal, getToken }) {
             );
           })}
         </div>
+
+        <button
+          className={`cta-invert`}
+          style={{
+            width: "100px",
+            height: "40px",
+            marginLeft: 'auto'
+          }}
+          onClick={handlePref}
+        >
+          {isButtonLoading ? (
+            <ReactLoading
+              type={"spin"}
+              color={"#ffffff"}
+              height={25}
+              width={25}
+              className={"mx-auto"}
+            />
+          ) : (
+            // <LoaderPlane /> // Loader component
+            "Submit"
+          )}
+        </button>
+      </div>
+      <div className="relative w-full p-8 mx-auto bg-white rounded-lg shadow-lg text-center flex lg:hidden flex-col justify-center items-center gap-2" style={{ maxWidth: "45rem" }}>
+        <h2 className="text-4xl font-bold">Select topics of your interest</h2>
+        <p className="text-sm text-gray-500 pb-5">
+          Select at least 1 topics of your interest so that we can provide daily
+          blogs.
+        </p>
+        <div className="flex  flex-wrap gap-2 py-4">
+          {prefKeyword.slice(0, 8).map((keyword, index) => {
+            return (
+              <span
+                className="cta preference"
+                style={{
+                  borderRadius: "100px",
+                  padding: "0.25em 0.75em",
+                  backgroundColor: "#e9e9e9",
+                  border: "none",
+                  color: "black",
+                  cursor: "pointer",
+                  userSelect: "none",
+                }}
+                key={index}
+                onClick={(e) => handlePrefClick(e, setSelectedPrefKeyword)}
+              >
+                {keyword}
+              </span>
+            );
+          })}
+        </div>
+
         <button
           className={`cta-invert`}
           style={{
