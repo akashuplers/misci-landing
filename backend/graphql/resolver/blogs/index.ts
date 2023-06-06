@@ -242,6 +242,7 @@ export const blogResolvers = {
                     article_id: articleIds,
                     publish_data: updatedBlogs,
                     userId: new ObjectID(userId),
+                    email: userDetails && userDetails.email,
                     keyword,
                     status: "draft",
                     description,
@@ -505,6 +506,7 @@ export const blogResolvers = {
                         tags: uniqueTags,
                         imageUrl: imageUrl ? imageUrl : blog.imageUrl,
                         imageSrc,
+                        email: userDetails && userDetails.email,
                         updatedAt: getTimeStamp()
                     }
                 })
@@ -636,6 +638,7 @@ export const blogResolvers = {
             const imageUrl = args.options.imageUrl
             const imageSrc = args.options.imageSrc
             const description = args.options.description && args.options.description.replace(/\n/gi, "")
+            const userDetails = await fetchUser({id: user.id, db})
             const blogDetails = await fetchBlog({id: blogId, db})
             if(!blogDetails){
                 throw "@No blog found"
@@ -686,7 +689,8 @@ export const blogResolvers = {
                     updatedAt: getTimeStamp(),
                     imageUrl: imageUrl && imageUrl.length && imageUrl !== blogDetails.imageUrl ? imageUrl : blogDetails.imageUrl,
                     imageSrc: imageSrc,
-                    description: description || blogDetails.description
+                    description: description || blogDetails.description,
+                    email: userDetails && userDetails.email,
                 }
             })
             const updatedBlog = await fetchBlog({id: blogId, db})
@@ -791,6 +795,7 @@ export const blogResolvers = {
                                 article_id: article_ids,
                                 publish_data: updatedBlogs,
                                 userId: new ObjectID(userId),
+                                email: userDetails && userDetails.email,
                                 keyword,
                                 status: "ir_generated",
                                 description,
