@@ -85,17 +85,22 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                             text = `write a post on topic ${title} for linkedin post with tags under 700 words`
                         }
                         if(key === 'twitter') {
-                            const tweetQuota = await db.db('lilleAdmin').collection('tweetsQuota').findOne({
-                                userId: new ObjectID(userDetails._id)
-                            })
+                            let tweetQuota;
+                            if(userDetails) {
+                                tweetQuota = await db.db('lilleAdmin').collection('tweetsQuota').findOne({
+                                    userId: new ObjectID(userDetails._id)
+                                })
+                            }
+                            let cond = "";
                             if(tweetQuota && tweetQuota.remainingQuota > 0) {
-                                text = `Please act as an expert Twitter Post to write a Twitter Thread as seperate list using below rules:
+                                cond = `${tweetQuota && `Tweet count should be ${tweetQuota.remainingQuota}`}`
+                            }
+                            text = `Please act as an expert Twitter Post to write a Twitter Thread as seperate list using below rules:
                                 Topic of Thread is "${title}"
                                 Each Tweet length should be less then 180 characters
-                                ${tweetQuota && `Tweet count should be ${tweetQuota.remainingQuota}`}
+                                ${cond}
                                 `
-                                console.log(text, "text")
-                            }
+                            console.log(text, "text")
                         }
                         const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text, db}).textCompletion(chatgptApis.timeout)
                         newsLetter = {...newsLetter, [key]: chatGPTText}
@@ -147,9 +152,9 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     return mapObj[matched];
                                 }); 
                                 // description = (newsLetter[key]?.replace("\n", ""))?.trimStart()
-                                usedIdeasArr = description?.split('.')
+                                usedIdeasArr = description?.split('. ')
                                 const htmlTagRegex = /<[^>]*>([^<]*)<\/[^>]*>/g; // Regular expression to match HTML tags
-                                const sentences = updatedContent?.split('.').map((sentence: any) => {
+                                const sentences = updatedContent?.split('. ').map((sentence: any) => {
                                     // Check if the sentence is not wrapped in HTML tags
                                     const matches = sentence.match(htmlTagRegex);
                                     if(matches) {
@@ -187,7 +192,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                 }
                                                 // const string = "<p></p><h2>What Are Your Chest Muscles?</h2><p></p>Before we dive into the 10 best chest exercises for building muscle, let’s take a quick look at the muscles that make up the chest"
                                                 const regex = /<[^>]*>([^<]*)<\/[^>]*>/g; 
-                                                data.text.split(".").forEach((sentence: any) => {
+                                                data.text.split(". ").forEach((sentence: any) => {
                                                     // Check if the sentence is not wrapped in HTML tags
                                                     const matches = sentence.match(regex);
                                                     if(matches) {
