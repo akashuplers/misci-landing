@@ -1,18 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/jsx-key */
-import React, { useState, useEffect } from "react";
+import { useApolloClient, useMutation, useQuery } from "@apollo/client";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import Modal from "react-modal";
+import { ToastContainer, toast } from "react-toastify";
+import { BottomTabBar } from '../components/BottomTabBar';
 import Layout from "../components/Layout";
-import styles from "../styles/saved.module.css";
-import { useQuery, useMutation } from "@apollo/client";
-import { getAllBlogs } from "../graphql/queries/getAllBlogs";
 import LoaderScan from "../components/LoaderScan";
 import Pagination from "../components/Pagination";
 import { deleteBlog } from "../graphql/mutations/deleteBlog";
-import { toast } from "react-toastify";
-import { ToastContainer } from "react-toastify";
-import Modal from "react-modal";
-import Link from "next/link";
-import { useApolloClient } from "@apollo/client";
+import { getAllBlogs } from "../graphql/queries/getAllBlogs";
+import styles from "../styles/saved.module.css";
 const PAGE_COUNT = 12;
 
 if (typeof window !== "undefined") {
@@ -76,7 +75,7 @@ export default function Saved() {
         },
       },
     })
-      .then(() => {})
+      .then(() => { })
       .catch((err) => {
         console.log(err);
       })
@@ -112,7 +111,7 @@ export default function Saved() {
             )}
             <ul
               role="list"
-              className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8 mx-[5%]"
+              className="flex flex-col md:grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8 mx-[5%]"
               style={{
                 listStyleType: "none",
               }}
@@ -124,7 +123,7 @@ export default function Saved() {
                       <img
                         src={blog.image}
                         alt={blog.title}
-                        className="pointer-events-none object-cover h-[150px] w-[280px]"
+                        className="pointer-events-none object-cover h-[150px] w-full lg:w-[280px]"
                         style={{ scale: "1.25" }}
                       />
                       <Link href={"/dashboard/" + blog._id}>
@@ -197,7 +196,7 @@ export default function Saved() {
                         minute: "numeric",
                       })}
                     </button>
-                    <p className="pointer-events-none mt-1 block truncate text-sm font-medium text-gray-900">
+                    <p className="pointer-events-none mt-1 block truncate text-lg font-bold text-gray-900">
                       {blog?.title}
                     </p>
                     <p className="pointer-events-none block text-sm font-medium text-gray-500">
@@ -209,11 +208,17 @@ export default function Saved() {
                 </>
               ))}
             </ul>
-            <Pagination
-              totalItems={data?.getAllBlogs.count}
-              pageSkip={pageSkip}
-              setPageSkip={setPageSkip}
-            />
+            <div className="hidden lg:block"
+            > <Pagination
+                totalItems={data?.getAllBlogs.count}
+                pageSkip={pageSkip}
+                setPageSkip={setPageSkip}
+              />
+
+            </div>
+            <div className="flex lg:hidden">
+              <BottomTabBar />
+            </div>
           </div>
         )}
         <Modal

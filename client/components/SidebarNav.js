@@ -168,7 +168,7 @@ export default function Sidebar() {
     const elementHeight = sideBarHeightRef.current.offsetHeight;
     console.log(elementHeight)
     console.log("element height");
-    document.documentElement.style.setProperty('--my-mobile-sidebar-height', `${elementHeight}px`);
+    document.documentElement.style.setProperty('--my-mobile-sidebar-height', `${elementHeight }px`);
   }, []);
 
   return (
