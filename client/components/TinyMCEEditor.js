@@ -11,8 +11,6 @@ import { useEffect, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import ReactLoading from "react-loading";
 import Modal from "react-modal";
-
-import { Tab } from "@headlessui/react";
 import {
   EmailIcon,
   EmailShareButton,
@@ -34,8 +32,9 @@ import {
 } from "../constants/apiEndpoints";
 import { updateBlog } from "../graphql/mutations/updateBlog";
 import { getCurrentDashboardURL, htmlToJson, jsonToHtml } from "../helpers/helper";
-import useStore, { useByMeCoffeModal, useTwitterThreadALertModal } from "../store/store";
+import useStore, { useByMeCoffeModal, useThreadsUIStore, useTwitterThreadALertModal } from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
+import { BottomTabBar } from "./BottomTabBar";
 import LoaderPlane from "./LoaderPlane";
 import Threads from "./ThreadsUI";
 import TrialEndedModal from "./TrialEndedModal";
@@ -84,7 +83,8 @@ export default function TinyMCEEditor({
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
   const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
   const [contributinoModalLoader, setContributionModalLoader] = useState(false);
-  const [showTwitterThreadUI, setShowTwitterThreadUI] = useState(false);
+  // const [showTwitterThreadUI, setShowTwitterThreadUI] = useState(false);
+
   const [twitterThreadData, setTwitterThreadData] = useState([]);
   const [pauseTwitterPublish, setPauseTwitterPublish] = useState(false);
   const {
@@ -96,7 +96,7 @@ export default function TinyMCEEditor({
     togggleShowInitailText: twitterThreadAlertToggleShowInitailText,
     setOptions: setTwitterThreadAlertOption,
   } = useTwitterThreadALertModal();
-
+  const { showTwitterThreadUI, setShowTwitterThreadUI } = useThreadsUIStore();
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -1168,7 +1168,7 @@ export default function TinyMCEEditor({
                   />
                 </svg>
                 Twitter
-              </div>w
+              </div>
             </div>
           ) : (
             <div style={{ display: "none" }}></div>
@@ -1539,84 +1539,9 @@ export default function TinyMCEEditor({
         }
       </div>
       <div className="flex lg:hidden">
-        <Tab.Group>
-          {/* bottom tab */}
-          <Tab.List className="flex space-x-1 rounded-xl bg-blue-900/20 p-1 fixed bottom-0 inset-x-0 mb-2 z-10 backdrop-filter backdrop-blur-lg bg-opacity-30">
-            {Object.keys(categories).map((category) => (
-              <Tab
-                key={category}
-                className={({ selected }) =>
-                  classNames(
-                    'w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700',
-                    'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2',
-                    selected
-                      ? 'bg-white shadow'
-                      : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'
-                  )
-                }
-              >
-                {category}
-              </Tab>
-            ))}
-          </Tab.List>
-        </Tab.Group>
+        <BottomTabBar />
       </div>
     </>
   );
 }
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
-}
-
-var categories = {
-  PublishBlog: [
-    {
-      id: 1,
-      title: 'Does drinking coffee make you smarter?',
-      date: '5h ago',
-      commentCount: 5,
-      shareCount: 2,
-    },
-    {
-      id: 2,
-      title: "So you've bought coffee... now what?",
-      date: '2h ago',
-      commentCount: 3,
-      shareCount: 2,
-    },
-  ],
-  GenerateBlog: [
-    {
-      id: 1,
-      title: 'Is tech making coffee better or worse?',
-      date: 'Jan 7',
-      commentCount: 29,
-      shareCount: 16,
-    },
-    {
-      id: 2,
-      title: 'The most innovative things happening in coffee',
-      date: 'Mar 19',
-      commentCount: 24,
-      shareCount: 12,
-    },
-  ],
-  SaveBlog: [
-    {
-      id: 1,
-      title: 'Is tech making coffee better or worse?',
-      date: 'Jan 7',
-      commentCount: 29,
-      shareCount: 16,
-    },
-    {
-      id: 2,
-      title: 'The most innovative things happening in coffee',
-      date: 'Mar 19',
-      commentCount: 24,
-      shareCount: 12,
-    },
-  ],
-
-}

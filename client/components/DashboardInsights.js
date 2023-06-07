@@ -9,12 +9,12 @@ import Modal from "react-modal";
 import { toast } from "react-toastify";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
+import { ContributionCheck } from "../helpers/ContributionCheck";
 import { jsonToHtml } from "../helpers/helper";
-import useStore, { useByMeCoffeModal } from "../store/store";
+import useStore, { useByMeCoffeModal, useThreadsUIStore } from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import LoaderScan from "./LoaderScan";
 import TrialEndedModal from "./TrialEndedModal";
-import { ContributionCheck } from "../helpers/ContributionCheck";
 
 export default function DashboardInsights({
   loading,
@@ -302,6 +302,7 @@ export default function DashboardInsights({
     console.log(filteredIdeas);
   }, [filteredIdeas]);
   */
+  const { showTwitterThreadUI, setShowTwitterThreadUI } = useThreadsUIStore();
 
   function handleRegenerate() {
     const arr = [];
@@ -419,7 +420,6 @@ export default function DashboardInsights({
           setFilteredIdeas([]);
           setFreshFilteredIdeas([]);
           // setblog_id(data.regenerateBlog._id);
-
           const button = document.querySelectorAll(".blog-toggle-button");
           button?.forEach((btn) => btn?.classList.remove("active"));
           Array.from(button).filter(
@@ -452,6 +452,7 @@ export default function DashboardInsights({
           if (SHOW_CONTRIBUTION_MODAL) {
             setShowContributionModal(true);
           }
+          setShowTwitterThreadUI(false)
         },
         onError: (error) => {
           console.error("Credit Exhaust or any other error", error.message);
@@ -566,29 +567,29 @@ export default function DashboardInsights({
     }
   }
 
-function handleFileUpload({ target }) {
-  setFileValid(true);
-  setUrlValid(false);
+  function handleFileUpload({ target }) {
+    setFileValid(true);
+    setUrlValid(false);
 
-  const file = target.files[0];
-  
-  // Check if file is defined
-  if (!file) {
-    toast.error('No file chosen');
-    return;
+    const file = target.files[0];
+
+    // Check if file is defined
+    if (!file) {
+      toast.error('No file chosen');
+      return;
+    }
+
+    const fileSizeMB = file.size / (1024 * 1024); // convert size to MB
+
+    if (fileSizeMB > 3) {
+      toast.error('File size cannot exceed 3MB');
+      return; // stop function execution after showing the error
+    }
+
+    setformInput(file.name);
+    console.log(file);
+    setFile(file);
   }
-
-  const fileSizeMB = file.size / (1024 * 1024); // convert size to MB
-
-  if (fileSizeMB > 3) {
-    toast.error('File size cannot exceed 3MB');
-    return; // stop function execution after showing the error
-  }
-
-  setformInput(file.name);
-  console.log(file);
-  setFile(file);
-}
 
 
   function handleFormChange(e) {
@@ -668,9 +669,9 @@ function handleFileUpload({ target }) {
       })
       .catch((error) => {
         console.log("error", error);
-         toast.error('Host has denied the extraction from this URL. Please try again or try some other URL.', {
-    autoClose: 10000, // 10 seconds
-  });
+        toast.error('Host has denied the extraction from this URL. Please try again or try some other URL.', {
+          autoClose: 10000, // 10 seconds
+        });
       })
       .finally(() => {
         setformInput("");
@@ -1370,23 +1371,23 @@ function handleFileUpload({ target }) {
                               </svg>
 
                               <div class="absolute bottom-0 flex flex-col items-center hidden mb-6 group-hover:flex z-50 h-full min-w-[250px]"
-                              style={{
-                 
-    right: '-50px',
-    bottom: '15px',
-    borderRadius: '10px'
+                                style={{
 
-                              }}
+                                  right: '-50px',
+                                  bottom: '15px',
+                                  borderRadius: '10px'
+
+                                }}
                               >
 
                                 <span class="relative z-10 p-2 text-xs leading-none text-white whitespace-no-wrap bg-black shadow-lg w-full"
-                                 style={{
-                   
-      borderRadius: '10px'
-  
-                                }}
+                                  style={{
+
+                                    borderRadius: '10px'
+
+                                  }}
                                 >
-                                Upload a file. pdf, docx and txt formats allowed. Max file size {'<'} 3MB
+                                  Upload a file. pdf, docx and txt formats allowed. Max file size {'<'} 3MB
                                 </span>
                                 <div class="w-3 h-3 -mt-2 rotate-45 bg-black"></div>
                               </div>
