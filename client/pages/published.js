@@ -1,20 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/jsx-key */
-import React, { useState, useEffect } from "react";
+import { useApolloClient, useMutation, useQuery } from "@apollo/client";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import Modal from "react-modal";
+import { ToastContainer, toast } from "react-toastify";
 import Layout from "../components/Layout";
-import styles from "../styles/saved.module.css";
-import { useQuery, useMutation } from "@apollo/client";
-import { getAllBlogs } from "../graphql/queries/getAllBlogs";
-import Head from "next/head";
-import { contextType } from "react-modal";
 import LoaderScan from "../components/LoaderScan";
 import Pagination from "../components/Pagination";
 import { deleteBlog } from "../graphql/mutations/deleteBlog";
-import { toast } from "react-toastify";
-import Modal from "react-modal";
-import { ToastContainer } from "react-toastify";
-import Link from "next/link";
-import { useApolloClient } from "@apollo/client";
+import { getAllBlogs } from "../graphql/queries/getAllBlogs";
+import styles from "../styles/saved.module.css";
+import BottomTabBar from "../components/BottomTabBar";
 
 const PAGE_COUNT = 12;
 
@@ -87,7 +84,7 @@ export default function Published() {
         },
       },
     })
-      .then(() => {})
+      .then(() => { })
       .catch((err) => {
         console.log(err);
       })
@@ -136,7 +133,7 @@ export default function Published() {
                       <img
                         src={blog.image}
                         alt={blog.title}
-                        className="pointer-events-none object-cover h-[150px] w-[280px]"
+                        className="pointer-events-none object-cover h-[150px] w-full lg:w-[280px]"
                         style={{ scale: "1.25" }}
                       />
                       <Link
@@ -209,20 +206,6 @@ export default function Published() {
                                 e.stopPropagation();
                               }}
                             >
-                              {/* <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 28 28"
-                          stroke-width="1"
-                          stroke="currentColor"
-                          class="w-6 h-6"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                          />
-                        </svg> */}
                               DELETE
                             </button>
                           </button>
@@ -239,7 +222,7 @@ export default function Published() {
                         minute: "numeric",
                       })}
                     </button>
-                    <p className="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">
+                    <p className="pointer-events-none mt-2 block truncate text-lg font-bold text-gray-900">
                       {blog?.title}
                     </p>
                     <p className="pointer-events-none block text-sm font-medium text-gray-500">
@@ -251,11 +234,17 @@ export default function Published() {
                 </>
               ))}
             </ul>
-            <Pagination
-              pageSkip={pageSkip}
-              setPageSkip={setPageSkip}
-              totalItems={data?.getAllBlogs.count}
-            />
+            <div className="hidden lg:block"
+            > <Pagination
+                totalItems={data?.getAllBlogs.count}
+                pageSkip={pageSkip}
+                setPageSkip={setPageSkip}
+              />
+
+            </div>
+            <div className="flex lg:hidden">
+              <BottomTabBar />
+            </div>
           </div>
         )}
         <Modal
