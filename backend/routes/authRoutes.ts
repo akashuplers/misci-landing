@@ -106,6 +106,7 @@ router.post("/user/login", async (req: any, res: any) => {
         const data: any = {
           userId: userExists._id,
           date: today,
+          email: userExists.email,
           timestamp: Math.round(new Date().getTime() / 1000),
         };
         if (ipAddress) data.ipAddress = ipAddress;
