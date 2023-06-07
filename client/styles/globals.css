@@ -316,6 +316,10 @@
   height: unset;
 }
 
+.authenticatedLayout {
+  padding-top: var(--my-mobile-sidebar-height)
+}
+
 @media only screen and (min-width: 768px) {
   .authenticatedLayout {
     padding-top: var(--my-mobile-sidebar-height)

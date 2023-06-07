@@ -1,7 +1,6 @@
 // store.js
 import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 import axios from "axios";
-import Link from "next/link";
 import create from "zustand";
 
 const useStore = create((set) => ({
@@ -80,7 +79,7 @@ export const useByMeCoffeModal = create((set) => ({
 export const useTwitterThreadALertModal = create((set) => ({
   isOpen: true,
   // toggle takes two params, remaining_twitter_quota, total_twitter_quota, isUserpaid
-  initailText: (thisMuch) => `You can only create ${thisMuch} tweets for  today, you can save for now.`,
+  initailText: (isPaid, thisMuch) => `You can only create ${thisMuch} tweets for  today, you can save for now.`,
   remaining_twitter_quota: 0,
   showInitailText: true,
   total_twitter_quota: 0,
@@ -120,3 +119,10 @@ export const useUserData = () => {
     updateUserData,
   };
 };
+export const useThreadsUIStore = create((set) => ({
+  // const [showTwitterThreadUI, setShowTwitterThreadUI] = useState(false);
+  // 
+  showTwitterThreadUI: false,
+  setShowTwitterThreadUI: (showTwitterThreadUI) =>
+    set({ showTwitterThreadUI }),
+}));
