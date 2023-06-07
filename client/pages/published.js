@@ -126,6 +126,7 @@ export default function Published() {
                 listStyleType: "none",
               }}
             >
+
               {data?.getAllBlogs.blogs.map((blog, index) => (
                 <>
                   <li key={blog._id} className="relative">
@@ -233,6 +234,8 @@ export default function Published() {
                   </li>
                 </>
               ))}
+
+              
             </ul>
             <div className="hidden lg:block"
             > <Pagination
