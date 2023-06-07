@@ -91,6 +91,26 @@ const Threads = ({
             <h1 className="text-2xl font-bold">📜</h1>
           </div>
           <div className="w-[90%] text-yellow-500">
+            {isUserPaid ? (
+              <>
+                <span>
+                  Lille allows <strong>6</strong> tweets per day. Each thread in
+                  the followng twitter threads is a tweet. You can edit/delete
+                  threads to optimize publishings, e.g. keep two threads per
+                  publishing to publish three times a day.
+                </span>
+              </>
+            ) : (
+              <>
+                <span>
+                  Lille allows <strong>3</strong> tweets per day. Each thread in
+                  the followng twitter threads is a tweet. You can edit/delete
+                  threads to optimize publishings, e.g. keep one thread per
+                  publishing to publish three times a day.
+                </span>
+              </>
+            )}
+
             {showInitailText ? (
               <span>{initailText(totalTwitterQuota)}</span>
             ) : (
@@ -113,7 +133,7 @@ const Threads = ({
               {(provided) => (
                 <div {...provided.droppableProps} ref={provided.innerRef}>
                   {threadData
-                    .slice(0, threadData.length - 1)
+                    .slice(0, threadData.length)
                     .map((thread: any, index: number) => (
                       <Draggable
                         key={index}
@@ -124,7 +144,7 @@ const Threads = ({
                           <div
                             ref={provided.innerRef}
                             {...provided.draggableProps}
-                            {...(index !== threadData.length - 1 &&
+                            {...(index !== threadData.length + 1 &&
                               provided.dragHandleProps)}
                           >
                             <Thread
@@ -148,7 +168,7 @@ const Threads = ({
                 </div>
               )}
             </Droppable>
-            {threadData
+            {/* {threadData
               .slice(threadData.length - 1)
               .map((thread: any, index: number) => (
                 <Thread
@@ -165,13 +185,13 @@ const Threads = ({
                   setthreadData={setthreadData}
                   isUserPaid={isUserPaid}
                 />
-              ))}
+              ))} */}
             {threadData.length > 0 &&
-              threadData.length - 1 < remainingTwitterQuota && (
+              threadData.length < remainingTwitterQuota && (
                 <div>
                   <button
                     onClick={addTextArea}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 mt-5"
                   >
                     + Add Thread
                   </button>
@@ -263,7 +283,7 @@ const Thread = ({
               }}
               placeholder="Type your thread here..."
               value={thread}
-              readOnly={index === threadData.length - 1}
+              readOnly={false}
               minLength={1}
               onChange={(e) => {
                 updateTextArea(index, e.target.value);
@@ -280,75 +300,47 @@ const Thread = ({
               </div>
             )}
           </div>
-          {index !== threadData.length - 1 ? (
-            <>
-              <div
-                className={`w-[10%] flex flex-col justify-around items-center rounded-md `}
-              >
-                {
-                  <button
-                    className={`text-red-700 hover:text-red-900 flex items-center justify-center transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-110 ${
-                      isHovering ? "" : "hidden"
-                    } transition duration-300 ease-in-out `}
-                    onClick={() => deleteThread(index)}
+          {/* {index !== threadData.length - 1 ? ( */}
+          <>
+            <div
+              className={`w-[10%] flex flex-col justify-around items-center rounded-md `}
+            >
+              {
+                <button
+                  className={`text-red-700 hover:text-red-900 flex items-center justify-center transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-110 ${
+                    isHovering ? "" : "hidden"
+                  } transition duration-300 ease-in-out `}
+                  onClick={() => deleteThread(index)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-6 h-6"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                      className="w-6 h-6"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                      />
-                    </svg>
-                  </button>
-                }
-              </div>
-            </>
-          ) : (
-            <>
-              {isUserPaid ? (
-                <>
-                  <>
-                    <div
-                      className={`w-[10%] flex flex-col justify-around items-center rounded-md `}
-                    >
-                      {
-                        <button
-                          className={`text-red-700 hover:text-red-900 flex items-center justify-center transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-110 ${
-                            isHovering ? "" : "hidden"
-                          } transition duration-300 ease-in-out `}
-                          onClick={() => deleteThread(index)}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="w-6 h-6"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                            />
-                          </svg>
-                        </button>
-                      }
-                    </div>
-                  </>
-                </>
-              ) : (
-                <> </>
-              )}
-            </>
-          )}
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                    />
+                  </svg>
+                </button>
+              }
+            </div>
+          </>
+          {/* ) : ( */}
+          {/* <>
+            {isUserPaid ? (
+              <>
+                
+              </>
+            ) : (
+              <> </>
+            )}
+          </> */}
+          {/* )} */}
         </div>
       </div>
     </div>
