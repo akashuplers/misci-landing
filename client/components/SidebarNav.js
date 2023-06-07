@@ -166,7 +166,7 @@ export default function Sidebar() {
 
   useEffect(() => {
     const MINIMUM_HEIGHT = 125;
-    const elementHeight = sideBarHeightRef.current.offsetHeight  > MINIMUM_HEIGHT ? sideBarHeightRef.current.offsetHeight : MINIMUM_HEIGHT;
+    const elementHeight = sideBarHeightRef.current.offsetHeight > MINIMUM_HEIGHT ? sideBarHeightRef.current.offsetHeight : MINIMUM_HEIGHT;
     console.log(elementHeight)
     console.log("element height");
     document.documentElement.style.setProperty('--my-mobile-sidebar-height', `${elementHeight}px`);
@@ -447,7 +447,7 @@ export default function Sidebar() {
             ref={sideBarHeightRef}
 
           >
-            <div className="py-2 pb-4">
+            <div className="py-2 pb-4 w-[85%] float-right">
               <div className="mx-auto max-w-7xl px-2 flex relative">
                 <div className="pt-4">
                   {path !== "/" ? (
@@ -527,21 +527,20 @@ export default function Sidebar() {
           </main>
         </div>
 
-        <div className="flex lg:hidden flex-1 flex-col lg:flex-col w-full fixed top-0 z-10 mobile_sidebar" style={{
+        <div className="flex lg:hidden flex-1 flex-col lg:flex-col w-full fixed top-0 z-10 mobile_sidebar bg-white" style={{
           ...topBarStyle,
         }}
           ref={sideBarHeightRef}
         >
           <div className="flex-row flex">
-            <div className="sticky top-0 z-10 pl-1 pt-1 sm:pl-3 sm:pt-3 lg:hidden">
-              <button
-                type="button"
-                className="-ml-0.5 -mt-0.5 inline-flex h-12 w-12 items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
-                onClick={() => setSidebarOpen(true)}
-              >
-                <span className="sr-only">Open sidebar</span>
-                <Bars3Icon className="h-6 w-6" aria-hidden="true" />
-              </button>
+            <div className="lg:hidden flex flex-row justify-center items-center py-2 pb-4">
+              <Link href={"/"}>
+                <img
+                  className="h-8 w-auto"
+                  src="/lille_logo_new.png"
+                  alt="Your Company"
+                />
+              </Link>
             </div>
             <main className="flex-1 flex-col" >
               <div className="py-2 pb-4">
@@ -570,7 +569,7 @@ export default function Sidebar() {
                         </div>
                       </div>
                     )}
-                    {!meeLoading && (
+                    {/* {!meeLoading && (
                       <Link
                         // className=" w-[50px]"
                         href="/settings"
@@ -593,7 +592,15 @@ export default function Sidebar() {
                         />
 
                       </Link>
-                    )}
+                    )} */}
+                    <button
+                      type="button"
+                      className="-ml-0.5 -mt-0.5 inline-flex h-12 w-12 items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                      onClick={() => setSidebarOpen(true)}
+                    >
+                      <span className="sr-only">Open sidebar</span>
+                      <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+                    </button>
                   </div>
                 </div>
 
@@ -602,9 +609,10 @@ export default function Sidebar() {
             </main>
 
           </div>
-          <div className="flex flex-row ">
-            <div className="pt-4">
-              {path !== "/" ? (
+          {path !== "/" ? (
+
+            <div className="flex flex-row px-2 ">
+              <div className="pt-4">
                 <button onClick={() => router.back()}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -619,16 +627,18 @@ export default function Sidebar() {
                     />
                   </svg>
                 </button>
-              ) : (
-                <></>
-              )}
+
+              </div>
+              <div className="flex">
+                <h1 className="text-2xl font-semibold text-gray-900 p-3">
+                  {title}
+                </h1>
+              </div>
             </div>
-            <div className="flex">
-              <h1 className="text-2xl font-semibold text-gray-900 p-3">
-                {title}
-              </h1>
-            </div>
-          </div>
+          ) : (
+            <></>
+          )}
+
         </div>
 
       </div>
