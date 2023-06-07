@@ -265,7 +265,7 @@ export default function TinyMCEEditor({
   ] = useMutation(updateBlog);
 
   const handleSave = async () => {
-    
+
     var getToken, ispaid, credits;
     if (typeof window !== "undefined") {
       window.addEventListener("beforeunload", (event) => {
@@ -685,7 +685,7 @@ export default function TinyMCEEditor({
       console.log("twitter quota");
 
       console.log(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
-      if (twitterThreadData.length > meeData?.me?.remaining_twitter_quota + 1) {
+      if (twitterThreadData.length > meeData?.me?.remaining_twitter_quota) {
         toast.error(`We offer the capability of ${totalTwitterQuota} tweets in a ${totalTwitterQuota} thread at once. Please upgrade your account to improve this`, {
           position: "top-center",
           autoClose: 5000,
