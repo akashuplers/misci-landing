@@ -1168,7 +1168,7 @@ export default function TinyMCEEditor({
                   />
                 </svg>
                 Twitter
-              </div>w
+              </div>
             </div>
           ) : (
             <div style={{ display: "none" }}></div>
