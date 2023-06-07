@@ -1,7 +1,6 @@
 // store.js
 import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 import axios from "axios";
-import Link from "next/link";
 import create from "zustand";
 
 const useStore = create((set) => ({
@@ -120,3 +119,10 @@ export const useUserData = () => {
     updateUserData,
   };
 };
+export const useThreadsUIStore = create((set) => ({
+  // const [showTwitterThreadUI, setShowTwitterThreadUI] = useState(false);
+  // 
+  showTwitterThreadUI: false,
+  setShowTwitterThreadUI: (showTwitterThreadUI) =>
+    set({ showTwitterThreadUI }),
+}));
