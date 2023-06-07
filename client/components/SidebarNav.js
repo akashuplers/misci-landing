@@ -165,10 +165,11 @@ export default function Sidebar() {
   const sideBarHeightRef = useRef(null);
 
   useEffect(() => {
-    const elementHeight = sideBarHeightRef.current.offsetHeight;
+    const MINIMUM_HEIGHT = 125;
+    const elementHeight = sideBarHeightRef.current.offsetHeight  > MINIMUM_HEIGHT ? sideBarHeightRef.current.offsetHeight : MINIMUM_HEIGHT;
     console.log(elementHeight)
     console.log("element height");
-    document.documentElement.style.setProperty('--my-mobile-sidebar-height', `${elementHeight }px`);
+    document.documentElement.style.setProperty('--my-mobile-sidebar-height', `${elementHeight}px`);
   }, []);
 
   return (
