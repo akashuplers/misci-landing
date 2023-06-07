@@ -154,7 +154,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 // description = (newsLetter[key]?.replace("\n", ""))?.trimStart()
                                 usedIdeasArr = description?.split('. ')
                                 const htmlTagRegex = /<[^>]*>([^<]*)<\/[^>]*>/g; // Regular expression to match HTML tags
-                                const sentences = updatedContent?.split('. ').map((sentence: any) => {
+                                const sentences = updatedContent?.split('.').map((sentence: any) => {
                                     // Check if the sentence is not wrapped in HTML tags
                                     const matches = sentence.match(htmlTagRegex);
                                     if(matches) {
@@ -192,7 +192,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                 }
                                                 // const string = "<p></p><h2>What Are Your Chest Muscles?</h2><p></p>Before we dive into the 10 best chest exercises for building muscle, let’s take a quick look at the muscles that make up the chest"
                                                 const regex = /<[^>]*>([^<]*)<\/[^>]*>/g; 
-                                                data.text.split(". ").forEach((sentence: any) => {
+                                                data.text.split(".").forEach((sentence: any) => {
                                                     // Check if the sentence is not wrapped in HTML tags
                                                     const matches = sentence.match(regex);
                                                     if(matches) {
