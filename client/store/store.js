@@ -79,7 +79,7 @@ export const useByMeCoffeModal = create((set) => ({
 export const useTwitterThreadALertModal = create((set) => ({
   isOpen: true,
   // toggle takes two params, remaining_twitter_quota, total_twitter_quota, isUserpaid
-  initailText: (thisMuch) => `You can only create ${thisMuch} tweets for  today, you can save for now.`,
+  initailText: (isPaid, thisMuch) => `You can only create ${thisMuch} tweets for  today, you can save for now.`,
   remaining_twitter_quota: 0,
   showInitailText: true,
   total_twitter_quota: 0,
