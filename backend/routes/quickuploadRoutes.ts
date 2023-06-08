@@ -36,7 +36,7 @@ router.post('/url', authMiddleware, async (req: any, res: any) => {
                 freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
             }
             article?._source?.summary.forEach((summary: string, index: number) => {
-                if(index < 5) {
+                if(index < 10) {
                     freshIdeas.push({
                         idea: summary,
                         article_id: articleid,
@@ -234,7 +234,7 @@ router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any
             }
             const name = article._source?.source?.name
             article?._source?.summary.forEach((summary: string, index: number) => {
-                if(index < 5) {
+                if(index < 10) {
                     freshIdeas.push({
                         idea: summary,
                         article_id: articleid,
