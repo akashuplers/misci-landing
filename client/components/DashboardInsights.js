@@ -570,7 +570,7 @@ export default function DashboardInsights({
   function handleFileUpload({ target }) {
 
     const FORMATCHECK = checkFileFormatAndSize(target.files[0]);
-    alert(FORMATCHECK, "FORMATCHECK")
+    // alert(FORMATCHECK, "FORMATCHECK")
     if (!FORMATCHECK) {
       return;
     }
