@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import styles from '../styles/saved.module.css';
-import { LocalDeleteIcon } from './localicons/localicons';
 const BlogListItem = ({ blog, index, setblog_id, setOpenModal }) => {
   return (
     <li key={blog._id} className="relative">
@@ -12,9 +11,6 @@ const BlogListItem = ({ blog, index, setblog_id, setOpenModal }) => {
           style={{ scale: '1.25' }}
         />
         {/* delete button */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100">
-          <LocalDeleteIcon />
-        </div>
         <Link
           legacyBehavior
           as={`/public/${blog._id}`}
@@ -102,10 +98,10 @@ const BlogListItem = ({ blog, index, setblog_id, setOpenModal }) => {
           minute: 'numeric',
         })}
       </button>
-      <p className="pointer-events-none mt-2 block truncate text-2xl font-extrabold text-black">
+      <p className="pointer-events-none mt-2 block truncate lg:text-sm lg:font-medium text-2xl font-extrabold text-black lg:text-gray-700">
         {blog?.title}
       </p>
-      <p className="pointer-events-none block text-base font-semibold text-black">
+      <p className="pointer-events-none block text-base font-base  lg:text-gray-700">
         {blog?.description?.length > 115
           ? blog?.description?.substring(0, 115) + '...'
           : blog.description}
