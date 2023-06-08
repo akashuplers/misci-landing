@@ -194,7 +194,7 @@ export default function Sidebar() {
               <div className="fixed inset-0 bg-gray-600 bg-opacity-75" />
             </Transition.Child>
 
-            <div className="fixed inset-0 z-40 flex">
+            <div className="fixed inset-0 z-40 flex flex-row-reverse lg:flex">
               <Transition.Child
                 as={Fragment}
                 enter="transition ease-in-out duration-300 transform"
@@ -214,7 +214,7 @@ export default function Sidebar() {
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                   >
-                    <div className="absolute top-0 right-0 -mr-12 pt-2">
+                    <div className="absolute top-0 -left-16 lg:right-0 -mr-12 pt-2">
                       <button
                         type="button"
                         className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"

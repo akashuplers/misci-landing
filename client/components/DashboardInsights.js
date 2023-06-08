@@ -568,6 +568,12 @@ export default function DashboardInsights({
   }
 
   function handleFileUpload({ target }) {
+
+    const FORMATCHECK = checkFileFormatAndSize(target.files[0]);
+    alert(FORMATCHECK, "FORMATCHECK")
+    if (!FORMATCHECK) {
+      return;
+    }
     setFileValid(true);
     setUrlValid(false);
 
@@ -592,7 +598,15 @@ export default function DashboardInsights({
   }
 
 
+
   function handleFormChange(e) {
+
+    const FORMATCHECK = checkFileFormatAndSize(e.target.files[0]);
+    alert(FORMATCHECK, "FORMATCHECK")
+    console.log(FORMATCHECK);
+    if (!FORMATCHECK) {
+      return;
+    }
     const value = e.target.value;
     setformInput(value);
 
@@ -608,7 +622,26 @@ export default function DashboardInsights({
   const handleusedideas = (arr) => {
     setArrUsed(arr);
   };
+  function checkFileFormatAndSize(file) {
 
+    var extension = file.name.split(".")[-1];
+
+    // Check if the extension is in the list of allowed formats.
+    var allowedFormats = ["pdf", "docx", "txt"];
+    if (extension in allowedFormats) {
+      // Check if the file size is greater than 3MB.
+      if (file.size > 3 * 1024 * 1024) {
+        toast.error("File size is too large. Please upload a file that is less than 3MB in size.");
+        return false;
+      }
+
+      return true;
+    } else {
+     
+      toast.error('File format is not supported. Please upload a file in PDF, DOCX, or TXT format.');
+      return false;
+    }
+  }
   function postFormData(e) {
     e.preventDefault();
     setNewIdeaLoad(true);
