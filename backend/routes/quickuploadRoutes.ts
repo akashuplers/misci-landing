@@ -302,9 +302,10 @@ router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any
             })
         }
     }catch (e) {
+        console.log(e, "error from python")
         return res.status(400).send({
             type: "ERROR",
-            message: e.message
+            message: "Lille is facing difficulty in content extraction from the file. It is trying to understand the issue to rectify. Please try some other file."
         })
     }
 })
