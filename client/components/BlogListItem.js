@@ -18,7 +18,7 @@ const BlogListItem = ({ blog, index, setblog_id, setOpenModal, type }) => {
             as={`/public/${blog._id}`}
             href={{
               pathname: '/public/[blogId]',
-              query: { blogId: blog._id },
+              query: { blogId: blog._id },  
             }}
             passHref
           >

@@ -570,7 +570,7 @@ export default function DashboardInsights({
   function handleFileUpload({ target }) {
 
     const FORMATCHECK = checkFileFormatAndSize(target.files[0]);
-    alert(FORMATCHECK, "FORMATCHECK")
+    // alert(FORMATCHECK, "FORMATCHECK")
     if (!FORMATCHECK) {
       return;
     }
@@ -602,7 +602,7 @@ export default function DashboardInsights({
   function handleFormChange(e) {
 
     const FORMATCHECK = checkFileFormatAndSize(e.target.files[0]);
-    alert(FORMATCHECK, "FORMATCHECK")
+    // alert(FORMATCHECK, "FORMATCHECK")
     console.log(FORMATCHECK);
     if (!FORMATCHECK) {
       return;
