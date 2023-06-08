@@ -668,7 +668,7 @@ function handleFileUpload({ target }) {
       })
       .catch((error) => {
         console.log("error", error);
-         toast.error(error?.reponse?.data?.message || 'Host has denied the extraction from this URL. Please try again or try some other URL.', {
+         toast.error(error?.response?.data?.message || 'Host has denied the extraction from this URL. Please try again or try some other URL.', {
     autoClose: 10000, // 10 seconds
   });
       })
