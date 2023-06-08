@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import styles from '../styles/saved.module.css';
-import { LocalDeleteIcon } from './localicons/localicons';
-const BlogListItem = ({ blog, index, setblog_id, setOpenModal }) => {
+const BlogListItem = ({ blog, index, setblog_id, setOpenModal, type }) => {
   return (
     <li key={blog._id} className="relative">
       <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
@@ -12,40 +11,41 @@ const BlogListItem = ({ blog, index, setblog_id, setOpenModal }) => {
           style={{ scale: '1.25' }}
         />
         {/* delete button */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100">
-          <LocalDeleteIcon />
-        </div>
-        <Link
-          legacyBehavior
-          as={`/public/${blog._id}`}
-          href={{
-            pathname: '/public/[blogId]',
-            query: { blogId: blog._id },
-          }}
-          passHref
-        >
-          <a
-            target="_blank"
-            style={{
-              position: 'absolute',
-              top: '0',
-              right: '0',
-              zIndex: '1',
-              background: 'white',
-              borderRadius: '0 0 0 5px',
+        {
+          type =='publish' && (
+            <Link
+            legacyBehavior
+            as={`/public/${blog._id}`}
+            href={{
+              pathname: '/public/[blogId]',
+              query: { blogId: blog._id },  
             }}
+            passHref
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
+            <a
+              target="_blank"
+              style={{
+                position: 'absolute',
+                top: '0',
+                right: '0',
+                zIndex: '1',
+                background: 'white',
+                borderRadius: '0 0 0 5px',
+              }}
             >
-              <path d="M0 0h24v24H0z" fill="none" />
-              <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z" />
-            </svg>
-          </a>
-        </Link>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+              >
+                <path d="M0 0h24v24H0z" fill="none" />
+                <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z" />
+              </svg>
+            </a>
+          </Link>
+          )
+        }
         <Link
           legacyBehavior
           href={{
@@ -70,6 +70,13 @@ const BlogListItem = ({ blog, index, setblog_id, setOpenModal }) => {
                 delButton.classList.add('!hidden');
               }}
             >
+              {
+                type == 'saved' && (
+                  <>
+                    <button class="saved_statusDelButton__d_UUQ saved_statusButton__6APUL">SAVED</button>
+                  </>
+                )
+              }
               <span className="sr-only">
                 View details for {blog.title}
               </span>
@@ -102,10 +109,10 @@ const BlogListItem = ({ blog, index, setblog_id, setOpenModal }) => {
           minute: 'numeric',
         })}
       </button>
-      <p className="pointer-events-none mt-2 block truncate text-2xl font-extrabold text-black">
+      <p className="pointer-events-none mt-2 block truncate lg:text-sm lg:font-medium text-2xl font-extrabold text-black lg:text-gray-700">
         {blog?.title}
       </p>
-      <p className="pointer-events-none block text-base font-semibold text-black">
+      <p className="pointer-events-none block lg:text-sm text-base font-base  lg:text-gray-700">
         {blog?.description?.length > 115
           ? blog?.description?.substring(0, 115) + '...'
           : blog.description}
