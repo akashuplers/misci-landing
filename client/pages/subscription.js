@@ -109,112 +109,113 @@ export default function Subscription({ query }) {
   console.log(currentPlan);
   return (
     <>
-    <Navbar />
-<Elements stripe={stripePromise}>
-  {processing && (
-    <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
-      <div className="flex flex-col items-center">
-        <div className="loader mb-4"></div>
-        <p className="text-gray-100 text-lg text-center">
-          Processing... <br />
-          Please do not refresh.
-        </p>
-      </div>
-    </div>
-  )}
-  <div className="h-full px-6">
-    <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
-      <SubIcon />
-    </div>
-    <div>
-      {clickOnSubscibe && (
-        <div className="absolute left-0 right-0 bottom-0 top-0 bg-[#000000c7] z-20 text-white w-full h-full">
-          <div className="w-full h-full flex content-center items-center">
-            <h1 className="text-center m-auto text-3xl">
-              Please wait payment is in Process
-            </h1>
-          </div>
-        </div>
-      )}
-      <div className="flex flex-col md:flex-row py-10 md:py-5">
-        <div className="w-full md:mx-5 flex flex-col md:items-center md:text-center">
-          <div className="text-[24px] font-bold leading-[28px] mb-[5%]">
-            Sign up & Pay
-          </div>
-          <div className="flex bg-[#ffffff] items-center rounded-[59px] h-[63px] w-[350px] md:w-[370px] p-[10px] mb-[4%] space-x-[10px]">
-            {plans.length > 0 &&
-              plans.map((item, i) => {
-                return (
-                  <div
-                    key={i}
-                    onClick={() => subscriptionPlan(item)}
-                    className={`w-[33%] text-[18px] font-medium cursor-pointer rounded-[55px] px-[19px] py-[8px] ${
-                      currentPlan?.subscriptionType === item.subscriptionType
-                        ? "bg-[#3cc0f6] text-[#ffffff]"
-                        : "bg-[#ECEDF5] text-[#13213E]"
-                    }`}
-                  >
-                    {item.subscriptionType}
-                  </div>
-                );
-              })}
-          </div>
-          {/* Left Side Card */}
-          <div
-            style={{
-              background:
-                "linear-gradient(157.47deg, #182735 14.91%, #15324E 96.07%)",
-              boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
-            }}
-            className="flex relative flex-col rounded-[4px] text-[#ffffff] p-4 w-[306px] sm:w-[392px] md:h-[590px] h-[200px]"
-          >
-            <div className="flex flex-col items-start justify-start mt-4">
-              <p className="font-semibold text-[24px] pb-2 capitalize">
-                {currentPlan?.subscriptionType}
+      <Navbar />
+      <Elements stripe={stripePromise}>
+        {processing && (
+          <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
+            <div className="flex flex-col items-center">
+              <div className="loader mb-4"></div>
+              <p className="text-gray-100 text-lg text-center">
+                Processing... <br />
+                Please do not refresh.
               </p>
-              <p className="text-[64px] font-bold">${currentPlan?.price}</p>
             </div>
-            <div className="h-[2px] mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px] hidden md:block"></div>
+          </div>
+        )}
+        <div className="h-full px-6">
+          <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
+            <SubIcon />
+          </div>
+          <div>
+            {clickOnSubscibe && (
+              <div className="absolute left-0 right-0 bottom-0 top-0 bg-[#000000c7] z-20 text-white w-full h-full">
+                <div className="w-full h-full flex content-center items-center">
+                  <h1 className="text-center m-auto text-3xl">
+                    Please wait payment is in Process
+                  </h1>
+                </div>
+              </div>
+            )}
+            <div className="flex flex-col md:flex-row py-10 md:py-5">
+              <div className="w-full md:mx-5 flex flex-col md:items-center md:text-center">
+                <div className="text-[24px] font-bold leading-[28px] mb-[5%]">
+                  Sign up & Pay
+                </div>
+                <div className="flex bg-[#ffffff] items-center rounded-[59px] h-[63px] w-[350px] md:w-[370px] p-[10px] mb-[4%] space-x-[10px]">
+                  {plans.length > 0 &&
+                    plans.map((item, i) => {
+                      return (
+                        <div
+                          key={i}
+                          onClick={() => subscriptionPlan(item)}
+                          className={`w-[33%] text-[18px] font-medium cursor-pointer rounded-[55px] px-[19px] py-[8px] ${currentPlan?.subscriptionType === item.subscriptionType
+                              ? "bg-[#3cc0f6] text-[#ffffff]"
+                              : "bg-[#ECEDF5] text-[#13213E]"
+                            }`}
+                        >
+                          {item.subscriptionType}
+                        </div>
+                      );
+                    })}
+                </div>
+                {/* Left Side Card */}
+                <div
+                  style={{
+                    background:
+                      "linear-gradient(157.47deg, #182735 14.91%, #15324E 96.07%)",
+                    boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
+                  }}
+                  className="flex relative flex-col rounded-[4px] text-[#ffffff] p-4 w-[306px] sm:w-[392px] md:h-[590px] h-[200px]"
+                >
+                  <div className="flex flex-col items-start justify-start mt-4">
+                    <p className="font-semibold text-[24px] pb-2 capitalize">
+                      {currentPlan?.subscriptionType}
+                    </p>
+                    <p className="text-[64px] font-bold">${currentPlan?.price}</p>
+                  </div>
+                  <div className="h-[2px] mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px] hidden md:block"></div>
 
-            <div className="flex flex-col items-start justify-start mt-4 text-left">
-              <div className="flex align-middle">
-                <p className="text-[18px] font-medium mb-4">
-                  Full Features Access with 200 Credits monthly validity
-                </p>
+                  <div className="flex flex-col items-start justify-start mt-4 text-left">
+                    <div className="flex align-middle">
+                      <p className="text-[18px] font-medium mb-4">
+                        Unlimited Blogs and Linked Posts.
+                        90 tweets a month for free plan
+                        180 tweets a month for paid plan
+                      </p>
+                    </div>
+                    <div className="flex align-middle">
+                      <p className="text-[18px] font-medium mb-4">
+                        Create/Regenerate blogs with your topics
+                      </p>
+                    </div>
+                    <div className="flex align-middle">
+                      <p className="text-[18px] font-medium mb-4">
+                        Unlimited publishing on top social media platforms
+                      </p>
+                    </div>
+                    <div className="flex align-middle">
+                      <p className="text-[18px] font-medium mb-4">
+                        Customization possibilities, Talk to our support team
+                      </p>
+                    </div>
+                    <div className="flex align-middle">
+                      <p className="text-[18px] font-medium mb-4">{/* Unlimited access of Topic Monitoring */}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="flex align-middle">
-                <p className="text-[18px] font-medium mb-4">
-                  Create/Regenerate blogs with your topics
-                </p>
-              </div>
-              <div className="flex align-middle">
-                <p className="text-[18px] font-medium mb-4">
-                  Unlimited publishing on top social media platforms
-                </p>
-              </div>
-              <div className="flex align-middle">
-                <p className="text-[18px] font-medium mb-4">
-                  Customization possibilities, Talk to our support team
-                </p>
-              </div>
-              <div className="flex align-middle">
-                <p className="text-[18px] font-medium mb-4">{/* Unlimited access of Topic Monitoring */}</p>
-              </div>
+              {/* Subscription Form */}
+              <CheckoutForm
+                currentPlan={currentPlan?.subscriptionType?.toLowerCase()}
+                priceId={priceId}
+                setClickOnSubscibe={setClickOnSubscibe}
+                setProcessing={setProcessing}
+                processing={processing}
+              />
             </div>
           </div>
         </div>
-        {/* Subscription Form */}
-        <CheckoutForm
-          currentPlan={currentPlan?.subscriptionType?.toLowerCase()}
-          priceId={priceId}
-          setClickOnSubscibe={setClickOnSubscibe}
-          setProcessing={setProcessing}
-          processing={processing}
-        />
-      </div>
-    </div>
-  </div>
-  <style>{`
+        <style>{`
     .loader {
       border-top: 2px solid rgba(255, 255, 255, 0.2);
       border-right: 2px solid rgba(255, 255, 255, 0.2);
@@ -262,7 +263,7 @@ export default function Subscription({ query }) {
       }
     }
   `}</style>
-</Elements>
+      </Elements>
 
     </>
   );

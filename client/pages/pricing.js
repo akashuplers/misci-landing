@@ -406,7 +406,9 @@ export default function Pricing() {
                   srcset=""
                 /> */}
                       <p className=" text-[18px] font-medium mb-4">
-                        Full Features Access with 200 Credits monthly validity
+                        Unlimited Blogs and Linked Posts.
+                        90 tweets a month for free plan
+                        180 tweets a month for paid plan
                       </p>
                     </div>
                     <div className="flex align-middle">
