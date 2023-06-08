@@ -59,7 +59,6 @@ export default function TinyMCEEditor({
   const [multiplier, setMultiplier] = useState(1);
   const [contributionAmout, setContributionAmount] = useState(1);
   const [updatedText, setEditorText] = useState(editorText);
-
   const [saveLoad, setSaveLoad] = useState(false);
   const [saveText, setSaveText] = useState("Save!");
   const [publishLoad, setPublishLoad] = useState(false);
@@ -155,6 +154,7 @@ export default function TinyMCEEditor({
   useEffect(() => {
     const intervalId = setInterval(() => {
       meeRefetch(); // Call the refetch function to refresh the query
+      setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
     }, 2000);
 
     return () => {
@@ -197,6 +197,11 @@ export default function TinyMCEEditor({
         const htmlDoc = jsonToHtml(aa.tiny_mce_data);
         console.log('MOVEING TO AA');
         console.log(aa);
+        // check remainging
+        if (meeData?.me?.remaining_twitter_quota <= 0 || meeData?.me?.remaining_twitter_quota == null || meeData?.me?.remaining_twitter_quota == undefined || meeData?.me?.remaining_twitter_quota < 1) {
+          setPauseTwitterPublish(true);
+        }
+
         if (aa.threads === null || aa.threads === undefined || aa.threads.length === 0 || aa.threads == "") {
           setShowTwitterThreadUI(false);
         } else {
@@ -220,6 +225,10 @@ export default function TinyMCEEditor({
           setShowTwitterThreadUI(true);
         }
         setEditorText(htmlDoc);
+        if (meeData?.me?.remaining_twitter_quota <= 0 || meeData?.me?.remaining_twitter_quota == null || meeData?.me?.remaining_twitter_quota == undefined || meeData?.me?.remaining_twitter_quota < 1) {
+          setPauseTwitterPublish(true);
+        }
+
       }
     }
   }, [option]);
@@ -1563,7 +1572,8 @@ export default function TinyMCEEditor({
               <Threads threadData={twitterThreadData} setthreadData={setTwitterThreadData}
                 isUserPaid={meeData?.me?.paid}
                 setPauseTwitterPublish={setPauseTwitterPublish} pauseTwitterPublish={pauseTwitterPublish}
-
+                remainingTwitterQuota={meeData?.me?.remaining_twitter_quota}
+                totalTwitterQuota={meeData?.me?.total_twitter_quota}
               />
             </div>
         }

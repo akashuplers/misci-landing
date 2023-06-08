@@ -87,7 +87,6 @@ export const useTwitterThreadALertModal = create((set) => ({
   togggleShowInitailText: (status) =>
     set((state) => ({
       showInitailText: status,
-
     })),
   toggleModal: (status) =>
     set((state) => ({

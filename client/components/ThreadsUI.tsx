@@ -10,14 +10,14 @@ const Threads = ({
   setthreadData,
   setPauseTwitterPublish,
   isUserPaid,
+  remainingTwitterQuota,
+  totalTwitterQuota,
 }: any) => {
   // const [threadData, setthreadData] = useState(threadData);
   console.log("THREADS DATA");
   const [hideAddThread, setHideAddThread] = useState(false);
   const {
     isOpen: isTwitterThreadAlertOpen,
-    remaining_twitter_quota: remainingTwitterQuota,
-    total_twitter_quota: totalTwitterQuota,
     initailText,
     isUserpaid,
     showInitailText,
@@ -94,25 +94,39 @@ const Threads = ({
             {isUserPaid ? (
               <>
                 <span>
-                  Lille allows <strong>6</strong> tweets per day. Each thread in
-                  the followng twitter threads is a tweet. You can edit/delete
-                  threads to optimize publishings, e.g. keep two threads per
-                  publishing to publish three times a day.
+                  Lille allows <strong>{totalTwitterQuota}</strong> tweets per
+                  day. Each thread in the followng twitter threads is a tweet.
+                  You can edit/delete threads to optimize publishings, e.g. keep
+                  two threads per publishing to publish three times a day.
                 </span>
               </>
             ) : (
               <>
                 <span>
-                  Lille allows <strong>3</strong> tweets per day. Each thread in
-                  the followng twitter threads is a tweet. You can edit/delete
-                  threads to optimize publishings, e.g. keep one thread per
-                  publishing to publish three times a day.
+                  Lille allows <strong>{totalTwitterQuota}</strong> tweets per
+                  day. Each thread in the followng twitter threads is a tweet.
+                  You can edit/delete threads to optimize publishings, e.g. keep
+                  one thread per publishing to publish three times a day.
                 </span>
               </>
             )}
 
             {showInitailText ? (
-              <span>{initailText(totalTwitterQuota)}</span>
+              <>
+                <span>{`You can only create ${remainingTwitterQuota} tweets for  today, you can save for now`}</span>
+                <br />{" "}
+                <span>
+                  Currenty you are left with
+                  <strong>
+                    {" "}
+                    {remainingTwitterQuota == null ||
+                    remainingTwitterQuota == undefined
+                      ? 0
+                      : remainingTwitterQuota}{" "}
+                  </strong>{" "}
+                  tweets for today.
+                </span>
+              </>
             ) : (
               <span>
                 We offer the capability of {totalTwitterQuota} tweets in a
@@ -168,24 +182,7 @@ const Threads = ({
                 </div>
               )}
             </Droppable>
-            {/* {threadData
-              .slice(threadData.length - 1)
-              .map((thread: any, index: number) => (
-                <Thread
-                  key={index}
-                  thread={thread}
-                  threadData={threadData}
-                  index={threadData.length - 1}
-                  addTextArea={addTextArea}
-                  updateTextArea={updateTextArea}
-                  moveThreadUp={moveThreadUp}
-                  moveThreadDown={moveThreadDown}
-                  deleteThread={deleteThread}
-                  setPauseTwitterPublish={setPauseTwitterPublish}
-                  setthreadData={setthreadData}
-                  isUserPaid={isUserPaid}
-                />
-              ))} */}
+
             {threadData.length > 0 &&
               threadData.length < remainingTwitterQuota && (
                 <div>

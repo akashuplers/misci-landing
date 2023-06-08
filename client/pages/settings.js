@@ -759,7 +759,7 @@ export default function Settings() {
                                       )}
                                   </div>
                                 )}
-                                <div className="py-4 flex flex-col md:flex-row gap-4">
+                                <div className="py-4 flex flex-col md:flex-row gap-4 justify-between">
                                   <span
                                     className="reset-button cta"
                                     style={{
