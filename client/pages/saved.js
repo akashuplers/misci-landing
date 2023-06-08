@@ -117,7 +117,7 @@ export default function Saved() {
             >
               {data?.getAllBlogs.blogs.map((blog, index) => (
                 <>
-                  <BlogListItem blog={blog} setblog_id={setblog_id} setOpenModal={setOpenModal} index={index} />
+                  <BlogListItem blog={blog} setblog_id={setblog_id} setOpenModal={setOpenModal} index={index} type={'saved'}/>
                 </>
               ))}
             </ul>

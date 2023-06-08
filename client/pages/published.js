@@ -128,7 +128,7 @@ export default function Published() {
 
               {data?.getAllBlogs.blogs.map((blog, index) => (
                 <>
-                  <BlogListItem blog={blog} setblog_id={setblog_id} setOpenModal={setOpenModal} index={index} />
+                  <BlogListItem blog={blog} setblog_id={setblog_id} setOpenModal={setOpenModal} index={index} type={'publish'} />
                 </>
               ))}
 
