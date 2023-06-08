@@ -1,17 +1,11 @@
-import { Fragment, useEffect, useState, useMemo, useLayoutEffect } from "react";
-import {
-  CardElement,
-  useElements,
-  useStripe,
-  PaymentElement,
-} from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
+import { STRIPE_PROMISE } from "@/constants";
 import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import axios from "axios";
+import { useEffect, useLayoutEffect, useState } from "react";
 import CheckoutFormUpgrade from "../components/CheckoutFormUpgrade";
 import Layout from "../components/Layout";
-import axios from "axios";
 import { API_BASE_PATH } from "../constants/apiEndpoints";
-import { STRIPE_PROMISE } from "@/constants";
 
 export default function Upgrade() {
   const stripePromise = loadStripe(STRIPE_PROMISE);
@@ -109,7 +103,7 @@ export default function Upgrade() {
         const order = ["Monthly", "Quarterly", "Yearly"];
         return order.indexOf(a.subscriptionType) - order.indexOf(b.subscriptionType);
       });
-    
+
       setPlans(sortedPlans);
     };
 
@@ -157,13 +151,12 @@ export default function Upgrade() {
                             <div
                               key={i}
                               onClick={() => subscriptionPlan(item)}
-                              className={`w-[33%]  text-[18px] font-medium cursor-pointer rounded-[55px] px-[19px] py-[8px] ${
-                                currentPlan?.subscriptionType ===
-                                item.subscriptionType
+                              className={`w-[33%]  text-[18px] font-medium cursor-pointer rounded-[55px] px-[19px] py-[8px] ${currentPlan?.subscriptionType ===
+                                  item.subscriptionType
                                   ? "bg-[#3cc0f6] text-[#13213E]"
                                   : "bg-[#ECEDF5] text-[#13213E]"
-                              }`}
-                              // className="bg-[#3cc0f6] cursor-pointer rounded-[55px] px-[19px] py-[8px]"
+                                }`}
+                            // className="bg-[#3cc0f6] cursor-pointer rounded-[55px] px-[19px] py-[8px]"
                             >
                               {item.subscriptionType}
                             </div>
@@ -201,7 +194,9 @@ export default function Upgrade() {
                         srcset=""
                       /> */}
                           <p className=" text-[18px] font-medium mb-4">
-                           Full Features Access with 200 Credits monthly validity
+                            Unlimited Blogs and Linked Posts.
+                            90 tweets a month for free plan
+                            180 tweets a month for paid plan
                           </p>
                         </div>
                         <div className="flex align-middle">

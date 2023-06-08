@@ -162,6 +162,7 @@ const Threads = ({
                               provided.dragHandleProps)}
                           >
                             <Thread
+
                               thread={thread}
                               threadData={threadData}
                               index={index}
@@ -243,6 +244,7 @@ const Thread = ({
   return (
     <div
       key={index}
+      tabIndex={-1}
       draggable={true}
       className="thread-item relative w-full min-w-[400px] thread-item min-h-[100px] flex flex-col items-start justify-between cursor-move"
       style={animationStyle}
@@ -264,6 +266,7 @@ const Thread = ({
         >
           <div className={`max-w-[95%] w-[95%]`}>
             <TextareaAutosize
+              tabIndex={0}
               className="w-full min-h-full p-2  px-3 py-4 text-black overflow-auto  rounded-md"
               style={{
                 wordWrap: "break-word",
