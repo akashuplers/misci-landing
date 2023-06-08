@@ -105,7 +105,7 @@ router.post('/url', authMiddleware, async (req: any, res: any) => {
     }catch (e) {
         return res.status(400).send({
             type: "ERROR",
-            message: e.message
+            message: "Host has denied the extraction from this URL. Please try again or try some other URL."
         })
     }
 })
