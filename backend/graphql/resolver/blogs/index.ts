@@ -37,7 +37,7 @@ export const blogResolvers = {
                 const id = args.id
                 const blogDetails = await fetchBlog({id, db})
                 const blogIdeas = await fetchBlogIdeas({id, db})
-                const updatedIdeas = blogIdeas.ideas.map((data: any) => data.summary ? ({...data, idea: data.summary}) : ({...data}))
+                const updatedIdeas = blogIdeas?.ideas.map((data: any) => data.summary ? ({...data, idea: data.summary}) : ({...data}))
                 const updatedFreshIdeas = blogIdeas?.freshIdeas?.map((data: any) => data.summary ? ({...data, idea: data.summary}) : ({...data}))
                 let refUrls: {
                     url: string
