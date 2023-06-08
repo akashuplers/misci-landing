@@ -724,6 +724,10 @@ export const blogResolvers = {
                         let imageSrc: string | null = null
                         let article_ids: String[] = []
                         let tags: String[] = []
+                        let ideasArr: {
+                            idea: string;
+                            article_id: string;
+                        }[] = []
                         const articlesData = await (
                             Promise.all(
                                 articles.map(async (id, index) => {
@@ -765,6 +769,7 @@ export const blogResolvers = {
                             data.used_summaries.forEach((summary: string, index: number) => {
                                 texts += `- ${summary}\n`
                                 ideasText += `${ideasText} `
+                                ideasArr.push({idea: summary, article_id: data.id})
                             })
                             article_ids.push(data.id)
                         })
