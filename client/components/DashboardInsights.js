@@ -633,11 +633,10 @@ export default function DashboardInsights({
       if (file.size > 3 * 1024 * 1024) {
         toast.error("File size is too large. Please upload a file that is less than 3MB in size.");
         return false;
-      }
-
+      }                                                                                                                             
       return true;
     } else {
-     
+
       toast.error('File format is not supported. Please upload a file in PDF, DOCX, or TXT format.');
       return false;
     }

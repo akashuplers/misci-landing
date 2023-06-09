@@ -27,8 +27,10 @@ const Threads = ({
 
   console.log(threadData);
   const addTextArea = () => {
-    // setthreadData([...threadData, ""]);
-    // take the index
+    if (threadData.length === 0) {
+      setthreadData([""]);
+      return;
+    }
     const lastIndex = threadData.length - 1;
     const lastThread = threadData[lastIndex];
     const updatedThreads = [...threadData];
@@ -162,7 +164,6 @@ const Threads = ({
                               provided.dragHandleProps)}
                           >
                             <Thread
-
                               thread={thread}
                               threadData={threadData}
                               index={index}
@@ -195,6 +196,17 @@ const Threads = ({
                   </button>
                 </div>
               )}
+
+            {threadData.length == 0 && (
+              <div>
+                <button
+                  onClick={addTextArea}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 mt-5"
+                >
+                  + Add Thread
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </DragDropContext>
