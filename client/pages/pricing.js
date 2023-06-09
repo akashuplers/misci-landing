@@ -3,11 +3,13 @@ import { Tab } from '@headlessui/react';
 import { CheckIcon, ChevronLeftIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import Link from "next/link";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import AuthenticationModal from "../components/AuthenticationModal";
+import { FeaturesItem, UpgradeFeatures } from "../components/FeatureItem";
 import Navbar from "../components/Navbar";
 import { API_BASE_PATH } from "../constants/apiEndpoints";
 import styles from "../styles/price.module.css";
+
 const featuresData = [
   {
     // icon: Search,
@@ -209,6 +211,15 @@ export default function Pricing() {
   function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
   }
+  const heightRef = useRef(null);
+  const [heightOfAnother, setHeightOfAnother] = useState(0);
+  useEffect(() => {
+
+    if (heightRef.current) {
+      setHeightOfAnother(heightRef.current.offsetHeight);
+    }
+  }, [heightRef]);
+
   return (
     <>
       <div className="relative md:min-h-screen md:hidden">
@@ -330,8 +341,10 @@ export default function Pricing() {
                 <div
                   style={{
                     boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
+                    height: heightOfAnother + 'px'
                   }}
-                  className="flex sm:flex-wrap sm:flex-row relative max-sm:flex-col bg-[#ffffff] rounded-[0.75rem] p-4 w-[21rem] md:w-[392px] h-[600px]"
+
+                  className="flex sm:flex-wrap sm:flex-row relative max-sm:flex-col bg-[#ffffff] rounded-[0.75rem] p-4 w-[21rem] md:w-[392px] lg:h-full h-[600px]"
                 >
                   <div className="flex flex-col items-start justify-start gap-4 mt-4">
                     <p className="text-[#182735] font-semibold text-[24px] leading-[26px]">
@@ -345,7 +358,7 @@ export default function Pricing() {
                       Lille.ai platform, LinkedIn and Twitter.
                     </p>
                   </div>
-                  <div className="mt-4 mb-4 bg-gradient-to-r from-[#182735] to-transparent h-[2px]"></div>
+                  <div className="mt-4 bg-gradient-to-r from-[#182735] to-transparent h-[2px]"></div>
                   <div className="flex flex-col items-start justify-start mt-4">
                     <div className="flex align-middle"></div>
                   </div>
@@ -353,11 +366,12 @@ export default function Pricing() {
                     onClick={() => {
                       setIsOpen(true);
                     }}
-                    className="bg-[#3CC0F6] bottom-6 inline-block right-[1rem] cursor-pointer absolute font-semibold text-[16px] no-underline text-[#0E0E2C] rounded-[10px] p-4"
+                    className="bg-[#3CC0F6] bottom-2   absolute w-[40%] inline-block right-[1rem] cursor-pointer  font-semibold text-[16px] no-underline text-[#0E0E2C] rounded-[10px] p-4"
                   >
                     Try for free
                   </div>
                 </div>
+
 
                 <div
                   style={{
@@ -365,7 +379,8 @@ export default function Pricing() {
                       "linear-gradient(157.47deg, #182735 14.91%, #15324E 96.07%)",
                     boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
                   }}
-                  className="flex relative flex-col  rounded-[0.75rem] text-[#ffffff] p-4 w-[21rem] md:w-[392px] h-[600px]"
+                  ref={heightRef}
+                  className="flex relative flex-col  rounded-[0.75rem] text-[#ffffff] p-4 w-[21rem] md:w-[392px] lg:h-full h-[600px]"
                 >
                   <div className="flex flex-col  items-start justify-start mt-4">
                     <p className=" font-semibold text-[24px] pb-2 capitalize">
@@ -379,7 +394,7 @@ export default function Pricing() {
                     </p>
                   </div>
                   <div className=" mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px]"></div>
-                  <div className="flex bg-[#fffff] items-center rounded-[59px] h-[55px] w-full justify-between px-2">
+                  <div className="flex bg-[#fffff] items-center rounded-[59px] h-[55px] w-full justify-between px-2" >
                     {plans.length > 0 &&
                       plans.map((item, i) => {
                         return (
@@ -397,77 +412,28 @@ export default function Pricing() {
                         );
                       })}
                   </div>
-                  <div className="flex  flex-col items-start justify-start mt-4">
-                    <div className="flex align-middle">
-                      {/* <img
-                  className="h-[18px] mr-3"
-                  src={TickIcon}
-                  alt=""
-                  srcset=""
-                /> */}
-                      <p className=" text-[18px] font-medium mb-4">
-                        Unlimited Blogs and Linked Posts.
-                        90 tweets a month for free plan
-                        180 tweets a month for paid plan
-                      </p>
-                    </div>
-                    <div className="flex align-middle">
-                      {/* <img
-                  className="h-[18px] mr-3"
-                  src={TickIcon}
-                  alt=""
-                  srcset=""
-                /> */}
-                      <p className=" text-[18px] font-medium mb-4">
-                        Create/Regenerate blogs with your topics
-                      </p>
-                    </div>
-                    <div className="flex align-middle">
-                      {/* <img
-                  className="h-[18px] mr-3"
-                  src={TickIcon}
-                  alt=""
-                  srcset=""
-                /> */}
-                      <p className=" text-[18px] font-medium mb-4">
-                        Unlimited publishing on top social media platforms
-                      </p>
-                    </div>
-                    <div className="flex align-middle">
-                      {/* <img
-                  className="h-[18px] mr-3"
-                  src={TickIcon}
-                  alt=""
-                  srcset=""
-                /> */}
-                      <p className=" text-[18px] font-medium mb-4">
-                        Customization possibilities, Talk to our support team
-                      </p>
-                    </div>
-                    <div className="flex align-middle">
-                      {/* <img
-                  className="h-[18px]"
-                  src={TickIcon}
-                  alt=""
-                  srcset=""
-                /> */}
-                      <p className="text-[18px] font-medium mb-4">
-                        {/* Unlimited access of Topic Monitoring */}
-                      </p>
-                    </div>
+                  <div className="flex  flex-col items-start justify-start mt-4"> {
+                    UpgradeFeatures.map((item, i) => {
+                      return (
+                        <FeaturesItem key={i} text={item} />
+                      );
+                    })}
                   </div>
-                  <Link
-                    legacyBehavior
-                    as={"/subscription"}
-                    href={{
-                      pathname: "/subscription",
-                      query: { currentPlan: JSON.stringify(currentPlan) },
-                    }}
-                  >
-                    <div className="bg-[#3CC0F6] bottom-6 inline-block right-[1rem] cursor-pointer absolute font-semibold text-[16px] no-underline text-[#0E0E2C] rounded-[10px] p-4">
-                      Get Started
-                    </div>
-                  </Link>
+                  <div className="flex flex-col items-end">
+                    <Link
+                      legacyBehavior
+                      as={"/subscription"}
+                      href={{
+                        pathname: "/subscription",
+                        query: { currentPlan: JSON.stringify(currentPlan) },
+                      }}
+                      className="justify-self-end"
+                    >
+                      <div className="bg-[#3CC0F6] bottom-6 inline-block right-[1rem] cursor-pointer w-[40%] font-semibold text-[16px] no-underline text-[#0E0E2C] rounded-[10px] p-4">
+                        Get Started
+                      </div>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
