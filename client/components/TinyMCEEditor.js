@@ -695,7 +695,7 @@ export default function TinyMCEEditor({
 
       console.log(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
       if (twitterThreadData.length > meeData?.me?.remaining_twitter_quota) {
-        toast.error(`We offer the capability of ${totalTwitterQuota} tweets in a ${totalTwitterQuota} thread at once. Please upgrade your account to improve this`, {
+        toast.error(`We offer the capability of ${meeData?.me?.total_twitter_quota} tweets in a day. Please upgrade your account to improve this`, {
           position: "top-center",
           autoClose: 5000,
           hideProgressBar: false,
@@ -1207,7 +1207,7 @@ export default function TinyMCEEditor({
                   />
                 </svg>
                 Twitter
-              </div> 
+              </div>
             </div>
           ) : (
             <div style={{ display: "none" }}></div>
