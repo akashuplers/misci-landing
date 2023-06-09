@@ -702,9 +702,9 @@ export default function DashboardInsights({
       })
       .catch((error) => {
         console.log("error", error);
-        toast.error('Host has denied the extraction from this URL. Please try again or try some other URL.', {
-          autoClose: 10000, // 10 seconds
-        });
+         toast.error(error?.response?.data?.message || 'Host has denied the extraction from this URL. Please try again or try some other URL.', {
+    autoClose: 10000, // 10 seconds
+  });
       })
       .finally(() => {
         setformInput("");
