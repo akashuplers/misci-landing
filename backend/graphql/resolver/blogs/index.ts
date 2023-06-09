@@ -788,6 +788,7 @@ export const blogResolvers = {
                                 imageSrc,
                                 ideasText,
                                 refUrls,
+                                ideasArr,
                                 userDetails
                             })
                             let uniqueTags: String[] = [];
