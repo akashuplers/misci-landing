@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import CheckoutForm from "../components/CheckoutForm";
 import Navbar from "../components/Navbar";
 import { API_BASE_PATH } from "../constants/apiEndpoints";
+import { FeaturesItem, UpgradeFeatures } from "../components/FeatureItem";
+
 export const STRIPE_CONST_AMOUNT = 100;
 async function fetchDynamicPriceData() {
   var priceData = [];
@@ -135,7 +137,7 @@ export default function Subscription({ query }) {
                   </h1>
                 </div>
               </div>
-            )}
+            )}  
             <div className="flex flex-col md:flex-row py-10 md:py-5">
               <div className="w-full md:mx-5 flex flex-col md:items-center md:text-center">
                 <div className="text-[24px] font-bold leading-[28px] mb-[5%]">
@@ -149,8 +151,8 @@ export default function Subscription({ query }) {
                           key={i}
                           onClick={() => subscriptionPlan(item)}
                           className={`w-[33%] text-[18px] font-medium cursor-pointer rounded-[55px] px-[19px] py-[8px] ${currentPlan?.subscriptionType === item.subscriptionType
-                              ? "bg-[#3cc0f6] text-[#ffffff]"
-                              : "bg-[#ECEDF5] text-[#13213E]"
+                            ? "bg-[#3cc0f6] text-[#ffffff]"
+                            : "bg-[#ECEDF5] text-[#13213E]"
                             }`}
                         >
                           {item.subscriptionType}
@@ -165,7 +167,7 @@ export default function Subscription({ query }) {
                       "linear-gradient(157.47deg, #182735 14.91%, #15324E 96.07%)",
                     boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
                   }}
-                  className="flex relative flex-col rounded-[4px] text-[#ffffff] p-4 w-[306px] sm:w-[392px] md:h-[590px] h-[200px]"
+                  className="flex relative flex-col rounded-[4px] text-[#ffffff] p-4 w-[306px] sm:w-[392px] md:h-full h-[200px]"
                 >
                   <div className="flex flex-col items-start justify-start mt-4">
                     <p className="font-semibold text-[24px] pb-2 capitalize">
@@ -176,31 +178,11 @@ export default function Subscription({ query }) {
                   <div className="h-[2px] mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px] hidden md:block"></div>
 
                   <div className="flex flex-col items-start justify-start mt-4 text-left">
-                    <div className="flex align-middle">
-                      <p className="text-[18px] font-medium mb-4">
-                        Unlimited Blogs and Linked Posts.
-                        90 tweets a month for free plan
-                        180 tweets a month for paid plan
-                      </p>
-                    </div>
-                    <div className="flex align-middle">
-                      <p className="text-[18px] font-medium mb-4">
-                        Create/Regenerate blogs with your topics
-                      </p>
-                    </div>
-                    <div className="flex align-middle">
-                      <p className="text-[18px] font-medium mb-4">
-                        Unlimited publishing on top social media platforms
-                      </p>
-                    </div>
-                    <div className="flex align-middle">
-                      <p className="text-[18px] font-medium mb-4">
-                        Customization possibilities, Talk to our support team
-                      </p>
-                    </div>
-                    <div className="flex align-middle">
-                      <p className="text-[18px] font-medium mb-4">{/* Unlimited access of Topic Monitoring */}</p>
-                    </div>
+                    {UpgradeFeatures.map((item, i) => {
+                      return (
+                        <FeaturesItem key={i} text={item} />
+                      );
+                    })}
                   </div>
                 </div>
               </div>

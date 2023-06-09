@@ -6,6 +6,7 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import CheckoutFormUpgrade from "../components/CheckoutFormUpgrade";
 import Layout from "../components/Layout";
 import { API_BASE_PATH } from "../constants/apiEndpoints";
+import { FeaturesItem, UpgradeFeatures } from "../components/FeatureItem";
 
 export default function Upgrade() {
   const stripePromise = loadStripe(STRIPE_PROMISE);
@@ -152,9 +153,9 @@ export default function Upgrade() {
                               key={i}
                               onClick={() => subscriptionPlan(item)}
                               className={`w-[33%]  text-[18px] font-medium cursor-pointer rounded-[55px] px-[19px] py-[8px] ${currentPlan?.subscriptionType ===
-                                  item.subscriptionType
-                                  ? "bg-[#3cc0f6] text-[#13213E]"
-                                  : "bg-[#ECEDF5] text-[#13213E]"
+                                item.subscriptionType
+                                ? "bg-[#3cc0f6] text-[#13213E]"
+                                : "bg-[#ECEDF5] text-[#13213E]"
                                 }`}
                             // className="bg-[#3cc0f6] cursor-pointer rounded-[55px] px-[19px] py-[8px]"
                             >
@@ -170,7 +171,7 @@ export default function Upgrade() {
                           "linear-gradient(157.47deg, #182735 14.91%, #15324E 96.07%)",
                         boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
                       }}
-                      className="flex relative flex-col  rounded-[4px] text-[#ffffff] p-4 w-[306px] sm:w-[392px] md:h-[590px] h-[200px]"
+                      className="flex relative flex-col  rounded-[4px] text-[#ffffff] p-4 w-[306px] sm:w-[392px] lg:h-full md:h-[590px] h-[200px]"
                     >
                       <div className="flex flex-col  items-start justify-start mt-4">
                         <p className=" font-semibold text-[24px] pb-2 capitalize">
@@ -186,64 +187,11 @@ export default function Upgrade() {
                       <div className="h-[2px] mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px] hidden md:block"></div>
 
                       <div className="flex  flex-col items-start justify-start mt-4 hidden md:block text-left">
-                        <div className="flex align-middle">
-                          {/* <img
-                        className="h-[18px] mr-3"
-                        src={TickIcon}
-                        alt=""
-                        srcset=""
-                      /> */}
-                          <p className=" text-[18px] font-medium mb-4">
-                            Unlimited Blogs and Linked Posts.
-                            90 tweets a month for free plan
-                            180 tweets a month for paid plan
-                          </p>
-                        </div>
-                        <div className="flex align-middle">
-                          {/* <img
-                        className="h-[18px] mr-3"
-                        src={TickIcon}
-                        alt=""
-                        srcset=""
-                      /> */}
-                          <p className=" text-[18px] font-medium mb-4">
-                            Create/Regenerate blogs with your topics
-                          </p>
-                        </div>
-                        <div className="flex align-middle">
-                          {/* <img
-                        className="h-[18px] mr-3"
-                        src={TickIcon}
-                        alt=""
-                        srcset=""
-                      /> */}
-                          <p className=" text-[18px] font-medium mb-4">
-                            Unlimited publishing on top social media platforms
-                          </p>
-                        </div>
-                        <div className="flex align-middle">
-                          {/* <img
-                        className="h-[18px] mr-3"
-                        src={TickIcon}
-                        alt=""
-                        srcset=""
-                      /> */}
-                          <p className=" text-[18px] font-medium mb-4">
-                            Customization possibilities, Talk to our support
-                            team
-                          </p>
-                        </div>
-                        <div className="flex align-middle">
-                          {/* <img
-                        className="h-[18px] mr-3"
-                        src={TickIcon}
-                        alt=""
-                        srcset=""
-                      /> */}
-                          {/* <p className=" text-[18px] font-medium mb-4">
-                            Unlimited access of Topic Monitoring
-                          </p> */}
-                        </div>
+                        {UpgradeFeatures.map((item, i) => {
+                          return (
+                            <FeaturesItem key={i} text={item} />
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
@@ -259,7 +207,8 @@ export default function Upgrade() {
             </div>
           </div>
         </Elements>
-      </Layout>
+      </Layout >
     </>
   );
 }
+
