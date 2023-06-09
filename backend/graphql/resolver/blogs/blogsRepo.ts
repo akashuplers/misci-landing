@@ -242,7 +242,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     }
                                     return newText.trim() + '. '
                                 })
-                                updatedContent = updatedContent?.map((content: string) => content.replace("..", "."))
+                                updatedContent = updatedContent?.map((content: string) => content.replace("..", ".") || content.replace(". .", "."))
                                 let references: any[] = []
                                 refUrls && refUrls.length && refUrls.forEach((data) => {
                                     references.push({
