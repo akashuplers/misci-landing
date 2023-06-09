@@ -151,6 +151,27 @@ export default function TinyMCEEditor({
       }
     },
   });
+  const [initialImageSrc, setInitialImageSrc] = useState(null);
+  useEffect(() => {
+    // Set the initial image source when the component mounts
+    const imageElement = getImageSrc(editorText);
+    if (imageElement) {
+      setInitialImageSrc(imageElement);
+    }
+  }, []);
+  const handleEditorImageChange = (content) => {
+    const updatedImageSrc = getImageSrc(content);
+    if (updatedImageSrc && initialImageSrc !== updatedImageSrc) {
+      alert('Thanks for uploading!');
+    }
+  };
+  useEffect(() => {
+    console.log("EDITOR TEXT CHANGED");
+    console.log(editorText);
+    console.log('UPDATED TEXT');
+    console.log(updatedText);
+
+  }, [editorText, updatedText]);
   useEffect(() => {
     const intervalId = setInterval(() => {
       meeRefetch(); // Call the refetch function to refresh the query
@@ -536,6 +557,7 @@ export default function TinyMCEEditor({
 
     }
   };
+
   async function handleCheckout() {
     console.log('LOCAL STOAGE: ')
     console.log(localStorage);
@@ -1560,7 +1582,8 @@ export default function TinyMCEEditor({
                 onEditorChange={(content, editor) => {
                   setEditorText(content);
                   setSaveText("Save Now!");
-                  // console.log(updatedText);
+                  console.log('CONTENT HAI YHE');
+                  console.log(content);
                 }}
               />
             </>
@@ -1590,3 +1613,13 @@ export default function TinyMCEEditor({
   );
 }
 
+function getImageSrc(text) {
+  // Create a new DOMDocument object.
+  const imageSrcRegex = /src="(.*?)"/;
+  const match = imageSrcRegex.exec(text);
+  if (match) {
+    return match[1];
+  } else {
+    return null;
+  }
+}
