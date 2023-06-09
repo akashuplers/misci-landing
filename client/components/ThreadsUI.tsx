@@ -92,7 +92,7 @@ const Threads = ({
           <div className="w-[10%]">
             <h1 className="text-2xl font-bold">📜</h1>
           </div>
-          <div className="w-[90%] text-yellow-500">
+          <div className="w-[90%] text-yellow-500 text-base">
             {isUserPaid ? (
               <>
                 <span>
@@ -117,10 +117,17 @@ const Threads = ({
               <>
                 <span>{`You can only create ${remainingTwitterQuota} tweets for  today, you can save for now`}</span>
                 <br />{" "}
-                <span>
+                <span
+                  className={`${
+                    remainingTwitterQuota < 1 ||
+                    remainingTwitterQuota == undefined ||
+                    remainingTwitterQuota == null
+                      ? "text-red-500"
+                      : ""
+                  }`}
+                >
                   Currenty you are left with
                   <strong>
-                    {" "}
                     {remainingTwitterQuota == null ||
                     remainingTwitterQuota == undefined
                       ? 0
@@ -197,7 +204,7 @@ const Threads = ({
                 </div>
               )}
 
-            {threadData.length == 0 && (
+            {threadData.length <= 0 && (
               <div>
                 <button
                   onClick={addTextArea}
