@@ -1,12 +1,12 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Modal from "react-modal";
 
 export default function LoginModal(modalIsOpen, setModalIsOpen) {
   const [formData, setFormData] = useState({
-    "email" : "",
-    "password" : ""
+    "email": "",
+    "password": ""
   })
-  
+
   const openModal = (url) => {
     setModalIsOpen(true);
   };
@@ -19,8 +19,8 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
     setModalIsOpen(false);
     console.log(formData);
     setFormData({
-      "email" : "",
-      "password" : ""
+      "email": "",
+      "password": ""
     });
   };
 
@@ -29,7 +29,7 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
     setFormData(prev => {
       return {
         ...prev,
-        [name] : value
+        [name]: value
       }
     })
   };
@@ -55,7 +55,7 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
           borderRadius: "8px",
           height: "75%",
           width: "50%",
-          maxWidth : "450px" ,
+          maxWidth: "450px",
           bottom: "",
           zIndex: "999",
           marginRight: "-50%",
@@ -79,12 +79,12 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
             <span className="p-4">Login with Google</span>
           </button>
         </div>
-        <form 
-          action="" 
-          method="post" 
+        <form
+          action=""
+          method="post"
           className="my-10 p-2"
           onSubmit={handleSubmit}
-          >
+        >
           <div className="flex flex-col space-y-5">
             <label for="email">
               <p className="font-medium text-slate-700 pb-2 p-2">
@@ -129,7 +129,7 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
                 </a>
               </div>
             </div>
-            <button 
+            <button
               className="p-2 w-full py-3 font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center"
               type="submit">
               <svg
@@ -138,7 +138,7 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
-                stroke-width="2"
+                strokeWidth="2"
               >
                 <path
                   stroke-linecap="round"
@@ -162,7 +162,7 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
-                    stroke-width="2"
+                    strokeWidth="2"
                   >
                     <path
                       stroke-linecap="round"
