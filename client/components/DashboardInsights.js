@@ -10,7 +10,7 @@ import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
 import { ContributionCheck } from "../helpers/ContributionCheck";
 import { jsonToHtml } from "../helpers/helper";
-import useStore, { useByMeCoffeModal } from "../store/store";
+import useStore, { useByMeCoffeModal, useThreadsUIStore } from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import FreshFilteredIdeaItem from "./FreshFilteredIdeaItem";
 import FreshIdeaForm from "./FreshIdeaForm";
@@ -25,29 +25,20 @@ import UsedReference from "./UsedReference";
 import { RegenerateIcon } from "./localicons/localicons";
 export default function DashboardInsights({
   loading,
-
   ideas,
   setIdeas,
-
   freshIdeas: oldFreshIdeas,
-
   blog_id,
   setblog_id,
-
   tags,
   setTags,
-
   freshIdeaTags: oldFreshIdeaTags,
-
   freshIdeasReferences,
   setFreshIdeaReferences,
-
   reference,
   setReference,
-
   setBlogData,
   setEditorText,
-
   setPyResTime,
   setNdResTime,
 }) {
@@ -185,6 +176,7 @@ export default function DashboardInsights({
 
   const [filteredIdeas, setFilteredIdeas] = useState([]);
   const [notUniquefilteredIdeas, setNotUniqueFilteredIdeas] = useState([]);
+  const { showTwitterThreadUI, setShowTwitterThreadUI } = useThreadsUIStore();
 
   const [filteredArray, setFilteredArray] = useState([]);
 
