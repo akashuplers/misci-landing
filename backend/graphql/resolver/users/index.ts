@@ -9,6 +9,9 @@ export const usersResolver = {
             parent: unknown, args: any, {db, pubsub, user}: any
         ) => {
             const userDetails = await db.db('lilleAdmin').collection('users').findOne({_id: new ObjectID(user.id)})
+            if(!userDetails) {
+                throw "@No authorization"
+            }
             const subscriptionDetails = await db.db('stripe')
             .collection('subscriptions')
             .find({user: new ObjectID(user.id)})
