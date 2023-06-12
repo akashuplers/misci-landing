@@ -16,5 +16,4 @@ export const UpgradeFeatures = [
     'Unlimited saving and publishing of Blogs and Linkedin Posts.',
     'Create/Regenerate blogs with your topics',
     'Customization possibilities, Talk to our support team'
-
 ]
