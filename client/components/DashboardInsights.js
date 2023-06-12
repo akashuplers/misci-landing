@@ -11,7 +11,7 @@ import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
 import { ContributionCheck } from "../helpers/ContributionCheck";
 import { jsonToHtml } from "../helpers/helper";
-import useStore, { useByMeCoffeModal, useThreadsUIStore } from "../store/store";
+import useStore, { useByMeCoffeModal } from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import LoaderScan from "./LoaderScan";
 import TrialEndedModal from "./TrialEndedModal";
@@ -61,7 +61,9 @@ export default function DashboardInsights({
   const updateCredit = useStore((state) => state.updateCredit);
   const updateisSave = useStore((state) => state.updateisSave);
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
-  const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
+  const setShowContributionModal = useByMeCoffeModal(
+    (state) => state.toggleModal
+  );
   const [toggle, setToggle] = useState(true);
   const toggleClass = " transform translate-x-3";
   const creditLeft = useStore((state) => state.creditLeft);
@@ -242,7 +244,7 @@ export default function DashboardInsights({
   };
   useEffect(() => {
     console.log("Ideas", ideas);
-  }, [ideas])
+  }, [ideas]);
 
   // Adds the matched idea into notUniqueFilteredIdeas
   useEffect(() => {
@@ -305,7 +307,6 @@ export default function DashboardInsights({
     console.log(filteredIdeas);
   }, [filteredIdeas]);
   */
-  const { showTwitterThreadUI, setShowTwitterThreadUI } = useThreadsUIStore();
 
   function handleRegenerate() {
     const arr = [];
@@ -443,19 +444,22 @@ export default function DashboardInsights({
             (el) => el?.classList?.remove("active")
           );
           console.log(data);
-          console.log('MEE DATA');
+          console.log("MEE DATA");
           console.log(meeData);
           const credits = meeData?.me?.credits;
-          console.log('CREDITS : ' + credits);
+          console.log("CREDITS : " + credits);
           var userCredits = meeData?.me?.totalCredits - creditLeft - 1;
-          console.log('USER CREDITS: ' + userCredits);
+          console.log("USER CREDITS: " + userCredits);
           userCredits = userCredits + 2;
-          const SHOW_CONTRIBUTION_MODAL = ContributionCheck(userCredits, meeData);
-          console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
+          const SHOW_CONTRIBUTION_MODAL = ContributionCheck(
+            userCredits,
+            meeData
+          );
+          console.log("SHOW_CONTRIBUTION_MODAL: ", SHOW_CONTRIBUTION_MODAL);
           if (SHOW_CONTRIBUTION_MODAL) {
             setShowContributionModal(true);
           }
-          setShowTwitterThreadUI(false)
+          setShowTwitterThreadUI(false);
         },
         onError: (error) => {
           console.error("Credit Exhaust or any other error", error.message);
@@ -571,7 +575,6 @@ export default function DashboardInsights({
   }
 
   function handleFileUpload({ target }) {
-
     const FORMATCHECK = checkFileFormatAndSize(target.files[0]);
     // alert(FORMATCHECK, "FORMATCHECK")
     if (!FORMATCHECK) {
@@ -584,14 +587,14 @@ export default function DashboardInsights({
 
     // Check if file is defined
     if (!file) {
-      toast.error('No file chosen');
+      toast.error("No file chosen");
       return;
     }
 
     const fileSizeMB = file.size / (1024 * 1024); // convert size to MB
 
     if (fileSizeMB > 3) {
-      toast.error('File size cannot exceed 3MB');
+      toast.error("File size cannot exceed 3MB");
       return; // stop function execution after showing the error
     }
 
@@ -599,17 +602,7 @@ export default function DashboardInsights({
     console.log(file);
     setFile(file);
   }
-
-
-
   function handleFormChange(e) {
-
-    const FORMATCHECK = checkFileFormatAndSize(e.target.files[0]);
-    // alert(FORMATCHECK, "FORMATCHECK")
-    console.log(FORMATCHECK);
-    if (!FORMATCHECK) {
-      return;
-    }
     const value = e.target.value;
     setformInput(value);
 
@@ -617,6 +610,22 @@ export default function DashboardInsights({
       setFileValid(false);
     }
   }
+
+  // function handleFileUpload(e) {
+  //   const FORMATCHECK = checkFileFormatAndSize(e.target.files[0]);
+  //   // alert(FORMATCHECK, "FORMATCHECK")
+  //   console.log();
+  //   if (!FORMATCHECK) {
+  //     return;
+  //   }FORMATCHECK
+  //   const value = e.target.value;
+  //   setformInput(value);
+
+  //   if (fileValid) {
+  //     setFileValid(false);
+  //   }
+  // }
+
 
   const handlefreshideas = (arr) => {
     setArrFresh(arr);
@@ -626,23 +635,24 @@ export default function DashboardInsights({
     setArrUsed(arr);
   };
   function checkFileFormatAndSize(file) {
-
-    var extension = file.name.split(".")[-1];
-
-    // Check if the extension is in the list of allowed formats.
+    var extension = file.name.split(".").pop().toLowerCase();
     var allowedFormats = ["pdf", "docx", "txt"];
-    if (extension in allowedFormats) {
-      // Check if the file size is greater than 3MB.
-      if (file.size > 3 * 1024 * 1024) {
-        toast.error("File size is too large. Please upload a file that is less than 3MB in size.");
-        return false;
-      }
-      return true;
-    } else {
 
-      toast.error('File format is not supported. Please upload a file in PDF, DOCX, or TXT format.');
+    if (!allowedFormats.includes(extension)) {
+      toast.error(
+        "File format is not supported. Please upload a file in PDF, DOCX, or TXT format."
+      );
       return false;
     }
+
+    if (file.size > 3 * 1024 * 1024) {
+      toast.error(
+        "File size is too large. Please upload a file that is less than 3MB in size."
+      );
+      return false;
+    }
+
+    return true;
   }
   function postFormData(e) {
     e.preventDefault();
@@ -650,7 +660,7 @@ export default function DashboardInsights({
 
     let url = API_BASE_PATH;
     let raw;
-    console.log(raw)
+    console.log(raw);
     if (fileValid) {
       url += API_ROUTES.FILE_UPLOAD;
       raw = new FormData();
@@ -1369,7 +1379,8 @@ export default function DashboardInsights({
                                   right: "0",
                                 }}
                               >
-                                upload a file pdf, docx, txt formats allowed. Max file size &gt; 3MB
+                                upload a file pdf, docx, txt formats allowed.
+                                Max file size &gt; 3MB
                               </div>
                             </>
                           ) : (
@@ -1405,24 +1416,22 @@ export default function DashboardInsights({
                                 />
                               </svg>
 
-                              <div class="absolute bottom-0 flex flex-col items-center hidden mb-6 group-hover:flex z-50 h-full min-w-[250px]"
+                              <div
+                                class="absolute bottom-0 flex flex-col items-center hidden mb-6 group-hover:flex z-50 h-full min-w-[250px]"
                                 style={{
-
-                                  right: '-50px',
-                                  bottom: '15px',
-                                  borderRadius: '10px'
-
+                                  right: "-50px",
+                                  bottom: "15px",
+                                  borderRadius: "10px",
                                 }}
                               >
-
-                                <span class="relative z-10 p-2 text-xs leading-none text-white whitespace-no-wrap bg-black shadow-lg w-full"
+                                <span
+                                  class="relative z-10 p-2 text-xs leading-none text-white whitespace-no-wrap bg-black shadow-lg w-full"
                                   style={{
-
-                                    borderRadius: '10px'
-
+                                    borderRadius: "10px",
                                   }}
                                 >
-                                  Upload a file. pdf, docx and txt formats allowed. Max file size {'<'} 3MB
+                                  Upload a file. pdf, docx and txt formats
+                                  allowed. Max file size {"<"} 3MB
                                 </span>
                                 <div class="w-3 h-3 -mt-2 rotate-45 bg-black"></div>
                               </div>
@@ -1645,4 +1654,3 @@ export default function DashboardInsights({
     </>
   );
 }
-
