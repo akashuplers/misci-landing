@@ -242,7 +242,9 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     }
                                     return newText.trim() + '. '
                                 })
-                                updatedContent = updatedContent?.map((content: string) => content.replace("..", ".") || content.replace(". .", "."))
+                                console.log(updatedContent, "updatedContentBefore")
+                                updatedContent = updatedContent?.map((content: string) => content.replace("..", "."))
+                                updatedContent = updatedContent?.join("")?.replace(". .", ".")
                                 let references: any[] = []
                                 refUrls && refUrls.length && refUrls.forEach((data) => {
                                     references.push({
@@ -343,7 +345,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                 "tag": "P",
                                                 "attributes": {},
                                                 "children": [
-                                                    updatedContent?.length ? updatedContent.join("") : ideasText && ideasText.length ? ideasText : "Sorry, We were unable to generate the blog at this time, Please try again after some time or try with different topic."
+                                                    updatedContent?.length ? updatedContent : ideasText && ideasText.length ? ideasText : "Sorry, We were unable to generate the blog at this time, Please try again after some time or try with different topic."
                                                 ]
                                             },
                                             {
