@@ -71,12 +71,34 @@ const useStore = create((set) => ({
 
 export default useStore;
 
-
 export const useByMeCoffeModal = create((set) => ({
   isOpen: false,
   toggleModal: () => set((state) => ({ isOpen: !state.isOpen })),
 }));
 
+export const useTwitterThreadALertModal = create((set) => ({
+  isOpen: true,
+  // toggle takes two params, remaining_twitter_quota, total_twitter_quota, isUserpaid
+  initailText: (isPaid, thisMuch) => `You can only create ${thisMuch} tweets for  today, you can save for now.`,
+  remaining_twitter_quota: 0,
+  showInitailText: true,
+  total_twitter_quota: 0,
+  isUserpaid: false,
+  togggleShowInitailText: (status) =>
+    set((state) => ({
+      showInitailText: status,
+    })),
+  toggleModal: (status) =>
+    set((state) => ({
+      isOpen: status,
+    })),
+  setOptions: (remaining_twitter_quota, total_twitter_quota, isUserpaid) =>
+    set((state) => ({
+      remaining_twitter_quota: remaining_twitter_quota,
+      total_twitter_quota: total_twitter_quota,
+      isUserpaid: isUserpaid,
+    })),
+}));
 
 export const MeeDataStore = create((set) => ({
   meeData: {},
@@ -96,3 +118,10 @@ export const useUserData = () => {
     updateUserData,
   };
 };
+export const useThreadsUIStore = create((set) => ({
+  // const [showTwitterThreadUI, setShowTwitterThreadUI] = useState(false);
+  // 
+  showTwitterThreadUI: false,
+  setShowTwitterThreadUI: (showTwitterThreadUI) =>
+    set({ showTwitterThreadUI }),
+}));

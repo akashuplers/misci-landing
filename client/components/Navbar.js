@@ -76,13 +76,7 @@ export default function Navbar({ isOpen }) {
                   </Popover.Button>
                 </div>
                 <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-4">
-                  {/* <a
-                    href="#"
-                    className="ml-5 flex-shrink-0 rounded-full bg-white p-1  hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    
-                  >
-                    Pricing
-                  </a> */}
+                   
                      
                 <Link
                     legacyBehavior
