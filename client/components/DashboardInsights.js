@@ -240,6 +240,9 @@ export default function DashboardInsights({
   const handlesetRegenSelected = (newarr) => {
     setRegenSelected(newarr);
   };
+  useEffect(() => {
+    console.log("Ideas", ideas);
+  }, [ideas])
 
   // Adds the matched idea into notUniqueFilteredIdeas
   useEffect(() => {
@@ -633,7 +636,7 @@ export default function DashboardInsights({
       if (file.size > 3 * 1024 * 1024) {
         toast.error("File size is too large. Please upload a file that is less than 3MB in size.");
         return false;
-      }                                                                                                                             
+      }
       return true;
     } else {
 
@@ -1218,7 +1221,7 @@ export default function DashboardInsights({
                 return (
                   <div className="flex pb-3 usedIdeas" key={index}>
                     <div className="flex justify-between gap-5 w-full">
-                      <p className="text-[13px]">{idea?.idea} </p>
+                      <p className="text-[13px]">{idea?.idea}</p>
                       <a
                         style={{
                           color: "var(--primary-blue)",
