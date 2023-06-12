@@ -948,7 +948,7 @@ export default function TinyMCEEditor({
             setShowContributionModal(false);
           }
 
-        } className="absolute top-3 right-3"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        } className="absolute top-3 right-3"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg></button>
         <div className="flex flex-col items-center justify-center relative">
 
           {/* <h3>Buy me a coffee</h3> */}
@@ -1053,7 +1053,7 @@ export default function TinyMCEEditor({
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              stroke-width="1.5"
+              strokeWidth="1.5"
               stroke="currentColor"
               class="w-5 h-6 ml-2"
             >
@@ -1427,7 +1427,7 @@ export default function TinyMCEEditor({
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
-                    stroke-width="1.5"
+                    strokeWidth="1.5"
                     stroke="currentColor"
                     class="w-4 h-4 mr-2"
                   >
