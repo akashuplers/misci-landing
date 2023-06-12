@@ -14,8 +14,6 @@ export const UpgradeFeatures = [
     'Full Features Access with 200 Credits monthly validity',
     '180 tweets a month for paid plan.',
     'Unlimited saving and publishing of Blogs and Linkedin Posts.',
-    '90 tweets a month for free plan.',
-    '180 tweets a month for paid plan.',
     'Create/Regenerate blogs with your topics',
     'Customization possibilities, Talk to our support team'
 

@@ -126,7 +126,7 @@ const Threads = ({
                       : ""
                   }`}
                 >
-                  Currenty you are left with
+                  Currenty you are left with{" "}
                   <strong>
                     {remainingTwitterQuota == null ||
                     remainingTwitterQuota == undefined
