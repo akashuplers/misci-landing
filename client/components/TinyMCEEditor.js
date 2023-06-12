@@ -172,16 +172,18 @@ export default function TinyMCEEditor({
     console.log(updatedText);
 
   }, [editorText, updatedText]);
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      meeRefetch(); // Call the refetch function to refresh the query
-      setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
-    }, 2000);
 
-    return () => {
-      clearInterval(intervalId); // Clean up the interval on component unmount
-    };
-  }, [meeRefetch])
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     meeRefetch(); // Call the refetch function to refresh the query
+  //     setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
+  //   }, 2000);
+
+  //   return () => {
+  //     clearInterval(intervalId); // Clean up the interval on component unmount
+  //   };
+  // }, [meeRefetch])
+
   useEffect(() => {
     updateCredit();
   }, []);
@@ -623,7 +625,6 @@ export default function TinyMCEEditor({
       const src = img ? img.getAttribute("src") : null;
 
       setPublishLinkLoad(true);
-
       const data = {
         token: linkedInAccessToken,
         author: `urn:li:person:${authorId}`,
@@ -711,7 +712,7 @@ export default function TinyMCEEditor({
       }
 
       setPublishTweetLoad(true);
-      meeRefetch();
+      // meeRefetch();
       // setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
       console.log("twitter quota");
 
