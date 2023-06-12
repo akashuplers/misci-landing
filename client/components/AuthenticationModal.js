@@ -1,44 +1,39 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
-import { PlayPauseIcon } from "@heroicons/react/24/outline";
-import React, { useDebugValue, useState, useEffect } from "react";
-import Modal from "react-modal";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import Modal from "react-modal";
 
-import { LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
-import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import { API_BASE_PATH, API_ROUTES, LINKEDIN_CLIENT_ID } from "../constants/apiEndpoints";
+import { signUpWithGoogle } from "../services/GoogleLogin";
 import { LinkedinLogin } from "../services/LinkedinLogin";
 import { TwitterLogin } from "../services/TwitterLogin";
-import { signUpWithGoogle } from "../services/GoogleLogin";
 
 import ForgotPasswordModal from "../components/ForgotPasswordModal";
 
-import { useRouter } from "next/router";
-import LoaderPlane from "./LoaderPlane";
-import { toast } from "react-toastify";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { createScanner } from "typescript";
-import ReactLoading from "react-loading";
 import useStore from "@/store/store";
+import { useRouter } from "next/router";
+import ReactLoading from "react-loading";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-function IconClose (){
+function IconClose() {
   return (
     <>
-    <svg
-  xmlns="http://www.w3.org/2000/svg"
-  fill="none"
-  viewBox="0 0 24 24"
-  stroke-width="1.5"
-  stroke="currentColor"
-  class="w-6 h-6"
->
-  <path
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    d="M6 18L18 6M6 6l12 12" />
-</svg>
-</>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="w-6 h-6"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </>
   )
 }
 export default function AuthenticationModal({
@@ -430,7 +425,7 @@ export default function AuthenticationModal({
           closeModal();
         }}
         ariaHideApp={false}
-        className="w-[100%] sm:w-[38%] max-h-[95%]"
+        className="w-full sm:w-[38%] max-h-[95%]"
         style={{
           overlay: {
             backgroundColor: "rgba(0,0,0,0.5)",
@@ -445,8 +440,7 @@ export default function AuthenticationModal({
             background: "white",
             boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
             borderRadius: "8px",
-            // height: "75%",
-            width: "50%",
+            width: "90%", // Adjusted for responsiveness
             maxWidth: "450px",
             bottom: "",
             zIndex: "999",
@@ -503,11 +497,11 @@ export default function AuthenticationModal({
                   className="w-6 h-6"
                   alt=""
                 />
-                 
+
               </button>
             </div>
           </div>
-        
+
           <form
             action=""
             method="post"
@@ -654,7 +648,7 @@ export default function AuthenticationModal({
               >
                 {!submitting ? (
                   <>
-                    <IconArrowLeftOnSquare/>
+                    <IconArrowLeftOnSquare />
                     {type === "login" ? "Login" : "Sign Up"}
                   </>
                 ) : (
@@ -680,7 +674,7 @@ export default function AuthenticationModal({
                 >
                   <span>{type === "login" ? "Register Now!" : "Sign In"}</span>
                   <span>
-                   <IconArrowTopRight/>
+                    <IconArrowTopRight />
                   </span>
                 </a>
               </p>

@@ -11,7 +11,6 @@ import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
 import { meeAPI } from "../../graphql/querys/mee";
 import { jsonToHtml } from "../../helpers/helper";
 import PreferencesModal from "../../modals/PreferencesModal";
-import Head from "next/head";
 
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
@@ -238,9 +237,9 @@ export default function Post() {
 
   return (
     <>
- {/* <Head><title>{blogData}</title><meta about="body">{blogData}</meta></Head> */}
+      {/* <Head><title>{blogData}</title><meta about="body">{blogData}</meta></Head> */}
       <Layout>
-       
+
         <ToastContainer />
         {
           isPayment && <ReactConfetti
@@ -281,7 +280,7 @@ export default function Post() {
               </span>
             </div>
           )}
-          <div className="relative" style={{ width: "var(--tinymce-width)" }}>
+          <div className="relative tiny_mce_width">
             <TinyMCEEditor
               isAuthenticated={true}
               editorText={editorText}
@@ -294,7 +293,7 @@ export default function Post() {
             />
           </div>
           <div
-            className="relative"
+            className="relative hidden lg:block"
             style={{ width: "var(--dashboardInsight-width)" }}
           >
             <DashboardInsights
