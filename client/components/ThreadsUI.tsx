@@ -126,7 +126,7 @@ const Threads = ({
                   ? 0
                   : remainingTwitterQuota}{" "}
               </strong>{" "}
-              tweets left.
+              {threadData.length < 2 ? "tweet" : "tweets"} left.{" "}
             </span>{" "}
           </div>
         </div>
