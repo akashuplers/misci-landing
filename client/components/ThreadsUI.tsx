@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 import { useTwitterThreadALertModal } from "@/store/store";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import TextareaAutosize from "react-textarea-autosize";
@@ -96,56 +95,39 @@ const Threads = ({
             {isUserPaid ? (
               <>
                 <span>
-                  Lille allows <strong>{totalTwitterQuota}</strong> tweets per
-                  day. Each thread in the followng twitter threads is a tweet.
-                  You can edit/delete threads to optimize publishings, e.g. keep
-                  two threads per publishing to publish three times a day.
+                  Lille allows 6 tweets per day where each thread is a tweet.
+                  You can edit/delete threads to optimize publishings. You can
+                  publish 1 thread each time to publish 6 times a day.
                 </span>
               </>
             ) : (
               <>
                 <span>
-                  Lille allows <strong>{totalTwitterQuota}</strong> tweets per
-                  day. Each thread in the followng twitter threads is a tweet.
-                  You can edit/delete threads to optimize publishings, e.g. keep
-                  one thread per publishing to publish three times a day.
+                  Lille allows 3 tweets per day where each thread is a tweet.
+                  You can edit/delete threads to optimize publishings. You can
+                  publish 1 thread each time to publish 3 times a day.
                 </span>
               </>
             )}
-
-            {showInitailText ? (
-              <>
-                <span>{`You can only create ${remainingTwitterQuota} tweets for  today, you can save for now`}</span>
-                <br />{" "}
-                <span
-                  className={`${
-                    remainingTwitterQuota < 1 ||
-                    remainingTwitterQuota == undefined ||
-                    remainingTwitterQuota == null
-                      ? "text-red-500"
-                      : ""
-                  }`}
-                >
-                  Currenty you are left with{" "}
-                  <strong>
-                    {remainingTwitterQuota == null ||
-                    remainingTwitterQuota == undefined
-                      ? 0
-                      : remainingTwitterQuota}{" "}
-                  </strong>{" "}
-                  tweets for today.
-                </span>
-              </>
-            ) : (
-              <span>
-                We offer the capability of {totalTwitterQuota} tweets in a
-                thread at once.
-                <Link href="/pricing" className="underline">
-                  Click here to upgrade
-                </Link>
-                if you desire more than {totalTwitterQuota} tweets.
-              </span>
-            )}
+            <br />{" "}
+            <span
+              className={`${
+                remainingTwitterQuota < 1 ||
+                remainingTwitterQuota == undefined ||
+                remainingTwitterQuota == null
+                  ? "text-red-500"
+                  : ""
+              }`}
+            >
+              Currently, you have{" "}
+              <strong>
+                {remainingTwitterQuota == null ||
+                remainingTwitterQuota == undefined
+                  ? 0
+                  : remainingTwitterQuota}{" "}
+              </strong>{" "}
+              tweets left.
+            </span>{" "}
           </div>
         </div>
       )}

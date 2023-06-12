@@ -834,8 +834,14 @@ export default function TinyMCEEditor({
     );
     const htmlDoc = jsonToHtml(aa.tiny_mce_data);
     console.log('MOVEING TO ');
-    if (aa.threads === null || aa.threads === undefined || aa.threads.length === 0 || aa.threads == "") {
-      setShowTwitterThreadUI(false);
+    if ((aa.threads === null || aa.threads === undefined || aa.threads.length === 0 || aa.threads == "")) {
+      if (
+        meeData?.me?.remaining_twitter_quota == 0 || meeData?.me?.remaining_twitter_quota == null || meeData?.me?.remaining_twitter_quota == undefined
+      ) {
+        setShowTwitterThreadUI(true);
+      } else {
+        setShowTwitterThreadUI(false);
+      }
     } else {
       console.log("THREADS DATA");
       console.log(aa.threads);
@@ -859,6 +865,7 @@ export default function TinyMCEEditor({
     setEditorText(htmlDoc);
 
   }
+
 
   if (loading) return <LoaderPlane />;
   return (
