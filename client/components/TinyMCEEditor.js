@@ -176,16 +176,16 @@ export default function TinyMCEEditor({
 
   }, [editorText, updatedText]);
 
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     meeRefetch(); // Call the refetch function to refresh the query
-  //     setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
-  //   }, 2000);
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      meeRefetch();
+      setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
+    }, 2000);
 
-  //   return () => {
-  //     clearInterval(intervalId); // Clean up the interval on component unmount
-  //   };
-  // }, [meeRefetch])
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [meeRefetch]);
 
   useEffect(() => {
     updateCredit();
