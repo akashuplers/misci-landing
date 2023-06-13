@@ -13,7 +13,7 @@ const Threads = ({
   totalTwitterQuota,
 }: any) => {
   // const [threadData, setthreadData] = useState(threadData);
-  console.log("THREADS DATA");
+  // //console.log("THREADS DATA");
   const [hideAddThread, setHideAddThread] = useState(false);
   const {
     isOpen: isTwitterThreadAlertOpen,
@@ -24,7 +24,7 @@ const Threads = ({
     toggleModal,
   } = useTwitterThreadALertModal();
 
-  console.log(threadData);
+  //console.log(threadData);
   const addTextArea = () => {
     if (threadData.length === 0) {
       setthreadData([""]);
@@ -239,8 +239,8 @@ const Thread = ({
       setPauseTwitterPublish(false);
     }
   }, [thread]);
-  console.log(isUserPaid);
-  console.log("IS USER PAID");
+  //console.log(isUserPaid);
+  //console.log("IS USER PAID");
   const paid = true;
   return (
     <div
