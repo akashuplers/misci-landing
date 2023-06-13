@@ -10,7 +10,7 @@ import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
 import { ContributionCheck } from "../helpers/ContributionCheck";
 import { jsonToHtml } from "../helpers/helper";
-import useStore, { useByMeCoffeModal, useThreadsUIStore } from "../store/store";
+import useStore, { useByMeCoffeModal, useThreadsUIStore, useTwitterThreadStore } from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import FreshFilteredIdeaItem from "./FreshFilteredIdeaItem";
 import FreshIdeaForm from "./FreshIdeaForm";
@@ -40,6 +40,8 @@ export default function DashboardInsights({
   setBlogData,
   setEditorText,
   setPyResTime,
+  setOption,
+  option,
   setNdResTime,
 }) {
   const [enabled, setEnabled] = useState(false);
@@ -306,6 +308,7 @@ export default function DashboardInsights({
     console.log(filteredIdeas);
   }, [filteredIdeas]);
   */
+  const { twitterThreadData, setTwitterThreadData } = useTwitterThreadStore();
 
   function handleRegenerate() {
     const arr = [];
@@ -392,6 +395,10 @@ export default function DashboardInsights({
           setReference(data?.regenerateBlog?.references);
           setFreshIdeaReferences(data?.regenerateBlog?.freshIdeasReferences);
           setFreshIdeas(data?.regenerateBlog?.ideas?.freshIdeas);
+          // setTwitterThreadData(data?.regenerateBlog?.publish_data)
+          // const aa = data?.regenerateBlog?.publish_data?.find(
+          //   (pd) => pd?.platform === "twitter"
+          // );
           console.log(
             "asfgasfda ",
             data?.regenerateBlog?.pythonRespTime,
@@ -412,6 +419,28 @@ export default function DashboardInsights({
           } else {
             aa = newArray[newArray.length - 1].tiny_mce_data;
           }
+          const aaThreads = data?.regenerateBlog?.publish_data?.find(
+            (pd) => pd?.platform === "twitter"
+          );
+          console.log(aaThreads.threads);
+          if (aaThreads?.threads?.length <= 0) {
+            setTwitterThreadData(twitterThreadData)
+          } else {
+            const theLastThread = aaThreads.threads[aaThreads.threads.length - 1];
+            // merge this will text with 2nd last tweet
+            var theSecondLastThread = aaThreads.threads[aaThreads.threads.length - 2];
+            if (theLastThread !== undefined && theLastThread !== null && theLastThread !== "") {
+              const mergedText = theSecondLastThread + " ." + theLastThread;
+              theSecondLastThread = mergedText;
+              aaThreads.threads.pop();
+              aaThreads.threads.pop();
+              aaThreads.threads.push(theSecondLastThread);
+              console.log("THREADS DATA AFTER MERGE");
+              console.log(aaThreads.threads);
+              setTwitterThreadData(aaThreads.threads);
+            }
+          }
+
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
 
@@ -423,13 +452,13 @@ export default function DashboardInsights({
           setFilteredIdeas([]);
           setFreshFilteredIdeas([]);
           // setblog_id(data.regenerateBlog._id);
-          const button = document.querySelectorAll(".blog-toggle-button");
-          button?.forEach((btn) => btn?.classList.remove("active"));
-          Array.from(button).filter(
-            (btn) =>
-              btn?.classList?.contains("wordpress") &&
-              btn?.classList?.add("active")
-          );
+          // const button = document.querySelectorAll(".blog-toggle-button");
+          // button?.forEach((btn) => btn?.classList.remove("active"));
+          // Array.from(button).filter(
+          //   (btn) =>
+          //     btn?.classList?.contains("wordpress") &&
+          //     btn?.classList?.add("active")
+          // );
 
           const fresh = document.querySelector(".idea-button.fresh");
           const used = document.querySelector(".idea-button.used");
@@ -458,7 +487,7 @@ export default function DashboardInsights({
           if (SHOW_CONTRIBUTION_MODAL) {
             setShowContributionModal(true);
           }
-          setShowTwitterThreadUI(false);
+          setOption(option);
         },
         onError: (error) => {
           console.error("Credit Exhaust or any other error", error.message);

@@ -32,7 +32,7 @@ import {
 } from "../constants/apiEndpoints";
 import { updateBlog } from "../graphql/mutations/updateBlog";
 import { getCurrentDashboardURL, htmlToJson, jsonToHtml } from "../helpers/helper";
-import useStore, { useByMeCoffeModal, useThreadsUIStore, useTwitterThreadALertModal } from "../store/store";
+import useStore, { useByMeCoffeModal, useRegenButtonStore, useThreadsUIStore, useTwitterThreadALertModal, useTwitterThreadStore } from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import { BottomTabBar } from "./BottomTabBar";
 import LoaderPlane from "./LoaderPlane";
@@ -85,7 +85,10 @@ export default function TinyMCEEditor({
   const [contributinoModalLoader, setContributionModalLoader] = useState(false);
   // const [showTwitterThreadUI, setShowTwitterThreadUI] = useState(false);
 
-  const [twitterThreadData, setTwitterThreadData] = useState([]);
+
+
+  const { twitterThreadData, setTwitterThreadData } = useTwitterThreadStore();
+  // const {}
   const [pauseTwitterPublish, setPauseTwitterPublish] = useState(false);
   const {
     isOpen: isTwitterThreadAlertOpen,
@@ -125,7 +128,7 @@ export default function TinyMCEEditor({
         }
       }
       if (networkError) {
-        console.log(`[Network error]: ${networkError}`);
+        //console.log(`[Network error]: ${networkError}`);
 
         if (
           `${networkError}` ===
@@ -166,10 +169,10 @@ export default function TinyMCEEditor({
     }
   };
   useEffect(() => {
-    console.log("EDITOR TEXT CHANGED");
-    console.log(editorText);
-    console.log('UPDATED TEXT');
-    console.log(updatedText);
+    //console.log("EDITOR TEXT CHANGED");
+    //console.log(editorText);
+    //console.log('UPDATED TEXT');
+    //console.log(updatedText);
 
   }, [editorText, updatedText]);
 
@@ -195,31 +198,31 @@ export default function TinyMCEEditor({
   useEffect(() => {
     if (option === "linkedin-comeback") {
       setOption("linkedin");
-      const siblingButton = document.querySelectorAll(".blog-toggle-button");
-      siblingButton.forEach((el) => el.classList.remove("active"));
-      const button = document.querySelector(".linkedin");
-      button?.classList?.add("active");
+      // const siblingButton = document.querySelectorAll(".blog-toggle-button");
+      // siblingButton.forEach((el) => el.classList.remove("active"));
+      // const button = document.querySelector(".linkedin");
+      // button?.classList?.add("active");
       const aa = blogData?.publish_data?.find(
         (pd) => pd.platform === "linkedin"
       ).tiny_mce_data;
       const htmlDoc = jsonToHtml(aa);
-      console.log("885", htmlDoc);
+      //console.log("885", htmlDoc);
       setEditorText(htmlDoc);
     } else {
       if (option === "twitter-comeback") {
         setOption("twitter");
-        const siblingButton = document.querySelectorAll(".blog-toggle-button");
-        siblingButton.forEach((el) => el.classList.remove("active"));
-        const button = document.querySelector(".twitter");
-        button?.classList?.add("active");
-        console.log("TWITTER COMEBACK");
-        console.log(blogData);
+        // const siblingButton = document.querySelectorAll(".blog-toggle-button");
+        // siblingButton.forEach((el) => el.classList.remove("active"));
+        // const button = document.querySelector(".twitter");
+        // button?.classList?.add("active");
+        //console.log("TWITTER COMEBACK");
+        //console.log(blogData);
         const aa = blogData?.publish_data?.find(
           (pd) => pd?.platform === "twitter"
         );
         const htmlDoc = jsonToHtml(aa.tiny_mce_data);
-        console.log('MOVEING TO AA');
-        console.log(aa);
+        //console.log('MOVEING TO AA');
+        //console.log(aa);
         // check remainging
         if (meeData?.me?.remaining_twitter_quota <= 0 || meeData?.me?.remaining_twitter_quota == null || meeData?.me?.remaining_twitter_quota == undefined || meeData?.me?.remaining_twitter_quota < 1) {
           setPauseTwitterPublish(true);
@@ -228,8 +231,8 @@ export default function TinyMCEEditor({
         if (aa.threads === null || aa.threads === undefined || aa.threads.length === 0 || aa.threads == "") {
           setShowTwitterThreadUI(false);
         } else {
-          console.log("THREADS DATA");
-          console.log(aa.threads);
+          //console.log("THREADS DATA");
+          //console.log(aa.threads);
           const theLastThread = aa.threads[aa.threads.length - 1];
           // merge this will text with 2nd last tweet
           var theSecondLastThread = aa.threads[aa.threads.length - 2];
@@ -241,8 +244,8 @@ export default function TinyMCEEditor({
             aa.threads.pop();
             aa.threads.pop();
             aa.threads.push(theSecondLastThread);
-            console.log("THREADS DATA AFTER MERGE");
-            console.log(aa.threads);
+            //console.log("THREADS DATA AFTER MERGE");
+            //console.log(aa.threads);
             setTwitterThreadData(aa.threads);
           }
           setShowTwitterThreadUI(true);
@@ -364,13 +367,13 @@ export default function TinyMCEEditor({
           },
         })
           .then(() => {
-            console.log(">>", window.location);
+            //console.log(">>", window.location);
             if (window.location.pathname !== "/dashboard/" + blog_id)
               window.location.href = "/dashboard/" + blog_id;
             // router.push("/dashboard/" + blog_id);
           })
           .catch((err) => {
-            //console.log(err);
+            //  //console.log(err);
           })
           .finally(() => {
             toast.success("Saved!!", {
@@ -473,14 +476,14 @@ export default function TinyMCEEditor({
             const responseArray = twitterToken.split("&");
             window.location.href = `https://api.twitter.com/oauth/authorize?${responseArray[0]}`;
           } else {
-            console.log("Error", response.data.error, response?.data?.data);
+            //console.log("Error", response.data.error, response?.data?.data);
           }
         })
         .catch((error) => {
-          console.log(error);
+          //console.log(error);
         });
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   };
   const handleSavePublish = () => {
@@ -496,7 +499,7 @@ export default function TinyMCEEditor({
         const jsonDoc = htmlToJson(updatedText).children;
         const formatedJSON = { children: [...jsonDoc] };
 
-        // console.log("save and publish");
+        //   //console.log("save and publish");
         axios({
           method: "post",
           url: API_BASE_PATH + API_ROUTES.GQL_PATH,
@@ -533,21 +536,21 @@ export default function TinyMCEEditor({
 
             var ll = Number(localStorage.getItem('meDataMePublishCount'))
 
-            console.log('PUBLISH COUNT');
-            console.log(Number(localStorage.getItem('meDataMePublishCount')));
+            //console.log('PUBLISH COUNT');
+            //console.log(Number(localStorage.getItem('meDataMePublishCount')));
             setTimeout(() => {
-              // console.log('MEE DATA');
-              // console.log('HERE FOR SHOW CONTRIBUTION MODAL');
+              //   //console.log('MEE DATA');
+              //   //console.log('HERE FOR SHOW CONTRIBUTION MODAL');
               // const credits = meeData?.me?.credits;
-              // console.log('CREDITS : ' + credits);
+              //   //console.log('CREDITS : ' + credits);
               var userCredits = meeData?.me?.totalCredits - creditLeft - 1;
-              console.log('USER CREDITS: ' + userCredits);
+              //console.log('USER CREDITS: ' + userCredits);
               userCredits = userCredits + 2;
               var userPublishCount = Number(meeData?.me?.publishCount);
-              console.log('pubb', userPublishCount)
-              console.log('USER PUBLISH COUNT: ' + userPublishCount);
+              //console.log('pubb', userPublishCount)
+              //console.log('USER PUBLISH COUNT: ' + userPublishCount);
               const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (userCredits === 20 || userCredits === 10 || userPublishCount === 0) && !meeData?.me?.isSubscribed;
-              console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
+              //console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
               if (SHOW_CONTRIBUTION_MODAL) {
                 setShowContributionModal(true);
               }
@@ -561,8 +564,8 @@ export default function TinyMCEEditor({
   };
 
   async function handleCheckout() {
-    console.log('LOCAL STOAGE: ')
-    console.log(localStorage);
+    //console.log('LOCAL STOAGE: ')
+    //console.log(localStorage);
     setContributionModalLoader(true);
     const stripe = await stripePromise;
     const res = await fetch('https://maverick.lille.ai/stripe/api/payment', {
@@ -593,14 +596,14 @@ export default function TinyMCEEditor({
       ), // Multiply by the multiplier (e.g., 500 * 1 = $5, 500 * 2 = $10, etc.)
     });
     const session = await res.json();
-    console.log(session);
+    //console.log(session);
     var userContribution = {
       amount: multiplier * contributionAmout,
       checkoutSessionId: session.id,
     }
     localStorage.setItem('userContribution', JSON.stringify(userContribution));
-    console.log('LOCAL STOAGE: ')
-    console.log(localStorage);
+    //console.log('LOCAL STOAGE: ')
+    //console.log(localStorage);
     const result = await stripe.redirectToCheckout({
       sessionId: session.id,
     })
@@ -611,7 +614,7 @@ export default function TinyMCEEditor({
       setTrailModal(true);
     } else {
       const tempDiv = document.createElement("div");
-      console.log(tempDiv);
+      //console.log(tempDiv);
       tempDiv.innerHTML = updatedText;
 
       let textContent = tempDiv.textContent;
@@ -641,7 +644,7 @@ export default function TinyMCEEditor({
             },
           })
           .then((response) => {
-            console.log(response.data);
+            //console.log(response.data);
             setPublishLinkLoad(false);
             setPublishLinkText("Published on Linkedin");
             toast.success("Published on Linkedin", {
@@ -669,16 +672,16 @@ export default function TinyMCEEditor({
                 progress: undefined,
                 theme: "light",
               });
-              console.log(error.response.data);
-              console.log(error.response.status);
+              //console.log(error.response.data);
+              //console.log(error.response.status);
             } else if (error.request) {
-              console.log(error.request);
+              //console.log(error.request);
             } else {
-              console.log("Error", error.message);
+              //console.log("Error", error.message);
             }
           });
       } catch (error) {
-        console.log("error", error.response.data.message);
+        //console.log("error", error.response.data.message);
       }
     }
   };
@@ -688,12 +691,12 @@ export default function TinyMCEEditor({
   }
 
   const handleTwitterPublish = () => {
-    console.log("handleTwitterPublish");
+    //console.log("handleTwitterPublish");
     if (creditLeft === 0) {
       setTrailModal(true);
     } else {
       const tempDiv = document.createElement("div");
-      console.log(tempDiv);
+      //console.log(tempDiv);
       tempDiv.innerHTML = updatedText;
       var data = {
         token: twitterAccessToken,
@@ -714,9 +717,9 @@ export default function TinyMCEEditor({
       setPublishTweetLoad(true);
       // meeRefetch();
       // setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
-      console.log("twitter quota");
+      //console.log("twitter quota");
 
-      console.log(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
+      //console.log(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
       if (twitterThreadData.length > meeData?.me?.remaining_twitter_quota) {
         toast.error(`We offer the capability of ${meeData?.me?.total_twitter_quota} tweets in a day. Please upgrade your account to improve this`, {
           position: "top-center",
@@ -742,7 +745,7 @@ export default function TinyMCEEditor({
               },
             })
             .then((response) => {
-              console.log(response.data);
+              //console.log(response.data);
               setPublishTweetLoad(false);
               setPublishTweetText("Published on Twitter");
               toast.success("Published on Twitter", {
@@ -770,16 +773,16 @@ export default function TinyMCEEditor({
                   progress: undefined,
                   theme: "light",
                 });
-                console.log(error.response.data);
-                console.log(error.response.status);
+                //console.log(error.response.data);
+                //console.log(error.response.status);
               } else if (error.request) {
-                console.log(error.request);
+                //console.log(error.request);
               } else {
-                console.log("Error", error.message);
+                //console.log("Error", error.message);
               }
             });
         } catch (error) {
-          console.log("error", error.response.data.message);
+          //console.log("error", error.response.data.message);
         }
       } else {
         setPublishTweetLoad(false);
@@ -791,10 +794,10 @@ export default function TinyMCEEditor({
 
   function handleBlog(e) {
     setOption("blog");
-    const siblingButton = document.querySelectorAll(".blog-toggle-button");
-    siblingButton.forEach((el) => el.classList.remove("active"));
-    const button = e.target;
-    button.classList.add("active");
+    // const siblingButton = document.querySelectorAll(".blog-toggle-button");
+    // siblingButton.forEach((el) => el.classList.remove("active"));
+    // const button = e.target;
+    // button.classList.add("active");
     const newArray = blogData?.publish_data?.filter(
       (obj) => obj.platform === "wordpress"
     );
@@ -811,12 +814,14 @@ export default function TinyMCEEditor({
     // check
     setEditorText(htmlDoc);
   }
+
+
   function handleLinkedinBlog(e) {
     setOption("linkedin");
-    const siblingButton = document.querySelectorAll(".blog-toggle-button");
-    siblingButton.forEach((el) => el.classList.remove("active"));
-    const button = e.target;
-    button.classList.add("active");
+    // const siblingButton = document.querySelectorAll(".blog-toggle-button");
+    // siblingButton.forEach((el) => el.classList.remove("active"));
+    // const button = e.target;
+    // button.classList.add("active");
     const aa = blogData?.publish_data?.find(
       (pd) => pd.platform === "linkedin"
     ).tiny_mce_data;
@@ -824,17 +829,19 @@ export default function TinyMCEEditor({
     setShowTwitterThreadUI(false);
     setEditorText(htmlDoc);
   }
+  const { stateOfRegenButton, setStateOfRegenButton } = useRegenButtonStore()
   function handleTwitterBlog(e) {
     setOption("twitter");
-    const siblingButton = document.querySelectorAll(".blog-toggle-button");
-    siblingButton.forEach((el) => el.classList.remove("active"));
-    const button = e.target;
-    button.classList.add("active");
+    setStateOfRegenButton(false);
+    // const siblingButton = document.querySelectorAll(".blog-toggle-button");
+    // siblingButton.forEach((el) => el.classList.remove("active"));
+    // const button = e.target;
+    // button.classList.add("active");
     const aa = blogData?.publish_data?.find(
       (pd) => pd.platform === "twitter"
     );
     const htmlDoc = jsonToHtml(aa.tiny_mce_data);
-    console.log('MOVEING TO ');
+    //console.log('MOVEING TO ');
     if ((aa.threads === null || aa.threads === undefined || aa.threads.length === 0 || aa.threads == "")) {
       if (
         meeData?.me?.remaining_twitter_quota == 0 || meeData?.me?.remaining_twitter_quota == null || meeData?.me?.remaining_twitter_quota == undefined
@@ -844,13 +851,13 @@ export default function TinyMCEEditor({
         setShowTwitterThreadUI(false);
       }
     } else {
-      console.log("THREADS DATA");
-      console.log(aa.threads);
+      //console.log("THREADS DATA");
+      //console.log(aa.threads);
       const twitterThreadsFromAPI = [...aa.threads];
       const lastThread = twitterThreadsFromAPI[twitterThreadsFromAPI.length - 1];
-      console.log(lastThread);
+      //console.log(lastThread);
       const secondlastThread = twitterThreadsFromAPI[twitterThreadsFromAPI.length - 2];
-      console.log(secondlastThread);
+      //console.log(secondlastThread);
       var mergedThread = "";
       if (lastThread == LILLE_BRANDING_TWEET) {
         mergedThread = secondlastThread + ". " + lastThread;
@@ -1184,7 +1191,8 @@ export default function TinyMCEEditor({
               }}
             >
               <div
-                className="blog-toggle-button cta active wordpress flex gap-1 items-center"
+                className={`blog-toggle-button cta wordpress flex gap-1 items-center ${option == 'blog' ? "active" : ""}`}
+
                 onClick={handleBlog}
               >
                 <svg
@@ -1199,7 +1207,9 @@ export default function TinyMCEEditor({
                 Blog
               </div>
               <div
-                className="blog-toggle-button cta linkedin flex gap-1 items-center"
+                // className="blog-toggle-button cta linkedin flex gap-1 items-center"
+                className={`blog-toggle-button cta linkedin flex gap-1 items-center ${option == 'linkedin' ? "active" : ""}`}
+
                 onClick={handleLinkedinBlog}
               >
                 <svg
@@ -1221,7 +1231,9 @@ export default function TinyMCEEditor({
                 Linkedin
               </div>
               <div
-                className="blog-toggle-button cta twitter flex gap-1 items-center"
+                // className="blog-toggle-button cta twitter flex gap-1 items-center"
+                className={`blog-toggle-button cta twitter flex gap-1 items-center ${option == 'twitter' ? "active" : ""}`}
+
                 onClick={handleTwitterBlog}
               >
                 <svg
@@ -1459,10 +1471,10 @@ export default function TinyMCEEditor({
                   },
                   init_instance_callback: function (editor) {
                     editor.on("ExecCommand", function (e) {
-                      console.log("The " + e.command + " command was fired.");
+                      //console.log("The " + e.command + " command was fired.");
                       if (e.command === "mceImage") {
                         setAlert(true);
-                        console.log("777");
+                        //console.log("777");
                       }
                       if (isEditing) {
                         // setEditingMode(true);
@@ -1493,7 +1505,7 @@ export default function TinyMCEEditor({
                   automatic_uploads: true,
                   file_picker_types: "image",
                   file_picker_callback: function (cb, value, meta) {
-                    console.log("852");
+                    //console.log("852");
                     var input = document.createElement("input");
                     input.setAttribute("type", "file");
                     input.setAttribute("accept", "image/*");
@@ -1514,10 +1526,10 @@ export default function TinyMCEEditor({
                           var url = response.url;
                           setImageURL(url);
                           setAlert(true);
-                          console.log("response.data", response.data);
-                          console.log("imageURL", imageURL);
-                          console.log("88", url);
-                          console.log("999", load);
+                          //console.log("response.data", response.data);
+                          //console.log("imageURL", imageURL);
+                          //console.log("88", url);
+                          //console.log("999", load);
                           setLoad(false);
                           // Create a thumbnail of the uploaded image, with 150px width
                           cb(url, { title: response.type });
@@ -1566,9 +1578,9 @@ export default function TinyMCEEditor({
                       //   const data = JSON.parse(result);
                       //   success(data.url);
                       // })
-                      .catch((error) => console.log("error", error));*/
+                      .catch((error) =>   //console.log("error", error));*/
 
-                    console.log("Harsh test this block");
+                    //console.log("Harsh test this block");
 
                     const formdata = new FormData();
                     formdata.append("file", blobInfo.blob());
@@ -1590,8 +1602,8 @@ export default function TinyMCEEditor({
                 onEditorChange={(content, editor) => {
                   setEditorText(content);
                   setSaveText("Save Now!");
-                  console.log('CONTENT HAI YHE');
-                  console.log(content);
+                  //console.log('CONTENT HAI YHE');
+                  //console.log(content);
                 }}
               />
             </>

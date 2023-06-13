@@ -314,6 +314,8 @@ export default function Post() {
               // tags={data?.fetchBlog?.tags}
               setPyResTime={setPyResTime}
               setNdResTime={setNdResTime}
+              setOption={setOption}
+              option={option}
             />
           </div>
         </div>

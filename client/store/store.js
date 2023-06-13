@@ -125,3 +125,17 @@ export const useThreadsUIStore = create((set) => ({
   setShowTwitterThreadUI: (showTwitterThreadUI) =>
     set({ showTwitterThreadUI }),
 }));
+
+// toggle REgenbutton
+export const useRegenButtonStore = create((set) => ({
+  stateOfRegenButton: false,
+  setStateOfRegenButton: (stateOfRegenButton) =>
+    set({ stateOfRegenButton }),
+}));
+
+  // const [twitterThreadData, setTwitterThreadData] = useState([]);
+  // 
+export const useTwitterThreadStore = create((set) => ({
+  twitterThreadData: [],
+  setTwitterThreadData: (twitterThreadData) => set({ twitterThreadData }),
+}));
