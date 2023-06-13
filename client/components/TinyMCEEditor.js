@@ -721,7 +721,10 @@ export default function TinyMCEEditor({
 
       //console.log(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
       if (twitterThreadData.length > meeData?.me?.remaining_twitter_quota) {
-        toast.error(`We offer the capability of ${meeData?.me?.total_twitter_quota} tweets in a day. Please upgrade your account to improve this`, {
+        const twitterErrorMessageForUnPaid = `Lille allows ${meeData?.me?.total_twitter_quota} day. Please upgrade your account to be able to publish more.`
+        const twitterErrorMessageForPaid = `Lille allows ${meeData?.me?.total_twitter_quota} day. You have exhaust...`
+
+        toast.error(meeData?.me?.paid ? twitterErrorMessageForPaid : twitterErrorMessageForUnPaid, {
           position: "top-center",
           autoClose: 5000,
           hideProgressBar: false,

@@ -95,17 +95,16 @@ const Threads = ({
             {isUserPaid ? (
               <>
                 <span>
-                  Lille allows 6 tweets per day where each thread is a tweet.
-                  You can edit/delete threads to optimize publishings. You can
-                  publish 1 thread each time to publish 6 times a day.
+                  Lille allows {totalTwitterQuota} Twitter credits per day. This
+                  thread is using
+                  {threadData.length} twitter credits.
                 </span>
               </>
             ) : (
               <>
                 <span>
-                  Lille allows 3 tweets per day where each thread is a tweet.
-                  You can edit/delete threads to optimize publishings. You can
-                  publish 1 thread each time to publish 3 times a day.
+                  Lille allows 3 Twitter credits per day. This thread is using{" "}
+                  {threadData.length} twitter credits.
                 </span>
               </>
             )}

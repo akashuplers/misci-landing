@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styles from '../styles/saved.module.css';
 const BlogListItem = ({ blog, index, setblog_id, setOpenModal, type }) => {
   const [queryParams, setQueryParams] = useState({ blogId: blog._id });
@@ -23,14 +23,14 @@ const BlogListItem = ({ blog, index, setblog_id, setOpenModal, type }) => {
           type == 'publish' && (
             <Link
               legacyBehavior
-              as={`/public/${blog._id}`}
+              as={"/dashboard/" + blog._id + "?isPublished=true"}
               href={{
-                pathname: '/public/[blogId]',
-                query: { blogId: blog._id },
+                pathname: "/dashboard/" + blog._id,
+                query: { isPublished: true },
               }}
               passHref
             >
-              <a
+              <span
                 target="_blank"
                 style={{
                   position: 'absolute',
@@ -50,18 +50,12 @@ const BlogListItem = ({ blog, index, setblog_id, setOpenModal, type }) => {
                   <path d="M0 0h24v24H0z" fill="none" />
                   <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z" />
                 </svg>
-              </a>
+              </span>
             </Link>
           )
         }
-        <Link
-          legacyBehavior
-          href={{
-            pathname: '/dashboard/[blogId]',
-            query: { queryParams },
-          }}
-        >
-          <a>
+        <Link href={"/dashboard/" + blog._id}>
+          <span>
             <button
               type="button"
               className="absolute inset-0 focus:outline-none"
@@ -110,7 +104,7 @@ const BlogListItem = ({ blog, index, setblog_id, setOpenModal, type }) => {
                 DELETE
               </button>
             </button>
-          </a>
+          </span>
         </Link>
       </div>
       <button className={`${styles.dateTag} mt-2`}>
