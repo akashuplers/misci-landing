@@ -91,7 +91,7 @@ const Threads = ({
           <div className="w-[10%]">
             <h1 className="text-2xl font-bold">📜</h1>
           </div>
-          <div className="w-[90%] text-yellow-500 text-base">
+          <div className="w-[90%] text-yellow-500 text-sm">
             {isUserPaid ? (
               <>
                 <span>

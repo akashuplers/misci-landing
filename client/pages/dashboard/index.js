@@ -452,7 +452,7 @@ export default function dashboard({ query }) {
               setReference={setReference}
               setOption={setOption}
               option={option}
-/>
+            />
           </div>
         </div>
       </Layout>

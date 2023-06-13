@@ -1,6 +1,14 @@
 import Link from 'next/link';
+import { useEffect } from 'react';
 import styles from '../styles/saved.module.css';
 const BlogListItem = ({ blog, index, setblog_id, setOpenModal, type }) => {
+  const [queryParams, setQueryParams] = useState({ blogId: blog._id });
+  useEffect(() => {
+    setQueryParams({ blogId: blog._id });
+    if (type !== 'saved') {
+      setQueryParams({ blogId: blog._id, isPublished: true });
+    }
+  }, [blog, type]);
   return (
     <li key={blog._id} className="relative">
       <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
@@ -50,7 +58,7 @@ const BlogListItem = ({ blog, index, setblog_id, setOpenModal, type }) => {
           legacyBehavior
           href={{
             pathname: '/dashboard/[blogId]',
-            query: { blogId: blog._id, isPublished: true },
+            query: { queryParams },
           }}
         >
           <a>
@@ -123,7 +131,7 @@ const BlogListItem = ({ blog, index, setblog_id, setOpenModal, type }) => {
           ? blog?.description?.substring(0, 115) + '...'
           : blog.description}
       </p>
-    </li>
+    </li >
   );
 };
 
