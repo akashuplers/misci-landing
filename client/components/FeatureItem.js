@@ -12,7 +12,7 @@ export function FeaturesItem({ text }) {
 
 export const UpgradeFeatures = [
     'Full Features Access with 200 Credits monthly validity',
-    "Unlimited saving and publishing of Blogs and LinkedIn Posts. 6 tweets per day on Twitter.",
+    "Unlimited saving and publishing of Blogs and LinkedIn Posts 6 tweets per day on Twitter.",
     'Create/Regenerate blogs with your topics',
     'Customization possibilities, Talk to our support team'
 ]
