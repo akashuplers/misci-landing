@@ -84,7 +84,7 @@ export default function TinyMCEEditor({
   const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
   const [contributinoModalLoader, setContributionModalLoader] = useState(false);
   // const [showTwitterThreadUI, setShowTwitterThreadUI] = useState(false);
-
+  // const [pauseTwitterPublish]
 
 
   const { twitterThreadData, setTwitterThreadData } = useTwitterThreadStore();
@@ -180,6 +180,10 @@ export default function TinyMCEEditor({
     const intervalId = setInterval(() => {
       meeRefetch();
       setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
+      const remaingingQuota = meeData?.me?.remaining_twitter_quota;
+      if (remaingingQuota === 0) {
+        setPauseTwitterPublish(true);
+      }
     }, 2000);
 
     return () => {
@@ -448,6 +452,7 @@ export default function TinyMCEEditor({
   };
 
   const handleconnectTwitter = async () => {
+    console.log('handling twitter connect');
     localStorage.setItem("loginProcess", true);
     localStorage.setItem("bid", blog_id);
     localStorage.setItem("for_TW", true);
@@ -1331,7 +1336,9 @@ export default function TinyMCEEditor({
                     )}
                   </button>
                 ) : (
-                  <button className="cta-invert" onClick={handleconnectTwitter}>
+                  <button
+                    disabled={pauseTwitterPublish}
+                    className="cta-invert" onClick={handleconnectTwitter}>
                     Connect Twitter
                   </button>
                 )
