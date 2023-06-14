@@ -356,8 +356,8 @@
 
 }
 
-#tidio-chat-iframe{
-  top: -30px !important;
+.sidebar-position-left #button.sidebar{
+  top: 25% !important;
 }
 
 
