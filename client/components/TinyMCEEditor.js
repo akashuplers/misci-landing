@@ -1328,7 +1328,8 @@ export default function TinyMCEEditor({
                         (
                           meeData?.me?.remaining_twitter_quota == undefined ||
                           meeData?.me?.remaining_twitter_quota < 1 ||
-                          meeData?.me?.remaining_twitter_quota == null 
+                          meeData?.me?.remaining_twitter_quota == null
+                          || pauseTwitterPublish 
                         )
                       }
 
