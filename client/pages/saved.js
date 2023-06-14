@@ -117,7 +117,7 @@ export default function Saved() {
             >
               {data?.getAllBlogs.blogs.map((blog, index) => (
                 <>
-                  <BlogListItem blog={blog} setblog_id={setblog_id} setOpenModal={setOpenModal} index={index} type={'saved'}/>
+                  <BlogListItem blog={blog} setblog_id={setblog_id} setOpenModal={setOpenModal} index={index} type={'saved'} />
                 </>
               ))}
             </ul>
@@ -173,7 +173,7 @@ export default function Saved() {
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              stroke-width="1.5"
+              strokeWidth="1.5"
               stroke="currentColor"
               class="w-6 h-6"
             >

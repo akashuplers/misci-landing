@@ -450,6 +450,8 @@ export default function dashboard({ query }) {
               setFreshIdeaReferences={setFreshIdeasReferences}
               reference={reference}
               setReference={setReference}
+              setOption={setOption}
+              option={option}
             />
           </div>
         </div>

@@ -9,6 +9,7 @@ export const regenerateBlog = gql`
           tag
           children
         }
+        threads
         published_date
         platform
         published

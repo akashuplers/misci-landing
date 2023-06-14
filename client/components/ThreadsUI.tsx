@@ -13,7 +13,7 @@ const Threads = ({
   totalTwitterQuota,
 }: any) => {
   // const [threadData, setthreadData] = useState(threadData);
-  console.log("THREADS DATA");
+  // //console.log("THREADS DATA");
   const [hideAddThread, setHideAddThread] = useState(false);
   const {
     isOpen: isTwitterThreadAlertOpen,
@@ -24,7 +24,7 @@ const Threads = ({
     toggleModal,
   } = useTwitterThreadALertModal();
 
-  console.log(threadData);
+  //console.log(threadData);
   const addTextArea = () => {
     if (threadData.length === 0) {
       setthreadData([""]);
@@ -91,21 +91,20 @@ const Threads = ({
           <div className="w-[10%]">
             <h1 className="text-2xl font-bold">📜</h1>
           </div>
-          <div className="w-[90%] text-yellow-500 text-base">
+          <div className="w-[90%] text-yellow-500 text-sm">
             {isUserPaid ? (
               <>
                 <span>
-                  Lille allows 6 tweets per day where each thread is a tweet.
-                  You can edit/delete threads to optimize publishings. You can
-                  publish 1 thread each time to publish 6 times a day.
+                  Lille allows <strong>{totalTwitterQuota}</strong> Twitter
+                  credits per day. This thread is using
+                  <strong>{threadData.length}</strong> twitter credits.
                 </span>
               </>
             ) : (
               <>
                 <span>
-                  Lille allows 3 tweets per day where each thread is a tweet.
-                  You can edit/delete threads to optimize publishings. You can
-                  publish 1 thread each time to publish 3 times a day.
+                  Lille allows 3 Twitter credits per day. This thread is using{" "}
+                  <strong>{threadData.length}</strong> twitter credits.
                 </span>
               </>
             )}
@@ -239,8 +238,8 @@ const Thread = ({
       setPauseTwitterPublish(false);
     }
   }, [thread]);
-  console.log(isUserPaid);
-  console.log("IS USER PAID");
+  //console.log(isUserPaid);
+  //console.log("IS USER PAID");
   const paid = true;
   return (
     <div
