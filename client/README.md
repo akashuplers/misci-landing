@@ -38,3 +38,17 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+----
+<!-- 
+We offer the capability of 3 tweets in a day. Please upgrade your account to improve this
+
+--for unpaid user change to: -->
+
+Lille allows 3 tweets/day. Please upgrade your account to be able to publish more.
+
+Lille allows 6 tweets/day. You have exhaust... by Arvind Ajimal
+Arvind Ajimal
+8:51 PM
+
+Lille allows 6 tweets/day. You have exhausted today's quota.
