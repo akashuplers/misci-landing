@@ -356,6 +356,9 @@
 
 }
 
+#tidio-chat-iframe{
+  top: -30px !important;
+}
 
 
 .sb-avatar__image {
