@@ -11,6 +11,7 @@ import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
 import { meeAPI } from "../../graphql/querys/mee";
 import { jsonToHtml } from "../../helpers/helper";
 import PreferencesModal from "../../modals/PreferencesModal";
+import { useTabOptionStore } from "../../store/store";
 
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
@@ -43,7 +44,7 @@ export default function Post() {
   const { bid, isPublished } = router.query;
   const [reference, setReference] = useState([]);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
-  const [option, setOption] = useState("blog");
+  const {option, setOption} = useTabOptionStore()
   console.log('ROUTER QUERY');
   console.log(router);
   // console.log("isPublished", isPublished);

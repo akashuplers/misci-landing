@@ -133,9 +133,22 @@ export const useRegenButtonStore = create((set) => ({
     set({ stateOfRegenButton }),
 }));
 
-  // const [twitterThreadData, setTwitterThreadData] = useState([]);
-  // 
+// const [twitterThreadData, setTwitterThreadData] = useState([]);
+// 
 export const useTwitterThreadStore = create((set) => ({
   twitterThreadData: [],
   setTwitterThreadData: (twitterThreadData) => set({ twitterThreadData }),
+}));
+
+// tab option
+export const useTabOptionStore = create((set) => ({
+  option: "blog",
+  setOption: (option) => set({ option }),
+}));
+
+// set blog data
+export const useBlogDataStore = create((set) => ({
+  // const [blogData, setBlogData] = useState([]);
+  blogData: [],
+  setBlogData: (blogData) => set({ blogData }),
 }));
