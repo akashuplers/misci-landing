@@ -180,9 +180,13 @@ export default function TinyMCEEditor({
     const intervalId = setInterval(() => {
       meeRefetch();
       setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
-      const remaingingQuota = meeData?.me?.remaining_twitter_quota;
-      if (remaingingQuota === 0) {
+      const remainingQuota = meeData?.me?.remaining_twitter_quota;
+      console.log("REMAINING QUOTA: " + remainingQuota);
+
+      if (!remainingQuota || remainingQuota <= 0) {
         setPauseTwitterPublish(true);
+      } else {
+        setPauseTwitterPublish(false);
       }
     }, 2000);
 
@@ -1312,17 +1316,17 @@ export default function TinyMCEEditor({
                 )
               ) : option === "twitter" ? (
                 twitterAccessToken ? (
+                  <>
                   <button
-                    className="cta-invert disabled:opacity-50"
+                    className={`cta-invert disabled:opacity-50 disabled:cursor-not-allowed`}
                     onClick={() => {
-                      if (
-                        publishTweetText === "Publish on Twitter" ||
-                        publishTweetText === "Published on Twitter"
-                      )
+                      if (publishTweetText === "Publish on Twitter" || publishTweetText === "Published on Twitter") {
                         handleTwitterPublish();
+                      }
                     }}
-                    disabled={pauseTwitterPublish}
-
+                    disabled={
+                      pauseTwitterPublish == true ? true : false
+                    }
                   >
                     {publishTweetLoad ? (
                       <ReactLoading
@@ -1335,10 +1339,13 @@ export default function TinyMCEEditor({
                       publishTweetText
                     )}
                   </button>
+ 
+                  </>
                 ) : (
                   <button
-                    disabled={pauseTwitterPublish}
-                    className="cta-invert" onClick={handleconnectTwitter}>
+                    // disabled={pauseTwitterPublish}
+                    className={`cta-invert disabled:opacity-50 ` + (pauseTwitterPublish == true ? "disabled:cursor-not-allowed" : "")}
+                    onClick={handleconnectTwitter}>
                     Connect Twitter
                   </button>
                 )
