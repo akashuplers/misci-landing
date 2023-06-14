@@ -204,6 +204,8 @@ export default function TinyMCEEditor({
     }
   }, [meeData]);
   useEffect(() => {
+    // alert('COming to TINy', option, "Super")
+    // toast("Coming to Tiny" + option, {})
     if (option === 'linkedin') {
       const aa = blogData?.publish_data?.find(
         (pd) => pd.platform === "linkedin"
@@ -281,7 +283,8 @@ export default function TinyMCEEditor({
     if (
       option !== "linkedin-comeback" &&
       option !== "twitter-comeback" &&
-      option !== "twitter"
+      option !== "twitter" &&
+      option !== "linkedin"
     )
       setEditorText(editorText);
   }, [editorText]);
