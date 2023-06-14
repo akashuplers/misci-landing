@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import useStore from "@/store/store";
+import useStore, { useTabOptionStore, useThreadsUIStore } from "@/store/store";
 import { useQuery } from "@apollo/client";
 import { Dialog, Transition } from "@headlessui/react";
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
@@ -16,7 +16,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment, useEffect, useRef, useState } from "react";
 import Avatar from "react-avatar";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import { meeAPI } from "../graphql/querys/mee";
 import { logout } from "../helpers/helper";
 import { LocalCreditCardIcon } from "./localicons/localicons";
@@ -171,7 +171,14 @@ export default function Sidebar() {
     console.log("element height");
     document.documentElement.style.setProperty('--my-mobile-sidebar-height', `${elementHeight}px`);
   }, []);
+  const { setShowTwitterThreadUI } = useThreadsUIStore();
+  const { option, setOption } = useTabOptionStore()
 
+  function handleEditorReset() {
+    // toast.success("Editor Reset Successfully!", {});
+    setOption('blog');
+    setShowTwitterThreadUI(false);
+  }
   return (
     <>
       <ToastContainer />
@@ -243,6 +250,7 @@ export default function Sidebar() {
                         <Link
                           key={item.name}
                           href={item.href}
+                          onClick={handleEditorReset}
                           className={classNames(
                             item.current
                               ? "bg-gray-100 text-gray-900"
@@ -348,6 +356,7 @@ export default function Sidebar() {
                   <Link
                     key={item.name}
                     href={item.href}
+                    onClick={handleEditorReset}
                     className={classNames(
                       item.current
                         ? "bg-[#E0E6FF] text-gray-900 active"
