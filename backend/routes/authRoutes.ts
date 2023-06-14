@@ -1159,51 +1159,58 @@ router.get('/add-tweet-quota', async (req: any, res: any) => {
   //     isSubscribed: 1
   //   }
   // }).toArray()
-  const quotaDataBefore24hours = await db.db('lilleAdmin').collection('tweetsQuota').find({"date":{
-    $lte: (new Date(Date.now() - (24*60*60 * 1000)).getTime()) / 1000
-  }}).toArray()
-  const quotaNotExist: {_id: ObjectID, paid: Boolean, isSubscribed: Boolean}[] = await db.db('lilleAdmin').collection('users').aggregate([
-    {
-      $lookup: {
-        from: "tweetsQuota",
-        localField: "_id",
-        foreignField: "userId",
-        as: "join"
-      }
-    },
-    {
-      $match: {
-        "join": {
-          $size: 0
-        }
-      }
-    },
-    {
-      $project: {
-        join: 0
-      }
-    }
-  ]).toArray()
-  if(quotaNotExist && quotaNotExist.length) {
+  // const quotaDataBefore24hours = await db.db('lilleAdmin').collection('tweetsQuota').find({"date":{
+  //   $lte: (new Date(Date.now() - (24*60*60 * 1000)).getTime()) / 1000
+  // }}).toArray()
+  const users = await db.db('lilleAdmin').collection('users').find({}, {projection: {
+    _id: 1,
+    paid: 1,
+    isSubscribed: 1,
+    email: 1
+  }}).toArray() 
+  console.log(users)
+  // const quotaNotExist: {_id: ObjectID, paid: Boolean, isSubscribed: Boolean}[] = await db.db('lilleAdmin').collection('users').aggregate([
+  //   {
+  //     $lookup: {
+  //       from: "tweetsQuota",
+  //       localField: "_id",
+  //       foreignField: "userId",
+  //       as: "join"
+  //     }
+  //   },
+  //   {
+  //     $match: {
+  //       "join": {
+  //         $size: 0
+  //       }
+  //     }
+  //   },
+  //   {
+  //     $project: {
+  //       join: 0
+  //     }
+  //   }
+  // ]).toArray()
+  // if(quotaNotExist && quotaNotExist.length) {
+  //   await (
+  //     Promise.all(
+  //       quotaNotExist.map(async (user) => {
+  //         const quotaData = await db.db('lilleAdmin').collection('tweetsQuota').findOne({_id: new ObjectID(user._id)})
+  //         if(!quotaData){
+  //           console.log(`Adding new tweet quota for user ${user._id}`)
+  //           await assignTweetQuota(db, user, false)
+  //         }
+  //         return user
+  //       })
+  //     )
+  //   )
+  // }
+  if(users && users.length) {
     await (
       Promise.all(
-        quotaNotExist.map(async (user) => {
-          const quotaData = await db.db('lilleAdmin').collection('tweetsQuota').findOne({_id: new ObjectID(user._id)})
-          if(!quotaData){
-            console.log(`Adding new tweet quota for user ${user._id}`)
-            await assignTweetQuota(db, user, false)
-          }
-          return user
-        })
-      )
-    )
-  }
-  if(quotaDataBefore24hours && quotaDataBefore24hours.length) {
-    await (
-      Promise.all(
-        quotaDataBefore24hours.map(async (quota: any) => {
-          console.log(`Updating daily quota for user ${quota.userId}`)
-          const resp = await assignTweetQuota(db, false, quota)
+        users.map(async (user: any) => {
+          console.log(`Reallocating daily quota for user ${user._id}`)
+          const resp = await assignTweetQuota(db, user, false)
           return resp
         })
       )
