@@ -658,26 +658,10 @@ export const assignTweetQuota = async (db: any, userDetails: any | false = false
             date: getTimeStamp(),
             userId: new ObjectID(userDetails._id),
         }
-        console.log(updatedTweetsQuotaData)
         const res = await db.db('lilleAdmin').collection('tweetsQuota').updateOne(
             {userId: new ObjectID(userDetails._id)}, 
             {$set: updatedTweetsQuotaData}, 
             {upsert: true})
-        return res    
-    }
-    if(quota) {
-        const totalQuota = quota.totalQuota
-        const updatedTweetsQuotaData = {
-            totalQuota,
-            remainingQuota: totalQuota,
-            date: getTimeStamp(),
-            userId: new ObjectID(quota.userId),
-        }
-        console.log(updatedTweetsQuotaData, "update")
-        const res = await db.db('lilleAdmin').collection('tweetsQuota').updateOne(
-            {_id: new ObjectID(quota._id)}, 
-            {$set: updatedTweetsQuotaData}, 
-            {upsert: true})
-        return res
+        return res       
     }
 }
