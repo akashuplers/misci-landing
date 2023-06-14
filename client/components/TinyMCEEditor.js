@@ -204,12 +204,15 @@ export default function TinyMCEEditor({
     }
   }, [meeData]);
   useEffect(() => {
-    if (option === "linkedin-comeback") {
+    if (option === 'linkedin') {
+      const aa = blogData?.publish_data?.find(
+        (pd) => pd.platform === "linkedin"
+      ).tiny_mce_data;
+      const htmlDoc = jsonToHtml(aa);
+      //console.log("885", htmlDoc);
+      setEditorText(htmlDoc);
+    } else if (option === "linkedin-comeback") {
       setOption("linkedin");
-      // const siblingButton = document.querySelectorAll(".blog-toggle-button");
-      // siblingButton.forEach((el) => el.classList.remove("active"));
-      // const button = document.querySelector(".linkedin");
-      // button?.classList?.add("active");
       const aa = blogData?.publish_data?.find(
         (pd) => pd.platform === "linkedin"
       ).tiny_mce_data;
@@ -1329,7 +1332,7 @@ export default function TinyMCEEditor({
                           meeData?.me?.remaining_twitter_quota == undefined ||
                           meeData?.me?.remaining_twitter_quota < 1 ||
                           meeData?.me?.remaining_twitter_quota == null
-                          || pauseTwitterPublish 
+                          || pauseTwitterPublish
                         )
                       }
 
