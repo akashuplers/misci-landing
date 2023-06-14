@@ -7,7 +7,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Editor } from "@tinymce/tinymce-react";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import ReactLoading from "react-loading";
 import Modal from "react-modal";
@@ -56,6 +56,7 @@ export default function TinyMCEEditor({
   option,
   setOption,
 }) {
+  const twitterButtonRef = useRef(null);
   const [multiplier, setMultiplier] = useState(1);
   const [contributionAmout, setContributionAmount] = useState(1);
   const [updatedText, setEditorText] = useState(editorText);
@@ -85,7 +86,6 @@ export default function TinyMCEEditor({
   const [contributinoModalLoader, setContributionModalLoader] = useState(false);
   // const [showTwitterThreadUI, setShowTwitterThreadUI] = useState(false);
   // const [pauseTwitterPublish]
-
 
   const { twitterThreadData, setTwitterThreadData } = useTwitterThreadStore();
   // const {}
@@ -176,18 +176,18 @@ export default function TinyMCEEditor({
 
   }, [editorText, updatedText]);
 
+
   useEffect(() => {
     const intervalId = setInterval(() => {
-      meeRefetch();
-      setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
-      const remainingQuota = meeData?.me?.remaining_twitter_quota;
-      console.log("REMAINING QUOTA: " + remainingQuota);
+      meeRefetch().then(
+        (res) => {
+          setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
+          const remainingQuota = meeData?.me?.remaining_twitter_quota;
+          console.log("REMAINING QUOTA: " + remainingTwitterQuota);
+          console.log(meeData);
+        }
+      )
 
-      if (!remainingQuota || remainingQuota <= 0) {
-        setPauseTwitterPublish(true);
-      } else {
-        setPauseTwitterPublish(false);
-      }
     }, 2000);
 
     return () => {
@@ -1317,34 +1317,41 @@ export default function TinyMCEEditor({
               ) : option === "twitter" ? (
                 twitterAccessToken ? (
                   <>
-                  <button
-                    className={`cta-invert disabled:opacity-50 disabled:cursor-not-allowed`}
-                    onClick={() => {
-                      if (publishTweetText === "Publish on Twitter" || publishTweetText === "Published on Twitter") {
-                        handleTwitterPublish();
+                    <button
+                      className={`cta-invert disabled:opacity-50 disabled:cursor-not-allowed`}
+                      onClick={() => {
+                        if (publishTweetText === "Publish on Twitter" || publishTweetText === "Published on Twitter") {
+                          handleTwitterPublish();
+                        }
+                      }}
+                      disabled={
+                        (
+                          meeData?.me?.remaining_twitter_quota == undefined ||
+                          meeData?.me?.remaining_twitter_quota < 1 ||
+                          meeData?.me?.remaining_twitter_quota == null 
+                        )
                       }
-                    }}
-                    disabled={
-                      pauseTwitterPublish == true ? true : false
-                    }
-                  >
-                    {publishTweetLoad ? (
-                      <ReactLoading
-                        width={25}
-                        height={25}
-                        round={true}
-                        color={"#2563EB"}
-                      />
-                    ) : (
-                      publishTweetText
-                    )}
-                  </button>
- 
+
+                    >
+                      {publishTweetLoad ? (
+                        <ReactLoading
+                          width={25}
+                          height={25}
+                          round={true}
+                          color={"#2563EB"}
+                        />
+                      ) : (
+                        publishTweetText
+                      )}
+                    </button>
+
                   </>
                 ) : (
                   <button
-                    // disabled={pauseTwitterPublish}
-                    className={`cta-invert disabled:opacity-50 ` + (pauseTwitterPublish == true ? "disabled:cursor-not-allowed" : "")}
+
+                    className={`cta-invert disabled:opacity-50 
+                    disabled:cursor-not-allowed
+                    `}
                     onClick={handleconnectTwitter}>
                     Connect Twitter
                   </button>
