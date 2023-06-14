@@ -95,16 +95,16 @@ const Threads = ({
             {isUserPaid ? (
               <>
                 <span>
-                  Lille allows {totalTwitterQuota} Twitter credits per day. This
-                  thread is using
-                  {threadData.length} twitter credits.
+                  Lille allows <strong>{totalTwitterQuota}</strong> Twitter
+                  credits per day. This thread is using
+                  <strong>{threadData.length}</strong> twitter credits.
                 </span>
               </>
             ) : (
               <>
                 <span>
                   Lille allows 3 Twitter credits per day. This thread is using{" "}
-                  {threadData.length} twitter credits.
+                  <strong>{threadData.length}</strong> twitter credits.
                 </span>
               </>
             )}
