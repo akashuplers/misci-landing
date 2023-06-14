@@ -204,12 +204,17 @@ export default function TinyMCEEditor({
     }
   }, [meeData]);
   useEffect(() => {
-    if (option === "linkedin-comeback") {
+    // alert('COming to TINy', option, "Super")
+    // toast("Coming to Tiny" + option, {})
+    if (option === 'linkedin') {
+      const aa = blogData?.publish_data?.find(
+        (pd) => pd.platform === "linkedin"
+      ).tiny_mce_data;
+      const htmlDoc = jsonToHtml(aa);
+      //console.log("885", htmlDoc);
+      setEditorText(htmlDoc);
+    } else if (option === "linkedin-comeback") {
       setOption("linkedin");
-      // const siblingButton = document.querySelectorAll(".blog-toggle-button");
-      // siblingButton.forEach((el) => el.classList.remove("active"));
-      // const button = document.querySelector(".linkedin");
-      // button?.classList?.add("active");
       const aa = blogData?.publish_data?.find(
         (pd) => pd.platform === "linkedin"
       ).tiny_mce_data;
@@ -278,7 +283,8 @@ export default function TinyMCEEditor({
     if (
       option !== "linkedin-comeback" &&
       option !== "twitter-comeback" &&
-      option !== "twitter"
+      option !== "twitter" &&
+      option !== "linkedin"
     )
       setEditorText(editorText);
   }, [editorText]);
@@ -730,8 +736,8 @@ export default function TinyMCEEditor({
 
       //console.log(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
       if (twitterThreadData.length > meeData?.me?.remaining_twitter_quota) {
-        const twitterErrorMessageForUnPaid = `Lille allows ${meeData?.me?.total_twitter_quota} day. Please upgrade your account to be able to publish more.`
-        const twitterErrorMessageForPaid = `Lille allows ${meeData?.me?.total_twitter_quota} day. You have exhaust...`
+        const twitterErrorMessageForUnPaid = `Lille allows ${meeData?.me?.total_twitter_quota} tweets per day. Please upgrade your account to be able to publish more.`
+        const twitterErrorMessageForPaid = `Lille allows ${meeData?.me?.total_twitter_quota} tweets per day. You have exhaust...`
 
         toast.error(meeData?.me?.paid ? twitterErrorMessageForPaid : twitterErrorMessageForUnPaid, {
           position: "top-center",
@@ -1329,7 +1335,7 @@ export default function TinyMCEEditor({
                           meeData?.me?.remaining_twitter_quota == undefined ||
                           meeData?.me?.remaining_twitter_quota < 1 ||
                           meeData?.me?.remaining_twitter_quota == null
-                          || pauseTwitterPublish 
+                          || pauseTwitterPublish
                         )
                       }
 
