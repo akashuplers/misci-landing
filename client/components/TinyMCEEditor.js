@@ -566,6 +566,11 @@ export default function TinyMCEEditor({
       }
     }
   }
+  useEffect(() => {
+    if (option == 'twitter' || option == 'twitter-comeback') {
+      setShowTwitterThreadUI(true);
+    }
+  }, [option])
   const handleSavePublish = () => {
     if (creditLeft === 0) {
       setTrailModal(true);
