@@ -15,6 +15,11 @@ const Threads = ({
   // const [threadData, setthreadData] = useState(threadData);
   // //console.log("THREADS DATA");
   const [hideAddThread, setHideAddThread] = useState(false);
+  const localDate = new Date();
+  const UTCHours = localDate.getUTCHours();
+  
+  const hoursTillMidnightUTC = ((24 - UTCHours - 1) % 24);
+  const minutesTillMidnightUTC = (60 - localDate.getUTCMinutes()) % 60;
   const {
     isOpen: isTwitterThreadAlertOpen,
     initailText,
@@ -125,7 +130,7 @@ const Threads = ({
                   ? 0
                   : remainingTwitterQuota}{" "}
               </strong>{" "}
-              {threadData.length < 2 ? "tweet" : "tweets"} left.{" "}
+              {threadData.length < 2 ? "tweet" : "tweets"} left.{" "} <p>Your credits will refresh in {hoursTillMidnightUTC} hours and {minutesTillMidnightUTC} minutes.</p>
             </span>{" "}
           </div>
         </div>
