@@ -555,6 +555,8 @@ export default function TinyMCEEditor({
     if (type === TYPESOFTABS.TWITTER) {
       if (initailTwitterThreads == twitterThreadData) {
         await handleTwitterPublish();
+      } else {
+        setAskingForSavingBlog(true);
       }
     }
     else { // linkedin
