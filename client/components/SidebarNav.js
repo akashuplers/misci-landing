@@ -77,15 +77,16 @@ export default function Sidebar() {
       icon: FolderIcon,
       current: url === "/saved",
     },
-  ];
-  console.log("hello");
-
-  const navigation_bottom = [
     {
       name: "FAQs",
       href: "/faq",
       icon: QuestionMarkCircleIcon,
     },
+  ];
+  console.log("hello");
+
+  const navigation_bottom = [
+
     {
       name: "Settings",
       href: "/settings",
@@ -174,7 +175,7 @@ export default function Sidebar() {
   const { setShowTwitterThreadUI } = useThreadsUIStore();
   const { option, setOption } = useTabOptionStore()
 
-function handleEditorReset() {
+  function handleEditorReset() {
     setOption('blog');
     setShowTwitterThreadUI(false);
   }

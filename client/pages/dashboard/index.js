@@ -2,7 +2,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { meeAPI } from "@/graphql/querys/mee";
 import { useMutation, useQuery } from "@apollo/client";
-import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -15,9 +14,7 @@ import TrialEndedModal from "../../components/TrialEndedModal";
 import { API_BASE_PATH, API_ROUTES } from "../../constants/apiEndpoints";
 import { generateBlog } from "../../graphql/mutations/generateBlog";
 import { jsonToHtml } from "../../helpers/helper";
-import useStore, { useBlogDataStore, useByMeCoffeModal, useTabOptionStore } from "../../store/store"; // Add this import
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-
+import useStore, { useBlogDataStore, useByMeCoffeModal, useTabOptionStore } from "../../store/store";
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
     event.stopImmediatePropagation();
@@ -30,10 +27,6 @@ dashboard.getInitialProps = ({ query }) => {
 
 export default function dashboard({ query }) {
   var { topic } = query;
-  // if (topic === undefined) {
-  //   topic = 'India in 2040'
-  // }
-  // const topic = 'India in 2040 '
   const router = useRouter();
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const [ideas, setIdeas] = useState([]);
@@ -126,7 +119,7 @@ export default function dashboard({ query }) {
 
   useEffect(() => {
     if (!topic && !bid && !loginProcess) {
-      alert("No Keyword Found...\nPlease generate the blog again!");
+      alert("Blog was not saved.\nPlease generate the blog again");
       window.location.href = "/";
     }
   }, []);
@@ -305,6 +298,7 @@ export default function dashboard({ query }) {
             toast.success("Linkedin Integration Done!!");
             setOption("linkedin-comeback");
           }
+          // localStorage.removeItem("for_TW"); this is causing linkedin to speak
         })
         .catch(function (error) {
           console.log(error);
