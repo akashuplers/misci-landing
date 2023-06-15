@@ -1055,13 +1055,13 @@ export default function TinyMCEEditor({
         </p>
         <div className="flex m-9">
           <button
-            class="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
+            class="mr-4 w-[200px] p-4 bg-transparent hover:bg-red-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded"
             onClick={handleJustPublish}
           >
             No
           </button>
           <button
-            class="w-[240px]  bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded"
+            class="w-[240px]  bg-transparent hover:bg-green-500 text-green-700 font-semibold hover:text-white py-2 px-4 border border-green-500 hover:border-transparent rounded"
             onClick={handleSaveAndPublishBlog}
           >
             YES, Save
