@@ -91,6 +91,8 @@ export default function TinyMCEEditor({
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
   const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
   const [contributinoModalLoader, setContributionModalLoader] = useState(false);
+  const [isEditorTextUpdated, setIsEditorTextUpdated] = useState(false);
+  const [initailEditorText, setInitailEditorText] = useState(editorText);
   // const [showTwitterThreadUI, setShowTwitterThreadUI] = useState(false);
   // const [pauseTwitterPublish]
 
@@ -269,6 +271,7 @@ export default function TinyMCEEditor({
             //console.log("THREADS DATA AFTER MERGE");
             //console.log(aa.threads);
             setTwitterThreadData(aa.threads);
+            setInitialTwitterThreads(aa.threads);
           }
           setShowTwitterThreadUI(true);
         }
@@ -287,7 +290,7 @@ export default function TinyMCEEditor({
       setIsCopied(false);
     }, 1000);
   };
-
+  const [initailTwitterThreads, setInitialTwitterThreads] = useState([]);
   useEffect(() => {
     if (
       option !== "linkedin-comeback" &&
@@ -515,7 +518,6 @@ export default function TinyMCEEditor({
 
   const handleSaveAndPublishBlog = async () => {
     await handleSave();
-    toast(thisIsToBePublished, {})
     // check for case of thisIsToBePublished twitter, linkedin. blog accoring run it
     if (thisIsToBePublished === TYPESOFTABS.TWITTER) {
       await handleTwitterPublish();
@@ -528,6 +530,8 @@ export default function TinyMCEEditor({
     }
 
     setAskingForSavingBlog(false);
+    setIsEditorTextUpdated(false);
+    setIRanNumberOfTimes(1);
   }
 
   const handleJustPublish = async () => {
@@ -542,21 +546,25 @@ export default function TinyMCEEditor({
     }
 
     setAskingForSavingBlog(false);
+    setIsEditorTextUpdated(false);
+    setIRanNumberOfTimes(1);
   }
 
-
-
-  // const handleSaveAndPublishTwitter = async () => {
-  //   await handleSave();
-  //   setAskingForSavingBlog(false);
-  // }
-  // const handleSaveAndPublishLinkedinPost = async () => {
-  //   await handleSave();
-  //   setAskingForSavingBlog(false);
-  // }
-  const handleConfirmUserForPublish = (type) => {
+  const handleConfirmUserForPublish = async (type) => {
     setThisIsToBePublished(type);
-    setAskingForSavingBlog(true);
+    if (type === TYPESOFTABS.TWITTER) {
+      if (initailTwitterThreads == twitterThreadData) {
+        await handleTwitterPublish();
+      }
+    }
+    else { // linkedin
+      if (iRanNumberOfTimes < 3) {
+        await handleJustPublish()
+      }
+      else {
+        setAskingForSavingBlog(true);
+      }
+    }
   }
   const handleSavePublish = () => {
     if (creditLeft === 0) {
@@ -765,6 +773,7 @@ export default function TinyMCEEditor({
     setTwitterThreadAlertOption(remaningQuota, totalTwitterQuota, isUserPaid);
   }
 
+  const [iRanNumberOfTimes, setIRanNumberOfTimes] = useState(0);
   const handleTwitterPublish = () => {
     //console.log("handleTwitterPublish");
     if (creditLeft === 0) {
@@ -943,14 +952,20 @@ export default function TinyMCEEditor({
         twitterThreadsFromAPI.pop();
         twitterThreadsFromAPI.push(mergedThread);
         setTwitterThreadData(twitterThreadsFromAPI);
+        setInitialTwitterThreads(twitterThreadsFromAPI);
       } else {
         setTwitterThreadData(twitterThreadsFromAPI);
+        setInitialTwitterThreads(twitterThreadsFromAPI);
+
       }
       setShowTwitterThreadUI(true);
     }
     setEditorText(htmlDoc);
 
   }
+  useEffect(() => {
+    setIRanNumberOfTimes(1);
+  }, [option])
 
 
   if (loading) return <LoaderPlane />;
@@ -1731,8 +1746,6 @@ export default function TinyMCEEditor({
 
                     input.click();
                   },
-                  // run a function on image save 
-                  save_onsavecallback: function () { toast.success('Saved IMage check now'); },
                   images_upload_handler: (blobInfo, success, failure) => {
                     /*var formdata = new FormData();
                     formdata.append("file", blobInfo.blob());
@@ -1773,8 +1786,10 @@ export default function TinyMCEEditor({
                 onEditorChange={(content, editor) => {
                   setEditorText(content);
                   setSaveText("Save Now!");
-                  //console.log('CONTENT HAI YHE');
-                  //console.log(content);
+                  setIRanNumberOfTimes(
+                    (prevCount) => prevCount + 1
+                  )
+                  setIsEditorTextUpdated(true);
                 }}
               />
             </>
