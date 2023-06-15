@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/jsx-key */
 import { useApolloClient, useMutation, useQuery } from "@apollo/client";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { ToastContainer, toast } from "react-toastify";
@@ -9,9 +10,8 @@ import Layout from "../components/Layout";
 import LoaderScan from "../components/LoaderScan";
 import Pagination from "../components/Pagination";
 import { deleteBlog } from "../graphql/mutations/deleteBlog";
-import styles from '../styles/saved.module.css';
-import Link from "next/link";
 import { getAllBlogs } from "../graphql/queries/getAllBlogs";
+import styles from '../styles/saved.module.css';
 
 const PAGE_COUNT = 12;
 

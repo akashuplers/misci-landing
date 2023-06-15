@@ -11,14 +11,13 @@ import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
 import { meeAPI } from "../../graphql/querys/mee";
 import { jsonToHtml } from "../../helpers/helper";
 import PreferencesModal from "../../modals/PreferencesModal";
-import { useTabOptionStore, useThreadsUIStore } from "../../store/store";
+import { useBlogDataStore, useTabOptionStore, useThreadsUIStore } from "../../store/store";
 
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
     event.stopImmediatePropagation();
   });
 }
-
 
 // get the path of link in server
 
@@ -62,7 +61,8 @@ export default function Post() {
 
   const [editorText, setEditorText] = useState([]);
   const [tags, setTags] = useState([]);
-  const [blogData, setBlogData] = useState([]);
+  // const [blogData, setBlogData] = useState([]);
+  const {blogData, setBlogData} = useBlogDataStore();
 
   const [pyResTime, setPyResTime] = useState(null);
   const [ndResTime, setNdResTime] = useState(null);
@@ -77,7 +77,7 @@ export default function Post() {
 
   }, []);
 
-  
+
 
   useEffect(() => {
     if (data == null) return;
