@@ -355,7 +355,7 @@ export default function Pricing() {
                     </p>
                     <p className=" text-[#182735] text-left leading-[26px] text-[18px] font-medium mb-4">
                       Create and Regenerate blogs with free publishing on
-                      Lille.ai platform, LinkedIn and Twitter.
+                      Lille.ai platform, LinkedIn and three tweets per day on Twitter.
                     </p>
                   </div>
                   <div className="mt-4 bg-gradient-to-r from-[#182735] to-transparent h-[2px]"></div>

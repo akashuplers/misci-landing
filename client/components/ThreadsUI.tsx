@@ -17,8 +17,8 @@ const Threads = ({
   const [hideAddThread, setHideAddThread] = useState(false);
   const localDate = new Date();
   const UTCHours = localDate.getUTCHours();
-  
-  const hoursTillMidnightUTC = ((24 - UTCHours - 1) % 24);
+
+  const hoursTillMidnightUTC = (24 - UTCHours - 1) % 24;
   const minutesTillMidnightUTC = (60 - localDate.getUTCMinutes()) % 60;
   const {
     isOpen: isTwitterThreadAlertOpen,
@@ -115,13 +115,13 @@ const Threads = ({
             )}
             <br />{" "}
             <span
-              className={`${
-                remainingTwitterQuota < 1 ||
-                remainingTwitterQuota == undefined ||
-                remainingTwitterQuota == null
-                  ? "text-red-500"
-                  : ""
-              }`}
+              className={
+                remainingTwitterQuota >= 1 &&
+                remainingTwitterQuota !== undefined &&
+                remainingTwitterQuota !== null
+                  ? "text-yellow-500"
+                  : "text-red-500"
+              }
             >
               Currently, you have{" "}
               <strong>
@@ -130,7 +130,11 @@ const Threads = ({
                   ? 0
                   : remainingTwitterQuota}{" "}
               </strong>{" "}
-              {threadData.length < 2 ? "tweet" : "tweets"} left.{" "} <p>Your credits will refresh in {hoursTillMidnightUTC} hours and {minutesTillMidnightUTC} minutes.</p>
+              {threadData.length < 2 ? "tweet" : "tweets"} left.{" "}
+              <span>
+                Credits will refresh in {hoursTillMidnightUTC} hours &{" "}
+                {minutesTillMidnightUTC} minutes.
+              </span>
             </span>{" "}
           </div>
         </div>
