@@ -15,7 +15,7 @@ import TrialEndedModal from "../../components/TrialEndedModal";
 import { API_BASE_PATH, API_ROUTES } from "../../constants/apiEndpoints";
 import { generateBlog } from "../../graphql/mutations/generateBlog";
 import { jsonToHtml } from "../../helpers/helper";
-import useStore, { useByMeCoffeModal, useTabOptionStore } from "../../store/store"; // Add this import
+import useStore, { useBlogDataStore, useByMeCoffeModal, useTabOptionStore } from "../../store/store"; // Add this import
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 if (typeof window !== "undefined") {
@@ -42,10 +42,11 @@ export default function dashboard({ query }) {
   const [freshIdeaTags, setFreshIdeaTags] = useState([]);
   const [blog_id, setblog_id] = useState("");
   const [editorText, setEditorText] = useState("");
-  const [blogData, setBlogData] = useState([]);
+  // const [blogData, setBlogData] = useState([]);
+  const { blogData, setBlogData } = useBlogDataStore();
   const [pyResTime, setPyResTime] = useState(null);
   const [ndResTime, setNdResTime] = useState(null);
-  const {option, setOption} = useTabOptionStore()
+  const { option, setOption } = useTabOptionStore()
   const [reference, setReference] = useState([]);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
   const [creditModal, setCreditModal] = useState(false);

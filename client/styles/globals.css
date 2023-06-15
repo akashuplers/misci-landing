@@ -19,6 +19,10 @@
   display: none !important;
 }
 
+.sidebar-position-left #button.sidebar{
+  top: 25% !important;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@300&display=swap');
 
 :root {
@@ -437,6 +441,10 @@ input[type='radio']:checked {
 
 a[aria-label="Powered by Tidio."] {
   display: none !important;
+}
+
+.sidebar-position-left #button.sidebar {
+  top: 25% !important;
 }
 
 @keyframes fade-in {

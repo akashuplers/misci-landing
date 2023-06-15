@@ -174,8 +174,7 @@ export default function Sidebar() {
   const { setShowTwitterThreadUI } = useThreadsUIStore();
   const { option, setOption } = useTabOptionStore()
 
-  function handleEditorReset() {
-    // toast.success("Editor Reset Successfully!", {});
+function handleEditorReset() {
     setOption('blog');
     setShowTwitterThreadUI(false);
   }
