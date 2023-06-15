@@ -116,11 +116,13 @@ const Threads = ({
             <br />{" "}
             <span
               className={
-                remainingTwitterQuota >= 1 &&
-                remainingTwitterQuota !== undefined &&
-                remainingTwitterQuota !== null
-                  ? "text-yellow-500"
-                  : "text-red-500"
+                remainingTwitterQuota
+                  ? remainingTwitterQuota >= 1 &&
+                    remainingTwitterQuota !== undefined &&
+                    remainingTwitterQuota !== null
+                    ? "text-yellow-500"
+                    : "text-red-500"
+                  : ""
               }
             >
               Currently, you have{" "}
