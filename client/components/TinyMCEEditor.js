@@ -1598,7 +1598,7 @@ export default function TinyMCEEditor({
               ) : option === "twitter" ? (
                 twitterAccessToken ? (
                   <button
-                    className="cta-invert"
+                    className={`cta-invert disabled:opacity-50 disabled:cursor-not-allowed`}
                     onClick={() => {
                       if (
                         publishTweetText === "Publish on Twitter" ||
@@ -1606,6 +1606,15 @@ export default function TinyMCEEditor({
                       )
                         handleConfirmUserForPublish(TYPESOFTABS.TWITTER)
                     }}
+                     disabled={
+                        (
+                          meeData?.me?.remaining_twitter_quota == undefined ||
+                          meeData?.me?.remaining_twitter_quota < 1 ||
+                          meeData?.me?.remaining_twitter_quota == null
+                          || pauseTwitterPublish
+                        )
+                      }
+
                   >
                     {publishTweetLoad ? (
                       <ReactLoading
