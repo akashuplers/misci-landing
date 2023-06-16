@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/rules-of-hooks */
+import { CloseButtonIcon } from "@/components/localicons/localicons";
 import { meeAPI } from "@/graphql/querys/mee";
 import { useMutation, useQuery } from "@apollo/client";
 import axios from "axios";
@@ -51,7 +52,6 @@ export default function dashboard({ query }) {
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
   const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
   const creditLeft = useStore((state) => state.creditLeft);
-
   // const [showContributionModal, setShowContributionModal] = useState(false);
   const [isPublish, seIsPublish] = useState(false);
   console.log('MEE DATA GET IN ZUSLAND');
@@ -117,14 +117,23 @@ export default function dashboard({ query }) {
     loginProcess = localStorage.getItem("loginProcess");
   }
 
+  const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
+  const [disclaimerCheck, setDisclaimerCheck] = useState(false);
+
+  const handleGenerateBlog = () => {
+    localStorage.setItem("isDisclaimerShown", "true");
+    localStorage.setItem("disclaimerResponse", disclaimerCheck ? "yes" : "no");
+    setShowDisclaimerModal(false);
+  };
+
+  const handleDisclaimerPopup = () => setDisclaimerCheck((prev) => !prev);
+
   useEffect(() => {
     if (!topic && !bid && !loginProcess) {
       alert("Blog was not saved.\nPlease generate the blog again");
       window.location.href = "/";
     }
   }, []);
-
-
 
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog, {
     context: {
@@ -181,6 +190,7 @@ export default function dashboard({ query }) {
     }
   }, [loading, meeData]);
   useEffect(() => {
+   
     const getToken = localStorage.getItem("token");
     const Gbid = localStorage.getItem("Gbid");
     if (getToken && Gbid) {
@@ -345,6 +355,20 @@ export default function dashboard({ query }) {
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
           console.log("Sucessfully generated the article");
+          if (typeof window !== "undefined") {
+            const isDisclaimerShown = localStorage.getItem("isDisclaimerShown");
+            const disclaimerResponse = localStorage.getItem("disclaimerResponse");
+
+            if (isDisclaimerShown === "true") {
+              if (disclaimerResponse === "yes") {
+                setShowDisclaimerModal(false);
+              } else {
+                setShowDisclaimerModal(true);
+              }
+            } else {
+              setShowDisclaimerModal(true);
+            }
+          }
         },
         onError: (error) => {
           if (error.message === 'Unexpected error value: "@Credit exhausted"') {
@@ -378,6 +402,7 @@ export default function dashboard({ query }) {
   }, [pyResTime, ndResTime]);
 
 
+
   console.log(freshIdeasReferences);
   return (
     <>
@@ -385,6 +410,71 @@ export default function dashboard({ query }) {
         {creditModal && (
           <TrialEndedModal setTrailModal={setCreditModal} topic={topic} />
         )}
+        
+
+
+        <Modal
+          isOpen={showDisclaimerModal}
+          onRequestClose={() => setShowDisclaimerModal(false)}
+          ariaHideApp={false}
+          className="w-[100%] sm:w-[38%] max-h-[95%]"
+          style={{
+            overlay: {
+              backgroundColor: "rgba(0,0,0,0.5)",
+              zIndex: "9999",
+            },
+            content: {
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              right: "auto",
+              border: "none",
+              background: "white",
+              // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+              borderRadius: "8px",
+              height: "280px",
+              // width: "100%",
+              bottom: "",
+              zIndex: "999",
+              marginRight: "-50%",
+              transform: "translate(-50%, -50%)",
+              padding: "30px",
+              paddingBottom: "0px",
+            },
+          }}
+        >
+          <button className="absolute right-[35px]" onClick={() => {
+            setShowDisclaimerModal(false);
+            localStorage.setItem("isDisclaimerShown", "true");
+            localStorage.setItem("disclaimerResponse", "no");
+          }}>
+            <CloseButtonIcon />
+          </button>
+          <div className="">
+            <h2 className="text-2xl mb-4">Disclaimer</h2>
+            <p className="text-gray-700 mb-4">
+              Please note that the AI-generated blog may not be 100% exact to
+              your requirements. You may need to make some edits and tweaks to
+              create a quality blog.
+            </p>
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                className="form-checkbox"
+                checked={disclaimerCheck}
+                onChange={handleDisclaimerPopup}
+              />
+              <span className="text-gray-700">
+                {"Don't show me this popup again"}
+              </span>
+            </label>
+            <div className="flex justify-end mt-6">
+              <button className="cta-invert" onClick={handleGenerateBlog}>
+                Ok Got it
+              </button>
+            </div>
+          </div>
+        </Modal>
 
         <div className="flex mb-6 h-[88vh]">
           {API_BASE_PATH === "https://maverick.lille.ai" && (
