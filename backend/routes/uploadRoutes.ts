@@ -1,9 +1,11 @@
-import { getTimeStamp } from "../utils/date";
+import { diff_minutes, getTimeStamp } from "../utils/date";
 import { Azure } from "../services/azure";
 import { ObjectID } from "bson";
-import { fetchUser } from "../graphql/resolver/blogs/blogsRepo";
+import { blogGeneration, fetchArticleById, fetchArticleUrls, fetchBlogFromTopic, fetchUser, updateUserCredit } from "../graphql/resolver/blogs/blogsRepo";
 import { randomUUID } from "crypto";
 import { ChatGPT } from "../services/chatGPT";
+import { Google } from "../services/google";
+import { Python } from "../services/python";
 
 const getStream = require('into-stream')
 const express = require("express");
@@ -235,6 +237,34 @@ router.post('/static-blog', async (req: any, res: any) => {
         type: "SUCCESS",
         data: blogInserted
     })
+})
+
+router.get('/topics', async (req: any, res: any) => {
+    try {
+        const db = req.app.get('db')
+        const token = await new Google().getAuthToken()
+        if(process.env.GOOGLE_SHEET_ID) {
+            const sheet = await new Google().getSpreadSheet({spreadsheetId: process.env.GOOGLE_SHEET_ID, auth: token})
+            const {values} = await new Google().getSpreadSheetValues({spreadsheetId: process.env.GOOGLE_SHEET_ID, auth: token, sheetName: sheet?.data?.sheets && sheet?.data?.sheets?.length && sheet?.data?.sheets?.[0]?.properties?.title})
+            const user = await db.db('lilleAdmin').collection('users').findOne({email: "admin@nowigence.com"})
+            const userId = user._id
+            if(values && values?.length) {
+                let topics: string[] = values.map((value: string[]) => value[0])
+                console.log(topics)
+                console.log(user)
+                const ideas = await fetchBlogFromTopic(db, topics, userId)
+            }
+            res.status(200).send({
+                type: "SUCCESS",
+                message: "Blog cached!"
+            })
+        }
+    }catch(e) {
+        return res.status(400).send({
+            type: "ERROR",
+            message: e.message
+        })
+    }
 })
 
 module.exports = router
