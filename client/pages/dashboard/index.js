@@ -52,7 +52,6 @@ export default function dashboard({ query }) {
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
   const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
   const creditLeft = useStore((state) => state.creditLeft);
-
   // const [showContributionModal, setShowContributionModal] = useState(false);
   const [isPublish, seIsPublish] = useState(false);
   console.log('MEE DATA GET IN ZUSLAND');
@@ -136,8 +135,6 @@ export default function dashboard({ query }) {
     }
   }, []);
 
-
-
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog, {
     context: {
       headers: {
@@ -193,6 +190,7 @@ export default function dashboard({ query }) {
     }
   }, [loading, meeData]);
   useEffect(() => {
+   
     const getToken = localStorage.getItem("token");
     const Gbid = localStorage.getItem("Gbid");
     if (getToken && Gbid) {
@@ -412,6 +410,9 @@ export default function dashboard({ query }) {
         {creditModal && (
           <TrialEndedModal setTrailModal={setCreditModal} topic={topic} />
         )}
+        
+
+
         <Modal
           isOpen={showDisclaimerModal}
           onRequestClose={() => setShowDisclaimerModal(false)}
