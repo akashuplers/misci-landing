@@ -8,9 +8,9 @@ import { createAccessToken, createRefreshToken } from "../utils/accessToken";
 import { validateRegisterInput, validateLoginInput, validateUpdateInput, validateSupportInput } from "../validations/Validations";
 import { encodeURIfix } from "../utils/encode";
 import { authMiddleware } from "../middleWare/authToken";
-import { daysBetween, diff_hours, getTimeStamp, monthDiff } from "../utils/date";
+import { daysBetween, diff_hours, getDateString, getTimeStamp, monthDiff } from "../utils/date";
 import { verify } from "jsonwebtoken";
-import { sendContributionEmail, sendForgotPasswordEmail } from "../utils/mailJetConfig";
+import { sendContributionEmail, sendEmails, sendForgotPasswordEmail } from "../utils/mailJetConfig";
 import { assignTweetQuota, fetchUser, publishBlog, updateUserCredit } from "../graphql/resolver/blogs/blogsRepo";
 const express = require("express");
 const router = express.Router();
@@ -1220,6 +1220,412 @@ router.get('/add-tweet-quota', async (req: any, res: any) => {
     type: "SUCCESS",
     message: "Tweet Quota Checked!"
   })
+})
+
+router.get('/send-otp', authMiddleware,  async (request: any, res: any) => {
+  try {
+    const db = request.app.get('db')
+    const user = request.user
+    if(!user) {
+      return res.status(401).send({
+        type: "ERROR",
+        message: "Not authorised!"
+      })
+    }
+    const userDetails = await fetchUser({id: user.id, db})
+    if(!userDetails) {
+      return res.status(401).send({
+        type: "ERROR",
+        message: "User not found!"
+      })
+    }
+    var digits = '0123456789';
+    let OTP = '';
+    for (let i = 0; i < 6; i++ ) {
+        OTP += digits[Math.floor(Math.random() * 10)];
+    }
+    console.log(OTP)
+    const test = await sendEmails({
+      to: [
+        { Email: userDetails.email, Name: `${userDetails.name} ${userDetails.lastName}` }
+      ],
+      subject: "Email verification for Lille",
+      textMsg: "Email verification for Lille",
+      // htmlMsg: `
+      // <p>Dear ${userDetails.name},</p>
+      // <br/><br/>
+      // <p>Thank you taking the action to have your email verified with Lille Platform.
+      // Please add the following one time password ( OTP )  to get your email verified.
+      // </p><br/><br/>
+      // <p>OTP: ${OTP}</p>
+      // <br/>
+      // <p>Please contact us at <a href="mailto:info@nowigence.com">info@nowigence.com</a> if you face any issue.</p>
+      // <br/><br/>
+      // <p>Cheers.</p>
+      // <p>Lille Support Team</p>
+      // <p>nowigence.com</p>
+      // <br/><br/>
+      // <p style="font-size: 6px">This is system generated email. Do not reply to this email. </p>
+      // `,
+      htmlMsg: `
+      <!DOCTYPE html>
+      <html>
+      
+      <head>
+        <title></title>
+        <meta content="summary_large_image" name="twitter:card" />
+        <meta content="website" property="og:type" />
+        <meta content="" property="og:description" />
+        <meta content="https://3ukkdml2si.preview-postedstuff.com/V2-MlGA-Fn6Q-IotS-2BRs/" property="og:url" />
+        <meta content="https://pro-bee-beepro-thumbnail.getbee.io/messages/1006241/991088/1934810/9458232_large.jpg" property="og:image" />
+        <meta content="" property="og:title" />
+        <meta content="" name="description" />
+        <meta charset="utf-8" />
+        <meta content="width=device-width" name="viewport" />
+        <style>
+          .bee-row,
+          .bee-row-content {
+            position: relative
+          }
+      
+          .bee-row-1,
+          .bee-row-2,
+          .bee-row-2 .bee-row-content,
+          .bee-row-3,
+          .bee-row-3 .bee-row-content,
+          .bee-row-4,
+          .bee-row-4 .bee-row-content,
+          .bee-row-5,
+          .bee-row-6 {
+            background-repeat: no-repeat
+          }
+      
+          body {
+            background-color: #f5f5f5;
+            color: #000;
+            font-family: Arial, "Helvetica Neue", Helvetica, sans-serif
+          }
+      
+          a {
+            color: #0068a5
+          }
+      
+          * {
+            box-sizing: border-box
+          }
+      
+          body,
+          p {
+            margin: 0
+          }
+      
+          .bee-row-content {
+            max-width: 650px;
+            margin: 0 auto;
+            display: flex
+          }
+      
+          .bee-row-content .bee-col-w12 {
+            flex-basis: 100%
+          }
+      
+          .bee-icon .bee-icon-label-right a {
+            text-decoration: none
+          }
+      
+          .bee-divider,
+          .bee-image {
+            overflow: auto
+          }
+      
+          .bee-divider .center,
+          .bee-image .bee-center {
+            margin: 0 auto
+          }
+      
+          .bee-row-2 .bee-col-1 .bee-block-1 {
+            width: 100%
+          }
+      
+          .bee-icon {
+            display: inline-block;
+            vertical-align: middle
+          }
+      
+          .bee-icon .bee-content {
+            display: flex;
+            align-items: center
+          }
+      
+          .bee-image img {
+            display: block;
+            width: 100%
+          }
+      
+          .bee-text {
+            overflow-wrap: anywhere
+          }
+      
+          @media (max-width:670px) {
+            .bee-row-content:not(.no_stack) {
+              display: block
+            }
+          }
+      
+          .bee-row-1 .bee-row-content,
+          .bee-row-5 .bee-row-content,
+          .bee-row-6 .bee-row-content {
+            background-repeat: no-repeat;
+            color: #000
+          }
+      
+          .bee-row-1 .bee-col-1,
+          .bee-row-6 .bee-col-1 {
+            padding-bottom: 5px;
+            padding-top: 5px
+          }
+      
+          .bee-row-1 .bee-col-1 .bee-block-1,
+          .bee-row-5 .bee-col-1 .bee-block-1,
+          .bee-row-5 .bee-col-1 .bee-block-2 {
+            padding: 10px
+          }
+      
+          .bee-row-2 .bee-row-content {
+            background-color: #f9948c;
+            color: #000
+          }
+      
+          .bee-row-2 .bee-col-1 {
+            padding: 10px 15px
+          }
+      
+          .bee-row-3 .bee-row-content {
+            background-color: #f0d5d5;
+            color: #000
+          }
+      
+          .bee-row-3 .bee-col-1 {
+            padding-top: 5px
+          }
+      
+          .bee-row-3 .bee-col-1 .bee-block-1 {
+            padding: 30px 10px
+          }
+      
+          .bee-row-4 .bee-row-content {
+            background-color: #fff;
+            border-bottom: 0 solid #fff;
+            border-left: 0 solid #fff;
+            border-radius: 0;
+            border-right: 0px solid #fff;
+            border-top: 0 solid #fff;
+            color: #000
+          }
+      
+          .bee-row-4 .bee-col-1 {
+            border-bottom: 30px solid #f0d5d5;
+            border-left: 30px solid #f0d5d5;
+            border-right: 30px solid #f0d5d5;
+            border-top: 0 solid #f0d5d5;
+            padding-bottom: 30px;
+            padding-top: 30px
+          }
+      
+          .bee-row-4 .bee-col-1 .bee-block-1 {
+            padding-bottom: 32px;
+            width: 100%
+          }
+      
+          .bee-row-4 .bee-col-1 .bee-block-2 {
+            padding-bottom: 10px;
+            padding-left: 10px;
+            padding-right: 10px
+          }
+      
+          .bee-row-4 .bee-col-1 .bee-block-3 {
+            padding: 15px 10px
+          }
+      
+          .bee-row-5 .bee-col-1 {
+            padding-bottom: 20px;
+            padding-top: 20px
+          }
+      
+          .bee-row-6 .bee-col-1 .bee-block-1 {
+            color: #9d9d9d;
+            font-family: inherit;
+            font-size: 15px;
+            padding-bottom: 5px;
+            padding-top: 5px;
+            text-align: center
+          }
+      
+          .bee-row-6 .bee-col-1 .bee-block-1 .bee-icon-image {
+            padding: 5px 6px 5px 5px
+          }
+      
+          .bee-row-6 .bee-col-1 .bee-block-1 .bee-icon:not(.bee-icon-first) .bee-content {
+            margin-left: 0
+          }
+      
+          .bee-row-6 .bee-col-1 .bee-block-1 .bee-icon::not(.bee-icon-last) .bee-content {
+            margin-right: 0
+          }
+        </style>
+      </head>
+      
+      <body>
+        <div class="bee-page-container">
+          <div class="bee-row bee-row-1">
+            <div class="bee-row-content">
+              <div class="bee-col bee-col-1 bee-col-w12">
+                <div class="bee-block bee-block-1 bee-divider">
+                  <div class="spacer" style="height:10px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bee-row bee-row-2">
+            <div class="bee-row-content">
+              <div class="bee-col bee-col-1 bee-col-w12">
+                <div class="bee-block bee-block-1 bee-image"><img alt="" class="bee-center bee-fixedwidth" src="https://a95de3cb9b.imgdist.com/public/users/Integrators/BeeProAgency/1006241_991088/image%209.png" style="max-width:124px;" /></div>
+              </div>
+            </div>
+          </div>
+          <div class="bee-row bee-row-3">
+            <div class="bee-row-content">
+              <div class="bee-col bee-col-1 bee-col-w12">
+                <div class="bee-block bee-block-1 bee-text">
+                  <div class="bee-text-content" style="line-height: 120%; font-size: 12px; font-family: inherit; color: #052d3d;">
+                    <p style="line-height: 14px; font-size: 12px; text-align: center;"><span style="font-size: 30px; line-height: 36px;"><strong style="">Here's your Verification Code</strong></span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bee-row bee-row-4">
+            <div class="bee-row-content">
+              <div class="bee-col bee-col-1 bee-col-w12">
+                <div class="bee-block bee-block-1 bee-image"><img alt="" class="bee-center bee-fixedwidth" src="https://a95de3cb9b.imgdist.com/public/users/Integrators/BeeProAgency/1006241_991088/data_protection_2_.png" style="max-width:118px;" /></div>
+                <div class="bee-block bee-block-2 bee-text">
+                  <div class="bee-text-content" style="line-height: 120%; font-size: 12px; font-family: inherit; color: #fc7318;">
+                    <p style="line-height: 14px; font-size: 12px; text-align: center; letter-spacing: 6px;"><span style="color: #052d3d; line-height: 14px;"><span style="font-size: 46px; line-height: 55px;"><strong style="">${OTP}</strong></span></span></p>
+                  </div>
+                </div>
+                <div class="bee-block bee-block-3 bee-text">
+                  <div class="bee-text-content" style="line-height: 120%; font-size: 12px; font-family: inherit; color: #fc7318;">
+                    <p style="line-height: 14px; font-size: 12px; text-align: center;"><span style="font-size: 20px; line-height: 24px; color: rgb(5,45,61);"><strong style="">👉 <span style="font-size: 13px; line-height: 15px;">  <span style="background-color: #ffff99; line-height: 14px;"> Valid for ${process.env.OTP_VERIFICATION_TIME || 20} minutes. only </span></span></strong></span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bee-row bee-row-5">
+            <div class="bee-row-content">
+              <div class="bee-col bee-col-1 bee-col-w12">
+                <div class="bee-block bee-block-1 bee-divider">
+                  <div class="center bee-separator" style="border-top:1px dotted #C4C4C4;width:60%;"></div>
+                </div>
+                <div class="bee-block bee-block-2 bee-text">
+                  <div class="bee-text-content" style="font-size: 12px; line-height: 120%; font-family: inherit; color: #004aad;">
+                    <p style="font-size: 12px; line-height: 14px; text-align: center;"><span style="font-size: 14px; line-height: 16px;"><a href="#" rel="noopener" style="text-decoration: none; color: #004aad;" target="_blank"><strong style=""> </strong></a><a href="https://nowigence.com/" rel="noopener" style="text-decoration: underline; color: #004aad;" target="_blank">Contact us</a><strong style=""><a href="#" rel="noopener" style="text-decoration: none; color: #004aad;" target="_blank"></a> </strong></span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bee-row bee-row-6">
+            <div class="bee-row-content">
+              <div class="bee-col bee-col-1 bee-col-w12">
+                <div class="bee-block bee-block-1 bee-icons" id="beepro-locked-footer">
+                  <div class="bee-icon bee-icon-last">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </body>
+      
+      </html>
+      
+      
+      `
+    });
+    const data: any = {
+      userId: new ObjectID(userDetails._id),
+      date: getDateString(new Date()),
+      timestamp: getTimeStamp(),
+      otp: OTP,
+      isVerified: 0,
+      isExpired: 0,
+      createdAt: new Date()
+    };
+    await db
+    .db("lilleAdmin")
+    .collection('userOTP')
+    .insertOne(data);
+    return res.status(200).send({
+      error: false,
+      message: "OTP sent to your registered email address"
+    })
+  } catch(err) {
+    console.log(err)
+    return res
+      .status(500)
+      .send({ error: true, message: err.message });
+  }
+})
+
+router.post('/verify-otp', authMiddleware,  async (request: any, res: any) => {
+  try {
+    const body = request.body
+    const db = request.app.get('db')
+    const user = request.user
+    if(!user) {
+      return res.status(401).send({
+        type: "ERROR",
+        message: "Not authorised!"
+      })
+    }
+    const userDetails = await fetchUser({id: user.id, db})
+    if(!userDetails) {
+      return res.status(401).send({
+        type: "ERROR",
+        message: "User not found!"
+      })
+    }
+    
+    const getOTP = await db.db('lilleAdmin').collection('userOTP').findOne({
+      userId: new ObjectID(userDetails._id),
+      otp: body.otp
+    })
+    
+    if(!getOTP) throw "Invalid otp!"
+    if(getOTP && (getOTP.isExpired || getOTP.isVerified)) throw "OTP Expired!"
+
+    const createdAt = getOTP.createdAt
+    const currentTimeStamp = getTimeStamp()
+    const otpVerificationTimestamp =  Math.round(new Date(createdAt.getTime() + (parseInt(process.env.OTP_VERIFICATION_TIME || '20')) * 60000).getTime() / 1000)
+    console.log(otpVerificationTimestamp)
+    if(currentTimeStamp > otpVerificationTimestamp) {
+      await db.db('lilleAdmin').collection('userOTP').updateOne({_id: new ObjectID(getOTP._id)}, {$set: {isExpired: 1}})
+      throw "OTP Expired!"
+    }
+    // await db.db('lilleAdmin').collection('userOTP').updateOne({_id: new ObjectID(getOTP._id)}, {$set: {isVerified: 1}})
+    // await db.db('lilleAdmin').collection('userOTP').update({userId: new ObjectID(userDetails._id), isExpired: 0, isVerified: 0}, {$set: {isExpired: 1}})
+    // await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user._id)}, {$set: {emailVerified: 1}})
+    return res.status(200).send({
+      error: false,
+      message: "Email address verified!"
+    })
+  } catch(err) {
+    console.log(err)
+    return res
+      .status(500)
+      .send({ error: true, message: err.message ? err.message : err });
+  }
 })
 
 module.exports = router;
