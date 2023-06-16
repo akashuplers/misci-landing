@@ -1613,9 +1613,9 @@ router.post('/verify-otp', authMiddleware,  async (request: any, res: any) => {
       await db.db('lilleAdmin').collection('userOTP').updateOne({_id: new ObjectID(getOTP._id)}, {$set: {isExpired: 1}})
       throw "OTP Expired!"
     }
-    // await db.db('lilleAdmin').collection('userOTP').updateOne({_id: new ObjectID(getOTP._id)}, {$set: {isVerified: 1}})
-    // await db.db('lilleAdmin').collection('userOTP').update({userId: new ObjectID(userDetails._id), isExpired: 0, isVerified: 0}, {$set: {isExpired: 1}})
-    // await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user._id)}, {$set: {emailVerified: 1}})
+    await db.db('lilleAdmin').collection('userOTP').updateOne({_id: new ObjectID(getOTP._id)}, {$set: {isVerified: 1}})
+    await db.db('lilleAdmin').collection('userOTP').update({userId: new ObjectID(userDetails._id), isExpired: 0, isVerified: 0}, {$set: {isExpired: 1}})
+    await db.db('lilleAdmin').collection('users').updateOne({_id: new ObjectID(user._id)}, {$set: {emailVerified: 1}})
     return res.status(200).send({
       error: false,
       message: "Email address verified!"
