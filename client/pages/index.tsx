@@ -13,6 +13,7 @@ import Layout from "../components/Layout";
 import LoaderPlane from "../components/LoaderPlane";
 import TrialEndedModal from "../components/TrialEndedModal";
 import { meeAPI } from "../graphql/querys/mee";
+import OTPModal from "../modals/OTPModal";
 import PreferencesModal from "../modals/PreferencesModal";
 import useStore from "../store/store";
 
@@ -149,6 +150,7 @@ export default function Home() {
     data: meeData,
     loading: meeLoading,
     error: meeError,
+    refetch: meeRefetch,
   } = useQuery(meeAPI, {
     context: {
       headers: {
@@ -220,15 +222,72 @@ export default function Home() {
   ));
 
   const [pfmodal, setPFModal] = useState(false);
+  const [isOTPVerified, setIsOTPVerified] = useState(true);
+  const [showOTPModal, setShowOTPModal] = useState(false);
 
   useEffect(() => {
     console.log(meeData);
-    if (meeData?.me.prefFilled === false) {
-      setPFModal(true);
+
+    if (typeof window !== "undefined") {
+      const isOTPVerified = localStorage.getItem("isOTPVerified");
+      // check if verified or not
+      if (isOTPVerified == "false" || !isOTPVerified) {
+        setPFModal(false);
+      } else {
+        if (meeData?.me.prefFilled === false) {
+          setPFModal(true);
+        }
+      }
+    }
+    if (meeData?.me) {
+      if (typeof window !== "undefined") {
+        const isOTPVerified = meeData?.me?.emailVerified;
+        if (
+          isOTPVerified == "false" ||
+          !isOTPVerified ||
+          isOTPVerified == null
+        ) {
+          setPFModal(false);
+        } else {
+          if (meeData?.me.prefFilled === false) {
+            setPFModal(true);
+          }
+        }
+        // GET https://maverick.lille.ai/auth/send-otp
+        if (
+          isOTPVerified === "false" ||
+          !isOTPVerified ||
+          isOTPVerified === null ||
+          isOTPVerified === undefined
+        ) {
+          setIsOTPVerified(false);
+          setShowOTPModal(true);
+          const SEND_OTP_URL = "https://maverick.lille.ai/auth/send-otp";
+          var getToken = localStorage.getItem("token");
+          const requestOptions = {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken,
+            },
+          };
+
+          fetch(SEND_OTP_URL, requestOptions)
+            .then((response) => {
+              console.log("RESPONSE FROM SEND OTP");
+              console.log(response);
+              console.log(response.json());
+            })
+            .catch((error) => {
+              console.log("ERROR FROM SEND OTP");
+            });
+        } else {
+          setIsOTPVerified(true);
+          setShowOTPModal(false);
+        }
+      }
     }
   }, [meeData]);
-
-  const [multiplier, setMultiplier] = useState(1);
 
   const [windowWidth, setWindowWidth] = useState(0);
   useEffect(() => {
@@ -260,7 +319,7 @@ export default function Home() {
       {isPayment && (
         <Confetti width={windowWidth} recycle={false} numberOfPieces={2000} />
       )}
-  
+
       <Layout>
         <ToastContainer />
         {pfmodal && (
@@ -269,6 +328,15 @@ export default function Home() {
             setPFModal={setPFModal}
             getToken={getToken}
           />
+        )}
+        {meeData?.me && showOTPModal === true ? (
+          <OTPModal
+            showOTPModal={showOTPModal}
+            setShowOTPModal={setShowOTPModal}
+            setPFModal={setPFModal}
+          />
+        ) : (
+          <></>
         )}
 
         {!meeData?.me?.isSubscribed && meeData?.me?.credits === 0 && (
@@ -306,7 +374,6 @@ export default function Home() {
           </div>
           <div className="mx-auto max-w-3xl flex py-32 sm:py-30 lg:py-20">
             <div className="text-center">
-               
               <div className="flex text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
                 Generate & Optimize{" "}
                 <TextTransition
@@ -336,7 +403,9 @@ export default function Home() {
               </p> */}
               <div className="p-4 mt-4">Try some of our trending topics</div>
               {!loading ? (
-                <div className="flex flex-col  lg:grid grid-cols-3 gap-4 py-4">{updatedArr}</div>
+                <div className="flex flex-col  lg:grid grid-cols-3 gap-4 py-4">
+                  {updatedArr}
+                </div>
               ) : (
                 <div style={{ margin: "0 auto" }}>
                   <LoaderPlane />
