@@ -150,7 +150,37 @@ export const blogResolvers = {
                 }
             }
             let articleIds: any = null
+            let refUrls: {
+                url: string
+                source: string
+            }[] = []
             let pythonStart = new Date()
+            const cachedBlogData = await db.db('lilleBlogs').collection('cachedBlogs').find({keyword: "Emerging IT Skills"}).sort({date: -1}).toArray()
+            console.log(cachedBlogData)
+            if(cachedBlogData.length) {
+                const cachedBlogIdeaData = await db.db('lilleBlogs').collection('cachedBlogIdeas').findOne({blog_id: new ObjectID(cachedBlogData[0]._id)})
+                delete cachedBlogData[0]._id
+                delete cachedBlogIdeaData._id
+                delete cachedBlogIdeaData.blog_id
+                const updatedBlogs = {
+                    ...cachedBlogData[0],
+                    userId: new ObjectID(userId)
+                }
+                const updatedBlogIdeas = cachedBlogIdeaData
+                const insertBlog = await db.db('lilleBlogs').collection('blogs').insertOne(updatedBlogs)
+                const insertBlogIdeas = await db.db('lilleBlogs').collection('blogIdeas').insertOne({
+                    blog_id: new ObjectID(insertBlog.insertedId),
+                    ...updatedBlogIdeas
+                })
+                if(cachedBlogData[0].article_id && cachedBlogData[0].article_id.length) refUrls = await fetchArticleUrls({db, articleId: cachedBlogData[0].article_id})
+                const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+                await delay(10000)
+                return {...cachedBlogData[0], _id: insertBlog.insertedId,  ideas: {
+                    blog_id: new ObjectID(insertBlog.insertedId),
+                    ...updatedBlogIdeas,
+                    _id: insertBlogIdeas.insertedId
+                }, references: refUrls}
+            }
             try {
                 articleIds = await new Python({userId: userId}).uploadKeyword({keyword, timeout:60000})
             }catch(e){
@@ -221,10 +251,6 @@ export const blogResolvers = {
                         uniqueTags.push(c);
                     }
                 });
-                let refUrls: {
-                    url: string
-                    source: string
-                }[] = []
                 if(articleIds && articleIds.length) refUrls = await fetchArticleUrls({db, articleId: articleIds})
                 const {usedIdeasArr, updatedBlogs, description}: any = await blogGeneration({
                     db,

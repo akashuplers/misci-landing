@@ -1,7 +1,8 @@
 import { ObjectID } from "bson";
 import { ChatGPT } from "../../../services/chatGPT";
-import { getTimeStamp } from "../../../utils/date";
+import { diff_minutes, getTimeStamp } from "../../../utils/date";
 import { URL } from "url";
+import { Python } from "../../../services/python";
 const natural = require('natural');
 
 export const fetchBlog = async ({id, db}: {
@@ -663,5 +664,164 @@ export const assignTweetQuota = async (db: any, userDetails: any | false = false
             {$set: updatedTweetsQuotaData}, 
             {upsert: true})
         return res       
+    }
+}
+
+export const fetchBlogFromTopic = async (db: any, topics: string[], userId: string) => {
+    try {
+        let ideas: any = []
+        for (let index = 0; index < topics.length; index++) {
+            let keyword = topics[index];
+            console.log(`Running cache topics for topic ${keyword}`)
+            let articleIds: any = null
+            let pythonStart = new Date()
+            try {
+                articleIds = await new Python({userId: userId}).uploadKeyword({keyword, timeout:60000})
+            }catch(e){
+                console.log(e, "error from python")
+            }
+            let pythonEnd = new Date()
+            let texts = ""
+            let imageUrl: string | null = null
+            let imageSrc: string | null = null
+            let article_ids: String[] = []
+            let ideasArr: {
+                idea: string;
+                article_id: string;
+            }[] = []
+            let tags: String[] = []
+            let ideasText = ""
+            let articlesData: any[] = []
+            if(articleIds) {
+                articlesData = await (
+                    Promise.all(
+                        articleIds?.map(async (id: string, index: number) => {
+                            const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
+                            if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
+                                imageUrl = article.proImageLink
+                                imageSrc = article._source?.orig_url
+                            } else {
+                                if(index === (articleIds.length - 1) && !imageUrl) {
+                                    imageUrl = (process.env.PLACEHOLDER_IMAGE || article.proImageLink)
+                                    imageSrc = null
+                                }
+                            }
+                            keyword = article.keyword
+                            // const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                            // const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                            // const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                            tags.push(...article._source.driver)
+                            const name = article._source?.source?.name
+                            return {
+                                used_summaries: article._source.summary.slice(0, 10),
+                                name: name && name === "file" ? "note" : name,
+                                unused_summaries: article._source.summary.slice(10),
+                                keyword: article.keyword,
+                                id
+                            }
+                        })
+                    )
+                )
+                articlesData.forEach((data) => {
+                    data.used_summaries.forEach((summary: string, index: number) => {
+                        texts += `- ${summary}\n`
+                        ideasText += `${summary} `
+                        ideasArr.push({idea: summary, article_id: data.id})
+                    })
+                    article_ids.push(data.id)
+                })
+            }
+            try {
+                let uniqueTags: String[] = [];
+                tags.forEach((c) => {
+                    if (!uniqueTags.includes(c)) {
+                        uniqueTags.push(c);
+                    }
+                });
+                let refUrls: {
+                    url: string
+                    source: string
+                }[] = []
+                if(articleIds && articleIds.length) refUrls = await fetchArticleUrls({db, articleId: articleIds})
+                const {usedIdeasArr, updatedBlogs, description}: any = await blogGeneration({
+                    db,
+                    text: !articlesData.length ? keyword : texts,
+                    regenerate: !articlesData.length ? false: true,
+                    imageUrl: imageUrl || process.env.PLACEHOLDER_IMAGE,
+                    title: keyword,
+                    imageSrc,
+                    ideasText,
+                    ideasArr,
+                    refUrls
+                })
+                const finalBlogObj = {
+                    article_id: articleIds,
+                    publish_data: updatedBlogs,
+                    userId: new ObjectID(userId),
+                    keyword,
+                    status: "draft",
+                    description,
+                    tags: uniqueTags,
+                    imageUrl: imageUrl ? imageUrl : process.env.PLACEHOLDER_IMAGE,
+                    imageSrc,
+                    date: getTimeStamp(),
+                    updatedAt: getTimeStamp(),
+                }
+                let updatedIdeas: any = []
+                articlesData.forEach((data) => {
+                    data.used_summaries.forEach((summary: string) => updatedIdeas.push({
+                        idea: summary,
+                        article_id: data.id,
+                        reference: null,
+                        name: data.name,
+                        used: 1,
+                    }))
+                })
+                if(!articlesData.length) {
+                    usedIdeasArr.forEach((idea: string) => updatedIdeas.push({
+                        idea,
+                        article_id: null,
+                        reference: null,
+                        used: 1,
+                    }))
+                }
+                if(updatedIdeas && updatedIdeas.length) {
+                    updatedIdeas = await (
+                        Promise.all(
+                            updatedIdeas.map(async (ideasData: any) => {
+                                if(ideasData.article_id) {
+                                    const article = await fetchArticleById({id: ideasData.article_id, db, userId})
+                                    return {
+                                        ...ideasData,
+                                        reference: {
+                                            type: "article",
+                                            link: article._source.orig_url,
+                                            id: ideasData.article_id
+                                        }
+                                    }
+                                } else {
+                                    return {
+                                        ...ideasData
+                                    }
+                                }
+                            })       
+                        )
+                    )
+                }
+                const insertBlog = await db.db('lilleBlogs').collection('cachedBlogs').insertOne(finalBlogObj)
+                const insertBlogIdeas: any = await db.db('lilleBlogs').collection('cachedBlogIdeas').insertOne({
+                    blog_id: insertBlog.insertedId,
+                    ideas: updatedIdeas
+                })
+                ideas.push(insertBlogIdeas)
+                console.log(`Completed Running cache topics for topic ${keyword}`)
+            } catch(e: any) {
+                console.log(e)
+                throw e
+            }
+        }
+        return ideas
+    }catch(e) {
+        throw e
     }
 }
