@@ -1032,8 +1032,7 @@ export default function DashboardInsights({
         </div>
         <div
           className="overflow-y-scroll px-2"
-          style={{
-            // marginRight: "0.5em",
+          style={{ 
             maxHeight: "82vh",
             height: "-webkit-fill-available",
             maxHeight: "50vh",

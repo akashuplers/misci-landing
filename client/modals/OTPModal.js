@@ -79,8 +79,6 @@ const OTPModal = (
             } else {
                 toast.success(data.message);
                 setShowOTPModal(false);
-
-                // wait for 2 seconds
                 setTimeout(() => {
                     setPFModal(true);
                 }, 2000);
@@ -125,7 +123,6 @@ const OTPModal = (
     return (
         <Modal
             isOpen={showOTPModal}
-            onRequestClose={() => setShowOTPModal(false)}
             ariaHideApp={false}
             className="w-[100%] sm:w-[38%] max-h-[95%]"
             style={{
