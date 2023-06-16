@@ -155,7 +155,7 @@ export const blogResolvers = {
                 source: string
             }[] = []
             let pythonStart = new Date()
-            const cachedBlogData = await db.db('lilleBlogs').collection('cachedBlogs').find({keyword: "Emerging IT Skills"}).sort({date: -1}).toArray()
+            const cachedBlogData = await db.db('lilleBlogs').collection('cachedBlogs').find({keyword}).sort({date: -1}).toArray()
             console.log(cachedBlogData)
             if(cachedBlogData.length) {
                 const cachedBlogIdeaData = await db.db('lilleBlogs').collection('cachedBlogIdeas').findOne({blog_id: new ObjectID(cachedBlogData[0]._id)})
