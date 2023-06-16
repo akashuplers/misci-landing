@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import useStore, { useTabOptionStore, useThreadsUIStore } from "@/store/store";
+import useStore, { useBlogDataStore, useTabOptionStore, useThreadsUIStore } from "@/store/store";
 import { useQuery } from "@apollo/client";
 import { Dialog, Transition } from "@headlessui/react";
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
@@ -164,6 +164,7 @@ export default function Sidebar() {
   }, []);
 
   const sideBarHeightRef = useRef(null);
+  const { blogData, setBlogData } = useBlogDataStore();
 
   useEffect(() => {
     const MINIMUM_HEIGHT = 125;
@@ -177,6 +178,7 @@ export default function Sidebar() {
 
   function handleEditorReset() {
     setOption('blog');
+    setBlogData([]);
     setShowTwitterThreadUI(false);
   }
   return (

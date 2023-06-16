@@ -30,6 +30,7 @@ export const meeAPI = gql`
       hours_left_for_quota_renew
       remaining_twitter_quota
       total_twitter_quota
+      emailVerified
     }
   }
 `;
