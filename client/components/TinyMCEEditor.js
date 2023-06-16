@@ -559,14 +559,28 @@ export default function TinyMCEEditor({
         setAskingForSavingBlog(true);
       }
     }
-    else { // linkedin
+
+    else if (type === TYPESOFTABS.LINKEDIN) {
       if (iRanNumberOfTimes < 3) {
-        await handleJustPublish()
+        await handlePublish();
+        setAskingForSavingBlog(false);
+        setIsEditorTextUpdated(false);
+        setIRanNumberOfTimes(1);
+        return
       }
       else {
         setAskingForSavingBlog(true);
       }
     }
+    else if (type === TYPESOFTABS.BLOG) {
+      if (iRanNumberOfTimes < 3) {
+        await handleJustPublish();
+      }
+      else {
+        setAskingForSavingBlog(true);
+      }
+    }
+
   }
   useEffect(() => {
     if (option == 'twitter' || option == 'twitter-comeback') {
@@ -1606,14 +1620,14 @@ export default function TinyMCEEditor({
                       )
                         handleConfirmUserForPublish(TYPESOFTABS.TWITTER)
                     }}
-                     disabled={
-                        (
-                          meeData?.me?.remaining_twitter_quota == undefined ||
-                          meeData?.me?.remaining_twitter_quota < 1 ||
-                          meeData?.me?.remaining_twitter_quota == null
-                          || pauseTwitterPublish
-                        )
-                      }
+                    disabled={
+                      (
+                        meeData?.me?.remaining_twitter_quota == undefined ||
+                        meeData?.me?.remaining_twitter_quota < 1 ||
+                        meeData?.me?.remaining_twitter_quota == null
+                        || pauseTwitterPublish
+                      )
+                    }
 
                   >
                     {publishTweetLoad ? (
