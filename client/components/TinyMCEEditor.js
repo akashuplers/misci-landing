@@ -988,8 +988,9 @@ export default function TinyMCEEditor({
     setIRanNumberOfTimes(1);
   }, [option])
 
-
   if (loading) return <LoaderPlane />;
+
+
   return (
     <>
       <ToastContainer />
@@ -1030,6 +1031,7 @@ export default function TinyMCEEditor({
           You are now in The Editor Mode!! 🥳
         </div>
       </Modal> */}
+      
       <Modal
         isOpen={askingForSavingBlog}
         onRequestClose={() => setAskingForSavingBlog(false)}
@@ -1111,7 +1113,7 @@ export default function TinyMCEEditor({
         style={{
           overlay: {
             backgroundColor: "rgba(0,0,0,0.5)",
-            zIndex: "9999",
+            zIndex: "9990",
           },
           content: {
             position: "absolute",

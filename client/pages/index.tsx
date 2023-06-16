@@ -260,7 +260,7 @@ export default function Home() {
       {isPayment && (
         <Confetti width={windowWidth} recycle={false} numberOfPieces={2000} />
       )}
-
+  
       <Layout>
         <ToastContainer />
         {pfmodal && (
