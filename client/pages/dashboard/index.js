@@ -190,7 +190,7 @@ export default function dashboard({ query }) {
     }
   }, [loading, meeData]);
   useEffect(() => {
-   
+
     const getToken = localStorage.getItem("token");
     const Gbid = localStorage.getItem("Gbid");
     if (getToken && Gbid) {
@@ -410,11 +410,11 @@ export default function dashboard({ query }) {
         {creditModal && (
           <TrialEndedModal setTrailModal={setCreditModal} topic={topic} />
         )}
-        
+
 
 
         <Modal
-          isOpen={showDisclaimerModal}
+          isOpen={true}
           onRequestClose={() => setShowDisclaimerModal(false)}
           ariaHideApp={false}
           className="w-[100%] sm:w-[38%] max-h-[95%]"
@@ -432,7 +432,6 @@ export default function dashboard({ query }) {
               background: "white",
               // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
               borderRadius: "8px",
-              height: "280px",
               // width: "100%",
               bottom: "",
               zIndex: "999",
@@ -451,27 +450,30 @@ export default function dashboard({ query }) {
             <CloseButtonIcon />
           </button>
           <div className="">
-            <h2 className="text-2xl mb-4">Disclaimer</h2>
+            <h2 className="text-2xl mb-4">Improvement Tip</h2>
             <p className="text-gray-700 mb-4">
-              Please note that the AI-generated blog may not be 100% exact to
-              your requirements. You may need to make some edits and tweaks to
-              create a quality blog.
+              {`To further improve the AI-generated Lille Blog to update it as per your likings you 
+can edit the content, remove some of the used ideas that you don't want and/or generate and add fresh ideas
+or use a combination of used and freah ideas to update the blog content.
+You can add your own image, click on the image and use image options icon.`}
             </p>
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                className="form-checkbox"
-                checked={disclaimerCheck}
-                onChange={handleDisclaimerPopup}
-              />
-              <span className="text-gray-700">
-                {"Don't show me this popup again"}
-              </span>
-            </label>
-            <div className="flex justify-end mt-6">
-              <button className="cta-invert" onClick={handleGenerateBlog}>
-                Ok Got it
-              </button>
+            <div >
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  className="form-checkbox"
+                  checked={disclaimerCheck}
+                  onChange={handleDisclaimerPopup}
+                />
+                <span className="text-gray-700">
+                  {"Don't show me this popup again"}
+                </span>
+              </label>
+              <div className="my-4">
+                <button className="cta-invert" onClick={handleGenerateBlog}>
+                  Ok Got it
+                </button>
+              </div>
             </div>
           </div>
         </Modal>
