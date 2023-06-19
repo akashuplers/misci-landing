@@ -188,23 +188,23 @@ export default function TinyMCEEditor({
   }, [editorText, updatedText]);
 
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      meeRefetch().then(
-        (res) => {
-          setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
-          const remainingQuota = meeData?.me?.remaining_twitter_quota;
-          console.log("REMAINING QUOTA: " + remainingTwitterQuota);
-          console.log(meeData);
-        }
-      )
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     meeRefetch().then(
+  //       (res) => {
+  //         setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
+  //         const remainingQuota = meeData?.me?.remaining_twitter_quota;
+  //         console.log("REMAINING QUOTA: " + remainingTwitterQuota);
+  //         console.log(meeData);
+  //       }
+  //     )
 
-    }, 2000);
+  //   }, 2000);
 
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [meeRefetch]);
+  //   return () => {
+  //     clearInterval(intervalId);
+  //   };
+  // }, [meeRefetch]);
 
   useEffect(() => {
     updateCredit();
@@ -559,14 +559,28 @@ export default function TinyMCEEditor({
         setAskingForSavingBlog(true);
       }
     }
-    else { // linkedin
+
+    else if (type === TYPESOFTABS.LINKEDIN) {
       if (iRanNumberOfTimes < 3) {
-        await handleJustPublish()
+        await handlePublish();
+        setAskingForSavingBlog(false);
+        setIsEditorTextUpdated(false);
+        setIRanNumberOfTimes(1);
+        return
       }
       else {
         setAskingForSavingBlog(true);
       }
     }
+    else if (type === TYPESOFTABS.BLOG) {
+      if (iRanNumberOfTimes < 3) {
+        await handleJustPublish();
+      }
+      else {
+        setAskingForSavingBlog(true);
+      }
+    }
+
   }
   useEffect(() => {
     if (option == 'twitter' || option == 'twitter-comeback') {
@@ -974,8 +988,9 @@ export default function TinyMCEEditor({
     setIRanNumberOfTimes(1);
   }, [option])
 
-
   if (loading) return <LoaderPlane />;
+
+
   return (
     <>
       <ToastContainer />
@@ -1016,6 +1031,7 @@ export default function TinyMCEEditor({
           You are now in The Editor Mode!! 🥳
         </div>
       </Modal> */}
+      
       <Modal
         isOpen={askingForSavingBlog}
         onRequestClose={() => setAskingForSavingBlog(false)}
@@ -1097,7 +1113,7 @@ export default function TinyMCEEditor({
         style={{
           overlay: {
             backgroundColor: "rgba(0,0,0,0.5)",
-            zIndex: "9999",
+            zIndex: "9990",
           },
           content: {
             position: "absolute",
@@ -1606,14 +1622,14 @@ export default function TinyMCEEditor({
                       )
                         handleConfirmUserForPublish(TYPESOFTABS.TWITTER)
                     }}
-                     disabled={
-                        (
-                          meeData?.me?.remaining_twitter_quota == undefined ||
-                          meeData?.me?.remaining_twitter_quota < 1 ||
-                          meeData?.me?.remaining_twitter_quota == null
-                          || pauseTwitterPublish
-                        )
-                      }
+                    disabled={
+                      (
+                        meeData?.me?.remaining_twitter_quota == undefined ||
+                        meeData?.me?.remaining_twitter_quota < 1 ||
+                        meeData?.me?.remaining_twitter_quota == null
+                        || pauseTwitterPublish
+                      )
+                    }
 
                   >
                     {publishTweetLoad ? (

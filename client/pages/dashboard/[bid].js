@@ -53,7 +53,6 @@ export default function Post() {
       fetchBlogId: bid,
     },
   });
-  // const [isPublished, setIsPublished] = useState(false);
   const [ideas, setIdeas] = useState([]);
   const [freshIdeas, setFreshIdeas] = useState([]);
 
@@ -62,7 +61,7 @@ export default function Post() {
   const [editorText, setEditorText] = useState([]);
   const [tags, setTags] = useState([]);
   // const [blogData, setBlogData] = useState([]);
-  const {blogData, setBlogData} = useBlogDataStore();
+  const { blogData, setBlogData } = useBlogDataStore();
 
   const [pyResTime, setPyResTime] = useState(null);
   const [ndResTime, setNdResTime] = useState(null);

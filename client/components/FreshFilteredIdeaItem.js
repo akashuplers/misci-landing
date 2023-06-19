@@ -8,7 +8,7 @@ const FreshFilteredIdeaItem = ({
     setFilteredIdeas,
     ideas,
     setIdeas,
-    handleusedideas
+    handleUsedIdeas
 }) => {
     const handleMouseEnter = () => {
         const refrenceTooltip = document.querySelector(`.refrenceTooltip${index}`);
@@ -49,7 +49,7 @@ const FreshFilteredIdeaItem = ({
                 arr.push(ideaObject);
             }
         }
-        handleusedideas(arr);
+        handleUsedIdeas(arr);
     };
 
     return (
