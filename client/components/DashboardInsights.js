@@ -262,6 +262,8 @@ export default function DashboardInsights({
 
     filteredArray.forEach((filterObject) => {
       arr.forEach((idea) => {
+        console.log("IDEA");
+        console.log(idea);
         const searchObject = filterObject?.filterText;
         console.log("CRITERIA : ", filterObject?.criteria);
         const doesIdeasIncludeSearchObject = idea?.idea?.includes(searchObject);
@@ -269,12 +271,17 @@ export default function DashboardInsights({
 
         const isIdeaNameSameAsSearchObject = idea?.name === searchObject;
         console.log("IS IDEA NAME SAME AS SEARCH OBJECT", isIdeaNameSameAsSearchObject);
+        var ideaOfIdea = idea?.idea;
+        // lowercase the idea
+        ideaOfIdea = ideaOfIdea?.toLowerCase();
+        const lowerCaseSearchObject = searchObject?.toLowerCase();
+        const ideaName = idea?.name?.toLowerCase();
 
-        if (filterObject?.criteria === "tag" && idea?.idea?.includes(searchObject)) {
+        if (filterObject?.criteria === "tag" && ideaOfIdea?.includes(lowerCaseSearchObject)) {
           console.log('idea is in IDEA');
           console.log(idea);
           setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-        } else if (filterObject?.criteria === "ref" && idea?.name === searchObject) {
+        } else if (filterObject?.criteria === "ref" && ideaName === lowerCaseSearchObject) {
           console.log('IDEA IN NOT UNIQUE FILTERED TAG');
           console.log(idea);
           setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
