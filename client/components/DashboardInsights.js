@@ -264,8 +264,14 @@ export default function DashboardInsights({
       arr.forEach((idea) => {
         const searchObject = filterObject?.filterText;
         console.log("CRITERIA : ", filterObject?.criteria);
+        const doesIdeasIncludeSearchObject = idea?.idea?.includes(searchObject);
+        console.log("DOES IDEA INCLUDE SEARCH OBJECT", doesIdeasIncludeSearchObject);
+
+        const isIdeaNameSameAsSearchObject = idea?.name === searchObject;
+        console.log("IS IDEA NAME SAME AS SEARCH OBJECT", isIdeaNameSameAsSearchObject);
+
         if (filterObject?.criteria === "tag" && idea?.idea?.includes(searchObject)) {
-          console.log('IDEA IN NOT UNIQUE FILTERED TAGS');
+          console.log('idea is in IDEA');
           console.log(idea);
           setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
         } else if (filterObject?.criteria === "ref" && idea?.name === searchObject) {

@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import useStore, { useBlogDataStore, useTabOptionStore, useThreadsUIStore } from "@/store/store";
+import useStore, { useBlogDataStore, useTabOptionStore, useThreadsUIStore, useTwitterThreadStore } from "@/store/store";
 import { useQuery } from "@apollo/client";
 import { Dialog, Transition } from "@headlessui/react";
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
@@ -175,11 +175,12 @@ export default function Sidebar() {
   }, []);
   const { setShowTwitterThreadUI } = useThreadsUIStore();
   const { option, setOption } = useTabOptionStore()
-
+  const { setTwitterThreadData } = useTwitterThreadStore()
   function handleEditorReset() {
     setOption('blog');
     setBlogData([]);
     setShowTwitterThreadUI(false);
+    setTwitterThreadData([]);
   }
   return (
     <>
