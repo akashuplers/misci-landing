@@ -462,7 +462,10 @@ export default function Sidebar() {
               <div className="mx-auto max-w-7xl px-2 flex relative">
                 <div className="pt-4">
                   {path !== "/" ? (
-                    <button onClick={() => router.back()}>
+                    <button onClick={() => {
+                      handleEditorReset();
+                      router.back();
+                    }}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"

@@ -123,6 +123,7 @@ const OTPModal = (
     return (
         <Modal
             isOpen={showOTPModal}
+            onRequestClose={() => { }}
             ariaHideApp={false}
             className="w-[100%] sm:w-[38%] max-h-[95%]"
             style={{
