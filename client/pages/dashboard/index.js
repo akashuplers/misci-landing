@@ -414,7 +414,7 @@ export default function dashboard({ query }) {
 
 
         <Modal
-          isOpen={true}
+          isOpen={showDisclaimerModal}
           onRequestClose={() => setShowDisclaimerModal(false)}
           ariaHideApp={false}
           className="w-[100%] sm:w-[38%] max-h-[95%]"
