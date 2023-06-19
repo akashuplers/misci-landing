@@ -185,7 +185,8 @@ const Threads = ({
             </Droppable>
 
             {threadData.length > 0 &&
-              threadData.length < remainingTwitterQuota && (
+              threadData.length < remainingTwitterQuota &&
+              remainingTwitterQuota > 0 && (
                 <div>
                   <button
                     onClick={addTextArea}
