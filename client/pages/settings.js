@@ -669,7 +669,7 @@ export default function Settings() {
                                   </dt>
                                   <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                     <span className="flex-grow">
-                                      {meeData?.me?.email} {meeData?.me?.emailVerified && "✅"}p
+                                      {meeData?.me?.email} {meeData?.me?.emailVerified && "✅"}
                                     </span>
                                   </dd>
                                 </div>
