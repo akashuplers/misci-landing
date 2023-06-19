@@ -61,6 +61,11 @@ export default function DashboardInsights({
   const updateCredit = useStore((state) => state.updateCredit);
   const updateisSave = useStore((state) => state.updateisSave);
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
+
+  const [filteredIdeas, setFilteredIdeas] = useState([]);
+  const [notUniquefilteredIdeas, setNotUniqueFilteredIdeas] = useState([]);
+  const { showTwitterThreadUI, setShowTwitterThreadUI } = useThreadsUIStore();
+
   const setShowContributionModal = useByMeCoffeModal(
     (state) => state.toggleModal
   );
@@ -176,10 +181,6 @@ export default function DashboardInsights({
     setRegenSelected((prev) => [...prev, ideaObject]);
   }
 
-  const [filteredIdeas, setFilteredIdeas] = useState([]);
-  const [notUniquefilteredIdeas, setNotUniqueFilteredIdeas] = useState([]);
-  const { showTwitterThreadUI, setShowTwitterThreadUI } = useThreadsUIStore();
-
   const [filteredArray, setFilteredArray] = useState([]);
 
   function handleTagClick(e) {
@@ -255,24 +256,46 @@ export default function DashboardInsights({
     setNotUniqueFilteredIdeas([]);
 
     const arr = ideaType === "used" ? ideas : freshIdeas;
+    console.log("IDEAS PROPS");
+    console.log(ideas);
+    // Assuming you have a state variable called 'notUniqueFilteredIdeas' and a function called 'setNotUniqueFilteredIdeas' to update it.
 
-    filteredArray.forEach((filterObject) =>
+    filteredArray.forEach((filterObject) => {
       arr.forEach((idea) => {
+        console.log("IDEA");
+        console.log(idea);
         const searchObject = filterObject?.filterText;
-        if (filterObject?.criteria === "tag") {
-          idea?.idea?.includes(searchObject) &&
-            setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-        } else if (filterObject?.criteria === "ref") {
-          idea?.name === searchObject &&
-            setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
+        console.log("CRITERIA : ", filterObject?.criteria);
+        const doesIdeasIncludeSearchObject = idea?.idea?.includes(searchObject);
+        console.log("DOES IDEA INCLUDE SEARCH OBJECT", doesIdeasIncludeSearchObject);
+
+        const isIdeaNameSameAsSearchObject = idea?.name === searchObject;
+        console.log("IS IDEA NAME SAME AS SEARCH OBJECT", isIdeaNameSameAsSearchObject);
+        var ideaOfIdea = idea?.idea;
+        // lowercase the idea
+        ideaOfIdea = ideaOfIdea?.toLowerCase();
+        const lowerCaseSearchObject = searchObject?.toLowerCase();
+        const ideaName = idea?.name?.toLowerCase();
+
+        if (filterObject?.criteria === "tag" && ideaOfIdea?.includes(lowerCaseSearchObject)) {
+          console.log('idea is in IDEA');
+          console.log(idea);
+          setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
+        } else if (filterObject?.criteria === "ref" && ideaName === lowerCaseSearchObject) {
+          console.log('IDEA IN NOT UNIQUE FILTERED TAG');
+          console.log(idea);
+          setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
         }
-      })
-    );
+      });
+    });
+
   }, [filteredArray]);
 
   // We create a set so that the values are unique, and multiple ideas are not added
   useEffect(() => {
     // Create a new Set object from the array, which removes duplicates
+    console.log('NOT UNQITE FILTER IDEAS HERE');
+    console.log(notUniquefilteredIdeas)
     const uniqueFilteredSet = new Set(
       notUniquefilteredIdeas.map(JSON.stringify)
     );
@@ -292,7 +315,7 @@ export default function DashboardInsights({
       }
       prevLink = idea?.name;
       idea.citationNumber = citationNumber;
-
+      console.log('IDeA TO BE ADDED');
       if (ideaType === "used") {
         setFilteredIdeas((prev) => [...prev, idea]);
       } else if (ideaType === "fresh") {
@@ -301,13 +324,16 @@ export default function DashboardInsights({
     });
   }, [notUniquefilteredIdeas]);
 
-  /*
-  keep this for de-bugging
+
+  // keep this for de-bugging
   useEffect(() => {
+    console.log('FILTERD ARRAY');
+    console.log('IDEA TYPE');
+    console.log(ideaType);
     console.log(filteredArray);
+    console.log('FILTER IDEAS');
     console.log(filteredIdeas);
   }, [filteredIdeas]);
-  */
   const { twitterThreadData, setTwitterThreadData } = useTwitterThreadStore();
 
   function handleRegenerate() {
@@ -1032,7 +1058,7 @@ export default function DashboardInsights({
         </div>
         <div
           className="overflow-y-scroll px-2"
-          style={{ 
+          style={{
             maxHeight: "82vh",
             height: "-webkit-fill-available",
             maxHeight: "50vh",
