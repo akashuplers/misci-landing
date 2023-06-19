@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import useStore, { useTabOptionStore, useThreadsUIStore } from "@/store/store";
+import useStore, { useBlogDataStore, useTabOptionStore, useThreadsUIStore, useTwitterThreadStore } from "@/store/store";
 import { useQuery } from "@apollo/client";
 import { Dialog, Transition } from "@headlessui/react";
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
@@ -164,6 +164,7 @@ export default function Sidebar() {
   }, []);
 
   const sideBarHeightRef = useRef(null);
+  const { blogData, setBlogData } = useBlogDataStore();
 
   useEffect(() => {
     const MINIMUM_HEIGHT = 125;
@@ -174,10 +175,12 @@ export default function Sidebar() {
   }, []);
   const { setShowTwitterThreadUI } = useThreadsUIStore();
   const { option, setOption } = useTabOptionStore()
-
+  const { setTwitterThreadData } = useTwitterThreadStore()
   function handleEditorReset() {
     setOption('blog');
+    setBlogData([]);
     setShowTwitterThreadUI(false);
+    setTwitterThreadData([]);
   }
   return (
     <>
@@ -460,7 +463,10 @@ export default function Sidebar() {
               <div className="mx-auto max-w-7xl px-2 flex relative">
                 <div className="pt-4">
                   {path !== "/" ? (
-                    <button onClick={() => router.back()}>
+                    <button onClick={() => {
+                      handleEditorReset();
+                      router.back();
+                    }}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
