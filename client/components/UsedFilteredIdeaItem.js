@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import React from 'react';
 
 const UsedFilteredIdeaItem = ({
     index,
@@ -43,7 +42,7 @@ const UsedFilteredIdeaItem = ({
     };
 
     return (
-        <div className="flex pb-3" key={index}>
+        <div className={`flex pb-3` + "filteredIdeas: " + idea?.idea} key={index}>
             <div className="flex justify-between gap-5 w-full">
                 <p className="text-[13px]">{idea?.idea} </p>
                 <a
