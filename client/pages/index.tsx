@@ -13,6 +13,7 @@ import Layout from "../components/Layout";
 import LoaderPlane from "../components/LoaderPlane";
 import TrialEndedModal from "../components/TrialEndedModal";
 import { meeAPI } from "../graphql/querys/mee";
+import { getDateMonthYear } from "../helpers/helper";
 import OTPModal from "../modals/OTPModal";
 import PreferencesModal from "../modals/PreferencesModal";
 import useStore from "../store/store";
@@ -252,8 +253,8 @@ export default function Home() {
           if (meeData?.me.prefFilled === false) {
             setPFModal(true);
           }
-        }
-        // GET https://maverick.lille.ai/auth/send-otp
+        } 
+        
         if (
           isOTPVerified === "false" ||
           !isOTPVerified ||
@@ -262,6 +263,13 @@ export default function Home() {
         ) {
           setIsOTPVerified(false);
           setShowOTPModal(true);
+          const { day, month } = getDateMonthYear(meeData?.me.date);
+
+          if (month == "June") {
+            if (day <= 18) {
+              setShowOTPModal(false);
+            }
+          }
           const SEND_OTP_URL = "https://maverick.lille.ai/auth/send-otp";
           var getToken = localStorage.getItem("token");
           const requestOptions = {

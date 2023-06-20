@@ -33,7 +33,7 @@ const FreshIdeaForm = ({
                             <input
                                 type="text"
                                 id="simple-search"
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 py-[0.75em]"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  py-[0.75em]"
                                 placeholder="To get Fresh Ideas upload topic, URL or File."
                                 required
                                 value={formInput}
