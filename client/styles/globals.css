@@ -468,7 +468,6 @@ a[aria-label="Powered by Tidio."] {
 }
 .dashboardInsightWidth {
   width: 100%;
-  margin: auto;
 }
 
 .dashboardInsightsUsedSectionHeight {
@@ -480,7 +479,6 @@ a[aria-label="Powered by Tidio."] {
 @media only screen and (min-width: 768px) {
   .dashboardInsightWidth {
     width: var(--dashboardInsight-width);
-    margin: auto;
   }
   .dashboardInsightsUsedSectionHeight {
     height: 100%;
