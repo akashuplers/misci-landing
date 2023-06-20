@@ -1,3 +1,4 @@
+import OTPModal from "@/modals/OTPModal";
 import { useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -6,13 +7,13 @@ import { ToastContainer, toast } from "react-toastify";
 import DashboardInsights from "../../components/DashboardInsights";
 import Layout from "../../components/Layout";
 import TinyMCEEditor from "../../components/TinyMCEEditor";
+import MoveToRegenPanel from "../../components/localicons/MoveToRegenPanel";
 import { API_BASE_PATH } from "../../constants/apiEndpoints";
 import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
 import { meeAPI } from "../../graphql/querys/mee";
-import { jsonToHtml } from "../../helpers/helper";
+import { getDateMonthYear, isMonthAfterJune, jsonToHtml } from "../../helpers/helper";
 import PreferencesModal from "../../modals/PreferencesModal";
 import { useBlogDataStore, useTabOptionStore, useThreadsUIStore } from "../../store/store";
-import MoveToRegenPanel from "../../components/localicons/MoveToRegenPanel";
 
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
@@ -69,6 +70,7 @@ export default function Post() {
   const [isPayment, setIsPayment] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
   const [windowHeight, setWindowHeight] = useState(0);
+  const [showOTPModal, setShowOTPModal] = useState(false);
   const { setShowTwitterThreadUI } = useThreadsUIStore();
 
   useEffect(() => {
@@ -237,6 +239,66 @@ export default function Post() {
     if (meeData?.me.prefFilled === false) {
       setPFModal(true);
     }
+    if (meeData?.me) {
+      if (typeof window !== "undefined") {
+        const isOTPVerified = meeData?.me?.emailVerified;
+        if (
+          isOTPVerified == "false" ||
+          !isOTPVerified ||
+          isOTPVerified == null
+        ) {
+          setPFModal(false);
+        } else {
+          if (meeData?.me.prefFilled === false) {
+            setPFModal(true);
+          }
+        }
+
+        if (
+          isOTPVerified === "false" ||
+          !isOTPVerified ||
+          isOTPVerified === null ||
+          isOTPVerified === undefined
+        ) {
+          const { day, month } = getDateMonthYear(meeData?.me.date);
+          if (!isMonthAfterJune(month)) {
+            if (month == "June") {
+              if (day <= 18) {
+                setShowOTPModal(false);
+              } else {
+                setShowOTPModal(true);
+              }
+            } else {
+              setShowOTPModal(false);
+            }
+
+          } else {
+            setShowOTPModal(true);
+          }
+          const SEND_OTP_URL = "https://maverick.lille.ai/auth/send-otp";
+          var getToken = localStorage.getItem("token");
+          const requestOptions = {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken,
+            },
+          };
+
+          fetch(SEND_OTP_URL, requestOptions)
+            .then((response) => {
+              console.log("RESPONSE FROM SEND OTP");
+              console.log(response);
+              console.log(response.json());
+            })
+            .catch((error) => {
+              console.log("ERROR FROM SEND OTP");
+            });
+        } else {
+          setShowOTPModal(false);
+        }
+      }
+    }
   }, [meeData]);
 
   console.log(freshIdeasReferences);
@@ -245,7 +307,15 @@ export default function Post() {
     <>
       {/* <Head><title>{blogData}</title><meta about="body">{blogData}</meta></Head> */}
       <Layout>
-
+        {meeData?.me && showOTPModal === true ? (
+          <OTPModal
+            showOTPModal={showOTPModal}
+            setShowOTPModal={setShowOTPModal}
+            setPFModal={setPFModal}
+          />
+        ) : (
+          <></>
+        )}
         <ToastContainer />
         {
           isPayment && <ReactConfetti
@@ -287,7 +357,7 @@ export default function Post() {
             </div>
           )}
 
-<MoveToRegenPanel/>
+          <MoveToRegenPanel />
 
           <div className="relative tiny_mce_width " >
             <TinyMCEEditor
