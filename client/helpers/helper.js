@@ -111,3 +111,12 @@ export function getCurrentDashboardURL() {
   }
   return null; // Return null if '/dashboard' is not found in the URL
 }
+export function getDateMonthYear(dateString) {
+  const timestamp = parseInt(dateString);
+  const date = new Date(timestamp);
+  const month = date.toLocaleString('default', { month: 'long' });
+  const year = date.getFullYear();
+  const day = date.getDate();
+
+  return { date, month, year, day };
+}
