@@ -153,12 +153,7 @@ const OTPModal = (
         >
             <div className="w-full">
                 <div className="bg-white h-full py-3 rounded text-center">
-                    <h1 className="text-2xl font-bold">OTP Verification</h1>
-                    <div className="flex flex-col mt-4">
-                        <span>Enter the OTP you received at</span>
-                        <span className="font-bold">Email</span>
-                    </div>
-
+                    <h1 className="text-xl font-bold">Enter the OTP Lille has sent to the email given by you</h1>
                     <div id="otp" className="flex flex-row justify-center text-center px-2 mt-5">
                         {Array.from({ length: 6 }, (_, index) => (
                             <input
