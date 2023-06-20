@@ -466,3 +466,25 @@ a[aria-label="Powered by Tidio."] {
   resize: none;
   /*remove the resize handle on the bottom right*/
 }
+.dashboardInsightWidth {
+  width: 100%;
+  margin: auto;
+}
+
+.dashboardInsightsUsedSectionHeight {
+  height: 100%;
+  max-height: unset;
+}
+
+/* after md */
+@media only screen and (min-width: 768px) {
+  .dashboardInsightWidth {
+    width: var(--dashboardInsight-width);
+    margin: auto;
+  }
+  .dashboardInsightsUsedSectionHeight {
+    height: 100%;
+    max-height:50vh;
+  }
+  
+}
