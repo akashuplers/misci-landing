@@ -16,7 +16,6 @@ import { API_BASE_PATH, API_ROUTES } from "../../constants/apiEndpoints";
 import { generateBlog } from "../../graphql/mutations/generateBlog";
 import { jsonToHtml } from "../../helpers/helper";
 import useStore, { useBlogDataStore, useByMeCoffeModal, useTabOptionStore } from "../../store/store";
-import OTPModal from "@/modals/OTPModal";
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
     event.stopImmediatePropagation();
@@ -456,11 +455,11 @@ export default function dashboard({ query }) {
             <h2 className="text-2xl mb-4">Improvement Tip 💡</h2>
             <p className="text-gray-700 mb-4">
               {`To further improve the AI-generated Lille Blog, to update it as per your likings you 
-can edit the content, remove some of the used ideas that you don't want and/or generate and add fresh ideas , 
+can edit the content, remove some of the used ideas that you don't want and/or generate and add fresh ideas, 
 or use a combination of used and freah ideas to update the blog content.
 You can add your own image, click on the image and use image options icon.`}
             </p>
-            <div >
+            <div className='flex justify-between'>
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
