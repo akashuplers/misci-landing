@@ -329,7 +329,8 @@ export default function Home() {
             getToken={getToken}
           />
         )}
-        {meeData?.me && showOTPModal === true ? (
+        {meeData?.me && showOTPModal === true ? 
+        (
           <OTPModal
             showOTPModal={showOTPModal}
             setShowOTPModal={setShowOTPModal}
