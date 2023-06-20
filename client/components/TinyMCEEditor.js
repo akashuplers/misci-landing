@@ -1031,7 +1031,7 @@ export default function TinyMCEEditor({
           You are now in The Editor Mode!! 🥳
         </div>
       </Modal> */}
-      
+
       <Modal
         isOpen={askingForSavingBlog}
         onRequestClose={() => setAskingForSavingBlog(false)}
@@ -1445,7 +1445,7 @@ export default function TinyMCEEditor({
             <div style={{ display: "none" }}></div>
           )}
           {!isPublished ? (
-            <div className="flex" style={{ gap: "0.25em", marginLeft: "auto" }}>
+            <div className="flex w-full lg:w-auto mt-5 lg:mt-auto" style={{ gap: "0.25em", marginLeft: "auto" }}>
 
               <button
                 className="cta"
@@ -1567,7 +1567,7 @@ export default function TinyMCEEditor({
               )}
             </div>
           ) : (
-            <div className="flex" style={{ gap: "0.25em", marginLeft: "auto" }}>
+            <div className="flex w-full lg:w-auto mt-5 lg:mt-auto" style={{ gap: "0.25em", marginLeft: "auto" }}>
               <button
                 className="cta"
                 onClick={saveText === "Save Now!" && handleSave}
