@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
 import styles from "../../styles/publish.module.css";
-
 import LoaderPlane from "../../components/LoaderPlane";
 import { jsonToHtml } from "../../helpers/helper";
 
