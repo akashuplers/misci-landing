@@ -26,6 +26,7 @@ import { addPreferances } from "../graphql/mutations/addPreferances";
 import { meeAPI } from "../graphql/querys/mee";
 import { formatDate, generateDateString } from "../helpers/helper";
 import fillerProfileImage from "../public/profile-filler.jpg";
+import { TwitterVerifiedIcon } from "../components/localicons/localicons";
 
 const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: false },
@@ -678,7 +679,11 @@ export default function Settings() {
                                     </span>
                                   </dd> */}
                                   <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                    <div className="group cursor-pointer relative inline-block text-center">{meeData?.me?.email} {meeData?.me?.emailVerified && "✅"}
+                                    <div className="flex group cursor-pointer relative gap-1 text-center">{meeData?.me?.email} {meeData?.me?.emailVerified && <span
+                                      className='text-green-600'
+                                    ><TwitterVerifiedIcon />
+                                    </span>
+                                    }
                                       {meeData?.me?.emailVerified && (
                                         <div className="opacity-0 w-28 bg-black text-white text-center text-xs rounded-lg py-2 absolute z-10 group-hover:opacity-100 bottom-full left-1/2 ml-14 px-3 pointer-events-none">
                                           Email verified
