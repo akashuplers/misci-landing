@@ -609,7 +609,7 @@ export default function Settings() {
                                   </dt>
                                   <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                     <div
-                                      class="profile-pic"
+                                      className="profile-pic"
                                       style={{
                                         width: "100px",
                                         height: "100px",
@@ -627,7 +627,7 @@ export default function Settings() {
                                       ) : (
                                         <>
                                           <label
-                                            class="-label"
+                                            className="-label"
                                             htmlFor="profileImageInput"
                                           >
                                             <span>Change Image</span>
@@ -667,11 +667,26 @@ export default function Settings() {
                                   <dt className="text-sm font-medium text-gray-500">
                                     Email
                                   </dt>
-                                  <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                    <span className="flex-grow">
-                                      {meeData?.me?.email}
+                                  {/* <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                    <span className="flex-grow relative">
+                                      {meeData?.me?.email} {meeData?.me?.emailVerified && "✅"}
+                                      {meeData?.me?.emailVerified && (
+                                        <span className="tooltip absolute text-white bg-gray-800 rounded-lg py-1 px-2 -mt-8 left-1/2 transform -translate-x-1/2 opacity-0 pointer-events-none transition-opacity duration-200">
+                                          Email verified
+                                        </span>
+                                      )}
                                     </span>
+                                  </dd> */}
+                                  <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                    <div className="group cursor-pointer relative inline-block text-center">{meeData?.me?.email} {meeData?.me?.emailVerified && "✅"}
+                                      {meeData?.me?.emailVerified && (
+                                        <div className="opacity-0 w-28 bg-black text-white text-center text-xs rounded-lg py-2 absolute z-10 group-hover:opacity-100 bottom-full left-1/2 ml-14 px-3 pointer-events-none">
+                                          Email verified
+                                        </div>)
+                                      }
+                                    </div>
                                   </dd>
+
                                 </div>
                                 {meeData?.me?.isSubscribed && (
                                   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:border-b sm:border-gray-200 sm:py-5">
@@ -725,7 +740,7 @@ export default function Settings() {
                                           </>
                                         ) : (
                                           <>
-                                            <span class="text-red-500 py-2 rounded">
+                                            <span className="text-red-500 py-2 rounded">
                                               You have cancelled the
                                               subscription
                                             </span>
@@ -747,7 +762,7 @@ export default function Settings() {
                                       meeData?.me?.paid &&
                                       meeData?.me?.interval !== "monthly" && (
                                         <div
-                                          class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-2 w-[310%]"
+                                          className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-2 w-[310%]"
                                           role="alert"
                                         >
                                           <p>
@@ -986,7 +1001,7 @@ export default function Settings() {
                       viewBox="0 0 24 24"
                       strokeWidth="1.5"
                       stroke="currentColor"
-                      class="w-6 h-6"
+                      className="w-6 h-6"
                     >
                       <path
                         stroke-linecap="round"
@@ -1014,7 +1029,7 @@ export default function Settings() {
                   </p>
                   <div className="flex m-6">
                     <button
-                      class="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
+                      className="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
                       onClick={() => {
                         setOpenModal(false);
                       }}
@@ -1022,7 +1037,7 @@ export default function Settings() {
                       Not Now
                     </button>
                     <button
-                      class="w-[240px]  bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded text-sm"
+                      className="w-[240px]  bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded text-sm"
                       onClick={() => {
                         handleCancel();
                       }}
