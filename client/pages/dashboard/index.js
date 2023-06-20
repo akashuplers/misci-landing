@@ -478,7 +478,7 @@ You can add your own image, click on the image and use image options icon.`}
           </div>
         </Modal>
 
-        <div className="flex mb-6 h-[88vh]">
+        <div className="flex  flex-col md:flex-row  lg:mb-6 lg:h-[88vh]">
           {API_BASE_PATH === "https://maverick.lille.ai" && (
             <div
               style={{
@@ -503,6 +503,15 @@ You can add your own image, click on the image and use image options icon.`}
               </span>
             </div>
           )}
+          <div className="absolute -right-[62px] top-[50%] lg:hidden z-50 rotate-[-180deg]">
+            <a
+              className="bg-transparent  text-blue-700 border-blue-700 font-bold py-2 px-4 rounded-full"
+              href="#regenblog"
+            >
+              Regenerate Blog
+            </a>
+          </div>
+
           <div className="relative tiny_mce_width">
             <TinyMCEEditor
               topic={topic}

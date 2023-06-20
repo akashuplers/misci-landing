@@ -12,6 +12,7 @@ import { meeAPI } from "../../graphql/querys/mee";
 import { jsonToHtml } from "../../helpers/helper";
 import PreferencesModal from "../../modals/PreferencesModal";
 import { useBlogDataStore, useTabOptionStore, useThreadsUIStore } from "../../store/store";
+import MoveToRegenPanel from "../../components/localicons/MoveToRegenPanel";
 
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
@@ -253,7 +254,7 @@ export default function Post() {
             numberOfPieces={2000}
           />
         }
-        <div className="flex">
+        <div className="flex flex-col md:flex-row">
           {pfmodal && (
             <PreferencesModal
               pfmodal={pfmodal}
@@ -285,7 +286,10 @@ export default function Post() {
               </span>
             </div>
           )}
-          <div className="relative tiny_mce_width">
+
+<MoveToRegenPanel/>
+
+          <div className="relative tiny_mce_width " >
             <TinyMCEEditor
               isAuthenticated={true}
               editorText={editorText}
@@ -298,8 +302,7 @@ export default function Post() {
             />
           </div>
           <div
-            className="relative hidden lg:block"
-            style={{ width: "var(--dashboardInsight-width)" }}
+            className="relative dashboardInsightWidth"
           >
             <DashboardInsights
               ideas={ideas}
@@ -324,7 +327,7 @@ export default function Post() {
             />
           </div>
         </div>
-      </Layout>
+      </Layout >
     </>
   );
 }

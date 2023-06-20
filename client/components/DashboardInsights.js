@@ -902,7 +902,7 @@ export default function DashboardInsights({
       {creditModal && (
         <TrialEndedModal setTrailModal={setCreditModal} topic={null} />
       )}
-      <div className="text-xs px-2" style={{ borderLeft: "2px solid #d2d2d2" }}>
+      <div className="text-xs px-2 mb-24 lg:mb-0" style={{ borderLeft: "2px solid #d2d2d2" }} id="regenblog">
         <div className="flex justify-between gap-[1.25em]">
           <p className="font-normal w-[70%]">
             Regenerate your blog on the basis of selected used & fresh ideas.
@@ -929,7 +929,7 @@ export default function DashboardInsights({
               <p className="pt-[0.65em] font-semibold">Filtering Keywords</p>
             </div>
             <div
-              className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
+              className="flex gap-[0.5em] flex-wrap h-full lg:max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
               style={{ padding: "0.75em 0.25em" }}
             >
               {ideaType === "used"
@@ -1054,12 +1054,7 @@ export default function DashboardInsights({
           )}
         </div>
         <div
-          className="overflow-y-scroll px-2"
-          style={{
-            maxHeight: "82vh",
-            height: "-webkit-fill-available",
-            maxHeight: "50vh",
-          }}
+          className=" dashboardInsightsUsedSectionHeight overflow-y-scroll px-2"
         >
           {ideaType === "used"
             ? filteredIdeas?.length > 0
