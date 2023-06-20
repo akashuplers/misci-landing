@@ -1706,7 +1706,7 @@ export default function TinyMCEEditor({
                   plugins: "lists code table codesample link",
                   menubar: false,
                   statusbar: false,
-                  height: "82vh",
+                  height: window ? window.innerWidth > 768 ? "80vh" : "67vh" : "80vh",
                   images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
                   images_upload_credentials: true,
                   plugins:

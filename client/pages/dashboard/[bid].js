@@ -8,14 +8,11 @@ import Layout from "../../components/Layout";
 import TinyMCEEditor from "../../components/TinyMCEEditor";
 import { API_BASE_PATH } from "../../constants/apiEndpoints";
 import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
-import { ChevronRightIcon } from "@heroicons/react/outline";
-
 import { meeAPI } from "../../graphql/querys/mee";
 import { jsonToHtml } from "../../helpers/helper";
 import PreferencesModal from "../../modals/PreferencesModal";
-import { DownIcon } from "../../components/localicons/localicons";
 import { useBlogDataStore, useTabOptionStore, useThreadsUIStore } from "../../store/store";
-import  MoveToRegenPanel from "../../components/localicons/MoveToRegenPanel";
+import MoveToRegenPanel from "../../components/localicons/MoveToRegenPanel";
 
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
@@ -290,8 +287,7 @@ export default function Post() {
             </div>
           )}
 
-          {/* add a buttion absolute center of right screen border */}
-          <MoveToRegenPanel />
+<MoveToRegenPanel/>
 
           <div className="relative tiny_mce_width " >
             <TinyMCEEditor
