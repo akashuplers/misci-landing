@@ -208,7 +208,7 @@ export default function TinyMCEEditor({
 
   useEffect(() => {
     updateCredit();
-  }, []);
+  }, [handleTwitterPublish]);
   useEffect(() => {
     if (meeData) {
       setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid)
@@ -245,7 +245,7 @@ export default function TinyMCEEditor({
         const aa = blogData?.publish_data?.find(
           (pd) => pd?.platform === "twitter"
         );
-        const htmlDoc = jsonToHtml(aa.tiny_mce_data);
+        const htmlDoc = jsonToHtml(aa?.tiny_mce_data);
         //console.log('MOVEING TO AA');
         //console.log(aa);
         // check remainging
@@ -253,26 +253,25 @@ export default function TinyMCEEditor({
           setPauseTwitterPublish(true);
         }
 
-        if (aa.threads === null || aa.threads === undefined || aa.threads.length === 0 || aa.threads == "") {
+        if (aa?.threads === null || aa?.threads === undefined || aa?.threads.length === 0 || aa?.threads == "") {
           setShowTwitterThreadUI(false);
         } else {
           //console.log("THREADS DATA");
-          //console.log(aa.threads);
-          const theLastThread = aa.threads[aa.threads.length - 1];
+          //console.log(aa?.threads);
+          const theLastThread = aa?.threads[aa?.threads.length - 1];
           // merge this will text with 2nd last tweet
-          var theSecondLastThread = aa.threads[aa.threads.length - 2];
+          var theSecondLastThread = aa?.threads[aa?.threads.length - 2];
 
           if (theLastThread !== undefined && theLastThread !== null && theLastThread !== "") {
             const mergedText = theSecondLastThread + " ." + theLastThread;
-
             theSecondLastThread = mergedText;
-            aa.threads.pop();
-            aa.threads.pop();
-            aa.threads.push(theSecondLastThread);
+            aa?.threads?.pop();
+            aa?.threads?.pop();
+            aa?.threads?.push(theSecondLastThread);
             //console.log("THREADS DATA AFTER MERGE");
-            //console.log(aa.threads);
-            setTwitterThreadData(aa.threads);
-            setInitialTwitterThreads(aa.threads);
+            //console.log(aa?.threads);
+            setTwitterThreadData(aa?.threads);
+            setInitialTwitterThreads(aa?.threads);
           }
           setShowTwitterThreadUI(true);
         }
@@ -306,6 +305,18 @@ export default function TinyMCEEditor({
       localStorage.removeItem("savingRedirectFrom");
     }
   }, [option]);
+
+  useEffect(() => {
+    if (option === "linkedin") {
+      setShowTwitterThreadUI(false);
+      setOption('linkedin');
+      const aa = blogData?.publish_data?.find(
+        (pd) => pd.platform === "linkedin"
+      ).tiny_mce_data;
+      const htmlDoc = jsonToHtml(aa);
+      setEditorText(htmlDoc);
+    }
+  }, [option])
 
   const onCopyText = () => {
     setIsCopied(true);
@@ -362,6 +373,13 @@ export default function TinyMCEEditor({
       else if (option === "blog") {
         localStorage.setItem("savingRedirectFrom", "blog");
       }
+    }
+
+    const for_TW = localStorage.getItem("for_TW");
+    if (for_TW) {
+      setOption("twitter-comeback");
+    } else {
+      setOption("linkedin-comeback");
     }
     if (typeof window !== "undefined") {
       window.addEventListener("beforeunload", (event) => {
@@ -893,7 +911,7 @@ export default function TinyMCEEditor({
   }
 
   const [iRanNumberOfTimes, setIRanNumberOfTimes] = useState(0);
-  const handleTwitterPublish = () => {
+  function handleTwitterPublish (){
     //console.log("handleTwitterPublish");
     if (creditLeft === 0) {
       setTrailModal(true);
@@ -1046,9 +1064,9 @@ export default function TinyMCEEditor({
     const aa = blogData?.publish_data?.find(
       (pd) => pd.platform === "twitter"
     );
-    const htmlDoc = jsonToHtml(aa.tiny_mce_data);
+    const htmlDoc = jsonToHtml(aa?.tiny_mce_data);
     //console.log('MOVEING TO ');
-    if ((aa.threads === null || aa.threads === undefined || aa.threads.length === 0 || aa.threads == "")) {
+    if ((aa?.threads === null || aa?.threads === undefined || aa?.threads.length === 0 || aa?.threads == "")) {
       if (
         meeData?.me?.remaining_twitter_quota == 0 || meeData?.me?.remaining_twitter_quota == null || meeData?.me?.remaining_twitter_quota == undefined
       ) {
@@ -1058,8 +1076,8 @@ export default function TinyMCEEditor({
       }
     } else {
       //console.log("THREADS DATA");
-      //console.log(aa.threads);
-      const twitterThreadsFromAPI = [...aa.threads];
+      //console.log(aa?.threads);
+      const twitterThreadsFromAPI = [...aa?.threads];
       const lastThread = twitterThreadsFromAPI[twitterThreadsFromAPI.length - 1];
       //console.log(lastThread);
       const secondlastThread = twitterThreadsFromAPI[twitterThreadsFromAPI.length - 2];
