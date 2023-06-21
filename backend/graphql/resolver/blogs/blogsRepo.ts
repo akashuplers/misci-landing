@@ -377,6 +377,21 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                             "tag": "BODY",
                                             children: [
                                                 {
+                                                    "tag": "H3",
+                                                    "attributes": {
+                                                        "style": "text-align: center;"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "tag": "STRONG",
+                                                            "attributes": {},
+                                                            "children": [
+                                                                title
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
                                                     "tag": "P",
                                                     "attributes": {},
                                                     "children": [
