@@ -28,6 +28,7 @@ export class ChatGPT {
             },
             timeout: timeout || 0
         };
+        console.log(config)
         try {
             const res = await axios(config)
             return res?.data?.choices?.length && res?.data?.choices?.[0].text
