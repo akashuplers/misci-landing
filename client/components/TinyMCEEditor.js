@@ -456,7 +456,7 @@ export default function TinyMCEEditor({
 
 
   const handleJustConnect = async () => {
-    toast(thisIsToBePublished + "TYPE", {});
+    
     if (thisIsToBePublished === TYPESOFTABS.TWITTER) {
       await handleconnectTwitter();
     }
@@ -612,7 +612,7 @@ export default function TinyMCEEditor({
 
   }
   const handleConfirmUserForConnect = async (type) => {
-    toast(type,{});
+    
     setThisIsToBePublished(type);
     if (type === TYPESOFTABS.TWITTER) {
       if (initailTwitterThreads == twitterThreadData) {
