@@ -265,8 +265,13 @@ export default function TinyMCEEditor({
           if (theLastThread !== undefined && theLastThread !== null && theLastThread !== "") {
             const mergedText = theSecondLastThread + " ." + theLastThread;
             theSecondLastThread = mergedText;
-            aa?.threads?.pop();
-            aa?.threads?.pop();
+            try {
+              aa?.threads?.pop();
+              aa?.threads?.pop();
+            }
+            catch (e) {
+              aa.threads = [];
+            }
             aa?.threads?.push(theSecondLastThread);
             //console.log("THREADS DATA AFTER MERGE");
             //console.log(aa?.threads);
@@ -447,8 +452,9 @@ export default function TinyMCEEditor({
         })
           .then(() => {
             //console.log(">>", window.location);
-            if (window.location.pathname !== "/dashboard/" + blog_id)
+            if (window.location.pathname !== "/dashboard/" + blog_id) {
               window.location.href = "/dashboard/" + blog_id;
+            }
             // router.push("/dashboard/" + blog_id);
           })
           .catch((err) => {
@@ -911,7 +917,7 @@ export default function TinyMCEEditor({
   }
 
   const [iRanNumberOfTimes, setIRanNumberOfTimes] = useState(0);
-  function handleTwitterPublish (){
+  function handleTwitterPublish() {
     //console.log("handleTwitterPublish");
     if (creditLeft === 0) {
       setTrailModal(true);
