@@ -1268,7 +1268,8 @@ router.get('/send-otp', authMiddleware,  async (request: any, res: any) => {
       // <p style="font-size: 6px">This is system generated email. Do not reply to this email. </p>
       // `,
       htmlMsg: `
-      <p style="box-sizing: border-box; margin: 0;">&nbsp;</p>
+      <html><head><title>Lille's Verification Code</title></head>
+      <body><p style="box-sizing: border-box; margin: 0;">&nbsp;</p>
       <style>
       @media (max-width:670px) {
         .bee-row-content:not(.no_stack) {
@@ -1278,7 +1279,7 @@ router.get('/send-otp', authMiddleware,  async (request: any, res: any) => {
       </style>
       <div class="bee-page-container" style="box-sizing: border-box;">
       <div class="bee-row bee-row-1" style="box-sizing: border-box; position: relative; background-repeat: no-repeat;">
-      <div class="bee-row-content" style="box-sizing: border-box; position: relative; max-width: 650px; margin: 0 auto; display: flex; background-repeat: no-repeat; color: #000;">
+      <div class="bee-row-content" style="box-sizing: border-box; position: relative; max-width: 650px; margin: 0 auto;background-repeat: no-repeat; color: #000;">
       <div class="bee-col bee-col-1 bee-col-w12" style="box-sizing: border-box; flex-basis: 100%; padding-bottom: 5px; padding-top: 5px;">
       <div class="bee-block bee-block-1 bee-divider" style="box-sizing: border-box; overflow: auto; padding: 10px;">
       <div class="spacer" style="box-sizing: border-box; height: 10px;">&nbsp;</div>
@@ -1289,7 +1290,7 @@ router.get('/send-otp', authMiddleware,  async (request: any, res: any) => {
       <div class="bee-row bee-row-2" style="box-sizing: border-box; position: relative; background-repeat: no-repeat;">
       <div class="bee-row-content" style="box-sizing: border-box; position: relative; max-width: 650px; margin: 0 auto; display: flex; background-repeat: no-repeat; background-color: #f9948c; color: #000;">
       <div class="bee-col bee-col-1 bee-col-w12" style="box-sizing: border-box; flex-basis: 100%; padding: 10px 15px;">
-      <div class="bee-block bee-block-1 bee-image" style="box-sizing: border-box; overflow: auto; width: 100%;"><img class="bee-center bee-fixedwidth" style="box-sizing: border-box; display: block; width: 100%; margin: 0 auto; max-width: 124px;" src="https://a95de3cb9b.imgdist.com/public/users/Integrators/BeeProAgency/1006241_991088/image%209.png" alt=""></div>
+      <div class="bee-block bee-block-1 bee-image" style="box-sizing: border-box; overflow: auto; width: 100%;"><img class="bee-center bee-fixedwidth" style="box-sizing: border-box;display: block;width: 100%;margin: 0 auto;max-width: 124px;height: 43px;" src="https://lille.ai/lille_logo_new.png" alt=""></div>
       </div>
       </div>
       </div>
@@ -1328,21 +1329,21 @@ router.get('/send-otp', authMiddleware,  async (request: any, res: any) => {
       <div class="center bee-separator" style="box-sizing: border-box; margin: 0 auto; border-top: 1px dotted #C4C4C4; width: 60%;">&nbsp;</div>
       </div>
       <div class="bee-block bee-block-2 bee-text" style="box-sizing: border-box; overflow-wrap: anywhere; padding: 10px;">
-      <div class="bee-text-content" style="box-sizing: border-box; font-size: 12px; line-height: 120%; font-family: inherit; color: #004aad;">
-      <p style="box-sizing: border-box; margin: 0; font-size: 12px; line-height: 14px; text-align: center;"><strong style="box-sizing: border-box;">You can reach us at <a style="box-sizing: border-box; text-decoration: underline; color: #004aad;" href="https://lille.ai/" target="_blank" rel="noopener">customersuccess@lille.ai</a></strong></p>
+      <div class="bee-text-content" style="box-sizing: border-box; font-size: 12px; line-height: 120%; font-family: inherit; color: #000000;">
+      <p style="box-sizing: border-box; margin: 0; font-size: 12px; line-height: 14px; text-align: center;"><a style="box-sizing: border-box; text-decoration: underline; color: #000000;" href="https://lille.ai/" target="_blank" rel="noopener"><strong style="box-sizing: border-box;">You can reach us at customersuccess@lille.ai</strong></a></p>
       </div>
       </div>
       <div class="bee-block bee-block-3 bee-text" style="box-sizing: border-box; overflow-wrap: anywhere; padding: 10px;">
       <div class="bee-text-content" style="box-sizing: border-box; font-size: 12px; line-height: 120%; font-family: inherit; color: #004aad;">
-      <p style="box-sizing: border-box; margin: 0; font-size: 12px; line-height: 14px; text-align: center;">Creator of Lille.ai - &nbsp; &nbsp;&copy; Nowigence, Inc. - All Rights Reserved 2023</p>
+      <p style="box-sizing: border-box; margin: 0; font-size: 12px; line-height: 14px; text-align: center;">Creator of Lille.ai - &nbsp; &nbsp;© Nowigence, Inc. - All Rights Reserved 2023</p>
       </div>
       </div>
       </div>
       </div>
       </div>
       </div>
-      
-      
+      </body></html>
+
       `
     });
     const data: any = {
