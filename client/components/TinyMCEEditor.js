@@ -446,12 +446,41 @@ export default function TinyMCEEditor({
 
   const [callBack, setCallBack] = useState();
   const [askingForSavingBlog, setAskingForSavingBlog] = useState(false);
+  const [askingForSavingBlogWhileConnecting, setAskingForSavingBlogWhileConnecting] = useState(false);
   useEffect(() => {
     if (load) {
       const inputElement = document.getElementsByClassName("tox-textfield");
       inputElement[0].value = "Loading...";
     }
   }, [load]);
+
+
+  const handleJustConnect = async () => {
+    toast(thisIsToBePublished + "TYPE", {});
+    if (thisIsToBePublished === TYPESOFTABS.TWITTER) {
+      await handleconnectTwitter();
+    }
+    else if (thisIsToBePublished === TYPESOFTABS.LINKEDIN) {
+      await handleconnectLinkedin();
+    }
+
+    setAskingForSavingBlogWhileConnecting(false);
+    setIsEditorTextUpdated(false);
+    setIRanNumberOfTimes(1);
+  }
+  const handleSaveLogAndConnect = async () => {
+    await handleSave();
+    if (thisIsToBePublished === TYPESOFTABS.TWITTER) {
+      await handleconnectTwitter();
+    }
+    else if (thisIsToBePublished === TYPESOFTABS.LINKEDIN) {
+      await handleconnectLinkedin();
+    }
+
+    setAskingForSavingBlogWhileConnecting(false);
+    setIsEditorTextUpdated(false);
+    setIRanNumberOfTimes(1);
+  }
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -582,6 +611,33 @@ export default function TinyMCEEditor({
     }
 
   }
+  const handleConfirmUserForConnect = async (type) => {
+    toast(type,{});
+    setThisIsToBePublished(type);
+    if (type === TYPESOFTABS.TWITTER) {
+      if (initailTwitterThreads == twitterThreadData) {
+        await handleconnectTwitter();
+      } else {
+        setAskingForSavingBlogWhileConnecting(true);
+      }
+    }
+
+    else if (type === TYPESOFTABS.LINKEDIN) {
+      if (iRanNumberOfTimes < 3) {
+        await handleconnectLinkedin();
+        setAskingForSavingBlogWhileConnecting(false);
+        setIsEditorTextUpdated(false);
+        setIRanNumberOfTimes(1);
+        return
+      }
+      else {
+        setAskingForSavingBlogWhileConnecting(true);
+      }
+    }
+
+
+  }
+
   useEffect(() => {
     if (option == 'twitter' || option == 'twitter-comeback') {
       setShowTwitterThreadUI(true);
@@ -1107,6 +1163,80 @@ export default function TinyMCEEditor({
         </div>
       </Modal>
       <Modal
+        isOpen={askingForSavingBlogWhileConnecting}
+        onRequestClose={() => setAskingForSavingBlogWhileConnecting(false)}
+        ariaHideApp={false}
+        className="w-[100%] sm:w-[38%] max-h-[95%]"
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0,0,0,0.5)",
+            zIndex: "9999",
+          },
+          content: {
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            right: "auto",
+            border: "none",
+            background: "white",
+            // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+            borderRadius: "8px",
+            height: "280px",
+            // width: "100%",
+            maxWidth: "380px",
+            bottom: "",
+            zIndex: "999",
+            marginRight: "-50%",
+            transform: "translate(-50%, -50%)",
+            padding: "30px",
+            paddingBottom: "0px",
+          },
+        }}
+      >
+        <button
+          className="absolute right-[35px]"
+          onClick={() => setAskingForSavingBlogWhileConnecting(false)}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            class="w-6 h-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+        <div className="mx-auto pb-4">
+          <img className="mx-auto h-12" src="/info.png" />
+        </div>
+        <div className="mx-auto font-bold text-2xl pl-[25%]">
+          Are you sure
+        </div>
+        <p className="text-center text-gray-500 text-base font-medium mt-4 mx-auto">
+          Do you want to save the changes
+        </p>
+        <div className="flex m-9">
+          <button
+            class="mr-4 w-[200px] p-4 bg-transparent hover:bg-red-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded"
+            onClick={handleJustConnect}
+          >
+            No
+          </button>
+          <button
+            class="w-[240px]  bg-transparent hover:bg-green-500 text-green-700 font-semibold hover:text-white py-2 px-4 border border-green-500 hover:border-transparent rounded"
+            onClick={handleSaveLogAndConnect}
+          >
+            YES, Save
+          </button>
+        </div>
+      </Modal>
+      <Modal
         isOpen={showContributionModal}
         ariaHideApp={false}
         className="w-[100%] sm:w-[38%] max-h-[95%]"
@@ -1484,7 +1614,9 @@ export default function TinyMCEEditor({
                     )}
                   </button>
                 ) : (
-                  <button className="cta-invert" onClick={handleconnectLinkedin}>
+                  <button className="cta-invert" onClick={
+                    () => handleConfirmUserForConnect(TYPESOFTABS.LINKEDIN)
+                  }>
                     Connect with Linkedin
                   </button>
                 )
@@ -1527,7 +1659,9 @@ export default function TinyMCEEditor({
                     className={`cta-invert disabled:opacity-50 
                     disabled:cursor-not-allowed
                     `}
-                    onClick={handleconnectTwitter}>
+                    onClick={
+                      () => handleConfirmUserForConnect(TYPESOFTABS.TWITTER)
+                    }>
                     Connect Twitter
                   </button>
                 )
@@ -1603,7 +1737,9 @@ export default function TinyMCEEditor({
                     )}
                   </button>
                 ) : (
-                  <button className="cta-invert" onClick={handleconnectLinkedin}>
+                  <button className="cta-invert" onClick={
+                    () => handleConfirmUserForConnect(TYPESOFTABS.LINKEDIN)
+                  }>
                     Connect with Linkedin
                   </button>
                 )
@@ -1640,7 +1776,9 @@ export default function TinyMCEEditor({
                     )}
                   </button>
                 ) : (
-                  <button className="cta-invert" onClick={handleconnectTwitter}>
+                  <button className="cta-invert" onClick={
+                    () => handleConfirmUserForConnect(TYPESOFTABS.TWITTER)
+                  }>
                     Connect Twitter
                   </button>
                 )
