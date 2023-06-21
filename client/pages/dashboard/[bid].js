@@ -236,6 +236,8 @@ export default function Post() {
 
   useEffect(() => {
     console.log(meeData);
+
+   
     if (meeData?.me.prefFilled === false) {
       setPFModal(true);
     }
@@ -294,6 +296,7 @@ export default function Post() {
             .catch((error) => {
               console.log("ERROR FROM SEND OTP");
             });
+
         } else {
           setShowOTPModal(false);
         }
