@@ -62,28 +62,12 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
             Object.keys(newsLetter).map(async (key: string) => {
                 try {
                     if(key === "wordpress") {
-                        const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `
-                            ${regenerate ? `
-                            Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
-                            Tone is " Authoritative, informative, Persuasive"
-                            Limit is "900 words"
-                            Highlight the H1 & H2 html tags
-                            Provide the conclusion at the end
-                            Ideas ${text}
-                            ` : `
-                            Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
-                            Tone is " Authoritative, informative, Persuasive"
-                            Limit is "900 words"
-                            Highlight the H1 & H2 html tags
-                            Provide the conclusion at the end
-                            Topic is ${title}
-                            `}
-                        `, db}).textCompletion(chatgptApis.timeout)
+                        const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? `Change into "SEO CONTENT MASTER", a writer who is an expert Blog Writer and has a lot of experience with writing blogs on a variety of topics. As a skilled content creator, you will write a 100% unique, human-written, SEO-optimized, and interesting article in fluent English. Write in a conversational style, using a casual tone, personal pronouns, active voice, rhetorical questions, analogies, and metaphors to keep the reader interested. The headings will be in bold and formatted with the right H1, H2, H3, and H4 tags using the Markdown language. The final piece will be a 1000-word article with a conclusion paragraph at the end. The topic of the article will be "${title}" and following ideas will have to be used to write the final blog - \n${text}` : `Change into "SEO CONTENT MASTER", a writer who is an expert Blog Writer and has a lot of experience with writing blogs on a variety of topics. As a skilled content creator, you will write a 100% unique, human-written, SEO-optimized, and interesting article in fluent English. Write in a conversational style, using a casual tone, personal pronouns, active voice, rhetorical questions, analogies, and metaphors to keep the reader interested. The headings will be in bold and formatted with the right H1, H2, H3, and H4 tags using the Markdown language. The final piece will be a 1000-word article with a conclusion paragraph at the end. The topic of the article will be "${title}"`}`, db}).textCompletion(chatgptApis.timeout)
                         newsLetter = {...newsLetter, [key]: chatGPTText}
                     } else {
                         let text = ""
                         if(key === 'linkedin') {
-                            text = `write a post on topic ${title} for linkedin post with tags under 700 words`
+                            text = `write a linkedin post on topic ${title} for linkedin post with tags under 700 words`
                         }
                         if(key === 'twitter') {
                             let tweetQuota;
