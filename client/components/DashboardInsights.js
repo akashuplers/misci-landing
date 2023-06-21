@@ -458,15 +458,14 @@ export default function DashboardInsights({
             if (theLastThread !== undefined && theLastThread !== null && theLastThread !== "") {
               const mergedText = theSecondLastThread + " ." + theLastThread;
               theSecondLastThread = mergedText;
-              aaThreads.threads.pop();
-              aaThreads.threads.pop();
-              aaThreads.threads.push(theSecondLastThread);
+              aaThreads.threads?.pop();
+              aaThreads.threads?.pop();
+              aaThreads.threads?.push(theSecondLastThread);
               console.log("THREADS DATA AFTER MERGE");
               console.log(aaThreads.threads);
               setTwitterThreadData(aaThreads.threads);
             }
           }
-
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
 
