@@ -188,23 +188,23 @@ export default function TinyMCEEditor({
   }, [editorText, updatedText]);
 
 
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     meeRefetch().then(
-  //       (res) => {
-  //         setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
-  //         const remainingQuota = meeData?.me?.remaining_twitter_quota;
-  //         console.log("REMAINING QUOTA: " + remainingTwitterQuota);
-  //         console.log(meeData);
-  //       }
-  //     )
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      meeRefetch().then(
+        (res) => {
+          setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
+          const remainingQuota = meeData?.me?.remaining_twitter_quota;
+          console.log("REMAINING QUOTA: " + remainingTwitterQuota);
+          console.log(meeData);
+        }
+      )
 
-  //   }, 2000);
+    }, 2000);
 
-  //   return () => {
-  //     clearInterval(intervalId);
-  //   };
-  // }, [meeRefetch]);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [meeRefetch]);
 
   useEffect(() => {
     updateCredit();
