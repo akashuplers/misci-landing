@@ -217,6 +217,7 @@ export default function TinyMCEEditor({
   useEffect(() => {
     // alert('COming to TINy', option, "Super")
     // toast("Coming to Tiny" + option, {})
+
     if (option === 'linkedin') {
       const aa = blogData?.publish_data?.find(
         (pd) => pd.platform === "linkedin"
@@ -282,6 +283,28 @@ export default function TinyMCEEditor({
 
       }
     }
+
+    const savingRedirectFrom = localStorage.getItem("savingRedirectFrom");
+    if (savingRedirectFrom === "linkedin") {
+      setShowTwitterThreadUI(false);
+      setOption('linkedin');
+      const aa = blogData?.publish_data?.find(
+        (pd) => pd.platform === "linkedin"
+      ).tiny_mce_data;
+      const htmlDoc = jsonToHtml(aa);
+      //console.log("885", htmlDoc);
+      setEditorText(htmlDoc);
+      localStorage.removeItem("savingRedirectFrom");
+    } else if (savingRedirectFrom === "twitter") {
+      setShowTwitterThreadUI(true);
+      setOption('twitter');
+      handleTwitterBlog();
+      localStorage.removeItem("savingRedirectFrom");
+    } else if (savingRedirectFrom === "blog") {
+      setOption('blog');
+      handleBlog();
+      localStorage.removeItem("savingRedirectFrom");
+    }
   }, [option]);
 
   const onCopyText = () => {
@@ -327,6 +350,19 @@ export default function TinyMCEEditor({
 
   const handleSave = async () => {
     var getToken, ispaid, credits;
+    if (window.location.pathname !== "/dashboard/" + blog_id) {
+
+      // check for options, blogs, twitter, linkedin,
+      if (option === "twitter") {
+        localStorage.setItem("savingRedirectFrom", "twitter");
+      }
+      else if (option === "linkedin") {
+        localStorage.setItem("savingRedirectFrom", "linkedin");
+      }
+      else if (option === "blog") {
+        localStorage.setItem("savingRedirectFrom", "blog");
+      }
+    }
     if (typeof window !== "undefined") {
       window.addEventListener("beforeunload", (event) => {
         event.preventDefault();
@@ -444,6 +480,11 @@ export default function TinyMCEEditor({
 
 
 
+  useEffect(() => {
+    if (option === 'linkedin') {
+      handleLinkedinBlog();
+    }
+  }, [option])
   const [callBack, setCallBack] = useState();
   const [askingForSavingBlog, setAskingForSavingBlog] = useState(false);
   const [askingForSavingBlogWhileConnecting, setAskingForSavingBlogWhileConnecting] = useState(false);
@@ -456,7 +497,7 @@ export default function TinyMCEEditor({
 
 
   const handleJustConnect = async () => {
-    
+
     if (thisIsToBePublished === TYPESOFTABS.TWITTER) {
       await handleconnectTwitter();
     }
@@ -612,7 +653,7 @@ export default function TinyMCEEditor({
 
   }
   const handleConfirmUserForConnect = async (type) => {
-    
+
     setThisIsToBePublished(type);
     if (type === TYPESOFTABS.TWITTER) {
       if (initailTwitterThreads == twitterThreadData) {
@@ -642,7 +683,8 @@ export default function TinyMCEEditor({
     if (option == 'twitter' || option == 'twitter-comeback') {
       setShowTwitterThreadUI(true);
     }
-  }, [option])
+  }, [option]);
+
   const handleSavePublish = () => {
     if (creditLeft === 0) {
       setTrailModal(true);
