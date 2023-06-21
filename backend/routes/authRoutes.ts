@@ -1268,287 +1268,81 @@ router.get('/send-otp', authMiddleware,  async (request: any, res: any) => {
       // <p style="font-size: 6px">This is system generated email. Do not reply to this email. </p>
       // `,
       htmlMsg: `
-      <!DOCTYPE html>
-      <html>
-      
-      <head>
-        <title></title>
-        <meta content="summary_large_image" name="twitter:card" />
-        <meta content="website" property="og:type" />
-        <meta content="" property="og:description" />
-        <meta content="https://3ukkdml2si.preview-postedstuff.com/V2-MlGA-Fn6Q-IotS-2BRs/" property="og:url" />
-        <meta content="https://pro-bee-beepro-thumbnail.getbee.io/messages/1006241/991088/1934810/9458232_large.jpg" property="og:image" />
-        <meta content="" property="og:title" />
-        <meta content="" name="description" />
-        <meta charset="utf-8" />
-        <meta content="width=device-width" name="viewport" />
-        <style>
-          .bee-row,
-          .bee-row-content {
-            position: relative
-          }
-      
-          .bee-row-1,
-          .bee-row-2,
-          .bee-row-2 .bee-row-content,
-          .bee-row-3,
-          .bee-row-3 .bee-row-content,
-          .bee-row-4,
-          .bee-row-4 .bee-row-content,
-          .bee-row-5,
-          .bee-row-6 {
-            background-repeat: no-repeat
-          }
-      
-          body {
-            background-color: #f5f5f5;
-            color: #000;
-            font-family: Arial, "Helvetica Neue", Helvetica, sans-serif
-          }
-      
-          a {
-            color: #0068a5
-          }
-      
-          * {
-            box-sizing: border-box
-          }
-      
-          body,
-          p {
-            margin: 0
-          }
-      
-          .bee-row-content {
-            max-width: 650px;
-            margin: 0 auto;
-            display: flex
-          }
-      
-          .bee-row-content .bee-col-w12 {
-            flex-basis: 100%
-          }
-      
-          .bee-icon .bee-icon-label-right a {
-            text-decoration: none
-          }
-      
-          .bee-divider,
-          .bee-image {
-            overflow: auto
-          }
-      
-          .bee-divider .center,
-          .bee-image .bee-center {
-            margin: 0 auto
-          }
-      
-          .bee-row-2 .bee-col-1 .bee-block-1 {
-            width: 100%
-          }
-      
-          .bee-icon {
-            display: inline-block;
-            vertical-align: middle
-          }
-      
-          .bee-icon .bee-content {
-            display: flex;
-            align-items: center
-          }
-      
-          .bee-image img {
-            display: block;
-            width: 100%
-          }
-      
-          .bee-text {
-            overflow-wrap: anywhere
-          }
-      
-          @media (max-width:670px) {
-            .bee-row-content:not(.no_stack) {
-              display: block
-            }
-          }
-      
-          .bee-row-1 .bee-row-content,
-          .bee-row-5 .bee-row-content,
-          .bee-row-6 .bee-row-content {
-            background-repeat: no-repeat;
-            color: #000
-          }
-      
-          .bee-row-1 .bee-col-1,
-          .bee-row-6 .bee-col-1 {
-            padding-bottom: 5px;
-            padding-top: 5px
-          }
-      
-          .bee-row-1 .bee-col-1 .bee-block-1,
-          .bee-row-5 .bee-col-1 .bee-block-1,
-          .bee-row-5 .bee-col-1 .bee-block-2 {
-            padding: 10px
-          }
-      
-          .bee-row-2 .bee-row-content {
-            background-color: #f9948c;
-            color: #000
-          }
-      
-          .bee-row-2 .bee-col-1 {
-            padding: 10px 15px
-          }
-      
-          .bee-row-3 .bee-row-content {
-            background-color: #f0d5d5;
-            color: #000
-          }
-      
-          .bee-row-3 .bee-col-1 {
-            padding-top: 5px
-          }
-      
-          .bee-row-3 .bee-col-1 .bee-block-1 {
-            padding: 30px 10px
-          }
-      
-          .bee-row-4 .bee-row-content {
-            background-color: #fff;
-            border-bottom: 0 solid #fff;
-            border-left: 0 solid #fff;
-            border-radius: 0;
-            border-right: 0px solid #fff;
-            border-top: 0 solid #fff;
-            color: #000
-          }
-      
-          .bee-row-4 .bee-col-1 {
-            border-bottom: 30px solid #f0d5d5;
-            border-left: 30px solid #f0d5d5;
-            border-right: 30px solid #f0d5d5;
-            border-top: 0 solid #f0d5d5;
-            padding-bottom: 30px;
-            padding-top: 30px
-          }
-      
-          .bee-row-4 .bee-col-1 .bee-block-1 {
-            padding-bottom: 32px;
-            width: 100%
-          }
-      
-          .bee-row-4 .bee-col-1 .bee-block-2 {
-            padding-bottom: 10px;
-            padding-left: 10px;
-            padding-right: 10px
-          }
-      
-          .bee-row-4 .bee-col-1 .bee-block-3 {
-            padding: 15px 10px
-          }
-      
-          .bee-row-5 .bee-col-1 {
-            padding-bottom: 20px;
-            padding-top: 20px
-          }
-      
-          .bee-row-6 .bee-col-1 .bee-block-1 {
-            color: #9d9d9d;
-            font-family: inherit;
-            font-size: 15px;
-            padding-bottom: 5px;
-            padding-top: 5px;
-            text-align: center
-          }
-      
-          .bee-row-6 .bee-col-1 .bee-block-1 .bee-icon-image {
-            padding: 5px 6px 5px 5px
-          }
-      
-          .bee-row-6 .bee-col-1 .bee-block-1 .bee-icon:not(.bee-icon-first) .bee-content {
-            margin-left: 0
-          }
-      
-          .bee-row-6 .bee-col-1 .bee-block-1 .bee-icon::not(.bee-icon-last) .bee-content {
-            margin-right: 0
-          }
-        </style>
-      </head>
-      
-      <body>
-        <div class="bee-page-container">
-          <div class="bee-row bee-row-1">
-            <div class="bee-row-content">
-              <div class="bee-col bee-col-1 bee-col-w12">
-                <div class="bee-block bee-block-1 bee-divider">
-                  <div class="spacer" style="height:10px;"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="bee-row bee-row-2">
-            <div class="bee-row-content">
-              <div class="bee-col bee-col-1 bee-col-w12">
-                <div class="bee-block bee-block-1 bee-image"><img alt="" class="bee-center bee-fixedwidth" src="https://a95de3cb9b.imgdist.com/public/users/Integrators/BeeProAgency/1006241_991088/image%209.png" style="max-width:124px;" /></div>
-              </div>
-            </div>
-          </div>
-          <div class="bee-row bee-row-3">
-            <div class="bee-row-content">
-              <div class="bee-col bee-col-1 bee-col-w12">
-                <div class="bee-block bee-block-1 bee-text">
-                  <div class="bee-text-content" style="line-height: 120%; font-size: 12px; font-family: inherit; color: #052d3d;">
-                    <p style="line-height: 14px; font-size: 12px; text-align: center;"><span style="font-size: 30px; line-height: 36px;"><strong style="">Here's your Verification Code</strong></span></p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="bee-row bee-row-4">
-            <div class="bee-row-content">
-              <div class="bee-col bee-col-1 bee-col-w12">
-                <div class="bee-block bee-block-1 bee-image"><img alt="" class="bee-center bee-fixedwidth" src="https://a95de3cb9b.imgdist.com/public/users/Integrators/BeeProAgency/1006241_991088/data_protection_2_.png" style="max-width:118px;" /></div>
-                <div class="bee-block bee-block-2 bee-text">
-                  <div class="bee-text-content" style="line-height: 120%; font-size: 12px; font-family: inherit; color: #fc7318;">
-                    <p style="line-height: 14px; font-size: 12px; text-align: center; letter-spacing: 6px;"><span style="color: #052d3d; line-height: 14px;"><span style="font-size: 46px; line-height: 55px;"><strong style="">${OTP}</strong></span></span></p>
-                  </div>
-                </div>
-                <div class="bee-block bee-block-3 bee-text">
-                  <div class="bee-text-content" style="line-height: 120%; font-size: 12px; font-family: inherit; color: #fc7318;">
-                    <p style="line-height: 14px; font-size: 12px; text-align: center;"><span style="font-size: 20px; line-height: 24px; color: rgb(5,45,61);"><strong style="">👉 <span style="font-size: 13px; line-height: 15px;">  <span style="background-color: #ffff99; line-height: 14px;"> Valid for ${process.env.OTP_VERIFICATION_TIME || 20} minutes. only </span></span></strong></span></p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="bee-row bee-row-5">
-            <div class="bee-row-content">
-              <div class="bee-col bee-col-1 bee-col-w12">
-                <div class="bee-block bee-block-1 bee-divider">
-                  <div class="center bee-separator" style="border-top:1px dotted #C4C4C4;width:60%;"></div>
-                </div>
-                <div class="bee-block bee-block-2 bee-text">
-                  <div class="bee-text-content" style="font-size: 12px; line-height: 120%; font-family: inherit; color: #004aad;">
-                    <p style="font-size: 12px; line-height: 14px; text-align: center;"><span style="font-size: 14px; line-height: 16px;"><a href="#" rel="noopener" style="text-decoration: none; color: #004aad;" target="_blank"><strong style=""> </strong></a><a href="https://nowigence.com/" rel="noopener" style="text-decoration: underline; color: #004aad;" target="_blank">Contact us</a><strong style=""><a href="#" rel="noopener" style="text-decoration: none; color: #004aad;" target="_blank"></a> </strong></span></p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="bee-row bee-row-6">
-            <div class="bee-row-content">
-              <div class="bee-col bee-col-1 bee-col-w12">
-                <div class="bee-block bee-block-1 bee-icons" id="beepro-locked-footer">
-                  <div class="bee-icon bee-icon-last">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </body>
-      
-      </html>
+      <html><head><title>Lille's Verification Code</title></head>
+      <body><p style="box-sizing: border-box; margin: 0;">&nbsp;</p>
+      <style>
+      @media (max-width:670px) {
+        .bee-row-content:not(.no_stack) {
+          display: block;
+        }
+      }
+      </style>
+      <div class="bee-page-container" style="box-sizing: border-box;">
+      <div class="bee-row bee-row-1" style="box-sizing: border-box; position: relative; background-repeat: no-repeat;">
+      <div class="bee-row-content" style="box-sizing: border-box; position: relative; max-width: 650px; margin: 0 auto;background-repeat: no-repeat; color: #000;">
+      <div class="bee-col bee-col-1 bee-col-w12" style="box-sizing: border-box; flex-basis: 100%; padding-bottom: 5px; padding-top: 5px;">
+      <div class="bee-block bee-block-1 bee-divider" style="box-sizing: border-box; overflow: auto; padding: 10px;">
+      <div class="spacer" style="box-sizing: border-box; height: 10px;">&nbsp;</div>
+      </div>
+      </div>
+      </div>
+      </div>
+      <div class="bee-row bee-row-2" style="box-sizing: border-box; position: relative; background-repeat: no-repeat;">
+      <div class="bee-row-content" style="box-sizing: border-box; position: relative; max-width: 650px; margin: 0 auto; display: flex; background-repeat: no-repeat; background-color: #f9948c; color: #000;">
+      <div class="bee-col bee-col-1 bee-col-w12" style="box-sizing: border-box; flex-basis: 100%; padding: 10px 15px;">
+      <div class="bee-block bee-block-1 bee-image" style="box-sizing: border-box; overflow: auto; width: 100%;"><img class="bee-center bee-fixedwidth" style="box-sizing: border-box;display: block;width: 100%;margin: 0 auto;max-width: 124px;height: 43px;" src="https://lille.ai/lille_logo_new.png" alt=""></div>
+      </div>
+      </div>
+      </div>
+      <div class="bee-row bee-row-3" style="box-sizing: border-box; position: relative; background-repeat: no-repeat;">
+      <div class="bee-row-content" style="box-sizing: border-box; position: relative; max-width: 650px; margin: 0 auto; display: flex; background-repeat: no-repeat; background-color: #f0d5d5; color: #000;">
+      <div class="bee-col bee-col-1 bee-col-w12" style="box-sizing: border-box; flex-basis: 100%; padding-top: 5px;">
+      <div class="bee-block bee-block-1 bee-text" style="box-sizing: border-box; overflow-wrap: anywhere; padding: 30px 10px;">
+      <div class="bee-text-content" style="box-sizing: border-box; line-height: 120%; font-size: 12px; font-family: inherit; color: #052d3d;">
+      <p style="box-sizing: border-box; margin: 0; line-height: 14px; font-size: 12px; text-align: center;"><span style="box-sizing: border-box; font-size: 30px; line-height: 36px;"><strong style="box-sizing: border-box;">Here's your Verification Code</strong></span></p>
+      </div>
+      </div>
+      </div>
+      </div>
+      </div>
+      <div class="bee-row bee-row-4" style="box-sizing: border-box; position: relative; background-repeat: no-repeat;">
+      <div class="bee-row-content" style="box-sizing: border-box; position: relative; max-width: 650px; margin: 0 auto; display: flex; background-repeat: no-repeat; background-color: #fff; border-bottom: 0 solid #fff; border-left: 0 solid #fff; border-radius: 0; border-right: 0px solid #fff; border-top: 0 solid #fff; color: #000;">
+      <div class="bee-col bee-col-1 bee-col-w12" style="box-sizing: border-box; flex-basis: 100%; border-bottom: 30px solid #f0d5d5; border-left: 30px solid #f0d5d5; border-right: 30px solid #f0d5d5; border-top: 0 solid #f0d5d5; padding-bottom: 30px; padding-top: 30px;">
+      <div class="bee-block bee-block-1 bee-image" style="box-sizing: border-box; overflow: auto; padding-bottom: 32px; width: 100%;"><img class="bee-center bee-fixedwidth" style="box-sizing: border-box; display: block; width: 100%; margin: 0 auto; max-width: 118px;" src="https://a95de3cb9b.imgdist.com/public/users/Integrators/BeeProAgency/1006241_991088/data_protection_2_.png" alt=""></div>
+      <div class="bee-block bee-block-2 bee-text" style="box-sizing: border-box; overflow-wrap: anywhere; padding-bottom: 10px; padding-left: 10px; padding-right: 10px;">
+      <div class="bee-text-content" style="box-sizing: border-box; line-height: 120%; font-size: 12px; font-family: inherit; color: #fc7318;">
+      <p style="box-sizing: border-box; margin: 0; line-height: 14px; font-size: 12px; text-align: center; letter-spacing: 6px;"><span style="box-sizing: border-box; color: #052d3d; line-height: 14px;"><span style="box-sizing: border-box; font-size: 46px; line-height: 55px;"><strong style="box-sizing: border-box;">${OTP}</strong></span></span></p>
+      </div>
+      </div>
+      <div class="bee-block bee-block-3 bee-text" style="box-sizing: border-box; overflow-wrap: anywhere; padding: 15px 10px;">
+      <div class="bee-text-content" style="box-sizing: border-box; line-height: 120%; font-size: 12px; font-family: inherit; color: #fc7318;">
+      <p style="box-sizing: border-box; margin: 0; line-height: 14px; font-size: 12px; text-align: center;"><span style="box-sizing: border-box; font-size: 20px; line-height: 24px; color: #052d3d;"><strong style="box-sizing: border-box;">👉 <span style="box-sizing: border-box; font-size: 13px; line-height: 15px;">&nbsp;&nbsp;<span style="box-sizing: border-box; background-color: #ffff99; line-height: 14px;"> Valid for ${process.env.OTP_VERIFICATION_TIME} min. only&nbsp;</span></span></strong></span></p>
+      </div>
+      </div>
+      </div>
+      </div>
+      </div>
+      <div class="bee-row bee-row-5" style="box-sizing: border-box; position: relative; background-repeat: no-repeat;">
+      <div class="bee-row-content" style="box-sizing: border-box; position: relative; max-width: 650px; margin: 0 auto; display: flex; background-repeat: no-repeat; color: #000;">
+      <div class="bee-col bee-col-1 bee-col-w12" style="box-sizing: border-box; flex-basis: 100%; padding-bottom: 20px; padding-top: 20px;">
+      <div class="bee-block bee-block-1 bee-divider" style="box-sizing: border-box; overflow: auto; padding: 10px;">
+      <div class="center bee-separator" style="box-sizing: border-box; margin: 0 auto; border-top: 1px dotted #C4C4C4; width: 60%;">&nbsp;</div>
+      </div>
+      <div class="bee-block bee-block-2 bee-text" style="box-sizing: border-box; overflow-wrap: anywhere; padding: 10px;">
+      <div class="bee-text-content" style="box-sizing: border-box; font-size: 12px; line-height: 120%; font-family: inherit; color: #000000;">
+      <p style="box-sizing: border-box; margin: 0; font-size: 12px; line-height: 14px; text-align: center;"><a style="box-sizing: border-box; text-decoration: underline; color: #000000;" href="https://lille.ai/" target="_blank" rel="noopener"><strong style="box-sizing: border-box;">You can reach us at customersuccess@lille.ai</strong></a></p>
+      </div>
+      </div>
+      <div class="bee-block bee-block-3 bee-text" style="box-sizing: border-box; overflow-wrap: anywhere; padding: 10px;">
+      <div class="bee-text-content" style="box-sizing: border-box; font-size: 12px; line-height: 120%; font-family: inherit; color: #004aad;">
+      <p style="box-sizing: border-box; margin: 0; font-size: 12px; line-height: 14px; text-align: center;">Creator of Lille.ai - &nbsp; &nbsp;© Nowigence, Inc. - All Rights Reserved 2023</p>
+      </div>
+      </div>
+      </div>
+      </div>
+      </div>
+      </div>
+      </body></html>
       
       
       `
