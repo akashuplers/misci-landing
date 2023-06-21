@@ -1113,7 +1113,7 @@ export default function TinyMCEEditor({
         style={{
           overlay: {
             backgroundColor: "rgba(0,0,0,0.5)",
-            zIndex: "9990",
+            zIndex: "9998",
           },
           content: {
             position: "absolute",
@@ -1122,9 +1122,7 @@ export default function TinyMCEEditor({
             right: "auto",
             border: "none",
             background: "white",
-            // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
             borderRadius: "8px",
-            // width: "100%",
             maxWidth: "450px",
             bottom: "",
             zIndex: "999",
@@ -1271,7 +1269,7 @@ export default function TinyMCEEditor({
         style={{
           overlay: {
             backgroundColor: "rgba(0,0,0,0.5)",
-            zIndex: "9998",
+            zIndex: "9996",
           },
           content: {
             position: "absolute",
@@ -1422,9 +1420,7 @@ export default function TinyMCEEditor({
               </div>
               <div
                 // className="blog-toggle-button cta twitter flex gap-1 items-center"
-                className={`blog-toggle-button cta twitter flex gap-1 items-center ${option == 'twitter' ? "active" : ""}`}
-
-                onClick={handleTwitterBlog}
+                className={`blog-toggle-button cta twitter flex gap-1 items-center ${option == 'twitter' ? "active" : ""}`} onClick={handleTwitterBlog}
               >
                 <svg
                   style={{ pointerEvents: "none" }}
