@@ -302,14 +302,15 @@ export default function dashboard({ query }) {
         .then((data) => { })
         .finally(() => {
           const for_TW = localStorage.getItem("for_TW");
-          if (for_TW) {
-            toast.success("Twitter Integration Done!!");
-            setOption("twitter-comeback");
-          } else {
-            toast.success("Linkedin Integration Done!!");
-            setOption("linkedin-comeback");
+          if (!router.asPath.includes('denied') && !router.asPath.includes('error')) {
+            if (for_TW) {
+              toast.success("Twitter Integration Done!!");
+              setOption("twitter-comeback");
+            } else {
+              toast.success("Linkedin Integration Done!!");
+              setOption("linkedin-comeback");
+            }
           }
-          // localStorage.removeItem("for_TW"); this is causing linkedin to speak
         })
         .catch(function (error) {
           console.log(error);
