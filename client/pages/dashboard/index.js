@@ -54,6 +54,7 @@ export default function dashboard({ query }) {
   const creditLeft = useStore((state) => state.creditLeft);
   // const [showContributionModal, setShowContributionModal] = useState(false);
   const [isPublish, seIsPublish] = useState(false);
+  const [showOTPModal, setShowOTPModal] = useState(false);
   console.log('MEE DATA GET IN ZUSLAND');
 
   var getToken;
@@ -413,6 +414,7 @@ export default function dashboard({ query }) {
 
 
 
+
         <Modal
           isOpen={showDisclaimerModal}
           onRequestClose={() => setShowDisclaimerModal(false)}
@@ -450,14 +452,14 @@ export default function dashboard({ query }) {
             <CloseButtonIcon />
           </button>
           <div className="">
-            <h2 className="text-2xl mb-4">Improvement Tip</h2>
+            <h2 className="text-2xl mb-4">Improvement Tip 💡</h2>
             <p className="text-gray-700 mb-4">
-              {`To further improve the AI-generated Lille Blog to update it as per your likings you 
-can edit the content, remove some of the used ideas that you don't want and/or generate and add fresh ideas
+              {`To further improve the AI-generated Lille Blog, to update it as per your likings you 
+can edit the content, remove some of the used ideas that you don't want and/or generate and add fresh ideas, 
 or use a combination of used and freah ideas to update the blog content.
 You can add your own image, click on the image and use image options icon.`}
             </p>
-            <div >
+            <div className='flex justify-between'>
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
