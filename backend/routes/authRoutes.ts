@@ -1330,7 +1330,7 @@ router.get('/send-otp', authMiddleware,  async (request: any, res: any) => {
       </div>
       <div class="bee-block bee-block-2 bee-text" style="box-sizing: border-box; overflow-wrap: anywhere; padding: 10px;">
       <div class="bee-text-content" style="box-sizing: border-box; font-size: 12px; line-height: 120%; font-family: inherit; color: #000000;">
-      <p style="box-sizing: border-box; margin: 0; font-size: 12px; line-height: 14px; text-align: center;"><a style="box-sizing: border-box; text-decoration: underline; color: #000000;" href="https://lille.ai/" target="_blank" rel="noopener"><strong style="box-sizing: border-box;">You can reach us at customersuccess@lille.ai</strong></a></p>
+      <p style="box-sizing: border-box; margin: 0; font-size: 12px; line-height: 14px; text-align: center;"><a style="box-sizing: border-box; text-decoration: underline; color: #000000;" href="mailto:customersuccess@lille.ai" target="_blank" rel="noopener"><strong style="box-sizing: border-box;">You can reach us at customersuccess@lille.ai</strong></a></p>
       </div>
       </div>
       <div class="bee-block bee-block-3 bee-text" style="box-sizing: border-box; overflow-wrap: anywhere; padding: 10px;">
