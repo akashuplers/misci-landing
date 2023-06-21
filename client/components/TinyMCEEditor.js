@@ -263,7 +263,14 @@ export default function TinyMCEEditor({
           var theSecondLastThread = aa?.threads[aa?.threads.length - 2];
 
           if (theLastThread !== undefined && theLastThread !== null && theLastThread !== "") {
-            const mergedText = theSecondLastThread + " ." + theLastThread;
+            // const mergedText = theSecondLastThread + " ." + theLastThread;
+            // check if theSecondLastThread is undefined
+            if (theSecondLastThread === undefined || theSecondLastThread === null || theSecondLastThread === "") {
+              theSecondLastThread = "";
+            } else {
+              theSecondLastThread = theSecondLastThread + " .";
+            }
+            const mergedText = theSecondLastThread + theLastThread;
             theSecondLastThread = mergedText;
             try {
               aa?.threads?.pop();

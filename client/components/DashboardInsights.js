@@ -456,7 +456,13 @@ export default function DashboardInsights({
             // merge this will text with 2nd last tweet
             var theSecondLastThread = aaThreads.threads[aaThreads.threads.length - 2];
             if (theLastThread !== undefined && theLastThread !== null && theLastThread !== "") {
-              const mergedText = theSecondLastThread + " ." + theLastThread;
+              // const mergedText = theSecondLastThread + " ." + theLastThread;
+              if (theSecondLastThread === undefined || theSecondLastThread === null || theSecondLastThread === "") {
+                theSecondLastThread = "";
+              } else {
+                theSecondLastThread = theSecondLastThread + " .";
+              }
+              const mergedText = theSecondLastThread + theLastThread;
               theSecondLastThread = mergedText;
               aaThreads.threads?.pop();
               aaThreads.threads?.pop();
