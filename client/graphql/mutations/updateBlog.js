@@ -8,6 +8,7 @@ export const updateBlog = gql`
           children
           tag
         }
+        threads
         published_date
         published
         platform
