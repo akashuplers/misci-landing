@@ -1268,81 +1268,78 @@ router.get('/send-otp', authMiddleware,  async (request: any, res: any) => {
       // <p style="font-size: 6px">This is system generated email. Do not reply to this email. </p>
       // `,
       htmlMsg: `
-      <html><head><title>Lille's Verification Code</title></head>
-      <body><p style="box-sizing: border-box; margin: 0;">&nbsp;</p>
-      <style>
-      @media (max-width:670px) {
-        .bee-row-content:not(.no_stack) {
-          display: block;
-        }
-      }
-      </style>
-      <div class="bee-page-container" style="box-sizing: border-box;">
-      <div class="bee-row bee-row-1" style="box-sizing: border-box; position: relative; background-repeat: no-repeat;">
-      <div class="bee-row-content" style="box-sizing: border-box; position: relative; max-width: 650px; margin: 0 auto;background-repeat: no-repeat; color: #000;">
-      <div class="bee-col bee-col-1 bee-col-w12" style="box-sizing: border-box; flex-basis: 100%; padding-bottom: 5px; padding-top: 5px;">
-      <div class="bee-block bee-block-1 bee-divider" style="box-sizing: border-box; overflow: auto; padding: 10px;">
-      <div class="spacer" style="box-sizing: border-box; height: 10px;">&nbsp;</div>
+      <html><head></head><body marginheight="0"><p style="box-sizing: border-box ; margin: 0">&nbsp;</p>
+      
+      <div class="bee-page-container" style="box-sizing: border-box">
+      <div class="bee-row bee-row-1" style="box-sizing: border-box ; position: relative ; background-repeat: no-repeat">
+      <div class="bee-row-content" style="box-sizing: border-box ; position: relative ; max-width: 650px ; margin: 0 auto ; background-repeat: no-repeat ; color: #000">
+      <div class="bee-col bee-col-1 bee-col-w12" style="box-sizing: border-box ; padding-bottom: 5px ; padding-top: 5px">
+      <div class="bee-block bee-block-1 bee-divider" style="box-sizing: border-box ; overflow: auto ; padding: 10px">
+      <div class="spacer" style="box-sizing: border-box ; height: 10px">&nbsp;</div>
       </div>
       </div>
       </div>
       </div>
-      <div class="bee-row bee-row-2" style="box-sizing: border-box; position: relative; background-repeat: no-repeat;">
-      <div class="bee-row-content" style="box-sizing: border-box; position: relative; max-width: 650px; margin: 0 auto; display: flex; background-repeat: no-repeat; background-color: #f9948c; color: #000;">
-      <div class="bee-col bee-col-1 bee-col-w12" style="box-sizing: border-box; flex-basis: 100%; padding: 10px 15px;">
-      <div class="bee-block bee-block-1 bee-image" style="box-sizing: border-box; overflow: auto; width: 100%;"><img class="bee-center bee-fixedwidth" style="box-sizing: border-box;display: block;width: 100%;margin: 0 auto;max-width: 124px;height: 43px;" src="https://lille.ai/lille_logo_new.png" alt=""></div>
+      <div class="bee-row bee-row-2" style="box-sizing: border-box ; position: relative ; background-repeat: no-repeat">
+      <div class="bee-row-content" style="box-sizing: border-box;position: relative;max-width: 650px;margin: 0 auto;/* display: flex ; */background-repeat: no-repeat;background-color: #f9948c;color: #000">
+      <div class="bee-col bee-col-1 bee-col-w12" style="box-sizing: border-box ; padding: 10px 15px">
+      <div class="bee-block bee-block-1 bee-image" style="box-sizing: border-box ; overflow: auto ; width: 100%"><img class="bee-center bee-fixedwidth" style="box-sizing: border-box;display: block;width: 100%;margin: auto;max-width: 124px;height: 66px;text-align: center;/* left: 50%; *//* position: relative; */" src="https://lille.ai/lille_logo_new.png" alt=""></div>
       </div>
       </div>
       </div>
-      <div class="bee-row bee-row-3" style="box-sizing: border-box; position: relative; background-repeat: no-repeat;">
-      <div class="bee-row-content" style="box-sizing: border-box; position: relative; max-width: 650px; margin: 0 auto; display: flex; background-repeat: no-repeat; background-color: #f0d5d5; color: #000;">
-      <div class="bee-col bee-col-1 bee-col-w12" style="box-sizing: border-box; flex-basis: 100%; padding-top: 5px;">
-      <div class="bee-block bee-block-1 bee-text" style="box-sizing: border-box; overflow-wrap: anywhere; padding: 30px 10px;">
-      <div class="bee-text-content" style="box-sizing: border-box; line-height: 120%; font-size: 12px; font-family: inherit; color: #052d3d;">
-      <p style="box-sizing: border-box; margin: 0; line-height: 14px; font-size: 12px; text-align: center;"><span style="box-sizing: border-box; font-size: 30px; line-height: 36px;"><strong style="box-sizing: border-box;">Here's your Verification Code</strong></span></p>
+      <div class="bee-row bee-row-3" style="box-sizing: border-box ; position: relative ; background-repeat: no-repeat">
+      <div class="bee-row-content" style="box-sizing: border-box;position: relative;max-width: 650px;margin: 0 auto;/* display: flex ; */background-repeat: no-repeat;background-color: #f0d5d5;color: #000">
+      <div class="bee-col bee-col-1 bee-col-w12" style="box-sizing: border-box ; padding-top: 5px">
+      <div class="bee-block bee-block-1 bee-text" style="box-sizing: border-box ; padding: 30px 10px">
+      <div class="bee-text-content" style="box-sizing: border-box ; line-height: 120% ; font-size: 12px ; font-family: inherit ; color: #052d3d">
+      <p style="box-sizing: border-box ; margin: 0 ; line-height: 14px ; font-size: 12px ; text-align: center"><span style="box-sizing: border-box ; font-size: 30px ; line-height: 36px"><strong style="box-sizing: border-box">Here's your Verification Code</strong></span></p>
       </div>
       </div>
       </div>
       </div>
       </div>
-      <div class="bee-row bee-row-4" style="box-sizing: border-box; position: relative; background-repeat: no-repeat;">
-      <div class="bee-row-content" style="box-sizing: border-box; position: relative; max-width: 650px; margin: 0 auto; display: flex; background-repeat: no-repeat; background-color: #fff; border-bottom: 0 solid #fff; border-left: 0 solid #fff; border-radius: 0; border-right: 0px solid #fff; border-top: 0 solid #fff; color: #000;">
-      <div class="bee-col bee-col-1 bee-col-w12" style="box-sizing: border-box; flex-basis: 100%; border-bottom: 30px solid #f0d5d5; border-left: 30px solid #f0d5d5; border-right: 30px solid #f0d5d5; border-top: 0 solid #f0d5d5; padding-bottom: 30px; padding-top: 30px;">
-      <div class="bee-block bee-block-1 bee-image" style="box-sizing: border-box; overflow: auto; padding-bottom: 32px; width: 100%;"><img class="bee-center bee-fixedwidth" style="box-sizing: border-box; display: block; width: 100%; margin: 0 auto; max-width: 118px;" src="https://a95de3cb9b.imgdist.com/public/users/Integrators/BeeProAgency/1006241_991088/data_protection_2_.png" alt=""></div>
-      <div class="bee-block bee-block-2 bee-text" style="box-sizing: border-box; overflow-wrap: anywhere; padding-bottom: 10px; padding-left: 10px; padding-right: 10px;">
-      <div class="bee-text-content" style="box-sizing: border-box; line-height: 120%; font-size: 12px; font-family: inherit; color: #fc7318;">
-      <p style="box-sizing: border-box; margin: 0; line-height: 14px; font-size: 12px; text-align: center; letter-spacing: 6px;"><span style="box-sizing: border-box; color: #052d3d; line-height: 14px;"><span style="box-sizing: border-box; font-size: 46px; line-height: 55px;"><strong style="box-sizing: border-box;">${OTP}</strong></span></span></p>
+      <div class="bee-row bee-row-4" style="box-sizing: border-box ; position: relative ; background-repeat: no-repeat">
+      <div class="bee-row-content" style="box-sizing: border-box;position: relative;max-width: 650px;margin: 0 auto;/* display: flex; */background-repeat: no-repeat;background-color: #fff;border-bottom: 0 solid #fff;border-left: 0 solid #fff;border-radius: 0;border-right: 0px solid #fff;border-top: 0 solid #fff;color: #000">
+      <div class="bee-col bee-col-1 bee-col-w12" style="box-sizing: border-box ; border-bottom: 30px solid #f0d5d5 ; border-left: 30px solid #f0d5d5 ; border-right: 30px solid #f0d5d5 ; border-top: 0 solid #f0d5d5 ; padding-bottom: 30px ; padding-top: 30px">
+      <div class="bee-block bee-block-1 bee-image" style="box-sizing: border-box ; overflow: auto ; padding-bottom: 32px ; width: 100%"><img class="bee-center bee-fixedwidth" style="box-sizing: border-box ; display: block ; width: 100% ; margin: 0 auto ; max-width: 118px" src="https://a95de3cb9b.imgdist.com/public/users/Integrators/BeeProAgency/1006241_991088/data_protection_2_.png" alt=""></div>
+      <div class="bee-block bee-block-2 bee-text" style="box-sizing: border-box ; padding-bottom: 10px ; padding-left: 10px ; padding-right: 10px">
+      <div class="bee-text-content" style="box-sizing: border-box ; line-height: 120% ; font-size: 12px ; font-family: inherit ; color: #fc7318">
+      <p style="box-sizing: border-box ; margin: 0 ; line-height: 14px ; font-size: 12px ; text-align: center ; letter-spacing: 6px"><span style="box-sizing: border-box ; color: #052d3d ; line-height: 14px"><span style="box-sizing: border-box ; font-size: 46px ; line-height: 55px"><strong style="box-sizing: border-box">${OTP}</strong></span></span></p>
       </div>
       </div>
-      <div class="bee-block bee-block-3 bee-text" style="box-sizing: border-box; overflow-wrap: anywhere; padding: 15px 10px;">
-      <div class="bee-text-content" style="box-sizing: border-box; line-height: 120%; font-size: 12px; font-family: inherit; color: #fc7318;">
-      <p style="box-sizing: border-box; margin: 0; line-height: 14px; font-size: 12px; text-align: center;"><span style="box-sizing: border-box; font-size: 20px; line-height: 24px; color: #052d3d;"><strong style="box-sizing: border-box;">👉 <span style="box-sizing: border-box; font-size: 13px; line-height: 15px;">&nbsp;&nbsp;<span style="box-sizing: border-box; background-color: #ffff99; line-height: 14px;"> Valid for ${process.env.OTP_VERIFICATION_TIME} min. only&nbsp;</span></span></strong></span></p>
+      <div class="bee-block bee-block-3 bee-text" style="box-sizing: border-box ; padding: 15px 10px">
+      <div class="bee-text-content" style="box-sizing: border-box ; line-height: 120% ; font-size: 12px ; font-family: inherit ; color: #fc7318">
+      <p style="box-sizing: border-box ; margin: 0 ; line-height: 14px ; font-size: 12px ; text-align: center"><span style="box-sizing: border-box ; font-size: 20px ; line-height: 24px ; color: #052d3d"><strong style="box-sizing: border-box">👉 <span style="box-sizing: border-box ; font-size: 13px ; line-height: 15px">&nbsp;&nbsp;<span style="box-sizing: border-box ; background-color: #ffff99 ; line-height: 14px"> Valid for ${process.env.OTP_VERIFICATION_TIME} min. only&nbsp;</span></span></strong></span></p>
       </div>
       </div>
       </div>
       </div>
       </div>
-      <div class="bee-row bee-row-5" style="box-sizing: border-box; position: relative; background-repeat: no-repeat;">
-      <div class="bee-row-content" style="box-sizing: border-box; position: relative; max-width: 650px; margin: 0 auto; display: flex; background-repeat: no-repeat; color: #000;">
-      <div class="bee-col bee-col-1 bee-col-w12" style="box-sizing: border-box; flex-basis: 100%; padding-bottom: 20px; padding-top: 20px;">
-      <div class="bee-block bee-block-1 bee-divider" style="box-sizing: border-box; overflow: auto; padding: 10px;">
-      <div class="center bee-separator" style="box-sizing: border-box; margin: 0 auto; border-top: 1px dotted #C4C4C4; width: 60%;">&nbsp;</div>
+      <div class="bee-row bee-row-5" style="box-sizing: border-box ; position: relative ; background-repeat: no-repeat">
+      <div class="bee-row-content" style="box-sizing: border-box ; position: relative ; max-width: 650px ; margin: 0 auto ; display: flex ; background-repeat: no-repeat ; color: #000">
+      <div class="bee-col bee-col-1 bee-col-w12" style="box-sizing: border-box ; padding-bottom: 20px ; padding-top: 20px">
+      <div class="bee-block bee-block-1 bee-divider" style="box-sizing: border-box ; overflow: auto ; padding: 10px">
+      <div class="center bee-separator" style="box-sizing: border-box ; margin: 0 auto ; border-top: 1px dotted #c4c4c4 ; width: 60%">&nbsp;</div>
       </div>
-      <div class="bee-block bee-block-2 bee-text" style="box-sizing: border-box; overflow-wrap: anywhere; padding: 10px;">
-      <div class="bee-text-content" style="box-sizing: border-box; font-size: 12px; line-height: 120%; font-family: inherit; color: #000000;">
-      <p style="box-sizing: border-box; margin: 0; font-size: 12px; line-height: 14px; text-align: center;"><a style="box-sizing: border-box; text-decoration: underline; color: #000000;" href="mailto:customersuccess@lille.ai" target="_blank" rel="noopener"><strong style="box-sizing: border-box;">You can reach us at customersuccess@lille.ai</strong></a></p>
+      <div class="bee-block bee-block-2 bee-text" style="box-sizing: border-box ; padding: 10px">
+      <div class="bee-text-content" style="box-sizing: border-box ; font-size: 12px ; line-height: 120% ; font-family: inherit ; color: #000000">
+      <p style="box-sizing: border-box ; margin: 0 ; font-size: 12px ; line-height: 14px ; text-align: center"><a style="box-sizing: border-box ; text-decoration: underline ; color: #000000" href="mailto:customersuccess@lille.ai" target="_other" rel="nofollow"><strong style="box-sizing: border-box">You can reach us at customersuccess@lille.ai</strong></a></p>
       </div>
       </div>
-      <div class="bee-block bee-block-3 bee-text" style="box-sizing: border-box; overflow-wrap: anywhere; padding: 10px;">
-      <div class="bee-text-content" style="box-sizing: border-box; font-size: 12px; line-height: 120%; font-family: inherit; color: #004aad;">
-      <p style="box-sizing: border-box; margin: 0; font-size: 12px; line-height: 14px; text-align: center;">Creator of Lille.ai - &nbsp; &nbsp;© Nowigence, Inc. - All Rights Reserved 2023</p>
+      <div class="bee-block bee-block-3 bee-text" style="box-sizing: border-box ; padding: 10px">
+      <div class="bee-text-content" style="box-sizing: border-box ; font-size: 12px ; line-height: 120% ; font-family: inherit ; color: #004aad">
+      <p style="box-sizing: border-box ; margin: 0 ; font-size: 12px ; line-height: 14px ; text-align: center">Creator of Lille.ai - &nbsp; &nbsp;© Nowigence, Inc. - All Rights Reserved 2023</p>
       </div>
       </div>
       </div>
       </div>
       </div>
       </div>
-      </body></html>
+      
+
+
+      <br><br><br><br><br><br><br></body></html>
+
 
       `
     });
