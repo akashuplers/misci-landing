@@ -199,7 +199,7 @@ export default function dashboard({ query }) {
     }
     var getUserId;
     if (typeof window !== "undefined") {
-      getUserId = localStorage.getItem("userId");
+      getUserId = localStorage.getItem("token");
     }
     var getTempId;
     if (typeof window !== "undefined") {
@@ -207,46 +207,6 @@ export default function dashboard({ query }) {
     }
 
     if (bid && loginProcess) {
-      /*var myHeaders = new Headers();
-      myHeaders.append("content-type", "application/json");
-
-      var graphql = JSON.stringify({
-        query:
-          "query FetchBlog($fetchBlogId: String!) {\n  fetchBlog(id: $fetchBlogId) {\n    _id\n    article_id\n    ideas {\n      blog_id\n      ideas {\n        used\n        idea\n        article_id\n      }\n    }\n    publish_data {\n      tiny_mce_data {\n        children\n        tag\n      }\n      published_date\n      published\n      platform\n      creation_date\n    }\n  }\n  trendingTopics\n  increment\n}",
-        variables: { fetchBlogId: bid },
-      });
-      var requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: graphql,
-        redirect: "follow",
-      };
-
-      fetch("https://maverick.lille.ai/graphql", requestOptions)
-        .then((response) => response.text())
-        .then((res) => {
-          const { data } = JSON.parse(res);
-          setBlogData(data.fetchBlog);
-          // const aa = data.fetchBlog.publish_data[2].tiny_mce_data;
-          const aa = data.fetchBlog.publish_data.find(
-            (pd) => pd.platform === "wordpress"
-          ).tiny_mce_data;
-          setIdeas(data.fetchBlog.ideas.ideas);
-          setblog_id(data.fetchBlog._id);
-          const htmlDoc = jsonToHtml(aa);
-          setEditorText(htmlDoc);
-          const queryParams = router.query;
-          if (!queryParams.code) {
-            localStorage.removeItem("bid");
-            localStorage.removeItem("loginProcess");
-          }
-        })
-        .finally(() => {
-          toast.success("LinkedIn SignUp Succesfull!!");
-        })
-        .catch((error) => console.log("error", error));*/
-
-      console.log("Harsh test this block");
 
       const myHeaders = {
         "Content-Type": "application/json",
