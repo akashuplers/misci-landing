@@ -124,7 +124,6 @@ export default function AuthenticationModal({
               window.location.pathname = '/dashboard/' + bid;
             }
           }
-wq
           return true;
         }
       })
