@@ -221,8 +221,8 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                             } 
                                             if(checkHtmlTagSentences && checkHtmlTagSentences.length > 0) {
                                                 const similarity = natural.JaroWinklerDistance(checkHtmlTagSentences, idea.idea, true);
-                                                // console.log(checkHtmlTagSentences,similarity, "similarity" )
-                                                if(similarity > 0.67 && idea.article_id) {
+                                                console.log(checkHtmlTagSentences,similarity, idea.idea, "similarity" )
+                                                if(similarity >= 0.7 && idea.article_id) {
                                                     filteredSource = refs?.findIndex((ref) => ref.id === idea.article_id)
                                                     // console.log(data, idea.idea, idea.article_id, filteredSource, similarity, "similiary")
                                                     return true
@@ -241,7 +241,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     }
                                     return newText.trim() + '. '
                                 })
-                                console.log(updatedContent, "updatedContentBefore")
+                                // console.log(updatedContent, "updatedContentBefore")
                                 updatedContent = updatedContent?.map((content: string) => content.replace("..", "."))
                                 updatedContent = updatedContent?.join("")?.replace(". .", ".")
                                 let references: any[] = []
