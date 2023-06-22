@@ -324,9 +324,9 @@ export default function AuthenticationModal({
         });
         setLoading(false);
       });
-       if (typeof window !== "undefined") {
-         window.location.reload()
-       }
+      //  if (typeof window !== "undefined") {
+      //    window.location.reload()
+      //  }
   };
 
   const handleSignUpChange = (event) => {
