@@ -382,7 +382,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     linkedinTitle = (newsLetter[key].substr(newsLetter[key].indexOf("Title: "), newsLetter[key].indexOf("\n"))).replace("Title: ", "")
                                 }
                                 if(linkedinTitle && linkedinTitle.length > 1) {
-                                    newsLetter[key].replace(linkedinTitle, "")
+                                    newsLetter[key] = newsLetter[key].replace(newsLetter[key].substr(newsLetter[key].indexOf("Title: "), newsLetter[key].indexOf("\n")), "")
                                 }
                                 let linkedinContent = newsLetter[key]?.replace(/\n/g, "<p/>")
                                 const matchObj: any = {
