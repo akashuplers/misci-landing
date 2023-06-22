@@ -381,6 +381,9 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 if(newsLetter[key]?.indexOf("Title: ") >= 0) {
                                     linkedinTitle = (newsLetter[key].substr(newsLetter[key].indexOf("Title: "), newsLetter[key].indexOf("\n"))).replace("Title: ", "")
                                 }
+                                if(linkedinTitle && linkedinTitle.length > 1) {
+                                    newsLetter[key].replace(linkedinTitle, "")
+                                }
                                 let linkedinContent = newsLetter[key]?.replace(/\n/g, "<p/>")
                                 const matchObj: any = {
                                     "<p/><p/>":"<p/>",
@@ -406,7 +409,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                             "tag": "STRONG",
                                                             "attributes": {},
                                                             "children": [
-                                                                linkedinTitle || title
+                                                                (linkedinTitle && linkedinTitle.length > 1 && linkedinTitle) || title
                                                             ]
                                                         }
                                                     ]
