@@ -50,7 +50,9 @@ export default function Post() {
   console.log(router);
   // console.log("isPublished", isPublished);
   console.log("router.query", router.query);
-  const { data, loading, error } = useQuery(getBlogbyId, {
+  const { data, loading, error, 
+    refetch: refetchBlog
+  } = useQuery(getBlogbyId, {
     variables: {
       fetchBlogId: bid,
     },
@@ -372,6 +374,7 @@ export default function Post() {
               loading={loading}
               option={option}
               setOption={setOption}
+              refetchBlog={refetchBlog}
             />
           </div>
           <div
