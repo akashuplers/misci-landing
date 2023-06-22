@@ -117,6 +117,14 @@ export default function AuthenticationModal({
             progress: undefined,
             theme: "light",
           });
+          const isUserOnDashboard = window.location.pathname = "/dashboard";
+
+          if (typeof window !== "undefined") {
+            if (window.location.pathname == '/dashboard') {
+              window.location.pathname = '/dashboard/' + bid;
+            }
+          }
+wq
           return true;
         }
       })
@@ -324,6 +332,9 @@ export default function AuthenticationModal({
         });
         setLoading(false);
       });
+      //  if (typeof window !== "undefined") {
+      //    window.location.reload()
+      //  }
   };
 
   const handleSignUpChange = (event) => {
