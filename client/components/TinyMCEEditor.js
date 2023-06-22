@@ -188,23 +188,23 @@ export default function TinyMCEEditor({
   }, [editorText, updatedText]);
 
 
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     meeRefetch().then(
-  //       (res) => {
-  //         setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
-  //         const remainingQuota = meeData?.me?.remaining_twitter_quota;
-  //         console.log("REMAINING QUOTA: " + remainingTwitterQuota);
-  //         console.log(meeData);
-  //       }
-  //     )
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      meeRefetch().then(
+        (res) => {
+          setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
+          const remainingQuota = meeData?.me?.remaining_twitter_quota;
+          console.log("REMAINING QUOTA: " + remainingTwitterQuota);
+          console.log(meeData);
+        }
+      )
 
-  //   }, 2000);
+    }, 2000);
 
-  //   return () => {
-  //     clearInterval(intervalId);
-  //   };
-  // }, [meeRefetch]);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [meeRefetch]);
 
   useEffect(() => {
     updateCredit();
@@ -258,32 +258,28 @@ export default function TinyMCEEditor({
         } else {
           //console.log("THREADS DATA");
           //console.log(aa?.threads);
-          const theLastThread = aa?.threads[aa?.threads.length - 1];
-          // merge this will text with 2nd last tweet
-          var theSecondLastThread = aa?.threads[aa?.threads.length - 2];
-
-          if (theLastThread !== undefined && theLastThread !== null && theLastThread !== "") {
-            // const mergedText = theSecondLastThread + " ." + theLastThread;
-            // check if theSecondLastThread is undefined
+          const twitterThreadsFromAPI = [...aa?.threads];
+          const lastThread = twitterThreadsFromAPI[twitterThreadsFromAPI.length - 1];
+          //console.log(lastThread);
+          const secondlastThread = twitterThreadsFromAPI[twitterThreadsFromAPI.length - 2];
+          var theSecondLastThread = secondlastThread;
+          //console.log(secondlastThread);
+          var mergedThread = "";
+          if (lastThread == LILLE_BRANDING_TWEET) {
             if (theSecondLastThread === undefined || theSecondLastThread === null || theSecondLastThread === "") {
               theSecondLastThread = "";
             } else {
               theSecondLastThread = theSecondLastThread + " .";
             }
-            const mergedText = theSecondLastThread + theLastThread;
-            theSecondLastThread = mergedText;
-            try {
-              aa?.threads?.pop();
-              aa?.threads?.pop();
-            }
-            catch (e) {
-              aa.threads = [];
-            }
-            aa?.threads?.push(theSecondLastThread);
-            //console.log("THREADS DATA AFTER MERGE");
-            //console.log(aa?.threads);
-            setTwitterThreadData(aa?.threads);
-            setInitialTwitterThreads(aa?.threads);
+            mergedThread = secondlastThread + ". " + lastThread;
+            twitterThreadsFromAPI.pop();
+            twitterThreadsFromAPI.pop();
+            twitterThreadsFromAPI.push(mergedThread);
+            setTwitterThreadData(twitterThreadsFromAPI);
+            setInitialTwitterThreads(twitterThreadsFromAPI);
+          } else {
+            setTwitterThreadData(twitterThreadsFromAPI);
+            setInitialTwitterThreads(twitterThreadsFromAPI);
           }
           setShowTwitterThreadUI(true);
         }
@@ -371,7 +367,7 @@ export default function TinyMCEEditor({
     { data: updateData, loading: updateLoading, error: updateError },
   ] = useMutation(updateBlog);
 
-  const handleSave = async () => {
+  const handleSave = async (redirectUser = true) => {
     var getToken, ispaid, credits;
     if (window.location.pathname !== "/dashboard/" + blog_id) {
 
@@ -459,15 +455,6 @@ export default function TinyMCEEditor({
         })
           .then(() => {
             //console.log(">>", window.location);
-            if (window.location.pathname !== "/dashboard/" + blog_id) {
-              window.location.href = "/dashboard/" + blog_id;
-            }
-            // router.push("/dashboard/" + blog_id);
-          })
-          .catch((err) => {
-            //  //console.log(err);
-          })
-          .finally(() => {
             toast.success("Saved!!", {
               position: "top-center",
               autoClose: 5000,
@@ -478,6 +465,30 @@ export default function TinyMCEEditor({
               progress: undefined,
               theme: "light",
             });
+            if (redirectUser == true) {
+              if (window.location.pathname !== "/dashboard/" + blog_id) {
+                window.location.href = "/dashboard/" + blog_id;
+              }
+            }
+            // router.push("/dashboard/" + blog_id);
+          })
+          .catch((err) => {
+            //  //console.log(err);
+            // faile to save error
+            toast.error(
+              "Failed to save, please try again later..",
+              {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+          })
+          .finally(() => {
             setSaveLoad(false);
             setSaveText("Saved!");
           });
@@ -541,7 +552,7 @@ export default function TinyMCEEditor({
     setIRanNumberOfTimes(1);
   }
   const handleSaveLogAndConnect = async () => {
-    await handleSave();
+    await handleSave(false);
     if (thisIsToBePublished === TYPESOFTABS.TWITTER) {
       await handleconnectTwitter();
     }
@@ -618,7 +629,7 @@ export default function TinyMCEEditor({
 
 
   const handleSaveAndPublishBlog = async () => {
-    await handleSave();
+    await handleSave(false);
     // check for case of thisIsToBePublished twitter, linkedin. blog accoring run it
     if (thisIsToBePublished === TYPESOFTABS.TWITTER) {
       await handleTwitterPublish();
@@ -1094,9 +1105,15 @@ export default function TinyMCEEditor({
       const lastThread = twitterThreadsFromAPI[twitterThreadsFromAPI.length - 1];
       //console.log(lastThread);
       const secondlastThread = twitterThreadsFromAPI[twitterThreadsFromAPI.length - 2];
+      var theSecondLastThread = secondlastThread
       //console.log(secondlastThread);
       var mergedThread = "";
       if (lastThread == LILLE_BRANDING_TWEET) {
+        if (theSecondLastThread === undefined || theSecondLastThread === null || theSecondLastThread === "") {
+          theSecondLastThread = "";
+        } else {
+          theSecondLastThread = theSecondLastThread + " .";
+        }
         mergedThread = secondlastThread + ". " + lastThread;
         twitterThreadsFromAPI.pop();
         twitterThreadsFromAPI.pop();
