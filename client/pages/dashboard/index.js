@@ -310,6 +310,14 @@ export default function dashboard({ query }) {
               toast.success("Linkedin Integration Done!!");
               setOption("linkedin-comeback");
             }
+          } else {
+            // check if denied is there and the for_TW is there then show the toast 'twitter integration failed'
+            if (for_TW) {
+              toast.error("Twitter Integration Failed!!");
+            }
+            else {
+              toast.error("Linkedin Integration Failed!!");
+            }
           }
         })
         .catch(function (error) {
