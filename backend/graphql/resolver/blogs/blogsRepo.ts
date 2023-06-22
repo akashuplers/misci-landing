@@ -42,6 +42,22 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
     refUrls?: any[];
     userDetails?: any
 }) => {
+    const mapObj: any = {
+        "H1:":" ",
+        "H2:":" ",
+        "<p/><p/>":"<p/>",
+        "Conclusions:<p/>":"<h3>Conclusions</h3><p/>",
+        "Conclusion:<p/>":"<h3>Conclusions</h3><p/>",
+        "Conclusion<p/>":"<h3>Conclusion</h3><p/>",
+        "Conclusions<p/>":"<h3>Conclusion</h3><p/>",
+        "<h1>":" ",
+        "Title:":" ",
+        "Introduction::":" ",
+        "</h1>":" ",
+        "<h2>":" ",
+        "</h2>":" ",
+        "\n":" ",
+    };
     const chatgptApis = await db.db('lilleAdmin').collection('chatGPT').findOne()
     let availableApi: any = null
     if(chatgptApis) {
@@ -53,9 +69,9 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         throw "Something went wrong! Please connect with support team";
     }
     let newsLetter: any = {
+        wordpress: null,
         linkedin: null,
-        twitter: null,
-        wordpress: null
+        twitter: null
     }
     await (
         Promise.all(
@@ -67,7 +83,15 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                     } else {
                         let text = ""
                         if(key === 'linkedin') {
-                            text = `write a linkedin post on topic ${title} for linkedin post with tags under 700 words`
+                            const blogPostToSendForLinkedin = newsLetter[key]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
+                                return mapObj[matched];
+                            });
+                            text = `Please act as an expert LinkedIn Article writer who has to write a LinkedIn post from this Blog post: ${blogPostToSendForLinkedin}  
+                            Topic of Blog is "${title}", go through the Blog and write about this topic.
+                            LinkedIn post should have maximum 300 words.
+                            Suggest an attention-grabbing Title.
+                            Insert hashtags at the end of the post
+                            Trim unwanted new lines and spaces`
                         }
                         if(key === 'twitter') {
                             let tweetQuota;
@@ -79,17 +103,23 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                             let cond = "";
                             if(tweetQuota) {
                                 if(tweetQuota.remainingQuota > 0) {
-                                    cond = `${tweetQuota && `Tweet count should be ${tweetQuota.remainingQuota}`}`
+                                    cond = `${tweetQuota && `Thread limit to not exceed ${tweetQuota.remainingQuota} tweets `}`
                                 } else {
                                     newsLetter = {...newsLetter, [key]: null}            
                                     return
                                 }
                             }
-                            text = `Please act as an expert Twitter Post to write a Twitter Thread as seperate list using below rules:
-                                Topic of Thread is "${title}"
-                                Each Tweet length should be less then 180 characters
-                                ${cond}
-                                `
+                            const blogPostToSendForLinkedin = newsLetter[key]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
+                                return mapObj[matched];
+                            });
+                            text = `Please act as an expert Twitter Thread writer who has to write a Twitter Thread From this Blog: ${blogPostToSendForLinkedin}   
+                            Topic of Blog is "${title}", go through the Blog to understand and write twitter thread.
+                            "Insert Emoticons in Twitter Thread".
+                            "${cond || "Thread limit to not exceed 10 tweets"}".
+                            "Insert hashtags at the end of tweets".
+                            “Character limit per tweet to be maximum 200 characters".
+                            "Trim unwanted new lines and spaces".
+                            "Do not show the Tweet Number count inside the Tweets".`
                             console.log(text, "text")
                         }
                         const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text, db}).textCompletion(chatgptApis.timeout)
@@ -117,22 +147,6 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 const refs = refUrls
                                 // const title = newsLetter[key].slice(newsLetter[key].indexOf("Title:"), newsLetter[key].indexOf("Content:")).trim()
                                 const content = newsLetter[key]?.replace(/\n/g, "<p/>")
-                                const mapObj: any = {
-                                    "H1:":" ",
-                                    "H2:":" ",
-                                    "<p/><p/>":"<p/>",
-                                    "Conclusions:<p/>":"<h3>Conclusions</h3><p/>",
-                                    "Conclusion:<p/>":"<h3>Conclusions</h3><p/>",
-                                    "Conclusion<p/>":"<h3>Conclusion</h3><p/>",
-                                    "Conclusions<p/>":"<h3>Conclusion</h3><p/>",
-                                    "<h1>":" ",
-                                    "Title:":" ",
-                                    "Introduction::":" ",
-                                    "</h1>":" ",
-                                    "<h2>":" ",
-                                    "</h2>":" ",
-                                    "\n":" ",
-                                };
                                 let updatedContent = content?.replace("In conclusion, ", "<p><h3>Conclusions:</h3></p>")
                                 updatedContent = updatedContent.replace(/H1:|H2:|Title:|Introduction:|<p\s*\/?><p\s*\/?>|Conclusions:<p\s*\/?>|Conclusion:<p\s*\/?>|Conclusion<p\s*\/?>|Conclusions<p\s*\/?>/gi, function(matched: any){
                                     return mapObj[matched];
@@ -361,6 +375,12 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     }  
                                 }   
                             case "linkedin":
+                                console.log(newsLetter[key], "linkedin")
+                                newsLetter[key] = newsLetter[key].trim()
+                                let linkedinTitle = ""
+                                if(newsLetter[key]?.indexOf("Title: ") >= 0) {
+                                    linkedinTitle = (newsLetter[key].substr(newsLetter[key].indexOf("Title: "), newsLetter[key].indexOf("\n"))).replace("Title: ", "")
+                                }
                                 let linkedinContent = newsLetter[key]?.replace(/\n/g, "<p/>")
                                 const matchObj: any = {
                                     "<p/><p/>":"<p/>",
@@ -386,7 +406,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                             "tag": "STRONG",
                                                             "attributes": {},
                                                             "children": [
-                                                                title
+                                                                linkedinTitle || title
                                                             ]
                                                         }
                                                     ]
