@@ -272,13 +272,10 @@ export default function TinyMCEEditor({
             }
             const mergedText = theSecondLastThread + theLastThread;
             theSecondLastThread = mergedText;
-            try {
+          
               aa?.threads?.pop();
               aa?.threads?.pop();
-            }
-            catch (e) {
-              aa.threads = [];
-            }
+                       
             aa?.threads?.push(theSecondLastThread);
             //console.log("THREADS DATA AFTER MERGE");
             //console.log(aa?.threads);
@@ -371,7 +368,7 @@ export default function TinyMCEEditor({
     { data: updateData, loading: updateLoading, error: updateError },
   ] = useMutation(updateBlog);
 
-  const handleSave = async () => {
+  const handleSave = async (redirectUser = true) => {
     var getToken, ispaid, credits;
     if (window.location.pathname !== "/dashboard/" + blog_id) {
 
@@ -459,15 +456,6 @@ export default function TinyMCEEditor({
         })
           .then(() => {
             //console.log(">>", window.location);
-            if (window.location.pathname !== "/dashboard/" + blog_id) {
-              window.location.href = "/dashboard/" + blog_id;
-            }
-            // router.push("/dashboard/" + blog_id);
-          })
-          .catch((err) => {
-            //  //console.log(err);
-          })
-          .finally(() => {
             toast.success("Saved!!", {
               position: "top-center",
               autoClose: 5000,
@@ -478,6 +466,30 @@ export default function TinyMCEEditor({
               progress: undefined,
               theme: "light",
             });
+            if (redirectUser == true) {
+              if (window.location.pathname !== "/dashboard/" + blog_id) {
+                window.location.href = "/dashboard/" + blog_id;
+              }
+            }
+            // router.push("/dashboard/" + blog_id);
+          })
+          .catch((err) => {
+            //  //console.log(err);
+            // faile to save error
+            toast.error(
+              "Failed to save, please try again later..",
+              {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+          })
+          .finally(() => {
             setSaveLoad(false);
             setSaveText("Saved!");
           });
@@ -541,7 +553,7 @@ export default function TinyMCEEditor({
     setIRanNumberOfTimes(1);
   }
   const handleSaveLogAndConnect = async () => {
-    await handleSave();
+    await handleSave(false);
     if (thisIsToBePublished === TYPESOFTABS.TWITTER) {
       await handleconnectTwitter();
     }
@@ -618,7 +630,7 @@ export default function TinyMCEEditor({
 
 
   const handleSaveAndPublishBlog = async () => {
-    await handleSave();
+    await handleSave(false);
     // check for case of thisIsToBePublished twitter, linkedin. blog accoring run it
     if (thisIsToBePublished === TYPESOFTABS.TWITTER) {
       await handleTwitterPublish();
