@@ -258,29 +258,28 @@ export default function TinyMCEEditor({
         } else {
           //console.log("THREADS DATA");
           //console.log(aa?.threads);
-          const theLastThread = aa?.threads[aa?.threads.length - 1];
-          // merge this will text with 2nd last tweet
-          var theSecondLastThread = aa?.threads[aa?.threads.length - 2];
-
-          if (theLastThread !== undefined && theLastThread !== null && theLastThread !== "") {
-            // const mergedText = theSecondLastThread + " ." + theLastThread;
-            // check if theSecondLastThread is undefined
+          const twitterThreadsFromAPI = [...aa?.threads];
+          const lastThread = twitterThreadsFromAPI[twitterThreadsFromAPI.length - 1];
+          //console.log(lastThread);
+          const secondlastThread = twitterThreadsFromAPI[twitterThreadsFromAPI.length - 2];
+          var theSecondLastThread = secondlastThread;
+          //console.log(secondlastThread);
+          var mergedThread = "";
+          if (lastThread == LILLE_BRANDING_TWEET) {
             if (theSecondLastThread === undefined || theSecondLastThread === null || theSecondLastThread === "") {
               theSecondLastThread = "";
             } else {
               theSecondLastThread = theSecondLastThread + " .";
             }
-            const mergedText = theSecondLastThread + theLastThread;
-            theSecondLastThread = mergedText;
-          
-              aa?.threads?.pop();
-              aa?.threads?.pop();
-                       
-            aa?.threads?.push(theSecondLastThread);
-            //console.log("THREADS DATA AFTER MERGE");
-            //console.log(aa?.threads);
-            setTwitterThreadData(aa?.threads);
-            setInitialTwitterThreads(aa?.threads);
+            mergedThread = secondlastThread + ". " + lastThread;
+            twitterThreadsFromAPI.pop();
+            twitterThreadsFromAPI.pop();
+            twitterThreadsFromAPI.push(mergedThread);
+            setTwitterThreadData(twitterThreadsFromAPI);
+            setInitialTwitterThreads(twitterThreadsFromAPI);
+          } else {
+            setTwitterThreadData(twitterThreadsFromAPI);
+            setInitialTwitterThreads(twitterThreadsFromAPI);
           }
           setShowTwitterThreadUI(true);
         }
@@ -1106,9 +1105,15 @@ export default function TinyMCEEditor({
       const lastThread = twitterThreadsFromAPI[twitterThreadsFromAPI.length - 1];
       //console.log(lastThread);
       const secondlastThread = twitterThreadsFromAPI[twitterThreadsFromAPI.length - 2];
+      var theSecondLastThread = secondlastThread
       //console.log(secondlastThread);
       var mergedThread = "";
       if (lastThread == LILLE_BRANDING_TWEET) {
+        if (theSecondLastThread === undefined || theSecondLastThread === null || theSecondLastThread === "") {
+          theSecondLastThread = "";
+        } else {
+          theSecondLastThread = theSecondLastThread + " .";
+        }
         mergedThread = secondlastThread + ". " + lastThread;
         twitterThreadsFromAPI.pop();
         twitterThreadsFromAPI.pop();
