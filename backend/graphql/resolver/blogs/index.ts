@@ -164,7 +164,9 @@ export const blogResolvers = {
                 delete cachedBlogIdeaData.blog_id
                 const updatedBlogs = {
                     ...cachedBlogData[0],
-                    userId: new ObjectID(userId)
+                    userId: new ObjectID(userId),
+                    date: getTimeStamp(),
+                    updatedAt: getTimeStamp(),
                 }
                 const updatedBlogIdeas = cachedBlogIdeaData
                 const insertBlog = await db.db('lilleBlogs').collection('blogs').insertOne(updatedBlogs)
