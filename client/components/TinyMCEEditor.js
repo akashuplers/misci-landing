@@ -62,6 +62,7 @@ export default function TinyMCEEditor({
   ref,
   option,
   setOption,
+  refetchBlog
 }) {
   const twitterButtonRef = useRef(null);
   const [multiplier, setMultiplier] = useState(1);
@@ -299,7 +300,6 @@ export default function TinyMCEEditor({
         (pd) => pd.platform === "linkedin"
       ).tiny_mce_data;
       const htmlDoc = jsonToHtml(aa);
-      //console.log("885", htmlDoc);
       setEditorText(htmlDoc);
       localStorage.removeItem("savingRedirectFrom");
     } else if (savingRedirectFrom === "twitter") {
@@ -455,6 +455,7 @@ export default function TinyMCEEditor({
         })
           .then(() => {
             //console.log(">>", window.location);
+            refetchBlog();
             toast.success("Saved!!", {
               position: "top-center",
               autoClose: 5000,
@@ -470,11 +471,8 @@ export default function TinyMCEEditor({
                 window.location.href = "/dashboard/" + blog_id;
               }
             }
-            // router.push("/dashboard/" + blog_id);
           })
           .catch((err) => {
-            //  //console.log(err);
-            // faile to save error
             toast.error(
               "Failed to save, please try again later..",
               {
@@ -491,6 +489,7 @@ export default function TinyMCEEditor({
           .finally(() => {
             setSaveLoad(false);
             setSaveText("Saved!");
+            setTwitterThreadData(twitterThreadData);
           });
         setAuthenticationModalOpen(false);
       } else {
@@ -553,13 +552,13 @@ export default function TinyMCEEditor({
   }
   const handleSaveLogAndConnect = async () => {
     await handleSave(false);
+    setTwitterThreadData(twitterThreadData);
     if (thisIsToBePublished === TYPESOFTABS.TWITTER) {
       await handleconnectTwitter();
     }
     else if (thisIsToBePublished === TYPESOFTABS.LINKEDIN) {
       await handleconnectLinkedin();
     }
-
     setAskingForSavingBlogWhileConnecting(false);
     setIsEditorTextUpdated(false);
     setIRanNumberOfTimes(1);
@@ -695,12 +694,13 @@ export default function TinyMCEEditor({
 
   }
   const handleConfirmUserForConnect = async (type) => {
-
+    setTwitterThreadData(twitterThreadData);
     setThisIsToBePublished(type);
     if (type === TYPESOFTABS.TWITTER) {
       if (initailTwitterThreads == twitterThreadData) {
         await handleconnectTwitter();
       } else {
+        setTwitterThreadData(twitterThreadData);
         setAskingForSavingBlogWhileConnecting(true);
       }
     }
@@ -1728,7 +1728,6 @@ export default function TinyMCEEditor({
                           || pauseTwitterPublish
                         )
                       }
-
                     >
                       {publishTweetLoad ? (
                         <ReactLoading
@@ -1866,9 +1865,12 @@ export default function TinyMCEEditor({
                     )}
                   </button>
                 ) : (
-                  <button className="cta-invert" onClick={
-                    () => handleConfirmUserForConnect(TYPESOFTABS.TWITTER)
-                  }>
+                  <button className={`cta-invert disabled:opacity-50 
+                  disabled:cursor-not-allowed
+                  `}
+                    onClick={
+                      () => handleConfirmUserForConnect(TYPESOFTABS.TWITTER)
+                    }>
                     Connect Twitter
                   </button>
                 )
