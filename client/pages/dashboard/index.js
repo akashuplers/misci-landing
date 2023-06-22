@@ -327,7 +327,7 @@ export default function dashboard({ query }) {
       GenerateBlog({
         variables: {
           options: {
-            user_id: getUserId ? getUserId : getTempId,
+            user_id: getToken ? getUserId : getTempId,
             keyword: topic ? topic : keyword,
           },
         },
