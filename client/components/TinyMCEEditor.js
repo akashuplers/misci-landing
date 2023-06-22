@@ -473,18 +473,7 @@ export default function TinyMCEEditor({
             }
           })
           .catch((err) => {
-            toast.error(
-              "Failed to save, please try again later..",
-              {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-              });
+            console.log(err);
           })
           .finally(() => {
             setSaveLoad(false);
@@ -854,6 +843,7 @@ export default function TinyMCEEditor({
   }
 
   const handlePublish = () => {
+    setTwitterThreadData(twitterThreadData);
     if (creditLeft === 0) {
       setTrailModal(true);
     } else {
@@ -889,6 +879,7 @@ export default function TinyMCEEditor({
           })
           .then((response) => {
             //console.log(response.data);
+            setTwitterThreadData(twitterThreadData);
             setPublishLinkLoad(false);
             setPublishLinkText("Published on Linkedin");
             toast.success("Published on Linkedin", {
@@ -937,6 +928,7 @@ export default function TinyMCEEditor({
   const [iRanNumberOfTimes, setIRanNumberOfTimes] = useState(0);
   function handleTwitterPublish() {
     //console.log("handleTwitterPublish");
+    setTwitterThreadData(twitterThreadData);
     if (creditLeft === 0) {
       setTrailModal(true);
     } else {
@@ -995,6 +987,7 @@ export default function TinyMCEEditor({
             .then((response) => {
               //console.log(response.data);
               setPublishTweetLoad(false);
+              setTwitterThreadData(twitterThreadData);
               setPublishTweetText("Published on Twitter");
               toast.success("Published on Twitter", {
                 position: "top-center",
