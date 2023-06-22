@@ -314,17 +314,6 @@ export default function TinyMCEEditor({
     }
   }, [option]);
 
-  useEffect(() => {
-    if (option === "linkedin") {
-      setShowTwitterThreadUI(false);
-      setOption('linkedin');
-      const aa = blogData?.publish_data?.find(
-        (pd) => pd.platform === "linkedin"
-      ).tiny_mce_data;
-      const htmlDoc = jsonToHtml(aa);
-      setEditorText(htmlDoc);
-    }
-  }, [option])
 
   const onCopyText = () => {
     setIsCopied(true);
@@ -383,12 +372,8 @@ export default function TinyMCEEditor({
       }
     }
 
-    const for_TW = localStorage.getItem("for_TW");
-    if (for_TW) {
-      setOption("twitter-comeback");
-    } else {
-      setOption("linkedin-comeback");
-    }
+
+
     if (typeof window !== "undefined") {
       window.addEventListener("beforeunload", (event) => {
         event.preventDefault();
@@ -508,13 +493,107 @@ export default function TinyMCEEditor({
     }
   };
 
+  const handleSaveTwitter = async () => {
+    var getToken, ispaid, credits;
 
-
-  useEffect(() => {
-    if (option === 'linkedin') {
-      handleLinkedinBlog();
+    if (typeof window !== "undefined") {
+      window.addEventListener("beforeunload", (event) => {
+        event.preventDefault();
+        event.returnValue = null;
+      });
+      ispaid = localStorage.getItem("ispaid");
+      getToken = localStorage.getItem("token");
+      credits = localStorage.getItem("credits");
     }
-  }, [option])
+    console.log(
+      "****--",
+      ispaid === "true",
+      credits !== "0",
+      ispaid === "true" || credits !== "0"
+    );
+    if (ispaid === "true" || credits !== "0") {
+      if (getToken) {
+        setSaveLoad(true);
+
+        var optionsForUpdate = {
+          // tinymce_json: formatedJSON,
+          blog_id: blog_id,
+          platform: option === "blog" ? "wordpress" : option,
+          imageUrl: null,
+          imageSrc: imageURL ? null : imageURL,
+          description: null,
+        }
+        if (showTwitterThreadUI === true) {
+          optionsForUpdate.threads = twitterThreadData;
+        } else {
+          optionsForUpdate.tinymce_json = formatedJSON;
+        }
+        UpdateBlog({
+          variables: {
+            options: optionsForUpdate,
+          },
+          context: {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken,
+            },
+          },
+        })
+          .then(() => {
+
+            toast.success("Saved!!", {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+            if (redirectUser == true) {
+              if (window.location.pathname !== "/dashboard/" + blog_id) {
+                window.location.href = "/dashboard/" + blog_id;
+              }
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
+            setSaveLoad(false);
+            setSaveText("Saved!");
+            setTwitterThreadData(twitterThreadData);
+          });
+        setAuthenticationModalOpen(false);
+      } else {
+        setAuthneticationModalType("signup");
+        setAuthenticationModalOpen(true);
+      }
+    } else {
+      if (!getToken) {
+        setAuthneticationModalType("signup");
+        setAuthenticationModalOpen(true);
+      } else {
+        toast.error("Looks like you don't have credit left..", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 3000);
+      }
+    }
+  };
+
+ 
   const [callBack, setCallBack] = useState();
   const [askingForSavingBlog, setAskingForSavingBlog] = useState(false);
   const [askingForSavingBlogWhileConnecting, setAskingForSavingBlogWhileConnecting] = useState(false);
@@ -1782,7 +1861,17 @@ export default function TinyMCEEditor({
             <div className="flex w-full lg:w-auto mt-5 lg:mt-auto" style={{ gap: "0.25em", marginLeft: "auto" }}>
               <button
                 className="cta"
-                onClick={saveText === "Save Now!" && handleSave}
+                // onClick={saveText === "Save Now!" && handleSave}
+                onClick={
+                  () => {
+                      if (showTwitterThreadUI == true) {
+                        handleSaveTwitter()
+                      } else {
+                        handleSave();
+                      }
+                   
+                  }
+                }
               >
                 {saveLoad ? (
                   <ReactLoading
