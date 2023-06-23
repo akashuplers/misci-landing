@@ -99,6 +99,7 @@ export default function TinyMCEEditor({
 
   const { twitterThreadData, setTwitterThreadData } = useTwitterThreadStore();
   // const {}
+  const [prevTwitterThreads, setPrevTwitterThreads] = useState(twitterThreadData);
   const [pauseTwitterPublish, setPauseTwitterPublish] = useState(false);
   const {
     isOpen: isTwitterThreadAlertOpen,
@@ -206,6 +207,13 @@ export default function TinyMCEEditor({
       clearInterval(intervalId);
     };
   }, [meeRefetch]);
+
+  useEffect(() => {
+    if (twitterThreadData === prevTwitterThreads) {
+    } else {
+      setSaveText("Save Now!");
+    }
+  }, [twitterThreadData])
 
   useEffect(() => {
     updateCredit();
@@ -357,6 +365,7 @@ export default function TinyMCEEditor({
   ] = useMutation(updateBlog);
 
   const handleSave = async (redirectUser = true) => {
+    console.log('user-save')
     var getToken, ispaid, credits;
     if (window.location.pathname !== "/dashboard/" + blog_id) {
 
@@ -463,6 +472,7 @@ export default function TinyMCEEditor({
           .finally(() => {
             setSaveLoad(false);
             setSaveText("Saved!");
+            // timemout
             setTwitterThreadData(twitterThreadData);
           });
         setAuthenticationModalOpen(false);
@@ -523,6 +533,7 @@ export default function TinyMCEEditor({
           imageSrc: imageURL ? null : imageURL,
           description: null,
         }
+        setPrevTwitterThreads(twitterThreadData);
         if (showTwitterThreadUI === true) {
           optionsForUpdate.threads = twitterThreadData;
         } else {
@@ -593,7 +604,7 @@ export default function TinyMCEEditor({
     }
   };
 
- 
+
   const [callBack, setCallBack] = useState();
   const [askingForSavingBlog, setAskingForSavingBlog] = useState(false);
   const [askingForSavingBlogWhileConnecting, setAskingForSavingBlogWhileConnecting] = useState(false);
@@ -1738,8 +1749,13 @@ export default function TinyMCEEditor({
               <button
                 className="cta"
                 onClick={() => {
-                  if (saveText === "Save Now!") handleSave();
-                }}
+                      if (showTwitterThreadUI == true) {
+                        handleSaveTwitter()
+                      } else {
+                        handleSave();
+                      }
+                   
+                  }}
               >
                 {saveLoad ? (
                   <ReactLoading
@@ -1864,12 +1880,12 @@ export default function TinyMCEEditor({
                 // onClick={saveText === "Save Now!" && handleSave}
                 onClick={
                   () => {
-                      if (showTwitterThreadUI == true) {
-                        handleSaveTwitter()
-                      } else {
-                        handleSave();
-                      }
-                   
+                    if (showTwitterThreadUI == true) {
+                      handleSaveTwitter()
+                    } else {
+                      handleSave();
+                    }
+
                   }
                 }
               >
