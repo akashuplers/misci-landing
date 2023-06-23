@@ -107,6 +107,7 @@ export const signUpWithGoogle = (handleSave, blogId) => {
                 "userId",
                 JSON.stringify(response.data.me._id).replace(/['"]+/g, "")
               );
+            console.log('reached here', response.data.me._id).replace(/['"]+/g, "",  response.data.me.credits )
             })
             .catch((error) => console.error(error))
             .finally(() => {

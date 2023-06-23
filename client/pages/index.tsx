@@ -241,6 +241,10 @@ export default function Home() {
       }
     }
     if (meeData?.me) {
+      localStorage.setItem(
+                "userId",
+                JSON.stringify(meeData.me._id).replace(/['"]+/g, "")
+       );
       if (typeof window !== "undefined") {
         const isOTPVerified = meeData?.me?.emailVerified;
         if (
@@ -482,14 +486,6 @@ export default function Home() {
     </>
   );
 }
-
-/* 
-TODO:
-
-1. Verification of user contribution and send to the server.
-2. Fix the auto scroll of text which a single letter is pressed for long time.
-3. Copy right 
-*/
 
 const AIInputComponent = () => {
   const [keyword, setkeyword] = useState("");
