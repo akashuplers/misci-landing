@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/rules-of-hooks */
+import { CloseButtonIcon } from "@/components/localicons/localicons";
 import { meeAPI } from "@/graphql/querys/mee";
 import { useMutation, useQuery } from "@apollo/client";
 import axios from "axios";
@@ -51,9 +52,9 @@ export default function dashboard({ query }) {
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
   const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
   const creditLeft = useStore((state) => state.creditLeft);
-
   // const [showContributionModal, setShowContributionModal] = useState(false);
   const [isPublish, seIsPublish] = useState(false);
+  const [showOTPModal, setShowOTPModal] = useState(false);
   console.log('MEE DATA GET IN ZUSLAND');
 
   var getToken;
@@ -117,14 +118,23 @@ export default function dashboard({ query }) {
     loginProcess = localStorage.getItem("loginProcess");
   }
 
+  const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
+  const [disclaimerCheck, setDisclaimerCheck] = useState(false);
+
+  const handleGenerateBlog = () => {
+    localStorage.setItem("isDisclaimerShown", "true");
+    localStorage.setItem("disclaimerResponse", disclaimerCheck ? "yes" : "no");
+    setShowDisclaimerModal(false);
+  };
+
+  const handleDisclaimerPopup = () => setDisclaimerCheck((prev) => !prev);
+
   useEffect(() => {
     if (!topic && !bid && !loginProcess) {
       alert("Blog was not saved.\nPlease generate the blog again");
       window.location.href = "/";
     }
   }, []);
-
-
 
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog, {
     context: {
@@ -155,6 +165,10 @@ export default function dashboard({ query }) {
 
   useEffect(() => {
     if (meeData) {
+      localStorage.setItem(
+                "userId",
+                JSON.stringify(meeData.me._id).replace(/['"]+/g, "")
+       );
       localStorage.setItem("meDataMeCredits", meeData?.me?.credits);
       localStorage.setItem("meDataMePublishCount", meeData?.me.publishCount);
       localStorage.setItem("meDataisSubscribed", meeData?.me?.isSubscribed);
@@ -181,6 +195,7 @@ export default function dashboard({ query }) {
     }
   }, [loading, meeData]);
   useEffect(() => {
+
     const getToken = localStorage.getItem("token");
     const Gbid = localStorage.getItem("Gbid");
     if (getToken && Gbid) {
@@ -291,14 +306,23 @@ export default function dashboard({ query }) {
         .then((data) => { })
         .finally(() => {
           const for_TW = localStorage.getItem("for_TW");
-          if (for_TW) {
-            toast.success("Twitter Integration Done!!");
-            setOption("twitter-comeback");
+          if (!router.asPath.includes('denied') && !router.asPath.includes('error')) {
+            if (for_TW) {
+              toast.success("Twitter Integration Done!!");
+              setOption("twitter-comeback");
+            } else {
+              toast.success("Linkedin Integration Done!!");
+              setOption("linkedin-comeback");
+            }
           } else {
-            toast.success("Linkedin Integration Done!!");
-            setOption("linkedin-comeback");
+            // check if denied is there and the for_TW is there then show the toast 'twitter integration failed'
+            if (for_TW) {
+              toast.error("Twitter Integration Failed!!");
+            }
+            else {
+              toast.error("Linkedin Integration Failed!!");
+            }
           }
-          // localStorage.removeItem("for_TW"); this is causing linkedin to speak
         })
         .catch(function (error) {
           console.log(error);
@@ -307,7 +331,7 @@ export default function dashboard({ query }) {
       GenerateBlog({
         variables: {
           options: {
-            user_id: getUserId ? getUserId : getTempId,
+            user_id: getToken ? getUserId : getTempId,
             keyword: topic ? topic : keyword,
           },
         },
@@ -345,6 +369,20 @@ export default function dashboard({ query }) {
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
           console.log("Sucessfully generated the article");
+          if (typeof window !== "undefined") {
+            const isDisclaimerShown = localStorage.getItem("isDisclaimerShown");
+            const disclaimerResponse = localStorage.getItem("disclaimerResponse");
+
+            if (isDisclaimerShown === "true") {
+              if (disclaimerResponse === "yes") {
+                setShowDisclaimerModal(false);
+              } else {
+                setShowDisclaimerModal(true);
+              }
+            } else {
+              setShowDisclaimerModal(true);
+            }
+          }
         },
         onError: (error) => {
           if (error.message === 'Unexpected error value: "@Credit exhausted"') {
@@ -378,6 +416,7 @@ export default function dashboard({ query }) {
   }, [pyResTime, ndResTime]);
 
 
+
   console.log(freshIdeasReferences);
   return (
     <>
@@ -386,7 +425,75 @@ export default function dashboard({ query }) {
           <TrialEndedModal setTrailModal={setCreditModal} topic={topic} />
         )}
 
-        <div className="flex mb-6 h-[88vh]">
+
+
+
+        <Modal
+          isOpen={showDisclaimerModal}
+          onRequestClose={() => setShowDisclaimerModal(false)}
+          ariaHideApp={false}
+          className="w-[100%] sm:w-[38%] max-h-[95%]"
+          style={{
+            overlay: {
+              backgroundColor: "rgba(0,0,0,0.5)",
+              zIndex: "9999",
+            },
+            content: {
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              right: "auto",
+              border: "none",
+              background: "white",
+              // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+              borderRadius: "8px",
+              // width: "100%",
+              bottom: "",
+              zIndex: "999",
+              marginRight: "-50%",
+              transform: "translate(-50%, -50%)",
+              padding: "30px",
+              paddingBottom: "0px",
+            },
+          }}
+        >
+          <button className="absolute right-[35px]" onClick={() => {
+            setShowDisclaimerModal(false);
+            localStorage.setItem("isDisclaimerShown", "true");
+            localStorage.setItem("disclaimerResponse", "no");
+          }}>
+            <CloseButtonIcon />
+          </button>
+          <div className="">
+            <h2 className="text-2xl mb-4">Improvement Tip 💡</h2>
+            <p className="text-gray-700 mb-4">
+              {`To further improve the AI-generated Lille Blog, to update it as per your likings you 
+can edit the content, remove some of the used ideas that you don't want and/or generate and add fresh ideas, 
+or use a combination of used and freah ideas to update the blog content.
+You can add your own image, click on the image and use image options icon.`}
+            </p>
+            <div className='flex justify-between'>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  className="form-checkbox"
+                  checked={disclaimerCheck}
+                  onChange={handleDisclaimerPopup}
+                />
+                <span className="text-gray-700">
+                  {"Don't show me this popup again"}
+                </span>
+              </label>
+              <div className="my-4">
+                <button className="cta-invert" onClick={handleGenerateBlog}>
+                  Ok Got it
+                </button>
+              </div>
+            </div>
+          </div>
+        </Modal>
+
+        <div className="flex  flex-col md:flex-row  lg:mb-6 lg:h-[88vh]">
           {API_BASE_PATH === "https://maverick.lille.ai" && (
             <div
               style={{
@@ -411,6 +518,15 @@ export default function dashboard({ query }) {
               </span>
             </div>
           )}
+          <div className="absolute -right-[62px] top-[50%] lg:hidden z-50 rotate-[-180deg]">
+            <a
+              className="bg-transparent  text-blue-700 border-blue-700 font-bold py-2 px-4 rounded-full"
+              href="#regenblog"
+            >
+              Regenerate Blog
+            </a>
+          </div>
+
           <div className="relative tiny_mce_width">
             <TinyMCEEditor
               topic={topic}

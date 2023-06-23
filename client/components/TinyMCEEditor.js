@@ -62,6 +62,7 @@ export default function TinyMCEEditor({
   ref,
   option,
   setOption,
+  refetchBlog
 }) {
   const twitterButtonRef = useRef(null);
   const [multiplier, setMultiplier] = useState(1);
@@ -98,6 +99,7 @@ export default function TinyMCEEditor({
 
   const { twitterThreadData, setTwitterThreadData } = useTwitterThreadStore();
   // const {}
+  const [prevTwitterThreads, setPrevTwitterThreads] = useState(twitterThreadData);
   const [pauseTwitterPublish, setPauseTwitterPublish] = useState(false);
   const {
     isOpen: isTwitterThreadAlertOpen,
@@ -207,8 +209,15 @@ export default function TinyMCEEditor({
   }, [meeRefetch]);
 
   useEffect(() => {
+    if (twitterThreadData === prevTwitterThreads) {
+    } else {
+      setSaveText("Save Now!");
+    }
+  }, [twitterThreadData])
+
+  useEffect(() => {
     updateCredit();
-  }, []);
+  }, [handleTwitterPublish]);
   useEffect(() => {
     if (meeData) {
       setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid)
@@ -217,6 +226,7 @@ export default function TinyMCEEditor({
   useEffect(() => {
     // alert('COming to TINy', option, "Super")
     // toast("Coming to Tiny" + option, {})
+
     if (option === 'linkedin') {
       const aa = blogData?.publish_data?.find(
         (pd) => pd.platform === "linkedin"
@@ -244,7 +254,7 @@ export default function TinyMCEEditor({
         const aa = blogData?.publish_data?.find(
           (pd) => pd?.platform === "twitter"
         );
-        const htmlDoc = jsonToHtml(aa.tiny_mce_data);
+        const htmlDoc = jsonToHtml(aa?.tiny_mce_data);
         //console.log('MOVEING TO AA');
         //console.log(aa);
         // check remainging
@@ -252,26 +262,33 @@ export default function TinyMCEEditor({
           setPauseTwitterPublish(true);
         }
 
-        if (aa.threads === null || aa.threads === undefined || aa.threads.length === 0 || aa.threads == "") {
+        if (aa?.threads === null || aa?.threads === undefined || aa?.threads.length === 0 || aa?.threads == "") {
           setShowTwitterThreadUI(false);
         } else {
           //console.log("THREADS DATA");
-          //console.log(aa.threads);
-          const theLastThread = aa.threads[aa.threads.length - 1];
-          // merge this will text with 2nd last tweet
-          var theSecondLastThread = aa.threads[aa.threads.length - 2];
-
-          if (theLastThread !== undefined && theLastThread !== null && theLastThread !== "") {
-            const mergedText = theSecondLastThread + " ." + theLastThread;
-
-            theSecondLastThread = mergedText;
-            aa.threads.pop();
-            aa.threads.pop();
-            aa.threads.push(theSecondLastThread);
-            //console.log("THREADS DATA AFTER MERGE");
-            //console.log(aa.threads);
-            setTwitterThreadData(aa.threads);
-            setInitialTwitterThreads(aa.threads);
+          //console.log(aa?.threads);
+          const twitterThreadsFromAPI = [...aa?.threads];
+          const lastThread = twitterThreadsFromAPI[twitterThreadsFromAPI.length - 1];
+          //console.log(lastThread);
+          const secondlastThread = twitterThreadsFromAPI[twitterThreadsFromAPI.length - 2];
+          var theSecondLastThread = secondlastThread;
+          //console.log(secondlastThread);
+          var mergedThread = "";
+          if (lastThread == LILLE_BRANDING_TWEET) {
+            if (theSecondLastThread === undefined || theSecondLastThread === null || theSecondLastThread === "") {
+              theSecondLastThread = "";
+            } else {
+              theSecondLastThread = theSecondLastThread + " .";
+            }
+            mergedThread = secondlastThread + ". " + lastThread;
+            twitterThreadsFromAPI.pop();
+            twitterThreadsFromAPI.pop();
+            twitterThreadsFromAPI.push(mergedThread);
+            setTwitterThreadData(twitterThreadsFromAPI);
+            setInitialTwitterThreads(twitterThreadsFromAPI);
+          } else {
+            setTwitterThreadData(twitterThreadsFromAPI);
+            setInitialTwitterThreads(twitterThreadsFromAPI);
           }
           setShowTwitterThreadUI(true);
         }
@@ -282,7 +299,29 @@ export default function TinyMCEEditor({
 
       }
     }
+
+    const savingRedirectFrom = localStorage.getItem("savingRedirectFrom");
+    if (savingRedirectFrom === "linkedin") {
+      setShowTwitterThreadUI(false);
+      setOption('linkedin');
+      const aa = blogData?.publish_data?.find(
+        (pd) => pd.platform === "linkedin"
+      ).tiny_mce_data;
+      const htmlDoc = jsonToHtml(aa);
+      setEditorText(htmlDoc);
+      localStorage.removeItem("savingRedirectFrom");
+    } else if (savingRedirectFrom === "twitter") {
+      setShowTwitterThreadUI(true);
+      setOption('twitter');
+      handleTwitterBlog();
+      localStorage.removeItem("savingRedirectFrom");
+    } else if (savingRedirectFrom === "blog") {
+      setOption('blog');
+      handleBlog();
+      localStorage.removeItem("savingRedirectFrom");
+    }
   }, [option]);
+
 
   const onCopyText = () => {
     setIsCopied(true);
@@ -325,8 +364,25 @@ export default function TinyMCEEditor({
     { data: updateData, loading: updateLoading, error: updateError },
   ] = useMutation(updateBlog);
 
-  const handleSave = async () => {
+  const handleSave = async (redirectUser = true) => {
+    console.log('user-save')
     var getToken, ispaid, credits;
+    if (window.location.pathname !== "/dashboard/" + blog_id) {
+
+      // check for options, blogs, twitter, linkedin,
+      if (option === "twitter") {
+        localStorage.setItem("savingRedirectFrom", "twitter");
+      }
+      else if (option === "linkedin") {
+        localStorage.setItem("savingRedirectFrom", "linkedin");
+      }
+      else if (option === "blog") {
+        localStorage.setItem("savingRedirectFrom", "blog");
+      }
+    }
+
+
+
     if (typeof window !== "undefined") {
       window.addEventListener("beforeunload", (event) => {
         event.preventDefault();
@@ -393,14 +449,7 @@ export default function TinyMCEEditor({
         })
           .then(() => {
             //console.log(">>", window.location);
-            if (window.location.pathname !== "/dashboard/" + blog_id)
-              window.location.href = "/dashboard/" + blog_id;
-            // router.push("/dashboard/" + blog_id);
-          })
-          .catch((err) => {
-            //  //console.log(err);
-          })
-          .finally(() => {
+            refetchBlog();
             toast.success("Saved!!", {
               position: "top-center",
               autoClose: 5000,
@@ -411,8 +460,121 @@ export default function TinyMCEEditor({
               progress: undefined,
               theme: "light",
             });
+            if (redirectUser == true) {
+              if (window.location.pathname !== "/dashboard/" + blog_id) {
+                window.location.href = "/dashboard/" + blog_id;
+              }
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
             setSaveLoad(false);
             setSaveText("Saved!");
+            // timemout
+            setTwitterThreadData(twitterThreadData);
+          });
+        setAuthenticationModalOpen(false);
+      } else {
+        setAuthneticationModalType("signup");
+        setAuthenticationModalOpen(true);
+      }
+    } else {
+      if (!getToken) {
+        setAuthneticationModalType("signup");
+        setAuthenticationModalOpen(true);
+      } else {
+        toast.error("Looks like you don't have credit left..", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 3000);
+      }
+    }
+  };
+
+  const handleSaveTwitter = async () => {
+    var getToken, ispaid, credits;
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("beforeunload", (event) => {
+        event.preventDefault();
+        event.returnValue = null;
+      });
+      ispaid = localStorage.getItem("ispaid");
+      getToken = localStorage.getItem("token");
+      credits = localStorage.getItem("credits");
+    }
+    console.log(
+      "****--",
+      ispaid === "true",
+      credits !== "0",
+      ispaid === "true" || credits !== "0"
+    );
+    if (ispaid === "true" || credits !== "0") {
+      if (getToken) {
+        setSaveLoad(true);
+
+        var optionsForUpdate = {
+          // tinymce_json: formatedJSON,
+          blog_id: blog_id,
+          platform: option === "blog" ? "wordpress" : option,
+          imageUrl: null,
+          imageSrc: imageURL ? null : imageURL,
+          description: null,
+        }
+        setPrevTwitterThreads(twitterThreadData);
+        if (showTwitterThreadUI === true) {
+          optionsForUpdate.threads = twitterThreadData;
+        } else {
+          optionsForUpdate.tinymce_json = formatedJSON;
+        }
+        UpdateBlog({
+          variables: {
+            options: optionsForUpdate,
+          },
+          context: {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken,
+            },
+          },
+        })
+          .then(() => {
+
+            toast.success("Saved!!", {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+            if (redirectUser == true) {
+              if (window.location.pathname !== "/dashboard/" + blog_id) {
+                window.location.href = "/dashboard/" + blog_id;
+              }
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
+            setSaveLoad(false);
+            setSaveText("Saved!");
+            setTwitterThreadData(twitterThreadData);
           });
         setAuthenticationModalOpen(false);
       } else {
@@ -443,15 +605,43 @@ export default function TinyMCEEditor({
   };
 
 
-
   const [callBack, setCallBack] = useState();
   const [askingForSavingBlog, setAskingForSavingBlog] = useState(false);
+  const [askingForSavingBlogWhileConnecting, setAskingForSavingBlogWhileConnecting] = useState(false);
   useEffect(() => {
     if (load) {
       const inputElement = document.getElementsByClassName("tox-textfield");
       inputElement[0].value = "Loading...";
     }
   }, [load]);
+
+
+  const handleJustConnect = async () => {
+
+    if (thisIsToBePublished === TYPESOFTABS.TWITTER) {
+      await handleconnectTwitter();
+    }
+    else if (thisIsToBePublished === TYPESOFTABS.LINKEDIN) {
+      await handleconnectLinkedin();
+    }
+
+    setAskingForSavingBlogWhileConnecting(false);
+    setIsEditorTextUpdated(false);
+    setIRanNumberOfTimes(1);
+  }
+  const handleSaveLogAndConnect = async () => {
+    await handleSave(false);
+    setTwitterThreadData(twitterThreadData);
+    if (thisIsToBePublished === TYPESOFTABS.TWITTER) {
+      await handleconnectTwitter();
+    }
+    else if (thisIsToBePublished === TYPESOFTABS.LINKEDIN) {
+      await handleconnectLinkedin();
+    }
+    setAskingForSavingBlogWhileConnecting(false);
+    setIsEditorTextUpdated(false);
+    setIRanNumberOfTimes(1);
+  }
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -517,7 +707,7 @@ export default function TinyMCEEditor({
 
 
   const handleSaveAndPublishBlog = async () => {
-    await handleSave();
+    await handleSave(false);
     // check for case of thisIsToBePublished twitter, linkedin. blog accoring run it
     if (thisIsToBePublished === TYPESOFTABS.TWITTER) {
       await handleTwitterPublish();
@@ -559,20 +749,63 @@ export default function TinyMCEEditor({
         setAskingForSavingBlog(true);
       }
     }
-    else { // linkedin
+
+    else if (type === TYPESOFTABS.LINKEDIN) {
       if (iRanNumberOfTimes < 3) {
-        await handleJustPublish()
+        await handlePublish();
+        setAskingForSavingBlog(false);
+        setIsEditorTextUpdated(false);
+        setIRanNumberOfTimes(1);
+        return
       }
       else {
         setAskingForSavingBlog(true);
       }
     }
+    else if (type === TYPESOFTABS.BLOG) {
+      if (iRanNumberOfTimes < 3) {
+        await handleJustPublish();
+      }
+      else {
+        setAskingForSavingBlog(true);
+      }
+    }
+
   }
+  const handleConfirmUserForConnect = async (type) => {
+    setTwitterThreadData(twitterThreadData);
+    setThisIsToBePublished(type);
+    if (type === TYPESOFTABS.TWITTER) {
+      if (initailTwitterThreads == twitterThreadData) {
+        await handleconnectTwitter();
+      } else {
+        setTwitterThreadData(twitterThreadData);
+        setAskingForSavingBlogWhileConnecting(true);
+      }
+    }
+
+    else if (type === TYPESOFTABS.LINKEDIN) {
+      if (iRanNumberOfTimes < 3) {
+        await handleconnectLinkedin();
+        setAskingForSavingBlogWhileConnecting(false);
+        setIsEditorTextUpdated(false);
+        setIRanNumberOfTimes(1);
+        return
+      }
+      else {
+        setAskingForSavingBlogWhileConnecting(true);
+      }
+    }
+
+
+  }
+
   useEffect(() => {
     if (option == 'twitter' || option == 'twitter-comeback') {
       setShowTwitterThreadUI(true);
     }
-  }, [option])
+  }, [option]);
+
   const handleSavePublish = () => {
     if (creditLeft === 0) {
       setTrailModal(true);
@@ -700,6 +933,7 @@ export default function TinyMCEEditor({
   }
 
   const handlePublish = () => {
+    setTwitterThreadData(twitterThreadData);
     if (creditLeft === 0) {
       setTrailModal(true);
     } else {
@@ -735,6 +969,7 @@ export default function TinyMCEEditor({
           })
           .then((response) => {
             //console.log(response.data);
+            setTwitterThreadData(twitterThreadData);
             setPublishLinkLoad(false);
             setPublishLinkText("Published on Linkedin");
             toast.success("Published on Linkedin", {
@@ -781,8 +1016,9 @@ export default function TinyMCEEditor({
   }
 
   const [iRanNumberOfTimes, setIRanNumberOfTimes] = useState(0);
-  const handleTwitterPublish = () => {
+  function handleTwitterPublish() {
     //console.log("handleTwitterPublish");
+    setTwitterThreadData(twitterThreadData);
     if (creditLeft === 0) {
       setTrailModal(true);
     } else {
@@ -841,6 +1077,7 @@ export default function TinyMCEEditor({
             .then((response) => {
               //console.log(response.data);
               setPublishTweetLoad(false);
+              setTwitterThreadData(twitterThreadData);
               setPublishTweetText("Published on Twitter");
               toast.success("Published on Twitter", {
                 position: "top-center",
@@ -934,9 +1171,9 @@ export default function TinyMCEEditor({
     const aa = blogData?.publish_data?.find(
       (pd) => pd.platform === "twitter"
     );
-    const htmlDoc = jsonToHtml(aa.tiny_mce_data);
+    const htmlDoc = jsonToHtml(aa?.tiny_mce_data);
     //console.log('MOVEING TO ');
-    if ((aa.threads === null || aa.threads === undefined || aa.threads.length === 0 || aa.threads == "")) {
+    if ((aa?.threads === null || aa?.threads === undefined || aa?.threads.length === 0 || aa?.threads == "")) {
       if (
         meeData?.me?.remaining_twitter_quota == 0 || meeData?.me?.remaining_twitter_quota == null || meeData?.me?.remaining_twitter_quota == undefined
       ) {
@@ -946,14 +1183,20 @@ export default function TinyMCEEditor({
       }
     } else {
       //console.log("THREADS DATA");
-      //console.log(aa.threads);
-      const twitterThreadsFromAPI = [...aa.threads];
+      //console.log(aa?.threads);
+      const twitterThreadsFromAPI = [...aa?.threads];
       const lastThread = twitterThreadsFromAPI[twitterThreadsFromAPI.length - 1];
       //console.log(lastThread);
       const secondlastThread = twitterThreadsFromAPI[twitterThreadsFromAPI.length - 2];
+      var theSecondLastThread = secondlastThread
       //console.log(secondlastThread);
       var mergedThread = "";
       if (lastThread == LILLE_BRANDING_TWEET) {
+        if (theSecondLastThread === undefined || theSecondLastThread === null || theSecondLastThread === "") {
+          theSecondLastThread = "";
+        } else {
+          theSecondLastThread = theSecondLastThread + " .";
+        }
         mergedThread = secondlastThread + ". " + lastThread;
         twitterThreadsFromAPI.pop();
         twitterThreadsFromAPI.pop();
@@ -974,8 +1217,9 @@ export default function TinyMCEEditor({
     setIRanNumberOfTimes(1);
   }, [option])
 
-
   if (loading) return <LoaderPlane />;
+
+
   return (
     <>
       <ToastContainer />
@@ -1016,6 +1260,7 @@ export default function TinyMCEEditor({
           You are now in The Editor Mode!! 🥳
         </div>
       </Modal> */}
+
       <Modal
         isOpen={askingForSavingBlog}
         onRequestClose={() => setAskingForSavingBlog(false)}
@@ -1091,7 +1336,8 @@ export default function TinyMCEEditor({
         </div>
       </Modal>
       <Modal
-        isOpen={showContributionModal}
+        isOpen={askingForSavingBlogWhileConnecting}
+        onRequestClose={() => setAskingForSavingBlogWhileConnecting(false)}
         ariaHideApp={false}
         className="w-[100%] sm:w-[38%] max-h-[95%]"
         style={{
@@ -1108,7 +1354,78 @@ export default function TinyMCEEditor({
             background: "white",
             // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
             borderRadius: "8px",
+            height: "280px",
             // width: "100%",
+            maxWidth: "380px",
+            bottom: "",
+            zIndex: "999",
+            marginRight: "-50%",
+            transform: "translate(-50%, -50%)",
+            padding: "30px",
+            paddingBottom: "0px",
+          },
+        }}
+      >
+        <button
+          className="absolute right-[35px]"
+          onClick={() => setAskingForSavingBlogWhileConnecting(false)}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            class="w-6 h-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+        <div className="mx-auto pb-4">
+          <img className="mx-auto h-12" src="/info.png" />
+        </div>
+        <div className="mx-auto font-bold text-2xl pl-[25%]">
+          Are you sure
+        </div>
+        <p className="text-center text-gray-500 text-base font-medium mt-4 mx-auto">
+          Do you want to save the changes
+        </p>
+        <div className="flex m-9">
+          <button
+            class="mr-4 w-[200px] p-4 bg-transparent hover:bg-red-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded"
+            onClick={handleJustConnect}
+          >
+            No
+          </button>
+          <button
+            class="w-[240px]  bg-transparent hover:bg-green-500 text-green-700 font-semibold hover:text-white py-2 px-4 border border-green-500 hover:border-transparent rounded"
+            onClick={handleSaveLogAndConnect}
+          >
+            YES, Save
+          </button>
+        </div>
+      </Modal>
+      <Modal
+        isOpen={showContributionModal}
+        ariaHideApp={false}
+        className="w-[100%] sm:w-[38%] max-h-[95%]"
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0,0,0,0.5)",
+            zIndex: "9998",
+          },
+          content: {
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            right: "auto",
+            border: "none",
+            background: "white",
+            borderRadius: "8px",
             maxWidth: "450px",
             bottom: "",
             zIndex: "999",
@@ -1255,7 +1572,7 @@ export default function TinyMCEEditor({
         style={{
           overlay: {
             backgroundColor: "rgba(0,0,0,0.5)",
-            zIndex: "9998",
+            zIndex: "9996",
           },
           content: {
             position: "absolute",
@@ -1406,9 +1723,7 @@ export default function TinyMCEEditor({
               </div>
               <div
                 // className="blog-toggle-button cta twitter flex gap-1 items-center"
-                className={`blog-toggle-button cta twitter flex gap-1 items-center ${option == 'twitter' ? "active" : ""}`}
-
-                onClick={handleTwitterBlog}
+                className={`blog-toggle-button cta twitter flex gap-1 items-center ${option == 'twitter' ? "active" : ""}`} onClick={handleTwitterBlog}
               >
                 <svg
                   style={{ pointerEvents: "none" }}
@@ -1429,13 +1744,18 @@ export default function TinyMCEEditor({
             <div style={{ display: "none" }}></div>
           )}
           {!isPublished ? (
-            <div className="flex" style={{ gap: "0.25em", marginLeft: "auto" }}>
+            <div className="flex w-full lg:w-auto mt-5 lg:mt-auto" style={{ gap: "0.25em", marginLeft: "auto" }}>
 
               <button
                 className="cta"
                 onClick={() => {
-                  if (saveText === "Save Now!") handleSave();
-                }}
+                      if (showTwitterThreadUI == true) {
+                        handleSaveTwitter()
+                      } else {
+                        handleSave();
+                      }
+                   
+                  }}
               >
                 {saveLoad ? (
                   <ReactLoading
@@ -1472,7 +1792,9 @@ export default function TinyMCEEditor({
                     )}
                   </button>
                 ) : (
-                  <button className="cta-invert" onClick={handleconnectLinkedin}>
+                  <button className="cta-invert" onClick={
+                    () => handleConfirmUserForConnect(TYPESOFTABS.LINKEDIN)
+                  }>
                     Connect with Linkedin
                   </button>
                 )
@@ -1494,7 +1816,6 @@ export default function TinyMCEEditor({
                           || pauseTwitterPublish
                         )
                       }
-
                     >
                       {publishTweetLoad ? (
                         <ReactLoading
@@ -1515,7 +1836,9 @@ export default function TinyMCEEditor({
                     className={`cta-invert disabled:opacity-50 
                     disabled:cursor-not-allowed
                     `}
-                    onClick={handleconnectTwitter}>
+                    onClick={
+                      () => handleConfirmUserForConnect(TYPESOFTABS.TWITTER)
+                    }>
                     Connect Twitter
                   </button>
                 )
@@ -1551,10 +1874,20 @@ export default function TinyMCEEditor({
               )}
             </div>
           ) : (
-            <div className="flex" style={{ gap: "0.25em", marginLeft: "auto" }}>
+            <div className="flex w-full lg:w-auto mt-5 lg:mt-auto" style={{ gap: "0.25em", marginLeft: "auto" }}>
               <button
                 className="cta"
-                onClick={saveText === "Save Now!" && handleSave}
+                // onClick={saveText === "Save Now!" && handleSave}
+                onClick={
+                  () => {
+                    if (showTwitterThreadUI == true) {
+                      handleSaveTwitter()
+                    } else {
+                      handleSave();
+                    }
+
+                  }
+                }
               >
                 {saveLoad ? (
                   <ReactLoading
@@ -1591,7 +1924,9 @@ export default function TinyMCEEditor({
                     )}
                   </button>
                 ) : (
-                  <button className="cta-invert" onClick={handleconnectLinkedin}>
+                  <button className="cta-invert" onClick={
+                    () => handleConfirmUserForConnect(TYPESOFTABS.LINKEDIN)
+                  }>
                     Connect with Linkedin
                   </button>
                 )
@@ -1606,14 +1941,14 @@ export default function TinyMCEEditor({
                       )
                         handleConfirmUserForPublish(TYPESOFTABS.TWITTER)
                     }}
-                     disabled={
-                        (
-                          meeData?.me?.remaining_twitter_quota == undefined ||
-                          meeData?.me?.remaining_twitter_quota < 1 ||
-                          meeData?.me?.remaining_twitter_quota == null
-                          || pauseTwitterPublish
-                        )
-                      }
+                    disabled={
+                      (
+                        meeData?.me?.remaining_twitter_quota == undefined ||
+                        meeData?.me?.remaining_twitter_quota < 1 ||
+                        meeData?.me?.remaining_twitter_quota == null
+                        || pauseTwitterPublish
+                      )
+                    }
 
                   >
                     {publishTweetLoad ? (
@@ -1628,7 +1963,12 @@ export default function TinyMCEEditor({
                     )}
                   </button>
                 ) : (
-                  <button className="cta-invert" onClick={handleconnectTwitter}>
+                  <button className={`cta-invert disabled:opacity-50 
+                  disabled:cursor-not-allowed
+                  `}
+                    onClick={
+                      () => handleConfirmUserForConnect(TYPESOFTABS.TWITTER)
+                    }>
                     Connect Twitter
                   </button>
                 )

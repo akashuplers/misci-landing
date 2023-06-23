@@ -13,6 +13,8 @@ import Layout from "../components/Layout";
 import LoaderPlane from "../components/LoaderPlane";
 import TrialEndedModal from "../components/TrialEndedModal";
 import { meeAPI } from "../graphql/querys/mee";
+import { getDateMonthYear, isMonthAfterJune } from "../helpers/helper";
+import OTPModal from "../modals/OTPModal";
 import PreferencesModal from "../modals/PreferencesModal";
 import useStore from "../store/store";
 
@@ -149,6 +151,7 @@ export default function Home() {
     data: meeData,
     loading: meeLoading,
     error: meeError,
+    refetch: meeRefetch,
   } = useQuery(meeAPI, {
     context: {
       headers: {
@@ -220,15 +223,89 @@ export default function Home() {
   ));
 
   const [pfmodal, setPFModal] = useState(false);
+  const [isOTPVerified, setIsOTPVerified] = useState(true);
+  const [showOTPModal, setShowOTPModal] = useState(false);
 
   useEffect(() => {
     console.log(meeData);
-    if (meeData?.me.prefFilled === false) {
-      setPFModal(true);
+
+    if (typeof window !== "undefined") {
+      const isOTPVerified = localStorage.getItem("isOTPVerified");
+      // check if verified or not
+      if (isOTPVerified == "false" || !isOTPVerified) {
+        setPFModal(false);
+      } else {
+        if (meeData?.me.prefFilled === false) {
+          setPFModal(true);
+        }
+      }
+    }
+    if (meeData?.me) {
+      localStorage.setItem(
+        "userId",
+        JSON.stringify(meeData.me._id).replace(/['"]+/g, "")
+      );
+      if (typeof window !== "undefined") {
+        const isOTPVerified = meeData?.me?.emailVerified;
+        if (
+          isOTPVerified == "false" ||
+          !isOTPVerified ||
+          isOTPVerified == null
+        ) {
+          setPFModal(false);
+        } else {
+          if (meeData?.me.prefFilled === false) {
+            setPFModal(true);
+          }
+        }
+
+        if (
+          isOTPVerified === "false" ||
+          !isOTPVerified ||
+          isOTPVerified === null ||
+          isOTPVerified === undefined
+        ) {
+          setIsOTPVerified(false);
+          const { day, month } = getDateMonthYear(meeData?.me.date);
+          if (!isMonthAfterJune(month)) {
+            if (month == "June") {
+              if (day <= 18) {
+                setShowOTPModal(false);
+              } else {
+                setShowOTPModal(true);
+              }
+            } else {
+              setShowOTPModal(false);
+            }
+          } else {
+            setShowOTPModal(true);
+          }
+          const SEND_OTP_URL = "https://maverick.lille.ai/auth/send-otp";
+          var getToken = localStorage.getItem("token");
+          const requestOptions = {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken,
+            },
+          };
+
+          fetch(SEND_OTP_URL, requestOptions)
+            .then((response) => {
+              console.log("RESPONSE FROM SEND OTP");
+              console.log(response);
+              console.log(response.json());
+            })
+            .catch((error) => {
+              console.log("ERROR FROM SEND OTP");
+            });
+        } else {
+          setIsOTPVerified(true);
+          setShowOTPModal(false);
+        }
+      }
     }
   }, [meeData]);
-
-  const [multiplier, setMultiplier] = useState(1);
 
   const [windowWidth, setWindowWidth] = useState(0);
   useEffect(() => {
@@ -270,6 +347,15 @@ export default function Home() {
             getToken={getToken}
           />
         )}
+        {meeData?.me && showOTPModal === true ? (
+          <OTPModal
+            showOTPModal={showOTPModal}
+            setShowOTPModal={setShowOTPModal}
+            setPFModal={setPFModal}
+          />
+        ) : (
+          <></>
+        )}
 
         {!meeData?.me?.isSubscribed && meeData?.me?.credits === 0 && (
           <TrialEndedModal setTrailModal={() => {}} topic={null} />
@@ -306,7 +392,6 @@ export default function Home() {
           </div>
           <div className="mx-auto max-w-3xl flex py-32 sm:py-30 lg:py-20">
             <div className="text-center">
-               
               <div className="flex text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
                 Generate & Optimize{" "}
                 <TextTransition
@@ -336,7 +421,9 @@ export default function Home() {
               </p> */}
               <div className="p-4 mt-4">Try some of our trending topics</div>
               {!loading ? (
-                <div className="flex flex-col  lg:grid grid-cols-3 gap-4 py-4">{updatedArr}</div>
+                <div className="flex flex-col  lg:grid grid-cols-3 gap-4 py-4">
+                  {updatedArr}
+                </div>
               ) : (
                 <div style={{ margin: "0 auto" }}>
                   <LoaderPlane />
@@ -399,14 +486,6 @@ export default function Home() {
   );
 }
 
-/* 
-TODO:
-
-1. Verification of user contribution and send to the server.
-2. Fix the auto scroll of text which a single letter is pressed for long time.
-3. Copy right 
-*/
-
 const AIInputComponent = () => {
   const [keyword, setkeyword] = useState("");
   const router = useRouter();
@@ -420,6 +499,14 @@ const AIInputComponent = () => {
       });
     }
   };
+  const handleButtonClick = () => { 
+    const pathname = keyword.trim().length > 0 ? "/dashboard" : "/";
+    const query = { topic: keyword };
+    router.push({ pathname, query });
+  };
+   
+  const isDisabled = keyword.trim().length === 0;
+
   return (
     <div
       className={`
@@ -429,7 +516,7 @@ const AIInputComponent = () => {
       <input
         id="search"
         name="search"
-        className="block w-full rounded-md border-0 bg-white py-2.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+        className="block w-full rounded-md border-0 bg-white py-2.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 disabled:opacity-50"
         placeholder="Search"
         type="search"
         onChange={(e) => {
@@ -438,16 +525,13 @@ const AIInputComponent = () => {
         }}
         onKeyPress={handleEnterKeyPress}
       />
-      <Link
-        legacyBehavior
-        as={"/dashboard"}
-        href={{
-          pathname: "/dashboard",
-          query: { topic: keyword },
-        }}
-      >
-        <a className="cta-invert">Generate</a>
-      </Link>
+      <button
+      className={`cta-invert ${isDisabled ? "disabled:opacity-50" : ""}`}
+      onClick={handleButtonClick}
+      disabled={isDisabled}
+    >
+      Generate
+    </button>
     </div>
   );
 };
