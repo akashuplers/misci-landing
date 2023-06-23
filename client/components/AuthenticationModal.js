@@ -123,7 +123,6 @@ export default function AuthenticationModal({
             if (window.location.pathname == '/dashboard') {
               window.location.pathname = '/dashboard/' + bid;
             } else {
-              toast("taking to : /");
               window.location.pathname = '/'
             }
           }
@@ -394,7 +393,7 @@ export default function AuthenticationModal({
 
   const handleGoogleSignUp = async () => {
     console.log("google signup");
-    signUpWithGoogle(handleSave);
+    signUpWithGoogle(handleSave, bid);
   };
 
   const handleLinkedinSignUp = () => {
