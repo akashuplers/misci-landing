@@ -61,6 +61,11 @@ export default function DashboardInsights({
   const updateCredit = useStore((state) => state.updateCredit);
   const updateisSave = useStore((state) => state.updateisSave);
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
+
+  const [filteredIdeas, setFilteredIdeas] = useState([]);
+  const [notUniquefilteredIdeas, setNotUniqueFilteredIdeas] = useState([]);
+  const { showTwitterThreadUI, setShowTwitterThreadUI } = useThreadsUIStore();
+
   const setShowContributionModal = useByMeCoffeModal(
     (state) => state.toggleModal
   );
@@ -176,10 +181,6 @@ export default function DashboardInsights({
     setRegenSelected((prev) => [...prev, ideaObject]);
   }
 
-  const [filteredIdeas, setFilteredIdeas] = useState([]);
-  const [notUniquefilteredIdeas, setNotUniqueFilteredIdeas] = useState([]);
-  const { showTwitterThreadUI, setShowTwitterThreadUI } = useThreadsUIStore();
-
   const [filteredArray, setFilteredArray] = useState([]);
 
   function handleTagClick(e) {
@@ -255,24 +256,46 @@ export default function DashboardInsights({
     setNotUniqueFilteredIdeas([]);
 
     const arr = ideaType === "used" ? ideas : freshIdeas;
+    console.log("IDEAS PROPS");
+    console.log(ideas);
+    // Assuming you have a state variable called 'notUniqueFilteredIdeas' and a function called 'setNotUniqueFilteredIdeas' to update it.
 
-    filteredArray.forEach((filterObject) =>
+    filteredArray.forEach((filterObject) => {
       arr.forEach((idea) => {
+        console.log("IDEA");
+        console.log(idea);
         const searchObject = filterObject?.filterText;
-        if (filterObject?.criteria === "tag") {
-          idea?.idea?.includes(searchObject) &&
-            setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-        } else if (filterObject?.criteria === "ref") {
-          idea?.name === searchObject &&
-            setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
+        console.log("CRITERIA : ", filterObject?.criteria);
+        const doesIdeasIncludeSearchObject = idea?.idea?.includes(searchObject);
+        console.log("DOES IDEA INCLUDE SEARCH OBJECT", doesIdeasIncludeSearchObject);
+
+        const isIdeaNameSameAsSearchObject = idea?.name === searchObject;
+        console.log("IS IDEA NAME SAME AS SEARCH OBJECT", isIdeaNameSameAsSearchObject);
+        var ideaOfIdea = idea?.idea;
+        // lowercase the idea
+        ideaOfIdea = ideaOfIdea?.toLowerCase();
+        const lowerCaseSearchObject = searchObject?.toLowerCase();
+        const ideaName = idea?.name?.toLowerCase();
+
+        if (filterObject?.criteria === "tag" && ideaOfIdea?.includes(lowerCaseSearchObject)) {
+          console.log('idea is in IDEA');
+          console.log(idea);
+          setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
+        } else if (filterObject?.criteria === "ref" && ideaName === lowerCaseSearchObject) {
+          console.log('IDEA IN NOT UNIQUE FILTERED TAG');
+          console.log(idea);
+          setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
         }
-      })
-    );
+      });
+    });
+
   }, [filteredArray]);
 
   // We create a set so that the values are unique, and multiple ideas are not added
   useEffect(() => {
     // Create a new Set object from the array, which removes duplicates
+    console.log('NOT UNQITE FILTER IDEAS HERE');
+    console.log(notUniquefilteredIdeas)
     const uniqueFilteredSet = new Set(
       notUniquefilteredIdeas.map(JSON.stringify)
     );
@@ -292,7 +315,7 @@ export default function DashboardInsights({
       }
       prevLink = idea?.name;
       idea.citationNumber = citationNumber;
-
+      console.log('IDeA TO BE ADDED');
       if (ideaType === "used") {
         setFilteredIdeas((prev) => [...prev, idea]);
       } else if (ideaType === "fresh") {
@@ -301,13 +324,16 @@ export default function DashboardInsights({
     });
   }, [notUniquefilteredIdeas]);
 
-  /*
-  keep this for de-bugging
+
+  // keep this for de-bugging
   useEffect(() => {
+    console.log('FILTERD ARRAY');
+    console.log('IDEA TYPE');
+    console.log(ideaType);
     console.log(filteredArray);
+    console.log('FILTER IDEAS');
     console.log(filteredIdeas);
   }, [filteredIdeas]);
-  */
   const { twitterThreadData, setTwitterThreadData } = useTwitterThreadStore();
 
   function handleRegenerate() {
@@ -430,17 +456,22 @@ export default function DashboardInsights({
             // merge this will text with 2nd last tweet
             var theSecondLastThread = aaThreads.threads[aaThreads.threads.length - 2];
             if (theLastThread !== undefined && theLastThread !== null && theLastThread !== "") {
-              const mergedText = theSecondLastThread + " ." + theLastThread;
+              // const mergedText = theSecondLastThread + " ." + theLastThread;
+              if (theSecondLastThread === undefined || theSecondLastThread === null || theSecondLastThread === "") {
+                theSecondLastThread = "";
+              } else {
+                theSecondLastThread = theSecondLastThread + " .";
+              }
+              const mergedText = theSecondLastThread + theLastThread;
               theSecondLastThread = mergedText;
-              aaThreads.threads.pop();
-              aaThreads.threads.pop();
-              aaThreads.threads.push(theSecondLastThread);
+              aaThreads.threads?.pop();
+              aaThreads.threads?.pop();
+              aaThreads.threads?.push(theSecondLastThread);
               console.log("THREADS DATA AFTER MERGE");
               console.log(aaThreads.threads);
               setTwitterThreadData(aaThreads.threads);
             }
           }
-
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
 
@@ -876,7 +907,7 @@ export default function DashboardInsights({
       {creditModal && (
         <TrialEndedModal setTrailModal={setCreditModal} topic={null} />
       )}
-      <div className="text-xs px-2" style={{ borderLeft: "2px solid #d2d2d2" }}>
+      <div className="text-xs px-2 mb-24 lg:mb-0" style={{ borderLeft: "2px solid #d2d2d2" }} id="regenblog">
         <div className="flex justify-between gap-[1.25em]">
           <p className="font-normal w-[70%]">
             Regenerate your blog on the basis of selected used & fresh ideas.
@@ -903,7 +934,7 @@ export default function DashboardInsights({
               <p className="pt-[0.65em] font-semibold">Filtering Keywords</p>
             </div>
             <div
-              className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
+              className="flex gap-[0.5em] flex-wrap h-full lg:max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
               style={{ padding: "0.75em 0.25em" }}
             >
               {ideaType === "used"
@@ -1028,13 +1059,7 @@ export default function DashboardInsights({
           )}
         </div>
         <div
-          className="overflow-y-scroll px-2"
-          style={{
-            // marginRight: "0.5em",
-            maxHeight: "82vh",
-            height: "-webkit-fill-available",
-            maxHeight: "50vh",
-          }}
+          className=" dashboardInsightsUsedSectionHeight overflow-y-scroll px-2"
         >
           {ideaType === "used"
             ? filteredIdeas?.length > 0

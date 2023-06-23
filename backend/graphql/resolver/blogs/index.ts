@@ -164,7 +164,9 @@ export const blogResolvers = {
                 delete cachedBlogIdeaData.blog_id
                 const updatedBlogs = {
                     ...cachedBlogData[0],
-                    userId: new ObjectID(userId)
+                    userId: new ObjectID(userId),
+                    date: getTimeStamp(),
+                    updatedAt: getTimeStamp(),
                 }
                 const updatedBlogIdeas = cachedBlogIdeaData
                 const insertBlog = await db.db('lilleBlogs').collection('blogs').insertOne(updatedBlogs)
@@ -175,6 +177,29 @@ export const blogResolvers = {
                 if(cachedBlogData[0].article_id && cachedBlogData[0].article_id.length) refUrls = await fetchArticleUrls({db, articleId: cachedBlogData[0].article_id})
                 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
                 await delay(10000)
+                if(user && Object.keys(user).length) {
+                    const updateduser = await fetchUser({id: user.id, db})
+                    const updatedCredits = ((updateduser.credits || 25) - 1)
+                    await updateUserCredit({id: updateduser._id, credit: updatedCredits, db})
+                    if(updatedCredits <= 0) {
+                        await sendEmails({
+                            to: [
+                            { Email: `akash.sharma@nowigence.com`, Name: `Akash Sharma` },
+                            { Email: `arvind.ajimal@nowigence.com`, Name: `Arvind Ajimal` },
+                            { Email: `subham.mahanta@nowigence.com`, Name: `Subham Mahanta` },
+                            { Email: `vashisth@adesignguy.co`, Name: `Vashisth Bhushan` }
+                            ],
+                            subject: "Credit Exhausted",
+                            textMsg: "",
+                            htmlMsg: `
+                                <p>Hello All,</p>
+                                <p>Credit has been exhausted for below user</p>
+                                <p>User Name: ${updateduser.name} ${userDetails.lastName}</p>
+                                <p>User Email: ${updateduser.email}</p>
+                            `,
+                        });
+                    }
+                }
                 return {...cachedBlogData[0], _id: insertBlog.insertedId,  ideas: {
                     blog_id: new ObjectID(insertBlog.insertedId),
                     ...updatedBlogIdeas,

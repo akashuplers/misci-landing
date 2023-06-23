@@ -25,6 +25,7 @@ type User {
     publishCount: Int
     total_twitter_quota: Int
     remaining_twitter_quota: Int
+    emailVerified: Boolean
     hours_left_for_quota_renew: Int
 }
 type Query {

@@ -1,6 +1,5 @@
 
 const UsedReference = ({ reference, index, handleRefClick }) => {
-    console.log("UsedReference.js: UsedReference: ref: ", reference)
     return (
         <div
             key={index}

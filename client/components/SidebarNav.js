@@ -1,8 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-import useStore, { useTabOptionStore, useThreadsUIStore, useTwitterThreadStore } from "@/store/store";
+import useStore, { useBlogDataStore, useTabOptionStore, useThreadsUIStore, useTwitterThreadStore } from "@/store/store";
 import { useQuery } from "@apollo/client";
 import { Dialog, Transition } from "@headlessui/react";
-import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import {
   ArrowRightOnRectangleIcon,
   Bars3Icon,
@@ -58,6 +57,7 @@ export default function Sidebar() {
     updateCredit();
   }, []);
 
+
   const navigation = [
     {
       name: "Generate New",
@@ -77,13 +77,9 @@ export default function Sidebar() {
       icon: FolderIcon,
       current: url === "/saved",
     },
-    {
-      name: "FAQs",
-      href: "/faq",
-      icon: QuestionMarkCircleIcon,
-    },
   ];
   console.log("hello");
+
 
   const navigation_bottom = [
 
@@ -100,7 +96,6 @@ export default function Sidebar() {
       current: false,
     },
   ];
-
   const {
     data: meeData,
     loading: meeLoading,
@@ -113,6 +108,8 @@ export default function Sidebar() {
       },
     },
     onError: ({ graphQLErrors, networkError, operation, forward }) => {
+      console.log("GRAPH QL ERRORS");
+      console.log(graphQLErrors);
       if (graphQLErrors) {
         for (let err of graphQLErrors) {
           switch (err.extensions.code) {
@@ -164,6 +161,7 @@ export default function Sidebar() {
   }, []);
 
   const sideBarHeightRef = useRef(null);
+  const { blogData, setBlogData } = useBlogDataStore();
 
   useEffect(() => {
     const MINIMUM_HEIGHT = 125;
@@ -177,6 +175,7 @@ export default function Sidebar() {
   const { setTwitterThreadData } = useTwitterThreadStore()
   function handleEditorReset() {
     setOption('blog');
+    setBlogData([]);
     setShowTwitterThreadUI(false);
     setTwitterThreadData([]);
   }

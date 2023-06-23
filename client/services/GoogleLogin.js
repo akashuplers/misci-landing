@@ -1,11 +1,9 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { GoogleAuthProvider } from "firebase/auth";
-import { signInWithPopup } from "firebase/auth";
-import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
-import { toast } from "react-toastify";
 import axios from "axios";
+import { initializeApp } from "firebase/app";
+import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
+import { toast } from "react-toastify";
+import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -22,7 +20,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
-export const signUpWithGoogle = (handleSave) => {
+export const signUpWithGoogle = (handleSave, blogId) => {
   signInWithPopup(auth, googleProvider)
     .then((res) => {
       const arr = res.user.displayName.split(" ");
@@ -109,6 +107,7 @@ export const signUpWithGoogle = (handleSave) => {
                 "userId",
                 JSON.stringify(response.data.me._id).replace(/['"]+/g, "")
               );
+            console.log('reached here', response.data.me._id).replace(/['"]+/g, "",  response.data.me.credits )
             })
             .catch((error) => console.error(error))
             .finally(() => {
@@ -121,10 +120,11 @@ export const signUpWithGoogle = (handleSave) => {
               if (window.location.pathname === "/") {
                 window.location.href = "/";
               } else {
-                if (window.location.pathname === "dashboard") {
+                if (window.location.pathname === "/dashboard") {
                   handleSave();
+                  window.location.href = "/dashboard/" + blogId;
                 } else {
-                  window.location.href = "/dashboard";
+                  window.location.href = "/";
                 }
               }
             });

@@ -68,6 +68,7 @@ export default function AuthenticationModal({
   };
 
   const handleLoginSubmit = (event, email, password) => {
+
     event.preventDefault();
     setSubmitting(true);
 
@@ -117,6 +118,7 @@ export default function AuthenticationModal({
             progress: undefined,
             theme: "light",
           });
+
           return true;
         }
       })
@@ -182,14 +184,23 @@ export default function AuthenticationModal({
         .then((response) => {
           localStorage.setItem("ispaid", response.data.me.isSubscribed);
           localStorage.setItem("credits", response.data.me.credits);
+          console.log('reached here', response.data.me._id).replace(/['"]+/g, "",  response.data.me.credits )
           localStorage.setItem(
             "userId",
             JSON.stringify(response.data.me._id).replace(/['"]+/g, "")
           );
+          // if (typeof window !== "undefined") {
+          //   if (window.location.pathname == '/dashboard') {
+          //     window.location.pathname = '/dashboard/' + bid;
+          //   } else {
+          //     window.location.pathname = '/'
+          //   }
+          // }
         })
         .catch((error) => console.error(error))
         .finally(() => {
           if (window.location.pathname === "/dashboard") {
+            window.location.pathname = '/dashboard/' + bid;
             handleSave();
           } else {
             window.location.href = "/";
@@ -324,6 +335,9 @@ export default function AuthenticationModal({
         });
         setLoading(false);
       });
+    //  if (typeof window !== "undefined") {
+    //    window.location.reload()
+    //  }
   };
 
   const handleSignUpChange = (event) => {
@@ -381,7 +395,7 @@ export default function AuthenticationModal({
 
   const handleGoogleSignUp = async () => {
     console.log("google signup");
-    signUpWithGoogle(handleSave);
+    signUpWithGoogle(handleSave, bid);
   };
 
   const handleLinkedinSignUp = () => {
