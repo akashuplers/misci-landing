@@ -357,6 +357,7 @@ export default function TinyMCEEditor({
   ] = useMutation(updateBlog);
 
   const handleSave = async (redirectUser = true) => {
+    console.log('user-save')
     var getToken, ispaid, credits;
     if (window.location.pathname !== "/dashboard/" + blog_id) {
 
@@ -1738,8 +1739,13 @@ export default function TinyMCEEditor({
               <button
                 className="cta"
                 onClick={() => {
-                  if (saveText === "Save Now!") handleSave();
-                }}
+                      if (showTwitterThreadUI == true) {
+                        handleSaveTwitter()
+                      } else {
+                        handleSave();
+                      }
+                   
+                  }}
               >
                 {saveLoad ? (
                   <ReactLoading
