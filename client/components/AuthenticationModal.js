@@ -68,6 +68,7 @@ export default function AuthenticationModal({
   };
 
   const handleLoginSubmit = (event, email, password) => {
+
     event.preventDefault();
     setSubmitting(true);
 
@@ -117,11 +118,12 @@ export default function AuthenticationModal({
             progress: undefined,
             theme: "light",
           });
-          const isUserOnDashboard = window.location.pathname = "/dashboard";
 
           if (typeof window !== "undefined") {
             if (window.location.pathname == '/dashboard') {
               window.location.pathname = '/dashboard/' + bid;
+            } else {
+              window.location.pathname = '/'
             }
           }
           return true;
@@ -331,9 +333,9 @@ export default function AuthenticationModal({
         });
         setLoading(false);
       });
-      //  if (typeof window !== "undefined") {
-      //    window.location.reload()
-      //  }
+    //  if (typeof window !== "undefined") {
+    //    window.location.reload()
+    //  }
   };
 
   const handleSignUpChange = (event) => {
@@ -391,7 +393,7 @@ export default function AuthenticationModal({
 
   const handleGoogleSignUp = async () => {
     console.log("google signup");
-    signUpWithGoogle(handleSave);
+    signUpWithGoogle(handleSave, bid);
   };
 
   const handleLinkedinSignUp = () => {
