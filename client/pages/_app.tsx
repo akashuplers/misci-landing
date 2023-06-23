@@ -24,13 +24,6 @@ import { ToastContainer } from "react-toastify";
 import { useRouter } from "next/router";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 
-declare global {
-  interface Window {
-    clarity: any;
-  }
-}
-
-
 axios.interceptors.request.use(
   (config) => {
     // Add any headers or modify the request as needed
@@ -236,31 +229,6 @@ export default function App({ Component, pageProps }: AppProps) {
     `;
     document.body.appendChild(script);
 
-    const userId = localStorage.getItem('userId');
-    const meDataIsSubscribed = localStorage.getItem('meDataisSubscribed');
-    const meDataMeEmail = localStorage.getItem('meDataMeEmail');
-    const meDataMePublishCount = localStorage.getItem('meDataMePublishCount');
-    const tempId = localStorage.getItem('tempId');
-    const disclaimerResponse = localStorage.getItem('disclaimerResponse');
-    const Gbid = localStorage.getItem('Gbid');
-    const isDisclaimerShown = localStorage.getItem('isDisclaimerShown');
-    const token = localStorage.getItem('token');
-    const meDataMeCredits = localStorage.getItem('meDataMeCredits');
-
-    if (window?.clarity && window !== undefined) {
-      console.log(window.clarity.userId, window.clarity)
-      window.clarity('set', 'userId', userId);
-      window.clarity('set', 'meDataisSubscribed', meDataIsSubscribed);
-      window.clarity('set', 'meDataMeEmail', meDataMeEmail);
-      window.clarity('set', 'meDataMePublishCount', meDataMePublishCount);
-      window.clarity('set', 'tempId', tempId);
-      window.clarity('set', 'disclaimerResponse', disclaimerResponse);
-      window.clarity('set', 'Gbid', Gbid);
-      window.clarity('set', 'isDisclaimerShown', isDisclaimerShown);
-      window.clarity('set', 'token', token);
-      window.clarity('set', 'meDataMeCredits', meDataMeCredits);
-      console.log(window.clarity.userId, window.clarity)
-    }
     return () => {
       document.body.removeChild(script);
     };
