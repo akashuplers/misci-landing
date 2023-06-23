@@ -119,13 +119,6 @@ export default function AuthenticationModal({
             theme: "light",
           });
 
-          if (typeof window !== "undefined") {
-            if (window.location.pathname == '/dashboard') {
-              window.location.pathname = '/dashboard/' + bid;
-            } else {
-              window.location.pathname = '/'
-            }
-          }
           return true;
         }
       })
@@ -191,10 +184,18 @@ export default function AuthenticationModal({
         .then((response) => {
           localStorage.setItem("ispaid", response.data.me.isSubscribed);
           localStorage.setItem("credits", response.data.me.credits);
+          console.log('reached here', response.data.me._id).replace(/['"]+/g, "",  response.data.me.credits )
           localStorage.setItem(
             "userId",
             JSON.stringify(response.data.me._id).replace(/['"]+/g, "")
           );
+          if (typeof window !== "undefined") {
+            if (window.location.pathname == '/dashboard') {
+              window.location.pathname = '/dashboard/' + bid;
+            } else {
+              window.location.pathname = '/'
+            }
+          }
         })
         .catch((error) => console.error(error))
         .finally(() => {
