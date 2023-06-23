@@ -189,17 +189,18 @@ export default function AuthenticationModal({
             "userId",
             JSON.stringify(response.data.me._id).replace(/['"]+/g, "")
           );
-          if (typeof window !== "undefined") {
-            if (window.location.pathname == '/dashboard') {
-              window.location.pathname = '/dashboard/' + bid;
-            } else {
-              window.location.pathname = '/'
-            }
-          }
+          // if (typeof window !== "undefined") {
+          //   if (window.location.pathname == '/dashboard') {
+          //     window.location.pathname = '/dashboard/' + bid;
+          //   } else {
+          //     window.location.pathname = '/'
+          //   }
+          // }
         })
         .catch((error) => console.error(error))
         .finally(() => {
           if (window.location.pathname === "/dashboard") {
+            window.location.pathname = '/dashboard/' + bid;
             handleSave();
           } else {
             window.location.href = "/";
