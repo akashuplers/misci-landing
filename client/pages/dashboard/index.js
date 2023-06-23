@@ -165,6 +165,10 @@ export default function dashboard({ query }) {
 
   useEffect(() => {
     if (meeData) {
+      localStorage.setItem(
+                "userId",
+                JSON.stringify(meeData.me._id).replace(/['"]+/g, "")
+       );
       localStorage.setItem("meDataMeCredits", meeData?.me?.credits);
       localStorage.setItem("meDataMePublishCount", meeData?.me.publishCount);
       localStorage.setItem("meDataisSubscribed", meeData?.me?.isSubscribed);
