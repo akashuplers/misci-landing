@@ -891,7 +891,7 @@ export default function TinyMCEEditor({
     //console.log(localStorage);
     setContributionModalLoader(true);
     const stripe = await stripePromise;
-    const res = await fetch('https://maverick.lille.ai/stripe/api/payment', {
+    const res = await fetch(API_BASE_PATH + '/stripe/api/payment', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -1749,13 +1749,13 @@ export default function TinyMCEEditor({
               <button
                 className="cta"
                 onClick={() => {
-                      if (showTwitterThreadUI == true) {
-                        handleSaveTwitter()
-                      } else {
-                        handleSave();
-                      }
-                   
-                  }}
+                  if (showTwitterThreadUI == true) {
+                    handleSaveTwitter()
+                  } else {
+                    handleSave();
+                  }
+
+                }}
               >
                 {saveLoad ? (
                   <ReactLoading
