@@ -242,9 +242,9 @@ export default function Home() {
     }
     if (meeData?.me) {
       localStorage.setItem(
-                "userId",
-                JSON.stringify(meeData.me._id).replace(/['"]+/g, "")
-       );
+        "userId",
+        JSON.stringify(meeData.me._id).replace(/['"]+/g, "")
+      );
       if (typeof window !== "undefined") {
         const isOTPVerified = meeData?.me?.emailVerified;
         if (
@@ -274,10 +274,9 @@ export default function Home() {
               } else {
                 setShowOTPModal(true);
               }
-            }else{
+            } else {
               setShowOTPModal(false);
             }
-
           } else {
             setShowOTPModal(true);
           }
@@ -500,6 +499,14 @@ const AIInputComponent = () => {
       });
     }
   };
+  const handleButtonClick = () => { 
+    const pathname = keyword.trim().length > 0 ? "/dashboard" : "/";
+    const query = { topic: keyword };
+    router.push({ pathname, query });
+  };
+   
+  const isDisabled = keyword.trim().length === 0;
+
   return (
     <div
       className={`
@@ -509,7 +516,7 @@ const AIInputComponent = () => {
       <input
         id="search"
         name="search"
-        className="block w-full rounded-md border-0 bg-white py-2.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+        className="block w-full rounded-md border-0 bg-white py-2.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 disabled:opacity-50"
         placeholder="Search"
         type="search"
         onChange={(e) => {
@@ -518,16 +525,13 @@ const AIInputComponent = () => {
         }}
         onKeyPress={handleEnterKeyPress}
       />
-      <Link
-        legacyBehavior
-        as={"/dashboard"}
-        href={{
-          pathname: "/dashboard",
-          query: { topic: keyword },
-        }}
-      >
-        <a className="cta-invert">Generate</a>
-      </Link>
+      <button
+      className={`cta-invert ${isDisabled ? "disabled:opacity-50" : ""}`}
+      onClick={handleButtonClick}
+      disabled={isDisabled}
+    >
+      Generate
+    </button>
     </div>
   );
 };
