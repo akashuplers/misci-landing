@@ -190,23 +190,7 @@ export default function TinyMCEEditor({
   }, [editorText, updatedText]);
 
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      meeRefetch().then(
-        (res) => {
-          setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
-          const remainingQuota = meeData?.me?.remaining_twitter_quota;
-          console.log("REMAINING QUOTA: " + remainingTwitterQuota);
-          console.log(meeData);
-        }
-      )
 
-    }, 2000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [meeRefetch]);
 
   useEffect(() => {
     if (twitterThreadData === prevTwitterThreads) {
@@ -215,9 +199,6 @@ export default function TinyMCEEditor({
     }
   }, [twitterThreadData])
 
-  useEffect(() => {
-    updateCredit();
-  }, [handleTwitterPublish]);
   useEffect(() => {
     if (meeData) {
       setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid)
@@ -366,6 +347,7 @@ export default function TinyMCEEditor({
 
   const handleSave = async (redirectUser = true) => {
     console.log('user-save')
+    
     var getToken, ispaid, credits;
     if (window.location.pathname !== "/dashboard/" + blog_id) {
 
@@ -450,6 +432,7 @@ export default function TinyMCEEditor({
           .then(() => {
             //console.log(">>", window.location);
             refetchBlog();
+            runMeeRefetch();
             toast.success("Saved!!", {
               position: "top-center",
               autoClose: 5000,
@@ -503,7 +486,8 @@ export default function TinyMCEEditor({
     }
   };
 
-  const handleSaveTwitter = async () => {
+  const handleSaveTwitter = async (redirectUser = true) => {
+    
     var getToken, ispaid, credits;
 
     if (typeof window !== "undefined") {
@@ -562,6 +546,7 @@ export default function TinyMCEEditor({
               progress: undefined,
               theme: "light",
             });
+            setPrevTwitterThreads(twitterThreadData);
             if (redirectUser == true) {
               if (window.location.pathname !== "/dashboard/" + blog_id) {
                 window.location.href = "/dashboard/" + blog_id;
@@ -602,6 +587,7 @@ export default function TinyMCEEditor({
         }, 3000);
       }
     }
+    runMeeRefetch();
   };
 
 
@@ -971,6 +957,7 @@ export default function TinyMCEEditor({
             //console.log(response.data);
             setTwitterThreadData(twitterThreadData);
             setPublishLinkLoad(false);
+            runMeeRefetch();
             setPublishLinkText("Published on Linkedin");
             toast.success("Published on Linkedin", {
               position: "top-center",
@@ -1076,6 +1063,8 @@ export default function TinyMCEEditor({
             })
             .then((response) => {
               //console.log(response.data);
+              runMeeRefetch();
+              updateCredit();
               setPublishTweetLoad(false);
               setTwitterThreadData(twitterThreadData);
               setPublishTweetText("Published on Twitter");
@@ -1089,6 +1078,10 @@ export default function TinyMCEEditor({
                 progress: undefined,
                 theme: "light",
               });
+              setPrevTwitterThreads(twitterThreadData);
+              if (window.location.pathname !== "/dashboard/" + blog_id) {
+                window.location.href = "/dashboard/" + blog_id;
+              }
             })
             .catch((error) => {
               if (error.response) {
@@ -1121,6 +1114,7 @@ export default function TinyMCEEditor({
         toast.error("Only 280 Character allowed!");
       }
     }
+
   };
 
   function handleBlog(e) {
@@ -1215,10 +1209,34 @@ export default function TinyMCEEditor({
   }
   useEffect(() => {
     setIRanNumberOfTimes(1);
-  }, [option])
+  }, [option]);
+
+  function runMeeRefetch() {
+    
+    meeRefetch().then((res) => {
+      setTwitterThreadAlertOption(
+        meeData?.me?.remaining_twitter_quota,
+        meeData?.me?.total_twitter_quota,
+        meeData?.me?.paid
+      );
+      const remainingQuota = meeData?.me?.remaining_twitter_quota;
+      console.log("REMAINING QUOTA: " + remainingQuota);
+      console.log(meeData);
+    });
+  };
+
+  // useEffect(() => {
+  //   toast('this');
+  //   meeRefetch().then((res) => {
+  //     setTwitterThreadAlertOption(meeData?.me?.remaining_twitter_quota, meeData?.me?.total_twitter_quota, meeData?.me?.paid);
+  //     const remainingQuota = meeData?.me?.remaining_twitter_quota;
+  //     console.log("REMAINING QUOTA: " + remainingQuota);
+  //     console.log(meeData);
+  //   });
+  // }, [handleSave, handlePublish, handleTwitterPublish, handleSaveTwitter, option]);
+
 
   if (loading) return <LoaderPlane />;
-
 
   return (
     <>

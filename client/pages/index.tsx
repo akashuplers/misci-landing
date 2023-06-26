@@ -279,7 +279,18 @@ export default function Home() {
           } else {
             setShowOTPModal(true);
           }
-          const SEND_OTP_URL = API_BASE_PATH + "/auth/send-otp";
+          
+        } else {
+          setIsOTPVerified(true);
+          setShowOTPModal(false);
+        }
+      }
+    }
+  }, [meeData]);
+
+  useEffect(()=>{
+ function sendOpt(){
+      const SEND_OTP_URL = API_BASE_PATH + "/auth/send-otp";
           var getToken = localStorage.getItem("token");
           const requestOptions = {
             method: "GET",
@@ -298,14 +309,13 @@ export default function Home() {
             .catch((error) => {
               console.log("ERROR FROM SEND OTP");
             });
-        } else {
-          setIsOTPVerified(true);
-          setShowOTPModal(false);
-        }
-      }
     }
-  }, [meeData]);
-
+    if(showOTPModal===true){
+      sendOpt()
+    }
+  
+    
+  },[showOTPModal])
   const [windowWidth, setWindowWidth] = useState(0);
   useEffect(() => {
     setWindowWidth(window.innerWidth);
