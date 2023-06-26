@@ -329,7 +329,7 @@ export default function Post() {
             numberOfPieces={2000}
           />
         }
-        <div className="flex flex-col md:flex-row">
+        <div className="flex  flex-col md:flex-row  lg:mb-6 lg:h-[88vh]">
           {pfmodal && (
             <PreferencesModal
               pfmodal={pfmodal}

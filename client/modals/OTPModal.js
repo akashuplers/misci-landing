@@ -34,12 +34,14 @@ const OTPModal = (
         }
     }, [inputRefs])
 
-
     const handlePaste = (e) => {
-        const otpString = e.clipboardData.getData('text/plain').slice(0, 6);
-        var otpDigits = otpString.split('')
-        // remove blank spaces
-        otpDigits = otpDigits.filter((digit) => digit !== ' ');
+        e.preventDefault(); // Prevent default paste behavior
+
+        const pastedData = e.clipboardData.getData('text/plain');
+        const otpString = pastedData.replace(/\D/g, '').slice(0, 6); // Remove non-digit characters and limit to 6 digits
+
+        const otpDigits = otpString.split('');
+
         setOTP((prevOtp) => {
             const updatedOtp = { ...prevOtp };
 
@@ -126,7 +128,7 @@ const OTPModal = (
             isOpen={showOTPModal}
             onRequestClose={() => { }}
             ariaHideApp={false}
-            className="w-[100%] sm:w-[38%] max-h-[95%]"
+            className="modalModalWidth sm:w-[38%] max-h-[95%]"
             style={{
                 overlay: {
                     backgroundColor: "rgba(0,0,0,0.5)",
@@ -160,7 +162,7 @@ const OTPModal = (
                             <input
                                 key={index}
                                 className="m-2 border h-10 w-10 text-center form-control rounded"
-                                type="text"
+                                type="number"
                                 id={`digit-${index}`}
                                 maxLength="1"
                                 value={otp[`digit-${index}`] || ''}
