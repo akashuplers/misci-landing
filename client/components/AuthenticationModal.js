@@ -439,7 +439,7 @@ export default function AuthenticationModal({
           closeModal();
         }}
         ariaHideApp={false}
-        className="w-full sm:w-[38%] max-h-[95%]"
+        className="w-full sm:w-[38%] modalModalWidth max-h-[95%] "
         style={{
           overlay: {
             backgroundColor: "rgba(0,0,0,0.5)",
@@ -467,7 +467,7 @@ export default function AuthenticationModal({
       >
         {/* <ToastContainer /> */}
         <div
-          className="max-w-lg mx-auto bg-white p-8 py-2 rounded-xl 
+          className="max-w-lg mx-auto bg-white lg:p-8 py-2 rounded-xl 
       "
         >
           {/* shadow shadow-slate-300 */}
