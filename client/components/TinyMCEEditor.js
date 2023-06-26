@@ -347,7 +347,7 @@ export default function TinyMCEEditor({
 
   const handleSave = async (redirectUser = true) => {
     console.log('user-save')
-    
+
     var getToken, ispaid, credits;
     if (window.location.pathname !== "/dashboard/" + blog_id) {
 
@@ -487,7 +487,7 @@ export default function TinyMCEEditor({
   };
 
   const handleSaveTwitter = async (redirectUser = true) => {
-    
+
     var getToken, ispaid, credits;
 
     if (typeof window !== "undefined") {
@@ -1212,7 +1212,7 @@ export default function TinyMCEEditor({
   }, [option]);
 
   function runMeeRefetch() {
-    
+
     meeRefetch().then((res) => {
       setTwitterThreadAlertOption(
         meeData?.me?.remaining_twitter_quota,
@@ -1690,10 +1690,10 @@ export default function TinyMCEEditor({
             justifyContent: "space-between",
             alignItems: "center",
           }}
-          className="text-sm mx-2 flex flex-wrap"
+          className="text-sm mx-2 flex flex-wrap relative"
         >
           {isAuthenticated ? (
-            <div
+            <div className="sticky top-0"
               style={{
                 display: "flex",
                 gap: "0.25em",
@@ -1762,10 +1762,12 @@ export default function TinyMCEEditor({
             <div style={{ display: "none" }}></div>
           )}
           {!isPublished ? (
-            <div className="flex w-full lg:w-auto mt-5 lg:mt-auto" style={{ gap: "0.25em", marginLeft: "auto" }}>
+            <div
+              className={`flex w-full  lg:w-auto   lg:mt-auto ${isAuthenticated ? "mt-5" : "mt-[70px]"}`}
+              style={{ gap: "0.25em", marginLeft: "auto" }}>
 
               <button
-                className="cta"
+                className="cta text-red-500"
                 onClick={() => {
                   if (showTwitterThreadUI == true) {
                     handleSaveTwitter()

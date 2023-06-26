@@ -908,8 +908,12 @@ export default function DashboardInsights({
         <TrialEndedModal setTrailModal={setCreditModal} topic={null} />
       )}
       <div className="text-xs px-2 mb-24 lg:mb-0" style={{ borderLeft: "2px solid #d2d2d2" }} id="regenblog">
-        <div className="flex justify-between gap-[1.25em]">
-          <p className="font-normal w-[70%]">
+        {/* h1 Insight only for mobile screens */}
+        <h1 className="text-2xl  font-semibold text-gray-800 my-4 lg:hidden">
+          Insights
+        </h1>
+        <div className="flex jusify-between gap-[1.25em]">
+          <p className="font-normal w-[100%] lg:w-[70%]">
             Regenerate your blog on the basis of selected used & fresh ideas.
           </p>
           <button
@@ -931,7 +935,7 @@ export default function DashboardInsights({
         {tags?.length > 0 && (
           <div>
             <div className="flex justify-between w-full items-center py-2">
-              <p className="pt-[0.65em] font-semibold">Filtering Keywords</p>
+              <h3 className="pt-[0.65em] font-semibold">Filtering Keywords</h3>
             </div>
             <div
               className="flex gap-[0.5em] flex-wrap h-full lg:max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
@@ -963,7 +967,7 @@ export default function DashboardInsights({
         )}
         <div>
           <div className="flex justify-between w-full items-center py-2">
-            <p className="pt-[0.65em] font-semibold">Sources</p>
+            <h3 className="pt-[0.65em] font-semibold">Sources</h3>
           </div>
           <div
             className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
