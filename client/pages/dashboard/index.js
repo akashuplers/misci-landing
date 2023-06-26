@@ -473,7 +473,7 @@ can edit the content, remove some of the used ideas that you don't want and/or g
 or use a combination of used and freah ideas to update the blog content.
 You can add your own image, click on the image and use image options icon.`}
             </p>
-            <div className='flex justify-between'>
+            <div className='flex flex-col lg:flex-row justify-between'>
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
@@ -485,7 +485,7 @@ You can add your own image, click on the image and use image options icon.`}
                   {"Don't show me this popup again"}
                 </span>
               </label>
-              <div className="my-4">
+              <div className="my-4 self-end lg:self-auto">
                 <button className="cta-invert" onClick={handleGenerateBlog}>
                   Ok Got it
                 </button>
