@@ -279,6 +279,7 @@ export default function Home() {
           } else {
             setShowOTPModal(true);
           }
+          
         } else {
           setIsOTPVerified(true);
           setShowOTPModal(false);
@@ -287,33 +288,35 @@ export default function Home() {
     }
   }, [meeData]);
 
-  useEffect(() => {
-    function sendOpt() {
+  useEffect(()=>{
+ function sendOpt(){
       const SEND_OTP_URL = API_BASE_PATH + "/auth/send-otp";
-      var getToken = localStorage.getItem("token");
-      const requestOptions = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + getToken,
-        },
-      };
+          var getToken = localStorage.getItem("token");
+          const requestOptions = {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken,
+            },
+          };
 
-      fetch(SEND_OTP_URL, requestOptions)
-        .then((response) => {
-          console.log("RESPONSE FROM SEND OTP");
-          console.log(response);
-          console.log(response.json());
-        })
-        .catch((error) => {
-          console.log("ERROR FROM SEND OTP");
-        });
+          fetch(SEND_OTP_URL, requestOptions)
+            .then((response) => {
+              console.log("RESPONSE FROM SEND OTP");
+              console.log(response);
+              console.log(response.json());
+            })
+            .catch((error) => {
+              console.log("ERROR FROM SEND OTP");
+            });
     }
-    if (showOTPModal === true) {
-      sendOpt();
+    if(showOTPModal===true){
+      sendOpt()
     }
-  }, [showOTPModal]);
-  const [owWidth, setWindowWidth] = useState(0);
+  
+    
+  },[showOTPModal])
+  const [windowWidth, setWindowWidth] = useState(0);
   useEffect(() => {
     setWindowWidth(window.innerWidth);
   }, []);
