@@ -268,7 +268,7 @@ export default function Published() {
           isOpen={openModal}
           onRequestClose={() => setOpenModal(false)}
           ariaHideApp={false}
-          className="w-[100%] sm:w-[38%] max-h-[95%]"
+          className="modalModalWidth sm:w-[38%] max-h-[95%]"
           style={{
             overlay: {
               backgroundColor: "rgba(0,0,0,0.5)",
@@ -284,7 +284,7 @@ export default function Published() {
               // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
               borderRadius: "8px",
               height: "280px",
-              // width: "100%",
+              width: "90%",
               maxWidth: "380px",
               bottom: "",
               zIndex: "999",
@@ -323,7 +323,7 @@ export default function Published() {
           <p className="text-gray-500 text-base font-medium mt-4 mx-auto">
             Are you sure you want to delete this Blog?
           </p>
-          <div className="flex m-9">
+          <div className="flex my-9">
             <button
               class="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
               onClick={() => {
