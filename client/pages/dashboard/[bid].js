@@ -279,7 +279,7 @@ export default function Post() {
           } else {
             setShowOTPModal(true);
           }
-          const SEND_OTP_URL = "https://maverick.lille.ai/auth/send-otp";
+          const SEND_OTP_URL = API_BASE_PATH+"/auth/send-otp";
           var getToken = localStorage.getItem("token");
           const requestOptions = {
             method: "GET",

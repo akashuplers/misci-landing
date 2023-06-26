@@ -1,4 +1,5 @@
 import Footer from "@/components/Footer";
+import { API_BASE_PATH } from "@/constants/apiEndpoints";
 import { gql, useQuery } from "@apollo/client";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
 import Head from "next/head";
@@ -88,9 +89,7 @@ export default function Home() {
         console.log("USER CONTRIBUTION IS NOT NULL");
         console.log(userContribution);
         // /auth/save-user-support
-        const SAVE_USER_SUPPORT_URL =
-          "https://maverick.lille.ai/auth/save-user-support";
-
+        const SAVE_USER_SUPPORT_URL = API_BASE_PATH + "/auth/save-user-support";
         const requestOptions = {
           method: "POST",
           headers: {
@@ -280,7 +279,18 @@ export default function Home() {
           } else {
             setShowOTPModal(true);
           }
-          const SEND_OTP_URL = "https://maverick.lille.ai/auth/send-otp";
+          
+        } else {
+          setIsOTPVerified(true);
+          setShowOTPModal(false);
+        }
+      }
+    }
+  }, [meeData]);
+
+  useEffect(()=>{
+ function sendOpt(){
+      const SEND_OTP_URL = API_BASE_PATH + "/auth/send-otp";
           var getToken = localStorage.getItem("token");
           const requestOptions = {
             method: "GET",
@@ -299,14 +309,13 @@ export default function Home() {
             .catch((error) => {
               console.log("ERROR FROM SEND OTP");
             });
-        } else {
-          setIsOTPVerified(true);
-          setShowOTPModal(false);
-        }
-      }
     }
-  }, [meeData]);
-
+    if(showOTPModal===true){
+      sendOpt()
+    }
+  
+    
+  },[showOTPModal])
   const [windowWidth, setWindowWidth] = useState(0);
   useEffect(() => {
     setWindowWidth(window.innerWidth);
@@ -499,12 +508,12 @@ const AIInputComponent = () => {
       });
     }
   };
-  const handleButtonClick = () => { 
+  const handleButtonClick = () => {
     const pathname = keyword.trim().length > 0 ? "/dashboard" : "/";
     const query = { topic: keyword };
     router.push({ pathname, query });
   };
-   
+
   const isDisabled = keyword.trim().length === 0;
 
   return (
@@ -526,12 +535,12 @@ const AIInputComponent = () => {
         onKeyPress={handleEnterKeyPress}
       />
       <button
-      className={`cta-invert ${isDisabled ? "disabled:opacity-50" : ""}`}
-      onClick={handleButtonClick}
-      disabled={isDisabled}
-    >
-      Generate
-    </button>
+        className={`cta-invert ${isDisabled ? "disabled:opacity-50" : ""}`}
+        onClick={handleButtonClick}
+        disabled={isDisabled}
+      >
+        Generate
+      </button>
     </div>
   );
 };
