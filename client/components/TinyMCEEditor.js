@@ -347,6 +347,7 @@ export default function TinyMCEEditor({
 
   const handleSave = async (redirectUser = true) => {
     console.log('user-save')
+    
     var getToken, ispaid, credits;
     if (window.location.pathname !== "/dashboard/" + blog_id) {
 
@@ -485,7 +486,8 @@ export default function TinyMCEEditor({
     }
   };
 
-  const handleSaveTwitter = async () => {
+  const handleSaveTwitter = async (redirectUser = true) => {
+    
     var getToken, ispaid, credits;
 
     if (typeof window !== "undefined") {
@@ -544,6 +546,7 @@ export default function TinyMCEEditor({
               progress: undefined,
               theme: "light",
             });
+            setPrevTwitterThreads(twitterThreadData);
             if (redirectUser == true) {
               if (window.location.pathname !== "/dashboard/" + blog_id) {
                 window.location.href = "/dashboard/" + blog_id;
@@ -1075,6 +1078,10 @@ export default function TinyMCEEditor({
                 progress: undefined,
                 theme: "light",
               });
+              setPrevTwitterThreads(twitterThreadData);
+              if (window.location.pathname !== "/dashboard/" + blog_id) {
+                window.location.href = "/dashboard/" + blog_id;
+              }
             })
             .catch((error) => {
               if (error.response) {
@@ -1107,7 +1114,7 @@ export default function TinyMCEEditor({
         toast.error("Only 280 Character allowed!");
       }
     }
-  
+
   };
 
   function handleBlog(e) {
@@ -1205,7 +1212,7 @@ export default function TinyMCEEditor({
   }, [option]);
 
   function runMeeRefetch() {
-    toast("mee refetch")
+    
     meeRefetch().then((res) => {
       setTwitterThreadAlertOption(
         meeData?.me?.remaining_twitter_quota,
