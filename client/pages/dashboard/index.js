@@ -12,6 +12,7 @@ import DashboardInsights from "../../components/DashboardInsights";
 import Layout from "../../components/Layout";
 import TinyMCEEditor from "../../components/TinyMCEEditor";
 import TrialEndedModal from "../../components/TrialEndedModal";
+import MoveToRegenPanel from "../../components/localicons/MoveToRegenPanel";
 import { API_BASE_PATH, API_ROUTES } from "../../constants/apiEndpoints";
 import { generateBlog } from "../../graphql/mutations/generateBlog";
 import { jsonToHtml } from "../../helpers/helper";
@@ -166,9 +167,9 @@ export default function dashboard({ query }) {
   useEffect(() => {
     if (meeData) {
       localStorage.setItem(
-                "userId",
-                JSON.stringify(meeData.me._id).replace(/['"]+/g, "")
-       );
+        "userId",
+        JSON.stringify(meeData.me._id).replace(/['"]+/g, "")
+      );
       localStorage.setItem("meDataMeCredits", meeData?.me?.credits);
       localStorage.setItem("meDataMePublishCount", meeData?.me.publishCount);
       localStorage.setItem("meDataisSubscribed", meeData?.me?.isSubscribed);
@@ -472,7 +473,7 @@ can edit the content, remove some of the used ideas that you don't want and/or g
 or use a combination of used and freah ideas to update the blog content.
 You can add your own image, click on the image and use image options icon.`}
             </p>
-            <div className='flex justify-between'>
+            <div className='flex flex-col lg:flex-row justify-between'>
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
@@ -484,7 +485,7 @@ You can add your own image, click on the image and use image options icon.`}
                   {"Don't show me this popup again"}
                 </span>
               </label>
-              <div className="my-4">
+              <div className="my-4 self-end lg:self-auto">
                 <button className="cta-invert" onClick={handleGenerateBlog}>
                   Ok Got it
                 </button>
@@ -518,14 +519,7 @@ You can add your own image, click on the image and use image options icon.`}
               </span>
             </div>
           )}
-          <div className="absolute -right-[62px] top-[50%] lg:hidden z-50 rotate-[-180deg]">
-            <a
-              className="bg-transparent  text-blue-700 border-blue-700 font-bold py-2 px-4 rounded-full"
-              href="#regenblog"
-            >
-              Regenerate Blog
-            </a>
-          </div>
+          <MoveToRegenPanel />
 
           <div className="relative tiny_mce_width">
             <TinyMCEEditor
@@ -540,8 +534,7 @@ You can add your own image, click on the image and use image options icon.`}
             />
           </div>
           <div
-            className="relative"
-            style={{ width: "var(--dashboardInsight-width)" }}
+            className="relative dashboardInsightWidth"
           >
             <DashboardInsights
               ideas={ideas}
