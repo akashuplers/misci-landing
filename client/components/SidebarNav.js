@@ -1,7 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
-import useStore, { useBlogDataStore, useTabOptionStore, useThreadsUIStore, useTwitterThreadStore } from "@/store/store";
+import useStore, {
+  useBlogDataStore,
+  useTabOptionStore,
+  useThreadsUIStore,
+  useTwitterThreadStore,
+} from "@/store/store";
 import { useQuery } from "@apollo/client";
 import { Dialog, Transition } from "@headlessui/react";
+import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import {
   ArrowRightOnRectangleIcon,
   Bars3Icon,
@@ -57,7 +63,6 @@ export default function Sidebar() {
     updateCredit();
   }, []);
 
-
   const navigation = [
     {
       name: "Generate New",
@@ -77,12 +82,15 @@ export default function Sidebar() {
       icon: FolderIcon,
       current: url === "/saved",
     },
-  ];
-  console.log("hello");
 
+    {
+      name: "FAQs",
+      href: "/faq",
+      icon: QuestionMarkCircleIcon,
+    },
+  ];
 
   const navigation_bottom = [
-
     {
       name: "Settings",
       href: "/settings",
@@ -165,16 +173,22 @@ export default function Sidebar() {
 
   useEffect(() => {
     const MINIMUM_HEIGHT = 125;
-    const elementHeight = sideBarHeightRef.current.offsetHeight > MINIMUM_HEIGHT ? sideBarHeightRef.current.offsetHeight : MINIMUM_HEIGHT;
-    console.log(elementHeight)
+    const elementHeight =
+      sideBarHeightRef.current.offsetHeight > MINIMUM_HEIGHT
+        ? sideBarHeightRef.current.offsetHeight
+        : MINIMUM_HEIGHT;
+    console.log(elementHeight);
     console.log("element height");
-    document.documentElement.style.setProperty('--my-mobile-sidebar-height', `${elementHeight}px`);
+    document.documentElement.style.setProperty(
+      "--my-mobile-sidebar-height",
+      `${elementHeight}px`
+    );
   }, []);
   const { setShowTwitterThreadUI } = useThreadsUIStore();
-  const { option, setOption } = useTabOptionStore()
-  const { setTwitterThreadData } = useTwitterThreadStore()
+  const { option, setOption } = useTabOptionStore();
+  const { setTwitterThreadData } = useTwitterThreadStore();
   function handleEditorReset() {
-    setOption('blog');
+    setOption("blog");
     setBlogData([]);
     setShowTwitterThreadUI(false);
     setTwitterThreadData([]);
@@ -298,7 +312,6 @@ export default function Sidebar() {
                         />
                       </svg>
                     </Link>
-
                   </div>
                   <nav className="mt-5 space-y-1 bg-white px-2 pb-8">
                     {navigation_bottom.map((item) => (
@@ -452,18 +465,17 @@ export default function Sidebar() {
               <Bars3Icon className="h-6 w-6" aria-hidden="true" />
             </button>
           </div>
-          <main className="flex-1"
-            ref={sideBarHeightRef}
-
-          >
+          <main className="flex-1" ref={sideBarHeightRef}>
             <div className="py-2 pb-4 w-[85%] float-right">
               <div className="mx-auto max-w-7xl px-2 flex relative">
                 <div className="pt-4">
                   {path !== "/" ? (
-                    <button onClick={() => {
-                      handleEditorReset();
-                      router.back();
-                    }}>
+                    <button
+                      onClick={() => {
+                        handleEditorReset();
+                        router.back();
+                      }}
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -530,7 +542,6 @@ export default function Sidebar() {
                         src={meeData?.me?.profileImage}
                         round={true}
                       />
-
                     </Link>
                   )}
                 </div>
@@ -539,9 +550,11 @@ export default function Sidebar() {
           </main>
         </div>
 
-        <div className="flex lg:hidden flex-1 flex-col lg:flex-col w-full fixed top-0 z-10 mobile_sidebar bg-white" style={{
-          ...topBarStyle,
-        }}
+        <div
+          className="flex lg:hidden flex-1 flex-col lg:flex-col w-full fixed top-0 z-10 mobile_sidebar bg-white"
+          style={{
+            ...topBarStyle,
+          }}
           ref={sideBarHeightRef}
         >
           <div className="flex-row flex">
@@ -554,10 +567,9 @@ export default function Sidebar() {
                 />
               </Link>
             </div>
-            <main className="flex-1 flex-col" >
+            <main className="flex-1 flex-col">
               <div className="py-2 pb-4">
                 <div className="mx-auto max-w-7xl px-2 flex relative">
-
                   <div
                     style={{
                       alignSelf: "center",
@@ -615,14 +627,10 @@ export default function Sidebar() {
                     </button>
                   </div>
                 </div>
-
               </div>
-
             </main>
-
           </div>
           {path !== "/" ? (
-
             <div className="flex flex-row px-2 ">
               <div className="pt-4">
                 <button onClick={() => router.back()}>
@@ -639,7 +647,6 @@ export default function Sidebar() {
                     />
                   </svg>
                 </button>
-
               </div>
               <div className="flex">
                 <h1 className="text-2xl font-semibold text-gray-900 p-3">
@@ -650,9 +657,7 @@ export default function Sidebar() {
           ) : (
             <></>
           )}
-
         </div>
-
       </div>
     </>
   );
