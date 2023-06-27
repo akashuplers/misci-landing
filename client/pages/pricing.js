@@ -1,6 +1,5 @@
 import Footer from "@/components/Footer";
-import { Tab } from "@headlessui/react";
-import { CheckIcon, ChevronLeftIcon } from "@heroicons/react/20/solid";
+import { CheckIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -212,7 +211,6 @@ export default function Pricing() {
 
   return (
     <>
-     
       <div className="relative md:min-h-screen ">
         <AuthenticationModal
           type={type}
@@ -266,7 +264,7 @@ export default function Pricing() {
                   features on every plan.
                 </p>
               </div>
-              <div className=" my-10 lg:my-1 flex max-sm:flex-col w-full max-sm:space-y-8 sm:space-x-4 justify-center align-middle items-center">
+              <div className=" mb-28 lg:mb-1 flex max-sm:flex-col w-full max-sm:space-y-8 sm:space-x-4 justify-center align-middle items-center">
                 <div
                   style={{
                     boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
@@ -308,7 +306,7 @@ export default function Pricing() {
                     boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
                   }}
                   ref={heightRef}
-                  className="flex relative flex-col  rounded-[0.75rem] text-[#ffffff] p-4 w-[21rem] md:w-[392px] lg:h-full h-[600px]"
+                  className="flex relative flex-col  rounded-[0.75rem] text-[#ffffff] p-4 w-[21rem] md:w-[392px] h-full"
                 >
                   <div className="flex flex-col  items-start justify-start mt-4">
                     <p className=" font-semibold text-[24px] pb-2 capitalize">
