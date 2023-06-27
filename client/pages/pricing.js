@@ -438,7 +438,7 @@ export default function Pricing() {
   );
 }
 
-export function PricingCard({ plan }) {
+export function PricingCard({ plan, onClick }) {
   return (
     <div className="bg-white rounded-lg shadow-md p-6 h-full w-full">
       <h3 className="text-lg font-semibold mb-2">{plan.name}</h3>
@@ -456,7 +456,10 @@ export function PricingCard({ plan }) {
         ))}
       </ul>
       <div className="w-full flex justify-center mt-6">
-        <button className="mt-6 border-2 w-full border-purple-500 text-purple-500 rounded-lg py-2 px-4 hover:bg-purple-500 hover:text-white transition-colors duration-300">
+        <button
+          onClick={onClick}
+          className="mt-6 border-2 w-full border-purple-500 text-purple-500 rounded-lg py-2 px-4 hover:bg-purple-500 hover:text-white transition-colors duration-300"
+        >
           Upgrade
         </button>
       </div>

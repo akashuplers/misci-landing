@@ -15,13 +15,16 @@ import {
   CreditCardIcon,
   UserIcon,
 } from "@heroicons/react/20/solid";
+import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
 import { useEffect, useLayoutEffect, useState } from "react";
 import ReactLoading from "react-loading";
+import Modal from "react-modal";
 import { LinkedinIcon, TwitterIcon } from "react-share";
 import { toast } from "react-toastify";
 import fillerProfileImage from "../../client/public/profile-filler.jpg";
+import CheckoutFormUpgrade from "../components/CheckoutFormUpgrade";
 import { UpgradeFeatures } from "./FeatureItem";
 import ForgotPasswordModal from "./ForgotPasswordModal";
 import { TwitterVerifiedIcon } from "./localicons/localicons";
@@ -707,36 +710,77 @@ function UpgradeTab({ meeData }) {
   console.log(currentPlan, priceId);
   const [userPlan, setUserPlan] = useState(plan);
   const [planType, setPlanType] = useState("monthly");
-
+  const[showUpgradeModal, setShowUpgradeModal] = useState(false);
   const tabs = ["monthly", "yearly", "quarterly"];
+  const handleUpgrade = () => {
+    setShowUpgradeModal(true);
+  }
   return (
     <div>
-      <Tab.Group>
-        <Tab.List className="overflow-x-auto scrollbar-hide flex justify-center space-x-4 rounded-xl bg-blue-900/20 p-1">
-          {plans &&
-            plans.map((plan) => (
-              <Tab
-                key={plan.subscriptionType}
-                onClick={() => subscriptionPlan(plan)}
-                className={({ selected }) =>
-                  classNames(
-                    "flex items-center px-4 py-2 text-sm font-medium leading-5 rounded-md text-gray-700 hover:text-gray-900 focus:outline-none focus:text-gray-900",
-                    "ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2",
-                    selected
-                      ? "bg-white shadow"
-                      : "text-blue-100 hover:bg-white/[0.12] hover:text-white"
-                  )
-                }
-              >
-                <span>
-                  { plan.subscriptionType}
-                </span>
-              </Tab>
-            ))}
-        </Tab.List>
-      </Tab.Group>
-
-      <PricingCard plan={userPlan} />
+      <Elements stripe={stripePromise}>
+        <Tab.Group>
+          <Tab.List className="overflow-x-auto scrollbar-hide flex justify-center space-x-4 rounded-xl bg-blue-900/20 p-1">
+            {plans &&
+              plans.map((plan) => (
+                <Tab
+                  key={plan.subscriptionType}
+                  onClick={() => subscriptionPlan(plan)}
+                  className={({ selected }) =>
+                    classNames(
+                      "flex items-center px-4 py-2 text-sm font-medium leading-5 rounded-md text-gray-700 hover:text-gray-900 focus:outline-none focus:text-gray-900",
+                      "ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2",
+                      selected
+                        ? "bg-white shadow"
+                        : "text-blue-100 hover:bg-white/[0.12] hover:text-white"
+                    )
+                  }
+                >
+                  <span>{plan.subscriptionType}</span>
+                </Tab>
+              ))}
+          </Tab.List>
+        </Tab.Group>
+        <PricingCard plan={userPlan} onClick={handleUpgrade} />
+        <Modal
+          isOpen={showUpgradeModal}
+          onRequestClose={() => {
+            setShowUpgradeModal(false);
+          }}
+          ariaHideApp={false}
+          className="w-full sm:w-[38%] modalModalWidth max-h-[95%] "
+          style={{
+            overlay: {
+              backgroundColor: "rgba(0,0,0,0.5)",
+              zIndex: "9999",
+            },
+            content: {
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              right: "auto",
+              border: "none",
+              background: "white",
+              boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+              borderRadius: "8px",
+              width: "90%", // Adjusted for responsiveness
+              maxWidth: "450px",
+              bottom: "",
+              zIndex: "999",
+              marginRight: "-50%",
+              transform: "translate(-50%, -50%)",
+              padding: "20px",
+              paddingBottom: "0px",
+            },
+          }}
+        >
+          <CheckoutFormUpgrade
+            currentPlan={currentPlan?.subscriptionType?.toLowerCase()}
+            priceId={currentPlan?.priceId}
+            setClickOnSubscibe={setClickOnSubscibe}
+            interval={currentPlan?.subscriptionType}
+          />
+        </Modal>
+      </Elements>
     </div>
   );
 }
