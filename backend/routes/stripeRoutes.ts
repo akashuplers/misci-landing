@@ -294,22 +294,22 @@ router.post('/upgrade-confirm', authMiddleware, async (request: any, reply: any)
     }
 })
 
-router.post('/payment-method-details', async (request: any, reply: any) => {
-    const subId = request.body.subId
-    const subIdDetails = await new Stripe().getSubscriptionDetails(subId)
-    let response = null
-    if(subIdDetails) {
-        const paymentMethod = subIdDetails.default_payment_method
-        const paymentMethodDetails = await new Stripe().getPaymentMethodDetails(paymentMethod)
-        if(paymentMethodDetails) {
-            response = {
-                brand: paymentMethodDetails.card.brand,
-                last4: paymentMethodDetails.card.last4
-            }
-        }
-    }
-    return reply.status(200).send({data: response})
-})
+// router.post('/payment-method-details', async (request: any, reply: any) => {
+//     const subId = request.body.subId
+//     const subIdDetails = await new Stripe().getSubscriptionDetails(subId)
+//     let response = null
+//     if(subIdDetails) {
+//         const paymentMethod = subIdDetails.default_payment_method
+//         const paymentMethodDetails = await new Stripe().getPaymentMethodDetails(paymentMethod)
+//         if(paymentMethodDetails) {
+//             response = {
+//                 brand: paymentMethodDetails.card.brand,
+//                 last4: paymentMethodDetails.card.last4
+//             }
+//         }
+//     }
+//     return reply.status(200).send({data: response})
+// })
 
 router.post('/cancel-subscription', authMiddleware, async (request: any, reply: any) => {
     const db = request.app.get('db')
@@ -409,8 +409,10 @@ router.get('/schedule/cancel-subscription', async (request: any, reply: any) => 
 
 router.post('/payment-method-details', authMiddleware, async (request: any, reply: any) => {
     const subId = request.body.subId
-    const subIdDetails = await new Stripe().getSubscriptionDetails(subId)
     try {
+        const user = request.user;
+        if(!user) throw "Not Authorized!"
+        const subIdDetails = await new Stripe().getSubscriptionDetails(subId)
         let response = null
         if(subIdDetails) {
             const paymentMethod = subIdDetails.default_payment_method
