@@ -23,8 +23,8 @@ import ReactLoading from "react-loading";
 import Modal from "react-modal";
 import { LinkedinIcon, TwitterIcon } from "react-share";
 import { toast } from "react-toastify";
-import fillerProfileImage from "../../client/public/profile-filler.jpg";
 import CheckoutFormUpgrade from "../components/CheckoutFormUpgrade";
+import fillerProfileImage from "../public/profile-filler.jpg";
 import { UpgradeFeatures } from "./FeatureItem";
 import ForgotPasswordModal from "./ForgotPasswordModal";
 import { TwitterVerifiedIcon } from "./localicons/localicons";
@@ -710,11 +710,11 @@ function UpgradeTab({ meeData }) {
   console.log(currentPlan, priceId);
   const [userPlan, setUserPlan] = useState(plan);
   const [planType, setPlanType] = useState("monthly");
-  const[showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const tabs = ["monthly", "yearly", "quarterly"];
   const handleUpgrade = () => {
     setShowUpgradeModal(true);
-  }
+  };
   return (
     <div>
       <Elements stripe={stripePromise}>
