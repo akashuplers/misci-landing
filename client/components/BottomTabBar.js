@@ -22,7 +22,7 @@ export const BottomTabBar = () => {
                         key={category}
                         category={category}
                         selected={selectedRoute === category.path}
-                    />
+                />
                 ))}
             </Tab.List>
         </Tab.Group>

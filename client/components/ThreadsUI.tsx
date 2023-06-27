@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
+// @ts-nocheck
 import { useTwitterThreadALertModal } from "@/store/store";
 import { useEffect, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
