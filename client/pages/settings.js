@@ -767,7 +767,7 @@ export default function Settings() {
                                       meeData?.me?.paid &&
                                       meeData?.me?.interval !== "monthly" && (
                                         <div
-                                          className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-2 w-[310%]"
+                                          className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-2 w-full"
                                           role="alert"
                                         >
                                           <p>
