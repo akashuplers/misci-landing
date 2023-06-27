@@ -1,5 +1,5 @@
 import Footer from "@/components/Footer";
-import { Tab } from '@headlessui/react';
+import { Tab } from "@headlessui/react";
 import { CheckIcon, ChevronLeftIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import Link from "next/link";
@@ -32,38 +32,27 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const MonthlyPlans = [
+export const MonthlyPlans = [
   {
-    name: 'Personal',
-    description: 'Perfect for side or hobby project',
-    price: '$10',
-    duration: '/ Month',
-    features: ['Upto 5 users', 'Collaboration features'],
+    name: "Personal",
+    description: "Perfect for side or hobby project",
+    price: "$10",
+    duration: "/ Month",
+    features: [...UpgradeFeatures],
   },
   {
-    name: 'Startup',
-    description: 'Perfect for small teams',
-    price: '$50',
-    duration: '/ Month',
-    features: [
-      'Upto 5 users',
-      'Collaboration features',
-      'Smart analytics',
-      '30-days free trial',
-    ],
+    name: "Startup",
+    description: "Perfect for small teams",
+    price: "$50",
+    duration: "/ Month",
+    features: [...UpgradeFeatures],
   },
   {
-    name: 'Organization',
-    description: 'Perfect for organization',
-    price: '$70',
-    duration: '/ Month',
-    features: [
-      'Upto 5 users',
-      'Collaboration features',
-      'Smart analytics',
-      '30-days free trial',
-      'Contact Sales',
-    ],
+    name: "Organization",
+    description: "Perfect for organization",
+    price: "$70",
+    duration: "/ Month",
+    features: [...UpgradeFeatures],
   },
 ];
 export default function Pricing() {
@@ -152,7 +141,9 @@ export default function Pricing() {
 
       const sortedPlans = updatedPricesArray.sort((a, b) => {
         const order = ["Monthly", "Quarterly", "Yearly"];
-        return order.indexOf(a.subscriptionType) - order.indexOf(b.subscriptionType);
+        return (
+          order.indexOf(a.subscriptionType) - order.indexOf(b.subscriptionType)
+        );
       });
 
       console.log(sortedPlans);
@@ -178,15 +169,15 @@ export default function Pricing() {
     Monthly: [
       {
         id: 1,
-        title: 'Does drinking coffee make you smarter?',
-        date: '5h ago',
+        title: "Does drinking coffee make you smarter?",
+        date: "5h ago",
         commentCount: 5,
         shareCount: 2,
       },
       {
         id: 2,
         title: "So you've bought coffee... now what?",
-        date: '2h ago',
+        date: "2h ago",
         commentCount: 3,
         shareCount: 2,
       },
@@ -194,27 +185,26 @@ export default function Pricing() {
     Yearly: [
       {
         id: 1,
-        title: 'Is tech making coffee better or worse?',
-        date: 'Jan 7',
+        title: "Is tech making coffee better or worse?",
+        date: "Jan 7",
         commentCount: 29,
         shareCount: 16,
       },
       {
         id: 2,
-        title: 'The most innovative things happening in coffee',
-        date: 'Mar 19',
+        title: "The most innovative things happening in coffee",
+        date: "Mar 19",
         commentCount: 24,
         shareCount: 12,
       },
     ],
-  })
+  });
   function classNames(...classes) {
-    return classes.filter(Boolean).join(' ')
+    return classes.filter(Boolean).join(" ");
   }
   const heightRef = useRef(null);
   const [heightOfAnother, setHeightOfAnother] = useState(0);
   useEffect(() => {
-
     if (heightRef.current) {
       setHeightOfAnother(heightRef.current.offsetHeight);
     }
@@ -223,7 +213,6 @@ export default function Pricing() {
   return (
     <>
       <div className="relative md:min-h-screen md:hidden">
-
         <div>
           <div>
             {/* back button */}
@@ -231,14 +220,15 @@ export default function Pricing() {
             <div className="w-full max-w-md px-2 py-16 sm:px-0">
               {/* back button */}
 
-              <Tab.Group >
-
+              <Tab.Group>
                 <Tab.List className="flex items-center justify-center">
-
                   <div className="flex items-center justify-start">
                     <Link href="/">
                       <span className="inline-flex items-center text-sm font-medium text-gray-900">
-                        <ChevronLeftIcon className="-ml-1 mr-2 h-5 w-5 text-gray-500" aria-hidden="true" />
+                        <ChevronLeftIcon
+                          className="-ml-1 mr-2 h-5 w-5 text-gray-500"
+                          aria-hidden="true"
+                        />
                       </span>
                     </Link>
                   </div>
@@ -248,11 +238,11 @@ export default function Pricing() {
                         key={category}
                         className={({ selected }) =>
                           classNames(
-                            'inline-flex items-center justify-center px-2.5 py-1.5 rounded-full text-xs font-medium leading-4',
-                            'ring-white ring-opacity-60 ring-offset-2 ring-purple-blue-400 focus:outline-none focus:ring-2',
+                            "inline-flex items-center justify-center px-2.5 py-1.5 rounded-full text-xs font-medium leading-4",
+                            "ring-white ring-opacity-60 ring-offset-2 ring-purple-blue-400 focus:outline-none focus:ring-2",
                             selected
-                              ? 'bg-purple-500 text-white shadow'
-                              : 'text-gray-500 hover:bg-white/[0.12] hover:text-white'
+                              ? "bg-purple-500 text-white shadow"
+                              : "text-gray-500 hover:bg-white/[0.12] hover:text-white"
                           )
                         }
                       >
@@ -266,8 +256,8 @@ export default function Pricing() {
                     <Tab.Panel
                       key={idx}
                       className={classNames(
-                        'rounded-xl bg-white p-3',
-                        'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2'
+                        "rounded-xl bg-white p-3",
+                        "ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2"
                       )}
                     >
                       <PricingCards />
@@ -276,12 +266,8 @@ export default function Pricing() {
                 </Tab.Panels>
               </Tab.Group>
             </div>
-
-
           </div>
-          <div>
-
-          </div>
+          <div></div>
         </div>
       </div>
       <div className="relative md:min-h-screen hidden md:block">
@@ -341,9 +327,8 @@ export default function Pricing() {
                 <div
                   style={{
                     boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
-                    height: heightOfAnother + 'px'
+                    height: heightOfAnother + "px",
                   }}
-
                   className="flex sm:flex-wrap sm:flex-row relative max-sm:flex-col bg-[#ffffff] rounded-[0.75rem] p-4 w-[21rem] md:w-[392px] lg:h-full h-[600px]"
                 >
                   <div className="flex flex-col items-start justify-start gap-4 mt-4">
@@ -355,7 +340,8 @@ export default function Pricing() {
                     </p>
                     <p className=" text-[#182735] text-left leading-[26px] text-[18px] font-medium mb-4">
                       Create and Regenerate blogs with free publishing on
-                      Lille.ai platform, LinkedIn and three tweets per day on Twitter.
+                      Lille.ai platform, LinkedIn and three tweets per day on
+                      Twitter.
                     </p>
                   </div>
                   <div className="mt-4 bg-gradient-to-r from-[#182735] to-transparent h-[2px]"></div>
@@ -371,7 +357,6 @@ export default function Pricing() {
                     Try for free
                   </div>
                 </div>
-
 
                 <div
                   style={{
@@ -394,29 +379,29 @@ export default function Pricing() {
                     </p>
                   </div>
                   <div className=" mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px]"></div>
-                  <div className="flex bg-[#fffff] items-center rounded-[59px] h-[55px] w-full justify-between px-2" >
+                  <div className="flex bg-[#fffff] items-center rounded-[59px] h-[55px] w-full justify-between px-2">
                     {plans.length > 0 &&
                       plans.map((item, i) => {
                         return (
                           <div
                             key={i}
                             onClick={() => subscriptionPlan(item)}
-                            className={`cursor-pointer rounded-[55px] px-[7.5px] md:px-[19px] py-[8px] ${currentPlan?.subscriptionType ===
+                            className={`cursor-pointer rounded-[55px] px-[7.5px] md:px-[19px] py-[8px] ${
+                              currentPlan?.subscriptionType ===
                               item.subscriptionType
-                              ? "bg-[#3cc0f6] text-[#ffffff]"
-                              : "bg-[#ffffff] text-[#000000]"
-                              }`}
+                                ? "bg-[#3cc0f6] text-[#ffffff]"
+                                : "bg-[#ffffff] text-[#000000]"
+                            }`}
                           >
                             {item.subscriptionType}
                           </div>
                         );
                       })}
                   </div>
-                  <div className="flex  flex-col items-start justify-start mt-4"> {
-                    UpgradeFeatures.map((item, i) => {
-                      return (
-                        <FeaturesItem key={i} text={item} />
-                      );
+                  <div className="flex  flex-col items-start justify-start mt-4">
+                    {" "}
+                    {UpgradeFeatures.map((item, i) => {
+                      return <FeaturesItem key={i} text={item} />;
                     })}
                   </div>
                   <div className="flex flex-col items-end">
@@ -437,11 +422,13 @@ export default function Pricing() {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
         <div className="bg-blue-500 p-4 fixed bottom-1 left-1 z-50 mx-0 rounded-md shadow-md text-white max-w-lg  mt-10 text-center">
-          For enterprise usage inquiries please contact us at <a href="mailto:sales@lille.ai" className="underline">sales@lille.ai</a>
+          For enterprise usage inquiries please contact us at{" "}
+          <a href="mailto:sales@lille.ai" className="underline">
+            sales@lille.ai
+          </a>
         </div>
         <div className="">
           <Footer />
@@ -451,9 +438,7 @@ export default function Pricing() {
   );
 }
 
-
-
-function PricingCard({ plan }) {
+export function PricingCard({ plan }) {
   return (
     <div className="bg-white rounded-lg shadow-md p-6 h-full w-full">
       <h3 className="text-lg font-semibold mb-2">{plan.name}</h3>
@@ -463,16 +448,12 @@ function PricingCard({ plan }) {
         <span className="text-gray-500 text-sm ml-2">{plan.duration}</span>
       </div>
       <ul className="space-y-2">
-        {
-          plan.features.map((feature, i) => (
-            <li key={feature} className="flex items-center">
-              <CheckIcon className="h-4 w-4 text-purple-500" />
-              <span className="ml-2">{feature}</span>
-            </li>
-          ))
-        }
-
-
+        {plan.features.map((feature, i) => (
+          <li key={feature} className="flex items-center">
+            <CheckIcon className="h-4 w-4 text-purple-500" />
+            <span className="ml-2">{feature}</span>
+          </li>
+        ))}
       </ul>
       <div className="w-full flex justify-center mt-6">
         <button className="mt-6 border-2 w-full border-purple-500 text-purple-500 rounded-lg py-2 px-4 hover:bg-purple-500 hover:text-white transition-colors duration-300">
@@ -483,7 +464,7 @@ function PricingCard({ plan }) {
   );
 }
 
-function PricingCards() {
+export function PricingCards() {
   return (
     <div className="flex flex-wrap w-full gap-3 mt-5">
       {MonthlyPlans.map((plan) => (
