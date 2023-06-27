@@ -1,17 +1,12 @@
-import React, { useState, useEffect } from "react";
-import {
-  CardElement,
-  useElements,
-  useStripe,
-  PaymentElement,
-} from "@stripe/react-stripe-js";
-import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
-import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
-import { meeAPI } from "../graphql/querys/mee";
 import { useQuery } from "@apollo/client";
+import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import axios from "axios";
+import { useState } from "react";
 import Confetti from "react-confetti";
 import Modal from "react-modal";
+import { ToastContainer, toast } from "react-toastify";
+import { API_BASE_PATH } from "../constants/apiEndpoints";
+import { meeAPI } from "../graphql/querys/mee";
 
 const CheckoutFormUpgrade = ({
   priceId,
@@ -131,7 +126,7 @@ const CheckoutFormUpgrade = ({
           interval: interval,
         };
 
-        console.log('test body', requestBody)
+        console.log("test body", requestBody);
 
         axios
           .post(API_BASE_PATH + "/stripe/upgrade", requestBody, {
@@ -313,7 +308,9 @@ const CheckoutFormUpgrade = ({
           backdropFilter: "blur(10px)",
           border: "2px solid white",
         }}
-        className={" py-3 w-full lg:w-[55%]  lg:px-4  rounded rounded-5 my-3 mx-auto"}
+        className={
+          " py-3 w-full lg:w-[55%]  lg:px-4  rounded rounded-5 my-3 mx-auto"
+        }
       >
         <div className="px-4 mt-7">
           <h2 className="fw-bold text-4xl  my-2 ">Join us today 👋</h2>
@@ -321,44 +318,7 @@ const CheckoutFormUpgrade = ({
             <form>
               <div className="flex space-x-2 mb-3">
                 {" "}
-                <div className="w-[50%]">
-                  {/* <div className="fs-6 my-1 text-[#0A0D13] text-normal">
-                    Name on card
-                  </div> */}
-                  {/* <div>
-                    <input
-                      style={{
-                        border: `2px solid ${
-                          formErrors.firstName ? "red" : "#96ABD4"
-                        }`,
-                      }}
-                      type="text"
-                      required
-                      id="firstNameInput"
-                      name="first"
-                      maxLength="30"
-                      onChange={(e) => {
-                        setFirstName(e.target.value);
-                        // resetError(e, firstNameField);
-                        if (checkForm) {
-                          validateForm();
-                        }
-                      }}
-                      placeholder="i.e. John"
-                      className={
-                        " w-100 text-[14px] bg-none my-1 rounded rounded-1 px-2 py-2"
-                      }
-                    />
-                    {formErrors.firstName && (
-                      <span style={{ color: "red" }}>
-                        {formErrors.firstName}
-                      </span>
-                    )}
-                     {errors?.first && (
-                          <span className={styles.error}>{errors?.first}</span>
-                        )} 
-                  </div> */}
-                </div>
+                <div className="w-[50%]"></div>
               </div>
 
               <div className="mb-3 w-full mt-1 lg:mt-24">
@@ -394,71 +354,8 @@ const CheckoutFormUpgrade = ({
                     onChange={handleChange}
                   />
                 </div>
-
-                {/* <div>
-                        <input
-                          placeholder="1234  5678  9101  1121"
-                          type="text"
-                          name="cardNumber"
-                          id="cardNumberInput"
-                          onChange={(e) => {
-                            
-                            setCardNumber(e.target.value);
-                            // resetError(e, passwordField);
-                          }}
-                          className={
-                            
-                            " w-100 bg-none my-1 rounded rounded-1 px-4 py-2"
-                          }
-                        />
-                      </div> */}
               </div>
-              {/* <div className="flex space-x-2 mb-3">
-                        <div className="w-[50%]">
-                          <div className="fs-6 my-1">Expiration Date</div>
-                          <div>
-                            <input
-                              placeholder="MM/YY"
-                              id="expirationDateInput"
-                              type="text"
-                              name="expirationDate"
-                              onChange={(e) => {
 
-                                setExpirationDate(e.target.value);
-                              }}
-                              className={
-                                
-                                " w-100 bg-none my-1 rounded rounded-1 px-4 py-2 "
-                              }
-                            />
-                          </div>
-                        </div>
-                        <div className="w-[50%]">
-                          <div className="fs-6 my-1">CVV</div>
-                          <div>
-                            <input
-                              placeholder="123"
-                              type="text"
-                              name="cvv"
-                              id="cvvInput"
-                              onChange={(e) => {
-                                setCvv(e.target.value);
-                              }}
-                              className={
-                                
-                                " w-100 bg-none my-1 rounded rounded-1 px-4 py-2"
-                              }
-                            />
-                          </div>
-                        </div>
-                      </div> */}
-              {/* <div className="my-2 items-center flex flex-col mb-4"> */}
-              {/* <div className="flex items-center self-start">
-								<input className="" type="checkbox" name="remember" />
-								<span className="text-[464f61] text-[16px] pl-2">
-									Save card details
-								</span>
-							</div> */}
               {/* </div> */}
               {btnClicked ? (
                 <button
@@ -483,17 +380,11 @@ const CheckoutFormUpgrade = ({
                     e.preventDefault();
                     createSubscription();
                   }}
-                  className="bg-[#3CC0F6] text-[16px] cursor-pointer font-bold text-[#13213e] rounded-[4px] py-[20px] w-[100%] mb-3"
+                  className="mt-6 border-2 w-full border-purple-500 text-purple-500 rounded-lg py-2 px-4 hover:bg-purple-500 hover:text-white transition-colors duration-300"
                 >
                   Subscribe
                 </button>
               )}
-              {/* <button
-                type=""
-                className="rounded-[4px] cursor-pointer  text-[16px] font-bold text-[#13213e] py-[20px] w-full"
-              >
-                <span className="opacity-[0.7]">Cancel</span>
-              </button> */}
             </form>
             <div className="text-[#606060] text-[14px] leading-[22px]">
               Your personal data will not be used however, your app usage data
