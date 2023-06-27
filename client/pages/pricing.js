@@ -212,65 +212,8 @@ export default function Pricing() {
 
   return (
     <>
-      <div className="relative md:min-h-screen md:hidden">
-        <div>
-          <div>
-            {/* back button */}
-
-            <div className="w-full max-w-md px-2 py-16 sm:px-0">
-              {/* back button */}
-
-              <Tab.Group>
-                <Tab.List className="flex items-center justify-center">
-                  <div className="flex items-center justify-start">
-                    <Link href="/">
-                      <span className="inline-flex items-center text-sm font-medium text-gray-900">
-                        <ChevronLeftIcon
-                          className="-ml-1 mr-2 h-5 w-5 text-gray-500"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </Link>
-                  </div>
-                  <div className="flex rounded-full shadow-md px-4 py-1 items-center">
-                    {Object.keys(categories).map((category) => (
-                      <Tab
-                        key={category}
-                        className={({ selected }) =>
-                          classNames(
-                            "inline-flex items-center justify-center px-2.5 py-1.5 rounded-full text-xs font-medium leading-4",
-                            "ring-white ring-opacity-60 ring-offset-2 ring-purple-blue-400 focus:outline-none focus:ring-2",
-                            selected
-                              ? "bg-purple-500 text-white shadow"
-                              : "text-gray-500 hover:bg-white/[0.12] hover:text-white"
-                          )
-                        }
-                      >
-                        {category}
-                      </Tab>
-                    ))}
-                  </div>
-                </Tab.List>
-                <Tab.Panels className="mt-2">
-                  {Object.values(categories).map((posts, idx) => (
-                    <Tab.Panel
-                      key={idx}
-                      className={classNames(
-                        "rounded-xl bg-white p-3",
-                        "ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2"
-                      )}
-                    >
-                      <PricingCards />
-                    </Tab.Panel>
-                  ))}
-                </Tab.Panels>
-              </Tab.Group>
-            </div>
-          </div>
-          <div></div>
-        </div>
-      </div>
-      <div className="relative md:min-h-screen hidden md:block">
+     
+      <div className="relative md:min-h-screen ">
         <AuthenticationModal
           type={type}
           setType={setType}
@@ -323,7 +266,7 @@ export default function Pricing() {
                   features on every plan.
                 </p>
               </div>
-              <div className="flex max-sm:flex-col w-full max-sm:space-y-8 sm:space-x-4 justify-center align-middle items-center">
+              <div className=" my-10 lg:my-1 flex max-sm:flex-col w-full max-sm:space-y-8 sm:space-x-4 justify-center align-middle items-center">
                 <div
                   style={{
                     boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
