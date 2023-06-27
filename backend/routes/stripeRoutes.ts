@@ -409,8 +409,10 @@ router.get('/schedule/cancel-subscription', async (request: any, reply: any) => 
 
 router.post('/payment-method-details', authMiddleware, async (request: any, reply: any) => {
     const subId = request.body.subId
-    const subIdDetails = await new Stripe().getSubscriptionDetails(subId)
     try {
+        const user = request.user;
+        const subIdDetails = await new Stripe().getSubscriptionDetails(subId)
+        if(!user) throw "Not Authorized!"
         let response = null
         if(subIdDetails) {
             const paymentMethod = subIdDetails.default_payment_method
