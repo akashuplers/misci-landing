@@ -407,6 +407,29 @@ router.get('/schedule/cancel-subscription', async (request: any, reply: any) => 
     })
 })
 
+router.post('/payment-method-details', authMiddleware, async (request: any, reply: any) => {
+    const subId = request.body.subId
+    const subIdDetails = await new Stripe().getSubscriptionDetails(subId)
+    try {
+        let response = null
+        if(subIdDetails) {
+            const paymentMethod = subIdDetails.default_payment_method
+            const paymentMethodDetails = await new Stripe().getPaymentMethodDetails(paymentMethod)
+            if(paymentMethodDetails) {
+                response = {
+                    brand: paymentMethodDetails.card.brand,
+                    last4: paymentMethodDetails.card.last4
+                }
+            }
+        }
+        return reply.status(200).send({data: response})
+    } catch(err: any) {
+        return reply.status(500).send({
+            message: err.message
+        })
+    }
+})
+
 router.get('/schedule', async (request: any, reply: any) => {
     const db = request.app.get('db')
     const freeTrialUsers = await db.db('lilleAdmin').collection('users').find({$or: [{isSubscribed: false, freeTrial: true}]}, {projection: {
