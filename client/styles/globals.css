@@ -32,7 +32,7 @@
   --primary-blue: #4a3afe;
   --tinymce-width: 70%;
   --dashboardInsight-width: 40%;
-
+  --scrollbar-width: 5px;
   --ashokaBlue: #13345f;
   --max-width: 1100px;
   --border-radius: 12px;
@@ -502,4 +502,38 @@ input[type=number] {
     max-height:50vh;
   }
   
+}
+
+/* mobileSettings hide scrollbar any inside this */
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer and Edge */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  width: 0px;
+  display: none;
+  background: transparent; /* Hide scrollbar in Chrome, Safari, and Opera */
+}
+
+
+.scrollbar-hide::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+  background-color: #f5f5f5;
+}
+
+/* Track */
+.scrollbar-hide::-webkit-scrollbar-track {
+  border-radius: 4px;
+}
+
+/* Handle */
+.scrollbar-hide::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
 }

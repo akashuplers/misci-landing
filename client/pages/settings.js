@@ -18,15 +18,16 @@ import ReactLoading from "react-loading";
 import Modal from "react-modal";
 import CreatableSelect from "react-select/creatable";
 import { ToastContainer, toast } from "react-toastify";
+import MobileSettings from "../components/MobileSettings";
 import ForgotPasswordModal from "../components/ForgotPasswordModal";
 import Layout from "../components/Layout";
 import LoaderScan from "../components/LoaderScan";
+import { TwitterVerifiedIcon } from "../components/localicons/localicons";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { addPreferances } from "../graphql/mutations/addPreferances";
 import { meeAPI } from "../graphql/querys/mee";
 import { formatDate, generateDateString } from "../helpers/helper";
 import fillerProfileImage from "../public/profile-filler.jpg";
-import { TwitterVerifiedIcon } from "../components/localicons/localicons";
 
 const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: false },
@@ -507,7 +508,7 @@ export default function Settings() {
         <Layout />
 
         {/* Content area */}
-        <div className="lg:pl-64">
+        <div className="hidden lg:block lg:pl-64">
           <div className="lg:px-8">
             <div className="mx-auto flex flex-col lg:max-w-4xl">
               <main className="flex-1">
@@ -582,7 +583,6 @@ export default function Settings() {
                                         padding: "0 0.25em",
                                       }}
                                     />
-
                                   </dd>
                                 </div>
                                 <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
@@ -601,7 +601,6 @@ export default function Settings() {
                                         padding: "0 0.25em",
                                       }}
                                     />
-
                                   </dd>
                                 </div>
                                 <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:pt-5">
@@ -679,19 +678,20 @@ export default function Settings() {
                                     </span>
                                   </dd> */}
                                   <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                    <div className="flex group cursor-pointer relative gap-1 text-center">{meeData?.me?.email} {meeData?.me?.emailVerified && <span
-                                      className='text-green-600'
-                                    ><TwitterVerifiedIcon />
-                                    </span>
-                                    }
+                                    <div className="flex group cursor-pointer relative gap-1 text-center">
+                                      {meeData?.me?.email}{" "}
+                                      {meeData?.me?.emailVerified && (
+                                        <span className="text-green-600">
+                                          <TwitterVerifiedIcon />
+                                        </span>
+                                      )}
                                       {meeData?.me?.emailVerified && (
                                         <div className="opacity-0 w-28 bg-black text-white text-center text-xs rounded-lg py-2 absolute z-10 group-hover:opacity-100 bottom-full left-1/2 ml-14 px-3 pointer-events-none">
                                           Email verified
-                                        </div>)
-                                      }
+                                        </div>
+                                      )}
                                     </div>
                                   </dd>
-
                                 </div>
                                 {meeData?.me?.isSubscribed && (
                                   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:border-b sm:border-gray-200 sm:py-5">
@@ -860,7 +860,7 @@ export default function Settings() {
                                         );
                                       }}
                                     >
-                                      Logout from Twitter
+                                         from Twitter
                                     </button>
                                   ) : (
                                     <></>
@@ -1054,6 +1054,11 @@ export default function Settings() {
               </main>
             </div>
           </div>
+        </div>
+        <div className="lg:hidden">
+          <MobileSettings meeData={
+            meeData
+          }/>
         </div>
       </div>
     </>

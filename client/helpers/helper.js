@@ -1,3 +1,5 @@
+import { LINKEDIN_CLIENT_ID } from "@/constants/apiEndpoints";
+
 export const htmlToJson = (htmlString, imageURL) => {
   const parser = new DOMParser();
   const htmlDoc = parser.parseFromString(htmlString, "text/html");
@@ -73,18 +75,26 @@ export function logout(item) {
   }
 }
 
-
-
 export function formatDate(dateString) {
-  const parts = dateString.split('/'); // Assuming the input date is in the format "day/month/year"
+  const parts = dateString.split("/"); // Assuming the input date is in the format "day/month/year"
   const day = parts[0];
   const month = parts[1];
   const year = parts[2];
 
   // Mapping month number to month name
   const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
   const monthName = months[parseInt(month, 10) - 1];
 
@@ -100,13 +110,16 @@ export function getCurrentDomain() {
 }
 export function getCurrentHref() {
   console.log(window.location.href);
-  return window.location.href
+  return window.location.href;
 }
 export function getCurrentDashboardURL() {
   const currentURL = window.location.href;
-  const dashboardIndex = currentURL.indexOf('/dashboard');
+  const dashboardIndex = currentURL.indexOf("/dashboard");
   if (dashboardIndex !== -1) {
-    const dashboardURL = currentURL.substring(0, dashboardIndex + '/dashboard'.length);
+    const dashboardURL = currentURL.substring(
+      0,
+      dashboardIndex + "/dashboard".length
+    );
     return dashboardURL;
   }
   return null; // Return null if '/dashboard' is not found in the URL
@@ -114,13 +127,12 @@ export function getCurrentDashboardURL() {
 export function getDateMonthYear(dateString) {
   const timestamp = parseInt(dateString);
   const date = new Date(timestamp);
-  const month = date.toLocaleString('default', { month: 'long' });
+  const month = date.toLocaleString("default", { month: "long" });
   const year = date.getFullYear();
   const day = date.getDate();
 
   return { date, month, year, day };
 }
-
 
 export function isMonthAfterJune(month) {
   const monthOrder = {
@@ -135,7 +147,7 @@ export function isMonthAfterJune(month) {
     September: 8,
     October: 9,
     November: 10,
-    December: 11
+    December: 11,
   };
 
   const currentMonthOrder = monthOrder[month];
@@ -147,3 +159,54 @@ export function isMonthAfterJune(month) {
 
   return false;
 }
+
+export const handleconnectTwitter = async (callback_path) => {
+  console.log("handling twitter connect");
+  localStorage.setItem("loginProcess", true);
+  localStorage.setItem("bid", undefined);
+  localStorage.setItem("for_TW", true);
+
+  try {
+    let data = JSON.stringify({
+      callback: window.location.origin + callback_path,
+    });
+
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: API_BASE_PATH + "/auth/twitter/request-token",
+      headers: {
+        Authorization: "",
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        if (!response?.data?.error) {
+          const twitterToken = response?.data?.data;
+          const responseArray = twitterToken.split("&");
+          window.location.href = `https://api.twitter.com/oauth/authorize?${responseArray[0]}`;
+        } else {
+          console.log("Error", response.data.error, response?.data?.data);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const handleconnectLinkedin = (callback_path) => {
+  localStorage.setItem("loginProcess", true);
+  localStorage.setItem("bid", undefined);
+  localStorage.removeItem("for_TW");
+  const callBack = window.location.origin + callback_path;
+  alert(callBack)
+  const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`;
+  window.location = redirectUrl;
+};
