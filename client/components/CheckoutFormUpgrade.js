@@ -313,7 +313,7 @@ const CheckoutFormUpgrade = ({
           backdropFilter: "blur(10px)",
           border: "2px solid white",
         }}
-        className={" py-3 w-[55%]  px-4  rounded rounded-5 my-3 mx-auto"}
+        className={" py-3 w-full lg:w-[55%]  lg:px-4  rounded rounded-5 my-3 mx-auto"}
       >
         <div className="px-4 mt-7">
           <h2 className="fw-bold text-4xl  my-2 ">Join us today 👋</h2>
@@ -361,7 +361,7 @@ const CheckoutFormUpgrade = ({
                 </div>
               </div>
 
-              <div className="mb-3 w-full mt-24">
+              <div className="mb-3 w-full mt-1 lg:mt-24">
                 <div className="fs-6 my-1">Card Number</div>
                 <div
                   style={{
