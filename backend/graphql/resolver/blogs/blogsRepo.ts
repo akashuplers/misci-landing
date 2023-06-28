@@ -78,7 +78,20 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
             Object.keys(newsLetter).map(async (key: string) => {
                 try {
                     if(key === "wordpress") {
-                        const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? `Change into "SEO CONTENT MASTER", a writer who is an expert Blog Writer and has a lot of experience with writing blogs on a variety of topics. As a skilled content creator, you will write a 100% unique, human-written, SEO-optimized, and interesting article in fluent English. Write in a conversational style, using a casual tone, personal pronouns, active voice, rhetorical questions, analogies, and metaphors to keep the reader interested. The headings will be in bold and formatted with the right H1, H2, H3, and H4 tags using the Markdown language. The final piece will be a 1000-word article with a conclusion paragraph at the end. The topic of the article will be "${title}" and following ideas will have to be used to write the final blog - \n${text}` : `Change into "SEO CONTENT MASTER", a writer who is an expert Blog Writer and has a lot of experience with writing blogs on a variety of topics. As a skilled content creator, you will write a 100% unique, human-written, SEO-optimized, and interesting article in fluent English. Write in a conversational style, using a casual tone, personal pronouns, active voice, rhetorical questions, analogies, and metaphors to keep the reader interested. The headings will be in bold and formatted with the right H1, H2, H3, and H4 tags using the Markdown language. The final piece will be a 1000-word article with a conclusion paragraph at the end. The topic of the article will be "${title}"`}`, db}).textCompletion(chatgptApis.timeout)
+                        const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `
+                            ${regenerate ? `
+                            Please act as an expert writer and using the below pasted ideas write a minimum 1200 word blog post for "${title}" with inputs as follows:
+                            Tone is " Authoritative, informative, Persuasive"
+                            Highlight the H1 & H2 html tags
+                            Provide the conclusion at the end
+                            Strictly using all these Ideas for writing blog: ${text}
+                            ` : `
+                            Please act as an expert writer and using the below pasted ideas write a minimum 1200 word blog post for  "${title}" strictly with inputs as follows:
+                            Tone is " Authoritative, informative, Persuasive"
+                            Highlight the H1 & H2 html tags
+                            Provide the conclusion at the end
+                            `}
+                        `, db}).textCompletion(chatgptApis.timeout)
                         newsLetter = {...newsLetter, [key]: chatGPTText}
                     } else {
                         let text = ""
@@ -117,7 +130,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                             "Insert Emoticons in Twitter Thread".
                             "${cond || "Thread limit to not exceed 10 tweets"}".
                             "Insert hashtags at the end of tweets".
-                            “Character limit per tweet to be maximum 200 characters".
+                            “Character limit per tweet to be exactly less then 200 characters".
                             "Trim unwanted new lines and spaces".
                             "Do not show the Tweet Number count inside the Tweets".`
                             console.log(text, "text")
