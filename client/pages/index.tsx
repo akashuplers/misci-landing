@@ -12,13 +12,13 @@ import Confetti from "react-confetti";
 import Marquee from "react-fast-marquee";
 import TextTransition, { presets } from "react-text-transition";
 import { ToastContainer, toast } from "react-toastify";
-import LandingPage from "../components/LandingPage/LandingPage";
 import Layout from "../components/Layout";
 import LoaderPlane from "../components/LoaderPlane";
 import TrialEndedModal from "../components/TrialEndedModal";
 import { meeAPI } from "../graphql/querys/mee";
 import { getDateMonthYear, isMonthAfterJune } from "../helpers/helper";
 import OTPModal from "../modals/OTPModal";
+import LandingPage from '../components/LandingPage/LandingPage'
 import PreferencesModal from "../modals/PreferencesModal";
 import useStore from "../store/store";
 
@@ -437,7 +437,6 @@ export default function Home() {
                 </div>
               )}
               <AIInputComponent />
-              {!isAuthenticated && <LandingPage />}
             </div>
           </div>
           <div className="absolute inset-x-0 top-[calc(100%-12rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
@@ -465,8 +464,9 @@ export default function Home() {
               </defs>
             </svg>
           </div>
+          {/* {isAuthenticated && <LandingPage/>} */}
         </div>
-        {/* {!isAuthenticated && <Footer />} */}
+        {!isAuthenticated && <Footer />}
       </Layout>
       <style>
         {`
