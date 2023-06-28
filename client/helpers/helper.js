@@ -171,12 +171,13 @@ export const handleconnectTwitter = async (callback_path) => {
       callback: window.location.origin + callback_path,
     });
 
+    var token = localStorage.getItem("token");
     let config = {
       method: "post",
       maxBodyLength: Infinity,
       url: API_BASE_PATH + "/auth/twitter/request-token",
       headers: {
-        Authorization: "",
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       data: data,
@@ -185,7 +186,6 @@ export const handleconnectTwitter = async (callback_path) => {
     axios
       .request(config)
       .then((response) => {
-        
         if (!response?.data?.error) {
           const twitterToken = response?.data?.data;
           const responseArray = twitterToken.split("&");

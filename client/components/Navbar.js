@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import AuthenticationModal from "../components/AuthenticationModal.js";
-import Link from "next/link";
 import { Popover } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
+import { useState } from "react";
+import AuthenticationModal from "../components/AuthenticationModal.js";
 
 const user = {};
 const navigation = [{ name: "Pricing", href: "/pricing", current: false }];
@@ -42,9 +42,9 @@ export default function Navbar({ isOpen }) {
               handleSave={() => (window.location = "/")}
               bid={Gbid}
             />
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className=" mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="relative flex justify-between lg:gap-8 xl:grid xl:grid-cols-12">
-                <div className="flex  space-x-1 rounded-xl bg-blue-900/20 p-1 fixed bottom-0 inset-x-0 mb-2 z-10 backdrop-filter backdrop-blur-lg bg-opacity-30  md:inset-y-0 md:left-0 lg:static xl:col-span-2">
+                <div className="md:inset-y-0 md:left-0 lg:static xl:col-span-2">
                   <div className="flex flex-shrink-0 items-center p-4">
                     <Link href="/">
                       <img
@@ -76,9 +76,7 @@ export default function Navbar({ isOpen }) {
                   </Popover.Button>
                 </div>
                 <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-4">
-                   
-                     
-                <Link
+                  <Link
                     legacyBehavior
                     as={"/faq"}
                     href={{
@@ -86,12 +84,12 @@ export default function Navbar({ isOpen }) {
                     }}
                   >
                     <p
-                       className="ml-5 flex-shrink-0 rounded-full bg-white p-1  hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                       style={{ cursor: "pointer" }}
-                     >
-                        FAQs
-                     </p>
-                   </Link>
+                      className="ml-5 flex-shrink-0 rounded-full bg-white p-1  hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                      style={{ cursor: "pointer" }}
+                    >
+                      FAQs
+                    </p>
+                  </Link>
 
                   <Link
                     legacyBehavior
@@ -107,9 +105,6 @@ export default function Navbar({ isOpen }) {
                       Pricing
                     </p>
                   </Link>
-               
-
-
 
                   <button
                     onClick={() => {
@@ -200,7 +195,7 @@ export default function Navbar({ isOpen }) {
             </Popover.Panel>
           </>
         )}
-      </Popover> 
+      </Popover>
     </>
   );
 }
