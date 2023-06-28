@@ -12,6 +12,7 @@ import Confetti from "react-confetti";
 import Marquee from "react-fast-marquee";
 import TextTransition, { presets } from "react-text-transition";
 import { ToastContainer, toast } from "react-toastify";
+import LandingPage from "../components/LandingPage/LandingPage";
 import Layout from "../components/Layout";
 import LoaderPlane from "../components/LoaderPlane";
 import TrialEndedModal from "../components/TrialEndedModal";
@@ -396,7 +397,7 @@ export default function Home() {
               </defs>
             </svg>
           </div>
-          <div className="mx-auto max-w-3xl flex py-32 sm:py-30 lg:py-20">
+          <div className="mx-auto max-w-3xl flex pt-32 lg:py-20">
             <div className="text-center">
               <div className="flex text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
                 Generate & Optimize{" "}
@@ -436,6 +437,7 @@ export default function Home() {
                 </div>
               )}
               <AIInputComponent />
+              {!isAuthenticated && <LandingPage />}
             </div>
           </div>
           <div className="absolute inset-x-0 top-[calc(100%-12rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
@@ -464,7 +466,7 @@ export default function Home() {
             </svg>
           </div>
         </div>
-        {!isAuthenticated && <Footer />}
+        {/* {!isAuthenticated && <Footer />} */}
       </Layout>
       <style>
         {`
