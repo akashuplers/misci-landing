@@ -638,7 +638,7 @@ function IntegrationTab({ meeData }) {
   };
 
   async function connectTwitter() {
-    handleconnectTwitter("");
+    handleconnectTwitter("/settings");
   }
   async function connectLinkedin() {
     handleconnectLinkedin("");
@@ -694,8 +694,27 @@ function BillingTab({ meeData }) {
     cardType: "Visa",
     cardNumber: "1234567890123456",
     expires: "09/25",
-    email: "example@example.com",
+    email: meeData?.me?.email,
   };
+  if (meeData?.me?.paid === false || meeData?.me?.paid === "false") {
+    return (
+      <div className="mt-4 border p-2 shadow-md rounded-md">
+        <div className="mt-2 flex justify-center">
+          <h3 className="text-black text-2xl font-semibold">Select a Plan</h3>
+        </div>
+        <div className="mt-4 flex justify-center">
+          <p className="text-gray-700">
+            From the latest update, choose your desired plan.
+          </p>
+        </div>
+        <div className="mt-6 flex justify-center">
+          <button className="w-[200px] p-4 bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded">
+            Select Plan from Upgrade
+          </button>
+        </div>
+      </div>
+    );
+  }
   return (
     <div>
       {" "}
