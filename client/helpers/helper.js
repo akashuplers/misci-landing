@@ -1,4 +1,5 @@
-import { LINKEDIN_CLIENT_ID } from "@/constants/apiEndpoints";
+import { API_BASE_PATH, LINKEDIN_CLIENT_ID } from "@/constants/apiEndpoints";
+import axios from "axios";
 
 export const htmlToJson = (htmlString, imageURL) => {
   const parser = new DOMParser();
@@ -163,7 +164,6 @@ export function isMonthAfterJune(month) {
 export const handleconnectTwitter = async (callback_path) => {
   console.log("handling twitter connect");
   localStorage.setItem("loginProcess", true);
-  localStorage.setItem("bid", undefined);
   localStorage.setItem("for_TW", true);
 
   try {
@@ -185,6 +185,7 @@ export const handleconnectTwitter = async (callback_path) => {
     axios
       .request(config)
       .then((response) => {
+        
         if (!response?.data?.error) {
           const twitterToken = response?.data?.data;
           const responseArray = twitterToken.split("&");
@@ -206,7 +207,6 @@ export const handleconnectLinkedin = (callback_path) => {
   localStorage.setItem("bid", undefined);
   localStorage.removeItem("for_TW");
   const callBack = window.location.origin + callback_path;
-  alert(callBack)
   const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`;
   window.location = redirectUrl;
 };
