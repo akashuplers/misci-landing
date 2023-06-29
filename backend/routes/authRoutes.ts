@@ -1418,4 +1418,30 @@ router.post('/verify-otp', authMiddleware,  async (request: any, res: any) => {
   }
 })
 
+router.post('/request-trial', async (req: any, res: any) => {
+  const db = req.app.get('db')
+  const data = req.body
+  const {email, name, topics} = data
+  if(!email || !name || !topics) {
+      return res.status(400).send({
+          type: "ERROR",
+          message: "Please provide all data!"
+      })
+  }
+  const emailExists = await db.db('lilleAdmin').collection('trials').findOne({
+      email
+  })
+  if(emailExists) {
+      return res.status(400).send({
+          type: "ERROR",
+          message: "Request is already under process!"
+      })
+  }
+  await db.db('lilleAdmin').collection('trials').insertOne({email, topics, name})
+  return res.status(200).send({
+      type: "SUCCESS",
+      message: "Request accepted!"
+  })
+})
+
 module.exports = router;
