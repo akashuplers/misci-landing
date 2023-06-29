@@ -16,6 +16,7 @@ const imagesForScreenShots = {
   publishLinkedinbutton: "/screenshots/publishLinkedinbutton.png",
   regenerate: "/screenshots/regenerate.png",
   regeneratebutton: "/screenshots/regeneratebutton.png",
+  customer: "/customer.png",
 };
 
 const LandingPage = () => {
@@ -45,8 +46,9 @@ const LandingPage = () => {
         </div>
       </div>
       {/* ABOUT US */}
+      <SectionSpacer />
       <div className="relative bg-gradient-to-b from-violet-50 to-violet-50 py-20 lg:min-h-screen">
-        <div className="flex mx-auto max-w-5xl">
+        <div className="flex mx-auto max-w-5xl items-center justify-center">
           <div className="w-[50%]">
             <div className="w-full justify-start items-center">
               {/* <div className="w-[50%] h-0.5 bg-indigo-600" /> */}
@@ -88,64 +90,70 @@ const LandingPage = () => {
         </div>
         {/* randm div with height 40% of parrent */}
         {/* why chose us */}
-        <div className=" w-full h-[40%] bg-white">{""}</div>
-        <div className="w-full h-[700px] p-20 relative bg-gradient-to-r from-indigo-600 to-indigo-400 rounded-2xl shadow justify-center items-center flex flex-col">
-          <div className="border h-[136px] flex-col justify-center items-center gap-6 inline-flex">
-            <div className="self-stretch h-14 text-center text-white text-[48px] font-bold leading-10 tracking-wide">
-              Why Choose Us
-            </div>
-            <div className="w-[803.89px] opacity-80 text-center text-white text-[16px] font-normal leading-7 tracking-wide">
-              Lille is a unique platform dedicated to enriching your online
-              experience by providing an engaging combination of informative
-              content and interactive discussions.
-            </div>
+      </div>
+      <SectionSpacer />
+      <div
+        className="w-full h-[700px] p-20 relative  rounded-2xl shadow justify-center items-center flex flex-col"
+        style={{
+          backgroundImage: "linear-gradient(138deg, #4A3AFE 0%, #6883FF 100%)",
+        }}
+      >
+        <div className="h-[136px] flex-col justify-center items-center gap-6 inline-flex">
+          <div className="self-stretch h-14 text-center text-white text-[48px] font-bold leading-10 tracking-wide">
+            Why Choose Us
           </div>
-          <div className="border py-[64.05px] bg-white mt-10 rounded-2xl shadow justify-center items-center inline-flex">
-            <div className="self-stretch justify-around  items-center gap-[38px] inline-flex">
-              <div className="w-[30%] flex-col justify-start items-center gap-5 inline-flex">
-                <div className="self-stretch h-[156px] flex-col justify-start items-center gap-3 flex">
-                  <div className="self-stretch text-center text-slate-800 text-[24px] font-medium leading-9">
-                    SEO optimization
-                  </div>
-                  <div className="self-stretch opacity-80 text-center text-slate-600 text-[16px] font-normal leading-7">
-                    {`We have implemented search engine optimization, such as
+          <div className="w-[803.89px] opacity-80 text-center text-white text-[16px] font-normal leading-7 tracking-wide">
+            Lille is a unique platform dedicated to enriching your online
+            experience by providing an engaging combination of informative
+            content and interactive discussions.
+          </div>
+        </div>
+        <div className="border py-[64.05px] bg-white mt-10 rounded-2xl shadow justify-center items-center inline-flex">
+          <div className="self-stretch justify-around  items-center gap-[38px] inline-flex">
+            <div className="w-[30%] flex-col justify-start items-center gap-5 inline-flex">
+              <div className="self-stretch h-[156px] flex-col justify-start items-center gap-3 flex">
+                <div className="self-stretch text-center text-slate-800 text-[24px] font-medium leading-9">
+                  SEO optimization
+                </div>
+                <div className="self-stretch opacity-80 text-center text-slate-600 text-[16px] font-normal leading-7">
+                  {`We have implemented search engine optimization, such as
                     using meta tags, alt tags for images, and ensuring the
                     website's loading speed is fast`}
-                  </div>
                 </div>
               </div>
-              <div className="w-[30%] flex-col justify-start items-center gap-5 inline-flex">
-                <div className="self-stretch h-[156px] flex-col justify-start items-center gap-3 flex">
-                  <div className="self-stretch text-center text-slate-800 text-[24px] font-medium leading-9">
-                    Social media integration
-                  </div>
-                  <div className="self-stretch opacity-80 text-center text-slate-600 text-[16px] font-normal leading-7">
-                    We have included social media share buttons to encourage
-                    users to easily share your blog posts on their preferred
-                    social platforms.
-                  </div>
+            </div>
+            <div className="w-[30%] flex-col justify-start items-center gap-5 inline-flex">
+              <div className="self-stretch h-[156px] flex-col justify-start items-center gap-3 flex">
+                <div className="self-stretch text-center text-slate-800 text-[24px] font-medium leading-9">
+                  Social media integration
+                </div>
+                <div className="self-stretch opacity-80 text-center text-slate-600 text-[16px] font-normal leading-7">
+                  We have included social media share buttons to encourage users
+                  to easily share your blog posts on their preferred social
+                  platforms.
                 </div>
               </div>
-              <div className="w-[30%] flex-col justify-start items-center gap-5 inline-flex">
-                <div className="self-stretch h-[156px] flex-col justify-start items-center gap-3 flex">
-                  <div className="self-stretch text-center text-slate-800 text-[24px] font-medium leading-9">
-                    Customization options
-                  </div>
-                  <div className="self-stretch opacity-80 text-center text-slate-600 text-[16px] font-normal leading-7">
-                    We have provided users with the ability to customize their
-                    experience on the website, such as choosing their preferred
-                    font size, color theme, etc.
-                  </div>
+            </div>
+            <div className="w-[30%] flex-col justify-start items-center gap-5 inline-flex">
+              <div className="self-stretch h-[156px] flex-col justify-start items-center gap-3 flex">
+                <div className="self-stretch text-center text-slate-800 text-[24px] font-medium leading-9">
+                  Customization options
+                </div>
+                <div className="self-stretch opacity-80 text-center text-slate-600 text-[16px] font-normal leading-7">
+                  We have provided users with the ability to customize their
+                  experience on the website, such as choosing their preferred
+                  font size, color theme, etc.
                 </div>
               </div>
             </div>
           </div>
-          <div className="w-[331.87px] h-[477.56px] origin-top-left rotate-[-53.85deg] opacity-60 bg-purple-500 rounded-full blur-[145px]" />
-          <div className="w-[266.57px] h-[383.59px] origin-top-left rotate-[-53.85deg] opacity-60 bg-purple-500 rounded-full blur-[145px]" />
         </div>
+        <div className="w-[331.87px] h-[477.56px] origin-top-left rotate-[-53.85deg] opacity-60 bg-purple-500 rounded-full blur-[145px]" />
+        <div className="w-[266.57px] h-[383.59px] origin-top-left rotate-[-53.85deg] opacity-60 bg-purple-500 rounded-full blur-[145px]" />
       </div>
       {/* how lille works */}
-      <div className="w-[1439.31px] h-[2465.15px] px-[130px] flex-col justify-start items-center gap-[60px] inline-flex">
+      <SectionSpacer />
+      <div className="w-full h-[2465.15px] px-[130px] flex-col justify-start items-center gap-[60px] inline-flex">
         <div className="self-stretch h-[95px] flex-col justify-start items-center gap-6 flex">
           <div>
             <span className="text-slate-800 text-[48px] font-bold leading-10">
@@ -352,10 +360,10 @@ const LandingPage = () => {
         </div>
       </div>
       {/* testimonials */}
-      <div className="w-[1440px] h-[700px] relative bg-blue-50">
-        <div className="w-[331.87px] h-[477.56px] left-[1064.75px] top-[237.42px] absolute origin-top-left rotate-[-53.85deg] opacity-80 bg-pink-100 rounded-full blur-[145px]" />
+      <SectionSpacer />
+      <div className="w-full h-[700px] relative bg-blue-50">
         <div className="w-[324.03px] h-[324.03px] left-[-195.14px] top-[374.12px] absolute opacity-80 bg-pink-100 rounded-full blur-[145px]" />
-        <div className="left-[71px] top-[64px] absolute flex-col justify-start items-center gap-[60px] inline-flex">
+        <div className="flex-col justify-start items-center gap-[60px] inline-flex">
           <div className="flex-col justify-start items-center gap-3 flex">
             <div className="text-center text-slate-800 text-[48px] font-medium leading-10">
               See what our customers say
@@ -386,7 +394,7 @@ const LandingPage = () => {
                   <div className="w-[90px] h-[90px] justify-center items-center inline-flex">
                     <img
                       className="w-[90px] h-[90px] rounded-full"
-                      src="https://via.placeholder.com/90x90"
+                      src={imagesForScreenShots["customer"]}
                     />
                   </div>
                   <div className="text-zinc-800 text-[16px] font-semibold">
@@ -410,7 +418,7 @@ const LandingPage = () => {
                   <div className="w-[90px] h-[90px] justify-center items-center inline-flex">
                     <img
                       className="w-[90px] h-[90px] rounded-full"
-                      src="https://via.placeholder.com/90x90"
+                      src={imagesForScreenShots["customer"]}
                     />
                   </div>
                   <div className="text-zinc-800 text-[16px] font-semibold">
@@ -434,7 +442,7 @@ const LandingPage = () => {
                   <div className="w-[90px] h-[90px] justify-center items-center inline-flex">
                     <img
                       className="w-[90px] h-[90px] rounded-full border border-white"
-                      src="https://via.placeholder.com/90x90"
+                      src={imagesForScreenShots["customer"]}
                     />
                   </div>
                   <div className="text-zinc-800 text-[16px] font-semibold">
@@ -452,8 +460,9 @@ const LandingPage = () => {
         </div>
       </div>
       {/* demo */}
-      <div>
-        <div className="w-[1051px] h-[600px] pl-[46px] pr-[97px] py-[51px] bg-white rounded-2xl shadow justify-start items-center gap-[101px] inline-flex">
+      <SectionSpacer />
+      <div className="flex items-center justify-center w-full h-full">
+        <div className="w-full h-[600px] pl-[46px] pr-[97px] py-[51px] bg-white rounded-2xl shadow justify-start items-center gap-[101px] inline-flex">
           <div className="w-[430px] h-[498px] relative bg-gradient-to-br from-indigo-600 to-indigo-400 rounded-lg flex-col justify-start items-start flex">
             <div className="justify-start items-center gap-1 inline-flex">
               <div className="text-slate-800 text-[32px] font-bold leading-10">
@@ -487,51 +496,42 @@ const LandingPage = () => {
                 Request a free demo
               </div>
             </div>
-            <div className="w-[377px] h-[388px] relative">
-              <div className="w-[377px] h-[373px] left-0 top-[15px] absolute flex-col justify-start items-center gap-[30px] inline-flex">
-                <div className="flex-col justify-start items-end gap-3 flex">
-                  <div className="h-[287px] flex-col justify-start items-start gap-[26px] flex">
-                    <div className="w-[376px] pl-4 pr-5 py-[15px] rounded-md border border border border border-black border-opacity-60 justify-start items-center gap-2.5 inline-flex">
-                      <div className="w-[20.40px] h-[20.40px] relative">
-                        <div className="w-[20.40px] h-[20.40px] left-0 top-0 absolute"></div>
-                      </div>
-                      <div className="text-black text-opacity-40 text-[16px] font-normal">
-                        i.e. sahilgarg
-                      </div>
-                    </div>
-                    <div className="w-[376px] pl-4 pr-5 py-[15px] rounded-md border border border border border-black border-opacity-60 justify-start items-center gap-2.5 inline-flex">
-                      <div className="w-[20.40px] h-[20.40px] relative">
-                        <div className="w-[20.40px] h-[20.40px] left-0 top-0 absolute"></div>
-                      </div>
-                      <div className="text-black text-opacity-40 text-[16px] font-normal">
-                        i.e. sahilgarg1523@gmial.com
-                      </div>
-                    </div>
-                    <div className="w-[376px] h-[127px] pl-4 pr-5 py-[15px] rounded-md border border border border border-black border-opacity-60 justify-start items-start gap-2.5 inline-flex">
-                      <div className="text-black text-opacity-40 text-[16px] font-normal">
-                        Write here
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="w-[378px] px-5 py-[15px] bg-indigo-600 rounded-lg justify-center items-center gap-2.5 inline-flex">
-                  <div className="text-white text-[18px] font-medium">Send</div>
-                </div>
-              </div>
-              <div className="w-[262px] h-[189px] left-[7px] top-0 absolute flex-col justify-start items-start gap-[51px] inline-flex">
-                <div className="px-2 py-1 bg-white rounded-[200px] justify-start items-start gap-2.5 inline-flex">
-                  <div className="text-black text-[14px] font-normal">Name</div>
-                </div>
-                <div className="px-2 py-1 bg-white rounded-[200px] justify-start items-start gap-2.5 inline-flex">
-                  <div className="text-black text-[14px] font-normal">
-                    Email ID
-                  </div>
-                </div>
+            <div className="w-[377px] h-[388px] relative ">
+              <div className="w-[262px] h-[189px] flex-col justify-start items-start gap-[51px] inline-flex">
+                <label for="email">
+                  <p className="font-medium text-slate-700 pb-2 p-2">Name</p>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={"email"}
+                    onChange={/* india the next super power */ () => {}}
+                    className="p-2 w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                    placeholder="Enter email address"
+                  />
+                </label>
+                <label for="email">
+                  <p className="font-medium text-slate-700 pb-2 p-2">
+                    Email address
+                  </p>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={"email"}
+                    onChange={/* india the next super power */ () => {}}
+                    className="p-2 w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                    placeholder="Enter email address"
+                  />
+                </label>
                 <div className="px-2 py-1 bg-white rounded-[200px] justify-start items-start gap-2.5 inline-flex">
                   <div className="text-black text-[14px] font-normal">
                     What topics are you most interested in?
                   </div>
                 </div>
+                <button className="w-[378px] px-5 py-[15px] bg-indigo-600 rounded-lg justify-center items-center gap-2.5 inline-flex">
+                  <div className="text-white text-[18px] font-medium">Send</div>
+                </button>
               </div>
             </div>
           </div>
@@ -543,3 +543,6 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+const SectionSpacer = () => {
+  return <div className="my-8"></div>;
+};
