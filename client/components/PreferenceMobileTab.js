@@ -1,5 +1,4 @@
 import Link from "next/link";
-import React from "react";
 import CreatableSelect from "react-select/creatable";
 
 const PreferenceMobileTab = ({
@@ -7,10 +6,10 @@ const PreferenceMobileTab = ({
   isFormat,
   handleUpdatePref,
   selectedOption,
-  options, 
+  options,
   setIsFormat,
+  setSelectedOption,
 }) => {
-  
   return (
     <>
       {meeData?.me?.isSubscribed ? (
@@ -69,6 +68,7 @@ const PreferenceMobileTab = ({
           <div className="flex flex-shrink-0 pb-0 pt-4">
             <Link
               to="/upgrade"
+              href={"/upgrade"}
               className="ml-6 inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               style={{
                 margin: "0em 0.5em",
