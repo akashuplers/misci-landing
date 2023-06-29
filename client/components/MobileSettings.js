@@ -569,6 +569,7 @@ function PreferencesTab({ meeData, meeLoading }) {
       options={options}
       selectedOption={selectedOption}
       setIsFormat={setIsFormat}
+      setSelectedOption={setselectedOption}
     />
   );
 }
