@@ -4,7 +4,6 @@ const logos = ["/Logo1", "/Logo2", "/Logo3", "/Logo4", "/Logo5"];
 // Import Swiper styles
 import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import { error } from "console";
 import { toast } from "react-toastify";
 import "swiper/css";
 import "swiper/css/navigation";
