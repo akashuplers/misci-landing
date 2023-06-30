@@ -4,6 +4,7 @@ const logos = ["/Logo1", "/Logo2", "/Logo3", "/Logo4", "/Logo5"];
 // Import Swiper styles
 import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import { error } from "console";
 import { toast } from "react-toastify";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -80,13 +81,14 @@ const initalState = {
 };
 const LandingPage = () => {
   const [userDetails, setUserDetails] = useState(initalState);
-  const handleUserDetailsChange = (e) => {
-    const { name, value } = e.target;
-    setUserDetails((prevState) => ({
-      ...prevState,
+  const [inputErrors, setInputErrors] = useState({});
+  function handleUserDetailsChange(event) {
+    const { name, value } = event.target;
+    setUserDetails((prevUserDetails) => ({
+      ...prevUserDetails,
       [name]: value,
     }));
-  };
+  }
   const handleSubmit = (e) => {
     const URL = API_BASE_PATH + API_ROUTES.TEMP_USER;
     e.preventDefault();
@@ -116,25 +118,13 @@ const LandingPage = () => {
           toast.success(
             "Thank you for your interest. We will get back to you soon."
           );
-          // setUserDetails(initalState);
         } else {
-          type === typeOFTypes.error &&
-            toast.error("Something went wrong. Please try again later.");
+          type === typeOFTypes.error && toast.error(error.message);
         }
       });
   };
   const handleDemoClick = () => {
     // check all fields are filled
-    const { name, email, interestedTopics } = userDetails;
-    if (
-      name.trim() !== "" &&
-      email.trim() !== "" &&
-      interestedTopics.trim() !== ""
-    ) {
-      return true;
-    } else {
-      return false;
-    }
   };
 
   return (
@@ -740,8 +730,8 @@ const LandingPage = () => {
       </div>
       {/* demo */}
       <SectionSpacer />
-      <div className="hidden  lg:flex items-center justify-center w-full h-full border ">
-        <div className="w-full p-10 bg-white rounded-2xl shadow justify-center items-center gap-[101px] flex">
+      <div className="hidden  lg:flex items-center justify-center w-full h-full ">
+        <div className="border w-full p-10 bg-white rounded-2xl shadow justify-center items-center gap-[101px] flex">
           <div className="relative bg-gradient-to-br from-indigo-600 to-indigo-400 rounded-lg flex-col justify-start items-start flex">
             <div className="justify-center w-full items-center gap-1 inline-flex">
               <div className="text-slate-800 text-[32px] font-bold leading-10">
@@ -759,59 +749,68 @@ const LandingPage = () => {
                 Request a free demo
               </div>
             </div>
-            <div className=" relative ">
-              <div className=" flex-col justify-start items-start gap-[51px] inline-flex">
-                <label for="email" className="w-full">
-                  <p className="font-medium text-slate-700 pb-2 p-2">Name</p>
-                  <input
-                    id="name"
-                    name="name"
-                    type="name"
-                    value={userDetails.name}
-                    onChange={handleUserDetailsChange}
-                    className="p-2 w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                    placeholder="e.g John Doe"
-                  />
-                </label>
-                <label for="email" className="w-full">
-                  <p className="font-medium text-slate-700 pb-2 p-2">
-                    Email address
-                  </p>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={userDetails.email}
-                    onChange={handleUserDetailsChange}
-                    className="p-2 w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                    placeholder="e.g john@adesign.guy"
-                  />
-                </label>
-                <label className="w-full" htmlFor="interestedTopics">
-                  <p className="font-medium text-slate-700 pb-2 p-2">
-                    What topics are you most interested in?
-                  </p>
-
-                  <input
-                    id="interestedTopics"
-                    name="interestedTopics"
-                    type="text"
-                    value={userDetails.interestedTopics}
-                    onChange={handleUserDetailsChange}
-                    className="p-2 w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                    placeholder="space, machines, etc."
-                  />
-                </label>
-
-                <button
-                  className="w-[378px] px-5 py-[15px] bg-indigo-600 rounded-lg justify-center items-center gap-2.5 inline-flex disabled:opacity-50"
-                  onClick={handleSubmit}
-                  // disabled={handleDemoClick}
+            <div className="relative">
+              <div className="flex-col justify-start items-start gap-14 inline-flex">
+                <form
+                  onSubmit={handleSubmit}
+                  className="flex-col justify-start items-start gap-6 inline-flex"
                 >
-                  <span className="text-white text-[18px] font-medium">
-                    Send
-                  </span>
-                </button>
+                  <label htmlFor="name" className="w-full">
+                    <p className="font-medium text-slate-700 pb-2 p-2">Name</p>
+                    <input
+                      id="name"
+                      name="name"
+                      type="text"
+                      value={userDetails.name}
+                      onChange={handleUserDetailsChange}
+                      className="p-2 w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                      placeholder="e.g John Doe"
+                      required
+                    />
+                  </label>
+
+                  <label htmlFor="email" className="w-full">
+                    <p className="font-medium text-slate-700 pb-2 p-2">
+                      Email address
+                    </p>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={userDetails.email}
+                      onChange={handleUserDetailsChange}
+                      className="p-2 w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                      placeholder="e.g john@adesign.guy"
+                      required
+                    />
+                  </label>
+
+                  <label className="w-full" htmlFor="interestedTopics">
+                    <p className="font-medium text-slate-700 pb-2 p-2">
+                      How are you planning to use Lille?
+                    </p>
+                    <input
+                      id="interestedTopics"
+                      name="interestedTopics"
+                      type="text"
+                      value={userDetails.interestedTopics}
+                      onChange={handleUserDetailsChange}
+                      className="p-2 w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                      placeholder="Write here."
+                      required
+                    />
+                  </label>
+
+                  <button
+                    type="submit"
+                    className="w-full px-5 py-[15px] bg-indigo-600 rounded-lg justify-center items-center gap-2.5 inline-flex disabled:opacity-50"
+                    // disabled={handleDemoClick}
+                  >
+                    <span className="text-white text-[18px] font-medium">
+                      Send
+                    </span>
+                  </button>
+                </form>
               </div>
             </div>
           </div>
@@ -866,7 +865,7 @@ const LandingPage = () => {
 
               <label htmlFor="interestedTopics">
                 <p className="font-medium text-slate-700 pb-2 p-2">
-                  Interested Topics
+                  How are you planning to use Lille?
                 </p>
 
                 <input
@@ -876,7 +875,7 @@ const LandingPage = () => {
                   value={userDetails.interestedTopics}
                   onChange={handleUserDetailsChange}
                   className="p-2 w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                  placeholder="Enter email address"
+                  placeholder="Write here"
                 />
               </label>
               <button
