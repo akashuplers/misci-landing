@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 // @ts-nocheck
-import Footer from "@/components/Footer";
 import { API_BASE_PATH } from "@/constants/apiEndpoints";
 import { gql, useQuery } from "@apollo/client";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
@@ -12,6 +11,7 @@ import Confetti from "react-confetti";
 import Marquee from "react-fast-marquee";
 import TextTransition, { presets } from "react-text-transition";
 import { ToastContainer, toast } from "react-toastify";
+import LandingPage from "../components/LandingPage/LandingPage";
 import Layout from "../components/Layout";
 import LoaderPlane from "../components/LoaderPlane";
 import TrialEndedModal from "../components/TrialEndedModal";
@@ -396,9 +396,9 @@ export default function Home() {
               </defs>
             </svg>
           </div>
-          <div className="mx-auto max-w-3xl flex py-32 sm:py-30 lg:py-20">
-            <div className="text-center">
-              <div className="flex text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
+          <div className="mx-auto max-w-screen-xl flex flex-col pt-32 lg:py-20">
+            <div className="mx-auto max-w-3xl text-center h-screen xl:h-full">
+              <div className="relative flex text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
                 Generate & Optimize{" "}
                 <TextTransition
                   springConfig={presets.gentle}
@@ -436,9 +436,18 @@ export default function Home() {
                 </div>
               )}
               <AIInputComponent />
+              <div
+                className="w-[80%] absolute top-[500px] lg:top-[350px] h-[200px] inset-x-0 -z-10"
+                style={{
+                  background:
+                    "linear-gradient(265deg, #C3DDFF 38%, #FFF5E3 61%)",
+                  filter: "blur(80px)",
+                }}
+              ></div>
             </div>
+            {!isAuthenticated && <LandingPage />}
           </div>
-          <div className="absolute inset-x-0 top-[calc(100%-12rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
+          {/* <div className="absolute inset-x-0 top-[calc(100%-12rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
             <svg
               className="relative left-[calc(50%+3rem)] h-[21.1875rem] max-w-none -translate-x-1/2 sm:left-[calc(50%+36rem)] sm:h-[30.375rem]"
               viewBox="0 0 1155 678"
@@ -462,9 +471,8 @@ export default function Home() {
                 </linearGradient>
               </defs>
             </svg>
-          </div>
+          </div> */}
         </div>
-        {!isAuthenticated && <Footer />}
       </Layout>
       <style>
         {`

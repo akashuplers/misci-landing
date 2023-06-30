@@ -18,10 +18,10 @@ import ReactLoading from "react-loading";
 import Modal from "react-modal";
 import CreatableSelect from "react-select/creatable";
 import { ToastContainer, toast } from "react-toastify";
-import MobileSettings from "../components/MobileSettings";
 import ForgotPasswordModal from "../components/ForgotPasswordModal";
 import Layout from "../components/Layout";
 import LoaderScan from "../components/LoaderScan";
+import MobileSettings from "../components/MobileSettings";
 import { TwitterVerifiedIcon } from "../components/localicons/localicons";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { addPreferances } from "../graphql/mutations/addPreferances";
@@ -767,7 +767,7 @@ export default function Settings() {
                                       meeData?.me?.paid &&
                                       meeData?.me?.interval !== "monthly" && (
                                         <div
-                                          className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-2 w-[310%]"
+                                          className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-2 w-full lg:w-[310%]"
                                           role="alert"
                                         >
                                           <p>
@@ -860,7 +860,7 @@ export default function Settings() {
                                         );
                                       }}
                                     >
-                                         from Twitter
+                                      from Twitter
                                     </button>
                                   ) : (
                                     <></>
@@ -1056,9 +1056,7 @@ export default function Settings() {
           </div>
         </div>
         <div className="lg:hidden">
-          <MobileSettings meeData={
-            meeData
-          }/>
+          <MobileSettings meeData={meeData} meeLoading={meeLoading} />
         </div>
       </div>
     </>
