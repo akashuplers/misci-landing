@@ -1,5 +1,6 @@
-import { STRIPE_PROMISE } from "@/constants";
-import { API_BASE_PATH } from "@/constants/apiEndpoints";
+      import { STRIPE_PROMISE } from "@/constants";
+import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
+import { addPreferances } from "@/graphql/mutations/addPreferances";
 import {
   formatDate,
   generateDateString,
@@ -7,12 +8,13 @@ import {
   handleconnectTwitter,
 } from "@/helpers/helper";
 import { PricingCard } from "@/pages/pricing";
+import { useMutation } from "@apollo/client";
 import { Switch, Tab } from "@headlessui/react";
 import {
   ArrowUpCircleIcon,
   AtSymbolIcon,
   CogIcon,
-  CreditCardIcon,
+  CreditCardIcon,     
   UserIcon,
 } from "@heroicons/react/20/solid";
 import { Elements } from "@stripe/react-stripe-js";
@@ -24,21 +26,27 @@ import Modal from "react-modal";
 import { LinkedinIcon, TwitterIcon } from "react-share";
 import { toast } from "react-toastify";
 import CheckoutFormUpgrade from "../components/CheckoutFormUpgrade";
+import PreferenceMobileTab from "../components/PreferenceMobileTab";
 import fillerProfileImage from "../public/profile-filler.jpg";
 import { UpgradeFeatures } from "./FeatureItem";
 import ForgotPasswordModal from "./ForgotPasswordModal";
+import LoaderScan from "./LoaderScan";
 import { TwitterVerifiedIcon } from "./localicons/localicons";
-
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function MobileSettings({ meeData }) {
+export default function MobileSettings({ meeData, meeLoading }) {
   var tabs = [
     {
       name: "Profile",
       icon: <UserIcon className="w-5 h-5" aria-hidden="true" />,
       component: <ProfileTab meeData={meeData} />,
+    },
+    {
+      name: "Preferences",
+      icon: <AtSymbolIcon className="w-5 h-5" aria-hidden="true" />,
+      component: <PreferencesTab meeData={meeData} meeLoading={meeLoading} />,
     },
     {
       name: "Integration",
@@ -125,7 +133,71 @@ function ProfileTab({ meeData }) {
       );
     }
   }, [meeData]);
-  const handleInputChange = (e) => {};
+  const handleInputChange = (e) => {
+    setUpdateProfileData({
+      ...updateProfileData,
+      [e.target.name]: e.target.value,
+    });
+  };
+  const handleUpdate = (e) => {
+    var getToken;
+    if (typeof window !== "undefined") {
+      getToken = localStorage.getItem("token");
+    }
+    if (
+      meeData.me.name === updateProfileData.firstName &&
+      meeData.me.lastName === updateProfileData.lastName &&
+      meeData.me.profileImage === updateProfileData.profileImage
+    ) {
+      toast.success("Profile up to Date!", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      return;
+    }
+
+    setUpdateLoader(true);
+    axios
+      .put(API_BASE_PATH + API_ROUTES.UPDATE_PROFILE, updateProfileData, {
+        headers: {
+          Authorization: `Bearer ${getToken}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        if (res.data.errors === false) {
+          toast.success(res.data.message, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        } else {
+          toast.error(res.data.message, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        }
+      })
+      .catch((err) => console.error(err.message))
+      .finally(() => setUpdateLoader(false));
+  };
   return (
     <div>
       <div className="w-full h-screen/3 flex items-center justify-center">
@@ -313,7 +385,7 @@ function ProfileTab({ meeData }) {
                 meeData?.me?.paid &&
                 meeData?.me?.interval !== "monthly" && (
                   <div
-                    className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-2 w-[310%]"
+                    className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-2 w-full lg:w-[310%]"
                     role="alert"
                   >
                     <p>
@@ -347,6 +419,7 @@ function ProfileTab({ meeData }) {
                 right: "0",
                 bottom: "30px",
               }}
+              onClick={handleUpdate}
             >
               {updateLoader ? (
                 <ReactLoading
@@ -360,49 +433,144 @@ function ProfileTab({ meeData }) {
                 "Update"
               )}
             </button>
-            {linkedin ? (
-              <button
-                className="update-button cta p-4"
-                style={{
-                  right: "100px",
-                  bottom: "30px",
-                  width: "150px",
-                }}
-                onClick={() => {
-                  localStorage.removeItem("linkedInAccessToken");
-                  toast.success("Linkedin has been disconnected.");
-                  setlinkedin(false);
-                }}
-              >
-                Logout Linkedin
-              </button>
-            ) : (
-              <></>
-            )}
-            {twitter ? (
-              <button
-                className="update-button cta p-4"
-                style={{
-                  right: "300px",
-                  bottom: "30px",
-                  width: "175px",
-                }}
-                onClick={() => {
-                  localStorage.removeItem("twitterAccessToken");
-                  localStorage.removeItem("twitterAccessTokenSecret");
-                  settwitter(false);
-                  toast.success("Twitter has been disconnected.");
-                }}
-              >
-                Logout from Twitter
-              </button>
-            ) : (
-              <></>
-            )}
           </div>
         </dl>
       </div>
     </div>
+  );
+}
+function PreferencesTab({ meeData, meeLoading }) {
+  const handleUpdate = (e) => {
+    if (
+      meeData.me.name === updateProfileData.firstName &&
+      meeData.me.lastName === updateProfileData.lastName &&
+      meeData.me.profileImage === updateProfileData.profileImage
+    ) {
+      toast.success("Profile up to Date!", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      return;
+    }
+
+    setUpdateLoader(true);
+    axios
+      .put(API_BASE_PATH + API_ROUTES.UPDATE_PROFILE, updateProfileData, {
+        headers: {
+          Authorization: `Bearer ${getToken}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        if (res.data.errors === false) {
+          toast.success(res.data.message, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        } else {
+          toast.error(res.data.message, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        }
+      })
+      .catch((err) => console.error(err.message))
+      .finally(() => setUpdateLoader(false));
+  };
+  var token;
+
+  var token;
+  if (typeof window !== "undefined") {
+    token = localStorage.getItem("token");
+  }
+  const [selectedOption, setselectedOption] = useState([]);
+
+  useEffect(() => {
+    const arr = [];
+    if (meeData) {
+      meeData.me.prefData.map((value) =>
+        arr.push({ value: value, label: value, color: "#000000" })
+      );
+      setOptions(arr);
+      setselectedOption(arr);
+    }
+  }, [meeData]);
+  const [AddPreferance, { loading: prefLoading }] = useMutation(
+    addPreferances,
+    {
+      context: {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      },
+    }
+  );
+  const [options, setOptions] = useState([]);
+
+  const handleUpdatePref = () => {
+    const Prefrence = [];
+    selectedOption.map((o) => Prefrence.push(o.value));
+    AddPreferance({
+      variables: {
+        options: {
+          keywords: Prefrence,
+        },
+      },
+      onCompleted: (data) => {
+        toast.success("Preferences Saved!", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    }).catch((err) => {
+      console.log(err);
+    });
+  };
+
+  const [isFormat, setIsFormat] = useState(false);
+
+  if (meeLoading) return <LoaderScan />;
+  console.log(meeData?.me?.lastInvoicedDate * 1000);
+
+  return (
+    <PreferenceMobileTab
+      meeData={meeData}
+      handleUpdatePref={handleUpdatePref}
+      isFormat={isFormat}
+      meData={meeData}
+      options={options}
+      selectedOption={selectedOption}
+      setIsFormat={setIsFormat}
+      setSelectedOption={setselectedOption}
+    />
   );
 }
 function IntegrationTab({ meeData }) {
@@ -471,7 +639,7 @@ function IntegrationTab({ meeData }) {
   };
 
   async function connectTwitter() {
-    handleconnectTwitter("");
+    handleconnectTwitter("/settings");
   }
   async function connectLinkedin() {
     handleconnectLinkedin("");
@@ -527,8 +695,27 @@ function BillingTab({ meeData }) {
     cardType: "Visa",
     cardNumber: "1234567890123456",
     expires: "09/25",
-    email: "example@example.com",
+    email: meeData?.me?.email,
   };
+  if (meeData?.me?.paid === false || meeData?.me?.paid === "false") {
+    return (
+      <div className="mt-4 border p-2 shadow-md rounded-md">
+        <div className="mt-2 flex justify-center">
+          <h3 className="text-black text-2xl font-semibold">Select a Plan</h3>
+        </div>
+        <div className="mt-4 flex justify-center">
+          <p className="text-gray-700">
+            From the latest update, choose your desired plan.
+          </p>
+        </div>
+        <div className="mt-6 flex justify-center">
+          <button className="w-[200px] p-4 bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded">
+            Select Plan from Upgrade
+          </button>
+        </div>
+      </div>
+    );
+  }
   return (
     <div>
       {" "}
