@@ -2,20 +2,24 @@ import { useState } from "react";
 const logos = ["/Logo1", "/Logo2", "/Logo3", "/Logo4", "/Logo5"];
 
 // Import Swiper styles
+import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import { toast } from "react-toastify";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import MoblieUnAuthFooter from "../LandingPage/MoblieUnAuthFooter";
+import { StarIcon } from "../localicons/localicons";
+import TestimonialUserCard from "./TestimonialUserCard";
 const imagesForScreenShots = {
   home: "/screenshots/home.png",
-  publish: "/screenshots/publish.png",
-  regenerate: "/screenshots/regenerate.png",
+  publish: "/publinkedinblog.png",
+  regenerate: "/regenerate.png",
   creditsfilters: "/screenshots/creditsfilters.png",
-  filterresults: "/screenshots/filterresults.png",
+  filterresults: "/filterresults.png",
   credits: "/screenshots/credits.png",
-  filter: "/screenshots/filter.png",
+  filter: "/filter.png",
   filterdemo: "/screenshots/filterdemo.png",
   filterresponse: "/screenshots/filterresponse.png",
   generateblogresponse: "/screenshots/generateblogresponse.png",
@@ -27,7 +31,7 @@ const imagesForScreenShots = {
   regeneratebutton: "/screenshots/regeneratebutton.png",
   customer: "/customer.png",
 };
-const teamDesktop = "/teamdesktop.svg";
+const teamDesktop = "/screenshots/teamworks.png";
 
 const AboutUsFeatures = [
   {
@@ -83,12 +87,60 @@ const LandingPage = () => {
       [name]: value,
     }));
   };
+  const handleSubmit = (e) => {
+    const URL = API_BASE_PATH + API_ROUTES.TEMP_USER;
+    e.preventDefault();
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    const body = {
+      name: userDetails.name,
+      email: userDetails.email,
+      topics: userDetails.interestedTopics,
+    };
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: JSON.stringify(body),
+    };
+    fetch(URL, requestOptions)
+      .then((response) => {
+        console.log(response);
+        return response.json();
+      })
+      .then((result) => {
+        console.log("RESULTS");
+        console.log(result);
+        const type = result.type;
+        const typeOFTypes = { success: "SUCCESS", error: "ERROR" };
+        if (type === typeOFTypes.success) {
+          toast.success(
+            "Thank you for your interest. We will get back to you soon."
+          );
+        } else {
+          type === typeOFTypes.error &&
+            toast.error("Something went wrong. Please try again later.");
+        }
+      });
+  };
+  const handleDemoClick = () => {
+    // check all fields are filled
+    const { name, email, interestedTopics } = userDetails;
+    if (
+      name.trim() !== "" &&
+      email.trim() !== "" &&
+      interestedTopics.trim() !== ""
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   return (
     <>
-    <div className='hidden xl:block'>
-      <SectionSpacer />
-    </div>
+      <div className="hidden xl:block">
+        <SectionSpacer />
+      </div>
       <div className="w-full h-[195px]    flex-col justify-start items-center gap-4 inline-flex">
         <div className="h-[81px] flex-col justify-start items-center gap-2 flex">
           <div className="w-full self-stretch text-center text-slate-800 text-2xl lg:text-[48px] font-bold leading-10">
@@ -165,11 +217,10 @@ const LandingPage = () => {
         <div className="lg:hidden w-[352.08px] h-[194.15px]">
           <img src={teamImage} alt="team" className="w-full h-full" />
         </div>
+        <div className="w-full h-[465.26px] hidden lg:flex items-center justify-center">
+          <img src={teamDesktop} alt="team" className="w-full h-full" />
+        </div>
       </div>
-      <div className="w-full h-[465.26px] hidden lg:flex items-center justify-center">
-        <img src={teamDesktop} alt="team" className="w-full h-full" />
-      </div>
-
       <div
         className="w-full h-full lg:p-20 relative  rounded-2xl shadow justify-center items-center flex flex-col pt-14 lg:py-14 lg:px-7"
         style={{
@@ -271,18 +322,7 @@ const LandingPage = () => {
           </div>
           <div className="w-[1179.31px] justify-start items-center gap-[117px] inline-flex">
             <div className="w-[578px] h-[430px] px-5 py-[1px] bg-white rounded-2xl  border border-gray-200 justify-center items-center flex">
-              <div className="w-[538px] h-[428px] relative bg-white rounded-lg flex-col justify-start items-start flex">
-                <img
-                  className="w-[375.17px] h-[215.34px] rounded-lg"
-                  src={imagesForScreenShots["credits"]}
-                />
-                <div className="w-[470px] h-[202px] px-[25.55px] py-[37.25px] bg-white rounded-lg shadow justify-center items-center inline-flex">
-                  <img
-                    className="w-[418.90px] h-[127.50px] rounded-lg"
-                    src={imagesForScreenShots["filter"]}
-                  />
-                </div>
-              </div>
+              <img src={imagesForScreenShots["filter"]} />
             </div>
             <div className="w-[484px] h-[430.03px] relative">
               {/* <div className="w-[430.03px] h-[430.03px] left-[430.03px] top-0 absolute origin-top-left rotate-180 origin-top-left bg-gradient-to-r from-fuchsia-100 to-purple-100 rounded-full" /> */}
@@ -325,34 +365,18 @@ const LandingPage = () => {
               </div>
             </div>
             <div className="w-[578px] h-[430px] px-5 py-[1px] bg-white rounded-2xl border   border-gray-200 justify-center items-center flex">
-              <div className="w-[538px] h-[428px] relative bg-white rounded-lg flex-col justify-start items-start flex">
-                <img
-                  className="w-[298.42px] h-[273.69px]"
-                  src={imagesForScreenShots["filter"]}
-                />
-                <div className="w-[470px] pl-[21.96px] pr-[22.03px] pt-[15.40px] pb-[11.74px] bg-white rounded-lg shadow justify-center items-center inline-flex">
-                  <img
-                    className="w-[426.01px] h-[270.86px]"
-                    src={imagesForScreenShots["filterresults"]}
-                  />
-                </div>
-              </div>
+              <img
+                className="w-[578px] h-[430px] rounded-2xl"
+                src={imagesForScreenShots["filterresults"]}
+              />
             </div>
           </div>
           <div className="justify-start items-center gap-[117px] inline-flex">
             <div className="w-[578px] h-[430px] px-[21px] py-[1px] bg-white rounded-2xl border border border border border-gray-200 justify-center items-center flex">
-              <div className="w-[536px] h-[428px] relative bg-white rounded-lg flex-col justify-start items-start flex">
-                <img
-                  className="w-[374.43px] h-[354.70px]"
-                  src={imagesForScreenShots["filterresults"]}
-                />
-                <div className="pl-[21.55px] pr-[18.41px] pt-[13.67px] pb-[11.40px] bg-white rounded-lg shadow justify-center items-center inline-flex">
-                  <img
-                    className="w-[157.63px] h-[50.93px] shadow"
-                    src={imagesForScreenShots["regeneratebutton"]}
-                  />
-                </div>
-              </div>
+              <img
+                className="w-[578px] h-[430px] rounded-2xl"
+                src={imagesForScreenShots["regenerate"]}
+              />
             </div>
             <div className="w-[484px] h-[430.03px] relative">
               {/* <div className="w-[430.03px] h-[430.03px] left-[430.03px] top-0 absolute  rotate-180 origin-top-left bg-gradient-to-r from-fuchsia-100 to-purple-100 rounded-full" /> */}
@@ -399,27 +423,9 @@ const LandingPage = () => {
             </div>
             <div className="w-[578px] h-[430px] relative bg-white rounded-2xl border border border border border-gray-200">
               <img
-                className="w-[357.21px] h-[306.82px] left-[16.42px] top-[9.57px] absolute rounded-lg shadow"
-                src={imagesForScreenShots["generateblogresponse"]}
+                className="w-full h-full rounded-2xl"
+                src={imagesForScreenShots["publish"]}
               />
-              <div className="w-[128.94px] h-[58.33px] pl-[5.85px] pr-[6.16px] py-[6.66px] left-[330px] top-[27px] absolute bg-white rounded-md shadow justify-center items-center inline-flex">
-                <img
-                  className="w-[116.93px] h-[45.02px]"
-                  src={imagesForScreenShots["publishbutton"]}
-                />
-              </div>
-              <div className="pl-2.5 pr-[14.47px] pt-[13.25px] pb-[15.45px] left-[189px] top-[173.87px] absolute bg-white rounded-lg shadow justify-start items-center inline-flex">
-                <img
-                  className="w-[264.53px] h-[223.30px] rounded-lg"
-                  src={imagesForScreenShots["generateresponse"]}
-                />
-              </div>
-              <div className="w-[153.24px] h-[44.66px] pl-[3.21px] pr-[4.08px] pt-[5.15px] pb-[4.72px] left-[412px] top-[197.87px] absolute bg-white rounded shadow justify-center items-center inline-flex">
-                <img
-                  className="w-[145.94px] h-[34.79px]"
-                  src={imagesForScreenShots["publishLinkedinbutton"]}
-                />
-              </div>
             </div>
           </div>
         </div>
@@ -643,31 +649,39 @@ const LandingPage = () => {
       </div>
       {/* testimonials */}
       <SectionSpacer />
-      <div className="hidden lg:block w-full h-[700px] relative bg-blue-50">
-        <div className="w-[324.03px] h-[324.03px] border  opacity-80 bg-pink-100 rounded-full blur-[145px]" />
-        <div className="flex-col justify-center items-center border flex">
-          <div className="flex-col justify-center items-center gap-3 flex border ">
-            <div className="text-center text-slate-800 text-[48px] font-medium leading-10 mt-20">
+      <div className="hidden lg:block w-full h-full py-14 relative bg-blue-50">
+        <div className="w-[324.03px] h-[324.03px] border absolute  opacity-80 bg-pink-100 rounded-full blur-[145px]" />
+        <div className="flex-col justify-center items-center flex">
+          <div className="flex-col justify-center items-center gap-3 flex  ">
+            <div className="text-center text-slate-800 text-[48px] font-medium leading-10 ">
               See what our customers say
             </div>
+            <div className="flex item-center justify-center gap-2">
+              {[1, 2, 3, 4, 5].map((item, index) => (
+                <StarIcon key={index} />
+              ))}
+            </div>
           </div>
-          {/* <Swiper
-            // install Swiper modules
-            modules={[Navigation, Pagination, Scrollbar, A11y]}
-            spaceBetween={50}
-            slidesPerView={3}
-            navigation
-            pagination={{ clickable: true }}
-            scrollbar={{ draggable: true }}
-            onSwiper={(swiper) => console.log(swiper)}
-            onSlideChange={() => console.log("slide change")}
-          >
-            <SwiperSlide>Slide 1</SwiperSlide>
-            <SwiperSlide>Slide 2</SwiperSlide>
-            <SwiperSlide>Slide 3</SwiperSlide>
-            <SwiperSlide>Slide 4</SwiperSlide>
-          </Swiper> */}
-          <div className="flex-col justify-start items-center gap-10 flex">
+
+          <div className="flex item-center justify-center mt-14">
+            <TestimonialUserCard
+              imageSrc={imagesForScreenShots["customer"]}
+              name="Lora Smith"
+              content={`I been impressed by the quality and relevance of the content at Lille. It has provided me with countless ideas, fresh perspectives, and of motivation to grow both personally and professionally. `}
+            />
+            <TestimonialUserCard
+              imageSrc={imagesForScreenShots["customer"]}
+              name="Lora Smith"
+              selected={true}
+              content={`I been impressed by the quality and relevance of the content at Lille. It has provided me with countless ideas, fresh perspectives, and of motivation to grow both personally and professionally. `}
+            />
+            <TestimonialUserCard
+              imageSrc={imagesForScreenShots["customer"]}
+              name="Lora Smith"
+              content={`I been impressed by the quality and relevance of the content at Lille. It has provided me with countless ideas, fresh perspectives, and of motivation to grow both personally and professionally. `}
+            />
+          </div>
+          <div className="flex-col justify-start items-center gap-10 flex mt-20">
             <div className="justify-start items-center gap-4 inline-flex">
               <div className="w-3.5 h-3.5 bg-indigo-600 rounded-full" />
               <div className="w-3.5 h-3.5 bg-indigo-200 rounded-full" />
@@ -788,8 +802,14 @@ const LandingPage = () => {
                   />
                 </label>
 
-                <button className="w-[378px] px-5 py-[15px] bg-indigo-600 rounded-lg justify-center items-center gap-2.5 inline-flex">
-                  <div className="text-white text-[18px] font-medium">Send</div>
+                <button
+                  className="w-[378px] px-5 py-[15px] bg-indigo-600 rounded-lg justify-center items-center gap-2.5 inline-flex disabled:opacity-50"
+                  onClick={handleSubmit}
+                  disabled={handleDemoClick}
+                >
+                  <span className="text-white text-[18px] font-medium">
+                    Send
+                  </span>
                 </button>
               </div>
             </div>
@@ -858,11 +878,15 @@ const LandingPage = () => {
                   placeholder="Enter email address"
                 />
               </label>
-              <div className="self-stretch px-[20.03px] py-[15.03px] bg-indigo-600 rounded-xl justify-center items-center gap-[10.02px] inline-flex">
-                <div className="text-white text-[18.0304012298584px] font-medium">
+              <button
+                disabled={handleDemoClick}
+                className="self-stretch px-[20.03px] disabled:opacity-50 py-[15.03px] bg-indigo-600 rounded-xl justify-center items-center gap-[10.02px] inline-flex"
+                onClick={handleSubmit}
+              >
+                <span className="text-white text-[18.0304012298584px] font-medium">
                   Send
-                </div>
-              </div>
+                </span>
+              </button>
             </div>
           </div>
         </div>
