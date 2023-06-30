@@ -10,6 +10,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import MoblieUnAuthFooter from "../LandingPage/MoblieUnAuthFooter";
+import TestimonialUserCard from "./TestimonialUserCard";
 const imagesForScreenShots = {
   home: "/screenshots/home.png",
   publish: "/screenshots/publish.png",
@@ -717,6 +718,13 @@ const LandingPage = () => {
             <SwiperSlide>Slide 3</SwiperSlide>
             <SwiperSlide>Slide 4</SwiperSlide>
           </Swiper> */}
+          <TestimonialUserCard
+            imageSrc={imagesForScreenShots["customer"]}
+            name="John Doe"
+            content={
+              ``
+            }
+          />
           <div className="flex-col justify-start items-center gap-10 flex">
             <div className="justify-start items-center gap-4 inline-flex">
               <div className="w-3.5 h-3.5 bg-indigo-600 rounded-full" />
