@@ -1,4 +1,4 @@
-import { STRIPE_PROMISE } from "@/constants";
+      import { STRIPE_PROMISE } from "@/constants";
 import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 import { addPreferances } from "@/graphql/mutations/addPreferances";
 import {
@@ -14,7 +14,7 @@ import {
   ArrowUpCircleIcon,
   AtSymbolIcon,
   CogIcon,
-  CreditCardIcon,
+  CreditCardIcon,     
   UserIcon,
 } from "@heroicons/react/20/solid";
 import { Elements } from "@stripe/react-stripe-js";
