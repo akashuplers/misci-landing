@@ -14,7 +14,7 @@ const MoblieUnAuthFooter = () => {
         <div className="flex flex-col justify-start items-start lg:flex-row ">
           <div className="w-full">
             <h6 className="mb-4 flex items-center lg:items-start  justify-start lg:justify-start font-semibold sss">
-              <img src="/lille_logo_new.png" className="h-6" alt="" />
+              <img src="/lille_logo_light.png" className="h-6" alt="" />
             </h6>
             <p className="text-left lg:text">
               Boost your engagement, increase your followers, and drive more
