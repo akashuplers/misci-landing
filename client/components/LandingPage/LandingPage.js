@@ -10,6 +10,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import MoblieUnAuthFooter from "../LandingPage/MoblieUnAuthFooter";
+import { StarIcon } from "../localicons/localicons";
 import TestimonialUserCard from "./TestimonialUserCard";
 const imagesForScreenShots = {
   home: "/screenshots/home.png",
@@ -648,15 +649,21 @@ const LandingPage = () => {
       </div>
       {/* testimonials */}
       <SectionSpacer />
-      <div className="hidden lg:block w-full h-[700px] relative bg-blue-50">
+      <div className="hidden lg:block w-full h-full py-14 relative bg-blue-50">
         <div className="w-[324.03px] h-[324.03px] border absolute  opacity-80 bg-pink-100 rounded-full blur-[145px]" />
-        <div className="flex-col justify-center items-center border flex">
-          <div className="flex-col justify-center items-center gap-3 flex border ">
-            <div className="text-center text-slate-800 text-[48px] font-medium leading-10 mt-20">
+        <div className="flex-col justify-center items-center flex">
+          <div className="flex-col justify-center items-center gap-3 flex  ">
+            <div className="text-center text-slate-800 text-[48px] font-medium leading-10 ">
               See what our customers say
             </div>
+            <div className="flex item-center justify-center gap-2">
+              {[1, 2, 3, 4, 5].map((item, index) => (
+                <StarIcon key={index} />
+              ))}
+            </div>
           </div>
-          <div className="flex item-center justify-center">
+
+          <div className="flex item-center justify-center mt-14">
             <TestimonialUserCard
               imageSrc={imagesForScreenShots["customer"]}
               name="Lora Smith"
@@ -665,6 +672,7 @@ const LandingPage = () => {
             <TestimonialUserCard
               imageSrc={imagesForScreenShots["customer"]}
               name="Lora Smith"
+              selected={true}
               content={`I been impressed by the quality and relevance of the content at Lille. It has provided me with countless ideas, fresh perspectives, and of motivation to grow both personally and professionally. `}
             />
             <TestimonialUserCard
@@ -673,7 +681,7 @@ const LandingPage = () => {
               content={`I been impressed by the quality and relevance of the content at Lille. It has provided me with countless ideas, fresh perspectives, and of motivation to grow both personally and professionally. `}
             />
           </div>
-          <div className="flex-col justify-start items-center gap-10 flex">
+          <div className="flex-col justify-start items-center gap-10 flex mt-20">
             <div className="justify-start items-center gap-4 inline-flex">
               <div className="w-3.5 h-3.5 bg-indigo-600 rounded-full" />
               <div className="w-3.5 h-3.5 bg-indigo-200 rounded-full" />
