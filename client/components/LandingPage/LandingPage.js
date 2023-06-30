@@ -73,13 +73,13 @@ const whyChoseus = [
     icon: "/featuresIcon/discovery.svg",
   },
 ];
-
+const initalState = {
+  name: "",
+  email: "",
+  interestedTopics: "",
+};
 const LandingPage = () => {
-  const [userDetails, setUserDetails] = useState({
-    name: "",
-    email: "",
-    interestedTopics: "",
-  });
+  const [userDetails, setUserDetails] = useState(initalState);
   const handleUserDetailsChange = (e) => {
     const { name, value } = e.target;
     setUserDetails((prevState) => ({
@@ -116,6 +116,7 @@ const LandingPage = () => {
           toast.success(
             "Thank you for your interest. We will get back to you soon."
           );
+          setUserDetails(initalState);
         } else {
           type === typeOFTypes.error &&
             toast.error("Something went wrong. Please try again later.");

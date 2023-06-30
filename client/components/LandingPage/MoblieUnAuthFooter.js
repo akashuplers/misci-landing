@@ -18,7 +18,7 @@ const MoblieUnAuthFooter = () => {
             </h6>
             <p className="text-left lg:text">
               Boost your engagement, increase your followers, and drive more
-              traffic to your website with optimized social media posts. 
+              traffic to your website with optimized social media posts.
             </p>
           </div>
           <div className="w-full flex flex-col items-start">
