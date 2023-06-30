@@ -16,6 +16,7 @@ export const API_ROUTES = {
   FORGOT_PASSWORD: "/auth/forgot-password",
   RESET_PASSWORD: "/auth/reset",
   GQL_PATH: "/graphql",
+  TEMP_USER: '/auth/request-trial'
 };
 
 export const LI_API_ENDPOINTS = {

@@ -2,7 +2,9 @@ import { useState } from "react";
 const logos = ["/Logo1", "/Logo2", "/Logo3", "/Logo4", "/Logo5"];
 
 // Import Swiper styles
+import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import { toast } from "react-toastify";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -83,12 +85,60 @@ const LandingPage = () => {
       [name]: value,
     }));
   };
+  const handleSubmit = (e) => {
+    const URL = API_BASE_PATH + API_ROUTES.TEMP_USER;
+    e.preventDefault();
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    const body = {
+      name: userDetails.name,
+      email: userDetails.email,
+      topics: userDetails.interestedTopics,
+    };
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: JSON.stringify(body),
+    };
+    fetch(URL, requestOptions)
+      .then((response) => {
+        console.log(response);
+        return response.json();
+      })
+      .then((result) => {
+        console.log("RESULTS");
+        console.log(result);
+        const type = result.type;
+        const typeOFTypes = { success: "SUCCESS", error: "ERROR" };
+        if (type === typeOFTypes.success) {
+          toast.success(
+            "Thank you for your interest. We will get back to you soon."
+          );
+        } else {
+          type === typeOFTypes.error &&
+            toast.error("Something went wrong. Please try again later.");
+        }
+      });
+  };
+  const handleDemoClick = () => {
+    // check all fields are filled
+    const { name, email, interestedTopics } = userDetails;
+    if (
+      name.trim() !== "" &&
+      email.trim() !== "" &&
+      interestedTopics.trim() !== ""
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   return (
     <>
-    <div className='hidden xl:block'>
-      <SectionSpacer />
-    </div>
+      <div className="hidden xl:block">
+        <SectionSpacer />
+      </div>
       <div className="w-full h-[195px]    flex-col justify-start items-center gap-4 inline-flex">
         <div className="h-[81px] flex-col justify-start items-center gap-2 flex">
           <div className="w-full self-stretch text-center text-slate-800 text-2xl lg:text-[48px] font-bold leading-10">
@@ -788,8 +838,14 @@ const LandingPage = () => {
                   />
                 </label>
 
-                <button className="w-[378px] px-5 py-[15px] bg-indigo-600 rounded-lg justify-center items-center gap-2.5 inline-flex">
-                  <div className="text-white text-[18px] font-medium">Send</div>
+                <button
+                  className="w-[378px] px-5 py-[15px] bg-indigo-600 rounded-lg justify-center items-center gap-2.5 inline-flex disabled:opacity-50"
+                  onClick={handleSubmit}
+                  disabled={handleDemoClick}
+                >
+                  <span className="text-white text-[18px] font-medium">
+                    Send
+                  </span>
                 </button>
               </div>
             </div>
@@ -858,11 +914,15 @@ const LandingPage = () => {
                   placeholder="Enter email address"
                 />
               </label>
-              <div className="self-stretch px-[20.03px] py-[15.03px] bg-indigo-600 rounded-xl justify-center items-center gap-[10.02px] inline-flex">
-                <div className="text-white text-[18.0304012298584px] font-medium">
+              <button
+                disabled={handleDemoClick}
+                className="self-stretch px-[20.03px] disabled:opacity-50 py-[15.03px] bg-indigo-600 rounded-xl justify-center items-center gap-[10.02px] inline-flex"
+                onClick={handleSubmit}
+              >
+                <span className="text-white text-[18.0304012298584px] font-medium">
                   Send
-                </div>
-              </div>
+                </span>
+              </button>
             </div>
           </div>
         </div>
