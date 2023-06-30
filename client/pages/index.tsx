@@ -437,7 +437,7 @@ export default function Home() {
               )}
               <AIInputComponent />
               <div
-                className="w-screen h-[200px]"
+                className="w-[80%] absolute top-[500px] lg:top-[350px] h-[200px] inset-x-0 -z-10"
                 style={{
                   background:
                     "linear-gradient(265deg, #C3DDFF 38%, #FFF5E3 61%)",
