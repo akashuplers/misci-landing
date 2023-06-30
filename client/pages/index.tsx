@@ -397,8 +397,8 @@ export default function Home() {
             </svg>
           </div>
           <div className="mx-auto max-w-screen-xl flex flex-col pt-32 lg:py-20">
-            <div className="mx-auto max-w-3xl text-center min-h-screen">
-              <div className="flex text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
+            <div className="mx-auto max-w-3xl text-center h-screen xl:h-full">
+              <div className="relative flex text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
                 Generate & Optimize{" "}
                 <TextTransition
                   springConfig={presets.gentle}
@@ -436,8 +436,15 @@ export default function Home() {
                 </div>
               )}
               <AIInputComponent />
+              <div
+                className="w-screen h-[200px]"
+                style={{
+                  background:
+                    "linear-gradient(265deg, #C3DDFF 38%, #FFF5E3 61%)",
+                  filter: "blur(80px)",
+                }}
+              ></div>
             </div>
-
             {!isAuthenticated && <LandingPage />}
           </div>
           {/* <div className="absolute inset-x-0 top-[calc(100%-12rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
