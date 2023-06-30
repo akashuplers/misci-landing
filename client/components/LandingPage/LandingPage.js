@@ -116,7 +116,7 @@ const LandingPage = () => {
           toast.success(
             "Thank you for your interest. We will get back to you soon."
           );
-          setUserDetails(initalState);
+          // setUserDetails(initalState);
         } else {
           type === typeOFTypes.error &&
             toast.error("Something went wrong. Please try again later.");
@@ -806,7 +806,7 @@ const LandingPage = () => {
                 <button
                   className="w-[378px] px-5 py-[15px] bg-indigo-600 rounded-lg justify-center items-center gap-2.5 inline-flex disabled:opacity-50"
                   onClick={handleSubmit}
-                  disabled={handleDemoClick}
+                  // disabled={handleDemoClick}
                 >
                   <span className="text-white text-[18px] font-medium">
                     Send
@@ -880,7 +880,7 @@ const LandingPage = () => {
                 />
               </label>
               <button
-                disabled={handleDemoClick}
+                // disabled={handleDemoClick}
                 className="self-stretch px-[20.03px] disabled:opacity-50 py-[15.03px] bg-indigo-600 rounded-xl justify-center items-center gap-[10.02px] inline-flex"
                 onClick={handleSubmit}
               >
