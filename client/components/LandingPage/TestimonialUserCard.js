@@ -1,9 +1,17 @@
 import Image from "next/image";
 
- const TestimonialUserCard = ({ imageSrc, name, content }) => {
+const TestimonialUserCard = ({ imageSrc, name, content, selected = false }) => {
   return (
-    <div className="w-[451px] h-[356px] left-[847px] top-[22px] absolute opacity-60 flex-col justify-center items-center inline-flex">
-      <div className="h-[284px] px-10 pt-[50px] pb-[90px] rounded-lg flex-col justify-start items-center gap-6 flex">
+    <div
+      className={`${
+        !selected ? "opacity-60" : ""
+      } flex-col justify-center items-center inline-flex`}
+    >
+      <div
+        className={`${
+          selected ? "bg-blue-700" : ""
+        }px-10 pt-[50px] pb-[90px] rounded-lg flex-col justify-start items-center gap-6 flex`}
+      >
         <div className="w-6 h-6 relative" />
         <div className="self-stretch h-24 flex-col justify-center items-start gap-6 flex">
           <div className="self-stretch opacity-70 text-center text-black text-[16px] font-normal leading-normal">
