@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { ToastContainer, toast } from "react-toastify";
 import BlogListItem from "../components/BlogListItem";
-import { BottomTabBar } from '../components/BottomTabBar';
+import { BottomTabBar } from "../components/BottomTabBar";
 import Layout from "../components/Layout";
 import LoaderScan from "../components/LoaderScan";
 import Pagination from "../components/Pagination";
@@ -74,7 +74,7 @@ export default function Saved() {
         },
       },
     })
-      .then(() => { })
+      .then(() => {})
       .catch((err) => {
         console.log(err);
       })
@@ -117,17 +117,23 @@ export default function Saved() {
             >
               {data?.getAllBlogs.blogs.map((blog, index) => (
                 <>
-                  <BlogListItem blog={blog} setblog_id={setblog_id} setOpenModal={setOpenModal} index={index} type={'saved'} />
+                  <BlogListItem
+                    blog={blog}
+                    setblog_id={setblog_id}
+                    setOpenModal={setOpenModal}
+                    index={index}
+                    type={"saved"}
+                  />
                 </>
               ))}
             </ul>
-            <div className="hidden lg:block"
-            > <Pagination
+            <div className="hidden lg:block">
+              {" "}
+              <Pagination
                 totalItems={data?.getAllBlogs.count}
                 pageSkip={pageSkip}
                 setPageSkip={setPageSkip}
               />
-
             </div>
             <div className="flex lg:hidden">
               <BottomTabBar />
