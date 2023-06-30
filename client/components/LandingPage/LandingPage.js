@@ -1,6 +1,13 @@
 import { useState } from "react";
-
 const logos = ["/Logo1", "/Logo2", "/Logo3", "/Logo4", "/Logo5"];
+
+// Import Swiper styles
+import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/scrollbar";
+import MoblieUnAuthFooter from "../LandingPage/MoblieUnAuthFooter";
 const imagesForScreenShots = {
   home: "/screenshots/home.png",
   publish: "/screenshots/publish.png",
@@ -20,27 +27,46 @@ const imagesForScreenShots = {
   regeneratebutton: "/screenshots/regeneratebutton.png",
   customer: "/customer.png",
 };
+const teamDesktop = "/teamdesktop.svg";
 
+const AboutUsFeatures = [
+  {
+    title: "80%",
+    description: `Time reduced on 1st Drafts`,
+  },
+  {
+    title: "40%",
+    description: `Increase in social media followers`,
+  },
+  {
+    title: "10X",
+    description: `Return on Investment using Lille`,
+  },
+];
 const welcomeImage = "/welcome.svg";
 const lilleLogo = "/lille_logo_new.png";
 const teamImage = "/team.svg";
 const whyChoseus = [
   {
-    title: "SEO optimization",
-    description: `We have implemented search engine optimization, such as
-  using meta tags, alt tags for images, and ensuring the
-  website's loading speed is fast`,
+    title: "Automated Backlinking",
+    description: `Lille.ai isn't just a content generation tool, it's a powerful partner in your SEO strategy. By leveraging existing URLs on your website, Lille.ai automates the process of backlinking, saving you time and boosting your SEO performance. `,
+    icon: "/featuresIcon/backlinking.svg",
   },
   {
-    title: `Social media integration`,
-    description: `We have included social media share buttons to encourage users to easily share your blog posts on their preferred social
-   platforms.`,
+    title: `Content Generation from Various Formats`,
+    description: `Lille.ai isn't just a content generation tool, it's a powerful partner in your SEO strategy. By leveraging existing URLs on your website, Lille.ai automates the process of backlinking, saving you time and boosting your SEO performance.`,
+    icon: "/featuresIcon/formats.svg",
+  },
+
+  {
+    title: `Tailored Social Media Posts`,
+    description: `With Lille.ai, you can supercharge your social media presence. The tool generates and optimizes post ideas for Blogs, Twitter and LinkedIn, tailored to your brand and audience. This can lead to increased engagement, more followers, and more traffic to your website.`,
+    icon: "/featuresIcon/tailored.svg",
   },
   {
-    title: `Customization options`,
-    description: `We have provided users with the ability to customize their
-    experience on the website, such as choosing their preferred
-    font size, color theme, etc.`,
+    title: "Trending Topic Discovery",
+    description: `Stay ahead of the curve with Lille.ai's ability to discover trending topics relevant to your brand and audience. This helps you create content that resonates with your audience and keeps them coming back for more.`,
+    icon: "/featuresIcon/discovery.svg",
   },
 ];
 
@@ -60,9 +86,12 @@ const LandingPage = () => {
 
   return (
     <>
-      <div className="w-full h-[195px]  flex-col justify-start items-center gap-4 inline-flex">
+    <div className='hidden xl:block'>
+      <SectionSpacer />
+    </div>
+      <div className="w-full h-[195px]    flex-col justify-start items-center gap-4 inline-flex">
         <div className="h-[81px] flex-col justify-start items-center gap-2 flex">
-          <div className="w-full self-stretch text-center text-slate-800 text-[48px] font-bold leading-10">
+          <div className="w-full self-stretch text-center text-slate-800 text-2xl lg:text-[48px] font-bold leading-10">
             Our Clients
           </div>
           <div className="w-full self-stretch text-center">
@@ -88,67 +117,68 @@ const LandingPage = () => {
       </div>
       {/* ABOUT US */}
       <SectionSpacer />
-      <div className="relative bg-gradient-to-b from-violet-50 to-violet-50 py-20 lg:min-h-screen">
-        <div className="flex lg:flex-row flex-col mx-auto max-w-5xl items-center justify-center">
-          <div className="lg:w-[50%] flex flex-col items-center justify-center lg:block">
-            <div className="w-full justify-start items-center">
+      <div className="relative bg-gradient-to-b from-violet-50 to-violet-50 pt-20">
+        <div className="flex lg:flex-row flex-col mx-auto max-w-5xl items-center justify-center lg:justify-between">
+          <div className="lg:w-[40%] flex flex-col lg:gap-16 items-center justify-center lg:justify-between lg:block">
+            <div className="w-full flex-col justify-start items-center ">
               {/* <div className="w-[50%] h-0.5 bg-indigo-600" /> */}
-              <div className="h-14 text-slate-800 text-[48px] text-center lg:text-start font-bold leading-10">
+              <div className="h-14 text-slate-800  text-2xl lg:text-5xl text-center lg:text-start font-bold leading-10">
                 About us
               </div>
             </div>
             <div className="opacity-70  text-center lg:text-start text-slate-600 text-[16px] font-normal leading-7">
-              {`We understand that consistently coming up with new ideas can be
-              challenging, especially for busy individuals or businesses
-              juggling multiple responsibilities. That's where we come in - let
-              us take care of the creative process while you focus on other
-              aspects of your work.`}
+              {`Lille is your secret weapon for automating backlinking by leveraging existing URLs on your website. Plus, it can read word documents, text files, and PDFs to generate fresh, engaging content.`}
             </div>
-            <div className="pl-[30px] pr-6 py-[17px] lg:w-full w-[50%]  rounded-lg shadow border  border-indigo-600 justify-center items-center gap-2.5 flex">
-              <div className="text-indigo-600 text-[18px]   font-medium">
+            <button className="pl-[30px] pr-6 py-[17px] mt-9 lg:w-full  rounded-lg shadow border  border-indigo-600 justify-center items-center gap-2.5 flex">
+              <span className="text-indigo-600 text-[18px] font-semibold">
                 Start for free
-              </div>
-            </div>
+              </span>
+              <ArrowRightIcon className="w-5 h-5 text-indigo-600" />
+            </button>
           </div>
           <div className="lg:hidden">
             <SectionSpacer />
           </div>
-          <div className="mt-20 lg:mt-0 flex justify-center  items-center gap-14 lg:gap-[100px]">
-            <div className="flex-col justify-start items-center inline-flex">
-              <div className="text-slate-600 text-[18px] font-normal uppercase leading-loose tracking-wider">
-                Partners
-              </div>
-              <div className="text-slate-800 text-[48px] font-extrabold leading-10">
-                1000
-              </div>
-            </div>
-            <div className="flex-col justify-start items-center inline-flex">
-              <div className="text-slate-600 text-[18px] font-normal uppercase leading-loose tracking-wider">
-                clients
-              </div>
-              <div className="text-slate-800 text-[48px] font-extrabold leading-10">
-                150k
-              </div>
+          <div className="mt-20 lg:mt-0 flex lg:flex-row flex-col justify-center  items-center gap-14 lg:gap-[100px]">
+            <div className="flex-col lg:flex-row justify-start items-center inline-flex gap-10 lg:gap-0">
+              {AboutUsFeatures.map((feature) => {
+                return (
+                  <div
+                    className="flex items-center justify-center flex-col"
+                    key={feature.title}
+                  >
+                    <div className="text-indigo-600 text-6xl uppercase font-extrabold leading-10">
+                      {feature.title}
+                    </div>
+                    <div className="text-lg text-slate-600 lg:text-center lg:items-center">
+                      {feature.description}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
           {/* teamImage */}
         </div>
         {/* randm div with height 40% of parrent */}
         {/* why chose us */}
-        <div className='"w-[783.88px] h-[465.26px]'>
+        <div className="lg:hidden w-[352.08px] h-[194.15px]">
           <img src={teamImage} alt="team" className="w-full h-full" />
         </div>
       </div>
-      <SectionSpacer />
+      <div className="w-full h-[465.26px] hidden lg:flex items-center justify-center">
+        <img src={teamDesktop} alt="team" className="w-full h-full" />
+      </div>
+
       <div
-        className="w-full lg:h-[700px] lg:p-20 relative  rounded-2xl shadow justify-center items-center flex flex-col pt-14 lg:pt-0"
+        className="w-full h-full lg:p-20 relative  rounded-2xl shadow justify-center items-center flex flex-col pt-14 lg:py-14 lg:px-7"
         style={{
           backgroundImage: "linear-gradient(138deg, #4A3AFE 0%, #6883FF 100%)",
         }}
       >
         <div className="h-[136px] flex-col justify-center items-center gap-6 inline-flex lg:px-0 px-2">
           <div className="self-stretch h-14 text-center text-white text-[28px] lg:text-[48px] font-bold leading-10 tracking-wide">
-            Why Choose Us
+            Remarkable Features
           </div>
           <div className="lg:w-[803.89px] opacity-80 text-center text-white text-[16px] font-normal leading-7 tracking-wide">
             Lille is a unique platform dedicated to enriching your online
@@ -156,15 +186,22 @@ const LandingPage = () => {
             content and interactive discussions.
           </div>
         </div>
-        <div className="border py-[64.05px] bg-white mt-10 rounded-2xl shadow justify-center items-center inline-flex">
+        <div
+          className="border py-[64.05px] bg-white mt-10 rounded-2xl shadow justify-center items-center inline-flex lg:py-11 px-7"
+          style={{
+            background: "#fff",
+            boxShadow: "0px 10px 20px 0px rgba(0, 0, 0, 0.20)",
+          }}
+        >
           <div className="self-stretch justify-around  items-center gap-4 lg:gap-[38px] flex lg:flex-row flex-col">
             {whyChoseus.map((item) => {
               return (
                 <div
                   key={item.title}
-                  className="lg:w-[30%] flex-col justify-start items-center gap-5 inline-flex"
+                  className="flex-col justify-start items-center gap-5 inline-flex"
                 >
-                  <div className="self-stretch h-[156px] flex-col justify-start items-center gap-3 flex">
+                  <div className="self-stretch h-full flex-col justify-start items-center gap-3 flex">
+                    <img src={item.icon} className="w-12 h-12" />
                     <div className="self-stretch text-center text-slate-800 text-[24px] font-medium leading-9">
                       {item.title}
                     </div>
@@ -196,8 +233,8 @@ const LandingPage = () => {
             </span>
           </div>
           <div className="opacity-70 text-center text-slate-600 text-[16px] font-normal leading-7">
-            One-stop destination for empowering ideas, inspiring stories, and
-            thought-provoking perspectives!
+            Boost your engagement, increase your followers, and drive more
+            traffic to your website with optimized social media posts.
           </div>
         </div>
         <div className="flex-col justify-start items-start gap-10 flex">
@@ -607,95 +644,30 @@ const LandingPage = () => {
       {/* testimonials */}
       <SectionSpacer />
       <div className="hidden lg:block w-full h-[700px] relative bg-blue-50">
-        <div className="w-[324.03px] h-[324.03px] left-[-195.14px] top-[374.12px] absolute opacity-80 bg-pink-100 rounded-full blur-[145px]" />
-        <div className="flex-col justify-start items-center gap-[60px] inline-flex">
-          <div className="flex-col justify-start items-center gap-3 flex">
+        <div className="w-[324.03px] h-[324.03px] border  opacity-80 bg-pink-100 rounded-full blur-[145px]" />
+        <div className="flex-col justify-center items-center border flex">
+          <div className="flex-col justify-center items-center gap-3 flex border ">
             <div className="text-center text-slate-800 text-[48px] font-medium leading-10 mt-20">
               See what our customers say
             </div>
-            {/* <div className="justify-start items-start gap-3 inline-flex">
-              <div className="w-6 h-6 relative" />
-              <div className="w-6 h-6 relative" />
-              <div className="w-6 h-6 relative" />
-              <div className="w-6 h-6 relative" />
-              <div className="w-6 h-6 relative" />
-            </div> */}
           </div>
+          {/* <Swiper
+            // install Swiper modules
+            modules={[Navigation, Pagination, Scrollbar, A11y]}
+            spaceBetween={50}
+            slidesPerView={3}
+            navigation
+            pagination={{ clickable: true }}
+            scrollbar={{ draggable: true }}
+            onSwiper={(swiper) => console.log(swiper)}
+            onSlideChange={() => console.log("slide change")}
+          >
+            <SwiperSlide>Slide 1</SwiperSlide>
+            <SwiperSlide>Slide 2</SwiperSlide>
+            <SwiperSlide>Slide 3</SwiperSlide>
+            <SwiperSlide>Slide 4</SwiperSlide>
+          </Swiper> */}
           <div className="flex-col justify-start items-center gap-10 flex">
-            <div className="w-[1298px] h-[378px] relative">
-              <div className="w-[451px] h-[356px] left-0 top-[22px] absolute opacity-60 flex-col justify-center items-center inline-flex">
-                <div className="h-[284px] px-10 pt-[50px] pb-[90px] rounded-lg flex-col justify-start items-center gap-6 flex">
-                  <div className="w-6 h-6 relative" />
-                  <div className="self-stretch h-24 flex-col justify-center items-start gap-6 flex">
-                    <div className="self-stretch opacity-70 text-center text-black text-[16px] font-normal leading-normal">
-                      I been impressed by the quality and relevance of the
-                      content at Lille. It has provided me with countless ideas,
-                      fresh perspectives, and of motivation to grow both
-                      personally and professionally.{" "}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex-col justify-start items-center gap-2 flex">
-                  <div className="w-[90px] h-[90px] justify-center items-center inline-flex">
-                    <img
-                      className="w-[90px] h-[90px] rounded-full"
-                      src={imagesForScreenShots["customer"]}
-                    />
-                  </div>
-                  <div className="text-zinc-800 text-[16px] font-semibold">
-                    Lora Smith{" "}
-                  </div>
-                </div>
-              </div>
-              <div className="w-[451px] h-[356px] left-[847px] top-[22px] absolute opacity-60 flex-col justify-center items-center inline-flex">
-                <div className="h-[284px] px-10 pt-[50px] pb-[90px] rounded-lg flex-col justify-start items-center gap-6 flex">
-                  <div className="w-6 h-6 relative" />
-                  <div className="self-stretch h-24 flex-col justify-center items-start gap-6 flex">
-                    <div className="self-stretch opacity-70 text-center text-black text-[16px] font-normal leading-normal">
-                      I been impressed by the quality and relevance of the
-                      content at Lille. It has provided me with countless ideas,
-                      fresh perspectives, and of motivation to grow both
-                      personally and professionally.{" "}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex-col justify-start items-center gap-2 flex">
-                  <div className="w-[90px] h-[90px] justify-center items-center inline-flex">
-                    <img
-                      className="w-[90px] h-[90px] rounded-full"
-                      src={imagesForScreenShots["customer"]}
-                    />
-                  </div>
-                  <div className="text-zinc-800 text-[16px] font-semibold">
-                    Lora Smith{" "}
-                  </div>
-                </div>
-              </div>
-              <div className="w-[451px] h-[348px] left-[422px] top-0 absolute flex-col justify-center items-center inline-flex">
-                <div className="h-[276px] px-6 pt-[50px] pb-[90px] bg-indigo-600 rounded-lg flex-col justify-start items-center gap-6 flex">
-                  <div className="w-6 h-6 relative" />
-                  <div className="self-stretch h-[88px] flex-col justify-center items-start gap-6 flex">
-                    <div className="w-[403px] text-center text-white text-[16px] font-normal leading-snug">
-                      I been impressed by the quality and relevance of the
-                      content at Lille. It has provided me with countless ideas,
-                      fresh perspectives, and of motivation to grow both
-                      personally and professionally.{" "}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex-col justify-start items-center gap-2 flex">
-                  <div className="w-[90px] h-[90px] justify-center items-center inline-flex">
-                    <img
-                      className="w-[90px] h-[90px] rounded-full border border-white"
-                      src={imagesForScreenShots["customer"]}
-                    />
-                  </div>
-                  <div className="text-zinc-800 text-[16px] font-semibold">
-                    Lora Smith{" "}
-                  </div>
-                </div>
-              </div>
-            </div>
             <div className="justify-start items-center gap-4 inline-flex">
               <div className="w-3.5 h-3.5 bg-indigo-600 rounded-full" />
               <div className="w-3.5 h-3.5 bg-indigo-200 rounded-full" />
@@ -753,16 +725,16 @@ const LandingPage = () => {
       </div>
       {/* demo */}
       <SectionSpacer />
-      <div className="hidden  lg:flex items-center justify-center w-full h-full">
-        <div className="w-full h-[600px] pl-[46px] pr-[97px] py-[51px] bg-white rounded-2xl shadow justify-start items-center gap-[101px] inline-flex">
-          <div className="w-[430px] h-[498px] relative bg-gradient-to-br from-indigo-600 to-indigo-400 rounded-lg flex-col justify-start items-start flex">
-            <div className="justify-start items-center gap-1 inline-flex">
+      <div className="hidden  lg:flex items-center justify-center w-full h-full border ">
+        <div className="w-full p-10 bg-white rounded-2xl shadow justify-center items-center gap-[101px] flex">
+          <div className="relative bg-gradient-to-br from-indigo-600 to-indigo-400 rounded-lg flex-col justify-start items-start flex">
+            <div className="justify-center w-full items-center gap-1 inline-flex">
               <div className="text-slate-800 text-[32px] font-bold leading-10">
                 Welcome to{" "}
               </div>
               <img className="w-[89.43px] h-[44.81px]" src={lilleLogo} />
             </div>
-            <div className="w-[497.21px] h-[320.26px] relative">
+            <div className="w-[497.21px] relative">
               <img className="w-full h-full" src={welcomeImage} />
             </div>
           </div>
@@ -772,9 +744,9 @@ const LandingPage = () => {
                 Request a free demo
               </div>
             </div>
-            <div className="w-[377px] h-[388px] relative ">
-              <div className="w-[262px] h-[189px] flex-col justify-start items-start gap-[51px] inline-flex">
-                <label for="email">
+            <div className=" relative ">
+              <div className=" flex-col justify-start items-start gap-[51px] inline-flex">
+                <label for="email" className="w-full">
                   <p className="font-medium text-slate-700 pb-2 p-2">Name</p>
                   <input
                     id="name"
@@ -786,7 +758,7 @@ const LandingPage = () => {
                     placeholder="e.g John Doe"
                   />
                 </label>
-                <label for="email">
+                <label for="email" className="w-full">
                   <p className="font-medium text-slate-700 pb-2 p-2">
                     Email address
                   </p>
@@ -800,7 +772,7 @@ const LandingPage = () => {
                     placeholder="e.g john@adesign.guy"
                   />
                 </label>
-                <label htmlFor="interestedTopics">
+                <label className="w-full" htmlFor="interestedTopics">
                   <p className="font-medium text-slate-700 pb-2 p-2">
                     What topics are you most interested in?
                   </p>
@@ -896,6 +868,7 @@ const LandingPage = () => {
         </div>
       </div>
       {/* footer */}
+      <MoblieUnAuthFooter />
     </>
   );
 };
