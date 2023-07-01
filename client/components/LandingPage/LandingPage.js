@@ -1,9 +1,16 @@
 import { useState } from "react";
 const logos = ["/Logo1", "/Logo2", "/Logo3", "/Logo4", "/Logo5"];
 
+// Import Swiper React components
+import { Swiper, SwiperSlide } from "swiper/react";
+
+// import required modules
+import { Pagination } from "swiper";
+
 // Import Swiper styles
 import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import Image from "next/image";
 import { toast } from "react-toastify";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -228,7 +235,7 @@ const LandingPage = () => {
           </div>
         </div>
         <div
-          className="border py-[64.05px] bg-white mt-10 rounded-2xl shadow justify-center items-center inline-flex lg:py-11 px-7"
+          className="hidden lg:flex border py-[64.05px] bg-white mt-10 rounded-2xl shadow justify-center items-center lg:py-11 px-7"
           style={{
             background: "#fff",
             boxShadow: "0px 10px 20px 0px rgba(0, 0, 0, 0.20)",
@@ -255,8 +262,41 @@ const LandingPage = () => {
             })}
           </div>
         </div>
-        {/* <div className="w-[331.87px] h-[477.56px] origin-top-left rotate-[-53.85deg] opacity-60 bg-purple-500 rounded-full blur-[145px]" /> */}
-        {/* <div className="w-[266.57px] h-[383.59px] origin-top-left rotate-[-53.85deg] opacity-60 bg-purple-500 rounded-full blur-[145px]" /> */}
+        <Swiper
+          pagination={true}
+          modules={[Pagination]}
+          className="lg:hidden w-full border py-[64.05px] bg-white mt-10 rounded-2xl shadow justify-center items-center inline-flex p-7 lg:p-0 lg:py-11 "
+          style={{
+            background: "#fff",
+            boxShadow: "0px 10px 20px 0px rgba(0, 0, 0, 0.20)",
+          }}
+        >
+          <div className="max-w-screen justify-around  items-center gap-4 lg:gap-[38px] flex lg:flex-row flex-col">
+            {whyChoseus.map((item) => {
+              return (
+                <SwiperSlide
+                  key={item.title}
+                  className="flex-col justify-start items-center gap-5 inline-flex px-9 py-10"
+                >
+                  <div className="self-stretch h-full flex-col justify-start items-center gap-3 flex">
+                    <Image
+                      src={item.icon}
+                      alt={item.title}
+                      width={48}
+                      height={48}
+                    />
+                    <div className="self-stretch text-center text-slate-800 text-[24px] font-medium leading-9">
+                      {item.title}
+                    </div>
+                    <div className="self-stretch opacity-80 text-center text-slate-600 text-[16px] font-normal leading-7">
+                      {item.description}
+                    </div>
+                  </div>
+                </SwiperSlide>
+              );
+            })}
+          </div>
+        </Swiper>
       </div>
       <SectionSpacer />
       <div className="hidden w-full h-[2465.15px] text-center lg:px-[130px] flex-col justify-start items-center gap-5 lg:gap-[60px] lg:flex">
@@ -878,7 +918,6 @@ const LandingPage = () => {
                 />
               </label>
               <button
-                // disabled={handleDemoClick}
                 className="self-stretch px-[20.03px] disabled:opacity-50 py-[15.03px] bg-indigo-600 rounded-xl justify-center items-center gap-[10.02px] inline-flex"
                 onClick={handleSubmit}
               >
