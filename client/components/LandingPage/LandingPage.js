@@ -18,7 +18,6 @@ import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import MoblieUnAuthFooter from "../LandingPage/MoblieUnAuthFooter";
 import { QuoteOpen, StarIcon } from "../localicons/localicons";
-import TestimonialUserCard from "./TestimonialUserCard";
 const imagesForScreenShots = {
   home: "/screenshots/home.png",
   publish: "/publinkedinblog.png",
@@ -187,7 +186,7 @@ const LandingPage = () => {
             "Thank you for your interest. We will get back to you soon."
           );
         } else {
-          type === typeOFTypes.error && toast.error(error.message);
+          type === typeOFTypes.error && toast.error(result.message);
         }
       });
   };
@@ -255,13 +254,13 @@ const LandingPage = () => {
               {AboutUsFeatures.map((feature) => {
                 return (
                   <div
-                    className="flex items-center justify-center flex-col"
+                    className="flex items-center gap-2 justify-center flex-col"
                     key={feature.title}
                   >
-                    <div className="text-indigo-600 text-6xl uppercase font-extrabold leading-10">
+                    <div className="text-indigo-600 text-[60px] lg:text-6xl uppercase font-extrabold leading-10">
                       {feature.title}
                     </div>
-                    <div className="text-lg text-slate-600 lg:text-center lg:items-center">
+                    <div className="text-slate-600 text-[18px] lg:text-lg text-slate-600 lg:text-center lg:items-center">
                       {feature.description}
                     </div>
                   </div>
@@ -288,7 +287,8 @@ const LandingPage = () => {
       >
         <div className="h-[136px] flex-col justify-center items-center gap-6 inline-flex lg:px-0 px-2">
           <div className="self-stretch h-14 text-center text-white text-[28px] lg:text-[48px] font-bold leading-10 tracking-wide">
-            Remarkable Features
+           <span className="hidden lg:block"> Remarkable Features </span>
+<span className="lg:hidden text-[28px]"> Why Choose Us</span>
           </div>
           <div className="lg:w-[803.89px] opacity-80 text-center text-white text-[16px] font-normal leading-7 tracking-wide">
             Lille is a unique platform dedicated to enriching your online
@@ -593,62 +593,62 @@ const LandingPage = () => {
           </div>
         </div>
 
- <>
-      <Swiper
-        spaceBetween={30}
-        pagination={{
-          clickable: true,
-        }}
-          slidesPerView={1}
-  breakpoints={{
-    640: {
-      slidesPerView: 2
-    },
-    1024: {
-      slidesPerView: 3
-    }
- 
-  }}
-        modules={[Pagination]}
-        className="mySwiper bg-white mt-10 rounded-2xl shadow justify-center items-center inline-flex" style={{paddingBottom: '2rem'}}
-      >
- {testimonialData.map((user) => (
-            <SwiperSlide
-              key={user.name} // Add a unique key for each slide
-              className="flex-col relative justify-center items-center flex h-full "
-            >
-              <div className=" h-full py-10 px-8 bg-indigo-600 rounded-lg flex-col justify-start items-center gap-6 flex">
-                <div className="flex flex-col justify-center items-center gap-6">
-                  <span className="text-white">
-                    <QuoteOpen />
-                  </span>
-                  <p className="text-center text-white text-[16px] font-normal leading-snug">
-                    {user.message}
-                  </p>
+        <>
+          <Swiper
+            spaceBetween={30}
+            pagination={{
+              clickable: true,
+            }}
+            slidesPerView={1}
+            breakpoints={{
+              640: {
+                slidesPerView: 2
+              },
+              1024: {
+                slidesPerView: 3
+              }
+
+            }}
+            modules={[Pagination]}
+            className="mySwiper bg-white mt-10 rounded-2xl shadow justify-center items-center inline-flex" style={{ paddingBottom: '2rem' }}
+          >
+            {testimonialData.map((user) => (
+              <SwiperSlide
+                key={user.name} // Add a unique key for each slide
+                className="flex-col relative justify-center items-center flex h-full "
+              >
+                <div className=" h-full py-10 px-8 bg-indigo-600 rounded-lg flex-col justify-start items-center gap-6 flex">
+                  <div className="flex flex-col justify-center items-center gap-6">
+                    <span className="text-white">
+                      <QuoteOpen />
+                    </span>
+                    <p className="text-center text-white text-[16px] font-normal leading-snug">
+                      {user.message}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex-col h-full justify-start items-center gap-2 flex" style={{
-                marginTop :'2rem'
-              }}>
-                <div className="w-[90px] h-[90px] justify-center items-center inline-flex">
-                  <img
-                    className="w-[90px] h-[90px] rounded-full border border-white"
-                    src={user.image}
-                    alt={user.name} // Add alt text for accessibility
-                  />
+                <div className="flex-col h-full justify-start items-center gap-2 flex" style={{
+                  marginTop: '2rem'
+                }}>
+                  <div className="w-[90px] h-[90px] justify-center items-center inline-flex">
+                    <img
+                      className="w-[90px] h-[90px] rounded-full border border-white"
+                      src={user.image}
+                      alt={user.name} // Add alt text for accessibility
+                    />
+                  </div>
+                  <h3 className="text-zinc-800 text-[16px] font-semibold">
+                    {user.name}
+                  </h3>
                 </div>
-                <h3 className="text-zinc-800 text-[16px] font-semibold">
-                  {user.name}
-                </h3>
-              </div>
-            </SwiperSlide>
-          ))}
-      </Swiper>
-    </>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </>
       </div>
       {/* demo */}
       <SectionSpacer />
-      <div className="hidden  lg:flex items-center justify-center w-full h-full ">
+      <div className="hidden lg:flex items-center justify-center w-full h-full ">
         <div className="border w-full p-10 bg-white rounded-2xl shadow justify-center items-center gap-[101px] flex">
           <div className="relative bg-gradient-to-br from-indigo-600 to-indigo-400 rounded-lg flex-col justify-start items-start flex">
             <div className="justify-center w-full items-center gap-1 inline-flex">
@@ -734,26 +734,26 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
-      <div className="w-[348px] h-[920.05px] lg:hidden flex-col justify-center items-start gap-[60.10px] inline-flex">
-        <div className="w-[347.43px] h-[402.38px] relative bg-gradient-to-br from-indigo-600 to-indigo-400 rounded-md">
-          <div className="left-[67.47px] top-[57.59px] absolute justify-start items-center gap-[3.23px] inline-flex">
+      <div className="lg:hidden flex-col justify-center items-start inline-flex">
+        <div className="w-full  relative bg-gradient-to-br from-indigo-600 to-indigo-400 rounded-md">
+          <div className="flex w-full flex-row items-center justify-center">
             <div className="text-slate-800 text-2xl font-bold leading-9">
               Welcome to{" "}
             </div>
-            <img className="w-[72.26px] h-[36.21px]" src={lilleLogo} />
+            <img className=" h-[36.21px]" src={lilleLogo} />
           </div>
-          <div className="w-[401.74px] h-[258.77px] left-[-15.66px] top-[143.84px] absolute">
-            <img className="w-[401.74px] h-[258.77px]" src={welcomeImage} />
+          <div className="w-full ">
+            <img className="w-full h-full" src={welcomeImage} />
           </div>
         </div>
-        <div className="h-[457.57px] flex-col justify-start items-center gap-[24.04px] flex">
+        <div className="h-full w-full flex-col justify-start items-center gap-[24.04px] flex">
           <div className="justify-start items-center gap-[12.02px] inline-flex">
-            <div className="text-slate-800 text-[32.054046630859375px] font-bold leading-10">
+            <div className="text-slate-800 text-xl font-bold leading-10">
               Request a free demo
             </div>
           </div>
-          <div className="">
-            <div className="flex-col justify-start items-start gap-8 inline-flex">
+          <div className="w-full">
+            <div className="flex-col w-full justify-start items-start gap-8 inline-flex">
               <label for="name">
                 <p className="font-medium text-slate-700 pb-2 p-2">Name</p>
                 <input
