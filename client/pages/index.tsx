@@ -396,9 +396,9 @@ export default function Home() {
               </defs>
             </svg>
           </div>
-          <div className="mx-auto max-w-screen-xl flex flex-col pt-32 lg:py-20">
-            <div className="mx-auto max-w-3xl text-center h-screen xl:h-full">
-              <div className="relative flex text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
+          <div className="mx-auto max-w-screen-xl flex flex-col">
+            <div className="mx-auto max-w-3xl text-center h-screen  xl:h-full">
+              <div className="relative flex text-3xl items-center pt-32 lg:py-20 justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
                 Generate & Optimize{" "}
                 <TextTransition
                   springConfig={presets.gentle}

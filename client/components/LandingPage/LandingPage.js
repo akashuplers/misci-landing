@@ -17,8 +17,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import MoblieUnAuthFooter from "../LandingPage/MoblieUnAuthFooter";
-import { StarIcon } from "../localicons/localicons";
-import TestimonialUserCard from "./TestimonialUserCard";
+import { QuoteOpen, StarIcon } from "../localicons/localicons";
 const imagesForScreenShots = {
   home: "/screenshots/home.png",
   publish: "/publinkedinblog.png",
@@ -39,6 +38,39 @@ const imagesForScreenShots = {
   customer: "/customer.png",
 };
 const teamDesktop = "/screenshots/teamworks.png";
+const Lillesteps = [
+  {
+    step: 1,
+    description: "Search Anything",
+    details: "Simply type in any keyword or topic of interest into the search input field and our website will present you with a comprehensive list of articles, guides, and case studies that match your search query.",
+    image: imagesForScreenShots["home"]
+  },
+  {
+    step: 2,
+    description: "Get Fresh Ideas",
+    details: "Lille offers you a cool feature in which you can enter some keywords relevant to your niche in the new input field and we'll suggest some new ideas that you can use to take your content to the next level.",
+    image: imagesForScreenShots["home"]
+  },
+  {
+    step: 3,
+    description: "Select fresh ideas",
+    details: "Once you've found some exciting new ideas, it's time to start incorporating them into your blog. Choose the ones that resonate with you, and then move on to the next step!",
+    image: imagesForScreenShots["home"]
+  },
+  {
+    step: 4,
+    description: "Click on Regenerate",
+    details: "After you've selected the ideas you want to focus on, it's time to let our website work its magic. Just click on the regenerate button, and our powerful algorithm will generate a whole new blog post based on the ideas you've selected. It's that easy!",
+    image: imagesForScreenShots["home"]
+  },
+  {
+    step: 5,
+    description: "Publish",
+    details: "Click on Publish. And last but not least, it's time to share your new post with the world. Simply click on the publish button, and your post will be available to read on your website. And why stop there? You also have the option to share your post on LinkedIn and Twitter to reach an even wider audience.",
+    image: imagesForScreenShots["home"]
+  }
+];
+
 
 const AboutUsFeatures = [
   {
@@ -54,13 +86,42 @@ const AboutUsFeatures = [
     description: `Return on Investment using Lille`,
   },
 ];
+
+const testimonialData = [
+  {
+    name: 'Lora Smith',
+    message: `I been impressed by the quality and relevance of the content
+    at Lille. It has provided me with countless ideas, fresh
+    perspectives, and of motivation to grow both personally and
+    professionally.`,
+    image: imagesForScreenShots["customer"]
+  },
+  {
+    name: 'Lora Smith',
+    message: `I been impressed by the quality and relevance of the content
+    at Lille. It has provided me with countless ideas, fresh
+    perspectives, and of motivation to grow both personally and
+    professionally.`,
+    image: imagesForScreenShots["customer"]
+  },
+  {
+    name: 'Lora Smith',
+    message: `I been impressed by the quality and relevance of the content
+    at Lille. It has provided me with countless ideas, fresh
+    perspectives, and of motivation to grow both personally and
+    professionally.`,
+    image: imagesForScreenShots["customer"]
+  }
+]
+
+
 const welcomeImage = "/welcome.svg";
 const lilleLogo = "/lille_logo_new.png";
 const teamImage = "/team.svg";
 const whyChoseus = [
   {
     title: "Automated Backlinking",
-    description: `Lille.ai isn't just a content generation tool, it's a powerful partner in your SEO strategy. By leveraging existing URLs on your website, Lille.ai automates the process of backlinking, saving you time and boosting your SEO performance. `,
+    description: `Lille.ai isn't just a content generation tool, it's a powerful partner in your SEO strategy. By leveraging existing URLs on your website, Lille.ai automates the process of backlinking, saving you time and boosting your SEO performance.`,
     icon: "/featuresIcon/backlinking.svg",
   },
   {
@@ -125,7 +186,7 @@ const LandingPage = () => {
             "Thank you for your interest. We will get back to you soon."
           );
         } else {
-          type === typeOFTypes.error && toast.error(error.message);
+          type === typeOFTypes.error && toast.error(result.message);
         }
       });
   };
@@ -193,13 +254,13 @@ const LandingPage = () => {
               {AboutUsFeatures.map((feature) => {
                 return (
                   <div
-                    className="flex items-center justify-center flex-col"
+                    className="flex items-center gap-2 justify-center flex-col"
                     key={feature.title}
                   >
-                    <div className="text-indigo-600 text-6xl uppercase font-extrabold leading-10">
+                    <div className="text-indigo-600 text-[60px] lg:text-6xl uppercase font-extrabold leading-10">
                       {feature.title}
                     </div>
-                    <div className="text-lg text-slate-600 lg:text-center lg:items-center">
+                    <div className="text-slate-600 text-[18px] lg:text-lg text-slate-600 lg:text-center lg:items-center">
                       {feature.description}
                     </div>
                   </div>
@@ -226,7 +287,8 @@ const LandingPage = () => {
       >
         <div className="h-[136px] flex-col justify-center items-center gap-6 inline-flex lg:px-0 px-2">
           <div className="self-stretch h-14 text-center text-white text-[28px] lg:text-[48px] font-bold leading-10 tracking-wide">
-            Remarkable Features
+           <span className="hidden lg:block"> Remarkable Features </span>
+<span className="lg:hidden text-[28px]"> Why Choose Us</span>
           </div>
           <div className="lg:w-[803.89px] opacity-80 text-center text-white text-[16px] font-normal leading-7 tracking-wide">
             Lille is a unique platform dedicated to enriching your online
@@ -460,7 +522,7 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
-      <div className="w-[350px] lg:hidden h-full flex-col justify-start items-start gap-10 inline-flex">
+      <div className=" lg:hidden h-full flex-col justify-start items-start gap-10 inline-flex">
         <div className="h-[147px] flex-col justify-start items-center gap-6 flex">
           <div>
             <span className="text-slate-800 text-[28px] font-bold leading-10">
@@ -479,297 +541,114 @@ const LandingPage = () => {
             thought-provoking perspectives!
           </div>
         </div>
-        <div className="flex-col w-full justify-start items-center gap-6 flex">
-          <div className="w-full overflow-x-scroll h-full justify-start items-start gap-10 inline-flex">
-            <div className="w-[350px] flex-col justify-center items-start gap-5 lg:gap-[60px] inline-flex">
-              <div className="w-[350px] h-[350px] relative">
-                <div className="Designcircle" />
-                <div className="w-[318px] h-[220px] left-[32px] top-[65px] absolute flex-col justify-start items-start gap-4 inline-flex">
-                  <div className="w-10 px-[13px] py-[2.50px] bg-indigo-600 rounded-[200px] justify-center items-center inline-flex">
-                    <div className="text-white text-[24px] font-bold">1</div>
-                  </div>
-                  <div className="self-stretch h-[164px] flex-col justify-start items-start gap-3 flex">
-                    <div className="text-slate-800 text-[24px] font-medium leading-10">
-                      {" "}
-                      Search Anything
+
+        <Swiper
+          pagination={true}
+          modules={[Pagination]} className="lg:hidden w-full border py-[64.05px] bg-white mt-10 rounded-2xl shadow justify-center items-center inline-flex p-7 lg:p-0 lg:py-11 ">
+
+          <div className="max-w-screen justify-around items-center gap-4 lg:gap-[38px] flex lg:flex-row flex-col">
+            {Lillesteps.map(({ image, description, details, step }) => (
+              <SwiperSlide className="flex-col justify-center items-start gap-5 inline-flex" key={step}>
+                <div className="relative">
+                  <div className="Designcircle" />
+                  <div className="  left-[32px] top-[65px] absolute flex-col justify-start items-start gap-4 inline-flex">
+                    <div className="w-10 px-[13px] py-[2.50px] bg-indigo-600 rounded-[200px] justify-center items-center inline-flex">
+                      <div className="text-white text-[24px] font-bold">{step}</div>
                     </div>
-                    <div className="self-stretch opacity-70 text-slate-600 text-[16px] font-normal leading-7">
-                      Simply type in any keyword or topic of interest into the
-                      search input field and our website will present you with a
-                      comprehensive list of articles, guides, and case studies
-                      that match your search query.
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="w-[350.42px] h-[260.69px] bg-white justify-center items-center inline-flex">
-                <div className="grow shrink basis-0 self-stretch pl-[12.12px] pr-[12.13px] py-[0.61px] bg-white rounded-xl border border border border border-gray-200 justify-center items-center inline-flex">
-                  <div className="grow shrink basis-0 self-stretch px-[1.31px] py-[37.62px] bg-white rounded justify-center items-center inline-flex">
-                    <img
-                      className="w-[323.55px] h-[184.24px] rounded shadow"
-                      src={imagesForScreenShots["home"]}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="w-[350px] flex-col justify-center items-start gap-5 lg:gap-[60px] inline-flex">
-              <div className="w-[350px] h-[350px] relative">
-                <div className="w-[350px] h-[350px] left-[350px] top-0 absolute origin-top-left rotate-180 bg-gradient-to-r from-fuchsia-100 to-purple-100 rounded-full" />
-                <div className="w-[318px] h-[239px] left-[32px] top-[55.50px] absolute flex-col justify-start items-start gap-4 inline-flex">
-                  <div className="w-10 px-[13px] py-[2.50px] bg-indigo-600 rounded-[200px] justify-center items-center inline-flex">
-                    <div className="text-white text-[24px] font-bold">2</div>
-                  </div>
-                  <div className="self-stretch h-[183px] flex-col justify-start items-start gap-3 flex">
-                    <div className="text-slate-800 text-[24px] font-medium leading-9">
-                      Get Fresh Ideas
-                    </div>
-                    <div className="self-stretch opacity-70 text-slate-600 text-[16px] font-normal leading-7">
-                      {`                      Lille offers you a cool feature in which you can enter
-                      some keywords relevant to your niche in the new input
-                      field and we'll suggest some new ideas that you can use to
-                      take your content to the next level.`}
+                    <div className="self-stretch h-[164px] flex-col justify-start items-start gap-3 flex">
+                      <div className="text-slate-800 text-[24px] font-medium leading-10">
+                        {description}
+                      </div>
+                      <div className="self-stretch opacity-70 text-slate-600 text-[16px] font-normal leading-7">
+                        {details}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="w-[350px] h-[260.38px] px-[12.11px] py-[0.61px] bg-white rounded-xl border border-gray-200 justify-center items-center inline-flex">
-                <div className="w-[325.77px] h-[259.17px] relative bg-white rounded flex-col justify-start items-start flex">
-                  <img
-                    className="w-[227.18px] h-[130.39px] rounded"
-                    src={imagesForScreenShots["credits"]}
-                  />
-                  <div className="w-[284.60px] h-[122.32px] px-[15.47px] py-[22.56px] bg-white rounded shadow justify-center items-center inline-flex">
-                    <img
-                      className="w-[253.65px] h-[77.20px] rounded"
-                      src={imagesForScreenShots["filter"]}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="w-[350px] flex-col justify-center items-start gap-5 lg:gap-[60px] inline-flex">
-              <div className="w-[350px] h-[350px] relative">
-                <div className="Designcircle" />
-                <div className="w-[318px] h-[220px] left-[32px] top-[65px] absolute flex-col justify-start items-start gap-4 inline-flex">
-                  <div className="w-10 px-[13px] py-[2.50px] bg-indigo-600 rounded-[200px] justify-center items-center inline-flex">
-                    <div className="text-white text-[24px] font-bold">3</div>
-                  </div>
-                  <div className="self-stretch h-[164px] flex-col justify-start items-start gap-3 flex">
-                    <div className="text-slate-800 text-[24px] font-medium leading-10">
-                      Select fresh ideas
-                    </div>
-                    <div className="self-stretch opacity-70 text-slate-600 text-[16px] font-normal leading-7">
-                      {`  Once you've found some exciting new ideas, it's time to
-                      start incorporating them into your blog. Choose the ones
-                      that resonate with your, and then move on to the next
-                      step!`}
+                <div className=" bg-white justify-center items-center inline-flex">
+                  <div className="grow shrink basis-0 self-stretch pl-[12.12px] pr-[12.13px] py-[0.61px] bg-white rounded-xl border border-gray-200 justify-center items-center inline-flex">
+                    <div className="grow shrink basis-0 self-stretch px-[1.31px] py-[37.62px] bg-white rounded justify-center items-center inline-flex">
+                      <img className="w-full h-full rounded shadow" src={image} />
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="w-[350px] h-[260.38px] px-[12.11px] py-[0.61px] bg-white rounded-xl border   border-gray-200 justify-center items-center inline-flex">
-                <div className="w-[325.77px] h-[259.17px] relative bg-white rounded flex-col justify-start items-start flex">
-                  <img
-                    className="w-[180.71px] h-[165.72px]"
-                    src={imagesForScreenShots["filter"]}
-                  />
-                  <div className="w-[284.60px] pl-[13.30px] pr-[13.34px] pt-[9.32px] pb-[7.11px] bg-white rounded shadow justify-center items-center inline-flex">
-                    <img
-                      className="w-[257.96px] h-[164.01px]"
-                      src={imagesForScreenShots["filterresults"]}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="w-[350px] flex-col justify-center items-start gap-5 lg:gap-[60px] inline-flex">
-              <div className="w-[350px] h-[350px] relative">
-                <div className="Designcircle" />
-                <div className="w-[318px] h-[274px] left-[32px] top-[38px] absolute flex-col justify-start items-start gap-4 inline-flex">
-                  <div className="w-10 px-[13px] py-[2.50px] bg-indigo-600 rounded-[200px] justify-center items-center inline-flex">
-                    <div className="text-white text-[24px] font-bold">4</div>
-                  </div>
-                  <div className="self-stretch h-[218px] flex-col justify-start items-start gap-3 flex">
-                    <div className="text-slate-800 text-[24px] font-medium leading-10">
-                      Click on Regenerate
-                    </div>
-                    <div className="self-stretch opacity-70 text-slate-600 text-[16px] font-normal leading-7">
-                      {` After you've selected the ideas you want to focus on, it's
-                      time to let our website work its magic. Just click on the
-                      regenerate button, and our powerful algorithm will
-                      generate a whole new blog post based on the ideas you've
-                      selected. It's that easy!`}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="w-[350px] h-[260.38px] pl-[12.71px] pr-[12.72px] py-[0.61px] bg-white rounded-xl border border-gray-200 justify-center items-center inline-flex">
-                <div className="w-[324.56px] h-[259.17px] relative bg-white rounded flex-col justify-start items-start flex">
-                  <img
-                    className="w-[226.73px] h-[214.78px]"
-                    src={imagesForScreenShots["filterresults"]}
-                  />
-                  <div className="w-[119.65px] h-[46.02px] pl-[13.05px] pr-[11.15px] pt-[8.28px] pb-[6.90px] bg-white rounded shadow justify-center items-center inline-flex">
-                    <img
-                      className="w-[95.45px] h-[30.84px] shadow"
-                      src={imagesForScreenShots["regeneratebutton"]}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="w-[350px] flex-col justify-center items-start gap-5 lg:gap-[60px] inline-flex">
-              <div className="w-[350px] h-[350px] relative">
-                <div className="Designcircle" />
-                <div className="w-[318px] h-[301px] left-[32px] top-[24.50px] absolute flex-col justify-start items-start gap-4 inline-flex">
-                  <div className="w-10 px-[13px] py-[2.50px] bg-indigo-600 rounded-[200px] justify-center items-center inline-flex">
-                    <div className="text-white text-[24px] font-bold">5</div>
-                  </div>
-                  <div className="self-stretch h-[245px] flex-col justify-start items-start gap-3 flex">
-                    <div className="text-slate-800 text-[24px] font-medium leading-10">
-                      Publish
-                    </div>
-                    <div className="self-stretch opacity-70 text-slate-600 text-[16px] font-normal leading-7">
-                      {`Click on Publish And last but not least, it's time to new
-                      post with the world. Simply click on the publish button,
-                      and your post will be available to read on your website.
-                      And why stop there? You also have the option to share your
-                      post on LinkedIn and Twitter to reach an even wider
-                      audience.
-`}{" "}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="w-[350px] h-[260.38px] relative bg-white rounded-xl border border border border border-gray-200">
-                <img
-                  className="w-[216.30px] h-[185.79px] left-[9.95px] top-[5.79px] absolute rounded-md shadow"
-                  src={imagesForScreenShots["generateblogresponse"]}
-                />
-                <div className="w-[78.08px] h-[35.32px] pl-[3.54px] pr-[3.73px] py-[4.03px] left-[199.83px] top-[16.35px] absolute bg-white rounded shadow justify-center items-center inline-flex">
-                  <img
-                    className="w-[70.81px] h-[27.26px]"
-                    src={imagesForScreenShots["publishbutton"]}
-                  />
-                </div>
-                <div className="h-[152.59px] pl-[6.06px] pr-[8.76px] pt-[8.02px] pb-[9.36px] left-[114.45px] top-[105.28px] absolute bg-white rounded shadow justify-center items-center inline-flex">
-                  <img
-                    className="w-[160.18px] h-[135.21px] rounded"
-                    src={imagesForScreenShots["generateresponse"]}
-                  />
-                </div>
-                <div className="w-[92.79px] h-[27.04px] pl-[1.94px] pr-[2.47px] pt-[3.12px] pb-[2.86px] left-[249.48px] top-[119.81px] absolute bg-white rounded-sm shadow justify-center items-center inline-flex">
-                  <img
-                    className="w-[88.37px] h-[21.07px]"
-                    src={imagesForScreenShots["publishLinkedinbutton"]}
-                  />
-                </div>
-              </div>
-            </div>
+              </SwiperSlide>
+            ))}
           </div>
-          {/* <div className="justify-start items-center gap-4 inline-flex">
-            <div className="w-3.5 h-3.5 bg-indigo-600 rounded-full" />
-            <div className="w-3.5 h-3.5 bg-indigo-200 rounded-full" />
-            <div className="w-3.5 h-3.5 bg-indigo-200 rounded-full" />
-            <div className="w-3.5 h-3.5 bg-indigo-200 rounded-full" />
-            <div className="w-3.5 h-3.5 bg-indigo-200 rounded-full" />
-          </div> */}
-        </div>
+        </Swiper>
       </div>
       {/* testimonials */}
       <SectionSpacer />
-      <div className="hidden lg:block w-full h-full py-14 relative bg-blue-50">
-        <div className="w-[324.03px] h-[324.03px] border absolute  opacity-80 bg-pink-100 rounded-full blur-[145px]" />
-        <div className="flex-col justify-center items-center flex">
-          <div className="flex-col justify-center items-center gap-3 flex  ">
-            <div className="text-center text-slate-800 text-[48px] font-medium leading-10 ">
-              See what our customers say
-            </div>
-            <div className="flex item-center justify-center gap-2">
-              {[1, 2, 3, 4, 5].map((item, index) => (
-                <StarIcon key={index} />
-              ))}
-            </div>
-          </div>
-
-          <div className="flex item-center justify-center mt-14">
-            <TestimonialUserCard
-              imageSrc={imagesForScreenShots["customer"]}
-              name="Lora Smith"
-              content={`I been impressed by the quality and relevance of the content at Lille. It has provided me with countless ideas, fresh perspectives, and of motivation to grow both personally and professionally. `}
-            />
-            <TestimonialUserCard
-              imageSrc={imagesForScreenShots["customer"]}
-              name="Lora Smith"
-              selected={true}
-              content={`I been impressed by the quality and relevance of the content at Lille. It has provided me with countless ideas, fresh perspectives, and of motivation to grow both personally and professionally. `}
-            />
-            <TestimonialUserCard
-              imageSrc={imagesForScreenShots["customer"]}
-              name="Lora Smith"
-              content={`I been impressed by the quality and relevance of the content at Lille. It has provided me with countless ideas, fresh perspectives, and of motivation to grow both personally and professionally. `}
-            />
-          </div>
-          <div className="flex-col justify-start items-center gap-10 flex mt-20">
-            <div className="justify-start items-center gap-4 inline-flex">
-              <div className="w-3.5 h-3.5 bg-indigo-600 rounded-full" />
-              <div className="w-3.5 h-3.5 bg-indigo-200 rounded-full" />
-              <div className="w-3.5 h-3.5 bg-indigo-200 rounded-full" />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="lg:hidden px-2 w-full h-[649px] relative bg-blue-50">
+      <div className=" px-2 w-full  relative bg-blue-50 mobileTestimonial">
         {/* <div className="w-[142.93px] h-[142.93px] left-[-71.48px] top-[495.74px] absolute bg-pink-200 rounded-full blur-[145px]" /> */}
         {/* <div className="w-[110.74px] h-[159.36px] left-[241.31px] top-[60.74px] absolute origin-top-left rotate-[-53.85deg] bg-fuchsia-200 rounded-full blur-[145px]" /> */}
-        <div className="mt-20 flex-col justify-start items-center gap-3 inline-flex">
+        <div className="mt-20 w-full flex-col justify-start items-center gap-3 inline-flex">
           <div className="text-center text-slate-800 text-[28px] font-medium leading-10">
             See what our customers say
           </div>
-          <div className="justify-start items-start gap-[9.43px] inline-flex">
-            <div className="w-[18.85px] h-[18.85px] relative" />
-            <div className="w-[18.85px] h-[18.85px] relative" />
-            <div className="w-[18.85px] h-[18.85px] relative" />
-            <div className="w-[18.85px] h-[18.85px] relative" />
-            <div className="w-[18.85px] h-[18.85px] relative" />
+          <div className="flex item-center justify-center gap-2">
+            {[1, 2, 3, 4, 5].map((item, index) => (
+              <StarIcon key={index} />
+            ))}
           </div>
         </div>
-        <div className="h-[414px] relative  flex-col justify-start items-center gap-10 inline-flex">
-          <div className="self-stretch h-[360px] flex-col justify-center items-center flex">
-            <div className="self-stretch h-72 px-6 pt-10 pb-[90px] bg-indigo-600 rounded-lg flex-col justify-start items-center gap-6 flex">
-              <div className="w-6 h-6 relative" />
-              <div className="self-stretch h-[110px] flex-col justify-center items-start gap-6 flex">
-                <div className="self-stretch text-center text-white text-[16px] font-normal leading-snug">
-                  I been impressed by the quality and relevance of the content
-                  at Lille. It has provided me with countless ideas, fresh
-                  perspectives, and of motivation to grow both personally and
-                  professionally.{" "}
+
+        <>
+          <Swiper
+            spaceBetween={30}
+            pagination={{
+              clickable: true,
+            }}
+            slidesPerView={1}
+            breakpoints={{
+              640: {
+                slidesPerView: 2
+              },
+              1024: {
+                slidesPerView: 3
+              }
+
+            }}
+            modules={[Pagination]}
+            className="mySwiper bg-white mt-10 rounded-2xl shadow justify-center items-center inline-flex" style={{ paddingBottom: '2rem' }}
+          >
+            {testimonialData.map((user) => (
+              <SwiperSlide
+                key={user.name} // Add a unique key for each slide
+                className="flex-col relative justify-center items-center flex h-full "
+              >
+                <div className=" h-full py-10 px-8 bg-indigo-600 rounded-lg flex-col justify-start items-center gap-6 flex">
+                  <div className="flex flex-col justify-center items-center gap-6">
+                    <span className="text-white">
+                      <QuoteOpen />
+                    </span>
+                    <p className="text-center text-white text-[16px] font-normal leading-snug">
+                      {user.message}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="flex-col absolute bottom-0 justify-start items-center gap-2 flex">
-              <div className="w-[90px] h-[90px] justify-center items-center inline-flex">
-                <img
-                  className="w-[90px] h-[90px] rounded-full border border-white"
-                  src={imagesForScreenShots["customer"]}
-                />
-              </div>
-              <div className="text-zinc-800 text-[16px] font-semibold">
-                Lora Smith{" "}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="w-full  mt-2 justify-center items-center gap-4 flex">
-          <div className="w-3.5 h-3.5 bg-indigo-600 rounded-full" />
-          <div className="w-3.5 h-3.5 bg-indigo-200 rounded-full" />
-          <div className="w-3.5 h-3.5 bg-indigo-200 rounded-full" />
-        </div>
+                <div className="flex-col h-full justify-start items-center gap-2 flex" style={{
+                  marginTop: '2rem'
+                }}>
+                  <div className="w-[90px] h-[90px] justify-center items-center inline-flex">
+                    <img
+                      className="w-[90px] h-[90px] rounded-full border border-white"
+                      src={user.image}
+                      alt={user.name} // Add alt text for accessibility
+                    />
+                  </div>
+                  <h3 className="text-zinc-800 text-[16px] font-semibold">
+                    {user.name}
+                  </h3>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </>
       </div>
       {/* demo */}
       <SectionSpacer />
-      <div className="hidden  lg:flex items-center justify-center w-full h-full ">
+      <div className="hidden lg:flex items-center justify-center w-full h-full ">
         <div className="border w-full p-10 bg-white rounded-2xl shadow justify-center items-center gap-[101px] flex">
           <div className="relative bg-gradient-to-br from-indigo-600 to-indigo-400 rounded-lg flex-col justify-start items-start flex">
             <div className="justify-center w-full items-center gap-1 inline-flex">
@@ -843,7 +722,7 @@ const LandingPage = () => {
                   <button
                     type="submit"
                     className="w-full px-5 py-[15px] bg-indigo-600 rounded-lg justify-center items-center gap-2.5 inline-flex disabled:opacity-50"
-                    // disabled={handleDemoClick}
+                  // disabled={handleDemoClick}
                   >
                     <span className="text-white text-[18px] font-medium">
                       Send
@@ -855,26 +734,26 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
-      <div className="w-[348px] h-[920.05px] lg:hidden flex-col justify-center items-start gap-[60.10px] inline-flex">
-        <div className="w-[347.43px] h-[402.38px] relative bg-gradient-to-br from-indigo-600 to-indigo-400 rounded-md">
-          <div className="left-[67.47px] top-[57.59px] absolute justify-start items-center gap-[3.23px] inline-flex">
+      <div className="lg:hidden flex-col justify-center items-start inline-flex">
+        <div className="w-full  relative bg-gradient-to-br from-indigo-600 to-indigo-400 rounded-md">
+          <div className="flex w-full flex-row items-center justify-center">
             <div className="text-slate-800 text-2xl font-bold leading-9">
               Welcome to{" "}
             </div>
-            <img className="w-[72.26px] h-[36.21px]" src={lilleLogo} />
+            <img className=" h-[36.21px]" src={lilleLogo} />
           </div>
-          <div className="w-[401.74px] h-[258.77px] left-[-15.66px] top-[143.84px] absolute">
-            <img className="w-[401.74px] h-[258.77px]" src={welcomeImage} />
+          <div className="w-full ">
+            <img className="w-full h-full" src={welcomeImage} />
           </div>
         </div>
-        <div className="h-[457.57px] flex-col justify-start items-center gap-[24.04px] flex">
+        <div className="h-full w-full flex-col justify-start items-center gap-[24.04px] flex">
           <div className="justify-start items-center gap-[12.02px] inline-flex">
-            <div className="text-slate-800 text-[32.054046630859375px] font-bold leading-10">
+            <div className="text-slate-800 text-xl font-bold leading-10">
               Request a free demo
             </div>
           </div>
-          <div className="">
-            <div className="flex-col justify-start items-start gap-8 inline-flex">
+          <div className="w-full">
+            <div className="flex-col w-full justify-start items-start gap-8 inline-flex">
               <label for="name">
                 <p className="font-medium text-slate-700 pb-2 p-2">Name</p>
                 <input
