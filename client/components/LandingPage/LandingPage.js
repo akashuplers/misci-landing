@@ -260,7 +260,7 @@ const LandingPage = () => {
     return (
         <>
             <div className="hidden xl:block 2xl:mt-[10rem]">
-                <SectionSpacer />
+                {/* <SectionSpacer /> */}
             </div>
             {/* <div className="w-full h-[195px]    flex-col justify-start items-center gap-4 inline-flex">
                 <div className="h-[81px] flex-col justify-start items-center gap-2 flex">
@@ -456,12 +456,12 @@ const LandingPage = () => {
                                     <div className="text-slate-800 text-[32px] font-medium leading-10">
                                         Search Anything
                                     </div>
-                                    <div className="w-[424px] opacity-70 text-slate-600 text-[16px] font-normal leading-7">
+                                    <p className="text-center lg:text-left w-[424px] opacity-70 text-slate-600 text-[16px] font-normal leading-7">
                                         Simply type in any keyword or topic of interest into the
                                         search input field and our website will present you with a
                                         comprehensive list of articles, guides, and case studies
                                         that match your search query.
-                                    </div>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -490,12 +490,12 @@ const LandingPage = () => {
                                     <div className="text-slate-800 text-[32px] font-medium leading-10">
                                         Get Fresh Ideas
                                     </div>
-                                    <div className="w-[424px] opacity-70 text-slate-600 text-[16px] font-normal leading-7">
+                                    <p className="text-left w-[424px] opacity-70 text-slate-600 text-[16px] font-normal leading-7">
                                         {`Lille offers you a cool feature in which you can enter some
                     keywords relevant to your niche in the new input field and
                     we'll suggest some new ideas that you can use to take your
                     content to the next level.`}
-                                    </div>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -511,9 +511,9 @@ const LandingPage = () => {
                                     <div className="text-slate-800 text-[32px] font-medium leading-10">
                                         Select fresh ideas
                                     </div>
-                                    <div className="w-[424px] opacity-70 text-slate-600 text-[16px] font-normal leading-7">
+                                    <p className="text-left w-[424px]  opacity-70 text-slate-600 text-[16px] font-normal leading-7">
                                         {`Once you have some exciting fresh ideas, its time to select some or all of them or make a combination of used ideas and fresh ideas before you regenerate`}
-                                    </div>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -542,12 +542,12 @@ const LandingPage = () => {
                                     <div className="text-slate-800 text-[32px] font-medium leading-10">
                                         Click on Regenerate
                                     </div>
-                                    <div className="w-[424px] opacity-70 text-slate-600 text-[16px] font-normal leading-7">
+                                    <p className="text-left w-[424px] opacity-70 text-slate-600 text-[16px] font-normal leading-7">
                                         {`After you've selected the ideas you want to focus on, its time to let Lille do its magic. Just click on the
                     regenerate button, and our powerful algorithm will generate
                     a whole new blog post based on the ideas you've selected.
                     It's that easy!`}
-                                    </div>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -563,13 +563,13 @@ const LandingPage = () => {
                                     <div className="text-slate-800 text-[32px] font-medium leading-10">
                                         Publish
                                     </div>
-                                    <div className="w-[424px] opacity-70 text-slate-600 text-[16px] font-normal leading-7">
+                                    <p className="text-left w-[424px] opacity-70 text-slate-600 text-[16px] font-normal leading-7">
                                         {`Click on Publish And last but not least, it's time to new
                     post with the world. Simply click on the publish button, and
                     your post will be available to read on your website. And why
                     stop there? You also have the option to share your post on
                     LinkedIn and Twitter to reach an even wider audience.`}
-                                    </div>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -619,7 +619,7 @@ const LandingPage = () => {
                                             <div className="text-slate-800 text-[24px] font-medium leading-10">
                                                 {description}
                                             </div>
-                                            <div className="self-stretch opacity-70 text-slate-600 text-[16px] font-normal leading-7">
+                                            <div className="text-center self-stretch opacity-70 text-slate-600 text-[16px] font-normal leading-7">
                                                 {details}
                                             </div>
                                         </div>
@@ -711,7 +711,7 @@ const LandingPage = () => {
                 <div className="border w-full p-10 bg-white rounded-2xl shadow justify-between items-center gap-16 flex">
                     <div className="relative bg-gradient-to-br from-indigo-600 to-indigo-400 rounded-lg flex-col justify-start items-start flex w-full">
                         <div className="justify-center w-full items-center gap-1 inline-flex">
-                            <div className="text-slate-800 text-[32px] font-bold leading-10">
+                            <div className="text-white text-[32px] font-bold leading-10">
                                 Welcome to{" "}
                             </div>
                             <img className="w-[89.43px] h-[44.81px]" src={lilleLogo} />
@@ -833,7 +833,7 @@ const LandingPage = () => {
             <div className="userDemo lg:hidden flex-col justify-center items-start inline-flex">
                 <div className="w-full  relative bg-gradient-to-br from-indigo-600 to-indigo-400 rounded-md">
                     <div className="flex w-full flex-row items-center justify-center">
-                        <div className="text-slate-800 text-2xl font-bold leading-9">
+                        <div className="text-white text-2xl font-bold leading-9">
                             Welcome to{" "}
                         </div>
                         <img className=" h-[36.21px]" src={lilleLogo} />
