@@ -53,9 +53,9 @@ const MobileNavigation = ({
   return (
     <>
       <div className="w-full h-20  bg-white  border border-neutral-200 justify-between px-4 items-center  inline-flex">
-    <Link href="/"> 
-    <img className="w-[79.83px] h-10" src="/lille_logo_new.png" />
-    </Link>
+        <Link href="/">
+          <img className="w-[79.83px] h-10" src="/lille_logo_new.png" />
+        </Link>
 
         <div className="self-stretch justify-start items-center gap-4 inline-flex">
           <button
@@ -70,7 +70,9 @@ const MobileNavigation = ({
             </div>
           </button>
           <button
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => {
+              setIsOpen(!isOpen);
+            }}
             className={`transition duration-150 ease-in-out rounded-md inline-flex items-center justify-center text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
           >
             {isOpen ? (
@@ -102,7 +104,7 @@ const MobileNavigation = ({
           <div className="fixed inset-0 z-40 flex flex-row-reverse lg:flex">
             <Transition.Child
               show={isOpen}
-              style={{ width: "35%" }}
+              style={{ width: "65%" }}
               enter="transition-transform duration-300 ease"
               enterFrom="translate-x-full"
               enterTo="translate-x-0"
@@ -112,22 +114,10 @@ const MobileNavigation = ({
             >
               {/* top and bottom left rouned */}
               {/* <div className="w-80 bg-white "> */}
-              <Dialog.Panel className="relative flex w-full h-screen flex-1 flex-col bg-white rounded-l-lg ">
-                <div className="h-0 flex-1 overflow-y-auto pt-5 pb-4">
-                  <nav className="mt-5 space-y-1 px-2">
-                    <div className="flex justify-end items-center px-4">
-                      <button
-                        type="button"
-                        className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        <span className="sr-only">Close sidebar</span>
-                        <XMarkIcon
-                          className="h-6 w-6 text-black"
-                          aria-hidden="true"
-                        />
-                      </button>
-                    </div>
+              <Dialog.Panel className="relative mt-20 flex w-full h-[91vh] flex-1 flex-col bg-white rounded-l-lg ">
+                <div className="h-0  flex-1 overflow-y-auto pt-5 pb-4">
+                  <nav className=" space-y-1 px-2">
+
                     {mobileNavigation &&
                       mobileNavigation.length > 0 &&
                       mobileNavigation.map((item, index) => (
@@ -185,9 +175,6 @@ const MobileNavigation = ({
                 <nav className="mt-5 space-y-1 bg-white px-2 pb-8"></nav>
               </Dialog.Panel>
             </Transition.Child>
-            <div className="w-14 flex-shrink-0">
-              {/* Force sidebar to shrink to fit close icon */}
-            </div>
           </div>
         </Dialog>
       </Transition.Root>
