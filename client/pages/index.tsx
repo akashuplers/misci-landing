@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 // @ts-nocheck
+import MoblieUnAuthFooter from "@/components/LandingPage/MoblieUnAuthFooter";
 import { API_BASE_PATH } from "@/constants/apiEndpoints";
 import { gql, useQuery } from "@apollo/client";
 import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
@@ -473,6 +474,7 @@ export default function Home() {
             </svg>
           </div> */}
         </div>
+        <MoblieUnAuthFooter />
       </Layout>
       <style>
         {`
