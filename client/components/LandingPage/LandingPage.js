@@ -512,9 +512,7 @@ const LandingPage = () => {
                                         Select fresh ideas
                                     </div>
                                     <div className="w-[424px] opacity-70 text-slate-600 text-[16px] font-normal leading-7">
-                                        {`Once you've found some exciting new ideas, it's time to
-                    start incorporating them into your blog. Choose the ones
-                    that resonate with your, and then move on to the next step!`}
+                                        {`Once you have some exciting fresh ideas, its time to select some or all of them or make a combination of used ideas and fresh ideas before you regenerate`}
                                     </div>
                                 </div>
                             </div>
@@ -545,8 +543,7 @@ const LandingPage = () => {
                                         Click on Regenerate
                                     </div>
                                     <div className="w-[424px] opacity-70 text-slate-600 text-[16px] font-normal leading-7">
-                                        {`After you've selected the ideas you want to focus on, it's
-                    time to let our website work its magic. Just click on the
+                                        {`After you've selected the ideas you want to focus on, its time to let Lille do its magic. Just click on the
                     regenerate button, and our powerful algorithm will generate
                     a whole new blog post based on the ideas you've selected.
                     It's that easy!`}
