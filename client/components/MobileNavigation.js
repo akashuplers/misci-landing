@@ -53,7 +53,10 @@ const MobileNavigation = ({
   return (
     <>
       <div className="w-full h-20  bg-white  border border-neutral-200 justify-between px-4 items-center  inline-flex">
-        <img className="w-[79.83px] h-10" src="/lille_logo_new.png" />
+    <Link href="/"> 
+    <img className="w-[79.83px] h-10" src="/lille_logo_new.png" />
+    </Link>
+
         <div className="self-stretch justify-start items-center gap-4 inline-flex">
           <button
             className="px-5 py-2.5 bg-indigo-600 rounded-lg shadow justify-center items-center gap-2.5 flex"

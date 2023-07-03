@@ -474,7 +474,8 @@ export default function Home() {
             </svg>
           </div> */}
         </div>
-        <MoblieUnAuthFooter />
+        
+        {!isAuthenticated &&<MoblieUnAuthFooter /> }
       </Layout>
       <style>
         {`
