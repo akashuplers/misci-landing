@@ -1,4 +1,4 @@
-      import { STRIPE_PROMISE } from "@/constants";
+import { STRIPE_PROMISE } from "@/constants";
 import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 import { addPreferances } from "@/graphql/mutations/addPreferances";
 import {
@@ -14,7 +14,7 @@ import {
   ArrowUpCircleIcon,
   AtSymbolIcon,
   CogIcon,
-  CreditCardIcon,     
+  CreditCardIcon,
   UserIcon,
 } from "@heroicons/react/20/solid";
 import { Elements } from "@stripe/react-stripe-js";
@@ -31,6 +31,7 @@ import fillerProfileImage from "../public/profile-filler.jpg";
 import { UpgradeFeatures } from "./FeatureItem";
 import ForgotPasswordModal from "./ForgotPasswordModal";
 import LoaderScan from "./LoaderScan";
+import CancelSubscriptionModal from "../modals/CancelSubscriptionModal";
 import { TwitterVerifiedIcon } from "./localicons/localicons";
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -396,7 +397,7 @@ function ProfileTab({ meeData }) {
                 )}
             </div>
           )}
-          <div className="py-4 flex flex-col md:flex-row gap-4 justify-between">
+          <div className="py-4 flex flex md:flex-row gap-4 justify-start">
             <span
               className="reset-button cta"
               style={{
@@ -589,6 +590,9 @@ function IntegrationTab({ meeData }) {
 
   const [loading, setloading] = useState(false);
   useEffect(() => {
+    checkForUserIntegration();
+  }, [loading]);
+  function checkForUserIntegration() {
     var linkedInAccessToken, twitterAccessToken;
     if (typeof window !== "undefined") {
       linkedInAccessToken = localStorage.getItem("linkedInAccessToken");
@@ -616,17 +620,19 @@ function IntegrationTab({ meeData }) {
         });
       }
     }
-  }, [loading]);
+  }
   const statusChange = (name, status) => {
     setloading(true);
     // puase
 
     if (name === "Linkedin" && status === false) {
       localStorage.removeItem("linkedInAccessToken");
+      checkForUserIntegration();
       toast.success("Linkedin has been disconnected.");
     }
     if (name === "Twitter" && status === false) {
       localStorage.removeItem("twitterAccessToken"); // remove token
+      checkForUserIntegration();
       toast.success("Twitter has been disconnected.");
     }
     if (name === "Linkedin" && status === true) {
@@ -642,7 +648,7 @@ function IntegrationTab({ meeData }) {
     handleconnectTwitter("/settings");
   }
   async function connectLinkedin() {
-    handleconnectLinkedin("");
+    handleconnectLinkedin("/settings");
   }
 
   return (
@@ -669,9 +675,8 @@ function IntegrationTab({ meeData }) {
                   >
                     <span
                       aria-hidden="true"
-                      className={`${
-                        item.status ? "translate-x-9" : "translate-x-0"
-                      }
+                      className={`${item.status ? "translate-x-9" : "translate-x-0"
+                        }
             pointer-events-none inline-block h-[34px] w-[34px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
                     />
                   </Switch>
@@ -684,6 +689,7 @@ function IntegrationTab({ meeData }) {
   );
 }
 function BillingTab({ meeData }) {
+  const [showCancelModal, setshowCancelModal] = useState(false);
   const maskCardNumber = (cardNumber) => {
     const visibleDigits = cardNumber.slice(-4);
     const maskedDigits = "*".repeat(cardNumber.length - 4);
@@ -716,9 +722,39 @@ function BillingTab({ meeData }) {
       </div>
     );
   }
+  const [processing, setProcessing] = useState(false);
+  const handleCancelSubscription = () => {
+    setProcessing(true);
+    const axios = require("axios");
+    var getToken;
+    if (typeof window !== "undefined") {
+      getToken = localStorage.getItem("token");
+    }
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: API_BASE_PATH + "/stripe/cancel-subscription",
+      headers: {
+        Authorization: "Bearer " + getToken,
+      },
+    };
+    axios
+      .request(config)
+      .then((response) => {
+        toast.success(response.data.data);
+        console.log(response.data.data);
+        setProcessing(false);
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 2000);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
   return (
     <div>
-      {" "}
+       <CancelSubscriptionModal isOpen={showCancelModal} onClose={() => setshowCancelModal(false)}  onCancel={handleCancelSubscription} processing={processing} />
       <div className="mt-4 border p-2 shadow-md rounded-md">
         <div className=" mt-2 flex justify-between ">
           <div className="flex flex-col">
@@ -735,7 +771,7 @@ function BillingTab({ meeData }) {
           <ProgressBar totalDays={30} daysCompleted={22} />
         </div>
         <div className="mt-3">
-          <button class="mr-4 w-[200px] p-4 bg-transparent hover:bg-red-500 text-red-500 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
+          <button className="mr-4 w-[200px] p-4 bg-transparent hover:bg-red-500 text-red-500 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded" onClick={() => setshowCancelModal(true)}>
             Cancel Subscription
           </button>
         </div>
