@@ -161,7 +161,7 @@ export default function TinyMCEEditor({
 
         if (
           `${networkError}` ===
-            "ServerError: Response not successful: Received status code 401" &&
+          "ServerError: Response not successful: Received status code 401" &&
           isauth
         ) {
           localStorage.clear();
@@ -1546,9 +1546,8 @@ export default function TinyMCEEditor({
               <div
                 key={item}
                 className={`flex items-center justify-center w-[40px] h-[40px] rounded-full bg-indigo-500 text-white text-sm font-bold 
-                ml-[10px] hover:bg-indigo-700 cursor-pointer ${
-                  multiplier === item && "bg-indigo-700 "
-                }  
+                ml-[10px] hover:bg-indigo-700 cursor-pointer ${multiplier === item && "bg-indigo-700 "
+                  }  
                 `}
                 onClick={() => setMultiplier(item)}
               >
@@ -1736,9 +1735,8 @@ export default function TinyMCEEditor({
               }}
             >
               <div
-                className={`blog-toggle-button cta wordpress flex gap-1 items-center ${
-                  option == "blog" ? "active" : ""
-                }`}
+                className={`blog-toggle-button cta wordpress flex gap-1 items-center ${option == "blog" ? "active" : ""
+                  }`}
                 onClick={handleBlog}
               >
                 <svg
@@ -1754,9 +1752,8 @@ export default function TinyMCEEditor({
               </div>
               <div
                 // className="blog-toggle-button cta linkedin flex gap-1 items-center"
-                className={`blog-toggle-button cta linkedin flex gap-1 items-center ${
-                  option == "linkedin" ? "active" : ""
-                }`}
+                className={`blog-toggle-button cta linkedin flex gap-1 items-center ${option == "linkedin" ? "active" : ""
+                  }`}
                 onClick={handleLinkedinBlog}
               >
                 <svg
@@ -1779,9 +1776,8 @@ export default function TinyMCEEditor({
               </div>
               <div
                 // className="blog-toggle-button cta twitter flex gap-1 items-center"
-                className={`blog-toggle-button cta twitter flex gap-1 items-center ${
-                  option == "twitter" ? "active" : ""
-                }`}
+                className={`blog-toggle-button cta twitter flex gap-1 items-center ${option == "twitter" ? "active" : ""
+                  }`}
                 onClick={handleTwitterBlog}
               >
                 <svg
@@ -1804,9 +1800,8 @@ export default function TinyMCEEditor({
           )}
           {!isPublished ? (
             <div
-              className={`flex w-full  lg:w-auto   lg:mt-auto ${
-                isAuthenticated ? "mt-5" : "mt-[70px]"
-              }`}
+              className={`flex w-full  lg:w-auto   lg:mt-auto ${isAuthenticated ? "mt-5" : "mt-[70px]"
+                }`}
               style={{ gap: "0.25em", marginLeft: "auto" }}
             >
               <button
@@ -2129,13 +2124,13 @@ export default function TinyMCEEditor({
 
                         // https://res.cloudinary.com/cloudName/image/upload/v1483481128/public_id.jpg
                         var url = response.url;
-                        setImageURL(url);
+                        setImageURL(url); 
                         setAlert(true);
                         //console.log("response.data", response.data);
                         //console.log("imageURL", imageURL);
                         //console.log("88", url);
                         //console.log("999", load);
-                        setLoad(false);
+                        setLoad(false); 
                         // Create a thumbnail of the uploaded image, with 150px width
                         cb(url, { title: response.type });
                       }
@@ -2198,7 +2193,7 @@ export default function TinyMCEEditor({
                   });
 
                   axios(config)
-                    .then((response) => {})
+                    .then((response) => { })
                     .catch((error) => console.log("error", error));
                 },
               }}

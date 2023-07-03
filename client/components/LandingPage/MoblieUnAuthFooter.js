@@ -24,22 +24,22 @@ const MoblieUnAuthFooter = () => {
           <div className="w-full flex flex-col items-start">
             <h6 className="mb-4 flex justify-start font-semibold  ">Company</h6>
             <p className="mb-4">
-              <a href="#!" className="text-neutral-600 dark:text-neutral-200">
+              <a href="#!" className="text-white-600 hover:opacity-90">
                 Why Choose us
               </a>
             </p>
             <p className="mb-4">
-              <a href="#!" className="text-neutral-600 dark:text-neutral-200">
+              <a href="#!" className="text-white-600 hover:opacity-90 ">
                 Testimonial
               </a>
             </p>
             <p className="mb-4">
-              <a href="#!" className="text-neutral-600 dark:text-neutral-200">
+              <a href="#!" className="text-white-600 hover:opacity-90 ">
                 Pricing
               </a>
             </p>
             <p>
-              <a href="#!" className="text-neutral-600 dark:text-neutral-200">
+              <a href="#!" className="text-white-600 hover:opacity-90 ">
                 FAQs
               </a>
             </p>
@@ -51,18 +51,18 @@ const MoblieUnAuthFooter = () => {
             <p className="mb-4">
               <a
                 href="#!"
-                className="text-neutral-600 dark:text-neutral-200 justify-start ss"
+                className="text-white-600 hover:opacity-90  justify-start ss"
               >
                 Privacy & Policy
               </a>
             </p>
             <p className="mb-4">
-              <a href="#!" className="text-neutral-600 dark:text-neutral-200">
+              <a href="#!" className="text-white-600 hover:opacity-90 ">
                 Terms & Conditions
               </a>
             </p>
             <p className="mb-4">
-              <a href="#!" className="text-neutral-600 dark:text-neutral-200">
+              <a href="#!" className="text-white-600 hover:opacity-90 ">
                 Blogs
               </a>
             </p>
