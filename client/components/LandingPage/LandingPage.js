@@ -912,7 +912,6 @@ const LandingPage = () => {
                 </div>
             </div >
             {/* footer */}
-            < MoblieUnAuthFooter />
         </>
     );
 };
