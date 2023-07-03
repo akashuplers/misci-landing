@@ -236,7 +236,7 @@ export default function Settings() {
       });
       return;
     }
-
+    
     setUpdateLoader(true);
     axios
       .put(API_BASE_PATH + API_ROUTES.UPDATE_PROFILE, updateProfileData, {
