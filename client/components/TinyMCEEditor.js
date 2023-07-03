@@ -2124,13 +2124,13 @@ export default function TinyMCEEditor({
 
                         // https://res.cloudinary.com/cloudName/image/upload/v1483481128/public_id.jpg
                         var url = response.url;
-                        setImageURL(url); 
+                        setImageURL(url);
                         setAlert(true);
                         //console.log("response.data", response.data);
                         //console.log("imageURL", imageURL);
                         //console.log("88", url);
                         //console.log("999", load);
-                        setLoad(false); 
+                        setLoad(false);
                         // Create a thumbnail of the uploaded image, with 150px width
                         cb(url, { title: response.type });
                       }
@@ -2196,6 +2196,7 @@ export default function TinyMCEEditor({
                     .then((response) => { })
                     .catch((error) => console.log("error", error));
                 },
+                save_onsavecallback: function () { console.log('Saved'); }
               }}
               onEditorChange={(content, editor) => {
                 setEditorText(content);
