@@ -722,39 +722,9 @@ function BillingTab({ meeData }) {
       </div>
     );
   }
-  const [processing, setProcessing] = useState(false);
-  const handleCancelSubscription = () => {
-    setProcessing(true);
-    const axios = require("axios");
-    var getToken;
-    if (typeof window !== "undefined") {
-      getToken = localStorage.getItem("token");
-    }
-    let config = {
-      method: "post",
-      maxBodyLength: Infinity,
-      url: API_BASE_PATH + "/stripe/cancel-subscription",
-      headers: {
-        Authorization: "Bearer " + getToken,
-      },
-    };
-    axios
-      .request(config)
-      .then((response) => {
-        toast.success(response.data.data);
-        console.log(response.data.data);
-        setProcessing(false);
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 2000);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
+  
   return (
     <div>
-       <CancelSubscriptionModal isOpen={showCancelModal} onClose={() => setshowCancelModal(false)}  onCancel={handleCancelSubscription} processing={processing} />
       <div className="mt-4 border p-2 shadow-md rounded-md">
         <div className=" mt-2 flex justify-between ">
           <div className="flex flex-col">
