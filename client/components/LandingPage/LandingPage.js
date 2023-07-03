@@ -14,7 +14,6 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
-import MoblieUnAuthFooter from "../LandingPage/MoblieUnAuthFooter";
 import { QuoteOpen, StarIcon } from "../localicons/localicons";
 const imagesForScreenShots = {
     home: "/screenshots/home.png",
@@ -622,7 +621,7 @@ const LandingPage = () => {
             </div>
             {/* testimonials */}
             <SectionSpacer />
-            <div className=" px-2 w-full  relative bg-blue-50 mobileTestimonial">
+            <div id='testimonial' className=" px-2 w-full  relative bg-blue-50 mobileTestimonial">
                 {/* <div className="w-[142.93px] h-[142.93px] left-[-71.48px] top-[495.74px] absolute bg-pink-200 rounded-full blur-[145px]" /> */}
                 {/* <div className="w-[110.74px] h-[159.36px] left-[241.31px] top-[60.74px] absolute origin-top-left rotate-[-53.85deg] bg-fuchsia-200 rounded-full blur-[145px]" /> */}
                 <div className="mt-20 w-full flex-col justify-start items-center gap-3 inline-flex">
@@ -635,7 +634,6 @@ const LandingPage = () => {
                         ))}
                     </div>
                 </div>
-
                 <>
                     <Swiper
                         spaceBetween={30}
