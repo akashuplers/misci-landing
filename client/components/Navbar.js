@@ -30,7 +30,7 @@ export default function Navbar({ isOpen }) {
           handleSave={() => (window.location = "/")}
           bid={Gbid}
         />
-        <div className="lg:hidden">
+        <div className="lg:hidden sticky top-0 z-50 bg-white backdrop-filter backdrop-blur-lg bg-opacity-30">
           <MobileNavigation
             navigation={navigation}
             userNavigation={userNavigation}
@@ -38,7 +38,7 @@ export default function Navbar({ isOpen }) {
             setAuthneticationModalType={setAuthneticationModalType}
           />
         </div>
-        <div className="hidden lg:block">
+        <div className="hidden lg:block sticky top-0 z-50 py-2 bg-white backdrop-filter backdrop-blur-lg bg-opacity-30">
           <DesktopNavigation
             navigation={navigation}
             userNavigation={userNavigation}
