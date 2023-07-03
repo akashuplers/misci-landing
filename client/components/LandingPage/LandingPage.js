@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ReactLoading from "react-loading";
+import TextareaAutosize from "react-textarea-autosize";
 const logos = ["/Logo1", "/Logo2", "/Logo3", "/Logo4", "/Logo5"];
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -7,7 +8,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper";
 
 import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
-import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import { toast } from "react-toastify";
 import "swiper/css";
@@ -102,6 +102,21 @@ const testimonialData = [
     perspectives, and of motivation to grow both personally and
     professionally.`,
         image: imagesForScreenShots["customer"]
+    }, {
+        name: 'Lora Smith',
+        message: `I been impressed by the quality and relevance of the content
+    at Lille. It has provided me with countless ideas, fresh
+    perspectives, and of motivation to grow both personally and
+    professionally.`,
+        image: imagesForScreenShots["customer"]
+    },
+    {
+        name: 'Lora Smith',
+        message: `I been impressed by the quality and relevance of the content
+    at Lille. It has provided me with countless ideas, fresh
+    perspectives, and of motivation to grow both personally and
+    professionally.`,
+        image: imagesForScreenShots["customer"]
     },
     {
         name: 'Lora Smith',
@@ -145,7 +160,8 @@ const initalState = {
     email: "",
     interestedTopics: "",
 };
-const specialCharsRegex = /[^a-zA-Z0-9,\.]/g
+const specialCharsRegex = /[^a-zA-Z0-9,.\s]/g;
+
 
 const numberRegex = /\d/;
 
@@ -167,9 +183,17 @@ const LandingPage = () => {
         let errors = {};
 
         if (name === 'interestedTopics') {
-            const hasSpecialCharacter = hasSpecialChars(value);
+            const characterNotAllowed = ['@', '#', '$', '%', '^', '&', '*', '(', ')']
+            const hasSpecialCharacter = characterNotAllowed.some((character) => value.includes(character));
             if (hasSpecialCharacter) {
-                errors[name] = "Interested topics should not contain special characters.";
+                errors[name] = "Your message should not contain special characters like @, #, $, %, ^, &, *, (, ), etc.";
+            }
+            // check if the words should not be more than 5
+            // split by space,
+            // check if the length is more than 5
+            const words = value.split(' ');
+            if (words.length > 5) {
+                errors[name] = "Interested topics should not be more than 5.";
             }
         }
 
@@ -235,10 +259,10 @@ const LandingPage = () => {
 
     return (
         <>
-            <div className="hidden xl:block">
+            <div className="hidden xl:block 2xl:mt-[10rem]">
                 <SectionSpacer />
             </div>
-            <div className="w-full h-[195px]    flex-col justify-start items-center gap-4 inline-flex">
+            {/* <div className="w-full h-[195px]    flex-col justify-start items-center gap-4 inline-flex">
                 <div className="h-[81px] flex-col justify-start items-center gap-2 flex">
                     <div className="w-full self-stretch text-center text-slate-800 text-2xl lg:text-[48px] font-bold leading-10">
                         Our Clients
@@ -263,14 +287,13 @@ const LandingPage = () => {
                         </div>
                     ))}
                 </div>
-            </div>
+            </div> */}
             {/* ABOUT US */}
             <SectionSpacer />
-            <div className="relative bg-gradient-to-b from-violet-50 to-violet-50 pt-20">
-                <div className="flex lg:flex-row flex-col mx-auto max-w-5xl items-center justify-center lg:justify-between">
+            {/* <div className="relative bg-gradient-to-b from-violet-50 to-violet-50 pt-20">
+                {/*  <div className="flex lg:flex-row flex-col mx-auto max-w-5xl items-center justify-center lg:justify-between">
                     <div className="lg:w-[40%] flex flex-col lg:gap-16 items-center justify-center lg:justify-between lg:block">
                         <div className="w-full flex-col justify-start items-center ">
-                            {/* <div className="w-[50%] h-0.5 bg-indigo-600" /> */}
                             <div className="h-14 text-slate-800  text-2xl lg:text-5xl text-center lg:text-start font-bold leading-10">
                                 About us
                             </div>
@@ -309,17 +332,15 @@ const LandingPage = () => {
                             })}
                         </div>
                     </div>
-                    {/* teamImage */}
-                </div>
-                {/* randm div with height 40% of parrent */}
-                {/* why chose us */}
+                </div> 
                 <div className="lg:hidden w-[352.08px] h-[194.15px]">
                     <img src={teamImage} alt="team" className="w-full h-full" />
                 </div>
                 <div className="w-full h-[465.26px] hidden lg:flex items-center justify-center">
                     <img src={teamDesktop} alt="team" className="w-full h-full" />
                 </div>
-            </div>
+            </div> */}
+
             <div
                 className="w-full h-full lg:p-20 relative  rounded-2xl shadow justify-center items-center flex flex-col pt-14 lg:py-14 lg:px-7"
                 style={{
@@ -763,10 +784,19 @@ const LandingPage = () => {
                                         <p className="font-medium text-slate-700 pb-2 p-2">
                                             How are you planning to use Lille?
                                         </p>
-                                        <input
+                                        {/* <input
                                             id="interestedTopics"
                                             name="interestedTopics"
                                             type="text"
+                                            value={userDetails.interestedTopics}
+                                            onChange={handleUserDetailsInputChange}
+                                            className="p-2 w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                                            placeholder="Write here."
+                                            required
+                                        /> */}
+                                        <TextareaAutosize
+                                            id="interestedTopics"
+                                            name="interestedTopics"
                                             value={userDetails.interestedTopics}
                                             onChange={handleUserDetailsInputChange}
                                             className="p-2 w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
@@ -873,16 +903,21 @@ const LandingPage = () => {
                                     How are you planning to use Lille?
                                 </p>
 
-                                <input
+                                <TextareaAutosize
                                     id="interestedTopics"
                                     name="interestedTopics"
-                                    type="text"
                                     value={userDetails.interestedTopics}
                                     onChange={handleUserDetailsInputChange}
                                     className="p-2 w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                                    placeholder="Write here"
+                                    placeholder="Write here."
                                     required
                                 />
+
+                                {
+                                    inputErrors.interestedTopics && inputErrors.interestedTopics != "" && <span className='text-red-500'>  {
+                                        inputErrors.interestedTopics
+                                    } </span>
+                                }
                                 {
                                     inputErrors.interestedTopics && inputErrors.interestedTopics != "" && <span className='text-red-500'>  {
                                         inputErrors.interestedTopics
