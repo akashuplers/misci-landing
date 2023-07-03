@@ -7,7 +7,7 @@ const MoblieUnAuthFooter = () => {
       style={{
         backgroundColor: "darkblue",
         backgroundImage:
-          "url('/footerbg.png'),lightgray 50% / cover no-repeat;",
+          "url('/footerbg.png')",
       }}
     >
       <div className="mx-6 py-10 text-center md:text-left">
@@ -24,22 +24,22 @@ const MoblieUnAuthFooter = () => {
           <div className="w-full flex flex-col items-start">
             <h6 className="mb-4 flex justify-start font-semibold  ">Company</h6>
             <p className="mb-4">
-              <a href="#!" className="text-neutral-600 dark:text-neutral-200">
+              <a href="#!" className="text-white-600 hover:opacity-90">
                 Why Choose us
               </a>
             </p>
             <p className="mb-4">
-              <a href="#!" className="text-neutral-600 dark:text-neutral-200">
+              <a href="#!" className="text-white-600 hover:opacity-90 ">
                 Testimonial
               </a>
             </p>
             <p className="mb-4">
-              <a href="#!" className="text-neutral-600 dark:text-neutral-200">
+              <a href="#!" className="text-white-600 hover:opacity-90 ">
                 Pricing
               </a>
             </p>
             <p>
-              <a href="#!" className="text-neutral-600 dark:text-neutral-200">
+              <a href="#!" className="text-white-600 hover:opacity-90 ">
                 FAQs
               </a>
             </p>
@@ -51,18 +51,18 @@ const MoblieUnAuthFooter = () => {
             <p className="mb-4">
               <a
                 href="#!"
-                className="text-neutral-600 dark:text-neutral-200 justify-start ss"
+                className="text-white-600 hover:opacity-90  justify-start ss"
               >
                 Privacy & Policy
               </a>
             </p>
             <p className="mb-4">
-              <a href="#!" className="text-neutral-600 dark:text-neutral-200">
+              <a href="#!" className="text-white-600 hover:opacity-90 ">
                 Terms & Conditions
               </a>
             </p>
             <p className="mb-4">
-              <a href="#!" className="text-neutral-600 dark:text-neutral-200">
+              <a href="#!" className="text-white-600 hover:opacity-90 ">
                 Blogs
               </a>
             </p>
@@ -80,7 +80,7 @@ const MoblieUnAuthFooter = () => {
                 <path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 5.493a3 3 0 01-3.144 0L1.5 8.67z" />
                 <path d="M22.5 6.908V6.75a3 3 0 00-3-3h-15a3 3 0 00-3 3v.158l9.714 5.978a1.5 1.5 0 001.572 0L22.5 6.908z" />
               </svg>
-              info@example.com
+              sales@lille.com
             </p>
             <h6 className="mb-4 flex justify-center font-semibold  md:justify-start">
               Follow us on
