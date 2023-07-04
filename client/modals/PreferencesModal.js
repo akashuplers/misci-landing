@@ -151,7 +151,7 @@ export default function PreferencesModal({ pfmodal, setPFModal, getToken }) {
         <h2 className="text-xl font-bold">Select topics of your interest</h2>
         <p className="text-sm text-gray-500 pb-5">
           Select at least 1 topics of your interest so that we can provide daily
-          blogs.
+          contents.
         </p>
         <div className="flex flex-wrap gap-2 py-4">
           {prefKeyword.map((keyword, index) => {
