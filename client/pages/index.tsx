@@ -429,7 +429,7 @@ export default function Home() {
                 generates blog posts from URLs or uploaded files, providing
                 concise and informative content in no time
               </p> */}
-              <div className="p-4 mt-4 lg:mt-2">Lille.ai, Your AI-Powered Content Repurposing Platform.</div>
+              <div className="p-4 mt-4 lg:mt-2">Try some of our trending topics.</div>
               {!loading ? (
                 <div className="flex flex-col  lg:grid grid-cols-3 gap-4 py-4">
                   {updatedArr}
