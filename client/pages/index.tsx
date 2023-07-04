@@ -287,7 +287,6 @@ export default function Home() {
     }
   }, [meeData]);
 
-
   useEffect(() => {
     function sendOpt() {
       const SEND_OTP_URL = API_BASE_PATH + "/auth/send-otp";
@@ -368,7 +367,7 @@ export default function Home() {
           <TrialEndedModal setTrailModal={() => {}} topic={null} />
         )}
         <div
-          className={`relative px-6 pt-5 lg:px-8 ${
+          className={`relative px-6 pt-5 lg:pt-0 lg:px-8 ${
             !isAuthenticated && "md:min-h-screen"
           }`}
         >
@@ -399,31 +398,34 @@ export default function Home() {
           </div>
           <div className="mx-auto max-w-screen-xl flex flex-col">
             <div className="mx-auto max-w-3xl text-center h-screen flex items-center justify-center max-h-[700px]">
-              <div>
-              <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
-                Automate, <span className='text-indigo-700'>Amplify</span>, Achieve.  
+              <div className="">
+                <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
+                  Automate, <span className="text-indigo-700">Amplify</span>,
+                  Achieve.
+                </div>
+                <div className="p-4 mt-4 lg:mt-2">
+                  Try some of our trending topics.
+                </div>
+                {!loading ? (
+                  <div className="flex flex-col  lg:grid grid-cols-3 gap-4 py-4">
+                    {updatedArr}
+                  </div>
+                ) : (
+                  <div style={{ margin: "0 auto" }}>
+                    <LoaderPlane />
+                  </div>
+                )}
+                <AIInputComponent />
+                <div
+                  className="w-[80%] absolute top-[500px] lg:top-[350px] h-[200px] inset-x-0 -z-10"
+                  style={{
+                    background:
+                      "linear-gradient(265deg, #C3DDFF 38%, #FFF5E3 61%)",
+                    filter: "blur(80px)",
+                  }}
+                ></div>
               </div>
-              <div className="p-4 mt-4 lg:mt-2">Try some of our trending topics.</div>
-              {!loading ? (
-                <div className="flex flex-col  lg:grid grid-cols-3 gap-4 py-4">
-                  {updatedArr}
-                </div>
-              ) : (
-                <div style={{ margin: "0 auto" }}>
-                  <LoaderPlane />
-                </div>
-              )}
-              <AIInputComponent />
-              <div
-                className="w-[80%] absolute top-[500px] lg:top-[350px] h-[200px] inset-x-0 -z-10"
-                style={{
-                  background:
-                    "linear-gradient(265deg, #C3DDFF 38%, #FFF5E3 61%)",
-                  filter: "blur(80px)",
-                }}
-              ></div>
             </div>
-              </div>
             {!isAuthenticated && <LandingPage />}
           </div>
           <div className="absolute inset-x-0 top-[calc(100%-12rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
@@ -452,8 +454,8 @@ export default function Home() {
             </svg>
           </div>
         </div>
-        
-        {!isAuthenticated &&<MoblieUnAuthFooter /> }
+
+        {!isAuthenticated && <MoblieUnAuthFooter />}
       </Layout>
       <style>
         {`
