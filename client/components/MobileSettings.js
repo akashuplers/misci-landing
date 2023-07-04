@@ -31,43 +31,44 @@ import fillerProfileImage from "../public/profile-filler.jpg";
 import { UpgradeFeatures } from "./FeatureItem";
 import ForgotPasswordModal from "./ForgotPasswordModal";
 import LoaderScan from "./LoaderScan";
-import CancelSubscriptionModal from "../modals/CancelSubscriptionModal";
 import { TwitterVerifiedIcon } from "./localicons/localicons";
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function MobileSettings({ meeData, meeLoading }) {
+
+  const [selectedTab, setSelectedTab] = useState(0);
   var tabs = [
     {
       name: "Profile",
       icon: <UserIcon className="w-5 h-5" aria-hidden="true" />,
-      component: <ProfileTab meeData={meeData} />,
+      component: <ProfileTab meeData={meeData} setSelectedTab={setSelectedTab} />,
     },
     {
       name: "Preferences",
       icon: <AtSymbolIcon className="w-5 h-5" aria-hidden="true" />,
-      component: <PreferencesTab meeData={meeData} meeLoading={meeLoading} />,
+      component: <PreferencesTab meeData={meeData} setSelectedTab={setSelectedTab} meeLoading={meeLoading} />,
     },
     {
       name: "Integration",
       icon: <CogIcon className="w-5 h-5" aria-hidden="true" />,
-      component: <IntegrationTab meeData={meeData} />,
+      component: <IntegrationTab meeData={meeData} setSelectedTab={setSelectedTab} />,
     },
     {
       name: "Billing",
       icon: <CreditCardIcon className="w-5 h-5" aria-hidden="true" />,
-      component: <BillingTab meeData={meeData} />,
+      component: <BillingTab meeData={meeData} setSelectedTab={setSelectedTab} />,
     },
     {
       name: "Upgrade",
       icon: <ArrowUpCircleIcon className="w-5 h-5" aria-hidden="true" />,
-      component: <UpgradeTab meeData={meeData} />,
+      component: <UpgradeTab meeData={meeData} setSelectedTab={setSelectedTab} />,
     },
   ];
   return (
     <div className="scrollbar-hide w-full px-2 sm:px-0">
-      <Tab.Group>
+      <Tab.Group onChange={setSelectedTab} defaultIndex={selectedTab}>
         <Tab.List className="overflow-x-auto scrollbar-hide flex w-full space-x-1 rounded-xl bg-blue-900/20 p-1">
           {tabs.map((category) => (
             <Tab
@@ -688,7 +689,7 @@ function IntegrationTab({ meeData }) {
     </div>
   );
 }
-function BillingTab({ meeData }) {
+function BillingTab({ meeData, setSelectedTab }) {
   const [showCancelModal, setshowCancelModal] = useState(false);
   const maskCardNumber = (cardNumber) => {
     const visibleDigits = cardNumber.slice(-4);
@@ -715,14 +716,16 @@ function BillingTab({ meeData }) {
           </p>
         </div>
         <div className="mt-6 flex justify-center">
-          <button className="w-[200px] p-4 bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded">
+          <button className="w-full p-4 bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded" onClick={() => {
+            setSelectedTab(4);
+          }}>
             Select Plan from Upgrade
           </button>
         </div>
       </div>
     );
   }
-  
+
   return (
     <div>
       <div className="mt-4 border p-2 shadow-md rounded-md">

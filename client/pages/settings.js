@@ -27,8 +27,9 @@ import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { addPreferances } from "../graphql/mutations/addPreferances";
 import { meeAPI } from "../graphql/querys/mee";
 import { formatDate, generateDateString } from "../helpers/helper";
-import fillerProfileImage from "../public/profile-filler.jpg";
 
+
+const fillerProfileImage = "/profile-filler.jpg";
 const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: false },
   { name: "Jobs", href: "#", icon: BriefcaseIcon, current: false },
@@ -173,7 +174,7 @@ export default function Settings() {
       setUpdateProfileData({
         firstName: meeData.me.name,
         lastName: meeData.me.lastName,
-        profileImage: meeData.me.profileImage ?? fillerProfileImage.src,
+        profileImage: meeData.me.profileImage ?? fillerProfileImage,
       });
       const arr = [];
       meeData.me.prefData.map((value) =>
@@ -236,7 +237,7 @@ export default function Settings() {
       });
       return;
     }
-    
+
     setUpdateLoader(true);
     axios
       .put(API_BASE_PATH + API_ROUTES.UPDATE_PROFILE, updateProfileData, {
