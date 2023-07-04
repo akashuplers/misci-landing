@@ -1,5 +1,4 @@
-// @ts-ignore
-
+// @ts-nocheck
 import Footer from "@/components/Footer";
 import { API_BASE_PATH } from "@/constants/apiEndpoints";
 import { gql, useQuery } from "@apollo/client";
