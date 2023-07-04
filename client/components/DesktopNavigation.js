@@ -10,7 +10,7 @@ const DesktopNavigation = ({
     <div className=" mx-auto max-w-full 2xl:max-w-6xl px-4 sm:px-6 lg:px-8">
       <div className=" h-[52.56px] justify-between items-center flex">
         <Link href="/">
-          <img className="w-[104.90px] h-[52.56px]" src="/lille_logo_new.png" />
+          <img className="w-[104.90px] h-full" src="/lille_logo_new.png" />
         </Link>
         <div className="justify-center items-center gap-6 flex">
           {desktopNavigationRoutes.map((route) => (
