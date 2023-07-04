@@ -280,7 +280,7 @@ export default function Pricing() {
                       Full Features Access with 25 Credits
                     </p>
                     <p className=" text-[#182735] text-left leading-[26px] text-[18px] font-medium mb-4">
-                      Create and Regenerate blogs with free publishing on
+                      Create and Regenerate contents with free publishing on
                       Lille.ai platform, LinkedIn and three tweets per day on
                       Twitter.
                     </p>
