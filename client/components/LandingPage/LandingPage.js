@@ -342,6 +342,7 @@ const LandingPage = () => {
             </div> */}
 
             <div
+                id='whyChooseUs'
                 className="w-full h-full lg:p-20 relative  rounded-2xl shadow justify-center items-center flex flex-col pt-14 lg:py-14 lg:px-7"
                 style={{
                     backgroundImage: "linear-gradient(138deg, #4A3AFE 0%, #6883FF 100%)",
@@ -706,7 +707,7 @@ const LandingPage = () => {
                 </>
             </div>
             {/* demo */}
-            <SectionSpacer />
+            <SectionSpacer id={`userDemo`} />
             <div className="userDemo hidden lg:flex items-center justify-center w-full h-full ">
                 <div className="border w-full p-10 bg-white rounded-2xl shadow justify-between items-center gap-16 flex">
                     <div className="relative bg-gradient-to-br from-indigo-600 to-indigo-400 rounded-lg flex-col justify-start items-start flex w-full">
@@ -947,6 +948,8 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
-const SectionSpacer = () => {
+export const SectionSpacer = () => {
+    const id = "section-spacer";
+    const randomId = Math.random().toString(36).substring(7);
     return <div className="my-8"></div>;
 };
