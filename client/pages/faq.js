@@ -5,11 +5,11 @@ import { useState } from 'react'
 const faqs =  [
   {
     "question": "What is Lille.ai?",
-    "answer": "Lille.ai is an AI-powered content creation platform. It helps users generate and optimize content for general blogs, Twitter, and LinkedIn. It allows users to provide topics and offers a wide range of trending topics to base your content on."
+    "answer": "Lille.ai is an AI-powered content creation platform. It helps users generate and optimize content for general contents, Twitter, and LinkedIn. It allows users to provide topics and offers a wide range of trending topics to base your content on."
   },
   {
     "question": "What kind of content can I generate with Lille.ai?",
-    "answer": "With Lille.ai, you can generate Twitter posts, LinkedIn posts, and even full blogs based on the topics you provide, choose, or from our trending topic suggestions."
+    "answer": "With Lille.ai, you can generate Twitter posts, LinkedIn posts, and even full contents based on the topics you provide, choose, or from our trending topic suggestions."
   },
   {
     "question": "How do I sign up or login to Lille.ai?",
@@ -25,7 +25,7 @@ const faqs =  [
   },
   {
     "question": "What are the benefits of a paid plan?",
-    "answer": "Paid plans grant full feature access, including 200 credits per month, the ability to create and regenerate blogs with your topics, unlimited publishing on top social media platforms, and the opportunity for customization. You can go to the settings page and edit the daily feed preferences in the respective tab. You'll also have access to our support team for any inquiries or issues."
+    "answer": "Paid plans grant full feature access, including 200 credits per month, the ability to create and regenerate contents with your topics, unlimited publishing on top social media platforms, and the opportunity for customization. You can go to the settings page and edit the daily feed preferences in the respective tab. You'll also have access to our support team for any inquiries or issues."
   },
   {
     "question": "How does the credit system work?",
@@ -33,7 +33,7 @@ const faqs =  [
   },
   {
     "question": "What does the Lille.ai dashboard offer?",
-    "answer": "You can generate any blog using the 'Generate New' link and access your previously saved blogs in the saved list. Once you publish a blog, you can find it in the published list. A blog can be published to the Lille platform and shared via WhatsApp, Telegram, Twitter, LinkedIn, etc."
+    "answer": "You can generate any blog using the 'Generate New' link and access your previously saved contents in the saved list. Once you publish a blog, you can find it in the published list. A blog can be published to the Lille platform and shared via WhatsApp, Telegram, Twitter, LinkedIn, etc."
   },
   {
     "question": "What are 'trending topics' on Lille.ai?",
