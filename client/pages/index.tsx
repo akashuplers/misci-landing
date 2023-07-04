@@ -398,7 +398,7 @@ export default function Home() {
           </div>
           <div className="mx-auto max-w-screen-xl flex flex-col">
             <div className="mx-auto max-w-3xl text-center h-screen  2xl:h-full">
-              <div className="relative flex text-3xl items-center pt-32 lg:py-20 justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
+              <div className="relative flex text-3xl items-center pt-32 lg:pt-20 justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
               {/*   Generate & Optimize{" "}
                 <TextTransition
                   springConfig={presets.gentle}
@@ -419,14 +419,17 @@ export default function Home() {
                   </TextTransition>
                 </span>
                 with Lille */}
-                Automate, Amplify, Achieve.
+                Automate, <span className='text-indigo-700'>Amplify</span>, Achieve.
+
+                {/* gradient color to these textx */}
+                 
               </div>
               {/* <p className="mt-6 text-lg leading-8 text-gray-600">
                 Streamline your content creation process with our website that
                 generates blog posts from URLs or uploaded files, providing
                 concise and informative content in no time
               </p> */}
-              <div className="p-4 mt-4">Lille.ai, Your AI-Powered Content Repurposing Platform.</div>
+              <div className="p-4 mt-4 lg:mt-2">Lille.ai, Your AI-Powered Content Repurposing Platform.</div>
               {!loading ? (
                 <div className="flex flex-col  lg:grid grid-cols-3 gap-4 py-4">
                   {updatedArr}
