@@ -287,6 +287,7 @@ export default function Home() {
     }
   }, [meeData]);
 
+
   useEffect(() => {
     function sendOpt() {
       const SEND_OTP_URL = API_BASE_PATH + "/auth/send-otp";
@@ -397,38 +398,11 @@ export default function Home() {
             </svg>
           </div>
           <div className="mx-auto max-w-screen-xl flex flex-col">
-            <div className="mx-auto max-w-3xl text-center h-screen  2xl:h-full">
-              <div className="relative flex text-3xl items-center pt-32 lg:pt-20 justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
-              {/*   Generate & Optimize{" "}
-                <TextTransition
-                  springConfig={presets.gentle}
-                  style={{
-                    margin: "0",
-                  }}
-                >
-                  <span className="newsletter">
-                    {TEXTS[index % TEXTS.length]}
-                  </span>
-                </TextTransition>
-                using{" "}
-                <span style={{ color: "var(--primary-blue)" }} className="">
-                  <TextTransition springConfig={presets.gentle}>
-                    <span className="newsletter">
-                      {TEXTS2[index % TEXTS2.length]}
-                    </span>
-                  </TextTransition>
-                </span>
-                with Lille */}
-                Automate, <span className='text-indigo-700'>Amplify</span>, Achieve.
-
-                {/* gradient color to these textx */}
-                 
+            <div className="mx-auto max-w-3xl text-center h-screen flex items-center justify-center max-h-[700px]">
+              <div>
+              <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
+                Automate, <span className='text-indigo-700'>Amplify</span>, Achieve.  
               </div>
-              {/* <p className="mt-6 text-lg leading-8 text-gray-600">
-                Streamline your content creation process with our website that
-                generates blog posts from URLs or uploaded files, providing
-                concise and informative content in no time
-              </p> */}
               <div className="p-4 mt-4 lg:mt-2">Try some of our trending topics.</div>
               {!loading ? (
                 <div className="flex flex-col  lg:grid grid-cols-3 gap-4 py-4">
@@ -449,9 +423,10 @@ export default function Home() {
                 }}
               ></div>
             </div>
+              </div>
             {!isAuthenticated && <LandingPage />}
           </div>
-          {/* <div className="absolute inset-x-0 top-[calc(100%-12rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
+          <div className="absolute inset-x-0 top-[calc(100%-12rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
             <svg
               className="relative left-[calc(50%+3rem)] h-[21.1875rem] max-w-none -translate-x-1/2 sm:left-[calc(50%+36rem)] sm:h-[30.375rem]"
               viewBox="0 0 1155 678"
@@ -475,7 +450,7 @@ export default function Home() {
                 </linearGradient>
               </defs>
             </svg>
-          </div> */}
+          </div>
         </div>
         
         {!isAuthenticated &&<MoblieUnAuthFooter /> }
