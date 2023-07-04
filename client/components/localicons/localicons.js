@@ -118,18 +118,18 @@ export const QuoteOpen = ({ className }) => {
       width="25"
       height="25"
       viewBox="0 0 25 25"
-      fill="currentColor"
+      fill="#fff"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
       <g clip-path="url(#clip0_1243_12166)">
         <path
           d="M0.5 12.648V22.9338H10.7857V12.648H3.9286C3.9286 8.86709 7.00478 5.7909 10.7857 5.7909V2.3623C5.11384 2.3623 0.5 6.97614 0.5 12.648Z"
-          fill="#3A4F39"
+          fill="#fff"
         />
         <path
           d="M24.4996 5.7909V2.3623C18.8277 2.3623 14.2139 6.97614 14.2139 12.648V22.9338H24.4996V12.648H17.6425C17.6425 8.86709 20.7186 5.7909 24.4996 5.7909Z"
-          fill="#3A4F39"
+          fill="#fff"
         />
       </g>
       <defs>
