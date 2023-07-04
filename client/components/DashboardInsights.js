@@ -914,7 +914,7 @@ export default function DashboardInsights({
         </h1>
         <div className="flex jusify-between gap-[1.25em]">
           <p className="font-normal w-[100%] lg:w-[70%]">
-            Regenerate your blog on the basis of selected used & fresh ideas.
+            Regenerate your content on the basis of selected used & fresh ideas.
           </p>
           <button
             className="cta flex items-center gap-2 self-start !py-2 !font-semibold"
