@@ -374,6 +374,25 @@ export default function Home() {
             !isAuthenticated && "md:min-h-screen"
           }`}
         >
+ {/* <div className="absolute top-10 left-10 transform-gpu -translate-x-1/2 -translate-y-1/2">
+          <div className="relative w-32 h-32 bg-indigo-500 rounded-full opacity-50 animate-float">
+            <p className="text-white text-center">80%</p>
+          </div>
+        </div>
+
+       
+        <div className="absolute top-30 right-30 transform-gpu -translate-x-1/2 -translate-y-1/2">
+          <div className="relative w-32 h-32 bg-pink-500 rounded-full opacity-50 animate-float">
+            <p className="text-white text-center">40%</p>
+          </div>
+        </div>
+
+       
+        <div className="absolute top-23 right-70 transform-gpu -translate-x-1/2 -translate-y-1/2">
+          <div className="relative w-32 h-32 bg-yellow-500 rounded-full opacity-50 animate-float">
+            <p className="text-white text-center">10X</p>
+          </div>
+        </div> */}
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
             <svg
               className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
