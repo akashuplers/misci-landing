@@ -174,4 +174,4 @@ export const StarIcon = ({ className }) => {
       </defs>
     </svg>
   );
-};
+}; 
