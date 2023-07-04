@@ -1,3 +1,5 @@
+// @ts-ignore
+
 import Footer from "@/components/Footer";
 import { API_BASE_PATH } from "@/constants/apiEndpoints";
 import { gql, useQuery } from "@apollo/client";
@@ -19,7 +21,6 @@ import OTPModal from "../modals/OTPModal";
 import PreferencesModal from "../modals/PreferencesModal";
 import useStore from "../store/store";
 
-// @ts-ignore
 
 const PAYMENT_PATH = "/?payment=true";
 const TEXTS = [
@@ -306,6 +307,32 @@ export default function Home() {
     }
   }, [meeData]);
 
+  useEffect(() => {
+    function sendOpt() {
+      const SEND_OTP_URL = API_BASE_PATH + "/auth/send-otp";
+      var getToken = localStorage.getItem("token");
+      const requestOptions = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + getToken,
+        },
+      };
+
+      fetch(SEND_OTP_URL, requestOptions)
+        .then((response) => {
+          console.log("RESPONSE FROM SEND OTP");
+          console.log(response);
+          console.log(response.json());
+        })
+        .catch((error) => {
+          console.log("ERROR FROM SEND OTP");
+        });
+    }
+    if (showOTPModal === true) {
+      sendOpt();
+    }
+  }, [showOTPModal]);
   const [windowWidth, setWindowWidth] = useState(0);
   useEffect(() => {
     setWindowWidth(window.innerWidth);
