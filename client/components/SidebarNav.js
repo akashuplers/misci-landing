@@ -193,6 +193,7 @@ export default function Sidebar() {
     setShowTwitterThreadUI(false);
     setTwitterThreadData([]);
   }
+  useEffect(() => {console.log('mee data'); console.log(meeData)}, [meeData])
   return (
     <>
       <ToastContainer />

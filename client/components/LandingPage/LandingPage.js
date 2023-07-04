@@ -259,9 +259,7 @@ const LandingPage = () => {
 
     return (
         <>
-            <div className="hidden xl:block 2xl:mt-[10rem]">
-                {/* <SectionSpacer /> */}
-            </div>
+           
             {/* <div className="w-full h-[195px]    flex-col justify-start items-center gap-4 inline-flex">
                 <div className="h-[81px] flex-col justify-start items-center gap-2 flex">
                     <div className="w-full self-stretch text-center text-slate-800 text-2xl lg:text-[48px] font-bold leading-10">
