@@ -2,26 +2,23 @@
 import "@/styles/globals.css";
 import axios from "axios";
 import type { AppProps } from "next/app";
-import { useEffect, useLayoutEffect, useState } from "react";
-import Script from "next/script";
+import { useEffect, useState } from "react";
 import CookieConsent from "react-cookie-consent";
 
+import { GRAPHQL_URL, WEBSOCKET_URL } from "@/constants";
 import {
   ApolloClient,
+  ApolloLink,
   ApolloProvider,
-  InMemoryCache,
   HttpLink,
+  InMemoryCache,
+  split,
 } from "@apollo/client";
-import { ApolloLink } from "@apollo/client";
-import { split, useSubscription, gql } from "@apollo/client";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
-import { createClient } from "graphql-ws";
 import { getMainDefinition } from "apollo-utilities";
-import { GRAPHQL_URL, WEBSOCKET_URL } from "@/constants";
-import useTempId from "@/store/store";
-import { toast } from "react-toastify";
-import { ToastContainer } from "react-toastify";
+import { createClient } from "graphql-ws";
 import { useRouter } from "next/router";
+import { ToastContainer } from "react-toastify";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 
 axios.interceptors.request.use(
@@ -105,6 +102,7 @@ export default function App({ Component, pageProps }: AppProps) {
     "/resetPass",
     "/cancellation-policy",
     "/faq",
+    "/aboutus"
   ];
 
   useEffect(() => {
