@@ -71,13 +71,13 @@ export default function Sidebar() {
       current: url === "/",
     },
     {
-      name: "Published Blogs",
+      name: "Published Contents",
       href: "/published",
       icon: PaperAirplaneIcon,
       current: url === "/published",
     },
     {
-      name: "Saved Blogs",
+      name: "Saved Contents",
       href: "/saved",
       icon: FolderIcon,
       current: url === "/saved",
@@ -154,17 +154,17 @@ export default function Sidebar() {
   useEffect(() => {
     const regex = /^\/dashboard\/[6|4][a-zA-Z0-9]*$/;
     if (window.location.search === "?isPublished=true") {
-      setTitle("Published Blog");
+      setTitle("Published Content");
     } else if (window.location.pathname === "/saved") {
-      setTitle("Saved Blog(s)");
+      setTitle("Saved Content(s)");
     } else if (window.location.pathname === "/dashboard") {
-      setTitle("Generated Blog(s)");
+      setTitle("Generated Content");
     } else if (window.location.pathname === "/settings") {
       setTitle("Settings");
     } else if (window.location.pathname === "/published") {
-      setTitle("Published");
+      setTitle("Published Content(s)");
     } else if (regex.test(window.location.pathname)) {
-      setTitle("Saved Blog");
+      setTitle("Saved Content");
     }
   }, []);
 
@@ -193,6 +193,7 @@ export default function Sidebar() {
     setShowTwitterThreadUI(false);
     setTwitterThreadData([]);
   }
+  useEffect(() => { console.log('mee data'); console.log(meeData) }, [meeData])
   return (
     <>
       <ToastContainer />
