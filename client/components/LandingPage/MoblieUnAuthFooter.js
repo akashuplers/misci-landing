@@ -35,7 +35,7 @@ const MoblieUnAuthFooter = () => {
             <h6 className="mb-4 flex items-center lg:items-start  justify-start lg:justify-start font-semibold sss">
               <img src="/lille_logo_light.png" className="h-6" alt="" />
             </h6>
-            <p className="text-left lg:text">
+            <p className="text-left lg:text max-w-xs">
               Boost your engagement, increase your followers, and drive more
               traffic to your website with optimized social media posts.
             </p>

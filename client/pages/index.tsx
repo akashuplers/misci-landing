@@ -347,6 +347,7 @@ export default function Home() {
       )}
 
       <Layout>
+
         <ToastContainer />
         {pfmodal && (
           <PreferencesModal
@@ -399,6 +400,8 @@ export default function Home() {
             </svg>
           </div>
           <div className="mx-auto max-w-screen-xl flex flex-col">
+
+
             <div className="mx-auto max-w-3xl text-center h-screen flex items-center justify-center max-h-[700px]">
               <div>
               <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
@@ -459,6 +462,22 @@ export default function Home() {
         
         {!isAuthenticated &&<MoblieUnAuthFooter /> }
       </Layout>
+<style>
+  {`
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+  `}
+</style>
       <style>
         {`
           @media screen and (max-width: 767px) {
