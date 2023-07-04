@@ -25,6 +25,10 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@300&display=swap');
 
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
   --my-mobile-sidebar-height: unset;
   --sidebar-width: 12.5rem;
