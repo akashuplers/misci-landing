@@ -405,7 +405,7 @@ export default function Home() {
             <div className="mx-auto max-w-3xl text-center h-screen flex items-center justify-center max-h-[700px]">
               <div>
               <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
-                Automate, <span className='text-indigo-700'>Amplify</span>, Achieve.  
+                Automate, <span className='text-indigo-700'>Amplify,</span> Achieve.  
               </div>
               <div className="relative flex text-xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap custom-spacing">
                 Your AI-powered content partner that doesn't dream, it delivers!  
