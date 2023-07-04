@@ -404,7 +404,7 @@ export default function Home() {
               <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
                 Automate, <span className='text-indigo-700'>Amplify</span>, Achieve.  
               </div>
-              <div className="relative flex text-xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-xl pt-4 pb-8 flex-wrap custom-spacing">
+              <div className="relative flex text-xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap custom-spacing">
                 Your AI-powered content partner that doesn't dream, it delivers!  
               </div>
               <div className="p-4 mt-4 lg:mt-2">Try some of our trending topics.</div>
