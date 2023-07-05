@@ -42,7 +42,6 @@ export const htmlToJson = (htmlString, imageURL) => {
 
 export const jsonToHtml = (jsonObj) => {
   if (!jsonObj || jsonObj.length == 0) return;
-  console.log("===", jsonObj);
   const tag = jsonObj?.tag;
 
   const children = jsonObj?.children || [];
@@ -106,11 +105,9 @@ export function generateDateString(invoice) {
 }
 
 export function getCurrentDomain() {
-  console.log(window.location.hostname);
   return window.location.origin;
 }
 export function getCurrentHref() {
-  console.log(window.location.href);
   return window.location.href;
 }
 export function getCurrentDashboardURL() {
@@ -162,7 +159,6 @@ export function isMonthAfterJune(month) {
 }
 
 export const handleconnectTwitter = async (callback_path) => {
-  console.log("handling twitter connect");
   localStorage.setItem("loginProcess", true);
   localStorage.setItem("for_TW", true);
 

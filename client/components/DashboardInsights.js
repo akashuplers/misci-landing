@@ -241,10 +241,6 @@ export default function DashboardInsights({
   const handlesetRegenSelected = (newarr) => {
     setRegenSelected(newarr);
   };
-  useEffect(() => {
-    console.log("Ideas", ideas);
-  }, [ideas]);
-
   // Adds the matched idea into notUniqueFilteredIdeas
   useEffect(() => {
     setFilteredIdeas([]);
@@ -321,7 +317,6 @@ export default function DashboardInsights({
           arr.push(ideaObject);
         }
       }
-      console.log("111", arr);
       for (let index = 0; index < freshIdeas?.length; index++) {
         const element = freshIdeas[index];
         if (element.used) {
@@ -333,7 +328,6 @@ export default function DashboardInsights({
         }
       }
       flag = 1;
-      console.log("222", arr);
     } else {
       if (arrUsed.length === 0) {
         for (let index = 0; index < ideas.length; index++) {
@@ -374,7 +368,7 @@ export default function DashboardInsights({
       (obj, index, self) => index === self.findIndex((t) => t.text === obj.text)
     );
     if (newarr?.length >= 1) {
-      console.log("888", newarr, arrUsed, regenSelected, arrFresh);
+
       RegenerateBlog({
         variables: {
           options: {
@@ -383,7 +377,6 @@ export default function DashboardInsights({
           },
         },
         onCompleted: (data) => {
-          console.log("regen", data);
           updateCredit();
           setBlogData(data?.regenerateBlog);
           setIdeas(data?.regenerateBlog?.ideas?.ideas);
@@ -392,15 +385,6 @@ export default function DashboardInsights({
           setReference(data?.regenerateBlog?.references);
           setFreshIdeaReferences(data?.regenerateBlog?.freshIdeasReferences);
           setFreshIdeas(data?.regenerateBlog?.ideas?.freshIdeas);
-          // setTwitterThreadData(data?.regenerateBlog?.publish_data)
-          // const aa = data?.regenerateBlog?.publish_data?.find(
-          //   (pd) => pd?.platform === "twitter"
-          // );
-          console.log(
-            "asfgasfda ",
-            data?.regenerateBlog?.pythonRespTime,
-            data?.regenerateBlog?.respTime
-          );
           setPyResTime(data?.regenerateBlog?.pythonRespTime);
           setNdResTime(data?.regenerateBlog?.respTime);
 
@@ -419,7 +403,6 @@ export default function DashboardInsights({
           const aaThreads = data?.regenerateBlog?.publish_data?.find(
             (pd) => pd?.platform === "twitter"
           );
-          console.log(aaThreads.threads);
           if (aaThreads?.threads?.length <= 0) {
             setTwitterThreadData(twitterThreadData)
           } else {
@@ -438,15 +421,11 @@ export default function DashboardInsights({
               aaThreads.threads?.pop();
               aaThreads.threads?.pop();
               aaThreads.threads?.push(theSecondLastThread);
-              console.log("THREADS DATA AFTER MERGE");
-              console.log(aaThreads.threads);
               setTwitterThreadData(aaThreads.threads);
             }
           }
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
-
-          console.log("Sucessfully re-generated the article");
           setArrFresh([]);
           setArrUsed([]);
           setRegenSelected([]);
@@ -473,19 +452,13 @@ export default function DashboardInsights({
           Array.from(document.querySelectorAll(".tag-button.active")).forEach(
             (el) => el?.classList?.remove("active")
           );
-          console.log(data);
-          console.log("MEE DATA");
-          console.log(meeData);
           const credits = meeData?.me?.credits;
-          console.log("CREDITS : " + credits);
           var userCredits = meeData?.me?.totalCredits - creditLeft - 1;
-          console.log("USER CREDITS: " + userCredits);
           userCredits = userCredits + 2;
           const SHOW_CONTRIBUTION_MODAL = ContributionCheck(
             userCredits,
             meeData
           );
-          console.log("SHOW_CONTRIBUTION_MODAL: ", SHOW_CONTRIBUTION_MODAL);
           if (SHOW_CONTRIBUTION_MODAL) {
             setShowContributionModal(true);
           }
@@ -543,11 +516,7 @@ export default function DashboardInsights({
           return { ...el, used: 1 };
         });
         setFreshFilteredIdeas(updatedFilteredIdeas);
-        console.log(
-          "updatedFilteredIdeas",
-          updatedFilteredIdeas,
-          freshFilteredIdeas
-        );
+
         var ideasCopy = [];
         for (let i = 0; i < freshIdeas.length; i++) {
           const element = freshIdeas[i];
@@ -791,7 +760,6 @@ export default function DashboardInsights({
       });
     } else if (ideaType === "fresh") {
       freshIdeasReferences.forEach((el, index) => {
-        // console.log(el.url, link);
         if (el.source === source) {
           filtered = index;
         }
@@ -801,7 +769,6 @@ export default function DashboardInsights({
     if (filtered === 0 || filtered) {
       return filtered + 1;
     } else {
-      // console.log(link, reference, "search")
       return null;
     }
   }
