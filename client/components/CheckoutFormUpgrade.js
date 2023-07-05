@@ -292,7 +292,7 @@ const CheckoutFormUpgrade = ({
             </p>
             <div className="ml-[25%] flex m-6">
               <button
-                class="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
+                className="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
                 onClick={() => {
                   window.location.href = "/";
                 }}
@@ -330,7 +330,7 @@ const CheckoutFormUpgrade = ({
                   className={
                     " w-100 bg-none my-1 rounded rounded-1 px-2 py-1.5"
                   }
-                  // className=" rounded-[4px]"
+                // className=" rounded-[4px]"
                 >
                   <CardElement
                     className="noob"

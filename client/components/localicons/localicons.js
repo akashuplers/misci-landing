@@ -29,11 +29,11 @@ export const LocalDeleteIcon = () => {
       viewBox="0 0 24 24"
       strokeWidth="1.5"
       stroke="currentColor"
-      class="w-6 h-6"
+      className="w-6 h-6"
     >
       <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
       />
     </svg>
@@ -67,8 +67,8 @@ export const CloseButtonIcon = () => {
       className="w-6 h-6"
     >
       <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         d="M6 18L18 6M6 6l12 12"
       />
     </svg>
@@ -99,13 +99,13 @@ export const DownIcon = () => {
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
-      stroke-width="1.5"
+      strokeWidth="1.5"
       stroke="currentColor"
-      class="w-6 h-6"
+      className="w-6 h-6"
     >
       <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         d="M19.5 8.25l-7.5 7.5-7.5-7.5"
       />
     </svg>
@@ -118,18 +118,18 @@ export const QuoteOpen = ({ className }) => {
       width="25"
       height="25"
       viewBox="0 0 25 25"
-      fill="currentColor"
+      fill="#fff"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
       <g clip-path="url(#clip0_1243_12166)">
         <path
           d="M0.5 12.648V22.9338H10.7857V12.648H3.9286C3.9286 8.86709 7.00478 5.7909 10.7857 5.7909V2.3623C5.11384 2.3623 0.5 6.97614 0.5 12.648Z"
-          fill="#3A4F39"
+          fill="#fff"
         />
         <path
           d="M24.4996 5.7909V2.3623C18.8277 2.3623 14.2139 6.97614 14.2139 12.648V22.9338H24.4996V12.648H17.6425C17.6425 8.86709 20.7186 5.7909 24.4996 5.7909Z"
-          fill="#3A4F39"
+          fill="#fff"
         />
       </g>
       <defs>

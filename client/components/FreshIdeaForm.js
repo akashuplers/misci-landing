@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactLoading from "react-loading";
 
 const FreshIdeaForm = ({
@@ -75,7 +74,7 @@ const FreshIdeaForm = ({
                                 style={{ display: "none" }}
                             />
 
-                            <div class="relative flex flex-col items-center group">
+                            <div className="relative flex flex-col items-center group">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 24 24"
@@ -90,7 +89,7 @@ const FreshIdeaForm = ({
                                 </svg>
 
                                 <div
-                                    class="absolute bottom-0 flex flex-col items-center hidden mb-6 group-hover:flex z-50 h-full min-w-[250px]"
+                                    className="absolute bottom-0 flex flex-col items-center hidden mb-6 group-hover:flex z-50 h-full min-w-[250px]"
                                     style={{
                                         right: "-50px",
                                         bottom: "15px",
@@ -98,14 +97,14 @@ const FreshIdeaForm = ({
                                     }}
                                 >
                                     <span
-                                        class="relative z-10 p-2 text-xs leading-none text-white whitespace-no-wrap bg-black shadow-lg w-full"
+                                        className="relative z-10 p-2 text-xs leading-none text-white whitespace-no-wrap bg-black shadow-lg w-full"
                                         style={{
                                             borderRadius: "10px",
                                         }}
                                     >
                                         Upload a file. pdf, docx and txt formats allowed. Max file size {"<"} 3MB
                                     </span>
-                                    <div class="w-3 h-3 -mt-2 rotate-45 bg-black"></div>
+                                    <div className="w-3 h-3 -mt-2 rotate-45 bg-black"></div>
                                 </div>
                             </div>
                         </label>
