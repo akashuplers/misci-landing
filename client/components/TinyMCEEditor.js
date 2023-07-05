@@ -113,15 +113,6 @@ export default function TinyMCEEditor({
 
   // const savingDataStatus = useAutoSave(updatedText, blog_id);
 
-  useEffect(() => {
-    let timerId;
-
-  }, [updatedText]);
-
-  async function handleAutoSave() {
-    handleSave();
-  }
-
   const { twitterThreadData, setTwitterThreadData } = useTwitterThreadStore();
   // const {}
   const [prevTwitterThreads, setPrevTwitterThreads] =
