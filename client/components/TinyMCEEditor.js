@@ -111,6 +111,17 @@ export default function TinyMCEEditor({
   // const [showTwitterThreadUI, setShowTwitterThreadUI] = useState(false);
   // const [pauseTwitterPublish]
 
+  // const savingDataStatus = useAutoSave(updatedText, blog_id);
+
+  useEffect(() => {
+    let timerId;
+
+  }, [updatedText]);
+
+  async function handleAutoSave() {
+    handleSave();
+  }
+
   const { twitterThreadData, setTwitterThreadData } = useTwitterThreadStore();
   // const {}
   const [prevTwitterThreads, setPrevTwitterThreads] =
@@ -198,13 +209,6 @@ export default function TinyMCEEditor({
     }
   };
   useEffect(() => {
-    //console.log("EDITOR TEXT CHANGED");
-    //console.log(editorText);
-    //console.log('UPDATED TEXT');
-    //console.log(updatedText);
-  }, [editorText, updatedText]);
-
-  useEffect(() => {
     if (twitterThreadData === prevTwitterThreads) {
     } else {
       setSaveText("Save Now!");
@@ -242,18 +246,10 @@ export default function TinyMCEEditor({
     } else {
       if (option === "twitter-comeback") {
         setOption("twitter");
-        // const siblingButton = document.querySelectorAll(".blog-toggle-button");
-        // siblingButton.forEach((el) => el.classList.remove("active"));
-        // const button = document.querySelector(".twitter");
-        // button?.classList?.add("active");
-        //console.log("TWITTER COMEBACK");
-        //console.log(blogData);
         const aa = blogData?.publish_data?.find(
           (pd) => pd?.platform === "twitter"
         );
         const htmlDoc = jsonToHtml(aa?.tiny_mce_data);
-        //console.log('MOVEING TO AA');
-        //console.log(aa);
         // check remainging
         if (
           meeData?.me?.remaining_twitter_quota <= 0 ||
