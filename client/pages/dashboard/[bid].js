@@ -21,36 +21,14 @@ if (typeof window !== "undefined") {
   });
 }
 
-// get the path of link in server
-
-// export const getServerSideProps = async (context) => {
-//   const { params } = context;
-//   console.log("CONTEXT");
-//   console.log(context);
-//   const { bid } = params;
-//   console.log(params);
-//   console.log('PARAMS');
-//   console.log(bid);
-
-//   return {
-//     props: { bid: bid }
-//   };
-// };
-
-
-
 export default function Post() {
   const [pfmodal, setPFModal] = useState(false);
   const router = useRouter();
   const { bid, isPublished } = router.query;
   const [reference, setReference] = useState([]);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
-  const { option, setOption } = useTabOptionStore()
-  console.log('ROUTER QUERY');
-  console.log(router);
-  // console.log("isPublished", isPublished);
-  console.log("router.query", router.query);
-  const { data, loading, error, 
+  const { option, setOption } = useTabOptionStore();
+  const { data, loading, error,
     refetch: refetchBlog
   } = useQuery(getBlogbyId, {
     variables: {
@@ -85,8 +63,6 @@ export default function Post() {
 
   useEffect(() => {
     if (data == null) return;
-
-    console.log("fetchBlog ", data);
     setBlogData(data.fetchBlog);
     setIdeas(data.fetchBlog.ideas.ideas);
     setTags(data.fetchBlog.tags);
@@ -158,28 +134,11 @@ export default function Post() {
     },
   });
   useEffect(() => {
-    console.log(router);
-    console.log('LOCAL STORERAGE');
-    console.log(localStorage);
-    /* asPath "/?payment=true" */
-    // query 
     const query = router.query;
-    console.log('QUERY');
-    console.log(query);
-    console.log('ROUTER');
     const { payment } = router.query;
     if (payment === 'true') {
-      // The "?payment=true" parameter is present in the URL
-      console.log('Payment is true');
-      console.log('ROUTER CHECK IF PAYMENT==TRUE');
-      console.log('USER CONTRIBUTION');
-
-      // console.log(userContribution);
       if (localStorage.getItem('userContribution') !== null) {
         var userContribution = JSON.parse(localStorage.getItem('userContribution') || '{}');
-        console.log('USER CONTRIBUTION IS NOT NULL');
-        console.log(userContribution);
-        // /auth/save-user-support
         const SAVE_USER_SUPPORT_URL = 'https://maverick.lille.ai/auth/save-user-support';
 
         const requestOptions = {
@@ -192,9 +151,6 @@ export default function Post() {
         };
         console.log('REQUEST OPTIONS');
         fetch(SAVE_USER_SUPPORT_URL, requestOptions).then((response) => {
-          console.log('RESPONSE FROM SAVE USER SUPPORT');
-          console.log(response);
-          console.log(response.json());
         }).catch((error) => {
           console.log('ERROR FROM SAVE USER SUPPORT');
           console.log(error);
@@ -237,9 +193,6 @@ export default function Post() {
   }, []);
 
   useEffect(() => {
-    console.log(meeData);
-
-   
     if (meeData?.me.prefFilled === false) {
       setPFModal(true);
     }
@@ -279,7 +232,7 @@ export default function Post() {
           } else {
             setShowOTPModal(true);
           }
-          const SEND_OTP_URL = API_BASE_PATH+"/auth/send-otp";
+          const SEND_OTP_URL = API_BASE_PATH + "/auth/send-otp";
           var getToken = localStorage.getItem("token");
           const requestOptions = {
             method: "GET",
@@ -291,9 +244,6 @@ export default function Post() {
 
           fetch(SEND_OTP_URL, requestOptions)
             .then((response) => {
-              console.log("RESPONSE FROM SEND OTP");
-              console.log(response);
-              console.log(response.json());
             })
             .catch((error) => {
               console.log("ERROR FROM SEND OTP");
@@ -305,9 +255,6 @@ export default function Post() {
       }
     }
   }, [meeData]);
-
-  console.log(freshIdeasReferences);
-
   return (
     <>
       {/* <Head><title>{blogData}</title><meta about="body">{blogData}</meta></Head> */}
