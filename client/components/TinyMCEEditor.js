@@ -2,10 +2,11 @@
 import { meeAPI } from "@/graphql/querys/mee";
 import { BASE_PRICE } from "@/pages";
 import { useMutation, useQuery } from "@apollo/client";
-import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import { CheckCircleIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { loadStripe } from "@stripe/stripe-js";
 import { Editor } from "@tinymce/tinymce-react";
 import axios from "axios";
+import equals from "fast-deep-equal";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -62,6 +63,12 @@ const TYPESOFTABS = {
   TWITTER: "twitter",
 };
 
+const SAVING_STATUS = {
+  SAVED: "Saved!",
+  SAVING: "Saving...",
+  ERROR: "Error!",
+  BLANK: "",
+}
 export default function TinyMCEEditor({
   topic,
   isAuthenticated,
@@ -128,6 +135,36 @@ export default function TinyMCEEditor({
     setOptions: setTwitterThreadAlertOption,
   } = useTwitterThreadALertModal();
   const { showTwitterThreadUI, setShowTwitterThreadUI } = useThreadsUIStore();
+  const [autoSaveSavingStatus, setAutoSaveSavingStatus] = useState(SAVING_STATUS.SAVED);
+  const [prevAutoSaveData, setPrevAutoSaveData] = useState(editorText);
+  const [hasDataChanged, setHasDataChanged] = useState(false);
+
+
+  // currently working for linkedin side only.
+  useEffect(() => {
+    const prevAutoSaveDataString = JSON.stringify(prevAutoSaveData);
+    const updatedTextString = JSON.stringify(updatedText);
+    if (!equals(prevAutoSaveDataString, updatedTextString) && option == "linkedin") {
+      setAutoSaveSavingStatus(SAVING_STATUS.SAVING);
+      setHasDataChanged(true);
+    }
+    setPrevAutoSaveData(updatedText);
+  }, [updatedText]);
+
+  // autosave useEffect
+  useEffect(() => {
+    if (hasDataChanged && option === "linkedin") {
+      const timeout = setTimeout(() => {
+        setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
+        handleSave(false, false);
+        setHasDataChanged(false);
+      }, 10000);
+      return () => clearTimeout(timeout);
+    }
+
+  }, [autoSaveSavingStatus, hasDataChanged]);
+
+
   // linkedin, twitter, blog
   const [thisIsToBePublished, setThisIsToBePublished] = useState(
     TYPESOFTABS.BLOG
@@ -367,7 +404,7 @@ export default function TinyMCEEditor({
     { data: updateData, loading: updateLoading, error: updateError },
   ] = useMutation(updateBlog);
 
-  const handleSave = async (redirectUser = true) => {
+  const handleSave = async (redirectUser = true, showToast = true) => {
     console.log("user-save");
 
     var getToken, ispaid, credits;
@@ -450,7 +487,7 @@ export default function TinyMCEEditor({
             //console.log(">>", window.location);
             refetchBlog();
             runMeeRefetch();
-            toast.success("Saved!!", {
+            showToast == true && toast.success("Saved!!", {
               position: "top-center",
               autoClose: 5000,
               hideProgressBar: false,
@@ -1781,6 +1818,17 @@ export default function TinyMCEEditor({
                 </svg>
                 Twitter
               </div>
+              {
+                autoSaveSavingStatus == SAVING_STATUS.SAVING && <ReactLoading
+                  width={25}
+                  height={25}
+                  round={true}
+                  color={"#2563EB"}
+                />
+              }{
+                autoSaveSavingStatus == SAVING_STATUS.SAVED && <CheckCircleIcon className="text-[#2563EB]" height={25} width={25} />
+              }
+
             </div>
           ) : (
             <div style={{ display: "none" }}></div>
