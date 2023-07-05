@@ -547,6 +547,24 @@ export default function DashboardInsights({
     }
   }
 
+  // wrtie a function to seelect all use ideas 
+  function handleSelectAllUsedIdeas() {
+    alert('running used ideas')
+  }
+  function handleSelectAllUsedIdeas() {
+    const updatedAllIdeas = ideas.map((el, elIndex) => {
+      return {
+        ...el, used: toggle ? 1 : 0
+      }
+    });
+    setIdeas(updatedAllIdeas);
+
+    const arr = updatedAllIdeas.filter((element) => element.used).map((element) => ({
+      text: element.idea,
+      article_id: element.article_id,
+    }));
+    handleUsedIdeas(arr);
+  }
   function handleSelectAll() {
     if (toggle) {
       if (freshFilteredIdeas?.length > 0) {
@@ -1045,13 +1063,13 @@ export default function DashboardInsights({
               </span>
             )}
           </button>
-          {ideaType === "fresh" && (
+          {(
             <>
               <span className="mt-3 text-sm ml-3">Select all </span>
               <div
-                className="md:w-10 md:h-5 w-7 h-2 flex items-center bg-blue-400 rounded-full p-1 cursor-pointer mt-3"
+                className={`md:w-10 md:h-5 w-7 h-2 flex items-center  rounded-full p-1 cursor-pointer mt-3 ${toggle == false ? 'bg-indigo-500' : 'bg-gray-300'} transform duration-300 ease-in-out`}
                 onClick={() => {
-                  handleSelectAll();
+                  ideaType === "used" ? handleSelectAllUsedIdeas() : handleSelectAll();
                   setToggle(!toggle);
                 }}
               >
