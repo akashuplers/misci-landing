@@ -162,7 +162,6 @@ export default function DashboardInsights({
   };
 
   function handleInputClick(idea, article_id, e) {
-    console.log("regenSelected", regenSelected);
     const ideaObject = {
       text: idea,
       article_id,
@@ -200,7 +199,6 @@ export default function DashboardInsights({
     //const refCount = e.target.firstElementChild;
 
     /* Adding or removing the keywords to an array */
-    console.log("e.target.dataset", e.target.dataset, filteredArray);
     const filterText = e.target.dataset.source;
 
     const valueExists = filteredArray.find(
@@ -217,7 +215,6 @@ export default function DashboardInsights({
       setToggle(!toggle);
     }
 
-    console.log("setFilteredArray", filteredArray);
   }
 
   useEffect(() => {
@@ -244,10 +241,6 @@ export default function DashboardInsights({
   const handlesetRegenSelected = (newarr) => {
     setRegenSelected(newarr);
   };
-  useEffect(() => {
-    console.log("Ideas", ideas);
-  }, [ideas]);
-
   // Adds the matched idea into notUniqueFilteredIdeas
   useEffect(() => {
     setFilteredIdeas([]);
@@ -256,21 +249,13 @@ export default function DashboardInsights({
     setNotUniqueFilteredIdeas([]);
 
     const arr = ideaType === "used" ? ideas : freshIdeas;
-    console.log("IDEAS PROPS");
-    console.log(ideas);
     // Assuming you have a state variable called 'notUniqueFilteredIdeas' and a function called 'setNotUniqueFilteredIdeas' to update it.
 
     filteredArray.forEach((filterObject) => {
       arr.forEach((idea) => {
-        console.log("IDEA");
-        console.log(idea);
         const searchObject = filterObject?.filterText;
-        console.log("CRITERIA : ", filterObject?.criteria);
         const doesIdeasIncludeSearchObject = idea?.idea?.includes(searchObject);
-        console.log("DOES IDEA INCLUDE SEARCH OBJECT", doesIdeasIncludeSearchObject);
-
         const isIdeaNameSameAsSearchObject = idea?.name === searchObject;
-        console.log("IS IDEA NAME SAME AS SEARCH OBJECT", isIdeaNameSameAsSearchObject);
         var ideaOfIdea = idea?.idea;
         // lowercase the idea
         ideaOfIdea = ideaOfIdea?.toLowerCase();
@@ -278,12 +263,8 @@ export default function DashboardInsights({
         const ideaName = idea?.name?.toLowerCase();
 
         if (filterObject?.criteria === "tag" && ideaOfIdea?.includes(lowerCaseSearchObject)) {
-          console.log('idea is in IDEA');
-          console.log(idea);
           setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
         } else if (filterObject?.criteria === "ref" && ideaName === lowerCaseSearchObject) {
-          console.log('IDEA IN NOT UNIQUE FILTERED TAG');
-          console.log(idea);
           setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
         }
       });
@@ -293,9 +274,6 @@ export default function DashboardInsights({
 
   // We create a set so that the values are unique, and multiple ideas are not added
   useEffect(() => {
-    // Create a new Set object from the array, which removes duplicates
-    console.log('NOT UNQITE FILTER IDEAS HERE');
-    console.log(notUniquefilteredIdeas)
     const uniqueFilteredSet = new Set(
       notUniquefilteredIdeas.map(JSON.stringify)
     );
@@ -315,7 +293,6 @@ export default function DashboardInsights({
       }
       prevLink = idea?.name;
       idea.citationNumber = citationNumber;
-      console.log('IDeA TO BE ADDED');
       if (ideaType === "used") {
         setFilteredIdeas((prev) => [...prev, idea]);
       } else if (ideaType === "fresh") {
@@ -324,16 +301,6 @@ export default function DashboardInsights({
     });
   }, [notUniquefilteredIdeas]);
 
-
-  // keep this for de-bugging
-  useEffect(() => {
-    console.log('FILTERD ARRAY');
-    console.log('IDEA TYPE');
-    console.log(ideaType);
-    console.log(filteredArray);
-    console.log('FILTER IDEAS');
-    console.log(filteredIdeas);
-  }, [filteredIdeas]);
   const { twitterThreadData, setTwitterThreadData } = useTwitterThreadStore();
 
   function handleRegenerate() {
@@ -350,7 +317,6 @@ export default function DashboardInsights({
           arr.push(ideaObject);
         }
       }
-      console.log("111", arr);
       for (let index = 0; index < freshIdeas?.length; index++) {
         const element = freshIdeas[index];
         if (element.used) {
@@ -362,7 +328,6 @@ export default function DashboardInsights({
         }
       }
       flag = 1;
-      console.log("222", arr);
     } else {
       if (arrUsed.length === 0) {
         for (let index = 0; index < ideas.length; index++) {
@@ -403,7 +368,7 @@ export default function DashboardInsights({
       (obj, index, self) => index === self.findIndex((t) => t.text === obj.text)
     );
     if (newarr?.length >= 1) {
-      console.log("888", newarr, arrUsed, regenSelected, arrFresh);
+
       RegenerateBlog({
         variables: {
           options: {
@@ -412,7 +377,6 @@ export default function DashboardInsights({
           },
         },
         onCompleted: (data) => {
-          console.log("regen", data);
           updateCredit();
           setBlogData(data?.regenerateBlog);
           setIdeas(data?.regenerateBlog?.ideas?.ideas);
@@ -421,15 +385,6 @@ export default function DashboardInsights({
           setReference(data?.regenerateBlog?.references);
           setFreshIdeaReferences(data?.regenerateBlog?.freshIdeasReferences);
           setFreshIdeas(data?.regenerateBlog?.ideas?.freshIdeas);
-          // setTwitterThreadData(data?.regenerateBlog?.publish_data)
-          // const aa = data?.regenerateBlog?.publish_data?.find(
-          //   (pd) => pd?.platform === "twitter"
-          // );
-          console.log(
-            "asfgasfda ",
-            data?.regenerateBlog?.pythonRespTime,
-            data?.regenerateBlog?.respTime
-          );
           setPyResTime(data?.regenerateBlog?.pythonRespTime);
           setNdResTime(data?.regenerateBlog?.respTime);
 
@@ -448,7 +403,6 @@ export default function DashboardInsights({
           const aaThreads = data?.regenerateBlog?.publish_data?.find(
             (pd) => pd?.platform === "twitter"
           );
-          console.log(aaThreads.threads);
           if (aaThreads?.threads?.length <= 0) {
             setTwitterThreadData(twitterThreadData)
           } else {
@@ -467,15 +421,11 @@ export default function DashboardInsights({
               aaThreads.threads?.pop();
               aaThreads.threads?.pop();
               aaThreads.threads?.push(theSecondLastThread);
-              console.log("THREADS DATA AFTER MERGE");
-              console.log(aaThreads.threads);
               setTwitterThreadData(aaThreads.threads);
             }
           }
           const htmlDoc = jsonToHtml(aa);
           setEditorText(htmlDoc);
-
-          console.log("Sucessfully re-generated the article");
           setArrFresh([]);
           setArrUsed([]);
           setRegenSelected([]);
@@ -502,19 +452,13 @@ export default function DashboardInsights({
           Array.from(document.querySelectorAll(".tag-button.active")).forEach(
             (el) => el?.classList?.remove("active")
           );
-          console.log(data);
-          console.log("MEE DATA");
-          console.log(meeData);
           const credits = meeData?.me?.credits;
-          console.log("CREDITS : " + credits);
           var userCredits = meeData?.me?.totalCredits - creditLeft - 1;
-          console.log("USER CREDITS: " + userCredits);
           userCredits = userCredits + 2;
           const SHOW_CONTRIBUTION_MODAL = ContributionCheck(
             userCredits,
             meeData
           );
-          console.log("SHOW_CONTRIBUTION_MODAL: ", SHOW_CONTRIBUTION_MODAL);
           if (SHOW_CONTRIBUTION_MODAL) {
             setShowContributionModal(true);
           }
@@ -547,6 +491,24 @@ export default function DashboardInsights({
     }
   }
 
+  // wrtie a function to seelect all use ideas 
+  function handleSelectAllUsedIdeas() {
+    alert('running used ideas')
+  }
+  function handleSelectAllUsedIdeas() {
+    const updatedAllIdeas = ideas.map((el, elIndex) => {
+      return {
+        ...el, used: toggle ? 1 : 0
+      }
+    });
+    setIdeas(updatedAllIdeas);
+
+    const arr = updatedAllIdeas.filter((element) => element.used).map((element) => ({
+      text: element.idea,
+      article_id: element.article_id,
+    }));
+    handleUsedIdeas(arr);
+  }
   function handleSelectAll() {
     if (toggle) {
       if (freshFilteredIdeas?.length > 0) {
@@ -554,11 +516,7 @@ export default function DashboardInsights({
           return { ...el, used: 1 };
         });
         setFreshFilteredIdeas(updatedFilteredIdeas);
-        console.log(
-          "updatedFilteredIdeas",
-          updatedFilteredIdeas,
-          freshFilteredIdeas
-        );
+
         var ideasCopy = [];
         for (let i = 0; i < freshIdeas.length; i++) {
           const element = freshIdeas[i];
@@ -595,11 +553,6 @@ export default function DashboardInsights({
           return { ...el, used: 0 };
         });
         setFreshFilteredIdeas(updatedFilteredIdeas);
-        console.log(
-          "updatedFilteredIdeas",
-          updatedFilteredIdeas,
-          freshFilteredIdeas
-        );
         var ideasCopy = [];
         for (let i = 0; i < freshIdeas.length; i++) {
           const element = freshIdeas[i];
@@ -658,7 +611,6 @@ export default function DashboardInsights({
     }
 
     setformInput(file.name);
-    console.log(file);
     setFile(file);
   }
   function handleFormChange(e) {
@@ -703,7 +655,6 @@ export default function DashboardInsights({
 
     let url = API_BASE_PATH;
     let raw;
-    console.log(raw);
     if (fileValid) {
       url += API_ROUTES.FILE_UPLOAD;
       raw = new FormData();
@@ -741,14 +692,12 @@ export default function DashboardInsights({
     axios(config)
       .then((response) => {
         setIdeaType("fresh");
-        console.log(response.data);
         setFreshIdeas(response.data.data);
         setFreshIdeaReferences(response.data.references);
         setFreshIdeaTags(response.data.freshIdeasTags);
 
         setPyResTime(response.data.pythonRespTime);
         setNdResTime(response.data.respTime);
-        console.log(freshIdeas);
         const fresh = document.querySelector(".idea-button.fresh");
         const used = document.querySelector(".idea-button.used");
 
@@ -786,7 +735,6 @@ export default function DashboardInsights({
         "(\\#[-a-zA-Z\\d_]*)?$",
         "i"
       ); // fragment locator
-      // console.log(formInput)
       return pattern.test(formInput);
     }
   }, [formInput]);
@@ -801,17 +749,14 @@ export default function DashboardInsights({
 
   function handleCitationFunction(source) {
     let filtered;
-    // console.log(link)
     if (ideaType === "used") {
       reference.forEach((el, index) => {
-        // console.log("elll", el, source);
         if (el.source === source) {
           filtered = index;
         }
       });
     } else if (ideaType === "fresh") {
       freshIdeasReferences.forEach((el, index) => {
-        // console.log(el.url, link);
         if (el.source === source) {
           filtered = index;
         }
@@ -821,7 +766,6 @@ export default function DashboardInsights({
     if (filtered === 0 || filtered) {
       return filtered + 1;
     } else {
-      // console.log(link, reference, "search")
       return null;
     }
   }
@@ -896,12 +840,12 @@ export default function DashboardInsights({
         </p>
         <div className="m-9 mx-auto">
           <button
-            class="w-[240px] ml-16 bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 border border-indigo-700 rounded"
+            className="w-[240px] ml-16 bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 border border-indigo-700 rounded"
             onClick={() => setOpen(false)}
           >
             Close
           </button>
-          {/* <button class="w-[240px] ml-9 bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded text-sm"></button> */}
+          {/* <button className="w-[240px] ml-9 bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded text-sm"></button> */}
         </div>
       </Modal>
       {creditModal && (
@@ -1042,13 +986,13 @@ export default function DashboardInsights({
               </span>
             )}
           </button>
-          {ideaType === "fresh" && (
+          {(
             <>
               <span className="mt-3 text-sm ml-3">Select all </span>
               <div
-                className="md:w-10 md:h-5 w-7 h-2 flex items-center bg-blue-400 rounded-full p-1 cursor-pointer mt-3"
+                className={`md:w-10 md:h-5 w-7 h-2 flex items-center  rounded-full p-1 cursor-pointer mt-3 ${toggle == false ? 'bg-indigo-500' : 'bg-gray-300'} transform duration-300 ease-in-out`}
                 onClick={() => {
-                  handleSelectAll();
+                  ideaType === "used" ? handleSelectAllUsedIdeas() : handleSelectAll();
                   setToggle(!toggle);
                 }}
               >

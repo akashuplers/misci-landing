@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable @next/next/no-html-link-for-pages */
 // @ts-nocheck
 import MoblieUnAuthFooter from "@/components/LandingPage/MoblieUnAuthFooter";
@@ -287,7 +288,6 @@ export default function Home() {
     }
   }, [meeData]);
 
-
   useEffect(() => {
     function sendOpt() {
       const SEND_OTP_URL = API_BASE_PATH + "/auth/send-otp";
@@ -397,34 +397,120 @@ export default function Home() {
               </defs>
             </svg>
           </div>
-          <div className="mx-auto max-w-screen-xl flex flex-col">
+
+          {!isAuthenticated && (
+            <div className='hidden lg:flex'>
+              <div
+                className="absolute top-[3%] w-32 h-32 hidden lg:flex left-[10%] hover:scale-105 cursor-pointer transform-gpu -translate-x-1/2 -translate-y-1/2 animate-float"
+                style={{
+                  padding: 10.23,
+                  rotate: "10.26deg",
+                  transformOrigin: "0 0",
+                  background:
+                    "linear-gradient(124deg, #4062FF 2.90%, #9747FF 100%), #FFF",
+                  boxShadow:
+                    "0px 9.136962890625px 18.27392578125px rgba(19.52, 39.88, 133.87, 0.20)",
+                  borderRadius: 10.23,
+                  flexDirection: "column",
+                  justifyContent: "space-evenly",
+                  alignItems: "center",
+                  display: "inline-flex",
+                }}
+              >
+                <div className="text-center text-white text-3xl font-extrabold leading-9">
+                  10x
+                </div>
+                <div className="self-stretch opacity-80 text-center text-white text-xs font-normal leading-3 tracking-wide">
+                  Return on Investment using Lille
+                </div>
+              </div>
+              <div
+                className="absolute top-[6%] w-32 h-32 hidden lg:flex right-[10%] hover:scale-105 cursor-pointer transform-gpu -translate-x-1/2 -translate-y-1/2 animate-float"
+                style={{
+                  padding: 10.23,
+                  rotate: "2.84deg",
+                  transformOrigin: "0 0",
+                  background:
+                    "linear-gradient(124deg, #4062FF 2.90%, #9747FF 100%), #FFF",
+                  boxShadow:
+                    "0px 9.136962890625px 18.27392578125px rgba(19.52, 39.88, 133.87, 0.20)",
+                  borderRadius: 10.23,
+                  flexDirection: "column",
+                  justifyContent: "space-evenly",
+                  alignItems: "center",
+                  display: "inline-flex",
+                }}
+              >
+                <div className="text-center text-white text-3xl font-extrabold leading-9">
+                  40%
+                </div>
+                <div className="self-stretch opacity-80 text-center text-white text-xs font-normal leading-3 tracking-wide">
+                  Increase in social media followers
+                </div>
+              </div>
+
+              <div
+                className="absolute w-32 h-32 hidden lg:flex top-[7%] left-[10%] hover:scale-105 cursor-pointer transform-gpu -translate-x-1/2 -translate-y-1/2 animate-float"
+                style={{
+                  rotate: "-9.71deg",
+                  transformOrigin: "0 0",
+                  background:
+                    "linear-gradient(124deg, #4062FF 2.90%, #9747FF 100%), #FFF",
+                  boxShadow:
+                    "0px 9.136962890625px 18.27392578125px rgba(19.52, 39.88, 133.87, 0.20)",
+                  borderRadius: 10.23,
+                  flexDirection: "column",
+                  justifyContent: "space-evenly",
+                  alignItems: "center",
+                  display: "inline-flex",
+                }}
+              >
+                <div className="text-center text-white text-3xl font-extrabold leading-10">
+                  80%
+                </div>
+                <div className="self-stretch opacity-80 text-center text-white text-sm font-normal leading-none tracking-wide">
+                  Time reduced on 1st Drafts
+                </div>
+              </div>
+            </div>
+          )}
+          <div className="relative mx-auto max-w-screen-xl flex flex-col">
             <div className="mx-auto max-w-3xl text-center h-screen flex items-center justify-center max-h-[700px]">
               <div>
-              <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
-                Automate, <span className='text-indigo-700'>Amplify</span>, Achieve.  
+                <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
+                  Automate, <span className="text-indigo-700">Amplify,</span>{" "}
+                  Achieve.
+                </div>
+                <div className="relative flex text-xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap custom-spacing">
+                  Your AI-powered content partner that doesn't dream, it
+                  delivers!
+                </div>
+                <div className="p-4 mt-4 lg:mt-2">
+                  Try some of our trending topics.
+                </div>
+                {!loading ? (
+                  <div className="flex flex-col  lg:grid grid-cols-3 gap-4 py-4">
+                    {updatedArr}
+                  </div>
+                ) : (
+                  <div style={{ margin: "0 auto" }}>
+                    <LoaderPlane />
+                  </div>
+                )}
+                <AIInputComponent />
+
+                <div
+                  className="w-[80%] absolute top-[500px] lg:top-[350px] h-[200px] inset-x-0 -z-10"
+                  style={{
+                    background:
+                      "linear-gradient(265deg, #C3DDFF 38%, #FFF5E3 61%)",
+                    filter: "blur(80px)",
+                  }}
+                ></div>
               </div>
-              <div className="p-4 mt-4 lg:mt-2">Try some of our trending topics.</div>
-              {!loading ? (
-                <div className="flex flex-col  lg:grid grid-cols-3 gap-4 py-4">
-                  {updatedArr}
-                </div>
-              ) : (
-                <div style={{ margin: "0 auto" }}>
-                  <LoaderPlane />
-                </div>
-              )}
-              <AIInputComponent />
-              <div
-                className="w-[80%] absolute top-[500px] lg:top-[350px] h-[200px] inset-x-0 -z-10"
-                style={{
-                  background:
-                    "linear-gradient(265deg, #C3DDFF 38%, #FFF5E3 61%)",
-                  filter: "blur(80px)",
-                }}
-              ></div>
             </div>
-              </div>
             {!isAuthenticated && <LandingPage />}
+            div
           </div>
           <div className="absolute inset-x-0 top-[calc(100%-12rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
             <svg
@@ -452,9 +538,25 @@ export default function Home() {
             </svg>
           </div>
         </div>
-        
-        {!isAuthenticated &&<MoblieUnAuthFooter /> }
+
+        {!isAuthenticated && <MoblieUnAuthFooter />}
       </Layout>
+      <style>
+        {`
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+  `}
+      </style>
       <style>
         {`
           @media screen and (max-width: 767px) {

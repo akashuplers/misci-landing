@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from "react";
 import Head from "next/head";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { Fragment } from "react";
-import Navbar from "../components/Navbar";
+import React, { Fragment, useEffect, useState } from "react";
 import Modal from "react-modal";
+import Navbar from "../components/Navbar";
 
 export default function CancellationRefundPolicy() {
   const [modalOpen, setOpenModal] = useState(false);
@@ -18,7 +15,7 @@ export default function CancellationRefundPolicy() {
         <title>Cancellation & Refund Policy | Lille.ai</title>
       </Head>
       <Navbar />
-      <div class="relative">
+      <div className="relative">
         <Modal
           isOpen={modalOpen}
           ariaHideApp={false}
@@ -60,7 +57,7 @@ export default function CancellationRefundPolicy() {
           </p>
 
           <button
-            class="mt-5 ml-[25%] mx-auto w-[200px] p-4 bg-transparent text-gray-500 font-semibold py-2 px-4 border border-gray-500  rounded"
+            className="mt-5 ml-[25%] mx-auto w-[200px] p-4 bg-transparent text-gray-500 font-semibold py-2 px-4 border border-gray-500  rounded"
             onClick={() => {
               window.close();
             }}
@@ -68,7 +65,7 @@ export default function CancellationRefundPolicy() {
             Close
           </button>
         </Modal>
-        <div class="absolute top-0 left-0 w-full h-full backdrop-filter backdrop-blur-sm"></div>
+        <div className="absolute top-0 left-0 w-full h-full backdrop-filter backdrop-blur-sm"></div>
 
         <div className="container mx-auto px-4">
           <h1 className="text-3xl font-bold mt-8 mb-6">
