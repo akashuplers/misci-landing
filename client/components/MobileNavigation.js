@@ -21,11 +21,6 @@ const mobileNavigation = [
     icon: ChatBubbleBottomCenterIcon,
   },
   {
-    name: "Contact Us",
-    href: "/faq",
-    icon: LifebuoyIcon,
-  },
-  {
     name: "FAQ",
     href: "/faq",
     icon: QuestionMarkCircleIcon,

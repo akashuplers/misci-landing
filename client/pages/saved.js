@@ -74,7 +74,7 @@ export default function Saved() {
         },
       },
     })
-      .then(() => {})
+      .then(() => { })
       .catch((err) => {
         console.log(err);
       })
@@ -181,11 +181,11 @@ export default function Saved() {
               viewBox="0 0 24 24"
               strokeWidth="1.5"
               stroke="currentColor"
-              class="w-6 h-6"
+              className="w-6 h-6"
             >
               <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
@@ -201,7 +201,7 @@ export default function Saved() {
           </p>
           <div className="flex m-9">
             <button
-              class="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
+              className="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
               onClick={() => {
                 setOpenModal(false);
               }}
@@ -209,7 +209,7 @@ export default function Saved() {
               No
             </button>
             <button
-              class="w-[240px]  bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded"
+              className="w-[240px]  bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded"
               onClick={() => {
                 handleDelete();
               }}

@@ -638,7 +638,7 @@ const LandingPage = () => {
             </div>
             {/* testimonials */}
             <SectionSpacer />
-            <div id='testimonial' className=" px-2 w-full  relative bg-blue-50 mobileTestimonial">
+            <div id='testimonial' className="w-full  relative bg-blue-50 mobileTestimonial px-4">
                 {/* <div className="w-[142.93px] h-[142.93px] left-[-71.48px] top-[495.74px] absolute bg-pink-200 rounded-full blur-[145px]" /> */}
                 {/* <div className="w-[110.74px] h-[159.36px] left-[241.31px] top-[60.74px] absolute origin-top-left rotate-[-53.85deg] bg-fuchsia-200 rounded-full blur-[145px]" /> */}
                 <div className="mt-20 w-full flex-col justify-start items-center gap-3 inline-flex">
@@ -668,7 +668,7 @@ const LandingPage = () => {
 
                         }}
                         modules={[Pagination]}
-                        className="mySwiper bg-white mt-10 rounded-2xl shadow justify-center items-center inline-flex" style={{ paddingBottom: '2rem' }}
+                        className="mySwiper mt-10 rounded-2xl shadow justify-center items-center inline-flex" style={{ paddingBottom: '2rem' }}
                     >
                         {testimonialData.map((user) => (
                             <SwiperSlide
@@ -707,7 +707,7 @@ const LandingPage = () => {
             {/* demo */}
             <SectionSpacer id={`userDemo`} />
             <div className="userDemo hidden lg:flex items-center justify-center w-full h-full ">
-                <div className="border w-full p-10 bg-white rounded-2xl shadow justify-between items-center gap-16 flex">
+                <div className="w-full p-10 bg-white rounded-2xl justify-between items-center gap-16 flex">
                     <div className="relative bg-gradient-to-br from-indigo-600 to-indigo-400 rounded-lg flex-col justify-start items-start flex w-full">
                         <div className="justify-center w-full items-center gap-1 inline-flex">
                             <div className="text-white text-[32px] font-bold leading-10">
