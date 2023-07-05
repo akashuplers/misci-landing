@@ -399,9 +399,9 @@ export default function Home() {
           </div>
 
           {!isAuthenticated && (
-            <>
+            <div className='hidden lg:flex'>
               <div
-                className="absolute top-[3%] w-32 h-32 left-[10%] hover:scale-105 cursor-pointer transform-gpu -translate-x-1/2 -translate-y-1/2 animate-float"
+                className="absolute top-[3%] w-32 h-32 hidden lg:flex left-[10%] hover:scale-105 cursor-pointer transform-gpu -translate-x-1/2 -translate-y-1/2 animate-float"
                 style={{
                   padding: 10.23,
                   rotate: "10.26deg",
@@ -425,7 +425,7 @@ export default function Home() {
                 </div>
               </div>
               <div
-                className="absolute top-[6%] w-32 h-32 right-[10%] hover:scale-105 cursor-pointer transform-gpu -translate-x-1/2 -translate-y-1/2 animate-float"
+                className="absolute top-[6%] w-32 h-32 hidden lg:flex right-[10%] hover:scale-105 cursor-pointer transform-gpu -translate-x-1/2 -translate-y-1/2 animate-float"
                 style={{
                   padding: 10.23,
                   rotate: "2.84deg",
@@ -450,7 +450,7 @@ export default function Home() {
               </div>
 
               <div
-                className="absolute w-32 h-32 top-[7%] left-[10%] hover:scale-105 cursor-pointer transform-gpu -translate-x-1/2 -translate-y-1/2 animate-float"
+                className="absolute w-32 h-32 hidden lg:flex top-[7%] left-[10%] hover:scale-105 cursor-pointer transform-gpu -translate-x-1/2 -translate-y-1/2 animate-float"
                 style={{
                   rotate: "-9.71deg",
                   transformOrigin: "0 0",
@@ -472,7 +472,7 @@ export default function Home() {
                   Time reduced on 1st Drafts
                 </div>
               </div>
-            </>
+            </div>
           )}
           <div className="relative mx-auto max-w-screen-xl flex flex-col">
             <div className="mx-auto max-w-3xl text-center h-screen flex items-center justify-center max-h-[700px]">
