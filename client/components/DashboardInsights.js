@@ -162,7 +162,6 @@ export default function DashboardInsights({
   };
 
   function handleInputClick(idea, article_id, e) {
-    console.log("regenSelected", regenSelected);
     const ideaObject = {
       text: idea,
       article_id,
@@ -200,7 +199,6 @@ export default function DashboardInsights({
     //const refCount = e.target.firstElementChild;
 
     /* Adding or removing the keywords to an array */
-    console.log("e.target.dataset", e.target.dataset, filteredArray);
     const filterText = e.target.dataset.source;
 
     const valueExists = filteredArray.find(
@@ -217,7 +215,6 @@ export default function DashboardInsights({
       setToggle(!toggle);
     }
 
-    console.log("setFilteredArray", filteredArray);
   }
 
   useEffect(() => {
@@ -256,21 +253,13 @@ export default function DashboardInsights({
     setNotUniqueFilteredIdeas([]);
 
     const arr = ideaType === "used" ? ideas : freshIdeas;
-    console.log("IDEAS PROPS");
-    console.log(ideas);
     // Assuming you have a state variable called 'notUniqueFilteredIdeas' and a function called 'setNotUniqueFilteredIdeas' to update it.
 
     filteredArray.forEach((filterObject) => {
       arr.forEach((idea) => {
-        console.log("IDEA");
-        console.log(idea);
         const searchObject = filterObject?.filterText;
-        console.log("CRITERIA : ", filterObject?.criteria);
         const doesIdeasIncludeSearchObject = idea?.idea?.includes(searchObject);
-        console.log("DOES IDEA INCLUDE SEARCH OBJECT", doesIdeasIncludeSearchObject);
-
         const isIdeaNameSameAsSearchObject = idea?.name === searchObject;
-        console.log("IS IDEA NAME SAME AS SEARCH OBJECT", isIdeaNameSameAsSearchObject);
         var ideaOfIdea = idea?.idea;
         // lowercase the idea
         ideaOfIdea = ideaOfIdea?.toLowerCase();
@@ -278,12 +267,8 @@ export default function DashboardInsights({
         const ideaName = idea?.name?.toLowerCase();
 
         if (filterObject?.criteria === "tag" && ideaOfIdea?.includes(lowerCaseSearchObject)) {
-          console.log('idea is in IDEA');
-          console.log(idea);
           setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
         } else if (filterObject?.criteria === "ref" && ideaName === lowerCaseSearchObject) {
-          console.log('IDEA IN NOT UNIQUE FILTERED TAG');
-          console.log(idea);
           setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
         }
       });
@@ -293,9 +278,6 @@ export default function DashboardInsights({
 
   // We create a set so that the values are unique, and multiple ideas are not added
   useEffect(() => {
-    // Create a new Set object from the array, which removes duplicates
-    console.log('NOT UNQITE FILTER IDEAS HERE');
-    console.log(notUniquefilteredIdeas)
     const uniqueFilteredSet = new Set(
       notUniquefilteredIdeas.map(JSON.stringify)
     );
@@ -315,7 +297,6 @@ export default function DashboardInsights({
       }
       prevLink = idea?.name;
       idea.citationNumber = citationNumber;
-      console.log('IDeA TO BE ADDED');
       if (ideaType === "used") {
         setFilteredIdeas((prev) => [...prev, idea]);
       } else if (ideaType === "fresh") {
@@ -324,16 +305,6 @@ export default function DashboardInsights({
     });
   }, [notUniquefilteredIdeas]);
 
-
-  // keep this for de-bugging
-  useEffect(() => {
-    console.log('FILTERD ARRAY');
-    console.log('IDEA TYPE');
-    console.log(ideaType);
-    console.log(filteredArray);
-    console.log('FILTER IDEAS');
-    console.log(filteredIdeas);
-  }, [filteredIdeas]);
   const { twitterThreadData, setTwitterThreadData } = useTwitterThreadStore();
 
   function handleRegenerate() {
@@ -613,11 +584,6 @@ export default function DashboardInsights({
           return { ...el, used: 0 };
         });
         setFreshFilteredIdeas(updatedFilteredIdeas);
-        console.log(
-          "updatedFilteredIdeas",
-          updatedFilteredIdeas,
-          freshFilteredIdeas
-        );
         var ideasCopy = [];
         for (let i = 0; i < freshIdeas.length; i++) {
           const element = freshIdeas[i];
@@ -676,7 +642,6 @@ export default function DashboardInsights({
     }
 
     setformInput(file.name);
-    console.log(file);
     setFile(file);
   }
   function handleFormChange(e) {
@@ -721,7 +686,6 @@ export default function DashboardInsights({
 
     let url = API_BASE_PATH;
     let raw;
-    console.log(raw);
     if (fileValid) {
       url += API_ROUTES.FILE_UPLOAD;
       raw = new FormData();
@@ -759,14 +723,12 @@ export default function DashboardInsights({
     axios(config)
       .then((response) => {
         setIdeaType("fresh");
-        console.log(response.data);
         setFreshIdeas(response.data.data);
         setFreshIdeaReferences(response.data.references);
         setFreshIdeaTags(response.data.freshIdeasTags);
 
         setPyResTime(response.data.pythonRespTime);
         setNdResTime(response.data.respTime);
-        console.log(freshIdeas);
         const fresh = document.querySelector(".idea-button.fresh");
         const used = document.querySelector(".idea-button.used");
 
@@ -807,7 +769,6 @@ export default function DashboardInsights({
         "(\\#[-a-zA-Z\\d_]*)?$",
         "i"
       ); // fragment locator
-      // console.log(formInput)
       return pattern.test(formInput);
     }
   }, [formInput]);
@@ -822,10 +783,8 @@ export default function DashboardInsights({
 
   function handleCitationFunction(source) {
     let filtered;
-    // console.log(link)
     if (ideaType === "used") {
       reference.forEach((el, index) => {
-        // console.log("elll", el, source);
         if (el.source === source) {
           filtered = index;
         }
