@@ -73,11 +73,6 @@ var desktopNavigationRoutes = [
     current: false,
   },
   {
-    name: "Contact us",
-    href: "/faq",
-    current: false,
-  },
-  {
     name: "Pricing",
     href: "/pricing",
     current: false,
