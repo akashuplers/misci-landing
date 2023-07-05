@@ -397,79 +397,83 @@ export default function Home() {
               </defs>
             </svg>
           </div>
-          <div
-            className="absolute top-[3%] w-32 h-32 left-[10%] transform-gpu -translate-x-1/2 -translate-y-1/2"
-            style={{
-              padding: 10.23,
-              transform: "rotate(10.26deg)",
-              transformOrigin: "0 0",
-              background:
-                "linear-gradient(124deg, #4062FF 2.90%, #9747FF 100%), #FFF",
-              boxShadow:
-                "0px 9.136962890625px 18.27392578125px rgba(19.52, 39.88, 133.87, 0.20)",
-              borderRadius: 10.23,
-              flexDirection: "column",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-              display: "inline-flex",
-            }}
-          >
-            <div className="text-center text-white text-3xl font-extrabold leading-9">
-              10x
-            </div>
-            <div className="self-stretch opacity-80 text-center text-white text-xs font-normal leading-3 tracking-wide">
-              Return on Investment using Lille
-            </div>
-          </div>
-          <div
-            className="absolute top-[7%] w-32 h-32 right-[10%] transform-gpu -translate-x-1/2 -translate-y-1/2 animate-float"
-            style={{
-              padding: 10.23,
-              transform: "rotate(2.84deg)",
-              transformOrigin: "0 0",
-              background:
-                "linear-gradient(124deg, #4062FF 2.90%, #9747FF 100%), #FFF",
-              boxShadow:
-                "0px 9.136962890625px 18.27392578125px rgba(19.52, 39.88, 133.87, 0.20)",
-              borderRadius: 10.23,
-              flexDirection: "column",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-              display: "inline-flex",
-            }}
-          >
-            <div className="text-center text-white text-3xl font-extrabold leading-9">
-              40%
-            </div>
-            <div className="self-stretch opacity-80 text-center text-white text-xs font-normal leading-3 tracking-wide">
-              Increase in social media followers
-            </div>
-          </div>
 
-          <div
-            className="absolute w-32 h-32 top-[7%] left-[10%] transform-gpu -translate-x-1/2 -translate-y-1/2 rotate-60"
-            style={{
-              transform: "rotate(-9.71deg)",
-              transformOrigin: "0 0",
-              background:
-                "linear-gradient(124deg, #4062FF 2.90%, #9747FF 100%), #FFF",
-              boxShadow:
-                "0px 9.136962890625px 18.27392578125px rgba(19.52, 39.88, 133.87, 0.20)",
-              borderRadius: 10.23,
-              flexDirection: "column",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-              display: "inline-flex",
-            }}
-          >
-            <div className="text-center text-white text-3xl font-extrabold leading-10">
-              80%
-            </div>
-            <div className="self-stretch opacity-80 text-center text-white text-sm font-normal leading-none tracking-wide">
-              Time reduced on 1st Drafts
-            </div>
-          </div>
+          {!isAuthenticated && (
+            <>
+              <div
+                className="absolute top-[3%] w-32 h-32 left-[10%] hover:scale-105 cursor-pointer transform-gpu -translate-x-1/2 -translate-y-1/2 animate-float"
+                style={{
+                  padding: 10.23,
+                  rotate: "10.26deg",
+                  transformOrigin: "0 0",
+                  background:
+                    "linear-gradient(124deg, #4062FF 2.90%, #9747FF 100%), #FFF",
+                  boxShadow:
+                    "0px 9.136962890625px 18.27392578125px rgba(19.52, 39.88, 133.87, 0.20)",
+                  borderRadius: 10.23,
+                  flexDirection: "column",
+                  justifyContent: "space-evenly",
+                  alignItems: "center",
+                  display: "inline-flex",
+                }}
+              >
+                <div className="text-center text-white text-3xl font-extrabold leading-9">
+                  10x
+                </div>
+                <div className="self-stretch opacity-80 text-center text-white text-xs font-normal leading-3 tracking-wide">
+                  Return on Investment using Lille
+                </div>
+              </div>
+              <div
+                className="absolute top-[6%] w-32 h-32 right-[10%] hover:scale-105 cursor-pointer transform-gpu -translate-x-1/2 -translate-y-1/2 animate-float"
+                style={{
+                  padding: 10.23,
+                  rotate: "2.84deg",
+                  transformOrigin: "0 0",
+                  background:
+                    "linear-gradient(124deg, #4062FF 2.90%, #9747FF 100%), #FFF",
+                  boxShadow:
+                    "0px 9.136962890625px 18.27392578125px rgba(19.52, 39.88, 133.87, 0.20)",
+                  borderRadius: 10.23,
+                  flexDirection: "column",
+                  justifyContent: "space-evenly",
+                  alignItems: "center",
+                  display: "inline-flex",
+                }}
+              >
+                <div className="text-center text-white text-3xl font-extrabold leading-9">
+                  40%
+                </div>
+                <div className="self-stretch opacity-80 text-center text-white text-xs font-normal leading-3 tracking-wide">
+                  Increase in social media followers
+                </div>
+              </div>
 
+              <div
+                className="absolute w-32 h-32 top-[7%] left-[10%] hover:scale-105 cursor-pointer transform-gpu -translate-x-1/2 -translate-y-1/2 animate-float"
+                style={{
+                  rotate: "-9.71deg",
+                  transformOrigin: "0 0",
+                  background:
+                    "linear-gradient(124deg, #4062FF 2.90%, #9747FF 100%), #FFF",
+                  boxShadow:
+                    "0px 9.136962890625px 18.27392578125px rgba(19.52, 39.88, 133.87, 0.20)",
+                  borderRadius: 10.23,
+                  flexDirection: "column",
+                  justifyContent: "space-evenly",
+                  alignItems: "center",
+                  display: "inline-flex",
+                }}
+              >
+                <div className="text-center text-white text-3xl font-extrabold leading-10">
+                  80%
+                </div>
+                <div className="self-stretch opacity-80 text-center text-white text-sm font-normal leading-none tracking-wide">
+                  Time reduced on 1st Drafts
+                </div>
+              </div>
+            </>
+          )}
           <div className="relative mx-auto max-w-screen-xl flex flex-col">
             <div className="mx-auto max-w-3xl text-center h-screen flex items-center justify-center max-h-[700px]">
               <div>
@@ -506,6 +510,7 @@ export default function Home() {
               </div>
             </div>
             {!isAuthenticated && <LandingPage />}
+            div
           </div>
           <div className="absolute inset-x-0 top-[calc(100%-12rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
             <svg

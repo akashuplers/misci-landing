@@ -19,10 +19,10 @@ export const BottomTabBar = () => {
             <Tab.List className="flex space-x-1 rounded-xl bg-blue-900/20 p-1 fixed bottom-0 inset-x-0 mb-2 z-10 backdrop-filter backdrop-blur-lg bg-opacity-30">
                 {(categories).map((category) => (
                     <TabItem
-                        key={category}
+                        key={category.name}
                         category={category}
                         selected={selectedRoute === category.path}
-                />
+                    />
                 ))}
             </Tab.List>
         </Tab.Group>
