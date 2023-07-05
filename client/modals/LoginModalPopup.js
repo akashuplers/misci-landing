@@ -39,7 +39,7 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
       isOpen={modalIsOpen}
       onRequestClose={closeModal}
       ariaHideApp={false}
-      class="w-[100%] sm:w-[38%] h-[90%]"
+      className="w-[100%] sm:w-[38%] h-[90%]"
       style={{
         overlay: {
           backgroundColor: "rgba(0,0,0,0.5)",
@@ -141,7 +141,7 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
                 strokeWidth="2"
               >
                 <path
-                  stroke-linecap="round"
+                  strokeLinecap="round"
                   stroke-linejoin="round"
                   d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
                 />
@@ -165,7 +165,7 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
                     strokeWidth="2"
                   >
                     <path
-                      stroke-linecap="round"
+                      strokeLinecap="round"
                       stroke-linejoin="round"
                       d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                     />
