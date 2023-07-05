@@ -212,10 +212,10 @@ export const blogResolvers = {
                 console.log(e, "error from python")
             }
             // articleIds = [
-            //     '832ab5a1-f957-11ed-90bc-0242c0a8f002',
-            //     '855094fa-f957-11ed-90bc-0242c0a8f002',
-            //     '86fb05bf-f957-11ed-90bc-0242c0a8f002',
-            //     '885d8e7b-f957-11ed-90bc-0242c0a8f002'
+            //     '97a32ca9-1710-11ee-8959-0242c0a8e002',
+            //     '96345a34-1710-11ee-8959-0242c0a8e002',
+            //     '9495c95a-1710-11ee-8959-0242c0a8e002',
+            //     '991cd785-1710-11ee-8959-0242c0a8e002'
             // ]
             let pythonEnd = new Date()
             let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
@@ -287,7 +287,8 @@ export const blogResolvers = {
                     ideasText,
                     ideasArr,
                     refUrls,
-                    userDetails
+                    userDetails,
+                    userId: (userDetails && userDetails._id) || userId
                 })
                 const finalBlogObj = {
                     article_id: articleIds,
@@ -482,7 +483,8 @@ export const blogResolvers = {
                     imageSrc,
                     ideasArr,
                     refUrls,
-                    userDetails
+                    userDetails,
+                    userId: userDetails._id
                 })
                 let endChatGPTRequest = new Date()
                 let respChatgptTime = diff_minutes(endChatGPTRequest, startChatGptRequest)
@@ -840,7 +842,8 @@ export const blogResolvers = {
                                 ideasText,
                                 refUrls,
                                 ideasArr,
-                                userDetails
+                                userDetails,
+                                userId: userDetails._id
                             })
                             let uniqueTags: String[] = [];
                             tags?.forEach((c) => {

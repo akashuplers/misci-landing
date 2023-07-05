@@ -3,10 +3,10 @@ import FormData from "form-data"
 
 const fs = require('fs')
 export class Python {
-    userId: string
+    userId: string | null
     companyId: string
     constructor(data: {
-        userId: string
+        userId: string | null
     }) {
         this.userId = data.userId
         this.companyId = "nowigence"
@@ -114,6 +114,37 @@ export class Python {
         }catch(e){
             console.log(e, "error from python")
             console.log(e.response.data, "error from python")
+            throw e
+        }
+    }
+
+    async getReferences(data: {
+        text: string,
+        article_ids?: string[]
+    }) {
+        try {
+            const uploadData = JSON.stringify(
+                {
+                    text: data.text,
+                    article_ids: data.article_ids
+                }
+            );
+            const config: any = {
+                method: 'post',
+                url: `${process.env.PYTHON_REST_BASE_ENDPOINT}/backlinking_url`,
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
+                data : uploadData,
+                timeout: 0
+            };
+            console.log(config)
+            const pythonRes = await axios(config)
+            console.log(pythonRes.data, pythonRes)
+            return pythonRes.data
+        }catch(e){
+            console.log(e, "error from python")
+            console.log(e?.response?.data, "error from python for backlinkings")
             throw e
         }
     }
