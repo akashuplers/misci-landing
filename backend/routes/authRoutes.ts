@@ -12,6 +12,7 @@ import { daysBetween, diff_hours, getDateString, getTimeStamp, monthDiff } from 
 import { verify } from "jsonwebtoken";
 import { sendContributionEmail, sendEmails, sendForgotPasswordEmail } from "../utils/mailJetConfig";
 import { assignTweetQuota, fetchUser, publishBlog, updateUserCredit } from "../graphql/resolver/blogs/blogsRepo";
+import { ChatGPT } from "../services/chatGPT";
 const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcrypt');
@@ -1442,6 +1443,31 @@ router.post('/request-trial', async (req: any, res: any) => {
       type: "SUCCESS",
       message: "Request accepted!"
   })
+})
+
+router.post('/prompt-test', async (req: any, res: any) => {
+  const db = req.app.get('db')
+  console.log(req.body)
+  const {prompt} = req.body
+  try {
+    const chatgptApis = await db.db('lilleAdmin').collection('chatGPT').findOne()
+    let availableApi: any = null
+    if(chatgptApis) {
+      availableApi = chatgptApis.apis?.find((api: any) => !api.quotaFull)
+    } else {
+      throw "Something went wrong! Please connect with support team";
+    }
+    const response = await new ChatGPT({apiKey: availableApi.key, text: prompt, db}).textCompletion(chatgptApis.timeout)
+    return res.status(200).send({
+      type: "SUCCESS",
+      data: response
+    })
+  }catch(e){
+    return res.status(500).send({
+      type: "ERROR",
+      message: e.message
+  })
+  }
 })
 
 module.exports = router;
