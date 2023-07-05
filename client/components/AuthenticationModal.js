@@ -26,10 +26,10 @@ function IconClose() {
         viewBox="0 0 24 24"
         strokeWidth="1.5"
         stroke="currentColor"
-        class="w-6 h-6"
+        className="w-6 h-6"
       >
         <path
-          stroke-linecap="round"
+          strokeLinecap="round"
           stroke-linejoin="round"
           d="M6 18L18 6M6 6l12 12" />
       </svg>
@@ -184,7 +184,7 @@ export default function AuthenticationModal({
         .then((response) => {
           localStorage.setItem("ispaid", response.data.me.isSubscribed);
           localStorage.setItem("credits", response.data.me.credits);
-          console.log('reached here', response.data.me._id).replace(/['"]+/g, "",  response.data.me.credits )
+          console.log('reached here', response.data.me._id).replace(/['"]+/g, "", response.data.me.credits)
           localStorage.setItem(
             "userId",
             JSON.stringify(response.data.me._id).replace(/['"]+/g, "")
