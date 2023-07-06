@@ -6,7 +6,6 @@ import { CheckCircleIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline"
 import { loadStripe } from "@stripe/stripe-js";
 import { Editor } from "@tinymce/tinymce-react";
 import axios from "axios";
-import equals from "fast-deep-equal";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -69,6 +68,10 @@ const SAVING_STATUS = {
   ERROR: "Error!",
   BLANK: "",
 }
+const resetTimeout = (id, newID) => {
+  clearTimeout(id);
+  return newID;
+};
 export default function TinyMCEEditor({
   topic,
   isAuthenticated,
@@ -115,11 +118,6 @@ export default function TinyMCEEditor({
   const [contributinoModalLoader, setContributionModalLoader] = useState(false);
   const [isEditorTextUpdated, setIsEditorTextUpdated] = useState(false);
   const [initailEditorText, setInitailEditorText] = useState(editorText);
-  // const [showTwitterThreadUI, setShowTwitterThreadUI] = useState(false);
-  // const [pauseTwitterPublish]
-
-  // const savingDataStatus = useAutoSave(updatedText, blog_id);
-
   const { twitterThreadData, setTwitterThreadData } = useTwitterThreadStore();
   // const {}
   const [prevTwitterThreads, setPrevTwitterThreads] =
@@ -139,33 +137,18 @@ export default function TinyMCEEditor({
   const [prevAutoSaveData, setPrevAutoSaveData] = useState(editorText);
   const [hasDataChanged, setHasDataChanged] = useState(false);
 
-
-  // currently working for linkedin side only.
+  const [timeout, setTimeoutId] = useState(null);
+  const [saved, setSaved] = useState(false);
+  const saveValue = () => {
+    handleSave(false, false);
+    setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
+    setTimeout(() => setAutoSaveSavingStatus(SAVING_STATUS.BLANK), 1000);
+  };
   useEffect(() => {
-    const prevAutoSaveDataString = JSON.stringify(prevAutoSaveData);
-    const updatedTextString = JSON.stringify(updatedText);
-    if (!equals(prevAutoSaveDataString, updatedTextString) && option == "linkedin") {
-      setAutoSaveSavingStatus(SAVING_STATUS.SAVING);
-      setHasDataChanged(true);
-    }
-    setPrevAutoSaveData(updatedText);
-  }, [updatedText]);
-
-  // autosave useEffect
-  useEffect(() => {
-    if (hasDataChanged && option === "linkedin") {
-      const timeout = setTimeout(() => {
-        setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
-        handleSave(false, false);
-        setHasDataChanged(false);
-      }, 10000);
-      return () => clearTimeout(timeout);
-    }
-
-  }, [autoSaveSavingStatus, hasDataChanged]);
-
-
-  // linkedin, twitter, blog
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [timeout]);
   const [thisIsToBePublished, setThisIsToBePublished] = useState(
     TYPESOFTABS.BLOG
   );
@@ -2234,6 +2217,9 @@ export default function TinyMCEEditor({
                 save_onsavecallback: function () { console.log('Saved'); }
               }}
               onEditorChange={(content, editor) => {
+                setAutoSaveSavingStatus(SAVING_STATUS.SAVING)
+                const newTimeout = resetTimeout(timeout, setTimeout(saveValue, 800));
+                setTimeoutId(newTimeout);
                 setEditorText(content);
                 setSaveText("Save Now!");
                 setIRanNumberOfTimes((prevCount) => prevCount + 1);
