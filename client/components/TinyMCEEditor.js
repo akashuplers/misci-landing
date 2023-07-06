@@ -30,7 +30,7 @@ import {
   LINKEDIN_CLIENT_ID,
   LI_API_ENDPOINTS,
 } from "../constants/apiEndpoints";
-import { updateBlog } from "../graphql/mutations/updateBlog";
+import { rawMutationUpdateBlog, updateBlog } from "../graphql/mutations/updateBlog";
 import {
   getCurrentDashboardURL,
   htmlToJson,
@@ -138,11 +138,76 @@ export default function TinyMCEEditor({
   const [hasDataChanged, setHasDataChanged] = useState(false);
 
   const [timeout, setTimeoutId] = useState(null);
-  const [saved, setSaved] = useState(false);
   const saveValue = () => {
-    isAuthenticated && handleSave(false, false);
+    // isAuthenticated && handleSave(false, false);
+
+    var ispaid = localStorage.getItem("ispaid");
+    var getToken = localStorage.getItem("token");
+    var credits = localStorage.getItem("credits");
+    if (ispaid === "true" || credits !== "0") {
+      if (getToken) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(updatedText, "text/html");
+        const img = doc?.querySelector("img");
+        const src = img?.getAttribute("src");
+
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = updatedText;
+        const elementsToRemove = tempDiv.querySelectorAll("h3");
+        for (let i = 0; i < elementsToRemove.length; i++) {
+          const element = elementsToRemove[i];
+          element.parentNode.removeChild(element);
+        }
+        const elementsToRemove2 = tempDiv.querySelectorAll("a");
+        for (let i = 0; i < elementsToRemove2.length; i++) {
+          const element = elementsToRemove2[i];
+          element.parentNode.removeChild(element);
+        }
+        const textContent = tempDiv.textContent;
+        const jsonDoc = htmlToJson(updatedText, imageURL).children;
+        const formatedJSON = { children: [...jsonDoc] };
+        var optionsForUpdate = {
+          // tinymce_json: formatedJSON,
+          blog_id: blog_id,
+          platform: option === "blog" ? "wordpress" : option,
+          imageUrl: src,
+          imageSrc: imageURL ? null : imageURL,
+          description: textContent,
+        };
+        if (showTwitterThreadUI === true) {
+          optionsForUpdate.threads = twitterThreadData;
+        } else {
+          optionsForUpdate.tinymce_json = formatedJSON;
+        }
+        fetch(API_BASE_PATH + "/graphql", {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + getToken,
+          },
+          body: JSON.stringify(
+            {
+              variables: {
+                options: optionsForUpdate,
+              },
+              query: rawMutationUpdateBlog
+            }
+          )
+        })
+          .then(response => response.json())
+          .then(responseData => {
+            console.log(responseData);
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+        setAuthenticationModalOpen(false);
+      } else {
+        setAuthneticationModalType("signup");
+        setAuthenticationModalOpen(true);
+      }
+    }
     setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
-    setTimeout(() => setAutoSaveSavingStatus(SAVING_STATUS.BLANK), 1000);
   };
   useEffect(() => {
     return () => {
@@ -468,7 +533,6 @@ export default function TinyMCEEditor({
         })
           .then(() => {
             //console.log(">>", window.location);
-            refetchBlog();
             runMeeRefetch();
             showToast == true && toast.success("Saved!!", {
               position: "top-center",
@@ -2217,10 +2281,15 @@ export default function TinyMCEEditor({
                 save_onsavecallback: function () { console.log('Saved'); }
               }}
               onEditorChange={(content, editor) => {
-                setAutoSaveSavingStatus(SAVING_STATUS.SAVING)
-                const newTimeout = resetTimeout(timeout, setTimeout(saveValue, 800));
-                setTimeoutId(newTimeout);
+                setAutoSaveSavingStatus(SAVING_STATUS.SAVING);
                 setEditorText(content);
+                const newTimeout = resetTimeout(timeout, setTimeout(() => {
+                  // saveValue
+                  if (iRanNumberOfTimes > 3) {
+                    saveValue()
+                  }
+                }, 2000));
+                setTimeoutId(newTimeout);
                 setSaveText("Save Now!");
                 setIRanNumberOfTimes((prevCount) => prevCount + 1);
                 setIsEditorTextUpdated(true);
