@@ -69,6 +69,14 @@ const MoblieUnAuthFooter = () => {
             </h6>
             <p className="mb-4">
               <Link
+                href="/userguide.pdf"
+                className="text-white-600 hover:opacity-90  justify-start ss"
+              >
+                Privacy & Policy
+              </Link>
+            </p>
+            <p className="mb-4">
+              <Link
                 href="/faq"
                 className="text-white-600 hover:opacity-90  justify-start ss"
               >
