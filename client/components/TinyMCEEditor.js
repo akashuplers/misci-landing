@@ -1866,14 +1866,14 @@ export default function TinyMCEEditor({
                 Twitter
               </div>
               {
-                autoSaveSavingStatus == SAVING_STATUS.SAVING && <ReactLoading
+                iRanNumberOfTimes > 3 && autoSaveSavingStatus == SAVING_STATUS.SAVING ? <ReactLoading
                   width={25}
                   height={25}
                   round={true}
                   color={"#2563EB"}
                 />
-              }{
-                autoSaveSavingStatus == SAVING_STATUS.SAVED && <CheckCircleIcon className="text-[#2563EB]" height={25} width={25} />
+                  :
+                  <CheckCircleIcon className="text-[#2563EB]" height={25} width={25} />
               }
 
             </div>
@@ -2281,14 +2281,14 @@ export default function TinyMCEEditor({
                 save_onsavecallback: function () { console.log('Saved'); }
               }}
               onEditorChange={(content, editor) => {
-                setAutoSaveSavingStatus(SAVING_STATUS.SAVING);
                 setEditorText(content);
+                setAutoSaveSavingStatus(SAVING_STATUS.SAVING)
                 const newTimeout = resetTimeout(timeout, setTimeout(() => {
                   // saveValue
                   if (iRanNumberOfTimes > 3) {
                     saveValue()
                   }
-                }, 2000));
+                }, 400));
                 setTimeoutId(newTimeout);
                 setSaveText("Save Now!");
                 setIRanNumberOfTimes((prevCount) => prevCount + 1);
