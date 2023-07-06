@@ -137,7 +137,68 @@ export default function TinyMCEEditor({
   const [prevAutoSaveData, setPrevAutoSaveData] = useState(editorText);
   const [hasDataChanged, setHasDataChanged] = useState(false);
 
+  function handleRawTwitterMutation() {
+    var getToken, ispaid, credits;
+    if (typeof window !== "undefined") {
+      window.addEventListener("beforeunload", (event) => {
+        event.preventDefault();
+        event.returnValue = null;
+      });
+      ispaid = localStorage.getItem("ispaid");
+      getToken = localStorage.getItem("token");
+      credits = localStorage.getItem("credits");
+      var optionsForUpdate = {
+        // tinymce_json: formatedJSON,
+        blog_id: blog_id,
+        platform: option === "blog" ? "wordpress" : option,
+        imageUrl: null,
+        imageSrc: imageURL ? null : imageURL,
+        description: null,
+      };
+      setPrevTwitterThreads(twitterThreadData);
+      if (showTwitterThreadUI === true) {
+        optionsForUpdate.threads = twitterThreadData;
+      } else {
+        optionsForUpdate.tinymce_json = formatedJSON;
+      }
+      fetch(API_BASE_PATH + "/graphql", {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + getToken,
+        },
+        body: JSON.stringify(
+          {
+            variables: {
+              options: optionsForUpdate,
+            },
+            query: rawMutationUpdateBlog
+          }
+        )
+      })
+        .then(response => response.json())
+        .then(responseData => {
+          console.log(responseData);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+      setAuthenticationModalOpen(false);
+    } else {
+      setAuthneticationModalType("signup");
+      setAuthenticationModalOpen(true);
+    }
+    setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
+  }
   const [timeout, setTimeoutId] = useState(null);
+  function handleTwitterAutoSave() {
+    setAutoSaveSavingStatus(SAVING_STATUS.SAVING);
+    const newTimeout = resetTimeout(timeout, setTimeout(() => {
+      // saveValue
+      handleRawTwitterMutation();
+    }, 1000));
+    setTimeoutId(newTimeout);
+  }
   const saveValue = () => {
     // isAuthenticated && handleSave(false, false);
 
@@ -1866,7 +1927,8 @@ export default function TinyMCEEditor({
                 Twitter
               </div>
               {
-                iRanNumberOfTimes > 3 && autoSaveSavingStatus == SAVING_STATUS.SAVING ? <>
+
+                option === "twitter" ? (autoSaveSavingStatus == SAVING_STATUS.SAVING ? <>
                   <ReactLoading
                     width={25}
                     height={25}
@@ -1878,8 +1940,23 @@ export default function TinyMCEEditor({
                   </span>
                 </>
                   :
-                  <CheckCircleIcon className="text-[#2563EB]" height={25} width={25} />
+                  <CheckCircleIcon className="text-[#2563EB]" height={25} width={25} />) : (iRanNumberOfTimes > 3 && autoSaveSavingStatus == SAVING_STATUS.SAVING ? <>
+                    <ReactLoading
+                      width={25}
+                      height={25}
+                      round={true}
+                      color={"#2563EB"}
+                    />
+                    <span className="text-[#2563EB] ml-2">
+                      Saving...
+                    </span>
+                  </>
+                    :
+                    <CheckCircleIcon className="text-[#2563EB]" height={25} width={25} />)
+
+
               }
+
 
             </div>
           ) : (
@@ -2319,6 +2396,7 @@ export default function TinyMCEEditor({
               pauseTwitterPublish={pauseTwitterPublish}
               remainingTwitterQuota={meeData?.me?.remaining_twitter_quota}
               totalTwitterQuota={meeData?.me?.total_twitter_quota}
+              handleTwitterAutoSave={handleTwitterAutoSave}
             />
           </div>
         )}
