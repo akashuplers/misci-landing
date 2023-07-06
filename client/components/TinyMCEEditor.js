@@ -6,7 +6,6 @@ import { CheckCircleIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline"
 import { loadStripe } from "@stripe/stripe-js";
 import { Editor } from "@tinymce/tinymce-react";
 import axios from "axios";
-import equals from "fast-deep-equal";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -31,7 +30,7 @@ import {
   LINKEDIN_CLIENT_ID,
   LI_API_ENDPOINTS,
 } from "../constants/apiEndpoints";
-import { updateBlog } from "../graphql/mutations/updateBlog";
+import { rawMutationUpdateBlog, updateBlog } from "../graphql/mutations/updateBlog";
 import {
   getCurrentDashboardURL,
   htmlToJson,
@@ -69,6 +68,10 @@ const SAVING_STATUS = {
   ERROR: "Error!",
   BLANK: "",
 }
+const resetTimeout = (id, newID) => {
+  clearTimeout(id);
+  return newID;
+};
 export default function TinyMCEEditor({
   topic,
   isAuthenticated,
@@ -115,11 +118,6 @@ export default function TinyMCEEditor({
   const [contributinoModalLoader, setContributionModalLoader] = useState(false);
   const [isEditorTextUpdated, setIsEditorTextUpdated] = useState(false);
   const [initailEditorText, setInitailEditorText] = useState(editorText);
-  // const [showTwitterThreadUI, setShowTwitterThreadUI] = useState(false);
-  // const [pauseTwitterPublish]
-
-  // const savingDataStatus = useAutoSave(updatedText, blog_id);
-
   const { twitterThreadData, setTwitterThreadData } = useTwitterThreadStore();
   // const {}
   const [prevTwitterThreads, setPrevTwitterThreads] =
@@ -139,33 +137,83 @@ export default function TinyMCEEditor({
   const [prevAutoSaveData, setPrevAutoSaveData] = useState(editorText);
   const [hasDataChanged, setHasDataChanged] = useState(false);
 
+  const [timeout, setTimeoutId] = useState(null);
+  const saveValue = () => {
+    // isAuthenticated && handleSave(false, false);
 
-  // currently working for linkedin side only.
-  useEffect(() => {
-    const prevAutoSaveDataString = JSON.stringify(prevAutoSaveData);
-    const updatedTextString = JSON.stringify(updatedText);
-    if (!equals(prevAutoSaveDataString, updatedTextString) && option == "linkedin") {
-      setAutoSaveSavingStatus(SAVING_STATUS.SAVING);
-      setHasDataChanged(true);
+    var ispaid = localStorage.getItem("ispaid");
+    var getToken = localStorage.getItem("token");
+    var credits = localStorage.getItem("credits");
+    if (ispaid === "true" || credits !== "0") {
+      if (getToken) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(updatedText, "text/html");
+        const img = doc?.querySelector("img");
+        const src = img?.getAttribute("src");
+
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = updatedText;
+        const elementsToRemove = tempDiv.querySelectorAll("h3");
+        for (let i = 0; i < elementsToRemove.length; i++) {
+          const element = elementsToRemove[i];
+          element.parentNode.removeChild(element);
+        }
+        const elementsToRemove2 = tempDiv.querySelectorAll("a");
+        for (let i = 0; i < elementsToRemove2.length; i++) {
+          const element = elementsToRemove2[i];
+          element.parentNode.removeChild(element);
+        }
+        const textContent = tempDiv.textContent;
+        const jsonDoc = htmlToJson(updatedText, imageURL).children;
+        const formatedJSON = { children: [...jsonDoc] };
+        var optionsForUpdate = {
+          // tinymce_json: formatedJSON,
+          blog_id: blog_id,
+          platform: option === "blog" ? "wordpress" : option,
+          imageUrl: src,
+          imageSrc: imageURL ? null : imageURL,
+          description: textContent,
+        };
+        if (showTwitterThreadUI === true) {
+          optionsForUpdate.threads = twitterThreadData;
+        } else {
+          optionsForUpdate.tinymce_json = formatedJSON;
+        }
+        fetch(API_BASE_PATH + "/graphql", {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + getToken,
+          },
+          body: JSON.stringify(
+            {
+              variables: {
+                options: optionsForUpdate,
+              },
+              query: rawMutationUpdateBlog
+            }
+          )
+        })
+          .then(response => response.json())
+          .then(responseData => {
+            console.log(responseData);
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+        setAuthenticationModalOpen(false);
+      } else {
+        setAuthneticationModalType("signup");
+        setAuthenticationModalOpen(true);
+      }
     }
-    setPrevAutoSaveData(updatedText);
-  }, [updatedText]);
-
-  // autosave useEffect
+    setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
+  };
   useEffect(() => {
-    if (hasDataChanged && option === "linkedin") {
-      const timeout = setTimeout(() => {
-        setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
-        handleSave(false, false);
-        setHasDataChanged(false);
-      }, 10000);
-      return () => clearTimeout(timeout);
-    }
-
-  }, [autoSaveSavingStatus, hasDataChanged]);
-
-
-  // linkedin, twitter, blog
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [timeout]);
   const [thisIsToBePublished, setThisIsToBePublished] = useState(
     TYPESOFTABS.BLOG
   );
@@ -485,7 +533,6 @@ export default function TinyMCEEditor({
         })
           .then(() => {
             //console.log(">>", window.location);
-            refetchBlog();
             runMeeRefetch();
             showToast == true && toast.success("Saved!!", {
               position: "top-center",
@@ -1819,14 +1866,19 @@ export default function TinyMCEEditor({
                 Twitter
               </div>
               {
-                autoSaveSavingStatus == SAVING_STATUS.SAVING && <ReactLoading
-                  width={25}
-                  height={25}
-                  round={true}
-                  color={"#2563EB"}
-                />
-              }{
-                autoSaveSavingStatus == SAVING_STATUS.SAVED && <CheckCircleIcon className="text-[#2563EB]" height={25} width={25} />
+                iRanNumberOfTimes > 3 && autoSaveSavingStatus == SAVING_STATUS.SAVING ? <>
+                  <ReactLoading
+                    width={25}
+                    height={25}
+                    round={true}
+                    color={"#2563EB"}
+                  />
+                  <span className="text-[#2563EB] ml-2">
+                    Saving...
+                  </span>
+                </>
+                  :
+                  <CheckCircleIcon className="text-[#2563EB]" height={25} width={25} />
               }
 
             </div>
@@ -2235,6 +2287,14 @@ export default function TinyMCEEditor({
               }}
               onEditorChange={(content, editor) => {
                 setEditorText(content);
+                setAutoSaveSavingStatus(SAVING_STATUS.SAVING)
+                const newTimeout = resetTimeout(timeout, setTimeout(() => {
+                  // saveValue
+                  if (iRanNumberOfTimes > 3) {
+                    saveValue()
+                  }
+                }, 400));
+                setTimeoutId(newTimeout);
                 setSaveText("Save Now!");
                 setIRanNumberOfTimes((prevCount) => prevCount + 1);
                 setIsEditorTextUpdated(true);
