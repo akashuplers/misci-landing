@@ -1866,12 +1866,17 @@ export default function TinyMCEEditor({
                 Twitter
               </div>
               {
-                iRanNumberOfTimes > 3 && autoSaveSavingStatus == SAVING_STATUS.SAVING ? <ReactLoading
-                  width={25}
-                  height={25}
-                  round={true}
-                  color={"#2563EB"}
-                />
+                iRanNumberOfTimes > 3 && autoSaveSavingStatus == SAVING_STATUS.SAVING ? <>
+                  <ReactLoading
+                    width={25}
+                    height={25}
+                    round={true}
+                    color={"#2563EB"}
+                  />
+                  <span className="text-[#2563EB] ml-2">
+                    Saving...
+                  </span>
+                </>
                   :
                   <CheckCircleIcon className="text-[#2563EB]" height={25} width={25} />
               }
