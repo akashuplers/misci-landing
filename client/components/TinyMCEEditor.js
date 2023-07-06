@@ -140,7 +140,7 @@ export default function TinyMCEEditor({
   const [timeout, setTimeoutId] = useState(null);
   const [saved, setSaved] = useState(false);
   const saveValue = () => {
-    handleSave(false, false);
+    isAuthenticated && handleSave(false, false);
     setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
     setTimeout(() => setAutoSaveSavingStatus(SAVING_STATUS.BLANK), 1000);
   };
