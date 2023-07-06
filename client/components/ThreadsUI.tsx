@@ -12,6 +12,7 @@ const Threads = ({
   isUserPaid,
   remainingTwitterQuota,
   totalTwitterQuota,
+  handleTwitterAutoSave,
 }: any) => {
   // const [threadData, setthreadData] = useState(threadData);
   // //console.log("THREADS DATA");
@@ -175,6 +176,7 @@ const Threads = ({
                               setPauseTwitterPublish={setPauseTwitterPublish}
                               setthreadData={setthreadData}
                               isUserPaid={isUserPaid}
+                              handleTwitterAutoSave={handleTwitterAutoSave}
                             />
                           </div>
                         )}
@@ -231,6 +233,7 @@ const Thread = ({
   addTextArea,
   setthreadData,
   setPauseTwitterPublish,
+  handleTwitterAutoSave,
 }: any) => {
   const [isHovering, setIsHovering] = useState(false);
 
@@ -300,6 +303,7 @@ const Thread = ({
               minLength={1}
               onChange={(e) => {
                 updateTextArea(index, e.target.value);
+                handleTwitterAutoSave()
               }}
             />
             {getCharCount(thread) > MAX_THREAD_COUNT && (
