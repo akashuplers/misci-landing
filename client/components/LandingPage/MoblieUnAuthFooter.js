@@ -72,7 +72,7 @@ const MoblieUnAuthFooter = () => {
                 href="/userguide.pdf"
                 className="text-white-600 hover:opacity-90  justify-start ss"
               >
-                Privacy & Policy
+                User Guide
               </Link>
             </p>
             <p className="mb-4">
