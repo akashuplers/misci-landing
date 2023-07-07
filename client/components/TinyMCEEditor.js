@@ -137,7 +137,7 @@ export default function TinyMCEEditor({
   const [prevAutoSaveData, setPrevAutoSaveData] = useState(editorText);
   const [hasDataChanged, setHasDataChanged] = useState(false);
 
-  function handleRawTwitterMutation() {
+  function handleRawTwitterMutation(twitterThreadData) {
     var getToken, ispaid, credits;
     if (typeof window !== "undefined") {
       window.addEventListener("beforeunload", (event) => {
@@ -191,17 +191,18 @@ export default function TinyMCEEditor({
     setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
   }
   const [timeout, setTimeoutId] = useState(null);
-  function handleTwitterAutoSave() {
+  function handleTwitterAutoSave(data, threadData) {
+    console.log('sending this...: '+ data);
+    console.log(data);
     setAutoSaveSavingStatus(SAVING_STATUS.SAVING);
     const newTimeout = resetTimeout(timeout, setTimeout(() => {
       // saveValue
-      handleRawTwitterMutation();
+      handleRawTwitterMutation(threadData);
     }, 1000));
     setTimeoutId(newTimeout);
   }
-  const saveValue = () => {
+  const saveValue = (contentToSave) => {
     // isAuthenticated && handleSave(false, false);
-
     var ispaid = localStorage.getItem("ispaid");
     var getToken = localStorage.getItem("token");
     var credits = localStorage.getItem("credits");
@@ -225,7 +226,7 @@ export default function TinyMCEEditor({
           element.parentNode.removeChild(element);
         }
         const textContent = tempDiv.textContent;
-        const jsonDoc = htmlToJson(updatedText, imageURL).children;
+        const jsonDoc = htmlToJson(contentToSave, imageURL).children;
         const formatedJSON = { children: [...jsonDoc] };
         var optionsForUpdate = {
           // tinymce_json: formatedJSON,
@@ -934,6 +935,7 @@ export default function TinyMCEEditor({
     }
   }, [option]);
 
+
   const handleSavePublish = () => {
     if (creditLeft === 0) {
       setTrailModal(true);
@@ -1145,6 +1147,13 @@ export default function TinyMCEEditor({
       }
     }
   };
+
+  useEffect(()=>{
+    refetchBlog();
+    if(option === "twitter" || option ==='twitter-comeback'){
+        setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
+      }
+  },[option]);
 
   const handleTwitterAlertModal = (
     remaningQuota,
@@ -2367,8 +2376,8 @@ export default function TinyMCEEditor({
                 setAutoSaveSavingStatus(SAVING_STATUS.SAVING)
                 const newTimeout = resetTimeout(timeout, setTimeout(() => {
                   // saveValue
-                  if (iRanNumberOfTimes > 3) {
-                    saveValue()
+                  if (iRanNumberOfTimes > 2) {
+                    saveValue(content)
                   }
                 }, 400));
                 setTimeoutId(newTimeout);
