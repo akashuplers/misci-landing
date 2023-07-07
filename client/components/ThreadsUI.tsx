@@ -303,7 +303,7 @@ const Thread = ({
               minLength={1}
               onChange={(e) => {
                 updateTextArea(index, e.target.value);
-                handleTwitterAutoSave()
+                handleTwitterAutoSave(e.target.value,threadData)
               }}
             />
             {getCharCount(thread) > MAX_THREAD_COUNT && (
