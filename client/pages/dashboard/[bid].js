@@ -232,22 +232,6 @@ export default function Post() {
           } else {
             setShowOTPModal(true);
           }
-          const SEND_OTP_URL = API_BASE_PATH + "/auth/send-otp";
-          var getToken = localStorage.getItem("token");
-          const requestOptions = {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + getToken,
-            },
-          };
-
-          fetch(SEND_OTP_URL, requestOptions)
-            .then((response) => {
-            })
-            .catch((error) => {
-              console.log("ERROR FROM SEND OTP");
-            });
 
         } else {
           setShowOTPModal(false);
@@ -255,6 +239,7 @@ export default function Post() {
       }
     }
   }, [meeData]);
+  
   return (
     <>
       {/* <Head><title>{blogData}</title><meta about="body">{blogData}</meta></Head> */}
