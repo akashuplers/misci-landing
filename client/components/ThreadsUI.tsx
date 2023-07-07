@@ -43,6 +43,7 @@ const Threads = ({
     updatedThreads[lastIndex] = "";
     updatedThreads.push(lastThread);
     setthreadData(updatedThreads);
+    handleTwitterAutoSave(value,threadData);
   };
 
   const updateTextArea = (index: number, value: number) => {
@@ -52,12 +53,14 @@ const Threads = ({
       updatedThreads[index] = value;
       setthreadData(updatedThreads);
     }
+    handleTwitterAutoSave(value,threadData);
   };
 
   const deleteThread = (index: number) => {
     const updatedThreads = [...threadData];
     updatedThreads.splice(index, 1);
     setthreadData(updatedThreads);
+    handleTwitterAutoSave(index,threadData);
   };
 
   const moveThreadUp = (index: number) => {
@@ -69,6 +72,8 @@ const Threads = ({
       ];
       setthreadData(updatedThreads);
     }
+    handleTwitterAutoSave(index,threadData)
+
   };
 
   const moveThreadDown = (index: number) => {
@@ -80,6 +85,8 @@ const Threads = ({
       ];
       setthreadData(updatedThreads);
     }
+    handleTwitterAutoSave(index,threadData)
+
   };
   const handleDragEnd = (result: any) => {
     setHideAddThread(true);
@@ -89,6 +96,8 @@ const Threads = ({
     updatedThreads.splice(result.destination.index, 0, removed);
 
     setthreadData(updatedThreads);
+    handleTwitterAutoSave(result,threadData)
+
   };
 
   return (
@@ -303,7 +312,6 @@ const Thread = ({
               minLength={1}
               onChange={(e) => {
                 updateTextArea(index, e.target.value);
-                handleTwitterAutoSave(e.target.value,threadData)
               }}
             />
             {getCharCount(thread) > MAX_THREAD_COUNT && (
