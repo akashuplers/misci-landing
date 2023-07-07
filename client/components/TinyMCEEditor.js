@@ -87,6 +87,7 @@ export default function TinyMCEEditor({
   refetchBlog,
 }) {
   const twitterButtonRef = useRef(null);
+  const [isTinyMCEReady, setIsTinyMCEReady] = useState(false);
   const [multiplier, setMultiplier] = useState(1);
   const [contributionAmout, setContributionAmount] = useState(1);
   const [updatedText, setEditorText] = useState(editorText);
@@ -137,7 +138,12 @@ export default function TinyMCEEditor({
   const [prevAutoSaveData, setPrevAutoSaveData] = useState(editorText);
   const [hasDataChanged, setHasDataChanged] = useState(false);
 
-  function handleRawTwitterMutation() {
+  const [isEditorReady, setIsEditorReady] = useState(false);
+  const handleEditorInit = () => {
+    setIsEditorReady(true);
+  };
+  
+  function handleRawTwitterMutation(newThreads) {
     var getToken, ispaid, credits;
     if (typeof window !== "undefined") {
       window.addEventListener("beforeunload", (event) => {
@@ -155,9 +161,9 @@ export default function TinyMCEEditor({
         imageSrc: imageURL ? null : imageURL,
         description: null,
       };
-      setPrevTwitterThreads(twitterThreadData);
+      setPrevTwitterThreads(newThreads);
       if (showTwitterThreadUI === true) {
-        optionsForUpdate.threads = twitterThreadData;
+        optionsForUpdate.threads = newThreads;
       } else {
         optionsForUpdate.tinymce_json = formatedJSON;
       }
@@ -191,17 +197,19 @@ export default function TinyMCEEditor({
     setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
   }
   const [timeout, setTimeoutId] = useState(null);
-  function handleTwitterAutoSave() {
+  const [twitterTimeOut, setTwitterTimeOut] = useState(null);
+  function handleTwitterAutoSave(data, threadData) {
+    console.log(data);
     setAutoSaveSavingStatus(SAVING_STATUS.SAVING);
-    const newTimeout = resetTimeout(timeout, setTimeout(() => {
-      // saveValue
-      handleRawTwitterMutation();
-    }, 1000));
-    setTimeoutId(newTimeout);
+    const newTimeout = resetTimeout(twitterTimeOut, setTimeout(() => {
+      // saveValu
+    console.log('sending this...: '+ threadData);
+      handleRawTwitterMutation(threadData);
+    }, 400));
+    setTwitterTimeOut(newTimeout);
   }
-  const saveValue = () => {
+  const saveValue = (contentToSave) => {
     // isAuthenticated && handleSave(false, false);
-
     var ispaid = localStorage.getItem("ispaid");
     var getToken = localStorage.getItem("token");
     var credits = localStorage.getItem("credits");
@@ -225,7 +233,7 @@ export default function TinyMCEEditor({
           element.parentNode.removeChild(element);
         }
         const textContent = tempDiv.textContent;
-        const jsonDoc = htmlToJson(updatedText, imageURL).children;
+        const jsonDoc = htmlToJson(contentToSave, imageURL).children;
         const formatedJSON = { children: [...jsonDoc] };
         var optionsForUpdate = {
           // tinymce_json: formatedJSON,
@@ -934,6 +942,7 @@ export default function TinyMCEEditor({
     }
   }, [option]);
 
+
   const handleSavePublish = () => {
     if (creditLeft === 0) {
       setTrailModal(true);
@@ -1145,6 +1154,13 @@ export default function TinyMCEEditor({
       }
     }
   };
+
+  useEffect(()=>{
+    refetchBlog();
+    if(option === "twitter" || option ==='twitter-comeback'){
+        setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
+      }
+  },[option]);
 
   const handleTwitterAlertModal = (
     remaningQuota,
@@ -2232,6 +2248,7 @@ export default function TinyMCEEditor({
                   if (editor.inline) {
                     registerPageMouseUp(editor, throttledStore);
                   }
+                  editor.on('init', handleEditorInit);
                 },
                 init_instance_callback: function (editor) {
                   editor.on("ExecCommand", function (e) {
@@ -2364,12 +2381,10 @@ export default function TinyMCEEditor({
               }}
               onEditorChange={(content, editor) => {
                 setEditorText(content);
+                console.log('EDITOR CHANAGE');
                 setAutoSaveSavingStatus(SAVING_STATUS.SAVING)
                 const newTimeout = resetTimeout(timeout, setTimeout(() => {
-                  // saveValue
-                  if (iRanNumberOfTimes > 3) {
-                    saveValue()
-                  }
+                  isEditorReady && saveValue(content)
                 }, 400));
                 setTimeoutId(newTimeout);
                 setSaveText("Save Now!");
