@@ -143,7 +143,7 @@ export default function TinyMCEEditor({
     setIsEditorReady(true);
   };
   
-  function handleRawTwitterMutation(twitterThreadData) {
+  function handleRawTwitterMutation(newThreads) {
     var getToken, ispaid, credits;
     if (typeof window !== "undefined") {
       window.addEventListener("beforeunload", (event) => {
@@ -161,9 +161,9 @@ export default function TinyMCEEditor({
         imageSrc: imageURL ? null : imageURL,
         description: null,
       };
-      setPrevTwitterThreads(twitterThreadData);
+      setPrevTwitterThreads(newThreads);
       if (showTwitterThreadUI === true) {
-        optionsForUpdate.threads = twitterThreadData;
+        optionsForUpdate.threads = newThreads;
       } else {
         optionsForUpdate.tinymce_json = formatedJSON;
       }
@@ -197,15 +197,16 @@ export default function TinyMCEEditor({
     setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
   }
   const [timeout, setTimeoutId] = useState(null);
+  const [twitterTimeOut, setTwitterTimeOut] = useState(null);
   function handleTwitterAutoSave(data, threadData) {
-    console.log('sending this...: '+ data);
     console.log(data);
     setAutoSaveSavingStatus(SAVING_STATUS.SAVING);
-    const newTimeout = resetTimeout(timeout, setTimeout(() => {
-      // saveValue
+    const newTimeout = resetTimeout(twitterTimeOut, setTimeout(() => {
+      // saveValu
+    console.log('sending this...: '+ threadData);
       handleRawTwitterMutation(threadData);
-    }, 1000));
-    setTimeoutId(newTimeout);
+    }, 400));
+    setTwitterTimeOut(newTimeout);
   }
   const saveValue = (contentToSave) => {
     // isAuthenticated && handleSave(false, false);
@@ -2239,14 +2240,6 @@ export default function TinyMCEEditor({
 
         {showTwitterThreadUI === false ? (
           <>
-
-      {isEditorReady ? <span className="text-xs text-green-500">Last saved </span> : <>
-      <span className="text-xs text-red-500">not ready</span>
-      </>
-}
-
-
-
             <Editor
               value={updatedText || editorText}
               apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
@@ -2388,6 +2381,7 @@ export default function TinyMCEEditor({
               }}
               onEditorChange={(content, editor) => {
                 setEditorText(content);
+                console.log('EDITOR CHANAGE');
                 setAutoSaveSavingStatus(SAVING_STATUS.SAVING)
                 const newTimeout = resetTimeout(timeout, setTimeout(() => {
                   isEditorReady && saveValue(content)
