@@ -1337,10 +1337,9 @@ router.get('/send-otp', authMiddleware,  async (request: any, res: any) => {
       </div>
       </div>
       
-
-
-      <br><br><br><br><br><br><br></body></html>
-
+      </html>
+      
+      
       `
     });
     const data: any = {
