@@ -510,7 +510,6 @@ export default function Home() {
               </div>
             </div>
             {!isAuthenticated && <LandingPage />}
-            div
           </div>
           <div className="absolute inset-x-0 top-[calc(100%-12rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
             <svg
