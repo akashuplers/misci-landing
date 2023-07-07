@@ -228,7 +228,7 @@ export default function Post() {
             } else {
               setShowOTPModal(false);
             }
-
+            
           } else {
             setShowOTPModal(true);
           }
@@ -239,7 +239,33 @@ export default function Post() {
       }
     }
   }, [meeData]);
-  
+
+  useEffect(() => {
+    function sendOpt() {
+      const SEND_OTP_URL = API_BASE_PATH + "/auth/send-otp";
+      var getToken = localStorage.getItem("token");
+      const requestOptions = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + getToken,
+        },
+      };
+
+      fetch(SEND_OTP_URL, requestOptions)
+        .then((response) => {
+          console.log("RESPONSE FROM SEND OTP");
+          console.log(response);
+          console.log(response.json());
+        })
+        .catch((error) => {
+          console.log("ERROR FROM SEND OTP");
+        });
+    }
+    if (showOTPModal === true) {
+      sendOpt();
+    }
+  }, [showOTPModal]);
   return (
     <>
       {/* <Head><title>{blogData}</title><meta about="body">{blogData}</meta></Head> */}
