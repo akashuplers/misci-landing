@@ -87,6 +87,7 @@ export default function TinyMCEEditor({
   refetchBlog,
 }) {
   const twitterButtonRef = useRef(null);
+  const [isTinyMCEReady, setIsTinyMCEReady] = useState(false);
   const [multiplier, setMultiplier] = useState(1);
   const [contributionAmout, setContributionAmount] = useState(1);
   const [updatedText, setEditorText] = useState(editorText);
@@ -137,6 +138,11 @@ export default function TinyMCEEditor({
   const [prevAutoSaveData, setPrevAutoSaveData] = useState(editorText);
   const [hasDataChanged, setHasDataChanged] = useState(false);
 
+  const [isEditorReady, setIsEditorReady] = useState(false);
+  const handleEditorInit = () => {
+    setIsEditorReady(true);
+  };
+  
   function handleRawTwitterMutation(twitterThreadData) {
     var getToken, ispaid, credits;
     if (typeof window !== "undefined") {
@@ -2233,6 +2239,14 @@ export default function TinyMCEEditor({
 
         {showTwitterThreadUI === false ? (
           <>
+
+      {isEditorReady ? <span className="text-xs text-green-500">Last saved </span> : <>
+      <span className="text-xs text-red-500">not ready</span>
+      </>
+}
+
+
+
             <Editor
               value={updatedText || editorText}
               apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
@@ -2241,6 +2255,7 @@ export default function TinyMCEEditor({
                   if (editor.inline) {
                     registerPageMouseUp(editor, throttledStore);
                   }
+                  editor.on('init', handleEditorInit);
                 },
                 init_instance_callback: function (editor) {
                   editor.on("ExecCommand", function (e) {
@@ -2375,10 +2390,7 @@ export default function TinyMCEEditor({
                 setEditorText(content);
                 setAutoSaveSavingStatus(SAVING_STATUS.SAVING)
                 const newTimeout = resetTimeout(timeout, setTimeout(() => {
-                  // saveValue
-                  if (iRanNumberOfTimes > 2) {
-                    saveValue(content)
-                  }
+                  isEditorReady && saveValue(content)
                 }, 400));
                 setTimeoutId(newTimeout);
                 setSaveText("Save Now!");
