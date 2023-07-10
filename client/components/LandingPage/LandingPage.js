@@ -670,9 +670,9 @@ const LandingPage = () => {
                         modules={[Pagination]}
                         className="mySwiper mt-10 rounded-2xl shadow justify-center items-center inline-flex" style={{ paddingBottom: '2rem' }}
                     >
-                        {testimonialData.map((user) => (
+                        {testimonialData.map((user, index) => (
                             <SwiperSlide
-                                key={user.name} // Add a unique key for each slide
+                                key={index} // Add a unique key for each slide
                                 className="flex-col relative justify-center items-center flex h-full "
                             >
                                 <div className=" h-full py-10 px-8 bg-indigo-600 rounded-lg flex-col justify-start items-center gap-6 flex">
