@@ -3,7 +3,7 @@
 // @ts-nocheck
 import MoblieUnAuthFooter from "@/components/LandingPage/MoblieUnAuthFooter";
 import RePurpose from "@/components/LandingPage/RePurpose";
-import { API_BASE_PATH } from "@/constants/apiEndpoints";
+import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 import { gql, useQuery } from "@apollo/client";
 import { ArrowRightCircleIcon, InformationCircleIcon } from "@heroicons/react/20/solid";
 import Head from "next/head";
@@ -97,7 +97,7 @@ export default function Home() {
       headers: myHeaders,
       body: raw,
     };
-  
+    const URL  = API_BASE_PATH +  API_ROUTES.EXTRACT_KEYWORDS
     fetch("https://maverick.lille.ai/quickupload/urls/extract-keywords", requestOptions)
       .then(response => response.json())
       .then(result => {
@@ -124,7 +124,7 @@ export default function Home() {
         setLoadingForKeywords(false); // Move the setLoadingForKeywords(false) inside the then block
       });
   }
-  
+    
   var getToken;
   useEffect(() => {
     if (typeof window !== "undefined") {
