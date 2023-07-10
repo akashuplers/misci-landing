@@ -98,7 +98,7 @@ export default function Home() {
       body: raw,
     };
     const URL  = API_BASE_PATH +  API_ROUTES.EXTRACT_KEYWORDS
-    fetch("https://maverick.lille.ai/quickupload/urls/extract-keywords", requestOptions)
+    fetch(URL, requestOptions)
       .then(response => response.json())
       .then(result => {
         console.log(result);
