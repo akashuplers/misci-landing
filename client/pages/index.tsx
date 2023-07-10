@@ -2,9 +2,10 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 // @ts-nocheck
 import MoblieUnAuthFooter from "@/components/LandingPage/MoblieUnAuthFooter";
-import { API_BASE_PATH } from "@/constants/apiEndpoints";
+import RePurpose from "@/components/LandingPage/RePurpose";
+import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 import { gql, useQuery } from "@apollo/client";
-import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
+import { ArrowRightCircleIcon, InformationCircleIcon } from "@heroicons/react/20/solid";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -21,6 +22,8 @@ import { getDateMonthYear, isMonthAfterJune } from "../helpers/helper";
 import OTPModal from "../modals/OTPModal";
 import PreferencesModal from "../modals/PreferencesModal";
 import useStore from "../store/store";
+import { Tab } from "@headlessui/react";
+import ReactLoading from "react-loading";
 
 const PAYMENT_PATH = "/?payment=true";
 const TEXTS = [
@@ -50,6 +53,15 @@ export default function Home() {
   const [showContributionModal, setShowContributionModal] = useState(false);
   const [contributinoModalLoader, setContributionModalLoader] = useState(false);
   const [contributionAmout, setContributionAmount] = useState(5);
+  const [blogLinks, setBlogLinks] = useState([]);
+  const [keywordsOFBlogs, setkeywordsOfBlogs] = useState([]);
+  const handleChipClick = (index) => {
+    setkeywordsOfBlogs((prevKeywords) => {
+      const updatedKeywords = [...prevKeywords];
+      updatedKeywords[index].selected = !updatedKeywords[index].selected;
+      return updatedKeywords;
+    });
+  };
   useEffect(() => {
     updateAuthentication();
   }, []);
@@ -61,6 +73,58 @@ export default function Home() {
   `;
   const { data, loading } = useQuery(keywords);
   const [isauth, setIsauth] = useState(false);
+  const [loadingForKeywords, setLoadingForKeywords] = useState(false);
+  function uploadExtractKeywords() {
+    setLoadingForKeywords(true);
+    const getToken = localStorage.getItem("token");
+    var getUserId;
+    if (typeof window !== "undefined") {
+      getUserId = localStorage.getItem("userId");
+    }
+    var getTempId;
+    if (typeof window !== "undefined") {
+      getTempId = localStorage.getItem("tempId");
+    }
+    var raw = JSON.stringify({
+      "urls": blogLinks.map(url => url.value),
+      "userId": getToken ? getUserId : getTempId
+    });
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+  
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+    };
+    const URL  = API_BASE_PATH +  API_ROUTES.EXTRACT_KEYWORDS
+    fetch("https://maverick.lille.ai/quickupload/urls/extract-keywords", requestOptions)
+      .then(response => response.json())
+      .then(result => {
+        console.log(result);
+        if (result.type === 'ERROR') {
+          toast.error(result.message);
+          return;
+        }
+        const keywordsArray = result.data[0].keywords;
+  
+        const updatedKeywordsArray = keywordsArray.map((keyword, index) => ({
+          text: keyword,
+          selected: false, // Add the selected property and set it to false initially
+          id: index, // Add the id property and set it to the index value
+        }));
+  
+        console.log(updatedKeywordsArray);
+        setkeywordsOfBlogs(updatedKeywordsArray);
+      })
+      .catch(error => {
+        console.log('error', error)
+      })
+      .finally(() => {
+        setLoadingForKeywords(false); // Move the setLoadingForKeywords(false) inside the then block
+      });
+  }
+    
   var getToken;
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -174,7 +238,7 @@ export default function Home() {
 
         if (
           `${networkError}` ===
-            "ServerError: Response not successful: Received status code 401" &&
+          "ServerError: Response not successful: Received status code 401" &&
           isauth
         ) {
           localStorage.clear();
@@ -365,12 +429,11 @@ export default function Home() {
         )}
 
         {!meeData?.me?.isSubscribed && meeData?.me?.credits === 0 && (
-          <TrialEndedModal setTrailModal={() => {}} topic={null} />
+          <TrialEndedModal setTrailModal={() => { }} topic={null} />
         )}
         <div
-          className={`relative px-6 pt-5 lg:px-8 ${
-            !isAuthenticated && "md:min-h-screen"
-          }`}
+          className={`relative px-6 pt-5 lg:px-8 ${!isAuthenticated && "md:min-h-screen"
+            }`}
         >
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
             <svg
@@ -399,7 +462,7 @@ export default function Home() {
           </div>
 
           {!isAuthenticated && (
-            <div className='hidden lg:flex'>
+            <div className="hidden lg:flex">
               <div
                 className="absolute top-[3%] w-32 h-32 hidden lg:flex left-[10%] hover:scale-105 cursor-pointer transform-gpu -translate-x-1/2 -translate-y-1/2 animate-float"
                 style={{
@@ -485,20 +548,157 @@ export default function Home() {
                   Your AI-powered content partner that doesn't dream, it
                   delivers!
                 </div>
-                <div className="p-4 mt-4 lg:mt-2">
-                  Try some of our trending topics.
-                </div>
-                {!loading ? (
-                  <div className="flex flex-col  lg:grid grid-cols-3 gap-4 py-4">
-                    {updatedArr}
-                  </div>
-                ) : (
-                  <div style={{ margin: "0 auto" }}>
-                    <LoaderPlane />
-                  </div>
-                )}
-                <AIInputComponent />
 
+                <Tab.Group>
+                  <Tab.List className="p-2 mt-10 bg-slate-50 h-14 rounded--xl border border-neutral-400 text-gray-600 border-opacity-25 justify-start items-center gap-3 inline-flex rounded-xl">
+                    <Tab>
+                      {({ selected }) => (
+                        <div className={`rounded-xl h-10 px-2 justify-center items-center gap-2 inline-flex ${selected ? 'bg-white border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`} >
+                          <span className="">
+                            {" "}
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke-width="1.5"
+                              stroke="currentColor"
+                              class="w-6 h-6 "
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                              />
+                            </svg>
+                          </span>{" "}
+                          Generate new
+                        </div>
+                      )}
+                    </Tab>
+                    <Tab>
+                      {({ selected }) => (
+                        <div className={`rounded-xl h-10 justify-center items-center gap-2 px-2 inline-flex ${selected ? 'bg-white border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`} >
+                          <span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke-width="1.5"
+                              stroke="currentColor"
+                              class="w-6 h-6"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+                              />
+                            </svg>
+                          </span>{" "}
+                          Repurpose Blog
+                        </div>
+                      )}
+                    </Tab>
+                  </Tab.List>
+                  <Tab.Panels>
+                    <Tab.Panel>
+                      <div className="p-4 mt-4 lg:mt-2">
+                        Try some of our trending topics.
+                      </div>
+                      {!loading ? (
+                        <div className="flex flex-col  lg:grid grid-cols-3 gap-4 py-4">
+                          {updatedArr}
+                        </div>
+                      ) : (
+                        <div style={{ margin: "0 auto" }}>
+                          <LoaderPlane />
+                        </div>
+                      )}
+                      <AIInputComponent />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <div className="w-[650px] h-full opacity-90 flex-col justify-center mt-10 items-center gap-[18px] inline-flex bg-transparent rounded-[10px]">
+                        <div className="w-full h-6 justify-center items-center gap-1.5 inline-flex">
+                          <div className="text-center text-slate-600 text-ase font-normal">Lille will help you to Repurpose the whole blog</div>
+                          {/* <div className="w-[18px] h-[18px] relative" />
+   */}
+                          <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
+                        </div>
+
+                        <div className="relative w-full min-h-[60px] bg-white rounded-[10px] flex items-center px-2  gap-2.5">
+                          <RePurpose value={blogLinks} setValue={setBlogLinks} />
+
+                          <button className="w-[100.81px] px-2 h-10 flex justify-center items-center gap-2.5 bg-slate-50 rounded-lg border border-indigo-600"
+                            onClick={uploadExtractKeywords}
+                          >
+                            {
+                              loadingForKeywords === true ? <ReactLoading
+                                width={25}
+                                height={25}
+                                round={true}
+                                color={"#2563EB"}
+                              /> : 
+                            <>
+                            <span className='text-indigo-500'>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.5"
+                                stroke="currentColor"
+                                class="w-6 h-6"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15m0-3l-3-3m0 0l-3 3m3-3V15"
+                                />
+                              </svg>
+                            </span>
+
+                            <p className="justify-center items-center gap-2 inline-flex">
+                              {/* <span className="text-indigo-600 text-sm font-normal">
+                                Upload
+                              </span> */}
+                             <span className="text-indigo-600 text-sm font-normal">
+                                Upload
+                              </span>
+                            </p>
+                            </>
+                            }
+                          </button>
+                        </div>
+                        <div className='flex items-center flex-col mt-5'>
+                          {keywordsOFBlogs.length > 0 && <h4>Select at least 3 keywords to regenerate blog</h4>}
+                          <div className='flex flex-wrap justify-center gap-2 mt-5'>
+                            {keywordsOFBlogs.length > 0 && keywordsOFBlogs.map((chip, index) => (
+                              <Chip key={index} text={chip.text} handleClick={handleChipClick} index={index} selected={chip.selected} />
+                            ))}
+
+                          </div>
+                        </div>
+                        <button className="pl-[30px] pr-6 py-[17px] mt-5 text-white bg-indigo-600 rounded-[10px] shadow justify-center items-center gap-2.5 inline-flex">
+                          <span className="text-white text-lg font-medium">
+                            Generate
+                          </span>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="w-6 h-6"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </Tab.Panel>
+                  </Tab.Panels>
+                </Tab.Group>
                 <div
                   className="w-[80%] absolute top-[500px] lg:top-[350px] h-[200px] inset-x-0 -z-10"
                   style={{
@@ -630,4 +830,10 @@ const AIInputComponent = () => {
       </button>
     </div>
   );
+};
+
+const Chip = ({ selected, text, handleClick, index }) => {
+  return <button className={`h-8 px-[18px] py-1.5  rounded-full justify-start items-start gap-2.5 inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick(index)}>
+    <span className=" text-sm font-normal leading-tight">{text}</span>
+  </button>
 };
