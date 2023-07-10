@@ -17,7 +17,7 @@ export const API_ROUTES = {
   RESET_PASSWORD: "/auth/reset",
   GQL_PATH: "/graphql",
   TEMP_USER: '/auth/request-trial',
-  EXTRACT_KEYWORDS : 'quickupload/urls/extract-keywords'
+  EXTRACT_KEYWORDS : '/quickupload/urls/extract-keywords'
 };
 
 export const LI_API_ENDPOINTS = {
