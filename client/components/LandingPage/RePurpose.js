@@ -26,15 +26,18 @@ const createOption = (label, id,index) => ({
   index: index
 });
 
-export default function RePurpose({value, setValue}){
+export default function RePurpose({value, setValue, setShowRepourposeError}){
   const [inputValue, setInputValue] = React.useState('');
 
   const handleKeyDown = (event) => {
     const elementId = generateRandomId();
     const inputLength = value.length;
-    if (inputLength >= 3) {
-      toast.error('You can only add 3 blogs');
+    if (inputLength > 3) {
+      // toast.error('You can only add 3 blogs');
+      setShowRepourposeError(true);
       return;
+    }else{
+      setShowRepourposeError(false);
     }
     if (!inputValue) return;
     switch (event.key) {
