@@ -85,8 +85,11 @@ input TinyMceObjInput {
 }
 
 input GenerateBlogOptions {
-    keyword: String!
+    keyword: String
     user_id: String!
+    article_ids: [String]
+    keywords: [String]
+    tones: [String]
 }
 
 type Ideas {
