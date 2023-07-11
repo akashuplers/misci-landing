@@ -83,14 +83,16 @@ export default function Home() {
   };
   function handleRepourpose() {
     // key all keywords which are selected
+    setLoadingForKeywords(true);
     const keywords = keywordsOFBlogs.filter((keyword) => keyword.selected).map((keyword) => keyword.text);
-    console.log(keywords);
     if (keywords.length === 0) {
-      setShowRepourposeError(true);
+      toast.error("Please select atleast one keyword");
+      setLoadingForKeywords(false);
       return;
     }
     setShowRepourposeError(false);
     handleGenerate(keywords.join(","));
+    setLoadingForKeywords(false);
   }
   function uploadExtractKeywords() {
     setLoadingForKeywords(true);
@@ -666,15 +668,22 @@ export default function Home() {
                           
                           keywordsOFBlogs.length > 0 ?
                           handleRepourpose :
-                      
                           uploadExtractKeywords
-                        
                         }>
-                          <span className="text-white text-lg font-medium">
+                          {
+                            loadingForKeywords ? 
+                            <ReactLoading 
+                            type="spin"
+                            color="#fff"
+                            height={20}
+                            width={20}
+                            />
+                            : <span className="text-white text-lg font-medium">
                             {
-                              keywordsOFBlogs.length > 0 ? 'Regenerate' : 'Generate'
+                              keywordsOFBlogs.length > 0 ? 'Repurpose' : 'Generate'
                             }
                           </span>
+                          }
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
