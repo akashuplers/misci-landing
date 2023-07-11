@@ -43,7 +43,7 @@ const Threads = ({
     updatedThreads[lastIndex] = "";
     updatedThreads.push(lastThread);
     setthreadData(updatedThreads);
-    handleTwitterAutoSave(value,threadData);
+    handleTwitterAutoSave(value,updatedThreads);
   };
 
   const updateTextArea = (index: number, value: number) => {
@@ -52,15 +52,15 @@ const Threads = ({
       const updatedThreads = [...threadData];
       updatedThreads[index] = value;
       setthreadData(updatedThreads);
+    handleTwitterAutoSave(value,updatedThreads);
     }
-    handleTwitterAutoSave(value,threadData);
   };
 
   const deleteThread = (index: number) => {
     const updatedThreads = [...threadData];
     updatedThreads.splice(index, 1);
     setthreadData(updatedThreads);
-    handleTwitterAutoSave(index,threadData);
+    handleTwitterAutoSave(index,updatedThreads);
   };
 
   const moveThreadUp = (index: number) => {
@@ -71,8 +71,8 @@ const Threads = ({
         updatedThreads[index - 1],
       ];
       setthreadData(updatedThreads);
+    handleTwitterAutoSave(index,updatedThreads)
     }
-    handleTwitterAutoSave(index,threadData)
 
   };
 
@@ -84,9 +84,8 @@ const Threads = ({
         updatedThreads[index],
       ];
       setthreadData(updatedThreads);
+      handleTwitterAutoSave(index,updatedThreads)
     }
-    handleTwitterAutoSave(index,threadData)
-
   };
   const handleDragEnd = (result: any) => {
     setHideAddThread(true);
@@ -94,10 +93,8 @@ const Threads = ({
     const updatedThreads = Array.from(threadData);
     const [removed] = updatedThreads.splice(result.source.index, 1);
     updatedThreads.splice(result.destination.index, 0, removed);
-
     setthreadData(updatedThreads);
-    handleTwitterAutoSave(result,threadData)
-
+    handleTwitterAutoSave(result,updatedThreads);
   };
 
   return (
