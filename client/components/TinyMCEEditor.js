@@ -1156,7 +1156,7 @@ export default function TinyMCEEditor({
   };
 
   useEffect(()=>{
-    refetchBlog();
+    refetchBlog && refetchBlog();
     if(option === "twitter" || option ==='twitter-comeback'){
         setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
       }
