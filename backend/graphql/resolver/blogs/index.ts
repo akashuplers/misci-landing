@@ -135,7 +135,10 @@ export const blogResolvers = {
         ) => {
             let startRequest = new Date()
             let keyword = args.options.keyword
-            if(!keyword.length) {
+            let articleIds = args.options.article_ids
+            let keywords = args.options.keywords
+            let tones = args.options.tones
+            if(!keyword?.length && !keywords?.length) {
                 throw "No keyword passed!"
             }
             const userId = args.options.user_id
@@ -149,7 +152,6 @@ export const blogResolvers = {
                     throw "@Credit exhausted"
                 }
             }
-            let articleIds: any = null
             let refUrls: {
                 url: string
                 source: string
@@ -206,10 +208,12 @@ export const blogResolvers = {
                     _id: insertBlogIdeas.insertedId
                 }, references: refUrls}
             }
-            try {
-                articleIds = await new Python({userId: userId}).uploadKeyword({keyword, timeout:60000})
-            }catch(e){
-                console.log(e, "error from python")
+            if(!articleIds.length) {
+                try {
+                    articleIds = await new Python({userId: userId}).uploadKeyword({keyword, timeout:60000})
+                }catch(e){
+                    console.log(e, "error from python")
+                }
             }
             // articleIds = [
             //     '97a32ca9-1710-11ee-8959-0242c0a8e002',
@@ -269,6 +273,7 @@ export const blogResolvers = {
                     article_ids.push(data.id)
                 })
             }
+            console.log(ideasArr, keywords, article_ids)
             try {
                 let uniqueTags: String[] = [];
                 tags.forEach((c) => {
@@ -288,7 +293,9 @@ export const blogResolvers = {
                     ideasArr,
                     refUrls,
                     userDetails,
-                    userId: (userDetails && userDetails._id) || userId
+                    userId: (userDetails && userDetails._id) || userId,
+                    keywords,
+                    tones,
                 })
                 const finalBlogObj = {
                     article_id: articleIds,

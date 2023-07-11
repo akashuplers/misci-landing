@@ -27,7 +27,7 @@ export const fetchBlogIdeas = async ({id, db}: {
    return await db.db('lilleBlogs').collection('blogIdeas').findOne({blog_id: new ObjectID(id)})
 }
 
-export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null, userId = null}: {
+export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null, userId = null, keywords = [], tones = []}: {
     db: any;
     text: String;
     regenerate: Boolean;
@@ -40,6 +40,8 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         article_id: string;
     }[]
     refUrls?: any[];
+    keywords?: string[];
+    tones?: string[];
     userDetails?: any;
     userId?: string | null;
 }) => {
@@ -70,79 +72,86 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         throw "Something went wrong! Please connect with support team";
     }
     let newsLetter: any = {
+        wordpress: null,
         linkedin: null,
         twitter: null,
-        wordpress: null
     }
-    await (
-        Promise.all(
-            Object.keys(newsLetter).map(async (key: string) => {
-                try {
-                    if(key === "wordpress") {
-                        const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? `Please act as an expert writer and using the below pasted ideas write a minimum 1200 word blog post for "${title}" with inputs as follows:
-                            Tone is " Authoritative, informative, Persuasive"
-                            Donot repeat sentence
-                            Highlight the H1 & H2 html tags
-                            Provide the conclusion at the end
-                            Strictly using all these Ideas for writing blog: ${text}` : `Please act as an expert writer and using the below pasted ideas write a minimum 1200 word blog post for  "${title}" strictly with inputs as follows:
-                            Tone is " Authoritative, informative, Persuasive"
-                            Donot repeat sentence
-                            Highlight the H1 & H2 html tags
-                            Provide the conclusion at the end`}
-                        `, db}).textCompletion(chatgptApis.timeout)
-                        newsLetter = {...newsLetter, [key]: chatGPTText}
-                    } else {
-                        let text = ""
-                        if(key === 'linkedin') {
-                            const blogPostToSendForLinkedin = newsLetter[key]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
-                                return mapObj[matched];
-                            });
-                            text = `Please act as an expert LinkedIn Article writer who has to write a LinkedIn post from this Blog post: ${blogPostToSendForLinkedin}  
-                            Topic of Blog is "${title}", go through the Blog and write about this topic.
-                            LinkedIn post should have maximum 300 words.
-                            Suggest an attention-grabbing Title.
-                            Insert hashtags at the end of the post
-                            Trim unwanted new lines and spaces`
-                        }
-                        if(key === 'twitter') {
-                            let tweetQuota;
-                            if(userDetails) {
-                                tweetQuota = await db.db('lilleAdmin').collection('tweetsQuota').findOne({
-                                    userId: new ObjectID(userDetails._id)
-                                })
-                            }
-                            let cond = "";
-                            if(tweetQuota) {
-                                if(tweetQuota.remainingQuota > 0) {
-                                    cond = `${tweetQuota && `Thread limit to not exceed ${tweetQuota.remainingQuota} tweets `}`
-                                } else {
-                                    newsLetter = {...newsLetter, [key]: null}            
-                                    return
-                                }
-                            }
-                            const blogPostToSendForLinkedin = newsLetter[key]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
-                                return mapObj[matched];
-                            });
-                            text = `Please act as an expert Twitter Thread writer who has to write a Twitter Thread From this Blog: ${blogPostToSendForLinkedin}   
-                            Topic of Blog is "${title}", go through the Blog to understand and write twitter thread.
-                            "Insert Emoticons in Twitter Thread".
-                            "${cond || "Thread limit to not exceed 10 tweets"}".
-                            "Insert hashtags at the end of tweets".
-                            “Character limit per tweet to be exactly less then 200 characters".
-                            "Trim unwanted new lines and spaces".
-                            "Do not show the Tweet Number count inside the Tweets".`
-                            console.log(text, "text")
-                        }
-                        const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text, db}).textCompletion(chatgptApis.timeout)
-                        newsLetter = {...newsLetter, [key]: chatGPTText}
-                    }
-                } catch(e: any) {
-                    console.log(e, "error from chat gpt")
-                    throw e
+    // await (
+    //     Promise.all(
+    //         Object.keys(newsLetter).map(async (key): Promise<any> => {
+                
+    //         })
+    //     )
+    // )
+     
+    const keys = Object.keys(newsLetter)
+    for (let index = 0; index < keys.length; index++) {
+        const key = keys[index];
+        try {
+            if(key === "wordpress") {
+                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? `Please act as an expert writer and using the below pasted ideas write a atleast 1200 word blog post ${keywords.length ? ` using keywords "${keywords.join('","')}"`: `for "${title}"`} with inputs as follows:
+                ${tones?.length ? tones.join('","') : `Tone is "Authoritative, informative, Persuasive"`}
+                    Limit is "1500 words"
+                    Donot repeat sentence
+                    Highlight the H1 & H2 html tags
+                    Provide the conclusion at the end
+                    Strictly use all these Ideas for writing blog: ${text}` : `Please act as an expert writer and using the below pasted ideas write a atleast 1200 word blog post ${keywords.length ? ` using keywords "${keywords.join('","')}"`: `for "${title}"`} strictly with inputs as follows:
+                    ${tones?.length ? tones.join('","') : `Tone is "Authoritative, informative, Persuasive"`}
+                    Donot repeat sentence
+                    Limit is "1500 words"
+                    Highlight the H1 & H2 html tags
+                    Provide the conclusion at the end`}`, db}).textCompletion(chatgptApis.timeout)
+                newsLetter = {...newsLetter, [key]: chatGPTText}
+            } else {
+                let text = ""
+                if(key === 'linkedin') {
+                    const blogPostToSendForLinkedin = newsLetter["wordpress"]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
+                        return mapObj[matched];
+                    });
+                    text = `Please act as an expert LinkedIn Article writer who has to write a LinkedIn post from this Blog post: "${blogPostToSendForLinkedin}"
+                    ${keywords.length ? `Keywords are "${keywords.join('","')}"`: `Topic of Blog is "${title}"`}, go through the Blog and write about this topic.
+                    LinkedIn post should have maximum 300 words.
+                    Suggest an attention-grabbing Title.
+                    Insert hashtags at the end of the post
+                    Trim unwanted new lines and spaces`
                 }
-            })
-        )
-    )
+                if(key === 'twitter') {
+                    let tweetQuota;
+                    if(userDetails) {
+                        tweetQuota = await db.db('lilleAdmin').collection('tweetsQuota').findOne({
+                            userId: new ObjectID(userDetails._id)
+                        })
+                    }
+                    let cond = "";
+                    if(tweetQuota) {
+                        if(tweetQuota.remainingQuota > 0) {
+                            cond = `${tweetQuota && `Thread limit to not exceed ${tweetQuota.remainingQuota} tweets `}`
+                        } else {
+                            newsLetter = {...newsLetter, [key]: null}            
+                            return
+                        }
+                    }
+                    const blogPostToSendForLinkedin = newsLetter["wordpress"]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
+                        return mapObj[matched];
+                    });
+                    text = `Please act as an expert Twitter Thread writer who has to write a Twitter Thread From this Blog: "${blogPostToSendForLinkedin}"
+                    ${keywords.length ? `Keywords are "${keywords.join('","')}"`: `Topic of Blog is "${title}"`}, go through the Blog to understand and write twitter thread.
+                    "Insert Emoticons in Twitter Thread".
+                    "${cond || "Thread limit to not exceed 10 tweets"}".
+                    "Insert hashtags at the end of tweets".
+                    “Character limit per tweet to be exactly less then 200 characters".
+                    "Trim unwanted new lines and spaces".
+                    "Do not show the Tweet Number count inside the Tweets".`
+                    console.log(text, "text")
+                }
+                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text, db}).textCompletion(chatgptApis.timeout)
+                newsLetter = {...newsLetter, [key]: chatGPTText}
+            }
+        } catch(e: any) {
+            console.log(e, "error from chat gpt")
+            throw e
+        }
+    }
     try {
         delete newsLetter.image
         let usedIdeasArr: any = []
