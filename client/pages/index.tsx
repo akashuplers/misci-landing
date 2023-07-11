@@ -5,6 +5,7 @@ import MoblieUnAuthFooter from "@/components/LandingPage/MoblieUnAuthFooter";
 import RePurpose from "@/components/LandingPage/RePurpose";
 import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 import { gql, useQuery } from "@apollo/client";
+import Tooltip from "@/components/ui/Tooltip";
 import { ArrowRightCircleIcon, InformationCircleIcon } from "@heroicons/react/20/solid";
 import Head from "next/head";
 import Link from "next/link";
@@ -74,6 +75,23 @@ export default function Home() {
   const { data, loading } = useQuery(keywords);
   const [isauth, setIsauth] = useState(false);
   const [loadingForKeywords, setLoadingForKeywords] = useState(false);
+  const [showRepourposeError, setShowRepourposeError] = useState(false);
+  const handleGenerate = (keyword) => {
+    const pathname = keyword.trim().length > 0 ? "/dashboard" : "/";
+    const query = { topic: keyword };
+    router.push({ pathname, query });
+  };
+  function handleRepourpose() {
+    // key all keywords which are selected
+    const keywords = keywordsOFBlogs.filter((keyword) => keyword.selected).map((keyword) => keyword.text);
+    console.log(keywords);
+    if (keywords.length === 0) {
+      setShowRepourposeError(true);
+      return;
+    }
+    setShowRepourposeError(false);
+    handleGenerate(keywords.join(","));
+  }
   function uploadExtractKeywords() {
     setLoadingForKeywords(true);
     const getToken = localStorage.getItem("token");
@@ -91,13 +109,13 @@ export default function Home() {
     });
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-  
+
     var requestOptions = {
       method: 'POST',
       headers: myHeaders,
       body: raw,
     };
-    const URL  = API_BASE_PATH +  API_ROUTES.EXTRACT_KEYWORDS
+    const URL = API_BASE_PATH + API_ROUTES.EXTRACT_KEYWORDS
     fetch(URL, requestOptions)
       .then(response => response.json())
       .then(result => {
@@ -107,13 +125,13 @@ export default function Home() {
           return;
         }
         const keywordsArray = result.data[0].keywords;
-  
+
         const updatedKeywordsArray = keywordsArray.map((keyword, index) => ({
           text: keyword,
           selected: false, // Add the selected property and set it to false initially
           id: index, // Add the id property and set it to the index value
         }));
-  
+
         console.log(updatedKeywordsArray);
         setkeywordsOfBlogs(updatedKeywordsArray);
       })
@@ -124,7 +142,7 @@ export default function Home() {
         setLoadingForKeywords(false); // Move the setLoadingForKeywords(false) inside the then block
       });
   }
-    
+
   var getToken;
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -619,56 +637,22 @@ export default function Home() {
                       <div className="w-[650px] h-full opacity-90 flex-col justify-center mt-10 items-center gap-[18px] inline-flex bg-transparent rounded-[10px]">
                         <div className="w-full h-6 justify-center items-center gap-1.5 inline-flex">
                           <div className="text-center text-slate-600 text-ase font-normal">Lille will help you to Repurpose the whole blog</div>
-                          {/* <div className="w-[18px] h-[18px] relative" />
-   */}
-                          <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
+                          <Tooltip content="We will help you recreate blog on the basis of keywords and tone selected by you" direction='bottom' className='max-w-[100px]'>
+                            <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
+                          </Tooltip>
                         </div>
-
-                        <div className="relative w-full min-h-[60px] bg-white rounded-[10px] flex items-center px-2  gap-2.5">
-                          <RePurpose value={blogLinks} setValue={setBlogLinks} />
-
-                          <button className="w-[100.81px] px-2 h-10 flex justify-center items-center gap-2.5 bg-slate-50 rounded-lg border border-indigo-600"
-                            onClick={uploadExtractKeywords}
-                          >
-                            {
-                              loadingForKeywords === true ? <ReactLoading
-                                width={25}
-                                height={25}
-                                round={true}
-                                color={"#2563EB"}
-                              /> : 
-                            <>
-                            <span className='text-indigo-500'>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke-width="1.5"
-                                stroke="currentColor"
-                                class="w-6 h-6"
-                              >
-                                <path
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15m0-3l-3-3m0 0l-3 3m3-3V15"
-                                />
-                              </svg>
-                            </span>
-
-                            <p className="justify-center items-center gap-2 inline-flex">
-                              {/* <span className="text-indigo-600 text-sm font-normal">
-                                Upload
-                              </span> */}
-                             <span className="text-indigo-600 text-sm font-normal">
-                                Upload
-                              </span>
-                            </p>
-                            </>
-                            }
-                          </button>
+                        <div className="relative w-full min-h-[60px] bg-white rounded-[10px] flex items-center px-2  gap-2.5 border border-gray-600">
+                          <RePurpose value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError}/>
+                        </div>
+                        <div className="w-full h-6 justify-start items-center gap-1.5 inline-flex">
+                          <span className={`text-center  text-sm font-normal ${showRepourposeError ? 'text-red-500': 'text-slate-500'}`}>You can add Max. 3 URLs. Use comma to add multiple ULRs, or press enter to add new URL.
+                          </span>
                         </div>
                         <div className='flex items-center flex-col mt-5'>
-                          {keywordsOFBlogs.length > 0 && <h4>Select at least 3 keywords to regenerate blog</h4>}
+                          {keywordsOFBlogs.length > 0 && <div className="flex items-center" >
+                            <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="These keywords is used to generate Blog article using lille's ai and give you high ranking SEO blog" direction='bottom' className='max-w-[100px]'>
+                              <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
+                            </Tooltip></div>}
                           <div className='flex flex-wrap justify-center gap-2 mt-5'>
                             {keywordsOFBlogs.length > 0 && keywordsOFBlogs.map((chip, index) => (
                               <Chip key={index} text={chip.text} handleClick={handleChipClick} index={index} selected={chip.selected} />
@@ -676,9 +660,20 @@ export default function Home() {
 
                           </div>
                         </div>
-                        <button className="pl-[30px] pr-6 py-[17px] mt-5 text-white bg-indigo-600 rounded-[10px] shadow justify-center items-center gap-2.5 inline-flex">
+                        <button className="pl-[30px] pr-6 py-[17px] mt-2.5 text-white bg-indigo-600 rounded-[10px] shadow justify-center items-center gap-2.5 inline-flex
+                        active:bg-indigo-600 hover:bg-indigo-700 focus:shadow-outline-indigo
+                        " onClick={
+                          
+                          keywordsOFBlogs.length > 0 ?
+                          handleRepourpose :
+                      
+                          uploadExtractKeywords
+                        
+                        }>
                           <span className="text-white text-lg font-medium">
-                            Generate
+                            {
+                              keywordsOFBlogs.length > 0 ? 'Regenerate' : 'Generate'
+                            }
                           </span>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
