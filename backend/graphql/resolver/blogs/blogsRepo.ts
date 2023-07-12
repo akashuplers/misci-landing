@@ -93,14 +93,17 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                 ${tones?.length ? tones.join('","') : `Tone is "Authoritative, informative, Persuasive"`}
                     Limit is "1500 words"
                     Donot repeat sentence
-                    Highlight the H1 & H2 html tags
+                    Strictly Highlight the H1 & H2 using html tags
+                    ${!title ? "Strictly Provide a specific title with Title:" : ""}
                     Provide the conclusion at the end
                     Strictly use all these Ideas for writing blog: ${text}` : `Please act as an expert writer and using the below pasted ideas write a atleast 1200 word blog post ${keywords.length ? ` using keywords "${keywords.join('","')}"`: `for "${title}"`} strictly with inputs as follows:
                     ${tones?.length ? tones.join('","') : `Tone is "Authoritative, informative, Persuasive"`}
                     Donot repeat sentence
                     Limit is "1500 words"
-                    Highlight the H1 & H2 html tags
+                    Strictly Highlight the H1 & H2 using html tags
+                    ${!title ? "Strictly Provide a specific title with Title:" : ""}
                     Provide the conclusion at the end`}`, db}).textCompletion(chatgptApis.timeout)
+                console.log(chatGPTText, "blog")    
                 newsLetter = {...newsLetter, [key]: chatGPTText}
             } else {
                 let text = ""
@@ -156,6 +159,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         delete newsLetter.image
         let usedIdeasArr: any = []
         let description = ""
+        let title = ""
         const updated = await (
             Promise.all(
                 Object.keys(newsLetter).map(async (key: string) => {
@@ -165,16 +169,22 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 break;
                             case "wordpress":
                                 const refs = refUrls
-                                // const title = newsLetter[key].slice(newsLetter[key].indexOf("Title:"), newsLetter[key].indexOf("Content:")).trim()
+                                newsLetter[key] = newsLetter[key].trim()
+                                console.log(newsLetter[key], "wordpress")
+                                if(newsLetter[key]?.indexOf("Title: ") >= 0) {
+                                    console.log(newsLetter[key].substr(newsLetter[key].indexOf("Title: "), newsLetter[key].indexOf("\n")), newsLetter[key].indexOf("\n"), "akash")
+                                    title = (newsLetter[key].substr(newsLetter[key].indexOf("Title: "), newsLetter[key].indexOf("\n"))).replace("Title: ", "")
+                                }
+                                console.log(title, "title", newsLetter[key]?.indexOf("Title: "))
                                 const content = newsLetter[key]?.replace(/\n/g, "<p/>")
                                 let updatedContent = content?.replace("In conclusion, ", "<p><h3>Conclusions:</h3></p>")
                                 updatedContent = updatedContent.replace(/H1:|H2:|Title:|Introduction:|<p\s*\/?><p\s*\/?>|Conclusions:<p\s*\/?>|Conclusion:<p\s*\/?>|Conclusion<p\s*\/?>|Conclusions<p\s*\/?>/gi, function(matched: any){
                                     return mapObj[matched];
                                 }); 
                                 let contentWithRef = ""
-                                console.log(updatedContent)
+                                // console.log(updatedContent)
                                 // updatedContent = updatedContent?.replace("<p></p><p></p>", "<p></p>")
-                                description = newsLetter[key]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
+                                description = newsLetter[key]?.replace(/<h1>|<\s*\/?h1>|Title:|Introduction:|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
                                     return mapObj[matched];
                                 }); 
                                 // description = (newsLetter[key]?.replace("\n", ""))?.trimStart()
@@ -539,7 +549,8 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         return {
             updatedBlogs: updated,
             usedIdeasArr,
-            description
+            description,
+            title
         }
     }catch(e){
         throw e
