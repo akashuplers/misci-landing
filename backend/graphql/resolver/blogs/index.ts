@@ -138,7 +138,7 @@ export const blogResolvers = {
             let articleIds = args.options.article_ids
             let keywords = args.options.keywords
             let tones = args.options.tones
-            if(!keyword?.length && (!keywords || keywords?.length)) {
+            if(!keyword?.length && !keywords?.length) {
                 throw "No keyword passed!"
             }
             const userId = args.options.user_id
