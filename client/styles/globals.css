@@ -644,8 +644,41 @@ input[type=number] {
   border-left-color: var(--tooltip-background-color);
 }
 
-.abhay-er > input {
-  padding: 10px !important;
-  display: flex;
-  overflow: scroll;
+ 
+.css-1p3m7a8-multiValue {
+  background-color: transparent !important;
+  border-radius: 1rem !important;
+  border: 1px solid #C6CED6 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0.25rem;
+}
+
+.css-12a83d4-MultiValueRemove {
+  height: 100% !important;
+  color: #000000 !important;
+  border-radius: 1rem !important;
+}
+
+/* hover */
+.css-12a83d4-MultiValueRemove {
+  height: 24px;
+  width: 24px;
+  padding: 4px !important;
+  background-color: #C6CED6 !important;
+  color: #000000 !important;
+  border-radius: 1rem !important;
+}
+ 
+.css-3w2yfm-ValueContainer {
+  gap: 6px !important;
+  overflow-x: scroll !important;
+  flex-wrap: nowrap !important;
+}
+.css-13cymwt-control{
+  border: unset !important;
+}
+.css-1jqq78o-placeholder{
+  text-align: left !important;
 }
