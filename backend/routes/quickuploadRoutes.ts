@@ -314,48 +314,59 @@ router.post('/urls/extract-keywords', async (req: any, res: any) => {
     let startRequest = new Date()
     const db = req.app.get('db')
     const {urls, userId} = req.body
-    try {
-        let pythonStart = new Date()
-        const articleIds = await (
-            Promise.all(
-                urls.map(async (url: string) => {
+    let pythonStart = new Date()
+    let unprocessedUrls: string[] = []
+    const articleIds = await (
+        Promise.all(
+            urls.map(async (url: string) => {
+                try {
                     return await new Python({userId}).uploadUrl({url})
-                })
-            )
+                }catch(e: any){
+                    unprocessedUrls.push(url)
+                }
+            })
         )
-        let pythonEnd = new Date()
-        let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
-        console.log(articleIds)
-        let keywordsData: {
-            id: string;
-            keywords: string[]
-        }[] = []
-        for (let index = 0; index < articleIds.length; index++) {
-            const id = articleIds[index];
-            if(id) {
-                const article = await fetchArticles({db, id})
-                keywordsData.push({
-                    id,
-                    keywords: article._source.driver
-                })
-            }
+    )
+    let pythonEnd = new Date()
+    let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
+    console.log(articleIds)
+    let keywordsData: {
+        id: string;
+        keywords: string[]
+    }[] = []
+    for (let index = 0; index < articleIds.length; index++) {
+        const id = articleIds[index];
+        if(id) {
+            const article = await fetchArticles({db, id})
+            keywordsData.push({
+                id,
+                keywords: article._source.driver
+            })
         }
-        if(keywordsData && keywordsData.length) {
+    }
+    if(keywordsData && keywordsData.length) {
+        if(unprocessedUrls && unprocessedUrls?.length && unprocessedUrls.length !== urls.length) {
             return res.status(200).send({
                 type: "SUCCESS",
                 data: keywordsData,
-            })
-        } else {
-            return res.status(400).send({
-                type: "SUCCESS",
-                data: "No keywords found!!",
-                pythonRespTime
-            })
+                unprocessedUrls
+            })    
         }
-    }catch (e) {
+        return res.status(200).send({
+            type: "SUCCESS",
+            data: keywordsData,
+        })
+    } else if(unprocessedUrls && unprocessedUrls?.length && unprocessedUrls.length === urls.length) {
         return res.status(400).send({
             type: "ERROR",
-            message: "Host has denied the extraction from this URL. Please try again or try some other URL."
+            message: "Host has denied the extraction from this URL. Please try again or try some other URL.",
+            unprocessedUrls
+        })    
+    } else {
+        return res.status(400).send({
+            type: "SUCCESS",
+            data: "No keywords found!!",
+            pythonRespTime
         })
     }
 })
