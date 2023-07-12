@@ -599,16 +599,16 @@ export default function Home() {
                   Automate, <span className="text-indigo-700">Amplify,</span>{" "}
                   Achieve.
                 </div>
-                <div className="relative flex text-xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap custom-spacing">
+                <div className="relative flex text-xl items-center  justify-center font-medium tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap custom-spacing">
                   Your AI-powered content partner that doesn't dream, it
                   delivers!
                 </div>
 
                 <Tab.Group>
-                  <Tab.List className="p-2 mt-10 bg-slate-50 h-14 rounded--xl border border-neutral-400 text-gray-600 border-opacity-25 justify-start items-center gap-3 inline-flex rounded-xl">
+                  <Tab.List className="p-2 mt-10 bg-slate-50 h-14 focus:outline-none rounded--xl border border-neutral-400 text-gray-600 border-opacity-25 justify-start items-center gap-3 inline-flex rounded-xl">
                     <Tab>
                       {({ selected }) => (
-                        <div className={`rounded-xl h-10 px-2 justify-center items-center gap-2 inline-flex ${selected ? 'bg-white border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`} >
+                        <div className={`rounded-xl h-10 px-2 focus:outline-none justify-center items-center gap-2 inline-flex ${selected ? 'bg-white border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`} >
                           <span className="">
                             {" "}
                             <svg
@@ -632,7 +632,7 @@ export default function Home() {
                     </Tab>
                     <Tab>
                       {({ selected }) => (
-                        <div className={`rounded-xl h-10 justify-center items-center gap-2 px-2 inline-flex ${selected ? 'bg-white border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`} >
+                        <div className={`rounded-xl h-10 focus:outline-none focus:border-transparent focus-visible:hidden justify-center items-center gap-2 px-2 inline-flex ${selected ? 'bg-white  border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`} >
                           <span>
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -682,7 +682,7 @@ export default function Home() {
                           <RePurpose value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
                         </div>
                         <div className="w-full h-6 justify-start items-center gap-1.5 inline-flex">
-                          <span className={`text-center  text-sm font-normal ${showRepourposeError ? 'text-red-500' : 'text-slate-500'}`}>You can add Max. 3 URLs. Use comma to add multiple ULRs, or press enter to add new URL.
+                          <span className={`text-center  text-sm font-normal ${showRepourposeError ? 'text-red-500' : 'text-slate-500'}`}>You can add Max. 3 URLs. Use comma to add multiple URLs, or press enter to add new URL.
                           </span>
                         </div>
                         <div className='flex items-center flex-col mt-5'>
@@ -754,7 +754,9 @@ export default function Home() {
                             keywordsOFBlogs.length > 0 ?
                               handleRepourpose :
                               uploadExtractKeywords
-                          }>
+                          }
+                          disabled={blogLinks.length === 0 || loadingForKeywords}
+                          >
                           {
                             loadingForKeywords ?
                               <ReactLoading
@@ -763,7 +765,7 @@ export default function Home() {
                                 height={20}
                                 width={20}
                               />
-                              : <span className="text-white text-lg font-medium">
+                              : <span className="text-white text-lg font-medium" >
                                 {
                                   keywordsOFBlogs.length > 0 ? 'Repurpose' : 'Generate'
                                 }

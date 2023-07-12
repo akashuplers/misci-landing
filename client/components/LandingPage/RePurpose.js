@@ -1,7 +1,7 @@
 import React, { KeyboardEventHandler ,useEffect} from 'react';
-
 import CreatableSelect from 'react-select/creatable';
 import { toast } from 'react-toastify';
+import classNames from 'classnames';
 
 const components = {
   DropdownIndicator: null,
@@ -32,20 +32,24 @@ export default function RePurpose({value, setValue, setShowRepourposeError}){
   const handleKeyDown = (event) => {
     const elementId = generateRandomId();
     const inputLength = value.length;
-    if (inputLength > 3) {
-      // toast.error('You can only add 3 blogs');
-      setShowRepourposeError(true);
-      return;
-    }else{
-      setShowRepourposeError(false);
-    }
-    if (!inputValue) return;
-    switch (event.key) {
-      case 'Enter':
-      case 'Tab':
-        setValue((prev) => [...prev, createOption(inputValue,elementId, inputLength+1)]);
-        setInputValue('');
-        event.preventDefault();
+  
+    if (event.key === 'Enter' || event.key === 'Tab' || event.key === ',') {
+      if (inputLength >= 3) {
+        setShowRepourposeError(true);
+        return;
+      } else {
+        setShowRepourposeError(false);
+      }
+  
+      if (!inputValue) return;
+  
+      setValue((prev) => [
+        ...prev,
+        createOption(inputValue, elementId, inputLength + 1)
+      ]);
+  
+      setInputValue('');
+      event.preventDefault();
     }
   };
 
@@ -56,7 +60,6 @@ export default function RePurpose({value, setValue, setShowRepourposeError}){
     }}
     >
       <CreatableSelect
-    className=""
       components={components}
       inputValue={inputValue}
       isClearable
@@ -64,7 +67,7 @@ export default function RePurpose({value, setValue, setShowRepourposeError}){
       onBlur={(event) => {
         const elementId = generateRandomId();
         const inputLength = value.length;
-        if (inputLength > 3) {
+        if (inputLength > 2) {
           // toast.error('You can only add 3 blogs');
           setShowRepourposeError(true);
           return;
