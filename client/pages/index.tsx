@@ -696,45 +696,46 @@ export default function Home() {
                           </div>
                         </div>
                         {
-  keywordsOFBlogs.length > 0 && isAuthenticated && 
-  (
-    <div className='flex items-center flex-col mt-5 relative'>
-      <div className="flex items-center">
-        <h4>Choose Tone/Focus Topics </h4>
-        <Tooltip content="Improve results by adding tones to your prompt" direction='bottom' className='max-w-[100px]'>
-          <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
-        </Tooltip>
-      </div>
-      <div className='flex flex-wrap justify-center gap-2 mt-5'>
-        {newTones.length > 0 && newTones.map((tone, index) => (
-          <div key={index} className="relative">
-            <Chip text={tone.text} handleClick={handleToneClick} index={index} selected={tone.selected} />
+                          keywordsOFBlogs.length > 0 && isAuthenticated &&
+                          (
+                            <div className='flex items-center flex-col mt-5 relative'>
+                              <div className="flex items-center">
+                                <h4>Choose Tone/Focus Topics </h4>
+                                <Tooltip content="Improve results by adding tones to your prompt" direction='bottom' className='max-w-[100px]'>
+                                  <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
+                                </Tooltip>
+                              </div>
+                              <div className='flex flex-wrap justify-center gap-2 mt-5'>
+                                {newTones.length > 0 && newTones.map((tone, index) => (
+                                  <div key={index} className="relative">
+                                    <Chip text={tone.text} handleClick={handleToneClick} index={index} selected={tone.selected} />
 
-          </div>
-        ))}
-      </div>
-      { (
-              <div className="absolute top-0 left-0 w-full h-full bg-gray-700 opacity-70 flex flex-col items-center justify-center">
-                <p>
-                  You are enjoying free trial. Upgrade your plan to get extra benefits
-                </p>
-                <button className="mt-2.5 text-white bg-indigo-600 rounded-[10px] shadow justify-center items-center gap-2.5 inline-flex
-                        active:bg-indigo-600 hover:bg-indigo-700 focus:shadow-outline-indigo px-4 py-2"
-                        onClick={
-                          () => {
-                            typeof window !== 'undefined' && router.push(
+                                  </div>
+                                ))}
+                              </div>
                               {
-                                pathname: '/upgrade',
-                              }
-                            )
-                          }
+                              meeData?.me?.paid === false && (
+                                <div className="absolute top-0 left-0 w-full h-full bg-gray-700 opacity-70 flex flex-col items-center justify-center">
+                                  <p>
+                                    You are enjoying free trial. Upgrade your plan to get extra benefits
+                                  </p>
+                                  <button className="mt-2.5 text-white bg-indigo-600 rounded-[10px] shadow justify-center items-center gap-2.5 inline-flex
+                        active:bg-indigo-600 hover:bg-indigo-700 focus:shadow-outline-indigo px-4 py-2"
+                                    onClick={
+                                      () => {
+                                        typeof window !== 'undefined' && router.push(
+                                          {
+                                            pathname: '/upgrade',
+                                          }
+                                        )
+                                      }
+                                    }
+                                  >Upgrade now</button>
+                                </div>
+                              )}
+                            </div>
+                          )
                         }
-                        >Upgrade now</button>
-              </div>
-            )}
-    </div>
-  )
-} 
 
                         <button className="pl-[30px] pr-6 py-[17px] mt-2.5 text-white bg-indigo-600 rounded-[10px] shadow justify-center items-center gap-2.5 inline-flex
                         active:bg-indigo-600 hover:bg-indigo-700 focus:shadow-outline-indigo
