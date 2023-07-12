@@ -138,7 +138,7 @@ export const blogResolvers = {
             let articleIds = args.options.article_ids
             let keywords = args.options.keywords
             let tones = args.options.tones
-            if(!keyword?.length && !keywords?.length) {
+            if(!keyword?.length && (!keywords || keywords?.length)) {
                 throw "No keyword passed!"
             }
             const userId = args.options.user_id
@@ -208,13 +208,14 @@ export const blogResolvers = {
                     _id: insertBlogIdeas.insertedId
                 }, references: refUrls}
             }
-            if(!articleIds.length) {
+            if(!articleIds?.length) {
                 try {
                     articleIds = await new Python({userId: userId}).uploadKeyword({keyword, timeout:60000})
                 }catch(e){
                     console.log(e, "error from python")
                 }
             }
+            console.log(keyword, "keyword")
             // articleIds = [
             //     '97a32ca9-1710-11ee-8959-0242c0a8e002',
             //     '96345a34-1710-11ee-8959-0242c0a8e002',
