@@ -682,7 +682,7 @@ export default function Home() {
                           <RePurpose value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
                         </div>
                         <div className="w-full h-6 justify-start items-center gap-1.5 inline-flex">
-                          <span className={`text-center  text-sm font-normal ${showRepourposeError ? 'text-red-500' : 'text-slate-500'}`}>You can add Max. 3 URLs. Use comma to add multiple ULRs, or press enter to add new URL.
+                          <span className={`text-center  text-sm font-normal ${showRepourposeError ? 'text-red-500' : 'text-slate-500'}`}>You can add Max. 3 URLs. Use comma to add multiple URLs, or press enter to add new URL.
                           </span>
                         </div>
                         <div className='flex items-center flex-col mt-5'>
@@ -754,7 +754,9 @@ export default function Home() {
                             keywordsOFBlogs.length > 0 ?
                               handleRepourpose :
                               uploadExtractKeywords
-                          }>
+                          }
+                          disabled={blogLinks.length === 0 || loadingForKeywords}
+                          >
                           {
                             loadingForKeywords ?
                               <ReactLoading
@@ -763,7 +765,7 @@ export default function Home() {
                                 height={20}
                                 width={20}
                               />
-                              : <span className="text-white text-lg font-medium">
+                              : <span className="text-white text-lg font-medium" >
                                 {
                                   keywordsOFBlogs.length > 0 ? 'Repurpose' : 'Generate'
                                 }

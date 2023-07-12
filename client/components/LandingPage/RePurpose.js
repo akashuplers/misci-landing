@@ -32,20 +32,24 @@ export default function RePurpose({value, setValue, setShowRepourposeError}){
   const handleKeyDown = (event) => {
     const elementId = generateRandomId();
     const inputLength = value.length;
-    if (inputLength > 3) {
-      // toast.error('You can only add 3 blogs');
-      setShowRepourposeError(true);
-      return;
-    }else{
-      setShowRepourposeError(false);
-    }
-    if (!inputValue) return;
-    switch (event.key) {
-      case 'Enter':
-      case 'Tab':
-        setValue((prev) => [...prev, createOption(inputValue,elementId, inputLength+1)]);
-        setInputValue('');
-        event.preventDefault();
+  
+    if (event.key === 'Enter' || event.key === 'Tab' || event.key === ',') {
+      if (inputLength >= 3) {
+        setShowRepourposeError(true);
+        return;
+      } else {
+        setShowRepourposeError(false);
+      }
+  
+      if (!inputValue) return;
+  
+      setValue((prev) => [
+        ...prev,
+        createOption(inputValue, elementId, inputLength + 1)
+      ]);
+  
+      setInputValue('');
+      event.preventDefault();
     }
   };
 
@@ -56,28 +60,6 @@ export default function RePurpose({value, setValue, setShowRepourposeError}){
     }}
     >
       <CreatableSelect
-      classNames={{
-            control: ({ isDisabled, isFocused }) =>
-              classNames(
-                !isDisabled && isFocused && 'border-purple-800',
-                isFocused && 'shadow-[0_0_0_1px] shadow-purple-800',
-                isFocused && 'hover:border-purple-800'
-              ),
-            input: ({ isDisabled, isFocused, isSelected }) =>
-              classNames(
-                isSelected && 'abhay-er',
-                !isSelected && isFocused && 'bg-purple-300',
-                !isDisabled && isSelected && 'abhay-er',
-                !isDisabled && !isSelected && 'abhay-er'
-              ),
-            option: ({ isDisabled, isFocused, isSelected }) =>
-              classNames(
-                isSelected && 'bg-purple-800',
-                !isSelected && isFocused && 'bg-purple-300',
-                !isDisabled && isSelected && 'active:bg-purple-800',
-                !isDisabled && !isSelected && 'active:bg-purple-500'
-              ),
-          }}
       components={components}
       inputValue={inputValue}
       isClearable
@@ -85,7 +67,7 @@ export default function RePurpose({value, setValue, setShowRepourposeError}){
       onBlur={(event) => {
         const elementId = generateRandomId();
         const inputLength = value.length;
-        if (inputLength > 3) {
+        if (inputLength > 2) {
           // toast.error('You can only add 3 blogs');
           setShowRepourposeError(true);
           return;
