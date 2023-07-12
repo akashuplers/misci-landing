@@ -3,6 +3,7 @@ import { ChatGPT } from "../../../services/chatGPT";
 import { diff_minutes, getTimeStamp } from "../../../utils/date";
 import { URL } from "url";
 import { Python } from "../../../services/python";
+import { title } from "process";
 const natural = require('natural');
 
 export const fetchBlog = async ({id, db}: {
@@ -159,7 +160,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         delete newsLetter.image
         let usedIdeasArr: any = []
         let description = ""
-        let title = ""
+        title = title
         const updated = await (
             Promise.all(
                 Object.keys(newsLetter).map(async (key: string) => {
