@@ -1,7 +1,7 @@
 // store.js
 import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 import axios from "axios";
-import create from "zustand";
+import {create} from "zustand";
 
 const useStore = create((set) => ({
   creditLeft: "",
