@@ -129,6 +129,7 @@ export default function Home() {
   const [isauth, setIsauth] = useState(false);
   const [loadingForKeywords, setLoadingForKeywords] = useState(false);
   const [showRepourposeError, setShowRepourposeError] = useState(false);
+  const [showHoveUpgradeNow, setShowHoveUpgradeNow] = useState(false);
   const handleGenerate = (options = {}) => {
     console.log('options');
     console.log(options);
@@ -698,7 +699,18 @@ export default function Home() {
                         {
                           keywordsOFBlogs.length > 0 && isAuthenticated &&
                           (
-                            <div className='flex items-center flex-col mt-5 relative'>
+                            <div className='flex items-center flex-col mt-5 relative' onMouseEnter={
+                              () => {
+                                setShowHoveUpgradeNow(true)
+                              }
+                            }
+                              onMouseLeave={
+                                () => {
+                                  setShowHoveUpgradeNow(false)
+                                }
+                              }
+
+                            >
                               <div className="flex items-center">
                                 <h4>Choose Tone/Focus Topics </h4>
                                 <Tooltip content="Improve results by adding tones to your prompt" direction='bottom' className='max-w-[100px]'>
@@ -709,12 +721,11 @@ export default function Home() {
                                 {newTones.length > 0 && newTones.map((tone, index) => (
                                   <div key={index} className="relative">
                                     <Chip text={tone.text} handleClick={handleToneClick} index={index} selected={tone.selected} />
-
                                   </div>
                                 ))}
                               </div>
                               {
-                              meeData?.me?.paid === false && (
+                              meeData?.me?.paid === false && showHoveUpgradeNow === true && (
                                 <div className="absolute top-0 left-0 w-full h-full bg-gray-700 opacity-70 flex flex-col items-center justify-center">
                                   <p>
                                     You are enjoying free trial. Upgrade your plan to get extra benefits
