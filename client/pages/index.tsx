@@ -593,7 +593,7 @@ export default function Home() {
             </div>
           )}
           <div className="relative mx-auto max-w-screen-xl flex flex-col">
-            <div className="mx-auto max-w-3xl text-center h-screen flex items-center justify-center lg:h-full">
+            <div className={`mx-auto max-w-3xl text-center h-screen flex items-center justify-center ${isAuthenticated ?  'lg:h-full' : 'lg:max-h-[1000px]'} `}>
               <div>
                 <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
                   Automate, <span className="text-indigo-700">Amplify,</span>{" "}
