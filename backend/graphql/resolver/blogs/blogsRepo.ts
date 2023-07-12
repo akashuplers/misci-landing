@@ -201,11 +201,11 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                         if(Object.keys(data)?.length) {
                                             const key = Object.keys(data)[0]
                                             const matchedId = data[key]
+                                            let text = key
                                             const filteredSourceIndex = refUrls?.findIndex((source: any) => source.id === matchedId)
                                             console.log(filteredSourceIndex, "match")
                                             if(filteredSourceIndex > -1) {
                                                 const filteredSource = refUrls[filteredSourceIndex]
-                                                let text = key
                                                 let foundFullStop = false
                                                 if (key[key.length-1] === ".") {
                                                     text = key.slice(0,-1);    
