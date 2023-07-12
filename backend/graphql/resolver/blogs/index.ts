@@ -282,7 +282,7 @@ export const blogResolvers = {
                     }
                 });
                 if(articleIds && articleIds.length) refUrls = await fetchArticleUrls({db, articleId: articleIds})
-                const {usedIdeasArr, updatedBlogs, description}: any = await blogGeneration({
+                const {usedIdeasArr, updatedBlogs, description,title}: any = await blogGeneration({
                     db,
                     text: !articlesData.length ? keyword : texts,
                     regenerate: !articlesData.length ? false: true,
@@ -302,7 +302,7 @@ export const blogResolvers = {
                     publish_data: updatedBlogs,
                     userId: new ObjectID(userId),
                     email: userDetails && userDetails.email,
-                    keyword,
+                    keyword: keyword || title,
                     status: "draft",
                     description,
                     tags: uniqueTags,
