@@ -211,9 +211,9 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                     text = key.slice(0,-1);    
                                                     foundFullStop = true
                                                 }
-                                                contentWithRef += `${key} <a href="${filteredSource?.url}" target="_blank" title="${filteredSourceIndex + 1} - ${filteredSource?.url}">[${filteredSourceIndex + 1}]</a>${foundFullStop && "."}` 
+                                                contentWithRef += `${text} <a href="${filteredSource?.url}" target="_blank" title="${filteredSourceIndex + 1} - ${filteredSource?.url}">[${filteredSourceIndex + 1}]</a>${foundFullStop ? "." : ""}` 
                                             }else{
-                                                contentWithRef += `${key}`
+                                                contentWithRef += `${text}`
                                             }
                                         }
                                     })
