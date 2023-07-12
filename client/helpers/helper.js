@@ -206,3 +206,40 @@ export const handleconnectLinkedin = (callback_path) => {
   const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`;
   window.location = redirectUrl;
 };
+
+
+export const extractKeywordsAndIds = (response) => {
+  const keywords = [];
+  const keywordIdMap = {};
+  const articleIds = [];
+  response.data.forEach((item) => {
+    const id = item.id;
+    const itemKeywords = item.keywords;
+    articleIds.push(id);
+    itemKeywords.forEach((keyword) => {
+      const uniqueName = keywordsUniqueName(id, keyword);
+      if (!keywordIdMap[uniqueName]) {
+        keywordIdMap[uniqueName] = id;
+        const keywordObj = {
+          id: uniqueName,
+          text: keyword,
+          selected: false,
+        }
+        keywords.push(keywordObj);
+      }
+    });
+  });
+
+  return {
+    keywords,
+    keywordIdMap,
+    articleIds,
+  };
+};
+const ID_KEYWORD_SEPARATOR = "&keyword&";
+export const keywordsUniqueName = (id, keyword) => {
+  return `${id.toLowerCase().trim()}${ID_KEYWORD_SEPARATOR}${keyword.toLowerCase().trim()}`;
+}
+export const getIdFromUniqueName = (uniqueName) => {
+  return uniqueName.split(ID_KEYWORD_SEPARATOR)[0];
+}

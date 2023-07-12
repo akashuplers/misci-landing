@@ -19,7 +19,7 @@ import Layout from "../components/Layout";
 import LoaderPlane from "../components/LoaderPlane";
 import TrialEndedModal from "../components/TrialEndedModal";
 import { meeAPI } from "../graphql/querys/mee";
-import { getDateMonthYear, isMonthAfterJune } from "../helpers/helper";
+import { extractKeywordsAndIds, getDateMonthYear, getIdFromUniqueName, isMonthAfterJune } from "../helpers/helper";
 import OTPModal from "../modals/OTPModal";
 import PreferencesModal from "../modals/PreferencesModal";
 import useStore from "../store/store";
@@ -27,6 +27,20 @@ import { Tab } from "@headlessui/react";
 import ReactLoading from "react-loading";
 
 const PAYMENT_PATH = "/?payment=true";
+const TONES = [
+
+  'Authoritative',
+  'Political/non political',
+  'Ethnic/ Rational/ Modern thinking',
+  'Content length',
+  'headings / without headings'
+]
+
+var newTones = [];
+TONES.forEach((tone) => {
+  newTones.push({ text: tone, selected: false });
+}
+);
 const TEXTS = [
   "Twitter  Post",
   "Linkedin Post",
@@ -44,6 +58,10 @@ const TEXTS2 = [
   "Blog ideas",
   "Linkedin Post",
 ];
+export const TYPES_OF_GENERATE = {
+  REPURPOSE: 'repurpose',
+  NORMAL: 'normal'
+}
 export const BASE_PRICE = 100;
 
 export default function Home() {
@@ -56,17 +74,52 @@ export default function Home() {
   const [contributionAmout, setContributionAmount] = useState(5);
   const [blogLinks, setBlogLinks] = useState([]);
   const [keywordsOFBlogs, setkeywordsOfBlogs] = useState([]);
+  const [articleIds, setArticleIds] = useState([]);
+  const [keywordsMap, setKeywordsMap] = useState({});
+  const [repurposeTones, setRepurposeTones] = useState(newTones);
   const handleChipClick = (index) => {
+    const idOfKeyword = getIdFromUniqueName(keywordsOFBlogs[index].id);
+
     setkeywordsOfBlogs((prevKeywords) => {
       const updatedKeywords = [...prevKeywords];
       updatedKeywords[index].selected = !updatedKeywords[index].selected;
+      const isSelected = updatedKeywords[index].selected;
+      if (isSelected === true) {
+        setArticleIds((prevArticleIds) => {
+          const updatedArticleIds = [...prevArticleIds];
+          updatedArticleIds.push(idOfKeyword);
+          return updatedArticleIds;
+        });
+      } else {
+        setArticleIds((prevArticleIds) => {
+          const updatedArticleIds = [...prevArticleIds];
+          const index = updatedArticleIds.indexOf(idOfKeyword);
+          if (index > -1) {
+            updatedArticleIds.splice(index, 1);
+          }
+          return updatedArticleIds;
+        });
+      }
       return updatedKeywords;
     });
   };
+  const handleToneClick = (index) => {
+    setRepurposeTones((prevTones) => {
+      const updatedTones = [...prevTones];
+      updatedTones[index].selected = !updatedTones[index].selected;
+      return updatedTones;
+    });
+  }
   useEffect(() => {
     updateAuthentication();
   }, []);
 
+  useEffect(() => {
+    console.log('articleids');
+    console.log(articleIds);
+    console.log('keywords');
+    console.log(keywordsOFBlogs);
+  }, [articleIds]);
   const keywords = gql`
     query keywords {
       trendingTopics
@@ -76,9 +129,12 @@ export default function Home() {
   const [isauth, setIsauth] = useState(false);
   const [loadingForKeywords, setLoadingForKeywords] = useState(false);
   const [showRepourposeError, setShowRepourposeError] = useState(false);
-  const handleGenerate = (keyword) => {
-    const pathname = keyword.trim().length > 0 ? "/dashboard" : "/";
-    const query = { topic: keyword };
+  const handleGenerate = (options = {}) => {
+    console.log('options');
+    console.log(options);
+    localStorage.setItem("optionsForRepurpose", JSON.stringify(options));
+    const pathname = "/dashboard";
+    const query = { type: TYPES_OF_GENERATE.REPURPOSE };
     router.push({ pathname, query });
   };
   function handleRepourpose() {
@@ -91,9 +147,15 @@ export default function Home() {
       return;
     }
     setShowRepourposeError(false);
-    handleGenerate(keywords.join(","));
+    const options = {
+      tones: repurposeTones.filter((tone) => tone.selected).map((tone) => tone.text) || [],
+      keywords: keywords || [],
+      article_ids: articleIds || [],
+    };
+    handleGenerate(options);
     setLoadingForKeywords(false);
   }
+
   function uploadExtractKeywords() {
     setLoadingForKeywords(true);
     const getToken = localStorage.getItem("token");
@@ -121,21 +183,15 @@ export default function Home() {
     fetch(URL, requestOptions)
       .then(response => response.json())
       .then(result => {
-        console.log(result);
         if (result.type === 'ERROR') {
           toast.error(result.message);
           return;
         }
-        const keywordsArray = result.data[0].keywords;
-
-        const updatedKeywordsArray = keywordsArray.map((keyword, index) => ({
-          text: keyword,
-          selected: false, // Add the selected property and set it to false initially
-          id: index, // Add the id property and set it to the index value
-        }));
-
-        console.log(updatedKeywordsArray);
-        setkeywordsOfBlogs(updatedKeywordsArray);
+        const { keywords,
+          keywordIdMap,
+          articleIds, } = extractKeywordsAndIds(result);
+        setkeywordsOfBlogs(keywords);
+        setKeywordsMap(keywordIdMap);
       })
       .catch(error => {
         console.log('error', error)
@@ -159,21 +215,11 @@ export default function Home() {
   const [index, setIndex] = React.useState(0);
 
   useEffect(() => {
-    console.log(router);
-    console.log("LOCAL STORERAGE");
-    console.log(localStorage);
-    /* asPath "/?payment=true" */
     if (router.asPath === PAYMENT_PATH) {
-      console.log("ROUTER CHECK IF PAYMENT==TRUE");
-      console.log("USER CONTRIBUTION");
-      // console.log(userContribution);
       if (localStorage.getItem("userContribution") !== null) {
         var userContribution = JSON.parse(
           localStorage.getItem("userContribution") || "{}"
         );
-        console.log("USER CONTRIBUTION IS NOT NULL");
-        console.log(userContribution);
-        // /auth/save-user-support
         const SAVE_USER_SUPPORT_URL = API_BASE_PATH + "/auth/save-user-support";
         const requestOptions = {
           method: "POST",
@@ -183,16 +229,10 @@ export default function Home() {
           },
           body: JSON.stringify(userContribution),
         };
-        console.log("REQUEST OPTIONS");
         fetch(SAVE_USER_SUPPORT_URL, requestOptions)
           .then((response) => {
-            console.log("RESPONSE FROM SAVE USER SUPPORT");
-            console.log(response);
-            console.log(response.json());
           })
           .catch((error) => {
-            console.log("ERROR FROM SAVE USER SUPPORT");
-            console.log(error);
           });
       }
       setIsPayment(true);
@@ -218,7 +258,6 @@ export default function Home() {
         clearTimeout(timeout);
       };
     } else {
-      console.log("ROUTER CHECK IF PAYMENT==TRUE ELSE");
       localStorage.removeItem("userContribution");
     }
   }, [router]);
@@ -311,8 +350,6 @@ export default function Home() {
   const [showOTPModal, setShowOTPModal] = useState(false);
 
   useEffect(() => {
-    console.log(meeData);
-
     if (typeof window !== "undefined") {
       const isOTPVerified = localStorage.getItem("isOTPVerified");
       // check if verified or not
@@ -386,12 +423,9 @@ export default function Home() {
 
       fetch(SEND_OTP_URL, requestOptions)
         .then((response) => {
-          console.log("RESPONSE FROM SEND OTP");
-          console.log(response);
-          console.log(response.json());
         })
         .catch((error) => {
-          console.log("ERROR FROM SEND OTP");
+          console("ERROR FROM SEND OTP");
         });
     }
     if (showOTPModal === true) {
@@ -558,7 +592,7 @@ export default function Home() {
             </div>
           )}
           <div className="relative mx-auto max-w-screen-xl flex flex-col">
-            <div className="mx-auto max-w-3xl text-center h-screen flex items-center justify-center max-h-[700px]">
+            <div className="mx-auto max-w-3xl text-center h-screen flex items-center justify-center lg:h-full">
               <div>
                 <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
                   Automate, <span className="text-indigo-700">Amplify,</span>{" "}
@@ -644,10 +678,10 @@ export default function Home() {
                           </Tooltip>
                         </div>
                         <div className="relative w-full min-h-[60px] bg-white rounded-[10px] flex items-center px-2  gap-2.5 border border-gray-600">
-                          <RePurpose value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError}/>
+                          <RePurpose value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
                         </div>
                         <div className="w-full h-6 justify-start items-center gap-1.5 inline-flex">
-                          <span className={`text-center  text-sm font-normal ${showRepourposeError ? 'text-red-500': 'text-slate-500'}`}>You can add Max. 3 URLs. Use comma to add multiple ULRs, or press enter to add new URL.
+                          <span className={`text-center  text-sm font-normal ${showRepourposeError ? 'text-red-500' : 'text-slate-500'}`}>You can add Max. 3 URLs. Use comma to add multiple ULRs, or press enter to add new URL.
                           </span>
                         </div>
                         <div className='flex items-center flex-col mt-5'>
@@ -659,30 +693,43 @@ export default function Home() {
                             {keywordsOFBlogs.length > 0 && keywordsOFBlogs.map((chip, index) => (
                               <Chip key={index} text={chip.text} handleClick={handleChipClick} index={index} selected={chip.selected} />
                             ))}
-
                           </div>
                         </div>
+
+                        {
+                          keywordsOFBlogs.length > 0 && isAuthenticated &&
+                          <div className='flex items-center flex-col mt-5'>
+                            {<div className="flex items-center" >
+                              <h4>Choose Tone/Focus Topics </h4> <Tooltip content="Improve results by adding tones to your prompt" direction='bottom' className='max-w-[100px]'>
+                                <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
+                              </Tooltip></div>}
+                            <div className='flex flex-wrap justify-center gap-2 mt-5'>
+                              {newTones.length > 0 && newTones.map((tone, index) => (
+                                <Chip key={index} text={tone.text} handleClick={handleToneClick} index={index} selected={tone.selected} />
+                              ))}
+                            </div>
+                          </div>
+                        }
                         <button className="pl-[30px] pr-6 py-[17px] mt-2.5 text-white bg-indigo-600 rounded-[10px] shadow justify-center items-center gap-2.5 inline-flex
                         active:bg-indigo-600 hover:bg-indigo-700 focus:shadow-outline-indigo
                         " onClick={
-                          
-                          keywordsOFBlogs.length > 0 ?
-                          handleRepourpose :
-                          uploadExtractKeywords
-                        }>
+                            keywordsOFBlogs.length > 0 ?
+                              handleRepourpose :
+                              uploadExtractKeywords
+                          }>
                           {
-                            loadingForKeywords ? 
-                            <ReactLoading 
-                            type="spin"
-                            color="#fff"
-                            height={20}
-                            width={20}
-                            />
-                            : <span className="text-white text-lg font-medium">
-                            {
-                              keywordsOFBlogs.length > 0 ? 'Repurpose' : 'Generate'
-                            }
-                          </span>
+                            loadingForKeywords ?
+                              <ReactLoading
+                                type="spin"
+                                color="#fff"
+                                height={20}
+                                width={20}
+                              />
+                              : <span className="text-white text-lg font-medium">
+                                {
+                                  keywordsOFBlogs.length > 0 ? 'Repurpose' : 'Generate'
+                                }
+                              </span>
                           }
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
