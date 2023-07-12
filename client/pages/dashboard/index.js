@@ -18,6 +18,7 @@ import { generateBlog } from "../../graphql/mutations/generateBlog";
 import { jsonToHtml } from "../../helpers/helper";
 import ReactLoading from "react-loading";
 import useStore, { useBlogDataStore, useByMeCoffeModal, useTabOptionStore } from "../../store/store";
+import { TYPES_OF_GENERATE } from "..";
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
     event.stopImmediatePropagation();
@@ -29,7 +30,7 @@ dashboard.getInitialProps = ({ query }) => {
 };
 
 export default function dashboard({ query }) {
-  var { topic } = query;
+  var { topic, type} = query;
   const router = useRouter();
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const [ideas, setIdeas] = useState([]);
@@ -133,9 +134,13 @@ export default function dashboard({ query }) {
   const handleDisclaimerPopup = () => setDisclaimerCheck((prev) => !prev);
 
   useEffect(() => {
-    if (!topic && !bid && !loginProcess) {
-      alert("Blog was not saved.\nPlease generate the blog again");
-      window.location.href = "/";
+    if(type != undefined && type && type===TYPES_OF_GENERATE.REPURPOSE){
+          
+    }else{
+      if (!topic && !bid && !loginProcess) {
+        alert("Blog was not saved.\nPlease generate the blog again");
+        window.location.href = "/";
+        }
     }
   }, []);
 
@@ -331,16 +336,30 @@ export default function dashboard({ query }) {
           console.log(error);
         });
     } else {
+      // get type from router
+      const TYPE = router.query.type;
+      var options = {
+        user_id: getToken ? getUserId : getTempId,
+        keyword: topic ? topic : keyword,
+      }
+      if(TYPE && TYPE === TYPES_OF_GENERATE.REPURPOSE){
+        // const optionsForRepurpose = router.query.options;
+        var optionsObj = JSON.parse(localStorage.getItem('optionsForRepurpose'));
+        optionsObj = {
+          ...optionsObj,
+          user_id: getToken ? getUserId : getTempId,
+        }
+        options = optionsObj;
+      }
       GenerateBlog({
         variables: {
           options: {
-            user_id: getToken ? getUserId : getTempId,
-            keyword: topic ? topic : keyword,
+            ...options
           },
         },
         onCompleted: (data) => {
+          localStorage.removeItem("optionsForRepurpose");
           console.log(data);
-
           var token;
           if (typeof window !== "undefined") {
             token = localStorage.getItem("token");
@@ -427,10 +446,6 @@ export default function dashboard({ query }) {
         {creditModal && (
           <TrialEndedModal setTrailModal={setCreditModal} topic={topic} />
         )}
-
-
-
-
         <Modal
           isOpen={showDisclaimerModal}
           onRequestClose={() => setShowDisclaimerModal(false)}

@@ -61,6 +61,21 @@ export default function RePurpose({value, setValue, setShowRepourposeError}){
       inputValue={inputValue}
       isClearable
       isMulti
+      onBlur={(event) => {
+        const elementId = generateRandomId();
+        const inputLength = value.length;
+        if (inputLength > 3) {
+          // toast.error('You can only add 3 blogs');
+          setShowRepourposeError(true);
+          return;
+        } else {
+          setShowRepourposeError(false);
+        }
+        if (!inputValue) return;
+        setValue((prev) => [...prev, createOption(inputValue, elementId, inputLength + 1)]);
+        setInputValue('');
+        event.preventDefault();
+      }}
       menuIsOpen={false}
       onChange={(newValue) => setValue(newValue)}
       onInputChange={(newValue) => setInputValue(newValue)}

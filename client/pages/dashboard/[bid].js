@@ -251,7 +251,7 @@ export default function Post() {
           Authorization: "Bearer " + getToken,
         },
       };
-
+      
       fetch(SEND_OTP_URL, requestOptions)
         .then((response) => {
           console.log("RESPONSE FROM SEND OTP");
