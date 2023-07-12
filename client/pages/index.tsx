@@ -150,7 +150,7 @@ export default function Home() {
     const options = {
       tones: repurposeTones.filter((tone) => tone.selected).map((tone) => tone.text) || [],
       keywords: keywords || [],
-      article_ids: articleIds || [],
+      article_ids: [...new Set(articleIds)] 
     };
     handleGenerate(options);
     setLoadingForKeywords(false);
