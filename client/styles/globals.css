@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100;200;300;400;500;600;700;800&display=swap');
+
 @layer base {
 
   ul,
@@ -11,7 +13,7 @@
 }
 
 @font-face {
-  font-family: 'Work Sans';
+  font-family: 'Heebo', sans-serif;
   src: url('/fonts/reg.ttf') format('ttf')
 }
 
@@ -22,8 +24,6 @@
 .sidebar-position-left #button.sidebar{
   top: 25% !important;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@300&display=swap');
 
 html {
   scroll-behavior: smooth;
@@ -109,7 +109,7 @@ html {
   font-family: 'Piazzolla', serif;
   font-family: 'Roboto', sans-serif;
   font-family: 'Zen Kurenaido', sans-serif;
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Heebo', sans-serif;;
 }
 
 /* width */
@@ -642,4 +642,10 @@ input[type=number] {
   top: 50%;
   transform: translateX(0) translateY(-50%);
   border-left-color: var(--tooltip-background-color);
+}
+
+.abhay-er > input {
+  padding: 10px !important;
+  display: flex;
+  overflow: scroll;
 }

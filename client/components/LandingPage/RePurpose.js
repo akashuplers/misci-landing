@@ -1,7 +1,7 @@
 import React, { KeyboardEventHandler ,useEffect} from 'react';
-
 import CreatableSelect from 'react-select/creatable';
 import { toast } from 'react-toastify';
+import classNames from 'classnames';
 
 const components = {
   DropdownIndicator: null,
@@ -56,7 +56,28 @@ export default function RePurpose({value, setValue, setShowRepourposeError}){
     }}
     >
       <CreatableSelect
-    className=""
+      classNames={{
+            control: ({ isDisabled, isFocused }) =>
+              classNames(
+                !isDisabled && isFocused && 'border-purple-800',
+                isFocused && 'shadow-[0_0_0_1px] shadow-purple-800',
+                isFocused && 'hover:border-purple-800'
+              ),
+            input: ({ isDisabled, isFocused, isSelected }) =>
+              classNames(
+                isSelected && 'abhay-er',
+                !isSelected && isFocused && 'bg-purple-300',
+                !isDisabled && isSelected && 'abhay-er',
+                !isDisabled && !isSelected && 'abhay-er'
+              ),
+            option: ({ isDisabled, isFocused, isSelected }) =>
+              classNames(
+                isSelected && 'bg-purple-800',
+                !isSelected && isFocused && 'bg-purple-300',
+                !isDisabled && isSelected && 'active:bg-purple-800',
+                !isDisabled && !isSelected && 'active:bg-purple-500'
+              ),
+          }}
       components={components}
       inputValue={inputValue}
       isClearable
