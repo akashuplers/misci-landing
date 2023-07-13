@@ -75,6 +75,7 @@ export default function Home() {
   const [keywordsOFBlogs, setkeywordsOfBlogs] = useState([]);
   const [articleIds, setArticleIds] = useState([]);
   const [keywordsMap, setKeywordsMap] = useState({});
+  const [currentTabIndex, setCurrentTabIndex] = useState(1);
   const [repurposeTones, setRepurposeTones] = useState(newTones);
   const handleChipClick = (index) => {
     const idOfKeyword = getIdFromUniqueName(keywordsOFBlogs[index].id);
@@ -187,7 +188,7 @@ export default function Home() {
           // const errorMessage = result.message + result?.unprocessedUrls && result.unprocessedUrls.length > 0 && (' Unresovled URLs ' + result.unprocessedUrls.join(', '));
           let _errorMessage = result.message;
           if (result?.unprocessedUrls && result.unprocessedUrls.length > 0) {
-            _errorMessage += ' Unresovled URLs are' + result.unprocessedUrls.join(', ');
+            _errorMessage += ' Unresovled URLs are ' + result.unprocessedUrls.join(', ');
           }
           const errorMessage = _errorMessage;
           toast.error(errorMessage);
@@ -613,11 +614,15 @@ export default function Home() {
                   delivers!
                 </div>
 
-                <Tab.Group>
+                <Tab.Group
+                defaultIndex={currentTabIndex}
+                >
                   <Tab.List className="p-2 mt-10 bg-slate-50 h-14 focus:outline-none rounded--xl border border-neutral-400 text-gray-600 border-opacity-25 justify-start items-center gap-3 inline-flex rounded-xl">
                     <Tab>
                       {({ selected }) => (
-                        <div className={`rounded-xl h-10 px-2 focus:outline-none justify-center items-center gap-2 inline-flex ${selected ? 'bg-white border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`} >
+                        <div className={`rounded-xl h-10 px-2 focus:outline-none justify-center items-center gap-2 inline-flex ${selected ? 'bg-white border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`} 
+                        onClick={() => setCurrentTabIndex(0)}
+                        >
                           <span className="">
                             {" "}
                             <svg
@@ -641,7 +646,9 @@ export default function Home() {
                     </Tab>
                     <Tab>
                       {({ selected }) => (
-                        <div className={`rounded-xl h-10 focus:outline-none focus:border-transparent focus-visible:hidden justify-center items-center gap-2 px-2 inline-flex ${selected ? 'bg-white  border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`} >
+                        <div className={`rounded-xl h-10 focus:outline-none focus:border-transparent focus-visible:hidden justify-center items-center gap-2 px-2 inline-flex ${selected ? 'bg-white  border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`} 
+                        onClick={() => {setCurrentTabIndex(1)}}
+                        >
                           <span>
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -687,8 +694,23 @@ export default function Home() {
                             <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
                           </Tooltip>
                         </div>
+                        <div className="w-full h-full justify-center items-center gap-2.5 inline-flex px-2"> 
                         <div className="relative w-full min-h-[60px] bg-white rounded-[10px] flex items-center px-2  gap-2.5 border border-gray-600">
                           <RePurpose value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
+                        </div>
+                        {
+                          keywordsOFBlogs.length > 0 && 
+                          <button className="h-5 px-4 py-6 flex items-center justify-center bg-indigo-600 rounded-lg text-white text-sm font-medium focus:outline-none"
+                          onClick={
+                            () => {
+                              setkeywordsOfBlogs([]);
+                              setBlogLinks([]);
+                            } 
+                          }
+                          >
+                            Reset
+                          </button>
+                        }
                         </div>
                         <div className="w-full h-6 justify-start items-center gap-1.5 inline-flex">
                           <span className={`text-center  text-sm font-normal ${showRepourposeError ? 'text-red-500' : 'text-slate-500'}`}>You can add Max. 3 URLs. Use comma to add multiple URLs, or press enter to add new URL.
