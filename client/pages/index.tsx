@@ -28,12 +28,11 @@ import ReactLoading from "react-loading";
 
 const PAYMENT_PATH = "/?payment=true";
 const TONES = [
-
   'Authoritative',
-  'Political/non political',
-  'Ethnic/ Rational/ Modern thinking',
+  'Political', 'Non political',
+  'Ethnic', 'Rational', 'Modern thinking',
   'Content length',
-  'headings / without headings'
+  'headings', 'Without headings'
 ]
 
 var newTones = [];
@@ -151,7 +150,7 @@ export default function Home() {
     const options = {
       tones: repurposeTones.filter((tone) => tone.selected).map((tone) => tone.text) || [],
       keywords: keywords || [],
-      article_ids: [...new Set(articleIds)] 
+      article_ids: [...new Set(articleIds)]
     };
     handleGenerate(options);
     setLoadingForKeywords(false);
@@ -187,7 +186,7 @@ export default function Home() {
         if (result.type === 'ERROR') {
           // const errorMessage = result.message + result?.unprocessedUrls && result.unprocessedUrls.length > 0 && (' Unresovled URLs ' + result.unprocessedUrls.join(', '));
           let _errorMessage = result.message;
-          if(result?.unprocessedUrls && result.unprocessedUrls.length > 0) {
+          if (result?.unprocessedUrls && result.unprocessedUrls.length > 0) {
             _errorMessage += ' Unresovled URLs are' + result.unprocessedUrls.join(', ');
           }
           const errorMessage = _errorMessage;
@@ -599,7 +598,7 @@ export default function Home() {
             </div>
           )}
           <div className="relative mx-auto max-w-screen-xl flex flex-col">
-            <div className={`mx-auto max-w-3xl text-center h-screen flex items-center justify-center ${isAuthenticated ?  'lg:h-full' : 'lg:max-h-[1000px]'} `}>
+            <div className={`mx-auto max-w-3xl text-center h-screen flex items-center justify-center ${isAuthenticated ? 'lg:h-full' : 'lg:max-h-[1000px]'} `}>
               <div>
                 <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
                   Automate, <span className="text-indigo-700">Amplify,</span>{" "}
@@ -731,25 +730,25 @@ export default function Home() {
                                 ))}
                               </div>
                               {
-                              meeData?.me?.isSubscribed === false && showHoveUpgradeNow === true && (
-                                <div className="absolute top-0 left-0 w-full h-full bg-gray-700 opacity-70 flex flex-col items-center justify-center">
-                                  <p>
-                                    You are enjoying free trial. Upgrade your plan to get extra benefits
-                                  </p>
-                                  <button className="mt-2.5 text-white bg-indigo-600 rounded-[10px] shadow justify-center items-center gap-2.5 inline-flex
+                                meeData?.me?.isSubscribed === false && showHoveUpgradeNow === true && (
+                                  <div className="absolute top-0 left-0 w-full h-full bg-gray-700 opacity-70 flex flex-col items-center justify-center">
+                                    <p>
+                                      You are enjoying free trial. Upgrade your plan to get extra benefits
+                                    </p>
+                                    <button className="mt-2.5 text-white bg-indigo-600 rounded-[10px] shadow justify-center items-center gap-2.5 inline-flex
                         active:bg-indigo-600 hover:bg-indigo-700 focus:shadow-outline-indigo px-4 py-2"
-                                    onClick={
-                                      () => {
-                                        typeof window !== 'undefined' && router.push(
-                                          {
-                                            pathname: '/upgrade',
-                                          }
-                                        )
+                                      onClick={
+                                        () => {
+                                          typeof window !== 'undefined' && router.push(
+                                            {
+                                              pathname: '/upgrade',
+                                            }
+                                          )
+                                        }
                                       }
-                                    }
-                                  >Upgrade now</button>
-                                </div>
-                              )}
+                                    >Upgrade now</button>
+                                  </div>
+                                )}
                             </div>
                           )
                         }
@@ -762,7 +761,7 @@ export default function Home() {
                               uploadExtractKeywords
                           }
                           disabled={blogLinks.length === 0 || loadingForKeywords}
-                          >
+                        >
                           {
                             loadingForKeywords ?
                               <ReactLoading
