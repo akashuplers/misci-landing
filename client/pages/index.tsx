@@ -193,6 +193,10 @@ export default function Home() {
           toast.error(errorMessage);
           return;
         }
+        const doesUnprocessedUrlsExist = result?.unprocessedUrls && result.unprocessedUrls.length > 0;
+        if(doesUnprocessedUrlsExist) {
+          toast.warn('Success with unresovled URLs: ' + result.unprocessedUrls.join(', '));
+        }
         const { keywords,
           keywordIdMap,
           articleIds, } = extractKeywordsAndIds(result);
