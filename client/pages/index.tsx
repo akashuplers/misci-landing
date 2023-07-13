@@ -31,7 +31,6 @@ const TONES = [
   'Authoritative',
   'Political', 'Non political',
   'Ethnic', 'Rational', 'Modern thinking',
-  'Content length',
   'headings', 'Without headings'
 ]
 
