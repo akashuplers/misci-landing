@@ -28,12 +28,11 @@ import ReactLoading from "react-loading";
 
 const PAYMENT_PATH = "/?payment=true";
 const TONES = [
-
   'Authoritative',
-  'Political/non political',
-  'Ethnic/ Rational/ Modern thinking',
+  'Political', 'Non political',
+  'Ethnic', 'Rational', 'Modern thinking',
   'Content length',
-  'headings / without headings'
+  'headings', 'Without headings'
 ]
 
 var newTones = [];
@@ -76,6 +75,7 @@ export default function Home() {
   const [keywordsOFBlogs, setkeywordsOfBlogs] = useState([]);
   const [articleIds, setArticleIds] = useState([]);
   const [keywordsMap, setKeywordsMap] = useState({});
+  const [currentTabIndex, setCurrentTabIndex] = useState(1);
   const [repurposeTones, setRepurposeTones] = useState(newTones);
   const handleChipClick = (index) => {
     const idOfKeyword = getIdFromUniqueName(keywordsOFBlogs[index].id);
@@ -151,7 +151,7 @@ export default function Home() {
     const options = {
       tones: repurposeTones.filter((tone) => tone.selected).map((tone) => tone.text) || [],
       keywords: keywords || [],
-      article_ids: [...new Set(articleIds)] 
+      article_ids: [...new Set(articleIds)]
     };
     handleGenerate(options);
     setLoadingForKeywords(false);
@@ -187,12 +187,16 @@ export default function Home() {
         if (result.type === 'ERROR') {
           // const errorMessage = result.message + result?.unprocessedUrls && result.unprocessedUrls.length > 0 && (' Unresovled URLs ' + result.unprocessedUrls.join(', '));
           let _errorMessage = result.message;
-          if(result?.unprocessedUrls && result.unprocessedUrls.length > 0) {
-            _errorMessage += ' Unresovled URLs are' + result.unprocessedUrls.join(', ');
+          if (result?.unprocessedUrls && result.unprocessedUrls.length > 0) {
+            _errorMessage += ' Unresovled URLs are ' + result.unprocessedUrls.join(', ');
           }
           const errorMessage = _errorMessage;
           toast.error(errorMessage);
           return;
+        }
+        const doesUnprocessedUrlsExist = result?.unprocessedUrls && result.unprocessedUrls.length > 0;
+        if(doesUnprocessedUrlsExist) {
+          toast.warn('Success with unresovled URLs: ' + result.unprocessedUrls.join(', '));
         }
         const { keywords,
           keywordIdMap,
@@ -599,7 +603,7 @@ export default function Home() {
             </div>
           )}
           <div className="relative mx-auto max-w-screen-xl flex flex-col">
-            <div className={`mx-auto max-w-3xl text-center h-screen flex items-center justify-center ${isAuthenticated ?  'lg:h-full' : 'lg:max-h-[1000px]'} `}>
+            <div className={`mx-auto max-w-3xl text-center h-screen flex items-center justify-center ${isAuthenticated ? 'lg:h-full' : 'lg:max-h-[1000px]'} `}>
               <div>
                 <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
                   Automate, <span className="text-indigo-700">Amplify,</span>{" "}
@@ -610,11 +614,15 @@ export default function Home() {
                   delivers!
                 </div>
 
-                <Tab.Group>
+                <Tab.Group
+                defaultIndex={currentTabIndex}
+                >
                   <Tab.List className="p-2 mt-10 bg-slate-50 h-14 focus:outline-none rounded--xl border border-neutral-400 text-gray-600 border-opacity-25 justify-start items-center gap-3 inline-flex rounded-xl">
                     <Tab>
                       {({ selected }) => (
-                        <div className={`rounded-xl h-10 px-2 focus:outline-none justify-center items-center gap-2 inline-flex ${selected ? 'bg-white border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`} >
+                        <div className={`rounded-xl h-10 px-2 focus:outline-none justify-center items-center gap-2 inline-flex ${selected ? 'bg-white border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`} 
+                        onClick={() => setCurrentTabIndex(0)}
+                        >
                           <span className="">
                             {" "}
                             <svg
@@ -638,7 +646,9 @@ export default function Home() {
                     </Tab>
                     <Tab>
                       {({ selected }) => (
-                        <div className={`rounded-xl h-10 focus:outline-none focus:border-transparent focus-visible:hidden justify-center items-center gap-2 px-2 inline-flex ${selected ? 'bg-white  border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`} >
+                        <div className={`rounded-xl h-10 focus:outline-none focus:border-transparent focus-visible:hidden justify-center items-center gap-2 px-2 inline-flex ${selected ? 'bg-white  border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`} 
+                        onClick={() => {setCurrentTabIndex(1)}}
+                        >
                           <span>
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -684,8 +694,23 @@ export default function Home() {
                             <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
                           </Tooltip>
                         </div>
+                        <div className="w-full h-full justify-center items-center gap-2.5 inline-flex px-2"> 
                         <div className="relative w-full min-h-[60px] bg-white rounded-[10px] flex items-center px-2  gap-2.5 border border-gray-600">
                           <RePurpose value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
+                        </div>
+                        {
+                          keywordsOFBlogs.length > 0 && 
+                          <button className="h-5 px-4 py-6 flex items-center justify-center bg-indigo-600 rounded-lg text-white text-sm font-medium focus:outline-none"
+                          onClick={
+                            () => {
+                              setkeywordsOfBlogs([]);
+                              setBlogLinks([]);
+                            } 
+                          }
+                          >
+                            Reset
+                          </button>
+                        }
                         </div>
                         <div className="w-full h-6 justify-start items-center gap-1.5 inline-flex">
                           <span className={`text-center  text-sm font-normal ${showRepourposeError ? 'text-red-500' : 'text-slate-500'}`}>You can add Max. 3 URLs. Use comma to add multiple URLs, or press enter to add new URL.
@@ -731,25 +756,25 @@ export default function Home() {
                                 ))}
                               </div>
                               {
-                              meeData?.me?.isSubscribed === false && showHoveUpgradeNow === true && (
-                                <div className="absolute top-0 left-0 w-full h-full bg-gray-700 opacity-70 flex flex-col items-center justify-center">
-                                  <p>
-                                    You are enjoying free trial. Upgrade your plan to get extra benefits
-                                  </p>
-                                  <button className="mt-2.5 text-white bg-indigo-600 rounded-[10px] shadow justify-center items-center gap-2.5 inline-flex
+                                meeData?.me?.isSubscribed === false && showHoveUpgradeNow === true && (
+                                  <div className="absolute top-0 left-0 w-full h-full bg-gray-700 opacity-70 flex flex-col items-center justify-center">
+                                    <p>
+                                      You are enjoying free trial. Upgrade your plan to get extra benefits
+                                    </p>
+                                    <button className="mt-2.5 text-white bg-indigo-600 rounded-[10px] shadow justify-center items-center gap-2.5 inline-flex
                         active:bg-indigo-600 hover:bg-indigo-700 focus:shadow-outline-indigo px-4 py-2"
-                                    onClick={
-                                      () => {
-                                        typeof window !== 'undefined' && router.push(
-                                          {
-                                            pathname: '/upgrade',
-                                          }
-                                        )
+                                      onClick={
+                                        () => {
+                                          typeof window !== 'undefined' && router.push(
+                                            {
+                                              pathname: '/upgrade',
+                                            }
+                                          )
+                                        }
                                       }
-                                    }
-                                  >Upgrade now</button>
-                                </div>
-                              )}
+                                    >Upgrade now</button>
+                                  </div>
+                                )}
                             </div>
                           )
                         }
@@ -762,7 +787,7 @@ export default function Home() {
                               uploadExtractKeywords
                           }
                           disabled={blogLinks.length === 0 || loadingForKeywords}
-                          >
+                        >
                           {
                             loadingForKeywords ?
                               <ReactLoading
