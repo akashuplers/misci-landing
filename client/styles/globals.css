@@ -655,7 +655,7 @@ input[type=number] {
   padding: 0.25rem;
 }
 
-.css-12a83d4-MultiValueRemove {
+.css-12a83d4-Multi1Remove {
   height: 100% !important;
   color: #000000 !important;
   border-radius: 1rem !important;
@@ -663,8 +663,8 @@ input[type=number] {
 
 /* hover */
 .css-12a83d4-MultiValueRemove {
-  height: 24px;
-  width: 24px;
+  height: 24px !important;
+  width: 24px !important;
   padding: 4px !important;
   background-color: #C6CED6 !important;
   color: #000000 !important;
