@@ -185,7 +185,13 @@ export default function Home() {
       .then(response => response.json())
       .then(result => {
         if (result.type === 'ERROR') {
-          toast.error(result.message);
+          // const errorMessage = result.message + result?.unprocessedUrls && result.unprocessedUrls.length > 0 && (' Unresovled URLs ' + result.unprocessedUrls.join(', '));
+          let _errorMessage = result.message;
+          if(result?.unprocessedUrls && result.unprocessedUrls.length > 0) {
+            _errorMessage += ' Unresovled URLs are' + result.unprocessedUrls.join(', ');
+          }
+          const errorMessage = _errorMessage;
+          toast.error(errorMessage);
           return;
         }
         const { keywords,
