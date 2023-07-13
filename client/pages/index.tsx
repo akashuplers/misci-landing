@@ -31,7 +31,6 @@ const TONES = [
   'Authoritative',
   'Political', 'Non political',
   'Ethnic', 'Rational', 'Modern thinking',
-  'headings', 'Without headings'
 ]
 
 var newTones = [];
