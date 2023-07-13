@@ -185,7 +185,13 @@ export default function Home() {
       .then(response => response.json())
       .then(result => {
         if (result.type === 'ERROR') {
-          toast.error(result.message);
+          // const errorMessage = result.message + result?.unprocessedUrls && result.unprocessedUrls.length > 0 && (' Unresovled URLs ' + result.unprocessedUrls.join(', '));
+          let _errorMessage = result.message;
+          if(result?.unprocessedUrls && result.unprocessedUrls.length > 0) {
+            _errorMessage += ' Unresovled URLs are' + result.unprocessedUrls.join(', ');
+          }
+          const errorMessage = _errorMessage;
+          toast.error(errorMessage);
           return;
         }
         const { keywords,
@@ -725,7 +731,7 @@ export default function Home() {
                                 ))}
                               </div>
                               {
-                              meeData?.me?.paid === false && showHoveUpgradeNow === true && (
+                              meeData?.me?.isSubscribed === false && showHoveUpgradeNow === true && (
                                 <div className="absolute top-0 left-0 w-full h-full bg-gray-700 opacity-70 flex flex-col items-center justify-center">
                                   <p>
                                     You are enjoying free trial. Upgrade your plan to get extra benefits
