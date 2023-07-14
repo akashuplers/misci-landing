@@ -61,6 +61,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         "<h2>":" ",
         "</h2>":" ",
         "\n":" ",
+        "\"":" ",
     };
     const chatgptApis = await db.db('lilleAdmin').collection('chatGPT').findOne()
     let availableApi: any = null
@@ -74,6 +75,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
     }
     let newsLetter: any = {
         wordpress: null,
+        title: null,
         linkedin: null,
         twitter: null,
     }
@@ -95,19 +97,23 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                     Limit is "1500 words"
                     Donot repeat sentence
                     Strictly Highlight the H1 & H2 using html tags
-                    ${!title ? "Strictly Provide a specific title with Title:" : ""}
                     Provide the conclusion at the end
                     Strictly use all these Ideas for writing blog: ${text}` : `Please act as an expert writer and using the below pasted ideas write a atleast 1200 word blog post ${keywords.length ? ` using keywords "${keywords.join('","')}"`: `for "${title}"`} strictly with inputs as follows:
                     ${tones?.length ? tones.join('","') : `Tone is "Authoritative, informative, Persuasive"`}
                     Donot repeat sentence
                     Limit is "1500 words"
                     Strictly Highlight the H1 & H2 using html tags
-                    ${!title ? "Strictly Provide a specific title with Title:" : ""}
                     Provide the conclusion at the end`}`, db}).textCompletion(chatgptApis.timeout)
                 console.log(chatGPTText, "blog")    
                 newsLetter = {...newsLetter, [key]: chatGPTText}
             } else {
                 let text = ""
+                if(key === 'title') {
+                    const blogPostToSend = newsLetter["wordpress"]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
+                        return mapObj[matched];
+                    });
+                    text = `Create a SEO based title using this blog: ${blogPostToSend}`
+                }
                 if(key === 'linkedin') {
                     const blogPostToSendForLinkedin = newsLetter["wordpress"]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
                         return mapObj[matched];
@@ -156,6 +162,14 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
             throw e
         }
     }
+    if(newsLetter['title']) {
+        title = newsLetter['title']
+        title = title?.replace(/"|\n/gi, function(matched: any){
+            return mapObj[matched];
+        })
+        title = title?.trim()
+    }
+    delete newsLetter.title
     try {
         delete newsLetter.image
         let usedIdeasArr: any = []
@@ -172,6 +186,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 const refs = refUrls
                                 newsLetter[key] = newsLetter[key].trim()
                                 console.log(newsLetter[key], "wordpress")
+                                console.log(title, "wordpress")
                                 if(newsLetter[key]?.indexOf("Title: ") >= 0) {
                                     console.log(newsLetter[key].substr(newsLetter[key].indexOf("Title: "), newsLetter[key].indexOf("\n")), newsLetter[key].indexOf("\n"), "akash")
                                     title = (newsLetter[key].substr(newsLetter[key].indexOf("Title: "), newsLetter[key].indexOf("\n"))).replace("Title: ", "")
@@ -212,7 +227,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                     text = key.slice(0,-1);    
                                                     foundFullStop = true
                                                 }
-                                                contentWithRef += `${text} <a href="${filteredSource?.url}" target="_blank" title="${filteredSourceIndex + 1} - ${filteredSource?.url}">[${filteredSourceIndex + 1}]</a>${foundFullStop ? "." : ""}` 
+                                                contentWithRef += `${text} <a href="${filteredSource?.url}" target="_blank" title="${filteredSourceIndex + 1} - ${filteredSource?.url}">[${filteredSourceIndex + 1}]</a>.` 
                                             }else{
                                                 contentWithRef += `${text}`
                                             }
