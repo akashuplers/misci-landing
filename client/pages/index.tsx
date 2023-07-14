@@ -31,7 +31,7 @@ const TONES = [
   'Authoritative',
   'Political', 'Non political',
   'Ethnic', 'Rational', 'Modern thinking',
-  'Non robotic'
+  'Non Robotic'
 ]
 
 var newTones = [];
@@ -238,7 +238,7 @@ export default function Home() {
             Authorization: "Bearer " + localStorage.getItem("token"),
           },
           body: JSON.stringify(userContribution),
-        };
+        };s
         fetch(SAVE_USER_SUPPORT_URL, requestOptions)
           .then((response) => {
           })
@@ -722,7 +722,7 @@ export default function Home() {
                             </Tooltip></div>}
                           <div className='flex flex-wrap justify-center gap-2 mt-5'>
                             {keywordsOFBlogs.length > 0 && keywordsOFBlogs.map((chip, index) => (
-                              <Chip key={index} text={chip.text} handleClick={handleChipClick} index={index} selected={chip.selected} />
+                              <Chip key={index} text={chip.text} handleClick={handleChipClick} index={index} selected={chip.selected} wholeData={chip} />
                             ))}
                           </div>
                         </div>
@@ -750,7 +750,7 @@ export default function Home() {
                               <div className='flex flex-wrap justify-center gap-2 mt-5'>
                                 {newTones.length > 0 && newTones.map((tone, index) => (
                                   <div key={index} className="relative">
-                                    <Chip text={tone.text} handleClick={handleToneClick} index={index} selected={tone.selected} />
+                                    <Chip text={tone.text} handleClick={handleToneClick} index={index} selected={tone.selected} wholeData={null}/>
                                   </div>
                                 ))}
                               </div>
@@ -953,8 +953,14 @@ const AIInputComponent = () => {
   );
 };
 
-const Chip = ({ selected, text, handleClick, index }) => {
+const Chip = ({ selected, text, handleClick, index, wholeData }) => {
+  console.log(wholeData);
   return <button className={`h-8 px-[18px] py-1.5  rounded-full justify-start items-start gap-2.5 inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick(index)}>
     <span className=" text-sm font-normal leading-tight">{text}</span>
+    {
+      wholeData !== null  && wholeData.source!==null && wholeData.source!=="" &&  <Tooltip content={"This keyword is coming from "+ wholeData.source} direction="top" className="text-xs">
+      <InformationCircleIcon className="w-4 h-4 text-gray-500 hover:text-gray-700 active:text-gray-700 focus:text-gray-700" />
+    </Tooltip>
+    }
   </button>
 };
