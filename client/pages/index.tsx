@@ -74,7 +74,7 @@ export default function Home() {
   const [keywordsOFBlogs, setkeywordsOfBlogs] = useState([]);
   const [articleIds, setArticleIds] = useState([]);
   const [keywordsMap, setKeywordsMap] = useState({});
-  const [currentTabIndex, setCurrentTabIndex] = useState(1);
+  const [currentTabIndex, setCurrentTabIndex] = useState(0);
   const [repurposeTones, setRepurposeTones] = useState(newTones);
   const handleChipClick = (index) => {
     const idOfKeyword = getIdFromUniqueName(keywordsOFBlogs[index].id);
@@ -686,7 +686,7 @@ export default function Home() {
                       <AIInputComponent />
                     </Tab.Panel>
                     <Tab.Panel>
-                      <div className="w-[650px] h-full opacity-90 flex-col justify-center mt-10 items-center gap-[18px] inline-flex bg-transparent rounded-[10px]">
+                      <div className="w-full lg:w-[650px] h-full opacity-90 flex-col justify-center mt-10 items-center gap-[18px] inline-flex bg-transparent rounded-[10px]">
                         <div className="w-full h-6 justify-center items-center gap-1.5 inline-flex">
                           <div className="text-center text-slate-600 text-ase font-normal">Lille will help you to Repurpose the whole blog</div>
                           <Tooltip content="We will help you recreate blog on the basis of keywords and tone selected by you" direction='bottom' className='max-w-[100px]'>
