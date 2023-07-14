@@ -462,7 +462,8 @@ export default function DashboardInsights({
           if (SHOW_CONTRIBUTION_MODAL) {
             setShowContributionModal(true);
           }
-          setOption(option);
+          alert(option);
+          setOption(prevState => prevState);
         },
         onError: (error) => {
           console.error("Credit Exhaust or any other error", error.message);
