@@ -432,7 +432,7 @@ router.post('/urls/extract-keywords', async (req: any, res: any) => {
             keywordsData.push({
                 id,
                 url: article._source.orig_url,
-                source: article._source.source.name,
+                source: article._source.title,
                 keywords: article._source.driver
             })
         }
