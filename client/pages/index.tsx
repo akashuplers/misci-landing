@@ -74,7 +74,7 @@ export default function Home() {
   const [keywordsOFBlogs, setkeywordsOfBlogs] = useState([]);
   const [articleIds, setArticleIds] = useState([]);
   const [keywordsMap, setKeywordsMap] = useState({});
-  const [currentTabIndex, setCurrentTabIndex] = useState(1);
+  const [currentTabIndex, setCurrentTabIndex] = useState(0);
   const [repurposeTones, setRepurposeTones] = useState(newTones);
   const handleChipClick = (index) => {
     const idOfKeyword = getIdFromUniqueName(keywordsOFBlogs[index].id);
