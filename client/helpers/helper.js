@@ -217,14 +217,28 @@ export const extractKeywordsAndIds = (response) => {
     const itemKeywords = item.keywords;
     articleIds.push(id);
     itemKeywords.forEach((keyword) => {
+      console.log('CHECK FOR SOURCE');
+      console.log(keyword);
       const uniqueName = keywordsUniqueName(id, keyword);
       if (!keywordIdMap[uniqueName]) {
         keywordIdMap[uniqueName] = id;
         const keywordObj = {
           id: uniqueName,
           text: keyword,
-          selected: false,
+          selected: false, 
+          source: keywords.find((item) => item.text === keyword) ?  item.source ? item.source.toLowerCase().charAt(0).toUpperCase() + item.source.toLowerCase().slice(1) : "" : null,
+          realSource: item.source,
+          url: item.url,
+          articleId: id,
         }
+        if(item.source!==null && item.source!==undefined && item.source!==""){
+          // get keyword with same text from keywords[]
+          const keywordObjFromKeywords = keywords.find((item) => item.text === keyword);
+          if(keywordObjFromKeywords!==null && keywordObjFromKeywords!==undefined && keywordObjFromKeywords!==""){
+            keywordObjFromKeywords.source = keywordObjFromKeywords.realSource ? keywordObjFromKeywords.realSource.toLowerCase().charAt(0).toUpperCase() + keywordObjFromKeywords.realSource.toLowerCase().slice(1) : "";
+          }
+        }
+                
         keywords.push(keywordObj);
       }
     });
