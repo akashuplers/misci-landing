@@ -332,7 +332,9 @@ router.post('/urls/extract-keywords', async (req: any, res: any) => {
     console.log(articleIds)
     let keywordsData: {
         id: string;
-        keywords: string[]
+        keywords: string[];
+        url: string;
+        source: string;
     }[] = []
     for (let index = 0; index < articleIds.length; index++) {
         const id = articleIds[index];
@@ -340,6 +342,8 @@ router.post('/urls/extract-keywords', async (req: any, res: any) => {
             const article = await fetchArticles({db, id})
             keywordsData.push({
                 id,
+                url: article._source.orig_url,
+                source: article._source.source.name,
                 keywords: article._source.driver
             })
         }
