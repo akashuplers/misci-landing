@@ -462,7 +462,6 @@ export default function DashboardInsights({
           if (SHOW_CONTRIBUTION_MODAL) {
             setShowContributionModal(true);
           }
-          alert(option);
           setOption(prevState => prevState);
         },
         onError: (error) => {

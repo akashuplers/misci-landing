@@ -644,7 +644,7 @@ input[type=number] {
   border-left-color: var(--tooltip-background-color);
 }
 
-
+/* 
 .css-1p3m7a8-multiValue {
   background-color: transparent !important;
   border-radius: 1rem !important;
@@ -661,7 +661,6 @@ input[type=number] {
   border-radius: 1rem !important;
 }
 
-/* hover */
 .css-12a83d4-MultiValueRemove {
   height: 24px !important;
   width: 24px !important;
@@ -681,4 +680,4 @@ input[type=number] {
 }
 .css-1jqq78o-placeholder{
   text-align: left !important;
-}
+} */
