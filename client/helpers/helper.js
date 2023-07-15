@@ -224,7 +224,7 @@ export const extractKeywordsAndIds = (response) => {
         keywordIdMap[uniqueName] = id;
         const keywordObj = {
           id: uniqueName,
-          text: keyword,
+          text: keyword.toLowerCase().charAt(0).toUpperCase()+keyword.toLowerCase().slice(1),
           selected: false, 
           source: keywords.find((item) => item.text === keyword) ?  item.source ? item.source.toLowerCase().charAt(0).toUpperCase() + item.source.toLowerCase().slice(1) : "" : null,
           realSource: item.source,
