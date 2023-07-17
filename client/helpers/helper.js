@@ -1,4 +1,4 @@
-import { API_BASE_PATH, LINKEDIN_CLIENT_ID } from "@/constants/apiEndpoints";
+import { API_BASE_PATH, API_ROUTES, LINKEDIN_CLIENT_ID } from "@/constants/apiEndpoints";
 import axios from "axios";
 
 export const htmlToJson = (htmlString, imageURL) => {
@@ -256,4 +256,23 @@ export const keywordsUniqueName = (id, keyword) => {
 }
 export const getIdFromUniqueName = (uniqueName) => {
   return uniqueName.split(ID_KEYWORD_SEPARATOR)[0];
+}
+
+
+export function uploadAndExtractKeywords(fileInput, userId) {
+  // Create a new FormData and append the file and userId to it
+  var formdata = new FormData();
+  formdata.append("files", fileInput.files[0], '[PROXY]');
+  formdata.append("userId", userId);
+  var requestOptions = {
+    method: 'POST',
+    body: formdata,
+    headers: {
+      "content-type": "multipart/form-data"
+    }
+  };
+  // Make the fetch API call and return the response
+  return fetch(API_BASE_PATH + API_ROUTES.EXTRACT_KEYWORDS_FROM_FILE, requestOptions)
+    .then(response => response.text())
+    .catch(error => console.log('error', error));
 }
