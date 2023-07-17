@@ -253,6 +253,16 @@ router.get('/topics', async (req: any, res: any) => {
                 console.log(topics)
                 console.log(user)
                 const ideas = await fetchBlogFromTopic(db, topics, userId)
+                const trendingTopicsData = await db.db('lilleAdmin').collection('trendingTopics').findOne()
+                if(trendingTopicsData) {
+                    await db.db('lilleAdmin').collection('trendingTopics').updateOne({
+                        _id: new ObjectID(trendingTopicsData._id)
+                    }, {
+                        $set: {
+                            topics
+                        }
+                    })
+                }
             }
             res.status(200).send({
                 type: "SUCCESS",
