@@ -57,11 +57,11 @@ const DesktopNavigation = ({
 
 export default DesktopNavigation;
 var desktopNavigationRoutes = [
-  {
-    name: "Testimonial",
-    href: "#testimonial",
-    current: false,
-  },
+  // {
+  //   name: "Testimonial",
+  //   href: "#testimonial",
+  //   current: false,
+  // },
   {
     name: "FAQs",
     href: "/faq",
