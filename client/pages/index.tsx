@@ -664,7 +664,7 @@ export default function Home() {
                               />
                             </svg>
                           </span>{" "}
-                          Repurpose Blog
+                          Repurpose Content
                         </div>
                       )}
                     </Tab>
@@ -716,7 +716,7 @@ export default function Home() {
                           </span>
                         </div>
                         <div className='flex items-center flex-col mt-5'>
-                          {keywordsOFBlogs.length > 0 && <div className="flex items-center" >
+                          {keywordsOFBlogs.length > 0 && <div className="flex items-center gap-1.5" >
                             <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="These keywords is used to generate Blog article using lille's ai and give you high ranking SEO blog" direction='bottom' className='max-w-[100px]'>
                               <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
                             </Tooltip></div>}

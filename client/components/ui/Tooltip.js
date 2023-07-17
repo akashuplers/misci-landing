@@ -1,5 +1,14 @@
 import React, { useState } from "react";
 
+
+export const TOOLTIP_DIRECTION= {
+  TOP: 'top',
+  LEFT: 'left',
+  RIGHT: 'right',
+  BOTTOM: 'bottom'
+}
+
+
 const Tooltip = (props) => {
   let timeout;
   const [active, setActive] = useState(false);
