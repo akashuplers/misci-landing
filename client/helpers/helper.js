@@ -206,3 +206,54 @@ export const handleconnectLinkedin = (callback_path) => {
   const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`;
   window.location = redirectUrl;
 };
+
+
+export const extractKeywordsAndIds = (response) => {
+  const keywords = [];
+  const keywordIdMap = {};
+  const articleIds = [];
+  response.data.forEach((item) => {
+    const id = item.id;
+    const itemKeywords = item.keywords;
+    articleIds.push(id);
+    itemKeywords.forEach((keyword) => {
+      console.log('CHECK FOR SOURCE');
+      console.log(keyword);
+      const uniqueName = keywordsUniqueName(id, keyword);
+      if (!keywordIdMap[uniqueName]) {
+        keywordIdMap[uniqueName] = id;
+        const keywordObj = {
+          id: uniqueName,
+          text: keyword.toLowerCase().charAt(0).toUpperCase()+keyword.toLowerCase().slice(1),
+          selected: false, 
+          source: keywords.find((item) => item.text === keyword) ?  item.source ? item.source.toLowerCase().charAt(0).toUpperCase() + item.source.toLowerCase().slice(1) : "" : null,
+          realSource: item.source,
+          url: item.url,
+          articleId: id,
+        }
+        if(item.source!==null && item.source!==undefined && item.source!==""){
+          // get keyword with same text from keywords[]
+          const keywordObjFromKeywords = keywords.find((item) => item.text === keyword);
+          if(keywordObjFromKeywords!==null && keywordObjFromKeywords!==undefined && keywordObjFromKeywords!==""){
+            keywordObjFromKeywords.source = keywordObjFromKeywords.realSource ? keywordObjFromKeywords.realSource.toLowerCase().charAt(0).toUpperCase() + keywordObjFromKeywords.realSource.toLowerCase().slice(1) : "";
+          }
+        }
+                
+        keywords.push(keywordObj);
+      }
+    });
+  });
+
+  return {
+    keywords,
+    keywordIdMap,
+    articleIds,
+  };
+};
+const ID_KEYWORD_SEPARATOR = "&keyword&";
+export const keywordsUniqueName = (id, keyword) => {
+  return `${id.toLowerCase().trim()}${ID_KEYWORD_SEPARATOR}${keyword.toLowerCase().trim()}`;
+}
+export const getIdFromUniqueName = (uniqueName) => {
+  return uniqueName.split(ID_KEYWORD_SEPARATOR)[0];
+}

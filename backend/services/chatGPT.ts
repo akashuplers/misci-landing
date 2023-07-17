@@ -23,11 +23,12 @@ export class ChatGPT {
             data : {
               "model": "text-davinci-003",
               "prompt": `${this.text}`,
-              "temperature": 0,
+              "temperature": 0.5,
               "max_tokens": 4096 - encoded.text?.length
             },
             timeout: timeout || 0
         };
+        console.log(config)
         try {
             const res = await axios(config)
             return res?.data?.choices?.length && res?.data?.choices?.[0].text

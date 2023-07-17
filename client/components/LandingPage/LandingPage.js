@@ -638,9 +638,7 @@ const LandingPage = () => {
             </div>
             {/* testimonials */}
             <SectionSpacer />
-            <div id='testimonial' className="w-full  relative bg-blue-50 mobileTestimonial px-4">
-                {/* <div className="w-[142.93px] h-[142.93px] left-[-71.48px] top-[495.74px] absolute bg-pink-200 rounded-full blur-[145px]" /> */}
-                {/* <div className="w-[110.74px] h-[159.36px] left-[241.31px] top-[60.74px] absolute origin-top-left rotate-[-53.85deg] bg-fuchsia-200 rounded-full blur-[145px]" /> */}
+            {/* <div id='testimonial' className="w-full  relative bg-blue-50 mobileTestimonial px-4">
                 <div className="mt-20 w-full flex-col justify-start items-center gap-3 inline-flex">
                     <div className="text-center text-slate-800 text-[28px] font-medium leading-10">
                         See what our customers say
@@ -670,9 +668,9 @@ const LandingPage = () => {
                         modules={[Pagination]}
                         className="mySwiper mt-10 rounded-2xl shadow justify-center items-center inline-flex" style={{ paddingBottom: '2rem' }}
                     >
-                        {testimonialData.map((user) => (
+                        {testimonialData.map((user, index) => (
                             <SwiperSlide
-                                key={user.name} // Add a unique key for each slide
+                                key={index} // Add a unique key for each slide
                                 className="flex-col relative justify-center items-center flex h-full "
                             >
                                 <div className=" h-full py-10 px-8 bg-indigo-600 rounded-lg flex-col justify-start items-center gap-6 flex">
@@ -703,7 +701,7 @@ const LandingPage = () => {
                         ))}
                     </Swiper>
                 </>
-            </div>
+            </div> */}
             {/* demo */}
             <SectionSpacer id={`userDemo`} />
             <div className="userDemo hidden lg:flex items-center justify-center w-full h-full ">

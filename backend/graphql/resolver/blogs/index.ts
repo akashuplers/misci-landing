@@ -135,7 +135,10 @@ export const blogResolvers = {
         ) => {
             let startRequest = new Date()
             let keyword = args.options.keyword
-            if(!keyword.length) {
+            let articleIds = args.options.article_ids
+            let keywords = args.options.keywords
+            let tones = args.options.tones
+            if(!keyword?.length && !keywords?.length) {
                 throw "No keyword passed!"
             }
             const userId = args.options.user_id
@@ -149,7 +152,6 @@ export const blogResolvers = {
                     throw "@Credit exhausted"
                 }
             }
-            let articleIds: any = null
             let refUrls: {
                 url: string
                 source: string
@@ -206,16 +208,19 @@ export const blogResolvers = {
                     _id: insertBlogIdeas.insertedId
                 }, references: refUrls}
             }
-            try {
-                articleIds = await new Python({userId: userId}).uploadKeyword({keyword, timeout:60000})
-            }catch(e){
-                console.log(e, "error from python")
+            if(!articleIds?.length) {
+                try {
+                    articleIds = await new Python({userId: userId}).uploadKeyword({keyword, timeout:60000})
+                }catch(e){
+                    console.log(e, "error from python")
+                }
             }
+            console.log(keyword, "keyword")
             // articleIds = [
-            //     '832ab5a1-f957-11ed-90bc-0242c0a8f002',
-            //     '855094fa-f957-11ed-90bc-0242c0a8f002',
-            //     '86fb05bf-f957-11ed-90bc-0242c0a8f002',
-            //     '885d8e7b-f957-11ed-90bc-0242c0a8f002'
+            //     '97a32ca9-1710-11ee-8959-0242c0a8e002',
+            //     '96345a34-1710-11ee-8959-0242c0a8e002',
+            //     '9495c95a-1710-11ee-8959-0242c0a8e002',
+            //     '991cd785-1710-11ee-8959-0242c0a8e002'
             // ]
             let pythonEnd = new Date()
             let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
@@ -262,13 +267,14 @@ export const blogResolvers = {
                 )
                 articlesData.forEach((data) => {
                     data.used_summaries.forEach((summary: string, index: number) => {
-                        texts += `- ${summary}\n`
+                        texts += `${summary}\n`
                         ideasText += `${summary} `
                         ideasArr.push({idea: summary, article_id: data.id})
                     })
                     article_ids.push(data.id)
                 })
             }
+            console.log(ideasArr, keywords, article_ids)
             try {
                 let uniqueTags: String[] = [];
                 tags.forEach((c) => {
@@ -277,7 +283,7 @@ export const blogResolvers = {
                     }
                 });
                 if(articleIds && articleIds.length) refUrls = await fetchArticleUrls({db, articleId: articleIds})
-                const {usedIdeasArr, updatedBlogs, description}: any = await blogGeneration({
+                const {usedIdeasArr, updatedBlogs, description,title}: any = await blogGeneration({
                     db,
                     text: !articlesData.length ? keyword : texts,
                     regenerate: !articlesData.length ? false: true,
@@ -287,14 +293,17 @@ export const blogResolvers = {
                     ideasText,
                     ideasArr,
                     refUrls,
-                    userDetails
+                    userDetails,
+                    userId: (userDetails && userDetails._id) || userId,
+                    keywords,
+                    tones,
                 })
                 const finalBlogObj = {
                     article_id: articleIds,
                     publish_data: updatedBlogs,
                     userId: new ObjectID(userId),
                     email: userDetails && userDetails.email,
-                    keyword,
+                    keyword: keyword || title,
                     status: "draft",
                     description,
                     tags: uniqueTags,
@@ -482,7 +491,8 @@ export const blogResolvers = {
                     imageSrc,
                     ideasArr,
                     refUrls,
-                    userDetails
+                    userDetails,
+                    userId: userDetails._id
                 })
                 let endChatGPTRequest = new Date()
                 let respChatgptTime = diff_minutes(endChatGPTRequest, startChatGptRequest)
@@ -819,7 +829,7 @@ export const blogResolvers = {
                         articlesData.forEach((data) => {
                             data.used_summaries.forEach((summary: string, index: number) => {
                                 texts += `- ${summary}\n`
-                                ideasText += `${ideasText} `
+                                ideasText += `${summary} `
                                 ideasArr.push({idea: summary, article_id: data.id})
                             })
                             article_ids.push(data.id)
@@ -840,7 +850,8 @@ export const blogResolvers = {
                                 ideasText,
                                 refUrls,
                                 ideasArr,
-                                userDetails
+                                userDetails,
+                                userId: userDetails._id
                             })
                             let uniqueTags: String[] = [];
                             tags?.forEach((c) => {
