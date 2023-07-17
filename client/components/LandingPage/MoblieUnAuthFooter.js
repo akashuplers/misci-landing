@@ -47,11 +47,11 @@ const MoblieUnAuthFooter = () => {
                 Why Choose us
               </Link>
             </p>
-            <p className="mb-4">
+            {/* <p className="mb-4">
               <Link href="/#testimonial" className="text-white-600 hover:opacity-90 ">
                 Testimonial
               </Link>
-            </p>
+            </p> */}
             <p className="mb-4">
               <Link href="/pricing" className="text-white-600 hover:opacity-90 ">
                 Pricing
