@@ -222,16 +222,20 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                             let text = key
                                             const filteredSourceIndex = refUrls?.findIndex((source: any) => source.id === matchedId)
                                             console.log(filteredSourceIndex, "match")
+                                            // let foundFullStop = false
+                                            // if (key[key.length-1] !== ".") {
+                                            //     text = key.slice(0,-1);    
+                                            //     foundFullStop = true
+                                            // }
                                             if(filteredSourceIndex > -1) {
                                                 const filteredSource = refUrls[filteredSourceIndex]
-                                                let foundFullStop = false
-                                                if (key[key.length-1] === ".") {
-                                                    text = key.slice(0,-1);    
-                                                    foundFullStop = true
-                                                }
                                                 contentWithRef += `${text} <a href="${filteredSource?.url}" target="_blank" title="${filteredSourceIndex + 1} - ${filteredSource?.url}">[${filteredSourceIndex + 1}]</a>.` 
                                             }else{
-                                                contentWithRef += `${text}`
+                                                if(updatedContent.charAt(updatedContent.lastIndexOf(key) + key.length) === ".") {
+                                                    contentWithRef += `${text}.`
+                                                } else {
+                                                    contentWithRef += `${text}`
+                                                }
                                             }
                                         }
                                     })

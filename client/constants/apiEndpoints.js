@@ -1,4 +1,4 @@
-export const API_BASE_PATH = "https://lille.ai";
+export const API_BASE_PATH = "http://localhost:8089";
 
 export const API_ROUTES = {
   TEMP_ID: "/auth/temp/user",
