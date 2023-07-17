@@ -314,7 +314,7 @@ export default function Home() {
         }
         const doesUnprocessedUrlsExist = result?.unprocessedUrls && result.unprocessedUrls.length > 0;
         if (doesUnprocessedUrlsExist) {
-          toast.warn('Success with unresovled URLs: ' + result.unprocessedUrls.join(', '));
+          toast.warn(`Success but we could not resolve ${result.unprocessedUrls.length>1 ? "these URLs" : "this URL" } : ` + result.unprocessedUrls.join(', '));
         }
         const { keywords,
           keywordIdMap,
