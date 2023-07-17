@@ -62,6 +62,41 @@ export default function RePurpose({value, setValue, setShowRepourposeError}){
       <CreatableSelect
       components={components}
       inputValue={inputValue}
+      styles={{
+        multiValue: (baseStyles, state) => ({
+          ...baseStyles,
+          backgroundColor: 'transparent',
+          borderRadius: '1rem',
+          border: '1px solid #C6CED6',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0.25rem'
+        }),
+        multiValueRemove: (baseStyles, state) => ({
+          ...baseStyles,
+          borderColor: state.isFocused ? 'grey' : 'red',
+            height: '24px',
+            width: '24px',
+            padding: '4px',
+            backgroundColor: '#C6CED6',
+            color: '#00000',
+            borderRadius: '1rem',
+        }),
+        valueContainer: (baseStyles, state)=>({
+          ...baseStyles, 
+          gap: '0.75rem',
+          flexWrap: 'nowrap',
+        }),
+        control: (baseStyles, state)=>({
+          ...baseStyles, 
+          border: 'unset'
+        }),
+        placeholder: (baseStyles, state)=>({
+          ...baseStyles, 
+          textAlign: 'left'
+        })
+      }}
       isClearable
       isMulti
       onBlur={(event) => {
