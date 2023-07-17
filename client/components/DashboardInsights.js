@@ -492,9 +492,9 @@ export default function DashboardInsights({
   }
 
   // wrtie a function to seelect all use ideas 
-  function handleSelectAllUsedIdeas() {
-    alert('running used ideas')
-  }
+  // function handleSelectAllUsedIdeas() {
+  //   alert('running used ideas')
+  // }
   function handleSelectAllUsedIdeas() {
     const updatedAllIdeas = ideas.map((el, elIndex) => {
       return {
