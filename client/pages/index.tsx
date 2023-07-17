@@ -664,7 +664,7 @@ export default function Home() {
                               />
                             </svg>
                           </span>{" "}
-                          Repurpose Blog
+                          Repurpose Content
                         </div>
                       )}
                     </Tab>
