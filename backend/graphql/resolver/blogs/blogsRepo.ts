@@ -3,6 +3,7 @@ import { ChatGPT } from "../../../services/chatGPT";
 import { diff_minutes, getTimeStamp } from "../../../utils/date";
 import { URL } from "url";
 import { Python } from "../../../services/python";
+import { title } from "process";
 const natural = require('natural');
 
 export const fetchBlog = async ({id, db}: {
@@ -27,7 +28,7 @@ export const fetchBlogIdeas = async ({id, db}: {
    return await db.db('lilleBlogs').collection('blogIdeas').findOne({blog_id: new ObjectID(id)})
 }
 
-export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null}: {
+export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null, userId = null, keywords = [], tones = []}: {
     db: any;
     text: String;
     regenerate: Boolean;
@@ -40,8 +41,28 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         article_id: string;
     }[]
     refUrls?: any[];
-    userDetails?: any
+    keywords?: string[];
+    tones?: string[];
+    userDetails?: any;
+    userId?: string | null;
 }) => {
+    const mapObj: any = {
+        "H1:":" ",
+        "H2:":" ",
+        "<p/><p/>":"<p/>",
+        "Conclusions:<p/>":"<h3>Conclusions</h3><p/>",
+        "Conclusion:<p/>":"<h3>Conclusions</h3><p/>",
+        "Conclusion<p/>":"<h3>Conclusion</h3><p/>",
+        "Conclusions<p/>":"<h3>Conclusion</h3><p/>",
+        "<h1>":" ",
+        "Title:":" ",
+        "Introduction::":" ",
+        "</h1>":" ",
+        "<h2>":" ",
+        "</h2>":" ",
+        "\n":" ",
+        "\"":" ",
+    };
     const chatgptApis = await db.db('lilleAdmin').collection('chatGPT').findOne()
     let availableApi: any = null
     if(chatgptApis) {
@@ -53,75 +74,109 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         throw "Something went wrong! Please connect with support team";
     }
     let newsLetter: any = {
+        wordpress: null,
+        title: null,
         linkedin: null,
         twitter: null,
-        wordpress: null
     }
-    await (
-        Promise.all(
-            Object.keys(newsLetter).map(async (key: string) => {
-                try {
-                    if(key === "wordpress") {
-                        const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `
-                            ${regenerate ? `
-                            Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
-                            Tone is " Authoritative, informative, Persuasive"
-                            Limit is "900 words"
-                            Highlight the H1 & H2 html tags
-                            Provide the conclusion at the end
-                            Ideas ${text}
-                            ` : `
-                            Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
-                            Tone is " Authoritative, informative, Persuasive"
-                            Limit is "900 words"
-                            Highlight the H1 & H2 html tags
-                            Provide the conclusion at the end
-                            Topic is ${title}
-                            `}
-                        `, db}).textCompletion(chatgptApis.timeout)
-                        newsLetter = {...newsLetter, [key]: chatGPTText}
-                    } else {
-                        let text = ""
-                        if(key === 'linkedin') {
-                            text = `write a post on topic ${title} for linkedin post with tags under 700 words`
-                        }
-                        if(key === 'twitter') {
-                            let tweetQuota;
-                            if(userDetails) {
-                                tweetQuota = await db.db('lilleAdmin').collection('tweetsQuota').findOne({
-                                    userId: new ObjectID(userDetails._id)
-                                })
-                            }
-                            let cond = "";
-                            if(tweetQuota) {
-                                if(tweetQuota.remainingQuota > 0) {
-                                    cond = `${tweetQuota && `Tweet count should be ${tweetQuota.remainingQuota}`}`
-                                } else {
-                                    newsLetter = {...newsLetter, [key]: null}            
-                                    return
-                                }
-                            }
-                            text = `Please act as an expert Twitter Post to write a Twitter Thread as seperate list using below rules:
-                                Topic of Thread is "${title}"
-                                Each Tweet length should be less then 180 characters
-                                ${cond}
-                                `
-                            console.log(text, "text")
-                        }
-                        const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text, db}).textCompletion(chatgptApis.timeout)
-                        newsLetter = {...newsLetter, [key]: chatGPTText}
-                    }
-                } catch(e: any) {
-                    console.log(e, "error from chat gpt")
-                    throw e
+    // await (
+    //     Promise.all(
+    //         Object.keys(newsLetter).map(async (key): Promise<any> => {
+                
+    //         })
+    //     )
+    // )
+     
+    const keys = Object.keys(newsLetter)
+    for (let index = 0; index < keys.length; index++) {
+        const key = keys[index];
+        try {
+            if(key === "wordpress") {
+                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? `Please act as an expert writer and using the below pasted ideas write a atleast 1200 word blog post ${title && title.length ? `for "${title}"` : ""} with inputs as follows:
+                ${tones?.length ? tones.join('","') : `Tone is "Authoritative, informative, Persuasive"`}
+                    Limit is "1500 words"
+                    ${keywords.length ? `Use these keywords: "${keywords.join('","')}"`: ``}
+                    Donot repeat sentence
+                    Strictly Highlight the H1 & H2 using html tags
+                    Provide the conclusion at the end
+                    Strictly use all these Ideas for writing blog: ${text}` : `Please act as an expert writer and using the below pasted ideas write a atleast 1200 word blog post ${title && title.length ? `for "${title}"` : ""} strictly with inputs as follows:
+                    ${tones?.length ? tones.join('","') : `Tone is "Authoritative, informative, Persuasive"`}
+                    Limit is "1500 words"
+                    ${keywords.length ? `Use these keywords: "${keywords.join('","')}"`: ``}
+                    Donot repeat sentence
+                    Strictly Highlight the H1 & H2 using html tags
+                    Provide the conclusion at the end`}`, db}).textCompletion(chatgptApis.timeout)
+                console.log(chatGPTText, "blog")    
+                newsLetter = {...newsLetter, [key]: chatGPTText}
+            } else {
+                let text = ""
+                if(key === 'title') {
+                    const blogPostToSend = newsLetter["wordpress"]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
+                        return mapObj[matched];
+                    });
+                    text = `Create a SEO based title using this blog: ${blogPostToSend}`
                 }
-            })
-        )
-    )
+                if(key === 'linkedin') {
+                    const blogPostToSendForLinkedin = newsLetter["wordpress"]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
+                        return mapObj[matched];
+                    });
+                    text = `Please act as an expert LinkedIn Article writer who has to write a LinkedIn post from this Blog post: "${blogPostToSendForLinkedin}"
+                    ${keywords.length ? `Keywords are "${keywords.join('","')}"`: `Topic of Blog is "${title}"`}, go through the Blog and write about this topic.
+                    LinkedIn post should have maximum 300 words.
+                    Suggest an attention-grabbing Title.
+                    Insert hashtags at the end of the post
+                    Trim unwanted new lines and spaces`
+                }
+                if(key === 'twitter') {
+                    let tweetQuota;
+                    if(userDetails) {
+                        tweetQuota = await db.db('lilleAdmin').collection('tweetsQuota').findOne({
+                            userId: new ObjectID(userDetails._id)
+                        })
+                    }
+                    let cond = "";
+                    if(tweetQuota) {
+                        if(tweetQuota.remainingQuota > 0) {
+                            cond = `${tweetQuota && `Thread limit to not exceed ${tweetQuota.remainingQuota} tweets `}`
+                        } else {
+                            newsLetter = {...newsLetter, [key]: null}            
+                            return
+                        }
+                    }
+                    const blogPostToSendForLinkedin = newsLetter["wordpress"]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
+                        return mapObj[matched];
+                    });
+                    text = `Please act as an expert Twitter Thread writer who has to write a Twitter Thread From this Blog: "${blogPostToSendForLinkedin}"
+                    ${keywords.length ? `Keywords are "${keywords.join('","')}"`: `Topic of Blog is "${title}"`}, go through the Blog to understand and write twitter thread.
+                    "Insert Emoticons in Twitter Thread".
+                    "${cond || "Thread limit to not exceed 10 tweets"}".
+                    "Insert hashtags at the end of tweets".
+                    “Character limit per tweet to be exactly less then 200 characters".
+                    "Trim unwanted new lines and spaces".
+                    "Do not show the Tweet Number count inside the Tweets".`
+                    console.log(text, "text")
+                }
+                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text, db}).textCompletion(chatgptApis.timeout)
+                newsLetter = {...newsLetter, [key]: chatGPTText}
+            }
+        } catch(e: any) {
+            console.log(e, "error from chat gpt")
+            throw e
+        }
+    }
+    if(newsLetter['title']) {
+        title = newsLetter['title']
+        title = title?.replace(/"|\n/gi, function(matched: any){
+            return mapObj[matched];
+        })
+        title = title?.trim()
+    }
+    delete newsLetter.title
     try {
         delete newsLetter.image
         let usedIdeasArr: any = []
         let description = ""
+        title = title
         const updated = await (
             Promise.all(
                 Object.keys(newsLetter).map(async (key: string) => {
@@ -131,121 +186,142 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 break;
                             case "wordpress":
                                 const refs = refUrls
-                                // const title = newsLetter[key].slice(newsLetter[key].indexOf("Title:"), newsLetter[key].indexOf("Content:")).trim()
+                                newsLetter[key] = newsLetter[key].trim()
+                                console.log(newsLetter[key], "wordpress")
+                                console.log(title, "wordpress")
+                                if(newsLetter[key]?.indexOf("Title: ") >= 0) {
+                                    console.log(newsLetter[key].substr(newsLetter[key].indexOf("Title: "), newsLetter[key].indexOf("\n")), newsLetter[key].indexOf("\n"), "akash")
+                                    title = (newsLetter[key].substr(newsLetter[key].indexOf("Title: "), newsLetter[key].indexOf("\n"))).replace("Title: ", "")
+                                }
+                                console.log(title, "title", newsLetter[key]?.indexOf("Title: "))
                                 const content = newsLetter[key]?.replace(/\n/g, "<p/>")
-                                const mapObj: any = {
-                                    "H1:":" ",
-                                    "H2:":" ",
-                                    "<p/><p/>":"<p/>",
-                                    "Conclusions:<p/>":"<h3>Conclusions</h3><p/>",
-                                    "Conclusion:<p/>":"<h3>Conclusions</h3><p/>",
-                                    "Conclusion<p/>":"<h3>Conclusion</h3><p/>",
-                                    "Conclusions<p/>":"<h3>Conclusion</h3><p/>",
-                                    "<h1>":" ",
-                                    "Title:":" ",
-                                    "Introduction::":" ",
-                                    "</h1>":" ",
-                                    "<h2>":" ",
-                                    "</h2>":" ",
-                                    "\n":" ",
-                                };
                                 let updatedContent = content?.replace("In conclusion, ", "<p><h3>Conclusions:</h3></p>")
                                 updatedContent = updatedContent.replace(/H1:|H2:|Title:|Introduction:|<p\s*\/?><p\s*\/?>|Conclusions:<p\s*\/?>|Conclusion:<p\s*\/?>|Conclusion<p\s*\/?>|Conclusions<p\s*\/?>/gi, function(matched: any){
                                     return mapObj[matched];
                                 }); 
-                                console.log(updatedContent)
+                                let contentWithRef = ""
+                                // console.log(updatedContent)
                                 // updatedContent = updatedContent?.replace("<p></p><p></p>", "<p></p>")
-                                description = newsLetter[key]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
+                                description = newsLetter[key]?.replace(/<h1>|<\s*\/?h1>|Title:|Introduction:|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
                                     return mapObj[matched];
                                 }); 
                                 // description = (newsLetter[key]?.replace("\n", ""))?.trimStart()
                                 usedIdeasArr = description?.split('. ')
-                                const htmlTagRegex = /<[^>]*>([^<]*)<\/[^>]*>/g; // Regular expression to match HTML tags
-                                const sentences = updatedContent?.split('.').map((sentence: any) => {
-                                    // Check if the sentence is not wrapped in HTML tags
-                                    const matches = sentence.match(htmlTagRegex);
-                                    if(matches) {
-                                        return {
-                                            text: sentence,
-                                            no: true
-                                        }
-                                    }else {
-                                        return {
-                                            text: sentence,
-                                            no: false
-                                        }
-                                    }
-                                    // return !matches || matches.length === 0;
-                                });
-                                // console.log(sentences, "updatedContentBefore")
-                                updatedContent = sentences?.map((data: any) => {
-                                    let newText = data.text
-                                    let filteredSource = null
-                                    ideasArr.some((idea) => {
-                                        if(idea.idea) {
-                                            let checkHtmlTagSentences = null
-                                            if(data.no) {
-                                                function findTagIndices(sentence: string, tagName: string) {
-                                                    const openingTagRegex = new RegExp(`<${tagName}\\b[^>]*>`, 'i');
-                                                    const closingTagRegex = new RegExp(`<\/${tagName}\\b[^>]*>`, 'i');
-                                                  
-                                                    const openingTagMatch = sentence.match(openingTagRegex);
-                                                    const closingTagMatch = sentence.match(closingTagRegex);
-                                                  
-                                                    const startIndex = openingTagMatch ? openingTagMatch.index : -1;
-                                                    const endIndex = closingTagMatch && closingTagMatch.index? closingTagMatch.index + closingTagMatch[0].length - 1 : -1;
-                                                  
-                                                    return { startIndex, endIndex };
+                                if(ideasArr && ideasArr.length && refUrls && refUrls?.length) {
+                                    let articleIds: string[] = []
+                                    refUrls?.map((refUrl) => articleIds.push(refUrl.id))
+                                    const refBlogs = await new Python({userId}).getReferences({
+                                        text: updatedContent,
+                                        article_ids: articleIds
+                                    })   
+                                    refBlogs.forEach((data: any) => {
+                                        // console.log(data, "data")
+                                        if(Object.keys(data)?.length) {
+                                            const key = Object.keys(data)[0]
+                                            const matchedId = data[key]
+                                            let text = key
+                                            const filteredSourceIndex = refUrls?.findIndex((source: any) => source.id === matchedId)
+                                            console.log(filteredSourceIndex, "match")
+                                            if(filteredSourceIndex > -1) {
+                                                const filteredSource = refUrls[filteredSourceIndex]
+                                                let foundFullStop = false
+                                                if (key[key.length-1] === ".") {
+                                                    text = key.slice(0,-1);    
+                                                    foundFullStop = true
                                                 }
-                                                // const string = "<p></p><h2>What Are Your Chest Muscles?</h2><p></p>Before we dive into the 10 best chest exercises for building muscle, let’s take a quick look at the muscles that make up the chest"
-                                                const regex = /<[^>]*>([^<]*)<\/[^>]*>/g; 
-                                                data.text.split(".").forEach((sentence: any) => {
-                                                    // Check if the sentence is not wrapped in HTML tags
-                                                    const matches = sentence.match(regex);
-                                                    if(matches) {
-                                                        const h2Indeces = findTagIndices(sentence, 'h2')
-                                                        const h1Indeces = findTagIndices(sentence, 'h1')
-                                                        if(h2Indeces.endIndex > -1){
-                                                            checkHtmlTagSentences = sentence.substr(h2Indeces.endIndex + 1)
-                                                        } else if(h1Indeces.endIndex > -1) {
-                                                            checkHtmlTagSentences = sentence.substr(h1Indeces.endIndex + 1)
-                                                        } else {
-                                                            checkHtmlTagSentences = null
-                                                        } 
-                                                        return checkHtmlTagSentences
-                                                    }else {
-                                                        return false
-                                                    }
-                                                    // return !matches || matches.length === 0;
-                                                });
-                                            } else {
-                                                checkHtmlTagSentences = data.text
-                                            } 
-                                            if(checkHtmlTagSentences && checkHtmlTagSentences.length > 0) {
-                                                const similarity = natural.JaroWinklerDistance(checkHtmlTagSentences, idea.idea, true);
-                                                console.log(checkHtmlTagSentences,similarity, idea.idea, "similarity" )
-                                                if(similarity >= 0.7 && idea.article_id) {
-                                                    filteredSource = refs?.findIndex((ref) => ref.id === idea.article_id)
-                                                    // console.log(data, idea.idea, idea.article_id, filteredSource, similarity, "similiary")
-                                                    return true
-                                                } else {
-                                                    return false
-                                                }
-                                            } else {
-                                                return false
+                                                contentWithRef += `${text} <a href="${filteredSource?.url}" target="_blank" title="${filteredSourceIndex + 1} - ${filteredSource?.url}">[${filteredSourceIndex + 1}]</a>.` 
+                                            }else{
+                                                contentWithRef += `${text}`
                                             }
-                                        }else {
-                                            return false
                                         }
                                     })
-                                    if((filteredSource || filteredSource === 0) && refs[filteredSource]) {
-                                        newText = `${data.text} <a href="${refs[filteredSource]?.url}" target="_blank" title="${filteredSource + 1} - ${refs[filteredSource]?.url}">[${filteredSource + 1}]</a>` 
-                                    }
-                                    return newText.trim() + '. '
-                                })
+                                }
+                                const htmlTagRegex = /<[^>]*>([^<]*)<\/[^>]*>/g; // Regular expression to match HTML tags
+                                // const sentences = updatedContent?.split('.').map((sentence: any) => {
+                                //     // Check if the sentence is not wrapped in HTML tags
+                                //     const matches = sentence.match(htmlTagRegex);
+                                //     if(matches) {
+                                //         return {
+                                //             text: sentence,
+                                //             no: true
+                                //         }
+                                //     }else {
+                                //         return {
+                                //             text: sentence,
+                                //             no: false
+                                //         }
+                                //     }
+                                //     // return !matches || matches.length === 0;
+                                // });
+                                // console.log(sentences, "updatedContentBefore")
+                                // updatedContent = sentences?.map((data: any) => {
+                                //     let newText = data.text
+                                //     let filteredSource = null
+                                //     ideasArr.some((idea) => {
+                                //         if(idea.idea) {
+                                //             let checkHtmlTagSentences = null
+                                //             if(data.no) {
+                                //                 function findTagIndices(sentence: string, tagName: string) {
+                                //                     const openingTagRegex = new RegExp(`<${tagName}\\b[^>]*>`, 'i');
+                                //                     const closingTagRegex = new RegExp(`<\/${tagName}\\b[^>]*>`, 'i');
+                                                  
+                                //                     const openingTagMatch = sentence.match(openingTagRegex);
+                                //                     const closingTagMatch = sentence.match(closingTagRegex);
+                                                  
+                                //                     const startIndex = openingTagMatch ? openingTagMatch.index : -1;
+                                //                     const endIndex = closingTagMatch && closingTagMatch.index? closingTagMatch.index + closingTagMatch[0].length - 1 : -1;
+                                                  
+                                //                     return { startIndex, endIndex };
+                                //                 }
+                                //                 // const string = "<p></p><h2>What Are Your Chest Muscles?</h2><p></p>Before we dive into the 10 best chest exercises for building muscle, let’s take a quick look at the muscles that make up the chest"
+                                //                 const regex = /<[^>]*>([^<]*)<\/[^>]*>/g; 
+                                //                 data.text.split(".").forEach((sentence: any) => {
+                                //                     // Check if the sentence is not wrapped in HTML tags
+                                //                     const matches = sentence.match(regex);
+                                //                     if(matches) {
+                                //                         const h2Indeces = findTagIndices(sentence, 'h2')
+                                //                         const h1Indeces = findTagIndices(sentence, 'h1')
+                                //                         if(h2Indeces.endIndex > -1){
+                                //                             checkHtmlTagSentences = sentence.substr(h2Indeces.endIndex + 1)
+                                //                         } else if(h1Indeces.endIndex > -1) {
+                                //                             checkHtmlTagSentences = sentence.substr(h1Indeces.endIndex + 1)
+                                //                         } else {
+                                //                             checkHtmlTagSentences = null
+                                //                         } 
+                                //                         return checkHtmlTagSentences
+                                //                     }else {
+                                //                         return false
+                                //                     }
+                                //                     // return !matches || matches.length === 0;
+                                //                 });
+                                //             } else {
+                                //                 checkHtmlTagSentences = data.text
+                                //             } 
+                                //             if(checkHtmlTagSentences && checkHtmlTagSentences.length > 0) {
+                                //                 const similarity = natural.JaroWinklerDistance(checkHtmlTagSentences, idea.idea, true);
+                                //                 console.log(checkHtmlTagSentences,similarity, idea.idea, "similarity" )
+                                //                 if(similarity >= 0.7 && idea.article_id) {
+                                //                     filteredSource = refs?.findIndex((ref) => ref.id === idea.article_id)
+                                //                     // console.log(data, idea.idea, idea.article_id, filteredSource, similarity, "similiary")
+                                //                     return true
+                                //                 } else {
+                                //                     return false
+                                //                 }
+                                //             } else {
+                                //                 return false
+                                //             }
+                                //         }else {
+                                //             return false
+                                //         }
+                                //     })
+                                //     if((filteredSource || filteredSource === 0) && refs[filteredSource]) {
+                                //         newText = `${data.text} <a href="${refs[filteredSource]?.url}" target="_blank" title="${filteredSource + 1} - ${refs[filteredSource]?.url}">[${filteredSource + 1}]</a>` 
+                                //     }
+                                //     return newText.trim() + '. '
+                                // })
                                 // console.log(updatedContent, "updatedContentBefore")
-                                updatedContent = updatedContent?.map((content: string) => content.replace("..", "."))
-                                updatedContent = updatedContent?.join("")?.replace(". .", ".")
+                                // updatedContent = updatedContent?.map((content: string) => content.replace("..", "."))
+                                // updatedContent = updatedContent?.join("")?.replace(". .", ".")
                                 let references: any[] = []
                                 refUrls && refUrls.length && refUrls.forEach((data) => {
                                     references.push({
@@ -274,6 +350,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     })
                                 })
                                 usedIdeasArr = usedIdeasArr?.filter((text: string) => text.length > 5)
+                                console.log(updatedContent)
                                 return {
                                     published: false,
                                     published_date: false,
@@ -346,7 +423,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                 "tag": "P",
                                                 "attributes": {},
                                                 "children": [
-                                                    updatedContent?.length ? updatedContent : ideasText && ideasText.length ? ideasText : "Sorry, We were unable to generate the blog at this time, Please try again after some time or try with different topic."
+                                                    contentWithRef?.length ? contentWithRef : updatedContent?.length ? updatedContent : ideasText && ideasText.length ? ideasText : "Sorry, We were unable to generate the blog at this time, Please try again after some time or try with different topic."
                                                 ]
                                             },
                                             {
@@ -377,6 +454,15 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     }  
                                 }   
                             case "linkedin":
+                                console.log(newsLetter[key], "linkedin")
+                                newsLetter[key] = newsLetter[key].trim()
+                                let linkedinTitle = ""
+                                if(newsLetter[key]?.indexOf("Title: ") >= 0) {
+                                    linkedinTitle = (newsLetter[key].substr(newsLetter[key].indexOf("Title: "), newsLetter[key].indexOf("\n"))).replace("Title: ", "")
+                                }
+                                if(linkedinTitle && linkedinTitle.length > 1) {
+                                    newsLetter[key] = newsLetter[key].replace(newsLetter[key].substr(newsLetter[key].indexOf("Title: "), newsLetter[key].indexOf("\n")), "")
+                                }
                                 let linkedinContent = newsLetter[key]?.replace(/\n/g, "<p/>")
                                 const matchObj: any = {
                                     "<p/><p/>":"<p/>",
@@ -402,7 +488,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                             "tag": "STRONG",
                                                             "attributes": {},
                                                             "children": [
-                                                                title
+                                                                (linkedinTitle && linkedinTitle.length > 1 && linkedinTitle) || title
                                                             ]
                                                         }
                                                     ]
@@ -481,7 +567,8 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         return {
             updatedBlogs: updated,
             usedIdeasArr,
-            description
+            description,
+            title
         }
     }catch(e){
         throw e

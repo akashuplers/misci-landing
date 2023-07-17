@@ -462,7 +462,7 @@ export default function DashboardInsights({
           if (SHOW_CONTRIBUTION_MODAL) {
             setShowContributionModal(true);
           }
-          setOption(option);
+          setOption(prevState => prevState);
         },
         onError: (error) => {
           console.error("Credit Exhaust or any other error", error.message);
@@ -492,9 +492,9 @@ export default function DashboardInsights({
   }
 
   // wrtie a function to seelect all use ideas 
-  function handleSelectAllUsedIdeas() {
-    alert('running used ideas')
-  }
+  // function handleSelectAllUsedIdeas() {
+  //   alert('running used ideas')
+  // }
   function handleSelectAllUsedIdeas() {
     const updatedAllIdeas = ideas.map((el, elIndex) => {
       return {

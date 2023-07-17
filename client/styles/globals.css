@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100;200;300;400;500;600;700;800&display=swap');
+
 @layer base {
 
   ul,
@@ -11,7 +13,7 @@
 }
 
 @font-face {
-  font-family: 'Work Sans';
+  font-family: 'Heebo', sans-serif;
   src: url('/fonts/reg.ttf') format('ttf')
 }
 
@@ -22,8 +24,6 @@
 .sidebar-position-left #button.sidebar{
   top: 25% !important;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@300&display=swap');
 
 html {
   scroll-behavior: smooth;
@@ -109,7 +109,7 @@ html {
   font-family: 'Piazzolla', serif;
   font-family: 'Roboto', sans-serif;
   font-family: 'Zen Kurenaido', sans-serif;
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Heebo', sans-serif;;
 }
 
 /* width */
@@ -548,3 +548,136 @@ input[type=number] {
   border-radius: 50%;
   background: linear-gradient(97deg, #F2EDFE 0%, rgba(242, 237, 254, 0.00) 100%);
 }
+
+
+/* TOOL TIP */
+/* Custom properties */
+:root {
+  --tooltip-text-color: white;
+  --tooltip-background-color: black;
+  --tooltip-margin: 30px;
+  --tooltip-arrow-size: 6px;
+}
+
+/* Wrapping */
+.Tooltip-Wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+/* Absolute positioning */
+.Tooltip-Tip {
+  position: absolute;
+  border-radius: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px;
+  color: var(--tooltip-text-color);
+  background: var(--tooltip-background-color);
+  font-size: 14px;
+  font-family: sans-serif;
+  z-index: 100;
+  white-space: nowrap;
+  height: auto;
+}
+
+/* CSS border triangles */
+.Tooltip-Tip::before {
+  content: " ";
+  left: 50%;
+  border: solid transparent;
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+  border-width: var(--tooltip-arrow-size);
+  margin-left: calc(var(--tooltip-arrow-size) * -1);
+}
+
+/* Absolute positioning */
+.Tooltip-Tip.top {
+  top: calc(var(--tooltip-margin) * -1);
+}
+/* CSS border triangles */
+.Tooltip-Tip.top::before {
+  top: 100%;
+  border-top-color: var(--tooltip-background-color);
+}
+
+/* Absolute positioning */
+.Tooltip-Tip.right {
+  left: calc(100% + var(--tooltip-margin));
+  top: 50%;
+  transform: translateX(0) translateY(-50%);
+}
+/* CSS border triangles */
+.Tooltip-Tip.right::before {
+  left: calc(var(--tooltip-arrow-size) * -1);
+  top: 50%;
+  transform: translateX(0) translateY(-50%);
+  border-right-color: var(--tooltip-background-color);
+}
+
+/* Absolute positioning */
+.Tooltip-Tip.bottom {
+  bottom: calc(var(--tooltip-margin) * -1);
+}
+/* CSS border triangles */
+.Tooltip-Tip.bottom::before {
+  bottom: 100%;
+  border-bottom-color: var(--tooltip-background-color);
+}
+
+/* Absolute positioning */
+.Tooltip-Tip.left {
+  left: auto;
+  right: calc(100% + var(--tooltip-margin));
+  top: 50%;
+  transform: translateX(0) translateY(-50%);
+}
+/* CSS border triangles */
+.Tooltip-Tip.left::before {
+  left: auto;
+  right: calc(var(--tooltip-arrow-size) * -2);
+  top: 50%;
+  transform: translateX(0) translateY(-50%);
+  border-left-color: var(--tooltip-background-color);
+}
+
+/* 
+.css-1p3m7a8-multiValue {
+  background-color: transparent !important;
+  border-radius: 1rem !important;
+  border: 1px solid #C6CED6 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0.25rem;
+}
+
+.css-12a83d4-Multi1Remove {
+  height: 100% !important;
+  color: #000000 !important;
+  border-radius: 1rem !important;
+}
+
+.css-12a83d4-MultiValueRemove {
+  height: 24px !important;
+  width: 24px !important;
+  padding: 4px !important;
+  background-color: #C6CED6 !important;
+  color: #000000 !important;
+  border-radius: 1rem !important;
+}
+ 
+.css-3w2yfm-ValueContainer {
+  gap: 6px !important;
+  overflow-x: scroll !important;
+  flex-wrap: nowrap !important;
+}
+.css-13cymwt-control{
+  border: unset !important;
+}
+.css-1jqq78o-placeholder{
+  text-align: left !important;
+} */

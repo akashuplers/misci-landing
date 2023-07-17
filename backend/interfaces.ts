@@ -1,6 +1,9 @@
 export interface GenerateBlogMutationArg {
     keyword: String;
     user_id: string;
+    article_ids: string[]
+    keywords: string[];
+    tones: string[];
 }
 
 export interface ReGenerateBlogMutationArg {

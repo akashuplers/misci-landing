@@ -10,6 +10,7 @@ const router = express.Router()
 const multer = require("multer");
 const inMemoryStorage = multer.memoryStorage();
 const uploadStrategy = multer({ storage: inMemoryStorage }).single('file');
+const mulitUploadStrategy = multer({ storage: inMemoryStorage });
 
 router.post('/url', authMiddleware, async (req: any, res: any) => {
     let startRequest = new Date()
@@ -306,6 +307,159 @@ router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any
         return res.status(400).send({
             type: "ERROR",
             message: "Lille is facing difficulty in content extraction from the file. It is trying to understand the issue to rectify. Please try some other file."
+        })
+    }
+})
+
+router.post('/files/extract-keywords', [mulitUploadStrategy.array('files')], async (req: any, res: any) => {
+    let startRequest = new Date()
+    const db = req.app.get('db')
+    const files = req.files
+    const {userId} = req.body
+    if(!userId) res.status(400).send({
+        type: "ERROR",
+        message: "No user id provided"
+    })
+    if(!files || !files.length) {
+        return res.status(400).send({
+            type: "ERROR",
+            message: "No files provied"
+        })
+    }
+    console.log(files, "files")
+    let pythonStart = new Date()
+    let unprocessedFiles: string[] = []
+    const articleIds = await (
+        Promise.all(
+            files.map(async (file: any) => {
+                try {
+                    return await new Python({userId}).uploadFile({file})
+                }catch(e: any){
+                    unprocessedFiles.push(file.originalname)
+                }
+            })
+        )
+    )
+
+    let pythonEnd = new Date()
+    let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
+    console.log(articleIds)
+    let keywordsData: {
+        id: string;
+        keywords: string[];
+        url: string;
+        source: string;
+    }[] = []
+    for (let index = 0; index < articleIds.length; index++) {
+        const id = articleIds[index];
+        if(id) {
+            const article = await fetchArticles({db, id})
+            keywordsData.push({
+                id,
+                url: article._source.orig_url,
+                source: article._source.title,
+                keywords: article._source.driver
+            })
+        }
+    }
+    if(keywordsData && keywordsData.length) {
+        if(unprocessedFiles && unprocessedFiles?.length && unprocessedFiles.length !== files.length) {
+            return res.status(200).send({
+                type: "SUCCESS",
+                data: keywordsData,
+                unprocessedFiles
+            })    
+        }
+        return res.status(200).send({
+            type: "SUCCESS",
+            data: keywordsData,
+        })
+    } else if(unprocessedFiles && unprocessedFiles?.length && unprocessedFiles.length === files.length) {
+        return res.status(400).send({
+            type: "ERROR",
+            message: "Host has denied the extraction from this URL. Please try again or try some other URL.",
+            unprocessedFiles
+        })    
+    } else {
+        return res.status(400).send({
+            type: "SUCCESS",
+            data: "No keywords found!!",
+            pythonRespTime
+        })
+    }
+})
+
+router.post('/urls/extract-keywords', async (req: any, res: any) => {
+    let startRequest = new Date()
+    const db = req.app.get('db')
+    const {urls, userId} = req.body
+    if(!userId) res.status(400).send({
+        type: "ERROR",
+        message: "No user id provided!"
+    })
+    if(!urls || !urls.length) {
+        return res.status(400).send({
+            type: "ERROR",
+            message: "No urls provied!"
+        })
+    }
+    let pythonStart = new Date()
+    let unprocessedUrls: string[] = []
+    const articleIds = await (
+        Promise.all(
+            urls.map(async (url: string) => {
+                try {
+                    return await new Python({userId}).uploadUrl({url})
+                }catch(e: any){
+                    unprocessedUrls.push(url)
+                }
+            })
+        )
+    )
+    let pythonEnd = new Date()
+    let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
+    console.log(articleIds)
+    let keywordsData: {
+        id: string;
+        keywords: string[];
+        url: string;
+        source: string;
+    }[] = []
+    for (let index = 0; index < articleIds.length; index++) {
+        const id = articleIds[index];
+        if(id) {
+            const article = await fetchArticles({db, id})
+            keywordsData.push({
+                id,
+                url: article._source.orig_url,
+                source: article._source.source.name,
+                keywords: article._source.driver
+            })
+        }
+    }
+    if(keywordsData && keywordsData.length) {
+        if(unprocessedUrls && unprocessedUrls?.length && unprocessedUrls.length !== urls.length) {
+            return res.status(200).send({
+                type: "SUCCESS",
+                data: keywordsData,
+                unprocessedUrls
+            })    
+        }
+        return res.status(200).send({
+            type: "SUCCESS",
+            data: keywordsData,
+        })
+    } else if(unprocessedUrls && unprocessedUrls?.length && unprocessedUrls.length === urls.length) {
+        return res.status(400).send({
+            type: "ERROR",
+            message: "Host has denied the extraction from this URL. Please try again or try some other URL.",
+            unprocessedUrls
+        })    
+    } else {
+        return res.status(400).send({
+            type: "SUCCESS",
+            data: "No keywords found!!",
+            pythonRespTime
         })
     }
 })
