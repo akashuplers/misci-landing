@@ -92,20 +92,35 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         const key = keys[index];
         try {
             if(key === "wordpress") {
-                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? `Please act as an expert writer and using the below pasted ideas write a atleast 1200 word blog post ${title && title.length ? `for "${title}"` : ""} with inputs as follows:
-                ${tones?.length ? tones.join('","') : `Tone is "Authoritative, informative, Persuasive"`}
-                    Limit is "1500 words"
-                    ${keywords.length ? `Use these keywords: "${keywords.join('","')}"`: ``}
-                    Donot repeat sentence
-                    Strictly Highlight the H1 & H2 using html tags
-                    Provide the conclusion at the end
-                    Strictly use all these Ideas for writing blog: ${text}` : `Please act as an expert writer and using the below pasted ideas write a atleast 1200 word blog post ${title && title.length ? `for "${title}"` : ""} strictly with inputs as follows:
+                // const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? `Please act as an expert writer and using the below pasted ideas write a atleast 1200 word blog post ${title && title.length ? `for "${title}"` : ""} with inputs as follows:
+                // ${tones?.length ? tones.join('","') : `Tone is "Authoritative, informative, Persuasive"`}
+                //     Limit is "1500 words"
+                //     ${keywords.length ? `Use these keywords: "${keywords.join('","')}"`: ``}
+                //     Donot repeat sentence
+                //     Strictly Highlight the H1 & H2 using html tags
+                //     Provide the conclusion at the end
+                //     Strictly use all these Ideas for writing blog: ${text}` : `Please act as an expert writer and using the below pasted ideas write a atleast 1200 word blog post ${title && title.length ? `for "${title}"` : ""} strictly with inputs as follows:
+                //     ${tones?.length ? tones.join('","') : `Tone is "Authoritative, informative, Persuasive"`}
+                //     Limit is "1500 words"
+                //     ${keywords.length ? `Use these keywords: "${keywords.join('","')}"`: ``}
+                //     Donot repeat sentence
+                //     Strictly Highlight the H1 & H2 using html tags
+                //     Provide the conclusion at the end`}`, db}).textCompletion(chatgptApis.timeout)
+                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? `Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
                     ${tones?.length ? tones.join('","') : `Tone is "Authoritative, informative, Persuasive"`}
-                    Limit is "1500 words"
                     ${keywords.length ? `Use these keywords: "${keywords.join('","')}"`: ``}
-                    Donot repeat sentence
-                    Strictly Highlight the H1 & H2 using html tags
-                    Provide the conclusion at the end`}`, db}).textCompletion(chatgptApis.timeout)
+                    Limit is "1500 words"
+                    Highlight the H1 & H2 html tags
+                    Provide the conclusion at the end
+                    ${title && title.length ? `Topic is ${title}`: "" }
+                    Use these Ideas ${text}` : `Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
+                    ${tones?.length ? tones.join('","') : `Tone is "Authoritative, informative, Persuasive"`}
+                    ${keywords.length ? `Use these keywords: "${keywords.join('","')}"`: ``}
+                    Limit is "1500 words"
+                    Highlight the H1 & H2 html tags
+                    Provide the conclusion at the end
+                    ${title && title.length ? `Topic is ${title}`: "" }`}`, db}).textCompletion(chatgptApis.timeout)
+                newsLetter = {...newsLetter, [key]: chatGPTText}
                 console.log(chatGPTText, "blog")    
                 newsLetter = {...newsLetter, [key]: chatGPTText}
             } else {
