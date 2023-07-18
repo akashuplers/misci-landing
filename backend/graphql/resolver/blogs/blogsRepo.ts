@@ -119,7 +119,6 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                     ${keywords.length ? `'Use these keywords: "${keywords.join('","')}'" \n 'Minimum limit is "1000 words"'`: `Limit is "1000 words"`}
                     "Highlight the H1 & H2 html tags"
                     "Provide the conclusion at the end"`}`, db}).textCompletion(chatgptApis.timeout)
-                newsLetter = {...newsLetter, [key]: chatGPTText}
                 console.log(chatGPTText, "blog")    
                 newsLetter = {...newsLetter, [key]: chatGPTText}
             } else {
