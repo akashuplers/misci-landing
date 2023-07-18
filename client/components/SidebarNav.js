@@ -588,7 +588,6 @@ export default function Sidebar() {
                       >
                         <div className="flex p-2 items-center">
                           <LocalCreditCardIcon />
-                          {console.log("creditLeft", creditLeft)}
                           {meeData?.me?.totalCredits - creditLeft}/
                           {meeData?.me?.totalCredits} Credits used
                         </div>
