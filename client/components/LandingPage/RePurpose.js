@@ -18,12 +18,13 @@ function generateRandomId() {
 
   return randomId;
 }
-const createOption = (label, id,index) => ({
+export const createOption = (label, id,index) => ({
   label,
   value: label,
   selected: false,
   id: id,
-  index: index
+  index: index,
+  type: 'url'
 });
 
 export default function RePurpose({value, setValue, setShowRepourposeError}){

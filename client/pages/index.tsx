@@ -19,12 +19,14 @@ import Layout from "../components/Layout";
 import LoaderPlane from "../components/LoaderPlane";
 import TrialEndedModal from "../components/TrialEndedModal";
 import { meeAPI } from "../graphql/querys/mee";
-import { extractKeywordsAndIds, getDateMonthYear, getIdFromUniqueName, isMonthAfterJune } from "../helpers/helper";
+import { extractKeywordsAndIds, getDateMonthYear, getIdFromUniqueName, isMonthAfterJune, keywordsUniqueName, uploadAndExtractKeywords } from "../helpers/helper";
 import OTPModal from "../modals/OTPModal";
 import PreferencesModal from "../modals/PreferencesModal";
 import useStore from "../store/store";
 import { Tab } from "@headlessui/react";
 import ReactLoading from "react-loading";
+import { CloudArrowUpIcon } from "@heroicons/react/24/outline";
+import { checkFileFormatAndSize } from "@/components/DashboardInsights";
 
 const PAYMENT_PATH = "/?payment=true";
 const TONES = [
@@ -63,6 +65,8 @@ export const TYPES_OF_GENERATE = {
 export const BASE_PRICE = 100;
 
 export default function Home() {
+  var getUserId;
+  var getTempId;
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const updateAuthentication = useStore((state) => state.updateAuthentication);
   // check if url container ?payment=true
@@ -76,6 +80,10 @@ export default function Home() {
   const [keywordsMap, setKeywordsMap] = useState({});
   const [currentTabIndex, setCurrentTabIndex] = useState(0);
   const [repurposeTones, setRepurposeTones] = useState(newTones);
+  const [fileInput, setFileInput] = useState([]);
+  const [fileValid, setFileValid] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [fileInputNames, setFileInputNames] = useState([]);
   const handleChipClick = (index) => {
     const idOfKeyword = getIdFromUniqueName(keywordsOFBlogs[index].id);
 
@@ -155,7 +163,107 @@ export default function Home() {
     handleGenerate(options);
     setLoadingForKeywords(false);
   }
-
+  async function uploadFilesForKeywords() {
+    setLoadingForKeywords(true);
+    console.log(fileInput.files);
+    if (fileInput.files.length > 0) {
+      uploadAndExtractKeywords(selectedFiles, '640ececf2369c047dbe0b8ff')
+        .then((response) => {
+          console.log('Response:', response);
+          // Handle the response here
+          const { data } = response;
+          const keyowordsForBlog =[];
+          data.forEach((data) => {
+            data.keywords.forEach((keyword) => {
+              const keywordObj = {
+                id: data.id,
+                text: keyword.toLowerCase().charAt(0).toUpperCase() + keyword.toLowerCase().slice(1),
+                selected: false,
+                source: keyowordsForBlog.some((keywordObj) => keywordObj.text === keyword) ? data.source ? data.source.toLowerCase().charAt(0).toUpperCase() + data.source.toLowerCase().slice(1) : '' : null,
+                realSource: data.source,
+                url: data.url,
+                articleId: data.id,
+              }
+              if(keywordObj.source!==null && item.source!==undefined && item.source!==''){
+                const keywordObjFromKeywords = keyowordsForBlog.find((keywordObj) => keywordObj.text === keyword);
+                if(keywordObjFromKeywords!==undefined){
+                  keywordObjFromKeywords.source = keywordObj.realSource ? keywordObj.realSource.toLowerCase().charAt(0).toUpperCase() + keywordObj.realSource.toLowerCase().slice(1) : '';
+                }
+              }
+              keyowordsForBlog.push(keywordObj);
+            })
+          });
+          // const prevKeywords = [...keywordsOFBlogs];
+          // // const updatedKeywords = [...prevKeywords, ...keyowordsForBlog];
+          // const processedKeywords = processDataForKeywords(updatedKeywords);
+          setkeywordsOfBlogs(
+            (prev) => {
+              const prevKeywords = [...prev];
+              const updatedKeywords = [...prevKeywords, ...keyowordsForBlog];
+              const processedKeywords = processDataForKeywords(updatedKeywords);
+              return processedKeywords;
+            }
+          );
+        })
+        .catch((error) => {
+          
+          // Handle errors here
+        });
+    } else {
+      toast.error('Please select a file');
+    }
+    setLoadingForKeywords(false);
+  }
+  useEffect(()=>{
+    console.log('keywordsOFBlogs');
+    console.log(keywordsOFBlogs);
+  },[keywordsOFBlogs]);
+  function processDataForKeywords(data){
+    const keywordsMap = {};
+    data.forEach((item) => {
+      keywordsMap[item.text] = keywordsMap[item.text] ? keywordsMap[item.text] + 1 : 1; 
+    });
+    data.forEach((item) => {
+      if(keywordsMap[item.text] > 1){
+        item.source = item.realSource ? item.realSource.toLowerCase().charAt(0).toUpperCase() + item.realSource.toLowerCase().slice(1) : '';
+       }
+    });
+    return data;
+  }
+  function handleGenerateClick() {
+    setLoadingForKeywords(true);
+    const countByType = blogLinks.reduce((acc, link) => {
+      if (link.type === 'file') {
+        acc.files++;
+      } else if (link.type === 'url') {
+        acc.urls++;
+      }
+      return acc;
+    }, { files: 0, urls: 0 });// Replace `keywords` with your actual keywords array/state
+    // Replace `fileInput` with your actual file input state or variable
+    console.log('countByType');
+    console.log(countByType);
+    if (countByType.files > 0 && countByType.urls > 0) {
+      // Call both methods when both keywords and files are greater than zero
+      uploadExtractKeywords();
+      uploadFilesForKeywords();
+    } else if (countByType.urls > 0) {
+      // Call only the keywords method when there are keywords but no files
+      uploadExtractKeywords();
+    } else if (countByType.files > 0) {
+      // Call only the files method when there are files but no keywords
+      uploadFilesForKeywords();
+    } else {
+      // Call the default method when both keywords and files are zero
+      uploadExtractKeywords();
+    }
+  }
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      getUserId = localStorage.getItem("userId");
+      getTempId = localStorage.getItem("tempId");
+    }
+  }, []);
   function uploadExtractKeywords() {
     setLoadingForKeywords(true);
     const getToken = localStorage.getItem("token");
@@ -168,7 +276,9 @@ export default function Home() {
       getTempId = localStorage.getItem("tempId");
     }
     var raw = JSON.stringify({
-      "urls": blogLinks.map(url => url.value),
+      "urls": blogLinks
+      .filter((url) => url.type === 'url')
+      .map((url) => url.value),
       "userId": getToken ? getUserId : getTempId
     });
     var myHeaders = new Headers();
@@ -194,13 +304,17 @@ export default function Home() {
           return;
         }
         const doesUnprocessedUrlsExist = result?.unprocessedUrls && result.unprocessedUrls.length > 0;
-        if(doesUnprocessedUrlsExist) {
+        if (doesUnprocessedUrlsExist) {
           toast.warn(`Success but we could not resolve ${result.unprocessedUrls.length>1 ? "these URLs" : "this URL" } : ` + result.unprocessedUrls.join(', '));
         }
         const { keywords,
           keywordIdMap,
           articleIds, } = extractKeywordsAndIds(result);
-        setkeywordsOfBlogs(keywords);
+        // setkeywordsOfBlogs(prev => [...prev, ...keywords]);
+        const prevKeywords = [...keywordsOFBlogs];
+        const updatedKeywords = [...prevKeywords, ...keywords];
+        const processedKeywords = processDataForKeywords(updatedKeywords);
+        setkeywordsOfBlogs(processedKeywords);
         setKeywordsMap(keywordIdMap);
       })
       .catch(error => {
@@ -223,6 +337,7 @@ export default function Home() {
   const router = useRouter();
   const setKeywordInStore = useStore((state) => state.setKeyword);
   const [index, setIndex] = React.useState(0);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   useEffect(() => {
     if (router.asPath === PAYMENT_PATH) {
@@ -238,7 +353,7 @@ export default function Home() {
             Authorization: "Bearer " + localStorage.getItem("token"),
           },
           body: JSON.stringify(userContribution),
-        };s
+        }; s
         fetch(SAVE_USER_SUPPORT_URL, requestOptions)
           .then((response) => {
           })
@@ -614,13 +729,13 @@ export default function Home() {
                 </div>
 
                 <Tab.Group
-                defaultIndex={currentTabIndex}
+                  defaultIndex={currentTabIndex}
                 >
                   <Tab.List className="p-2 mt-10 bg-slate-50 h-14 focus:outline-none rounded--xl border border-neutral-400 text-gray-600 border-opacity-25 justify-start items-center gap-3 inline-flex rounded-xl">
                     <Tab>
                       {({ selected }) => (
-                        <div className={`rounded-xl h-10 px-2 focus:outline-none justify-center items-center gap-2 inline-flex ${selected ? 'bg-white border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`} 
-                        onClick={() => setCurrentTabIndex(0)}
+                        <div className={`rounded-xl h-10 px-2 focus:outline-none justify-center items-center gap-2 inline-flex ${selected ? 'bg-white border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`}
+                          onClick={() => setCurrentTabIndex(0)}
                         >
                           <span className="">
                             {" "}
@@ -645,8 +760,8 @@ export default function Home() {
                     </Tab>
                     <Tab>
                       {({ selected }) => (
-                        <div className={`rounded-xl h-10 focus:outline-none focus:border-transparent focus-visible:hidden justify-center items-center gap-2 px-2 inline-flex ${selected ? 'bg-white  border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`} 
-                        onClick={() => {setCurrentTabIndex(1)}}
+                        <div className={`rounded-xl h-10 focus:outline-none focus:border-transparent focus-visible:hidden justify-center items-center gap-2 px-2 inline-flex ${selected ? 'bg-white  border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`}
+                          onClick={() => { setCurrentTabIndex(1) }}
                         >
                           <span>
                             <svg
@@ -693,23 +808,58 @@ export default function Home() {
                             <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
                           </Tooltip>
                         </div>
-                        <div className="w-full h-full justify-center items-center gap-2.5 inline-flex px-2"> 
-                        <div className="relative w-full min-h-[60px] bg-white rounded-[10px] flex items-center px-2  gap-2.5 border border-gray-600">
-                          <RePurpose value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
-                        </div>
-                        {
-                          keywordsOFBlogs.length > 0 && 
-                          <button className="h-5 px-4 py-6 flex items-center justify-center bg-indigo-600 rounded-lg text-white text-sm font-medium focus:outline-none"
-                          onClick={
-                            () => {
-                              setkeywordsOfBlogs([]);
-                              setBlogLinks([]);
-                            } 
+                        <div className="w-full h-full justify-center items-center gap-2.5 inline-flex px-2">
+                          <div className="relative w-full min-h-[60px] bg-white rounded-[10px] flex items-center px-2  gap-2.5 border border-gray-600">
+                            <RePurpose value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
+
+                            <label className="w-[100.81px] h-10 flex justify-around cursor-pointer rounded-lg border border-indigo-600 items-center gap-2.5" htmlFor="refileupload">
+                              <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
+                              <div className="justify-center items-center gap-2 inline-flex">
+                                <div className="text-indigo-600 text-sm font-normal">Upload</div>
+                              </div>
+                            </label>
+                            <input
+                              id="refileupload"
+                              type="file"
+                              multiple={true}
+                              accept=""
+                              max-size="500000"
+                              onChange={(e) => {
+                                const fileInput = e.target;
+                                setFileInput(fileInput);
+                                setSelectedFile(e.target.files[0]);
+                                const filesArray = Array.from(e.target.files);
+                                setSelectedFiles(filesArray);
+                                if (fileInput.files && fileInput.files.length > 0) {
+                                  const newLinks = filesArray.map((file, index) => ({
+                                    label: file.name,
+                                    value: file.name,
+                                    selected: false,
+                                    id: file.name,
+                                    index: blogLinks.length + index + 1,
+                                    type: 'file',
+                                  }));
+                                  setBlogLinks([...blogLinks, ...newLinks]);
+                                } else {
+                                  toast.error('File not uploaded');
+                                }                            
+                              }}
+                              className="hidden"
+                            />
+                          </div>
+                          {
+                            keywordsOFBlogs.length > 0 &&
+                            <button className="h-5 px-4 py-6 flex items-center justify-center bg-indigo-600 rounded-lg text-white text-sm font-medium focus:outline-none"
+                              onClick={
+                                () => {
+                                  setkeywordsOfBlogs([]);
+                                  setBlogLinks([]);
+                                }
+                              }
+                            >
+                              Reset
+                            </button>
                           }
-                          >
-                            Reset
-                          </button>
-                        }
                         </div>
                         <div className="w-full h-6 justify-start items-center gap-1.5 inline-flex">
                           <span className={`text-center  text-sm font-normal ${showRepourposeError ? 'text-red-500' : 'text-slate-500'}`}>You can add Max. 3 URLs. Use comma to add multiple URLs, or press enter to add new URL.
@@ -717,7 +867,7 @@ export default function Home() {
                         </div>
                         <div className='flex items-center flex-col mt-5'>
                           {keywordsOFBlogs.length > 0 && <div className="flex items-center gap-1.5" >
-                            <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="These keywords is used to generate Blog article using lille's ai and give you high ranking SEO blog" direction='bottom' className='max-w-[100px]'>
+                            <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="These keywords are used to generate Blog article using lille's ai and give you high ranking SEO blog" direction='bottom' className='max-w-[100px]'>
                               <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
                             </Tooltip></div>}
                           <div className='flex flex-wrap justify-center gap-2 mt-5'>
@@ -750,7 +900,7 @@ export default function Home() {
                               <div className='flex flex-wrap justify-center gap-2 mt-5'>
                                 {newTones.length > 0 && newTones.map((tone, index) => (
                                   <div key={index} className="relative">
-                                    <Chip text={tone.text} handleClick={handleToneClick} index={index} selected={tone.selected} wholeData={null}/>
+                                    <Chip text={tone.text} handleClick={handleToneClick} index={index} selected={tone.selected} wholeData={null} />
                                   </div>
                                 ))}
                               </div>
@@ -783,7 +933,7 @@ export default function Home() {
                         " onClick={
                             keywordsOFBlogs.length > 0 ?
                               handleRepourpose :
-                              uploadExtractKeywords
+                              handleGenerateClick
                           }
                           disabled={blogLinks.length === 0 || loadingForKeywords}
                         >
@@ -958,9 +1108,9 @@ const Chip = ({ selected, text, handleClick, index, wholeData }) => {
   return <button className={`h-8 px-[18px] py-1.5  rounded-full justify-start items-start gap-2.5 inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick(index)}>
     <span className=" text-sm font-normal leading-tight">{text}</span>
     {
-      wholeData !== null  && wholeData.source!==null && wholeData.source!=="" &&  <Tooltip content={"This keyword is coming from "+ wholeData.source} direction="top" className="text-xs">
-      <InformationCircleIcon className="w-4 h-4 text-gray-500 hover:text-gray-700 active:text-gray-700 focus:text-gray-700" />
-    </Tooltip>
+      wholeData !== null && wholeData.source !== null && wholeData.source !== "" && <Tooltip content={"This keyword is coming from " + wholeData.source} direction="top" className="text-xs">
+        <InformationCircleIcon className="w-4 h-4 text-gray-500 hover:text-gray-700 active:text-gray-700 focus:text-gray-700" />
+      </Tooltip>
     }
   </button>
 };
