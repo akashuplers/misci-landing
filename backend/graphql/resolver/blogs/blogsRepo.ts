@@ -113,7 +113,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                     Highlight the H1 & H2 html tags
                     Provide the conclusion at the end
                     ${title && title.length ? `Topic is ${title}`: "" }
-                    Use these Ideas ${text}` : `Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
+                    Use these Ideas: ${text}` : `Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
                     ${tones?.length ? tones.join('","') : `Tone is "Authoritative, informative, Persuasive"`}
                     ${keywords.length ? `Use these keywords: "${keywords.join('","')}"`: ``}
                     Limit is "1500 words"
