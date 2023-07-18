@@ -106,20 +106,19 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                 //     Donot repeat sentence
                 //     Strictly Highlight the H1 & H2 using html tags
                 //     Provide the conclusion at the end`}`, db}).textCompletion(chatgptApis.timeout)
-                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? `Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
-                    ${tones?.length ? tones.join('","') : `Tone is "Authoritative, informative, Persuasive"`}
-                    ${keywords.length ? `Use these keywords: "${keywords.join('","')}"`: ``}
-                    Limit is "1500 words"
-                    Highlight the H1 & H2 html tags
-                    Provide the conclusion at the end
-                    ${title && title.length ? `Topic is ${title}`: "" }
-                    Use these Ideas: ${text}` : `Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
-                    ${tones?.length ? tones.join('","') : `Tone is "Authoritative, informative, Persuasive"`}
-                    ${keywords.length ? `Use these keywords: "${keywords.join('","')}"`: ``}
-                    Limit is "1500 words"
-                    Highlight the H1 & H2 html tags
-                    Provide the conclusion at the end
-                    ${title && title.length ? `Topic is ${title}`: "" }`}`, db}).textCompletion(chatgptApis.timeout)
+                const gptPrompt = `Please forget old prompt and act as an new expert writer and using the below pasted ideas write a blog with inputs as follows:
+                ${title && title.length ? `'Topic is "${title}"'`: tones?.length ? tones.join('","') : `'Tone is "Authoritative, informative, Persuasive"'` }
+                ${keywords.length ? `'Use these keywords: "${keywords.join('","')}'" \n 'Minimum limit is "1000 words"'`: `'Minimum limit is "1000 words"'`}
+                'Highlight the H1 & H2 html tags'
+                'Provide the conclusion at the end'
+                'Stricly use all these points': ${text}`
+                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? gptPrompt : 
+                    `Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
+                    ${title && title.length ? `'Topic is "${title}"'`: "" }
+                    ${tones?.length ? tones.join('","') : `'Tone is "Authoritative, informative, Persuasive"'`}
+                    ${keywords.length ? `'Use these keywords: "${keywords.join('","')}'" \n 'Minimum limit is "1000 words"'`: `Limit is "1000 words"`}
+                    "Highlight the H1 & H2 html tags"
+                    "Provide the conclusion at the end"`}`, db}).textCompletion(chatgptApis.timeout)
                 newsLetter = {...newsLetter, [key]: chatGPTText}
                 console.log(chatGPTText, "blog")    
                 newsLetter = {...newsLetter, [key]: chatGPTText}
@@ -179,7 +178,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
             throw e
         }
     }
-    if(newsLetter['title']) {
+    if(newsLetter['title'] && (!title || !title?.length)) {
         title = newsLetter['title']
         title = title?.replace(/"|\n/gi, function(matched: any){
             return mapObj[matched];
