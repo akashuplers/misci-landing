@@ -258,21 +258,27 @@ export const getIdFromUniqueName = (uniqueName) => {
   return uniqueName.split(ID_KEYWORD_SEPARATOR)[0];
 }
 
+export const uploadAndExtractKeywords = async (files, userId) => {
+  console.log(files, userId);      
+  if (!files) {
+    throw new Error('No file provided.');
+  }
 
-export function uploadAndExtractKeywords(fileInput, userId) {
-  // Create a new FormData and append the file and userId to it
-  var formdata = new FormData();
-  formdata.append("files", fileInput.files[0], '[PROXY]');
-  formdata.append("userId", userId);
-  var requestOptions = {
-    method: 'POST',
-    body: formdata,
-    headers: {
-      "content-type": "multipart/form-data"
-    }
-  };
-  // Make the fetch API call and return the response
-  return fetch(API_BASE_PATH + API_ROUTES.EXTRACT_KEYWORDS_FROM_FILE, requestOptions)
-    .then(response => response.text())
-    .catch(error => console.log('error', error));
-}
+  const formData = new FormData();
+  files.forEach((file, index) => {
+    formData.append(`files`, file);
+  });
+  formData.append('userId', userId);
+
+  const URL = API_BASE_PATH + API_ROUTES.EXTRACT_KEYWORDS_FROM_FILE;
+  try {
+    const response = await axios.post(URL, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error('Error uploading file:', error);
+  }
+};
