@@ -1,4 +1,4 @@
-import { API_BASE_PATH, LINKEDIN_CLIENT_ID } from "@/constants/apiEndpoints";
+import { API_BASE_PATH, API_ROUTES, LINKEDIN_CLIENT_ID } from "@/constants/apiEndpoints";
 import axios from "axios";
 
 export const htmlToJson = (htmlString, imageURL) => {
@@ -257,3 +257,28 @@ export const keywordsUniqueName = (id, keyword) => {
 export const getIdFromUniqueName = (uniqueName) => {
   return uniqueName.split(ID_KEYWORD_SEPARATOR)[0];
 }
+
+export const uploadAndExtractKeywords = async (files, userId) => {
+  console.log(files, userId);      
+  if (!files) {
+    throw new Error('No file provided.');
+  }
+
+  const formData = new FormData();
+  files.forEach((file, index) => {
+    formData.append(`files`, file);
+  });
+  formData.append('userId', userId);
+
+  const URL = API_BASE_PATH + API_ROUTES.EXTRACT_KEYWORDS_FROM_FILE;
+  try {
+    const response = await axios.post(URL, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error('Error uploading file:', error);
+  }
+};
