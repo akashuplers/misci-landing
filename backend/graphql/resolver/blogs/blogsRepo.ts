@@ -111,7 +111,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                 ${keywords.length ? `'Use these keywords: "${keywords.join('","')}'" \n 'Minimum limit is "1000 words"'`: `'Minimum limit is "1000 words"'`}
                 'Highlight the H1 & H2 html tags'
                 'Provide the conclusion at the end'
-                'Stricly use all these points': ${text}`
+                'Strictly use all these points': ${text}`
                 const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? gptPrompt : 
                     `Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
                     ${title && title.length ? `'Topic is "${title}"'`: "" }
