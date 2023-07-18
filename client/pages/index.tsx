@@ -78,11 +78,11 @@ export default function Home() {
   const [keywordsOFBlogs, setkeywordsOfBlogs] = useState([]);
   const [articleIds, setArticleIds] = useState([]);
   const [keywordsMap, setKeywordsMap] = useState({});
-  const [currentTabIndex, setCurrentTabIndex] = useState(1);
+  const [currentTabIndex, setCurrentTabIndex] = useState(0);
   const [repurposeTones, setRepurposeTones] = useState(newTones);
   const [fileInput, setFileInput] = useState([]);
   const [fileValid, setFileValid] = useState(false);
-
+  const [selectedFile, setSelectedFile] = useState(null);
   const [fileInputNames, setFileInputNames] = useState([]);
   const handleChipClick = (index) => {
     const idOfKeyword = getIdFromUniqueName(keywordsOFBlogs[index].id);
@@ -164,73 +164,49 @@ export default function Home() {
     setLoadingForKeywords(false);
   }
   async function uploadFilesForKeywords() {
-    alert('FIles called');
     setLoadingForKeywords(true);
     console.log(fileInput.files);
     if (fileInput.files.length > 0) {
-      uploadAndExtractKeywords(fileInput, '640ececf2369c047dbe0b8ff')
+      uploadAndExtractKeywords(selectedFiles, '640ececf2369c047dbe0b8ff')
         .then((response) => {
           console.log('Response:', response);
           // Handle the response here
           const { data } = response;
-          const keyowordsForBlog = []
+          const keyowordsForBlog =[];
           data.forEach((data) => {
             data.keywords.forEach((keyword) => {
               const keywordObj = {
                 id: data.id,
                 text: keyword.toLowerCase().charAt(0).toUpperCase() + keyword.toLowerCase().slice(1),
                 selected: false,
-                source: data.source ? data.source.toLowerCase().charAt(0).toUpperCase() + data.source.toLowerCase().slice(1) : "",
+                source: keyowordsForBlog.some((keywordObj) => keywordObj.text === keyword) ? data.source ? data.source.toLowerCase().charAt(0).toUpperCase() + data.source.toLowerCase().slice(1) : '' : null,
                 realSource: data.source,
                 url: data.url,
                 articleId: data.id,
               }
+              if(keywordObj.source!==null && item.source!==undefined && item.source!==''){
+                const keywordObjFromKeywords = keyowordsForBlog.find((keywordObj) => keywordObj.text === keyword);
+                if(keywordObjFromKeywords!==undefined){
+                  keywordObjFromKeywords.source = keywordObj.realSource ? keywordObj.realSource.toLowerCase().charAt(0).toUpperCase() + keywordObj.realSource.toLowerCase().slice(1) : '';
+                }
+              }
               keyowordsForBlog.push(keywordObj);
             })
-          })
-          setkeywordsOfBlogs(keyowordsForBlog);
+          });
+          // const prevKeywords = [...keywordsOFBlogs];
+          // // const updatedKeywords = [...prevKeywords, ...keyowordsForBlog];
+          // const processedKeywords = processDataForKeywords(updatedKeywords);
+          setkeywordsOfBlogs(
+            (prev) => {
+              const prevKeywords = [...prev];
+              const updatedKeywords = [...prevKeywords, ...keyowordsForBlog];
+              const processedKeywords = processDataForKeywords(updatedKeywords);
+              return processedKeywords;
+            }
+          );
         })
         .catch((error) => {
-          console.log('Error:', error);
-          const sampleResponse = {
-            "type": "SUCCESS",
-            "data": [
-              {
-                "id": "6e2f6911-24a0-11ee-b240-0242ac120002",
-                "url": "No url for this file",
-                "source": "shakespeare.txt",
-                "keywords": [
-                  "worthy",
-                  "loveliness",
-                  "lest",
-                  "virtue",
-                  "thou",
-                  "eve",
-                  "thy"
-                ]
-              }
-            ]
-          }
-          const { data } = sampleResponse;
-          const keyowordsForBlog = []
-          data.forEach((data) => {
-            data.keywords.forEach((keyword) => {
-              const keywordObj = {
-                id: data.id,
-                text: keyword.toLowerCase().charAt(0).toUpperCase() + keyword.toLowerCase().slice(1),
-                selected: false,
-                source: data.source ? data.source.toLowerCase().charAt(0).toUpperCase() + data.source.toLowerCase().slice(1) : "",
-                realSource: data.source,
-                url: data.url,
-                articleId: data.id,
-              }
-              keyowordsForBlog.push(keywordObj);
-            })
-          })
-          setkeywordsOfBlogs((prevKeywords) => [
-            ...prevKeywords,
-            ...keyowordsForBlog
-          ]);
+          
           // Handle errors here
         });
     } else {
@@ -238,7 +214,24 @@ export default function Home() {
     }
     setLoadingForKeywords(false);
   }
+  useEffect(()=>{
+    console.log('keywordsOFBlogs');
+    console.log(keywordsOFBlogs);
+  },[keywordsOFBlogs]);
+  function processDataForKeywords(data){
+    const keywordsMap = {};
+    data.forEach((item) => {
+      keywordsMap[item.text] = keywordsMap[item.text] ? keywordsMap[item.text] + 1 : 1; 
+    });
+    data.forEach((item) => {
+      if(keywordsMap[item.text] > 1){
+        item.source = item.realSource ? item.realSource.toLowerCase().charAt(0).toUpperCase() + item.realSource.toLowerCase().slice(1) : '';
+       }
+    });
+    return data;
+  }
   function handleGenerateClick() {
+    setLoadingForKeywords(true);
     const countByType = blogLinks.reduce((acc, link) => {
       if (link.type === 'file') {
         acc.files++;
@@ -272,8 +265,6 @@ export default function Home() {
     }
   }, []);
   function uploadExtractKeywords() {
-    alert('keywodds called');
-
     setLoadingForKeywords(true);
     const getToken = localStorage.getItem("token");
     var getUserId;
@@ -319,7 +310,11 @@ export default function Home() {
         const { keywords,
           keywordIdMap,
           articleIds, } = extractKeywordsAndIds(result);
-        setkeywordsOfBlogs(prev => [...prev, ...keywords]);
+        // setkeywordsOfBlogs(prev => [...prev, ...keywords]);
+        const prevKeywords = [...keywordsOFBlogs];
+        const updatedKeywords = [...prevKeywords, ...keywords];
+        const processedKeywords = processDataForKeywords(updatedKeywords);
+        setkeywordsOfBlogs(processedKeywords);
         setKeywordsMap(keywordIdMap);
       })
       .catch(error => {
@@ -342,6 +337,7 @@ export default function Home() {
   const router = useRouter();
   const setKeywordInStore = useStore((state) => state.setKeyword);
   const [index, setIndex] = React.useState(0);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   useEffect(() => {
     if (router.asPath === PAYMENT_PATH) {
@@ -825,24 +821,28 @@ export default function Home() {
                             <input
                               id="refileupload"
                               type="file"
+                              multiple={true}
                               accept=""
                               max-size="500000"
                               onChange={(e) => {
                                 const fileInput = e.target;
                                 setFileInput(fileInput);
-                                if (fileInput.files && fileInput.files[0]) {
-                                  const typeOfFile = {
-                                    label: fileInput.files[0].name,
-                                    value: fileInput.files[0].name,
+                                setSelectedFile(e.target.files[0]);
+                                const filesArray = Array.from(e.target.files);
+                                setSelectedFiles(filesArray);
+                                if (fileInput.files && fileInput.files.length > 0) {
+                                  const newLinks = filesArray.map((file, index) => ({
+                                    label: file.name,
+                                    value: file.name,
                                     selected: false,
-                                    id: fileInput.files[0].name,
-                                    index: blogLinks.length + 1,
-                                    type: 'file'
-                                  } 
-                                  setBlogLinks([...blogLinks, typeOfFile])
-                                }else{
-                                  toast.error('File not uploaded')
-                                }
+                                    id: file.name,
+                                    index: blogLinks.length + index + 1,
+                                    type: 'file',
+                                  }));
+                                  setBlogLinks([...blogLinks, ...newLinks]);
+                                } else {
+                                  toast.error('File not uploaded');
+                                }                            
                               }}
                               className="hidden"
                             />
@@ -867,7 +867,7 @@ export default function Home() {
                         </div>
                         <div className='flex items-center flex-col mt-5'>
                           {keywordsOFBlogs.length > 0 && <div className="flex items-center gap-1.5" >
-                            <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="These keywords is used to generate Blog article using lille's ai and give you high ranking SEO blog" direction='bottom' className='max-w-[100px]'>
+                            <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="These keywords are used to generate Blog article using lille's ai and give you high ranking SEO blog" direction='bottom' className='max-w-[100px]'>
                               <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
                             </Tooltip></div>}
                           <div className='flex flex-wrap justify-center gap-2 mt-5'>
