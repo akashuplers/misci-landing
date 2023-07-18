@@ -167,11 +167,15 @@ export default function Home() {
     setLoadingForKeywords(true);
     console.log(fileInput.files);
     if (fileInput.files.length > 0) {
-      uploadAndExtractKeywords(selectedFiles, '640ececf2369c047dbe0b8ff')
-        .then((response) => {
+      uploadAndExtractKeywords(selectedFiles).then((response) => {
           console.log('Response:', response);
           // Handle the response here
-          const { data } = response;
+          if(response?.response?.data && response?.response?.data?.type == 'ERROR'){
+            toast.error(response.response.data.message);
+            setLoadingForKeywords(false);
+            return;
+          }
+          const { data } = response.data;
           const keyowordsForBlog =[];
           data.forEach((data) => {
             data.keywords.forEach((keyword) => {
@@ -206,7 +210,8 @@ export default function Home() {
           );
         })
         .catch((error) => {
-          
+          console.log('ERRO');
+          console.log(error);
           // Handle errors here
         });
     } else {
@@ -258,12 +263,7 @@ export default function Home() {
       uploadExtractKeywords();
     }
   }
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      getUserId = localStorage.getItem("userId");
-      getTempId = localStorage.getItem("tempId");
-    }
-  }, []);
+
   function uploadExtractKeywords() {
     setLoadingForKeywords(true);
     const getToken = localStorage.getItem("token");
@@ -1106,10 +1106,9 @@ const AIInputComponent = () => {
 const Chip = ({ selected, text, handleClick, index, wholeData }) => {
   console.log(wholeData);
   return <button className={`h-8 px-[18px] py-1.5  rounded-full justify-start items-start gap-2.5 inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick(index)}>
-    <span className=" text-sm font-normal leading-tight">{text}</span>
     {
-      wholeData !== null && wholeData.source !== null && wholeData.source !== "" && <Tooltip content={"This keyword is coming from " + wholeData.source} direction="top" className="text-xs">
-        <InformationCircleIcon className="w-4 h-4 text-gray-500 hover:text-gray-700 active:text-gray-700 focus:text-gray-700" />
+      wholeData !== null && wholeData.realSource !== null && wholeData.realSource !== "" && <Tooltip content={"From " + wholeData.realSource} direction="top" className="text-xs">
+    <span className=" text-sm font-normal leading-tight">{text}</span>
       </Tooltip>
     }
   </button>

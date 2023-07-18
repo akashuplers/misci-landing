@@ -258,8 +258,17 @@ export const getIdFromUniqueName = (uniqueName) => {
   return uniqueName.split(ID_KEYWORD_SEPARATOR)[0];
 }
 
-export const uploadAndExtractKeywords = async (files, userId) => {
-  console.log(files, userId);      
+export const uploadAndExtractKeywords = async (files) => {
+  // console.log(files, userId);      
+  const getToken = localStorage.getItem("token");
+  var getUserId;
+  if (typeof window !== "undefined") {
+    getUserId = localStorage.getItem("userId");
+  }
+  var getTempId;
+  if (typeof window !== "undefined") {
+    getTempId = localStorage.getItem("tempId");
+  }
   if (!files) {
     throw new Error('No file provided.');
   }
@@ -268,17 +277,13 @@ export const uploadAndExtractKeywords = async (files, userId) => {
   files.forEach((file, index) => {
     formData.append(`files`, file);
   });
-  formData.append('userId', userId);
+  formData.append('userId', getToken ? getUserId : getTempId);
 
   const URL = API_BASE_PATH + API_ROUTES.EXTRACT_KEYWORDS_FROM_FILE;
-  try {
     const response = await axios.post(URL, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-    return response.data;
-  } catch (error) {
-    throw new Error('Error uploading file:', error);
-  }
+    return response;
 };
