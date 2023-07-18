@@ -15,11 +15,11 @@ function classNames(...classes) {
 }
 
 const mobileNavigation = [
-  {
-    name: "Testimonials",
-    href: "/#testimonials",
-    icon: ChatBubbleBottomCenterIcon,
-  },
+  // {
+  //   name: "Testimonials",
+  //   href: "/#testimonials",
+  //   icon: ChatBubbleBottomCenterIcon,
+  // },
   {
     name: "FAQ",
     href: "/faq",

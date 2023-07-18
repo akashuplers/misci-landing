@@ -23,6 +23,26 @@ import TrialEndedModal from "./TrialEndedModal";
 import UsedFilteredIdeaItem from "./UsedFilteredIdeaItem";
 import UsedReference from "./UsedReference";
 import { RegenerateIcon } from "./localicons/localicons";
+export function checkFileFormatAndSize(file) {
+  var extension = file.name.split(".").pop().toLowerCase();
+  var allowedFormats = ["pdf", "docx", "txt"];
+
+  if (!allowedFormats.includes(extension)) {
+    toast.error(
+      "File format is not supported. Please upload a file in PDF, DOCX, or TXT format."
+    );
+    return false;
+  }
+
+  if (file.size > 3 * 1024 * 1024) {
+    toast.error(
+      "File size is too large. Please upload a file that is less than 3MB in size."
+    );
+    return false;
+  }
+
+  return true;
+}
 export default function DashboardInsights({
   loading,
   ideas,
@@ -462,7 +482,7 @@ export default function DashboardInsights({
           if (SHOW_CONTRIBUTION_MODAL) {
             setShowContributionModal(true);
           }
-          setOption(prevState => prevState);
+          // setOption(prevState => prevState);
         },
         onError: (error) => {
           console.error("Credit Exhaust or any other error", error.message);
@@ -629,26 +649,7 @@ export default function DashboardInsights({
   const handleUsedIdeas = (arr) => {
     setArrUsed(arr);
   };
-  function checkFileFormatAndSize(file) {
-    var extension = file.name.split(".").pop().toLowerCase();
-    var allowedFormats = ["pdf", "docx", "txt"];
-
-    if (!allowedFormats.includes(extension)) {
-      toast.error(
-        "File format is not supported. Please upload a file in PDF, DOCX, or TXT format."
-      );
-      return false;
-    }
-
-    if (file.size > 3 * 1024 * 1024) {
-      toast.error(
-        "File size is too large. Please upload a file that is less than 3MB in size."
-      );
-      return false;
-    }
-
-    return true;
-  }
+  
   function postFormData(e) {
     e.preventDefault();
     setNewIdeaLoad(true);
@@ -717,7 +718,6 @@ export default function DashboardInsights({
         setformInput("");
         setFileValid(false);
         setUrlValid(false);
-
         setNewIdeaLoad(false);
       });
   }
