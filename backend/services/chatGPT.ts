@@ -22,7 +22,7 @@ export class ChatGPT {
             },
             data : {
               "model": "text-davinci-003",
-              "prompt": `${this.text}`,
+              "prompt": this.text,
               "temperature": 0.5,
               "max_tokens": 4096 - encoded.text?.length
             },
