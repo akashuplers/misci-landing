@@ -267,7 +267,7 @@ export const blogResolvers = {
                 )
                 articlesData.forEach((data) => {
                     data.used_summaries.forEach((summary: string, index: number) => {
-                        texts += `${summary}\n`
+                        texts += `'${summary}'\n`
                         ideasText += `${summary} `
                         ideasArr.push({idea: summary, article_id: data.id})
                     })
