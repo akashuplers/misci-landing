@@ -804,7 +804,7 @@ export default function Home() {
                       <div className="w-full lg:w-[650px] h-full opacity-90 flex-col justify-center mt-10 items-center gap-[18px] inline-flex bg-transparent rounded-[10px]">
                         <div className="w-full h-6 justify-center items-center gap-1.5 inline-flex">
                           <div className="text-center text-slate-600 text-ase font-normal">Lille will help you to Repurpose the whole blog</div>
-                          <Tooltip content="We will help you recreate blog on the basis of keywords and tone selected by you" direction='bottom' className='max-w-[100px]'>
+                          <Tooltip content="Add your content URLs, We will help you recreate blog on the basis of keywords and tones  selected by you." direction='top' className='max-w-[100px]'>
                             <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
                           </Tooltip>
                         </div>
@@ -867,7 +867,7 @@ export default function Home() {
                         </div>
                         <div className='flex items-center flex-col mt-5'>
                           {keywordsOFBlogs.length > 0 && <div className="flex items-center gap-1.5" >
-                            <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="These keywords are used to generate Blog article using lille's ai and give you high ranking SEO blog" direction='bottom' className='max-w-[100px]'>
+                            <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="Select keywords as per your choice to add focus, URLs containing the selected keywords will be used to recreate a high ranking SEO blog." direction='top' className='max-w-[100px]'>
                               <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
                             </Tooltip></div>}
                           <div className='flex flex-wrap justify-center gap-2 mt-5'>
