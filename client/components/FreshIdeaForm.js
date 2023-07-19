@@ -68,7 +68,7 @@ const FreshIdeaForm = ({
                         >
                             <input
                                 type="file"
-                                accept="application/pdf, .docx, .txt, .rtf, .png, .jpg, .jpeg, .gif"
+                                accept="application/pdf, .docx, .txt"
                                 max-size="500000"
                                 onInput={handleFileUpload}
                                 style={{ display: "none" }}

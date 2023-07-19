@@ -61,8 +61,6 @@ export default function RePurpose({value, setValue, setShowRepourposeError, remo
     }
   };
   const MultiValueRemove = (props) => {
-    console.log(props);
-    console.log(setValue)
     function handleClick(){
       const typeOfData = props.data.type;
       if(type ==='file'){
@@ -83,14 +81,7 @@ export default function RePurpose({value, setValue, setShowRepourposeError, remo
     return null; // Return null to hide the default separator
   };
   const ClearIndicator = (props) => {
-    function handleClearClick() {
-      alert("clicked");
-    }    
-    return (
-      <components.ClearIndicator {...props}>
-        <XCircleIcon className="h-5 w-5 text-gray-500" onClick={handleClearClick} />
-      </components.ClearIndicator>
-    );
+    return null; // Return null to hide the default separator
   };
 
   return (
