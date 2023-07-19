@@ -50,7 +50,6 @@ export default function Sidebar() {
   const [topBarStyle, setTopBarStyle] = useState({});
   useEffect(() => {
     const pathname = router.pathname.split("/")[1];
-    console.log(pathname);
     if (router.pathname === "/") {
       setTopBarStyle({});
       return;
@@ -516,7 +515,6 @@ export default function Sidebar() {
                     >
                       <div className="flex p-2 items-center">
                         <LocalCreditCardIcon />
-                        {console.log("creditLeft", creditLeft)}
                         {meeData?.me?.totalCredits - creditLeft}/
                         {meeData?.me?.totalCredits} Credits used
                       </div>

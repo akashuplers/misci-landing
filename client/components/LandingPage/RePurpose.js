@@ -2,10 +2,17 @@ import React, { KeyboardEventHandler ,useEffect} from 'react';
 import CreatableSelect from 'react-select/creatable';
 import { toast } from 'react-toastify';
 import classNames from 'classnames';
+import Select, {
+  components,
+  ControlProps,
+  Props,
+  MultiValueRemoveProps,
+  StylesConfig,
+} from 'react-select';
+import Tooltip from '../ui/Tooltip';
+import { Chip } from '@/pages';
+import { XCircleIcon } from '@heroicons/react/24/outline';
 
-const components = {
-  DropdownIndicator: null,
-};
 function generateRandomId() {
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   const length = 8; // Adjust the length as desired
@@ -27,7 +34,7 @@ export const createOption = (label, id,index) => ({
   type: 'url'
 });
 
-export default function RePurpose({value, setValue, setShowRepourposeError}){
+export default function RePurpose({value, setValue, setShowRepourposeError, removeFile}){
   const [inputValue, setInputValue] = React.useState('');
 
   const handleKeyDown = (event) => {
@@ -53,6 +60,38 @@ export default function RePurpose({value, setValue, setShowRepourposeError}){
       event.preventDefault();
     }
   };
+  const MultiValueRemove = (props) => {
+    console.log(props);
+    console.log(setValue)
+    function handleClick(){
+      const typeOfData = props.data.type;
+      if(type ==='file'){
+        removeFile(props.data.id);
+      }
+      const newValues = value.filter((item) => item.id !== props.data.id);
+      setValue(newValues);
+    }
+    return (
+        <components.MultiValueRemove {...props} >
+          <XCircleIcon class="h-6 w-6 text-gray-500" onClick={handleClick}/>
+        </components.MultiValueRemove>
+    );
+  }; 
+
+
+  const DropdownIndicator = () => {
+    return null; // Return null to hide the default separator
+  };
+  const ClearIndicator = (props) => {
+    function handleClearClick() {
+      alert("clicked");
+    }    
+    return (
+      <components.ClearIndicator {...props}>
+        <XCircleIcon className="h-5 w-5 text-gray-500" onClick={handleClearClick} />
+      </components.ClearIndicator>
+    );
+  };
 
   return (
     <div style={{
@@ -61,8 +100,9 @@ export default function RePurpose({value, setValue, setShowRepourposeError}){
     }}
     >
       <CreatableSelect
-      components={components}
+      components={{DropdownIndicator , MultiValueRemove, ClearIndicator}}
       inputValue={inputValue}
+      
       styles={{
         multiValue: (baseStyles, state) => ({
           ...baseStyles,
