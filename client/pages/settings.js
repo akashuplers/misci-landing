@@ -27,7 +27,7 @@ import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { addPreferances } from "../graphql/mutations/addPreferances";
 import { meeAPI } from "../graphql/querys/mee";
 import { formatDate, generateDateString } from "../helpers/helper";
-
+import Tooltip from "../components/ui/Tooltip";
 
 const fillerProfileImage = "/profile-filler.jpg";
 const navigation = [
@@ -668,17 +668,8 @@ export default function Settings() {
                                   <dt className="text-sm font-medium text-gray-500">
                                     Email
                                   </dt>
-                                  {/* <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                    <span className="flex-grow relative">
-                                      {meeData?.me?.email} {meeData?.me?.emailVerified && "✅"}
-                                      {meeData?.me?.emailVerified && (
-                                        <span className="tooltip absolute text-white bg-gray-800 rounded-lg py-1 px-2 -mt-8 left-1/2 transform -translate-x-1/2 opacity-0 pointer-events-none transition-opacity duration-200">
-                                          Email verified
-                                        </span>
-                                      )}
-                                    </span>
-                                  </dd> */}
                                   <dd className="updateSettingsField mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                    <Tooltip content='Email Verified' direction='top'>
                                     <div className="flex group cursor-pointer relative gap-1 text-center">
                                       {meeData?.me?.email}{" "}
                                       {meeData?.me?.emailVerified && (
@@ -686,12 +677,8 @@ export default function Settings() {
                                           <TwitterVerifiedIcon />
                                         </span>
                                       )}
-                                      {meeData?.me?.emailVerified && (
-                                        <div className="opacity-0 w-28 bg-black text-white text-center text-xs rounded-lg py-2 absolute z-10 group-hover:opacity-100 bottom-full left-1/2 ml-14 px-3 pointer-events-none">
-                                          Email verified
-                                        </div>
-                                      )}
                                     </div>
+                                    </Tooltip>
                                   </dd>
                                 </div>
                                 {meeData?.me?.isSubscribed && (
@@ -861,7 +848,7 @@ export default function Settings() {
                                         );
                                       }}
                                     >
-                                      from Twitter
+                                      Logout from Twitter
                                     </button>
                                   ) : (
                                     <></>
