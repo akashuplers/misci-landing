@@ -61,8 +61,6 @@ export default function RePurpose({value, setValue, setShowRepourposeError, remo
     }
   };
   const MultiValueRemove = (props) => {
-    console.log(props);
-    console.log(setValue)
     function handleClick(){
       const typeOfData = props.data.type;
       if(type ==='file'){
