@@ -186,7 +186,7 @@ export default function Home() {
           }
           const { data } = response.data;
           const keywordsForBlog = [];
-  
+
           data.forEach((item) => {
             item.keywords.forEach((keyword) => {
               const keywordObj = {
@@ -198,7 +198,7 @@ export default function Home() {
                 url: item.url,
                 articleId: item.id,
               };
-  
+
               if (keywordObj.source !== null && item.source !== undefined && item.source !== '') {
                 const keywordObjFromKeywords = keywordsForBlog.find((keywordObj) => keywordObj.text === keyword);
                 if (keywordObjFromKeywords !== undefined) {
@@ -208,7 +208,7 @@ export default function Home() {
               keywordsForBlog.push(keywordObj);
             });
           });
-  
+
           // Update the state with processed keywords
           setkeywordsOfBlogs((prev) => {
             const prevKeywords = [...prev];
@@ -216,21 +216,21 @@ export default function Home() {
             const processedKeywords = processDataForKeywords(updatedKeywords);
             return processedKeywords;
           });
-  
-    setShowUserLoadingModal({ show: false });
+
+          setShowUserLoadingModal({ show: false });
           setLoadingForKeywords(false); // Set loading state back to false on successful response
         })
         .catch((error) => {
           console.log('ERROR');
           console.log(error);
           // Handle errors here
-    setShowUserLoadingModal({ show: false });
+          setShowUserLoadingModal({ show: false });
 
           setLoadingForKeywords(false); // Set loading state back to false on error
         });
     } else {
       toast.error('Please select a file');
-    setShowUserLoadingModal({ show: false });
+      setShowUserLoadingModal({ show: false });
       setLoadingForKeywords(false); // Set loading state back to false if no file is selected
     }
   }
@@ -263,7 +263,7 @@ export default function Home() {
     console.log('countByType');
     console.log(countByType);
     if (countByType.files > 0 && countByType.urls > 0) {
-      
+
       // Call both methods when both keywords and files are greater than zero
       uploadExtractKeywords();
       uploadFilesForKeywords();
@@ -276,7 +276,7 @@ export default function Home() {
     } else {
       // Call the default method when both keywords and files are zero
       uploadExtractKeywords();
-    } 
+    }
   }
 
   function uploadExtractKeywords() {
@@ -556,7 +556,7 @@ export default function Home() {
   useEffect(() => {
     function sendOpt() {
       const SEND_OTP_URL = API_BASE_PATH + "/auth/send-otp";
-      var getToken = localStorage.getItem("token");
+      // var getToken = localStorage.getItem("token");
       const requestOptions = {
         method: "GET",
         headers: {
@@ -843,7 +843,6 @@ export default function Home() {
                               accept="application/pdf, .docx, .txt, .rtf"
                               type="file"
                               multiple={true}
-                              accept=""
                               max-size="500000"
                               onChange={(e) => {
                                 // check format
@@ -858,18 +857,18 @@ export default function Home() {
                                   toast.warn("Please select at least one file.");
                                   return;
                                 }
-                            
+
                                 // Iterate through each selected file
                                 for (let i = 0; i < files.length; i++) {
                                   const file = files[i];
-                            
+
                                   // Check file format
                                   if (!allowedFormats.includes(file.type)) {
                                     toast.error(`File format not allowed for ${file.name}.`);
                                     e.target.value = ''; // Reset file input to clear selected files
                                     return;
                                   }
-                            
+
                                   // Check file size
                                   if (file.size > maxSize) {
                                     toast.error(`File size exceeds the limit for ${file.name}. Maximum size allowed is 5MB.`);
@@ -891,7 +890,7 @@ export default function Home() {
                                   index: currentFiles.length + index + 1,
                                   type: 'file',
                                 }));
-                                
+
                                 let isFileExists = false;
                                 selectedFilesByUser.forEach((file) => {
                                   const doesFileExist = currentFiles.find((currentFile) => currentFile.id === file.id);
@@ -903,8 +902,8 @@ export default function Home() {
                                 });
                                 if (isFileExists) {
                                   return;
-                                }else{
-                                  const currentFiles =[...selectedFiles];
+                                } else {
+                                  const currentFiles = [...selectedFiles];
                                   currentFiles.push(...filesArray);
                                   setSelectedFiles(currentFiles);
                                 }
@@ -1063,7 +1062,7 @@ export default function Home() {
                                 </svg>
                               </div>
                           }
-                         
+
                         </button>
                       </div>
                     </Tab.Panel>
