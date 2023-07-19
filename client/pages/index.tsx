@@ -832,19 +832,51 @@ export default function Home() {
                           <div className="relative w-full min-h-[60px] bg-white rounded-[10px] flex items-center px-2  gap-2.5 border border-gray-600">
                             <RePurpose removeFile={removeFile} value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
 
-                            <label className="w-[100.81px] h-10 flex justify-around cursor-pointer rounded-lg border border-indigo-600 items-center gap-2.5" htmlFor="refileupload">
+                            <label className="w-[100.81px] h-10 flex justify-around cursor-pointer px-2 rounded-lg border border-indigo-600 items-center gap-2.5" htmlFor="refileupload">
                               <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
-                              <div className="justify-center items-center gap-2 inline-flex">
-                                <div className="text-indigo-600 text-sm font-normal">Upload</div>
-                              </div>
+                              <button className="justify-center items-center gap-2 inline-flex ">
+                                <span className="text-indigo-600 text-sm font-normal">Upload</span>
+                              </button>
                             </label>
                             <input
                               id="refileupload"
+                              accept="application/pdf, .docx, .txt, .rtf"
                               type="file"
                               multiple={true}
                               accept=""
                               max-size="500000"
                               onChange={(e) => {
+                                // check format
+
+                                const allowedFormats = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain", "text/rtf"];
+                                const maxSize = 500000; // 5MB in bytes
+
+                                const files = e.target.files;
+
+                                // Check if files are selected
+                                if (files.length === 0) {
+                                  toast.warn("Please select at least one file.");
+                                  return;
+                                }
+                            
+                                // Iterate through each selected file
+                                for (let i = 0; i < files.length; i++) {
+                                  const file = files[i];
+                            
+                                  // Check file format
+                                  if (!allowedFormats.includes(file.type)) {
+                                    toast.error(`File format not allowed for ${file.name}.`);
+                                    e.target.value = ''; // Reset file input to clear selected files
+                                    return;
+                                  }
+                            
+                                  // Check file size
+                                  if (file.size > maxSize) {
+                                    toast.error(`File size exceeds the limit for ${file.name}. Maximum size allowed is 5MB.`);
+                                    e.target.value = ''; // Reset file input to clear selected files
+                                    return;
+                                  }
+                                }
                                 const fileInput = e.target;
                                 setFileInput(fileInput);
                                 setSelectedFile(e.target.files[0]);
@@ -859,7 +891,7 @@ export default function Home() {
                                   index: currentFiles.length + index + 1,
                                   type: 'file',
                                 }));
-                                // check 
+                                
                                 let isFileExists = false;
                                 selectedFilesByUser.forEach((file) => {
                                   const doesFileExist = currentFiles.find((currentFile) => currentFile.id === file.id);
@@ -918,7 +950,7 @@ export default function Home() {
                                 () => {
                                   setkeywordsOfBlogs([]);
                                   setBlogLinks([]);
-                                  setSelectedFiles(null);
+                                  setSelectedFiles([]);
                                 }
                               }
                             >
@@ -993,7 +1025,7 @@ export default function Home() {
                           )
                         }
 
-                        <button className="pl-[30px] pr-6 py-[17px] mt-2.5 text-white bg-indigo-600 rounded-[10px] shadow justify-center items-center gap-2.5 inline-flex
+                        <button className="p-4 mt-2.5 text-white bg-indigo-600 rounded-[10px] shadow justify-center items-center gap-2.5 inline-flex
                         active:bg-indigo-600 hover:bg-indigo-700 focus:shadow-outline-indigo
                         " onClick={
                             keywordsOFBlogs.length > 0 ?
@@ -1009,7 +1041,7 @@ export default function Home() {
                                 height={20}
                                 width={20}
                               />
-                              : <div className="flex items-center justify-around text-white text-lg font-medium" >
+                              : <div className="flex items-center justify-between text-white text-lg font-medium" >
                                 <span>
                                   {
                                     keywordsOFBlogs.length > 0 ? 'Repurpose' : 'Generate'
