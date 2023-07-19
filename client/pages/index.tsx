@@ -851,7 +851,7 @@ export default function Home() {
                                 const filesArray = Array.from(e.target.files);
                                 // check if file with this name and last modified date already exists
                                 const currentFiles = blogLinks.filter((link) => link.type === 'file');
-                                const selectedFiles = filesArray.map((file, index) => ({
+                                const selectedFilesByUser = filesArray.map((file, index) => ({
                                   label: file.name,
                                   value: file.name,
                                   selected: false,
@@ -861,7 +861,7 @@ export default function Home() {
                                 }));
                                 // check 
                                 let isFileExists = false;
-                                selectedFiles.forEach((file) => {
+                                selectedFilesByUser.forEach((file) => {
                                   const doesFileExist = currentFiles.find((currentFile) => currentFile.id === file.id);
                                   if (doesFileExist) {
                                     toast.error(`File ${file.name} already exists`);
@@ -871,13 +871,17 @@ export default function Home() {
                                 });
                                 if (isFileExists) {
                                   return;
+                                }else{
+                                  const currentFiles =[...selectedFiles];
+                                  currentFiles.push(...filesArray);
+                                  setSelectedFiles(currentFiles);
                                 }
+                                console.log("FILE ARRAY |")
                                 console.log(filesArray);
                                 if (blogLinks.length > 3) {
                                   toast.error('You can upload max 3 files or URLs');
                                   return;
                                 }
-                                setSelectedFiles(filesArray);
                                 if (Array.from(e.target.files).length > 0) {
                                   if (fileInput.files && fileInput.files.length > 0) {
                                     console.log(Array.from(e.target.files).length);
