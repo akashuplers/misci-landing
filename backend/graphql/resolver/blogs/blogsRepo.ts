@@ -106,7 +106,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                 //     Donot repeat sentence
                 //     Strictly Highlight the H1 & H2 using html tags
                 //     Provide the conclusion at the end`}`, db}).textCompletion(chatgptApis.timeout)
-                const gptPrompt = `Please forget old prompt and act as an new expert writer and using the below pasted ideas write a blog with inputs as follows:\n${title && title.length ? `Topic is "${title}"`: "" } \n${tones?.length ? tones.join('","') : `Tone is "Authoritative, informative, Persuasive"`} \n${keywords.length ? `Use these keywords: "${keywords.join('","')}" \nMinimum limit is "1000 words"`: `Minimum limit is "1000 words"`}\nHighlight the H1 & H2 html tags\nProvide the conclusion at the end\nStrictly use all these points: ${text}`
+                const gptPrompt = `Please forget old prompt and act as an new expert writer and using the below pasted ideas write a blog with inputs as follows:\n${title && title.length ? `Topic is "${title}"\n${tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"`}`: tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"` }\n${keywords.length ? `Use these keywords: "${keywords.join('","')}" \nMinimum limit is "1000 words"`: `Minimum limit is "1000 words"`}\nHighlight the H1 & H2 html tags\nProvide the conclusion at the end\nStrictly use all these points: ${text}`
                 const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? gptPrompt : 
                     `Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
                     ${title && title.length ? `'Topic is "${title}"'`: "" }
@@ -349,11 +349,11 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                     {
                                                         "tag": "A",
                                                         "attributes": {
-                                                            "href": data.url,
+                                                            "href": data.url !== "No url for this file" ? data.url : "#",
                                                             "target": "_blank"
                                                         },
                                                         "children": [
-                                                            data.url
+                                                            data.url !== "No url for this file" ? data.url : data.source
                                                         ]
                                                     }
                                                 ]
@@ -719,11 +719,12 @@ export const fetchArticleUrls = async ({
             projection: {
                 "_id": 1,
                 "_source.orig_url": 1,
-                "_source.source.name": 1
+                "_source.source.name": 1,
+                "_source.title": 1
             }
         }).toArray()
         if(urlsData?.length) {
-            urlsData?.forEach((data: {_source: {orig_url: string, source: {name: string}}, _id: string}) => {
+            urlsData?.forEach((data: {_source: {orig_url: string, source: {name: string}, title: string}, _id: string}) => {
                 console.log(data._source.source.name)
                 let urlObj: null | {
                     url: string
@@ -734,6 +735,12 @@ export const fetchArticleUrls = async ({
                     urlObj = {
                         url : data?._source?.orig_url,
                         source: new URL(data?._source?.orig_url).host,
+                        id: data._id
+                    }
+                } else if(data._source.source.name && data._source.source.name === "file") {
+                    urlObj = {
+                        url : data?._source?.orig_url,
+                        source: data?._source?.title,
                         id: data._id
                     }
                 } else {

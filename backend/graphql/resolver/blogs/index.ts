@@ -257,7 +257,7 @@ export const blogResolvers = {
                             const name = article._source?.source?.name
                             return {
                                 used_summaries: article._source.summary.slice(0, 10),
-                                name: name && name === "file" ? "note" : name,
+                                name: name && name === "file" ? article._source.title : name,
                                 unused_summaries: article._source.summary.slice(10),
                                 keyword: article.keyword,
                                 id
