@@ -84,6 +84,9 @@ export default function Home() {
   const [fileValid, setFileValid] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileInputNames, setFileInputNames] = useState([]);
+  const removeFile = (fileName) => {
+    setSelectedFiles((prevFiles) => prevFiles.filter((file) => file !== fileName));
+  };
   const handleChipClick = (index) => {
     const idOfKeyword = getIdFromUniqueName(keywordsOFBlogs[index].id);
 
@@ -137,6 +140,7 @@ export default function Home() {
   const [loadingForKeywords, setLoadingForKeywords] = useState(false);
   const [showRepourposeError, setShowRepourposeError] = useState(false);
   const [showHoveUpgradeNow, setShowHoveUpgradeNow] = useState(false);
+  const [loadingForFilesKeywords, setLoadingForFilesKeywords] = useState(false);
   const handleGenerate = (options = {}) => {
     console.log('options');
     console.log(options);
@@ -146,12 +150,13 @@ export default function Home() {
     router.push({ pathname, query });
   };
   function handleRepourpose() {
-    // key all keywords which are selected
     setLoadingForKeywords(true);
+    // key all keywords which are selected
+    ;
     const keywords = keywordsOFBlogs.filter((keyword) => keyword.selected).map((keyword) => keyword.text);
     if (keywords.length === 0) {
       toast.error("Please select atleast one keyword");
-      setLoadingForKeywords(false);
+      ;
       return;
     }
     setShowRepourposeError(false);
@@ -163,80 +168,89 @@ export default function Home() {
     handleGenerate(options);
     setLoadingForKeywords(false);
   }
-  async function uploadFilesForKeywords() {
-    setLoadingForKeywords(true);
+  useEffect(() => {
+    // alert('STATUS: ', loadingForKeywords)
+  }, [loadingForKeywords]);
+  function uploadFilesForKeywords() {
+    setShowUserLoadingModal({ show: true });
     console.log(fileInput.files);
     if (fileInput.files.length > 0) {
-      uploadAndExtractKeywords(selectedFiles).then((response) => {
+      uploadAndExtractKeywords(selectedFiles)
+        .then((response) => {
           console.log('Response:', response);
           // Handle the response here
-          if(response?.response?.data && response?.response?.data?.type == 'ERROR'){
+          if (response?.response?.data && response?.response?.data?.type === 'ERROR') {
             toast.error(response.response.data.message);
-            setLoadingForKeywords(false);
+            setLoadingForKeywords(false); // Set loading state back to false on error
             return;
           }
           const { data } = response.data;
-          const keyowordsForBlog =[];
-          data.forEach((data) => {
-            data.keywords.forEach((keyword) => {
+          const keywordsForBlog = [];
+  
+          data.forEach((item) => {
+            item.keywords.forEach((keyword) => {
               const keywordObj = {
-                id: data.id,
+                id: item.id,
                 text: keyword.toLowerCase().charAt(0).toUpperCase() + keyword.toLowerCase().slice(1),
                 selected: false,
-                source: keyowordsForBlog.some((keywordObj) => keywordObj.text === keyword) ? data.source ? data.source.toLowerCase().charAt(0).toUpperCase() + data.source.toLowerCase().slice(1) : '' : null,
-                realSource: data.source,
-                url: data.url,
-                articleId: data.id,
-              }
-              if(keywordObj.source!==null && item.source!==undefined && item.source!==''){
-                const keywordObjFromKeywords = keyowordsForBlog.find((keywordObj) => keywordObj.text === keyword);
-                if(keywordObjFromKeywords!==undefined){
+                source: keywordsForBlog.some((keywordObj) => keywordObj.text === keyword) ? (item.source ? item.source.toLowerCase().charAt(0).toUpperCase() + item.source.toLowerCase().slice(1) : '') : null,
+                realSource: item.source,
+                url: item.url,
+                articleId: item.id,
+              };
+  
+              if (keywordObj.source !== null && item.source !== undefined && item.source !== '') {
+                const keywordObjFromKeywords = keywordsForBlog.find((keywordObj) => keywordObj.text === keyword);
+                if (keywordObjFromKeywords !== undefined) {
                   keywordObjFromKeywords.source = keywordObj.realSource ? keywordObj.realSource.toLowerCase().charAt(0).toUpperCase() + keywordObj.realSource.toLowerCase().slice(1) : '';
                 }
               }
-              keyowordsForBlog.push(keywordObj);
-            })
+              keywordsForBlog.push(keywordObj);
+            });
           });
-          // const prevKeywords = [...keywordsOFBlogs];
-          // // const updatedKeywords = [...prevKeywords, ...keyowordsForBlog];
-          // const processedKeywords = processDataForKeywords(updatedKeywords);
-          setkeywordsOfBlogs(
-            (prev) => {
-              const prevKeywords = [...prev];
-              const updatedKeywords = [...prevKeywords, ...keyowordsForBlog];
-              const processedKeywords = processDataForKeywords(updatedKeywords);
-              return processedKeywords;
-            }
-          );
+  
+          // Update the state with processed keywords
+          setkeywordsOfBlogs((prev) => {
+            const prevKeywords = [...prev];
+            const updatedKeywords = [...prevKeywords, ...keywordsForBlog];
+            const processedKeywords = processDataForKeywords(updatedKeywords);
+            return processedKeywords;
+          });
+  
+    setShowUserLoadingModal({ show: false });
+          setLoadingForKeywords(false); // Set loading state back to false on successful response
         })
         .catch((error) => {
-          console.log('ERRO');
+          console.log('ERROR');
           console.log(error);
           // Handle errors here
+    setShowUserLoadingModal({ show: false });
+
+          setLoadingForKeywords(false); // Set loading state back to false on error
         });
     } else {
       toast.error('Please select a file');
+    setShowUserLoadingModal({ show: false });
+      setLoadingForKeywords(false); // Set loading state back to false if no file is selected
     }
-    setLoadingForKeywords(false);
   }
-  useEffect(()=>{
+  useEffect(() => {
     console.log('keywordsOFBlogs');
     console.log(keywordsOFBlogs);
-  },[keywordsOFBlogs]);
-  function processDataForKeywords(data){
+  }, [keywordsOFBlogs]);
+  function processDataForKeywords(data) {
     const keywordsMap = {};
     data.forEach((item) => {
-      keywordsMap[item.text] = keywordsMap[item.text] ? keywordsMap[item.text] + 1 : 1; 
+      keywordsMap[item.text] = keywordsMap[item.text] ? keywordsMap[item.text] + 1 : 1;
     });
     data.forEach((item) => {
-      if(keywordsMap[item.text] > 1){
+      if (keywordsMap[item.text] > 1) {
         item.source = item.realSource ? item.realSource.toLowerCase().charAt(0).toUpperCase() + item.realSource.toLowerCase().slice(1) : '';
-       }
+      }
     });
     return data;
   }
   function handleGenerateClick() {
-    setLoadingForKeywords(true);
     const countByType = blogLinks.reduce((acc, link) => {
       if (link.type === 'file') {
         acc.files++;
@@ -249,6 +263,7 @@ export default function Home() {
     console.log('countByType');
     console.log(countByType);
     if (countByType.files > 0 && countByType.urls > 0) {
+      
       // Call both methods when both keywords and files are greater than zero
       uploadExtractKeywords();
       uploadFilesForKeywords();
@@ -261,11 +276,11 @@ export default function Home() {
     } else {
       // Call the default method when both keywords and files are zero
       uploadExtractKeywords();
-    }
+    } 
   }
 
   function uploadExtractKeywords() {
-    setLoadingForKeywords(true);
+    setShowUserLoadingModal({ show: true });
     const getToken = localStorage.getItem("token");
     var getUserId;
     if (typeof window !== "undefined") {
@@ -277,8 +292,8 @@ export default function Home() {
     }
     var raw = JSON.stringify({
       "urls": blogLinks
-      .filter((url) => url.type === 'url')
-      .map((url) => url.value),
+        .filter((url) => url.type === 'url')
+        .map((url) => url.value),
       "userId": getToken ? getUserId : getTempId
     });
     var myHeaders = new Headers();
@@ -305,7 +320,7 @@ export default function Home() {
         }
         const doesUnprocessedUrlsExist = result?.unprocessedUrls && result.unprocessedUrls.length > 0;
         if (doesUnprocessedUrlsExist) {
-          toast.warn(`Success but we could not resolve ${result.unprocessedUrls.length>1 ? "these URLs" : "this URL" } : ` + result.unprocessedUrls.join(', '));
+          toast.warn(`Success but we could not resolve ${result.unprocessedUrls.length > 1 ? "these URLs" : "this URL"} : ` + result.unprocessedUrls.join(', '));
         }
         const { keywords,
           keywordIdMap,
@@ -321,8 +336,9 @@ export default function Home() {
         console.log('error', error)
       })
       .finally(() => {
-        setLoadingForKeywords(false); // Move the setLoadingForKeywords(false) inside the then block
+        ; // Move the  inside the then block
       });
+    setShowUserLoadingModal({ show: false });
   }
 
   var getToken;
@@ -338,6 +354,9 @@ export default function Home() {
   const setKeywordInStore = useStore((state) => state.setKeyword);
   const [index, setIndex] = React.useState(0);
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [showUserLoadingModal, setShowUserLoadingModal] = useState({
+    show: false,
+  });
 
   useEffect(() => {
     if (router.asPath === PAYMENT_PATH) {
@@ -804,13 +823,14 @@ export default function Home() {
                       <div className="w-full lg:w-[650px] h-full opacity-90 flex-col justify-center mt-10 items-center gap-[18px] inline-flex bg-transparent rounded-[10px]">
                         <div className="w-full h-6 justify-center items-center gap-1.5 inline-flex">
                           <div className="text-center text-slate-600 text-ase font-normal">Lille will help you to Repurpose the whole blog</div>
-                          <Tooltip content="We will help you recreate blog on the basis of keywords and tone selected by you" direction='bottom' className='max-w-[100px]'>
+                          <Tooltip content="Add your content URLs, We will help you recreate blog on the basis of keywords and tones  selected by you.
+" direction='bottom' className='max-w-[100px]'>
                             <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
                           </Tooltip>
                         </div>
                         <div className="w-full h-full justify-center items-center gap-2.5 inline-flex px-2">
                           <div className="relative w-full min-h-[60px] bg-white rounded-[10px] flex items-center px-2  gap-2.5 border border-gray-600">
-                            <RePurpose value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
+                            <RePurpose removeFile={removeFile} value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
 
                             <label className="w-[100.81px] h-10 flex justify-around cursor-pointer rounded-lg border border-indigo-600 items-center gap-2.5" htmlFor="refileupload">
                               <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
@@ -829,12 +849,39 @@ export default function Home() {
                                 setFileInput(fileInput);
                                 setSelectedFile(e.target.files[0]);
                                 const filesArray = Array.from(e.target.files);
-                                filesArray.push(...selectedFiles);
+                                // check if file with this name and last modified date already exists
+                                const currentFiles = blogLinks.filter((link) => link.type === 'file');
+                                const selectedFiles = filesArray.map((file, index) => ({
+                                  label: file.name,
+                                  value: file.name,
+                                  selected: false,
+                                  id: file.name,
+                                  index: currentFiles.length + index + 1,
+                                  type: 'file',
+                                }));
+                                // check 
+                                let isFileExists = false;
+                                selectedFiles.forEach((file) => {
+                                  const doesFileExist = currentFiles.find((currentFile) => currentFile.id === file.id);
+                                  if (doesFileExist) {
+                                    toast.error(`File ${file.name} already exists`);
+                                    isFileExists = true;
+                                    return;
+                                  }
+                                });
+                                if (isFileExists) {
+                                  return;
+                                }
                                 console.log(filesArray);
+                                if (blogLinks.length > 3) {
+                                  toast.error('You can upload max 3 files or URLs');
+                                  return;
+                                }
                                 setSelectedFiles(filesArray);
-                                if(Array.from(e.target.files).length > 0){
+                                if (Array.from(e.target.files).length > 0) {
                                   if (fileInput.files && fileInput.files.length > 0) {
-                                    const newLinks = filesArray.map((file, index) => ({
+                                    console.log(Array.from(e.target.files).length);
+                                    const newLinks = Array.from(e.target.files).map((file, index) => ({
                                       label: file.name,
                                       value: file.name,
                                       selected: false,
@@ -842,11 +889,20 @@ export default function Home() {
                                       index: blogLinks.length + index + 1,
                                       type: 'file',
                                     }));
-                                    setBlogLinks([...blogLinks, ...newLinks]);
+                                    console.log('PREV BLOG LINKS');
+                                    console.log(blogLinks)
+                                    const updatedBlogLinks = [...blogLinks, ...newLinks];
+                                    // filter with uniqu id's 
+                                    updatedBlogLinks.filter((link, index, self) =>
+                                      index === self.findIndex((t) => (
+                                        t.id === link.id
+                                      ))
+                                    )
+                                    setBlogLinks(updatedBlogLinks);
                                   } else {
                                     toast.error('File not uploaded');
-                                  } 
-                                }                          
+                                  }
+                                }
                               }}
                               className="hidden"
                             />
@@ -858,6 +914,7 @@ export default function Home() {
                                 () => {
                                   setkeywordsOfBlogs([]);
                                   setBlogLinks([]);
+                                  setSelectedFiles(null);
                                 }
                               }
                             >
@@ -871,7 +928,7 @@ export default function Home() {
                         </div>
                         <div className='flex items-center flex-col mt-5'>
                           {keywordsOFBlogs.length > 0 && <div className="flex items-center gap-1.5" >
-                            <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="These keywords are used to generate Blog article using lille's ai and give you high ranking SEO blog" direction='bottom' className='max-w-[100px]'>
+                            <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="Select keywords as per your choice to add focus, URLs containing the selected keywords will be used to recreate a high ranking SEO blog." direction='top' className='max-w-[100px]'>
                               <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
                             </Tooltip></div>}
                           <div className='flex flex-wrap justify-center gap-2 mt-5'>
@@ -897,7 +954,7 @@ export default function Home() {
                             >
                               <div className="flex items-center">
                                 <h4>Choose Tone/Focus Topics </h4>
-                                <Tooltip content="Improve results by adding tones to your prompt" direction='bottom' className='max-w-[100px]'>
+                                <Tooltip content="Improve results by adding tones to your prompt" direction='top' className='max-w-[100px]'>
                                   <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
                                 </Tooltip>
                               </div>
@@ -939,36 +996,38 @@ export default function Home() {
                               handleRepourpose :
                               handleGenerateClick
                           }
-                          disabled={blogLinks.length === 0 || loadingForKeywords}
                         >
                           {
-                            loadingForKeywords ?
+                            showUserLoadingModal.show == true ?
                               <ReactLoading
                                 type="spin"
                                 color="#fff"
                                 height={20}
                                 width={20}
                               />
-                              : <span className="text-white text-lg font-medium" >
-                                {
-                                  keywordsOFBlogs.length > 0 ? 'Repurpose' : 'Generate'
-                                }
-                              </span>
+                              : <div className="flex items-center justify-around text-white text-lg font-medium" >
+                                <span>
+                                  {
+                                    keywordsOFBlogs.length > 0 ? 'Repurpose' : 'Generate'
+                                  }
+                                </span>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke-width="1.5"
+                                  stroke="currentColor"
+                                  class="w-6 h-6"
+                                >
+                                  <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
+                                  />
+                                </svg>
+                              </div>
                           }
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="1.5"
-                            stroke="currentColor"
-                            class="w-6 h-6"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
-                            />
-                          </svg>
+                         
                         </button>
                       </div>
                     </Tab.Panel>
@@ -1108,21 +1167,21 @@ const AIInputComponent = () => {
 };
 
 
-const Chip = ({ selected, text, handleClick, index, wholeData }) => {
+export const Chip = ({ selected, text, handleClick, index, wholeData }) => {
   console.log(wholeData);
   return <>
-      {
-        wholeData !=null ? (
-          <Tooltip content={wholeData.realSource} direction="top" className="text-xs">
-    <button className={`h-8 px-[18px] py-1.5  rounded-full justify-start items-start gap-2.5 inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick(index)}>
-      <span className=" text-sm font-normal leading-tight">{text}</span>
-    </button>
-  </Tooltip>
-        ):(
+    {
+      wholeData != null ? (
+        <Tooltip content={wholeData.realSource} direction="top" className="text-xs">
           <button className={`h-8 px-[18px] py-1.5  rounded-full justify-start items-start gap-2.5 inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick(index)}>
-      <span className=" text-sm font-normal leading-tight">{text}</span>
-    </button>
-        )
-      }
-    </>
+            <span className=" text-sm font-normal leading-tight">{text}</span>
+          </button>
+        </Tooltip>
+      ) : (
+        <button className={`h-8 px-[18px] py-1.5  rounded-full justify-start items-start gap-2.5 inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick(index)}>
+          <span className=" text-sm font-normal leading-tight">{text}</span>
+        </button>
+      )
+    }
+  </>
 };
