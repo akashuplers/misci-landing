@@ -832,12 +832,14 @@ export default function Home() {
                           <div className="relative w-full min-h-[60px] bg-white rounded-[10px] flex items-center px-2  gap-2.5 border border-gray-600">
                             <RePurpose removeFile={removeFile} value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
 
-                            <label className="w-[100.81px] h-10 flex justify-around cursor-pointer px-2 rounded-lg border border-indigo-600 items-center gap-2.5" htmlFor="refileupload">
-                              <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
-                              <button className="justify-center items-center gap-2 inline-flex ">
-                                <span className="text-indigo-600 text-sm font-normal">Upload</span>
-                              </button>
-                            </label>
+                            <Tooltip content="Select file formats like PDF, DOCX, TXT" direction='top' className='max-w-[100px]'>
+                              <label className="w-[100.81px] h-10 flex justify-around cursor-pointer px-2 rounded-lg border border-indigo-600 items-center gap-2.5" htmlFor="refileupload">
+                                <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
+                                <button className="justify-center items-center gap-2 inline-flex ">
+                                  <span className="text-indigo-600 text-sm font-normal">Upload</span>
+                                </button>
+                              </label>
+                            </Tooltip>
                             <input
                               id="refileupload"
                               accept="application/pdf, .docx, .txt, .rtf"
