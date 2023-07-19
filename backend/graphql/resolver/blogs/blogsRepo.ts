@@ -769,6 +769,11 @@ export const fetchArticleUrls = async ({
     return uniqueUrls
 }
 
+export const getSavedTime = async (db: any, blogId: string) => {
+    return await db.db('lilleBlogs').collection('blogsTime').findOne({
+        blogId: new ObjectID(blogId)
+    })
+}
 
 export const assignTweetQuota = async (db: any, userDetails: any | false = false, quota: any | false = false) => {
     if(userDetails) {

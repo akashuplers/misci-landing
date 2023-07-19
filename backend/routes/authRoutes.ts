@@ -8,7 +8,7 @@ import { createAccessToken, createRefreshToken } from "../utils/accessToken";
 import { validateRegisterInput, validateLoginInput, validateUpdateInput, validateSupportInput } from "../validations/Validations";
 import { encodeURIfix } from "../utils/encode";
 import { authMiddleware } from "../middleWare/authToken";
-import { daysBetween, diff_hours, getDateString, getTimeStamp, monthDiff } from "../utils/date";
+import { daysBetween, diff_hours, getDateString, getTimeStamp, monthDiff, timeFromMins, timeToMins } from "../utils/date";
 import { verify } from "jsonwebtoken";
 import { sendContributionEmail, sendEmails, sendForgotPasswordEmail } from "../utils/mailJetConfig";
 import { assignTweetQuota, fetchUser, publishBlog, updateUserCredit } from "../graphql/resolver/blogs/blogsRepo";
@@ -1443,6 +1443,116 @@ router.post('/request-trial', async (req: any, res: any) => {
   })
 })
 
+router.get('/saved-time', authMiddleware, async (req: any, res: any) => {
+  const db = req.app.get('db')
+  try {
+    const user = req.user
+    if(!user) {
+      return res.status(401).send({
+        type: "ERROR",
+        message: "Not authorised!"
+      })
+    }
+    const userDetails = await fetchUser({id: user.id, db})
+    if(!userDetails) {
+      return res.status(401).send({
+        type: "ERROR",
+        message: "User not found!"
+      })
+    }
+    const totalSavedData = await db.db('lilleBlogs').collection('blogsTime').find({userId: new ObjectID(user.id)}, {
+      projection: {
+        time: 1,
+        date: 1,
+        _id: 0
+      }
+    }).toArray()
+    const currentTimeStamp = getTimeStamp()
+    const todaysDateTimeStamp = getTimeStamp(new Date(getDateString(new Date())))
+    let oneWeekAgoDate: any = new Date()
+    oneWeekAgoDate.setDate(oneWeekAgoDate.getDate() - 7)
+    oneWeekAgoDate = getTimeStamp(oneWeekAgoDate)
+    let oneMonthAgoDate: any = new Date()
+    oneMonthAgoDate.setMonth(oneMonthAgoDate.getMonth() - 1);
+    oneMonthAgoDate = getTimeStamp(oneMonthAgoDate)
+    // console.log(totalSavedData, getTimeStamp(new Date(todaysDate)))
+    if(totalSavedData && totalSavedData.length) {
+      let daySaved = 0
+      let weekSaved = 0
+      let monthSaved = 0
+      totalSavedData?.forEach((data: {time: string, date: number}) => {
+        if(data.date <= currentTimeStamp && data.date >= todaysDateTimeStamp) {
+          daySaved += timeToMins(data.time)
+        }
+        if(data.date <= currentTimeStamp && data.date >= oneWeekAgoDate) {
+          weekSaved += timeToMins(data.time)
+        }
+        if(data.date <= currentTimeStamp && data.date >= oneMonthAgoDate) {
+          monthSaved += timeToMins(data.time)
+        }
+      })
+      const oneDaySavedTime = timeFromMins(daySaved)
+      const oneWeekSavedTime = timeFromMins(weekSaved)
+      const oneMonthSavedTime = timeFromMins(monthSaved)
+      console.log(daySaved, oneDaySavedTime, oneWeekAgoDate, oneWeekSavedTime, oneMonthAgoDate, oneMonthSavedTime)
+      return res.status(200).send({
+        type: "SUCCESS",
+        message: "Total Saved Time!",
+        data: {
+          oneDaySavedTime,
+          oneWeekSavedTime,
+          oneMonthSavedTime
+        }
+      })
+    }
+  }catch(e){
+    return res.status(500).send({
+      type: "ERROR",
+      message: e.message
+    })
+  }
+})
+
+router.post('/add-time-saved', async (req: any, res: any) => {
+  const db = req.app.get('db')
+  const {userId, blogId, time, type} = req.body
+  try {
+    if(!userId) {
+      return res.status(400).send({
+        type: "ERROR",
+        message: "No user id found!"
+      })
+    }
+    const blog = await db.db('lilleBlogs').collection('blogs').findOne({
+      _id: new ObjectID(blogId)
+    })
+    if(!blog) {
+      return res.status(400).send({
+        type: "ERROR",
+        message: "Blog not found!"
+      })
+    }
+    await db.db('lilleBlogs').collection('blogsTime').updateOne({blogId: new ObjectID(blogId)}, 
+    {$set: {
+      userId: new ObjectID(userId),
+      blogId: new ObjectID(blogId),
+      time,
+      type,
+      date: getTimeStamp()
+    }}, 
+    {upsert: true})
+    return res.status(200).send({
+      type: "SUCCESS",
+      message: "Time Added!"
+    })
+  }catch(e){
+    return res.status(500).send({
+      type: "ERROR",
+      message: e.message
+    })
+  }
+})
+
 router.post('/prompt-test', async (req: any, res: any) => {
   const db = req.app.get('db')
   console.log(req.body)
@@ -1464,7 +1574,7 @@ router.post('/prompt-test', async (req: any, res: any) => {
     return res.status(500).send({
       type: "ERROR",
       message: e.message
-  })
+    })
   }
 })
 

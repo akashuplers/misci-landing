@@ -36,8 +36,8 @@ export const getBeginningOfTheWeek = (now: Date) => {
   return getDateString(now);
 };
 
-export const getTimeStamp = () => {
-  return Math.round(new Date().getTime() / 1000) 
+export const getTimeStamp = (date: Date | null = null) => {
+  return date ? Math.round(date.getTime() / 1000) : Math.round(new Date().getTime() / 1000) 
 }
 
 export function diff_minutes(dt2: Date, dt1: Date) 
@@ -79,4 +79,18 @@ export const diff_hours = (dt2: Date, dt1: Date) =>
  diff /= (60 * 60);
  return Math.abs(Math.round(diff));
  
+}
+
+export const timeToMins = (time:string) => {
+  const b: any = time.split(':');
+  return b[0]*60 + +b[1];
+}
+
+// Convert minutes to a time in format hh:mm
+// Returned value is in range 00  to 24 hrs
+export const timeFromMins = (mins: any) => {
+  function z(n: any){return (n<10? '0':'') + n;}
+  var h = (mins/60 |0) % 24;
+  var m = mins % 60;
+  return z(h) + ':' + z(m);
 }
