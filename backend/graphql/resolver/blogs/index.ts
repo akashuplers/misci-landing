@@ -2,7 +2,7 @@ import { withFilter } from 'graphql-subscriptions';
 import { BlogListArgs, FetchBlog, GenerateBlogMutationArg, IRNotifiyArgs, ReGenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
 import { pubsub } from '../../../pubsub';
 import { ObjectID } from 'bson';
-import { blogGeneration, deleteBlog, fetchBlog, fetchBlogByUser, fetchBlogIdeas, fetchUser, publishBlog, updateUserCredit, deleteBlogIdeas, fetchUsedBlogIdeasByIdea, fetchArticleById, fetchArticleUrls } from './blogsRepo';
+import { blogGeneration, deleteBlog, fetchBlog, fetchBlogByUser, fetchBlogIdeas, fetchUser, publishBlog, updateUserCredit, deleteBlogIdeas, fetchUsedBlogIdeasByIdea, fetchArticleById, fetchArticleUrls, getSavedTime } from './blogsRepo';
 import { Python } from '../../../services/python';
 import { diff_minutes, getTimeStamp } from '../../../utils/date';
 import { sendEmails } from '../../../utils/mailJetConfig';
@@ -54,11 +54,12 @@ export const blogResolvers = {
                 }                
                 blogIdeas?.freshIdeas?.forEach((idea: any) => idea.article_id ? freshIdeasArticle.push(idea.article_id) : false)
                 if(blogDetails && freshIdeasArticle && freshIdeasArticle.length) refUrlsFreshIdeas = await fetchArticleUrls({db, articleId: freshIdeasArticle})
+                const savedTimeData = await getSavedTime(db, blogDetails._id)
                 return {...blogDetails, ideas: {
                     ...blogIdeas,
                     ideas: updatedIdeas,
                     freshIdeas: updatedFreshIdeas?.length ? updatedFreshIdeas : null
-                }, references: refUrls, freshIdeasReferences:refUrlsFreshIdeas}
+                }, references: refUrls, freshIdeasReferences:refUrlsFreshIdeas, savedTime: savedTimeData ? savedTimeData.time : null}
             }catch(e) {
                 console.log(e)
             }

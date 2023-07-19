@@ -38,6 +38,7 @@ type Blog {
     respTime: Float
     imageSrc: String
     imageUrl: String
+    savedTime: String
 }
 
 type UrlObj {
