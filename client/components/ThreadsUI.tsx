@@ -109,8 +109,7 @@ const Threads = ({
               <>
                 <span>
                   Lille allows <strong>{totalTwitterQuota}</strong> Twitter
-                  credits per day. This thread is using
-                  <strong>{threadData.length}</strong> twitter credits.
+                  credits per day. This thread is using <strong>{threadData.length}</strong> twitter credits.
                 </span>
               </>
             ) : (

@@ -829,20 +829,24 @@ export default function Home() {
                                 setFileInput(fileInput);
                                 setSelectedFile(e.target.files[0]);
                                 const filesArray = Array.from(e.target.files);
+                                filesArray.push(...selectedFiles);
+                                console.log(filesArray);
                                 setSelectedFiles(filesArray);
-                                if (fileInput.files && fileInput.files.length > 0) {
-                                  const newLinks = filesArray.map((file, index) => ({
-                                    label: file.name,
-                                    value: file.name,
-                                    selected: false,
-                                    id: file.name,
-                                    index: blogLinks.length + index + 1,
-                                    type: 'file',
-                                  }));
-                                  setBlogLinks([...blogLinks, ...newLinks]);
-                                } else {
-                                  toast.error('File not uploaded');
-                                }                            
+                                if(Array.from(e.target.files).length > 0){
+                                  if (fileInput.files && fileInput.files.length > 0) {
+                                    const newLinks = filesArray.map((file, index) => ({
+                                      label: file.name,
+                                      value: file.name,
+                                      selected: false,
+                                      id: file.name,
+                                      index: blogLinks.length + index + 1,
+                                      type: 'file',
+                                    }));
+                                    setBlogLinks([...blogLinks, ...newLinks]);
+                                  } else {
+                                    toast.error('File not uploaded');
+                                  } 
+                                }                          
                               }}
                               className="hidden"
                             />
