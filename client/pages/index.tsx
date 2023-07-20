@@ -22,11 +22,12 @@ import { meeAPI } from "../graphql/querys/mee";
 import { extractKeywordsAndIds, getDateMonthYear, getIdFromUniqueName, isMonthAfterJune, keywordsUniqueName, uploadAndExtractKeywords } from "../helpers/helper";
 import OTPModal from "../modals/OTPModal";
 import PreferencesModal from "../modals/PreferencesModal";
-import useStore from "../store/store";
+import useStore, { useFunctionStore } from "../store/store";
 import { Tab } from "@headlessui/react";
 import ReactLoading from "react-loading";
-import { CloudArrowUpIcon } from "@heroicons/react/24/outline";
+import { CloudArrowUpIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { checkFileFormatAndSize } from "@/components/DashboardInsights";
+import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
 
 const PAYMENT_PATH = "/?payment=true";
 const TONES = [
@@ -84,6 +85,24 @@ export default function Home() {
   const [fileValid, setFileValid] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileInputNames, setFileInputNames] = useState([]);
+  const [showFileUploadUI, setShowFileUploadUI] = useState(false);
+  const addToFunctionStack = useFunctionStore((state) => state.addToStack);
+
+  const executeLastFunction = useFunctionStore((state) => state.executeLastFunction);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        executeLastFunction();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [executeLastFunction]);
   const removeFile = (fileName) => {
     setSelectedFiles((prevFiles) => prevFiles.filter((file) => file !== fileName));
   };
@@ -626,9 +645,12 @@ export default function Home() {
           <></>
         )}
 
+        {/* <TotalTImeSaved   /> */}
+        
         {!meeData?.me?.isSubscribed && meeData?.me?.credits === 0 && (
           <TrialEndedModal setTrailModal={() => { }} topic={null} />
         )}
+
         <div
           className={`relative px-6 pt-5 lg:px-8 ${!isAuthenticated && "md:min-h-screen"
             }`}
@@ -739,8 +761,7 @@ export default function Home() {
             <div className={`mx-auto max-w-3xl text-center h-screen flex items-center justify-center ${isAuthenticated ? 'lg:h-full' : 'lg:max-h-[1000px]'} `}>
               <div>
                 <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
-                  Automate, <span className="text-indigo-700">Amplify,</span>{" "}
-                  Achieve.
+                  <span className="text-indigo-700">Lille.ai,</span> your <span className="text-indigo-700">Research</span> Co-Pilot 
                 </div>
                 <div className="relative flex text-xl items-center  justify-center font-medium tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap custom-spacing">
                   Your AI-powered content partner that doesn't dream, it
@@ -824,125 +845,160 @@ export default function Home() {
                         <div className="w-full h-6 justify-center items-center gap-1.5 inline-flex">
                           <div className="text-center text-slate-600 text-ase font-normal">Lille will help you to Repurpose the whole blog</div>
                           <Tooltip content="Add your content URLs, We will help you recreate blog on the basis of keywords and tones  selected by you.
-" direction='bottom' className='max-w-[100px]'>
+" direction='top' className='max-w-[100px]'>
                             <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
                           </Tooltip>
                         </div>
-                        <div className="w-full h-full justify-center items-center gap-2.5 inline-flex px-2">
-                          <div className="relative w-full min-h-[60px] bg-white rounded-[10px] flex items-center px-2  gap-2.5 border border-gray-600">
-                            <RePurpose removeFile={removeFile} value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
+                        <div className="w-full h-full justify-center items-center gap-2.5 inline-flex">
+                          <div className="relative w-full min-h-[60px] bg-white rounded-[10px]  border border-gray-600 py-2.5">
 
-                            <Tooltip content="Select file formats like PDF, DOCX, TXT" direction='top' className='max-w-[100px]'>
-                              <label className="w-[100.81px] h-10 flex justify-around cursor-pointer px-2 rounded-lg border border-indigo-600 items-center gap-2.5" htmlFor="refileupload">
+                            {showFileUploadUI == true &&
+
+                              <div className="flex items-center justify-between px-5">
+                                <h1>Upload</h1>
+                                <button onClick={
+                                  () => { setShowFileUploadUI(false) }}
+                                >
+                                  <XCircleIcon className='h-6 w-6 text-indigo-600' />
+                                </button>
+                              </div>
+                            }
+                            <div className="flex items-center px-2  gap-2.5">
+                              <RePurpose removeFile={removeFile} value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
+
+                              {showFileUploadUI != true && <div onClick={
+                                () => {
+                                  setShowFileUploadUI(true);
+                                  addToFunctionStack(() => { setShowFileUploadUI(false) })
+                                }
+                              } className="w-[100.81px] h-10 flex justify-around cursor-pointer px-2 rounded-lg border border-indigo-600 items-center gap-2.5">
                                 <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
                                 <button className="justify-center items-center gap-2 inline-flex ">
                                   <span className="text-indigo-600 text-sm font-normal">Upload</span>
                                 </button>
-                              </label>
-                            </Tooltip>
-                            <input
-                              id="refileupload"
-                              accept="application/pdf, .docx, .txt, .rtf"
-                              type="file"
-                              multiple={true}
-                              max-size="500000"
-                              onChange={(e) => {
-                                // check format
+                              </div>
+                              }
 
-                                const allowedFormats = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain", "text/rtf"];
-                                const maxSize = 500000; // 5MB in bytes
+                            </div>
 
-                                const files = e.target.files;
+                            {showFileUploadUI == true &&
+                              <div>
+                                
+                                <h3>
+                                  Drag or Drop file <Tooltip content="Select file formats like PDF, DOCX, TXT" direction='top' className='max-w-[100px]'>
+                                    <label className="w-[100.81px] h-10 flex justify-around cursor-pointer px-2 rounded-lg border border-indigo-600 items-center gap-2.5" htmlFor="refileupload">
+                                      <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
+                                      <button className="justify-center items-center gap-2 inline-flex ">
+                                        <span className="text-indigo-600 text-sm font-normal">Upload</span>
+                                      </button>
+                                    </label>
+                                    <input
+                                      id="refileupload"
+                                      accept="application/pdf, .docx, .txt, .rtf"
+                                      type="file"
+                                      multiple={true}
+                                      max-size="500000"
+                                      onChange={(e) => {
+                                        // check format
 
-                                // Check if files are selected
-                                if (files.length === 0) {
-                                  toast.warn("Please select at least one file.");
-                                  return;
-                                }
+                                        const allowedFormats = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain", "text/rtf"];
+                                        const maxSize = 500000; // 5MB in bytes
 
-                                // Iterate through each selected file
-                                for (let i = 0; i < files.length; i++) {
-                                  const file = files[i];
+                                        const files = e.target.files;
 
-                                  // Check file format
-                                  if (!allowedFormats.includes(file.type)) {
-                                    toast.error(`File format not allowed for ${file.name}.`);
-                                    e.target.value = ''; // Reset file input to clear selected files
-                                    return;
-                                  }
+                                        // Check if files are selected
+                                        if (files.length === 0) {
+                                          toast.warn("Please select at least one file.");
+                                          return;
+                                        }
 
-                                  // Check file size
-                                  if (file.size > maxSize) {
-                                    toast.error(`File size exceeds the limit for ${file.name}. Maximum size allowed is 5MB.`);
-                                    e.target.value = ''; // Reset file input to clear selected files
-                                    return;
-                                  }
-                                }
-                                const fileInput = e.target;
-                                setFileInput(fileInput);
-                                setSelectedFile(e.target.files[0]);
-                                const filesArray = Array.from(e.target.files);
-                                // check if file with this name and last modified date already exists
-                                const currentFiles = blogLinks.filter((link) => link.type === 'file');
-                                const selectedFilesByUser = filesArray.map((file, index) => ({
-                                  label: file.name,
-                                  value: file.name,
-                                  selected: false,
-                                  id: file.name,
-                                  index: currentFiles.length + index + 1,
-                                  type: 'file',
-                                }));
+                                        // Iterate through each selected file
+                                        for (let i = 0; i < files.length; i++) {
+                                          const file = files[i];
 
-                                let isFileExists = false;
-                                selectedFilesByUser.forEach((file) => {
-                                  const doesFileExist = currentFiles.find((currentFile) => currentFile.id === file.id);
-                                  if (doesFileExist) {
-                                    toast.error(`File ${file.name} already exists`);
-                                    isFileExists = true;
-                                    return;
-                                  }
-                                });
-                                if (isFileExists) {
-                                  return;
-                                } else {
-                                  const currentFiles = [...selectedFiles];
-                                  currentFiles.push(...filesArray);
-                                  setSelectedFiles(currentFiles);
-                                }
-                                console.log("FILE ARRAY |")
-                                console.log(filesArray);
-                                if (blogLinks.length > 3) {
-                                  toast.error('You can upload max 3 files or URLs');
-                                  return;
-                                }
-                                if (Array.from(e.target.files).length > 0) {
-                                  if (fileInput.files && fileInput.files.length > 0) {
-                                    console.log(Array.from(e.target.files).length);
-                                    const newLinks = Array.from(e.target.files).map((file, index) => ({
-                                      label: file.name,
-                                      value: file.name,
-                                      selected: false,
-                                      id: file.name,
-                                      index: blogLinks.length + index + 1,
-                                      type: 'file',
-                                    }));
-                                    console.log('PREV BLOG LINKS');
-                                    console.log(blogLinks)
-                                    const updatedBlogLinks = [...blogLinks, ...newLinks];
-                                    // filter with uniqu id's 
-                                    updatedBlogLinks.filter((link, index, self) =>
-                                      index === self.findIndex((t) => (
-                                        t.id === link.id
-                                      ))
-                                    )
-                                    setBlogLinks(updatedBlogLinks);
-                                  } else {
-                                    toast.error('File not uploaded');
-                                  }
-                                }
-                              }}
-                              className="hidden"
-                            />
+                                          // Check file format
+                                          if (!allowedFormats.includes(file.type)) {
+                                            toast.error(`File format not allowed for ${file.name}.`);
+                                            e.target.value = ''; // Reset file input to clear selected files
+                                            return;
+                                          }
+
+                                          // Check file size
+                                          if (file.size > maxSize) {
+                                            toast.error(`File size exceeds the limit for ${file.name}. Maximum size allowed is 5MB.`);
+                                            e.target.value = ''; // Reset file input to clear selected files
+                                            return;
+                                          }
+                                        }
+                                        const fileInput = e.target;
+                                        setFileInput(fileInput);
+                                        setSelectedFile(e.target.files[0]);
+                                        const filesArray = Array.from(e.target.files);
+                                        // check if file with this name and last modified date already exists
+                                        const currentFiles = blogLinks.filter((link) => link.type === 'file');
+                                        const selectedFilesByUser = filesArray.map((file, index) => ({
+                                          label: file.name,
+                                          value: file.name,
+                                          selected: false,
+                                          id: file.name,
+                                          index: currentFiles.length + index + 1,
+                                          type: 'file',
+                                        }));
+
+                                        let isFileExists = false;
+                                        selectedFilesByUser.forEach((file) => {
+                                          const doesFileExist = currentFiles.find((currentFile) => currentFile.id === file.id);
+                                          if (doesFileExist) {
+                                            toast.error(`File ${file.name} already exists`);
+                                            isFileExists = true;
+                                            return;
+                                          }
+                                        });
+                                        if (isFileExists) {
+                                          return;
+                                        } else {
+                                          const currentFiles = [...selectedFiles];
+                                          currentFiles.push(...filesArray);
+                                          setSelectedFiles(currentFiles);
+                                        }
+                                        console.log("FILE ARRAY |")
+                                        console.log(filesArray);
+                                        if (blogLinks.length > 3) {
+                                          toast.error('You can upload max 3 files or URLs');
+                                          return;
+                                        }
+                                        if (Array.from(e.target.files).length > 0) {
+                                          if (fileInput.files && fileInput.files.length > 0) {
+                                            console.log(Array.from(e.target.files).length);
+                                            const newLinks = Array.from(e.target.files).map((file, index) => ({
+                                              label: file.name,
+                                              value: file.name,
+                                              selected: false,
+                                              id: file.name,
+                                              index: blogLinks.length + index + 1,
+                                              type: 'file',
+                                            }));
+                                            console.log('PREV BLOG LINKS');
+                                            console.log(blogLinks)
+                                            const updatedBlogLinks = [...blogLinks, ...newLinks];
+                                            // filter with uniqu id's 
+                                            updatedBlogLinks.filter((link, index, self) =>
+                                              index === self.findIndex((t) => (
+                                                t.id === link.id
+                                              ))
+                                            )
+                                            setBlogLinks(updatedBlogLinks);
+                                          } else {
+                                            toast.error('File not uploaded');
+                                          }
+                                        }
+                                      }}
+                                      className="hidden"
+                                    />
+                                  </Tooltip>
+                                </h3>
+                              </div>
+                            }
                           </div>
                           {
                             keywordsOFBlogs.length > 0 &&

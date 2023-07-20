@@ -822,7 +822,7 @@ export default function Settings() {
                                         setlinkedin(false);
                                       }}
                                     >
-                                      Logout Linkedin
+                                      Logout from Linkedin
                                     </button>
                                   ) : (
                                     <></>
