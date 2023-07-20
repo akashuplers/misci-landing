@@ -695,9 +695,10 @@ export function UserSaveTime(data) {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        <Menu.Button className="border inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50">
+        <Menu.Button className="relative inline-flex w-full justify-center gap-x-1.5 rounded-md bg-indigo-100 px-3 py-2 text-sm font-semibold text-gray-900 hover:opacity-75 border-indigo-600 border-l-8  outline-white">
+{/* small width verticial line */}
           <ClockIcon className="h-5 w-5" aria-hidden="true" />
-          {`Time Saved for the ${selectedOption} - ${data[selectedOption]?.hours} h : ${data[selectedOption]?.minutes} m`}
+          <span className="font-light">Time Saved for the {selectedOption}</span> {`- ${data[selectedOption]?.hours} h : ${data[selectedOption]?.minutes} m`}
           <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
         </Menu.Button>
       </div>
@@ -713,7 +714,6 @@ export function UserSaveTime(data) {
       >
         <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="py-1">
-
             {
               Object.keys(data).map((key, index) => {
                 return (
@@ -731,7 +731,7 @@ export function UserSaveTime(data) {
                           console.log(data[key]);
                         }}
                       >
-                        <div className="flex justify-between items-center">
+                        <div className="flex text-indigo-600 justify-between items-center">
                           <div>{key}</div>
                           <div>{data[key].seconds}</div>
                         </div>
