@@ -152,3 +152,20 @@ export const useBlogDataStore = create((set) => ({
   blogData: [],
   setBlogData: (blogData) => set({ blogData }),
 }));
+
+export const useFunctionStore = create((set) => ({
+  functionStack: [],
+  addToStack: (func) => {
+    set((state) => ({ functionStack: [...state.functionStack, func] }));
+  },
+  executeLastFunction: () => {
+    set((state) => {
+      if (state.functionStack.length > 0) {
+        const lastFunction = state.functionStack.pop();
+        lastFunction();
+        return { functionStack: [...state.functionStack] };
+      }
+      return state;
+    });
+  },
+}));

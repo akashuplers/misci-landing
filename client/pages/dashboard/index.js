@@ -19,6 +19,8 @@ import { jsonToHtml } from "../../helpers/helper";
 import ReactLoading from "react-loading";
 import useStore, { useBlogDataStore, useByMeCoffeModal, useTabOptionStore } from "../../store/store";
 import { TYPES_OF_GENERATE } from "..";
+import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
+import useUserTimeSave from "@/hooks/useUserTimeSave";
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
     event.stopImmediatePropagation();
@@ -28,9 +30,10 @@ if (typeof window !== "undefined") {
 dashboard.getInitialProps = ({ query }) => {
   return { query };
 };
+const DEFAULT_TIME_MULTIPLE = 30;
 
 export default function dashboard({ query }) {
-  var { topic, type} = query;
+  var { topic, type } = query;
   const router = useRouter();
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const [ideas, setIdeas] = useState([]);
@@ -58,9 +61,10 @@ export default function dashboard({ query }) {
   // const [showContributionModal, setShowContributionModal] = useState(false);
   const [isPublish, seIsPublish] = useState(false);
   const [showOTPModal, setShowOTPModal] = useState(false);
-  
-  console.log('MEE DATA GET IN ZUSLAND');
 
+  console.log('MEE DATA GET IN ZUSLAND');
+  const { userTimeSave, loading: userDataLoading, error: userDataError } = useUserTimeSave();
+  // const {}
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -134,13 +138,13 @@ export default function dashboard({ query }) {
   const handleDisclaimerPopup = () => setDisclaimerCheck((prev) => !prev);
 
   useEffect(() => {
-    if(type != undefined && type && type===TYPES_OF_GENERATE.REPURPOSE){
-          
-    }else{
+    if (type != undefined && type && type === TYPES_OF_GENERATE.REPURPOSE) {
+
+    } else {
       if (!topic && !bid && !loginProcess) {
         alert("Blog was not saved.\nPlease generate the blog again");
         window.location.href = "/";
-        }
+      }
     }
   }, []);
 
@@ -342,7 +346,7 @@ export default function dashboard({ query }) {
         user_id: getToken ? getUserId : getTempId,
         keyword: topic ? topic : keyword,
       }
-      if(TYPE && TYPE === TYPES_OF_GENERATE.REPURPOSE){
+      if (TYPE && TYPE === TYPES_OF_GENERATE.REPURPOSE) {
         // const optionsForRepurpose = router.query.options;
         var optionsObj = JSON.parse(localStorage.getItem('optionsForRepurpose'));
         optionsObj = {
@@ -538,6 +542,8 @@ You can add your own image, click on the image and use image options icon.`}
           )}
           <MoveToRegenPanel />
 
+          {isAuthenticated && loading != true && data && <TotalTImeSaved timeSaved={data?.generate?.respTime * DEFAULT_TIME_MULTIPLE} blogId={blog_id} />
+          }
           <div className="relative tiny_mce_width">
             <TinyMCEEditor
               topic={topic}
