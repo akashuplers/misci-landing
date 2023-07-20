@@ -761,7 +761,8 @@ export default function Home() {
             <div className={`mx-auto max-w-3xl text-center h-screen flex items-center justify-center ${isAuthenticated ? 'lg:h-full' : 'lg:max-h-[1000px]'} `}>
               <div>
                 <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
-                  <span className="text-indigo-700">Lille.ai,</span> your <span className="text-indigo-700">Research</span> Co-Pilot 
+                  Automate, <span className="text-indigo-700">Amplify,</span>{" "}
+                  Achieve.
                 </div>
                 <div className="relative flex text-xl items-center  justify-center font-medium tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap custom-spacing">
                   Your AI-powered content partner that doesn't dream, it
@@ -855,7 +856,7 @@ export default function Home() {
                             {showFileUploadUI == true &&
 
                               <div className="flex items-center justify-between px-5">
-                                <h1>Upload</h1>
+                                <h1></h1>
                                 <button onClick={
                                   () => { setShowFileUploadUI(false) }}
                                 >
@@ -885,7 +886,7 @@ export default function Home() {
                               <div>
                                 
                                 <h3>
-                                  Drag or Drop file <Tooltip content="Select file formats like PDF, DOCX, TXT" direction='top' className='max-w-[100px]'>
+                                  <Tooltip content="Select file formats like PDF, DOCX, TXT" direction='top' className='max-w-[100px]'>
                                     <label className="w-[100.81px] h-10 flex justify-around cursor-pointer px-2 rounded-lg border border-indigo-600 items-center gap-2.5" htmlFor="refileupload">
                                       <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
                                       <button className="justify-center items-center gap-2 inline-flex ">
