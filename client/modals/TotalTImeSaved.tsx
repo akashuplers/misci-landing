@@ -7,13 +7,15 @@ import { formatMinutesToTimeString } from "@/helpers/helper";
 export function TotalTImeSaved({
   timeSaved,
   blogId,
-}) {
+}:any) 
+
+{
  const [modalIsOpen, setIsOpen] = useState(true);
- const [editedHours, setEditedMinutes] = useState({
+ const [editedHours, setEditedMinutes] :any = useState({
   minutes: formatMinutesToTimeString(timeSaved).minutes,
   seconds: formatMinutesToTimeString(timeSaved).seconds,
- });
- const {response, error, loading, sendSavedTime} = useSendSavedTimeOfUser();
+ } as any);
+ const {response, error, loading, sendSavedTime}:any = useSendSavedTimeOfUser();
  useEffect(() => {
   if(response!=null){
     if(response?.type === "SUCCESS"){
@@ -50,7 +52,7 @@ export function TotalTImeSaved({
             type="number"
             value={editedHours.minutes}
             onChange={(e) => 
-              setEditedMinutes((prev)=>{
+              setEditedMinutes((prev :any)=>{
                 return {
                   ...prev,
                   minutes: e.target.value
@@ -64,7 +66,7 @@ export function TotalTImeSaved({
           <input
             type="number"
             value={editedHours.seconds}
-            onChange={(e) => setEditedMinutes((prev)=>{
+            onChange={(e) => setEditedMinutes((prev:any)=>{
               return {
                 ...prev,
                 seconds: e.target.value
