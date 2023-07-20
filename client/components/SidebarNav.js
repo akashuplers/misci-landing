@@ -529,7 +529,7 @@ export default function Sidebar() {
                   }}
                 >
                   {
-                    userTimeSaveLoading != true && <UserSaveTime data={userTimeSave} />
+                    userTimeSaveLoading != true && meeData?.me?.totalCredits && <UserSaveTime data={userTimeSave} />
                   }
                   {!meeLoading && (
                     <div
