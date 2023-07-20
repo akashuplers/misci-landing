@@ -825,8 +825,8 @@ export default function Home() {
                       )}
                     </Tab>
                   </Tab.List>
-                  <Tab.Panels>
-                    <Tab.Panel>
+                  <Tab.Panels className={`outline-none`}>
+                    <Tab.Panel className={`outline-none`}>
                       <div className="p-4 mt-4 lg:mt-2">
                         Try some of our trending topics.
                       </div>
@@ -841,7 +841,7 @@ export default function Home() {
                       )}
                       <AIInputComponent />
                     </Tab.Panel>
-                    <Tab.Panel>
+                    <Tab.Panel className={`outline-none`}>
                       <div className="w-full lg:w-[650px] h-full opacity-90 flex-col justify-center mt-10 items-center gap-[18px] inline-flex bg-transparent rounded-[10px]">
                         <div className="w-full h-6 justify-center items-center gap-1.5 inline-flex">
                           <div className="text-center text-slate-600 text-ase font-normal">Lille will help you to Repurpose the whole blog</div>
