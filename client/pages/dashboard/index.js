@@ -137,7 +137,7 @@ export default function dashboard({ query }) {
 
   const handleDisclaimerPopup = () => setDisclaimerCheck((prev) => !prev);
 
-  const {refreshData:refreshDataForUserTime} = useUserTimeSave();
+  const {handleManualRefresh:refreshDataForUserTime} = useUserTimeSave();
 
   useEffect(() => {
     if (type != undefined && type && type === TYPES_OF_GENERATE.REPURPOSE) {
