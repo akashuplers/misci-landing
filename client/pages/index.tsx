@@ -10,7 +10,7 @@ import { ArrowRightCircleIcon, InformationCircleIcon } from "@heroicons/react/20
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Confetti from "react-confetti";
 import Marquee from "react-fast-marquee";
 import { ToastContainer, toast } from "react-toastify";
@@ -89,7 +89,7 @@ export default function Home() {
   const addToFunctionStack = useFunctionStore((state) => state.addToStack);
 
   const executeLastFunction = useFunctionStore((state) => state.executeLastFunction);
-
+  const inputFilesRef = useRef(null);
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') {
@@ -625,7 +625,6 @@ export default function Home() {
       {isPayment && (
         <Confetti width={windowWidth} recycle={false} numberOfPieces={2000} />
       )}
-
       <Layout>
         <ToastContainer />
         {pfmodal && (
@@ -887,12 +886,18 @@ export default function Home() {
                                 
                                 <h3>
                                   <Tooltip content="Select file formats like PDF, DOCX, TXT" direction='top' className='max-w-[100px]'>
-                                    <label className="w-[100.81px] h-10 flex justify-around cursor-pointer px-2 rounded-lg border border-indigo-600 items-center gap-2.5" htmlFor="refileupload">
+                                    <button 
+                                    onClick={
+                                      () => {
+                                        inputFilesRef.current.click();
+                                      }
+                                    }
+                                    className="w-[100.81px] h-10 flex justify-around cursor-pointer px-2 rounded-lg border border-indigo-600 items-center gap-2.5" htmlFor="refileupload">
                                       <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
                                       <button className="justify-center items-center gap-2 inline-flex ">
                                         <span className="text-indigo-600 text-sm font-normal">Upload</span>
                                       </button>
-                                    </label>
+                                    </button>
                                   </Tooltip>
 
                                     <input
@@ -900,6 +905,7 @@ export default function Home() {
                                       accept="application/pdf, .docx, .txt, .rtf"
                                       type="file"
                                       multiple={true}
+                                      ref={inputFilesRef}
                                       max-size="500000"
                                       onChange={(e) => {
                                         const allowedFormats = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain", "text/rtf"];
