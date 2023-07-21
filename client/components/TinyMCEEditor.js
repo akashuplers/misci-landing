@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import ReactLoading from "react-loading";
+import useUserTimeSave from "../hooks/useUserTimeSave";
 import Modal from "react-modal";
 import {
   EmailIcon,
@@ -48,6 +49,7 @@ import { BottomTabBar } from "./BottomTabBar";
 import LoaderPlane from "./LoaderPlane";
 import Threads from "./ThreadsUI";
 import TrialEndedModal from "./TrialEndedModal";
+import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 );
@@ -120,7 +122,8 @@ export default function TinyMCEEditor({
   const [isEditorTextUpdated, setIsEditorTextUpdated] = useState(false);
   const [initailEditorText, setInitailEditorText] = useState(editorText);
   const { twitterThreadData, setTwitterThreadData } = useTwitterThreadStore();
-  // const {}
+  
+
   const [prevTwitterThreads, setPrevTwitterThreads] =
     useState(twitterThreadData);
   const [pauseTwitterPublish, setPauseTwitterPublish] = useState(false);
@@ -520,7 +523,7 @@ export default function TinyMCEEditor({
     UpdateBlog,
     { data: updateData, loading: updateLoading, error: updateError },
   ] = useMutation(updateBlog);
-
+  
   const handleSave = async (redirectUser = true, showToast = true) => {
     console.log("user-save");
 

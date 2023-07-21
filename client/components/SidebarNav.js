@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import ReactLoading from "react-loading";
 import useStore, {
   useBlogDataStore,
   useTabOptionStore,
@@ -6,11 +7,13 @@ import useStore, {
   useTwitterThreadStore,
 } from "@/store/store";
 import { useQuery } from "@apollo/client";
-import { Dialog, Transition } from "@headlessui/react";
+import { Dialog, Menu, Transition } from "@headlessui/react";
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import {
   ArrowRightOnRectangleIcon,
   Bars3Icon,
+  ChevronDownIcon,
+  ClockIcon,
   FolderIcon,
   PaperAirplaneIcon,
   PlusCircleIcon,
@@ -25,6 +28,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { meeAPI } from "../graphql/querys/mee";
 import { logout } from "../helpers/helper";
 import { LocalCreditCardIcon } from "./localicons/localicons";
+import useUserTimeSave from "@/hooks/useUserTimeSave";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -192,7 +196,24 @@ export default function Sidebar() {
     setShowTwitterThreadUI(false);
     setTwitterThreadData([]);
   }
-  useEffect(() => { console.log('mee data'); console.log(meeData) }, [meeData])
+  useEffect(() => { console.log('mee data'); console.log(meeData) }, [meeData]);
+  const [selectedOption, setSelectedOption] = useState('today');
+  const [savedTime, setSavedTime] = useState('00:00');
+
+  // Function to update the saved time based on the selected option
+  const updateSavedTime = (option) => {
+    // You can implement the logic to fetch the saved time from the API based on the selected option
+    // For now, we'll just use a dummy value.
+    let newSavedTime = '00:00';
+    if (option === 'week') {
+      newSavedTime = '10:30';
+    } else if (option === 'month') {
+      newSavedTime = '25:15';
+    }
+
+    setSavedTime(newSavedTime);
+  };
+  const { userTimeSave, loading: userTimeSaveLoading, error } = useUserTimeSave();
   return (
     <>
       <ToastContainer />
@@ -508,6 +529,9 @@ export default function Sidebar() {
                     gap: "2em",
                   }}
                 >
+                  {
+                    meeData?.me?.totalCredits  && <UserSaveTime data={userTimeSave} dataLoading={userTimeSaveLoading} />
+                  }
                   {!meeLoading && (
                     <div
                       className="flex text-center font-bold text-sm w-auto rounded border border-gray"
@@ -520,6 +544,7 @@ export default function Sidebar() {
                       </div>
                     </div>
                   )}
+
                   {!meeLoading && (
                     <Link
                       // className=" w-[50px]"
@@ -659,4 +684,77 @@ export default function Sidebar() {
       </div>
     </>
   );
+}
+
+
+export function UserSaveTime(data, dataLoading) {
+  // const [selectedOption, setSelectedOption] = useState(data[);
+  // firstdata
+  console.log(data.data);
+  data = data.data;
+  const [selectedOption, setSelectedOption] = useState('Day');
+
+  return (
+    <Menu as="div" className="relative inline-block text-left">
+      <div>
+        <Menu.Button className="relative inline-flex w-full justify-center items-center gap-x-1.5 rounded-md bg-indigo-100 px-3 py-2 text-sm font-semibold text-gray-900 hover:opacity-75 border-indigo-600 border-l-8  outline-white">
+          {/* small width verticial line */}
+          <ClockIcon className="h-5 w-5" aria-hidden="true" />
+          <span className="font-light">Time Saved for the {selectedOption}</span> {data == null || dataLoading == true ? <ReactLoading
+            width={25}
+            height={25}
+            round={true}
+          /> :
+            data && `- ${data[selectedOption]?.hours} h : ${data[selectedOption]?.minutes} m`}
+          <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
+        </Menu.Button>
+      </div>
+
+      {
+        (dataLoading == false ||  data !== null) &&
+        <Transition
+          as={Fragment}
+          enter="transition ease-out duration-100"
+          enterFrom="transform opacity-0 scale-95"
+          enterTo="transform opacity-100 scale-100"
+          leave="transition ease-in duration-75"
+          leaveFrom="transform opacity-100 scale-100"
+          leaveTo="transform opacity-0 scale-95"
+        >
+    <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+      <div className="py-1">
+        { 
+          Object.keys(data).map((key, index) => {
+            return (
+              <Menu.Item key={index}>
+                {({ active }) => (
+                  <a
+                    href="#"
+                    className={classNames(
+                      active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                      'block px-4 py-2 text-sm'
+                    )}
+                    onClick={() => {
+                      setSelectedOption(key);
+                      console.log(key);
+                      console.log(data[key]);
+                    }}
+                  >
+                    <div className="flex text-indigo-600 justify-between items-center">
+                      <div>{key}</div>
+                      <div>{data[key]?.seconds}</div>
+                    </div>
+                  </a>
+                )}
+              </Menu.Item>
+            )
+          })
+        }
+
+      </div>
+    </Menu.Items>
+  </Transition>
+}
+    </Menu>
+  )
 }
