@@ -1475,7 +1475,7 @@ router.get('/saved-time', authMiddleware, async (req: any, res: any) => {
     let oneMonthAgoDate: any = new Date()
     oneMonthAgoDate.setMonth(oneMonthAgoDate.getMonth() - 1);
     oneMonthAgoDate = getTimeStamp(oneMonthAgoDate)
-    // console.log(totalSavedData, getTimeStamp(new Date(todaysDate)))
+    console.log(totalSavedData)
     if(totalSavedData && totalSavedData.length) {
       let daySaved = 0
       let weekSaved = 0
@@ -1502,6 +1502,16 @@ router.get('/saved-time', authMiddleware, async (req: any, res: any) => {
           oneDaySavedTime,
           oneWeekSavedTime,
           oneMonthSavedTime
+        }
+      })
+    } else {
+      return res.status(200).send({
+        type: "SUCCESS",
+        message: "Total Saved Time!",
+        data: {
+          oneDaySavedTime: "00:00",
+          oneWeekSavedTime:"00:00",
+          oneMonthSavedTime:"00:00"
         }
       })
     }
@@ -1532,11 +1542,12 @@ router.post('/add-time-saved', async (req: any, res: any) => {
         message: "Blog not found!"
       })
     }
+    const splittedTime = time.split(":")
     await db.db('lilleBlogs').collection('blogsTime').updateOne({blogId: new ObjectID(blogId)}, 
     {$set: {
       userId: new ObjectID(userId),
       blogId: new ObjectID(blogId),
-      time,
+      time: `00:${splittedTime[0] || 1}`,
       type,
       date: getTimeStamp()
     }}, 
