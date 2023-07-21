@@ -866,7 +866,11 @@ export default function Home() {
                             <div className="flex items-center px-2  gap-2.5">
                               <RePurpose removeFile={removeFile} value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
 
-                              {showFileUploadUI != true && <div onClick={
+                              {showFileUploadUI != true && 
+                              
+                              <Tooltip content="Select file formats like PDF, DOCX, TXT (size <7mb)" direction='top' className='max-w-[100px] mt-4'>
+                              
+                              <div onClick={
                                 () => {
                                   setShowFileUploadUI(true);
                                   addToFunctionStack(() => { setShowFileUploadUI(false) })
@@ -877,9 +881,9 @@ export default function Home() {
                                   <span className="text-indigo-600 text-sm font-normal">Upload</span>
                                 </button>
                               </div>
+                              </Tooltip>
                               }
-
-                            </div>
+</div>
 
                             {showFileUploadUI == true &&
                               <div>
