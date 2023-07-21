@@ -63,7 +63,7 @@ export default function dashboard({ query }) {
   const [showOTPModal, setShowOTPModal] = useState(false);
 
   console.log('MEE DATA GET IN ZUSLAND');
-  const { userTimeSave, loading: userDataLoading, error: userDataError } = useUserTimeSave();
+  // const { userTimeSave, loading: userDataLoading, error: userDataError } = useUserTimeSave();
   // const {}
   var getToken;
   if (typeof window !== "undefined") {
@@ -136,6 +136,8 @@ export default function dashboard({ query }) {
   };
 
   const handleDisclaimerPopup = () => setDisclaimerCheck((prev) => !prev);
+
+  const {refreshData:refreshDataForUserTime} = useUserTimeSave();
 
   useEffect(() => {
     if (type != undefined && type && type === TYPES_OF_GENERATE.REPURPOSE) {
@@ -542,7 +544,7 @@ You can add your own image, click on the image and use image options icon.`}
           )}
           <MoveToRegenPanel />
 
-          {isAuthenticated && loading != true && data && <TotalTImeSaved timeSaved={data?.generate?.respTime * DEFAULT_TIME_MULTIPLE} blogId={blog_id} />
+          {isAuthenticated && loading != true && data && <TotalTImeSaved refreshDataForUserTime={refreshDataForUserTime} timeSaved={data?.generate?.respTime * DEFAULT_TIME_MULTIPLE} blogId={blog_id} />
           }
           <div className="relative tiny_mce_width">
             <TinyMCEEditor
