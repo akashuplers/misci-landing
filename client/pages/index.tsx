@@ -866,7 +866,11 @@ export default function Home() {
                             <div className="flex items-center px-2  gap-2.5">
                               <RePurpose removeFile={removeFile} value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
 
-                              {showFileUploadUI != true && <div onClick={
+                              {showFileUploadUI != true && 
+                              
+                              <Tooltip content="Select file formats like PDF, DOCX, TXT (size <7mb)" direction='top' className='max-w-[100px] mt-4'>
+                              
+                              <div onClick={
                                 () => {
                                   setShowFileUploadUI(true);
                                   addToFunctionStack(() => { setShowFileUploadUI(false) })
@@ -877,15 +881,15 @@ export default function Home() {
                                   <span className="text-indigo-600 text-sm font-normal">Upload</span>
                                 </button>
                               </div>
+                              </Tooltip>
                               }
-
-                            </div>
+</div>
 
                             {showFileUploadUI == true &&
                               <div>
                                 
                                 <h3>
-                                  <Tooltip content="Select file formats like PDF, DOCX, TXT" direction='top' className='max-w-[100px]'>
+                                  <Tooltip content="Select file formats like PDF, DOCX, TXT (size <7mb)" direction='top' className='max-w-[100px] mt-4'>
                                     <button 
                                     onClick={
                                       () => {
@@ -1022,8 +1026,7 @@ export default function Home() {
                           }
                         </div>
                         <div className="w-full h-6 justify-start items-center gap-1.5 inline-flex">
-                          <span className={`text-center  text-sm font-normal ${showRepourposeError ? 'text-red-500' : 'text-slate-500'}`}>You can add Max. 3 URLs. Use comma to add multiple URLs, or press enter to add new URL.
-                          </span>
+                          <span className={`text-center  text-sm font-normal ${showRepourposeError ? 'text-red-500' : 'text-slate-500'}`}>You can add max. 3 URLs (or Files) Use comma or press enter to add multiple URLs. Use upload button to select files</span>
                         </div>
                         <div className='flex items-center flex-col mt-5'>
                           {keywordsOFBlogs.length > 0 && <div className="flex items-center gap-1.5" >
@@ -1272,8 +1275,8 @@ export const Chip = ({ selected, text, handleClick, index, wholeData }) => {
     {
       wholeData != null ? (
         <Tooltip content={wholeData.realSource} direction="top" className="text-xs">
-          <button className={`h-6 px-[18px] py-1.5  rounded-full justify-center items-center inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick(index)}>
-            <span className=" text-sm font-normal leading-tight">{text}</span>
+          <button className={`h-5 px-[18px] py-1.5  rounded-full justify-center items-center inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick(index)}>
+            <span className=" text-[10px] font-normal leading-tight">{text}</span>
           </button>
         </Tooltip>
       ) : (

@@ -112,7 +112,7 @@ export function TotalTImeSaved({
               }
               )}
               style={{ width: getInputWidth(editedHours.minutes) }}
-            className="text-2xl font-bold w-14 border-none outline-0"
+            className="text-2xl font-bold w-14 border border-gray-400 outline-0"
           />{" "}
           minutes and
           <input
@@ -125,7 +125,7 @@ export function TotalTImeSaved({
               }
             })}
             style={{ width: getInputWidth(editedHours.seconds) }}
-            className="text-2xl font-bold w-14 border-none outline-0"
+            className="text-2xl font-bold w-14 border border-gray-400 outline-0 "
           />{" "}
           seconds.
           {/* self end */}
@@ -140,14 +140,15 @@ export function TotalTImeSaved({
             }
             )
           }}
-          className="ml-2 text-blue-500 underline justify-self-end justify-items-end">
-          <ArrowPathIcon className="w-5 h-5" />
+          className="ml-2 text-blue-500 underline justify-self-end justify-items-end hover:text-blue-700">
+          <ArrowPathIcon className="w-5 h-5 " />
           </button>
           </div>
-            <button  className="cta-invert  hover:cta max-w-lg"
+            <button  className="cta-invert  hover:cta max-w-lg mt-2 hover:shadow-lg"
             onClick={() => {
+              setIsOpen(false);
               sendSavedTime(blogId, `${editedHours.minutes}:${editedHours.seconds}`, 'disagree');
-            }}    
+            }}
             >
               Done 
             </button>
@@ -166,6 +167,7 @@ export function TotalTImeSaved({
             </button>
             <button
               onClick={() => {
+                setIsOpen(false);
                 sendSavedTime(blogId, `${editedHours.minutes}:${editedHours.seconds}`, 'agree');
               }}
               className="cta-invert  hover:cta">
