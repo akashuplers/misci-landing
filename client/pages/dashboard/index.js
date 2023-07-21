@@ -544,7 +544,7 @@ You can add your own image, click on the image and use image options icon.`}
           )}
           <MoveToRegenPanel />
 
-          {isAuthenticated && loading != true && data && <TotalTImeSaved refreshDataForUserTime={refreshDataForUserTime} timeSaved={data?.generate?.respTime * DEFAULT_TIME_MULTIPLE} blogId={blog_id} />
+          {isAuthenticated && loading != true && data && <TotalTImeSaved refreshDataForUserTime={refreshDataForUserTime} timeSaved={data?.generate?.respTime !=null ?data?.generate?.respTime * DEFAULT_TIME_MULTIPLE : DEFAULT_TIME_MULTIPLE} blogId={blog_id} />
           }
           <div className="relative tiny_mce_width">
             <TinyMCEEditor

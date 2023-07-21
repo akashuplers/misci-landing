@@ -222,7 +222,7 @@ const Threads = ({
   );
 };
 
-const MAX_THREAD_COUNT = 280;
+const MAX_THREAD_COUNT = 220;
 function getCharCount(text: string) {
   return text.length;
 }
