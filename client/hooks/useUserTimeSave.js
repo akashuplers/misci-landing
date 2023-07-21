@@ -5,7 +5,7 @@ const useUserTimeSave = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [refresh, setRefresh] = useState(false);
+  const [refresh, setRefresh] = useState(0);
   const fetchData = async () => {
     const URL = API_BASE_PATH + API_ROUTES.GET_SAVED_TIME
     const headers = new Headers();
@@ -35,13 +35,17 @@ const useUserTimeSave = () => {
         setLoading(false);
       }
     };
-    useEffect(() => {
-      fetchData();
-      setRefresh(false); // Reset refresh to false after data is fetched
-    }, [refresh]);
-    const handleManualRefresh = () => {
-      setRefresh(true);
-    };
+  useEffect(() => {
+    fetchData();
+    setRefresh(prev => prev + 1);
+  }, [refresh]);
+  useEffect(() => {
+    console.log('DATA', data)
+  }, [data]);
+  
+  const handleManualRefresh = () => {
+    setRefresh(prev => prev + 1);
+  };
 
   return { userTimeSave : data, loading, error, handleManualRefresh };
 };
