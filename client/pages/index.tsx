@@ -873,21 +873,21 @@ export default function Home() {
                               <div onClick={
                                 () => {
                                   setShowFileUploadUI(true);
-                                  addToFunctionStack(() => { setShowFileUploadUI(false) })
-                                }
-                              } className="w-[100.81px] h-10 flex justify-around cursor-pointer px-2 rounded-lg border border-indigo-600 items-center gap-2.5">
-                                <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
-                                <button className="justify-center items-center gap-2 inline-flex ">
-                                  <span className="text-indigo-600 text-sm font-normal">Upload</span>
-                                </button>
-                              </div>
-                              </Tooltip>
+                                      addToFunctionStack(() => { setShowFileUploadUI(false) })
+                                    }
+                                  } className="w-[100.81px] h-10 flex justify-around cursor-pointer px-2 rounded-lg border border-indigo-600 items-center gap-2.5">
+                                    <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
+                                    <button className="justify-center items-center gap-2 inline-flex ">
+                                      <span className="text-indigo-600 text-sm font-normal">Upload</span>
+                                    </button>
+                                  </div>
+                                </Tooltip>
                               }
-</div>
+                            </div>
 
                             {showFileUploadUI == true &&
                               <div>
-                                
+
                                 <h3>
                                   <Tooltip content="Select file formats like PDF, DOCX, TXT (size <7mb)" direction='top' className='max-w-[100px] mt-4'>
                                     <button 
