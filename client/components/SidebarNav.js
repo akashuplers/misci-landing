@@ -706,7 +706,7 @@ export function UserSaveTime(data, dataLoading) {
             height={25}
             round={true}
           /> :
-            data && `- ${data[selectedOption]?.hours} h : ${data[selectedOption]?.minutes} m`}
+            data && ` ${data[selectedOption]?.hours} h : ${data[selectedOption]?.minutes} m`}
           <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
         </Menu.Button>
       </div>
