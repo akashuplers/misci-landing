@@ -287,3 +287,43 @@ export const uploadAndExtractKeywords = async (files) => {
     });
     return response;
 };
+
+export const getTimeObject = (timeString) => {
+  const [hoursStr, minutesStr] = timeString.split(':');
+  const hours = parseInt(hoursStr, 10);
+  const minutes = parseInt(minutesStr, 10);
+  return { hours, minutes };
+};
+
+export const saveUserTimeData = async (rawData) => {
+  try {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: JSON.stringify(rawData),
+    };
+    const URL = API_BASE_PATH + API_ROUTES.ADD_SAVED_TIME;
+    const response = await fetch(URL, requestOptions);
+    const result = await response.json();
+    console.log(result);
+  } catch (error) {
+    console.log('error', error);
+  }
+};
+
+export function formatMinutesToTimeString(minutes) {
+  var mins = Math.floor(minutes);
+  var secs = Math.round((minutes - mins) * 60);
+  // Pad seconds with leading zero if necessary
+  if (secs < 10) {
+    secs = "0" + secs;
+  }
+  return {
+    minutes: mins,
+    seconds: secs,
+  }
+  
+}

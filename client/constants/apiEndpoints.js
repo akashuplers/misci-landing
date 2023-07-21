@@ -19,6 +19,8 @@ export const API_ROUTES = {
   TEMP_USER: '/auth/request-trial',
   EXTRACT_KEYWORDS : '/quickupload/urls/extract-keywords',
   EXTRACT_KEYWORDS_FROM_FILE : '/quickupload/files/extract-keywords',
+  GET_SAVED_TIME: '/auth/saved-time',
+  ADD_SAVED_TIME: '/auth/add-time-saved',
 };
 
 export const LI_API_ENDPOINTS = {
