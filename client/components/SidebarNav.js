@@ -213,7 +213,10 @@ export default function Sidebar() {
 
     setSavedTime(newSavedTime);
   };
-  const { userTimeSave, loading: userTimeSaveLoading, error } = useUserTimeSave();
+  const { userTimeSave, loading: userTimeSaveLoading, error, refreshData:refreshDataForUserTime} = useUserTimeSave();
+  useEffect(()=>{
+    refreshDataForUserTime();
+  },[])
   return (
     <>
       <ToastContainer />

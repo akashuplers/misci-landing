@@ -8,6 +8,7 @@ import { ArrowPathIcon } from "@heroicons/react/20/solid";
 export function TotalTImeSaved({
   timeSaved,
   blogId,
+  refreshDataForUserTime
 }:any) 
 
 {
@@ -23,16 +24,18 @@ export function TotalTImeSaved({
   if(response!=null){
     if(response?.type === "SUCCESS"){
       toast.success(response?.message);
+      refreshDataForUserTime();
     }
     else{
       toast.error(response?.message);
+      refreshDataForUserTime();
     }
 
     setIsOpen(false);
   }
   }, [response])
     // Calculate the width for the input box based on the number of characters in the input value
-    const getInputWidth = (value) => {
+    const getInputWidth = (value:any) => {
       return value.toString().length * 14 + 24; // Adjust the multiplier and constant as per your preference
     };
   
