@@ -169,3 +169,41 @@ export const useFunctionStore = create((set) => ({
     });
   },
 }));
+
+
+export const useUserTimeSaveStore = create((set) => ({
+  userTimeSave: null,
+  loading: true,
+  error: null,
+  refreshData: async () => {
+    set({ loading: true });
+    try {
+      const URL = API_BASE_PATH + API_ROUTES.GET_SAVED_TIME;
+      const headers = new Headers();
+      headers.append('Content-Type', 'application/json');
+      headers.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
+
+      const response = await fetch(URL, {
+        method: 'GET',
+        headers: headers,
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const jsonData = await response.json();
+      console.log(jsonData);
+      const improvedData = {
+        Day: getTimeObject(jsonData.data.oneDaySavedTime),
+        Week: getTimeObject(jsonData.data.oneWeekSavedTime),
+        Month: getTimeObject(jsonData.data.oneMonthSavedTime),
+      };
+      console.log('IMRPOVED DATA', improvedData);
+
+      set({ userTimeSave: improvedData, loading: false, error: null });
+    } catch (error) {
+      set({ error, loading: false });
+    }
+  },
+}));
