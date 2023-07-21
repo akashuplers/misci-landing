@@ -893,6 +893,8 @@ export default function Home() {
                                         <span className="text-indigo-600 text-sm font-normal">Upload</span>
                                       </button>
                                     </label>
+                                  </Tooltip>
+
                                     <input
                                       id="refileupload"
                                       accept="application/pdf, .docx, .txt, .rtf"
@@ -900,11 +902,9 @@ export default function Home() {
                                       multiple={true}
                                       max-size="500000"
                                       onChange={(e) => {
-                                        // check format
-
                                         const allowedFormats = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain", "text/rtf"];
-                                        const maxSize = 500000; // 5MB in bytes
-
+                                        // const maxSize = 500000; // 5MB in bytes
+                                        const maxSize = 7 * 1024 * 1024;
                                         const files = e.target.files;
 
                                         // Check if files are selected
@@ -996,7 +996,6 @@ export default function Home() {
                                       }}
                                       className="hidden"
                                     />
-                                  </Tooltip>
                                 </h3>
                               </div>
                             }
