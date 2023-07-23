@@ -86,7 +86,7 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
           onSubmit={handleSubmit}
         >
           <div className="flex flex-col space-y-5">
-            <label for="email">
+            <label htmlFor="email">
               <p className="font-medium text-slate-700 pb-2 p-2">
                 Email address
               </p>
@@ -100,7 +100,7 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
                 placeholder="Enter email address"
               />
             </label>
-            <label for="password">
+            <label htmlFor="password">
               <p className="p-2 font-medium text-slate-700 pb-2">Password</p>
               <input
                 id="password"
@@ -114,7 +114,7 @@ export default function LoginModal(modalIsOpen, setModalIsOpen) {
             </label>
             <div className="flex flex-row justify-between py-4">
               <div>
-                <label for="remember" className="pr-4">
+                <label htmlFor="remember" className="pr-4">
                   <input
                     type="checkbox"
                     id="remember"

@@ -327,3 +327,90 @@ export function formatMinutesToTimeString(minutes) {
   }
   
 }
+
+
+const checkAndAddFiles = (files, fileInput, setSelectedFile, blogLinks, setBlogLinks) => {
+  const maxSize = 7 * 1024 * 1024;
+
+  // Check if files are selected
+  if (files.length === 0) {
+    toast.warn("Please select at least one file.");
+    return;
+  }
+
+  // Iterate through each selected file
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+
+    // Check file format
+    if (!allowedFormats.includes(file.type)) {
+      toast.error(`File format not allowed for ${file.name}.`);
+      fileInput.value = ''; // Reset file input to clear selected files
+      return;
+    }
+
+    // Check file size
+    if (file.size > maxSize) {
+      toast.error(`File size exceeds the limit for ${file.name}. Maximum size allowed is 5MB.`);
+      fileInput.value = ''; // Reset file input to clear selected files
+      return;
+    }
+  }
+
+  const filesArray = Array.from(files);
+
+  // Check if file with this name and last modified date already exists
+  const currentFiles = blogLinks.filter((link) => link.type === 'file');
+  const selectedFilesByUser = filesArray.map((file, index) => ({
+    label: file.name,
+    value: file.name,
+    selected: false,
+    id: file.name,
+    index: currentFiles.length + index + 1,
+    type: 'file',
+  }));
+
+  let isFileExists = false;
+  selectedFilesByUser.forEach((file) => {
+    const doesFileExist = currentFiles.find((currentFile) => currentFile.id === file.id);
+    if (doesFileExist) {
+      toast.error(`File ${file.name} already exists`);
+      isFileExists = true;
+      return;
+    }
+  });
+
+  if (isFileExists) {
+    return;
+  } else {
+    const currentFiles = [...selectedFiles];
+    currentFiles.push(...filesArray);
+    setSelectedFiles(currentFiles);
+  }
+
+  if (blogLinks.length > 3) {
+    toast.error('You can upload max 3 files or URLs');
+    return;
+  }
+
+  if (filesArray.length > 0) {
+    const newLinks = filesArray.map((file, index) => ({
+      label: file.name,
+      value: file.name,
+      selected: false,
+      id: file.name,
+      index: blogLinks.length + index + 1,
+      type: 'file',
+    }));
+    const updatedBlogLinks = [...blogLinks, ...newLinks];
+
+    // Filter with unique id's 
+    const filteredBlogLinks = updatedBlogLinks.filter((link, index, self) =>
+      index === self.findIndex((t) => t.id === link.id)
+    );
+
+    setBlogLinks(filteredBlogLinks);
+  } else {
+    toast.error('File not uploaded');
+  }
+};

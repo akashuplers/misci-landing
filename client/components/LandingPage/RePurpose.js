@@ -11,7 +11,7 @@ import Select, {
 } from 'react-select';
 import Tooltip from '../ui/Tooltip';
 import { Chip } from '@/pages';
-import { XCircleIcon } from '@heroicons/react/24/outline';
+import { DocumentIcon, XCircleIcon } from '@heroicons/react/24/outline';
 
 function generateRandomId() {
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -36,7 +36,6 @@ export const createOption = (label, id,index) => ({
 
 export default function RePurpose({value, setValue, setShowRepourposeError, removeFile}){
   const [inputValue, setInputValue] = React.useState('');
-
   const handleKeyDown = (event) => {
     const elementId = generateRandomId();
     const inputLength = value.length;
@@ -51,11 +50,8 @@ export default function RePurpose({value, setValue, setShowRepourposeError, remo
   
       if (!inputValue) return;
   
-      setValue((prev) => [
-        ...prev,
-        createOption(inputValue, elementId, inputLength + 1)
-      ]);
-  
+      const newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1)];
+      setValue(newBlogLinks);
       setInputValue('');
       event.preventDefault();
     }
@@ -64,17 +60,30 @@ export default function RePurpose({value, setValue, setShowRepourposeError, remo
     function handleClick(){
       const typeOfData = props.data.type;
       if(typeOfData ==='file'){
-        removeFile(props.data.id);
+        
       }
       const newValues = value.filter((item) => item.id !== props.data.id);
       setValue(newValues);
     }
     return (
         <components.MultiValueRemove {...props} >
-          <XCircleIcon class="h-6 w-6 text-gray-500" onClick={handleClick}/>
+          <XCircleIcon className="h-6 w-6 text-gray-500" onClick={handleClick}/>
         </components.MultiValueRemove>
     );
-  }; 
+  };  
+  function MultiValueLabel(props) {
+    // check for .type
+    return (
+      <components.MultiValueLabel {...props}>
+        <div className="flex items-center rounded-full">
+        {
+          props.data.type === 'file' ? <DocumentIcon className="h-6 w-6 text-gray-500" /> : null
+        }
+        <span>{props.data.label}</span>
+        </div>
+        </components.MultiValueLabel>
+    )
+  }
 
 
   const DropdownIndicator = () => {
@@ -91,7 +100,7 @@ export default function RePurpose({value, setValue, setShowRepourposeError, remo
     }}
     >
       <CreatableSelect
-      components={{DropdownIndicator , MultiValueRemove, ClearIndicator}}
+      components={{DropdownIndicator , MultiValueRemove, ClearIndicator, MultiValueLabel}}
       inputValue={inputValue}
       
       styles={{
@@ -104,7 +113,8 @@ export default function RePurpose({value, setValue, setShowRepourposeError, remo
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '0.25rem'
-        }),
+        }), 
+        
         multiValueRemove: (baseStyles, state) => ({
           ...baseStyles,
           borderColor: state.isFocused ? 'grey' : 'red',
@@ -142,7 +152,8 @@ export default function RePurpose({value, setValue, setShowRepourposeError, remo
           setShowRepourposeError(false);
         }
         if (!inputValue) return;
-        setValue((prev) => [...prev, createOption(inputValue, elementId, inputLength + 1)]);
+        const newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1)];
+        setValue(newBlogLinks);
         setInputValue('');
         event.preventDefault();
       }}

@@ -37,11 +37,8 @@ const useUserTimeSave = () => {
     };
   useEffect(() => {
     fetchData();
-    setRefresh(prev => prev + 1);
   }, [refresh]);
-  useEffect(() => {
-    console.log('DATA', data)
-  }, [data]);
+
   
   const handleManualRefresh = () => {
     setRefresh(prev => prev + 1);
