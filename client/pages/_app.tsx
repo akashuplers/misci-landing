@@ -102,7 +102,7 @@ export default function App({ Component, pageProps }: AppProps) {
     "/resetPass",
     "/cancellation-policy",
     "/faq",
-    "/aboutus"
+    "/aboutus",
   ];
 
   useEffect(() => {
