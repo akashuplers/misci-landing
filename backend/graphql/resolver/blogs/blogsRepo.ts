@@ -154,7 +154,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                         return mapObj[matched];
                     });
                     text = `Please act as an expert Twitter Thread writer who has to write a Twitter Thread From this Blog: "${blogPostToSendForLinkedin}"
-                    'Donot include serial numbers'
+                    "Strictly Do not include serial numbers"
                     ${keywords.length ? `Keywords are "${keywords.join('","')}"`: `Topic of Blog is "${title}"`}, go through the Blog to understand and write twitter thread.
                     "Insert Emoticons in Twitter Thread".
                     "${cond || "Thread limit to not exceed 10 tweets"}".
