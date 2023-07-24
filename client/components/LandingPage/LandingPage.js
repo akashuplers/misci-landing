@@ -849,7 +849,7 @@ const LandingPage = () => {
                         <form className="flex-col w-full justify-start items-start gap-8 inline-flex"
                             onSubmit={handleSubmit}
                         >
-                            <label for="name" className="w-full">
+                            <label htmlFor="name" className="w-full">
                                 <p className="font-medium text-slate-700 pb-2 p-2">Name</p>
                                 <input
                                     id="name"
@@ -869,7 +869,7 @@ const LandingPage = () => {
                                         </span>
                                 }
                             </label>
-                            <label for="email" className="w-full">
+                            <label htmlFor="email" className="w-full">
                                 <p className="font-medium text-slate-700 pb-2 p-2">
                                     Email address
                                 </p>
