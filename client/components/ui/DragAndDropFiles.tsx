@@ -27,6 +27,11 @@ const DragAndDropFiles = () => {
       toast.warn("Please select at least one file.");
       return;
     }
+    if(files.length > 3){
+      console.log("IFLES LENGHT", files.length)
+      toast.warn("You can add max 3 ");
+      return;
+    }
     if (blogLinks.length >= 3) {
       toast.error('You can add max 3 files or URLs');
       return;
@@ -78,6 +83,11 @@ const DragAndDropFiles = () => {
   const onDrop = (acceptedFiles : File[]) => {
     console.log('prev blogs links');
     console.log(blogLinks);
+    console.log("IFLES LENGHT", acceptedFiles.length, acceptedFiles);
+    if(acceptedFiles.length >3){
+      toast.warn('You can upload max 3 files or URLs');
+      return;
+    }
      // Check if files are selected
     const selectedFiles = filesInputValidation(acceptedFiles);
     if (!selectedFiles) {
@@ -109,9 +119,15 @@ const DragAndDropFiles = () => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
     onDrop,
+    // accept: 'application/pdf, .docx, .txt, text/plain, text/rtf',
     accept: {
-      accept: allowedFormats
-    },
+      'application/pdf': [],
+      '.docx': [],
+      '.txt': [],
+      'text/plain': [],
+      'text/rtf': [],
+    }
+    ,
     maxFiles: REPURPOSE_MAX_SIZE,
     multiple: true,
   });
@@ -128,7 +144,7 @@ const DragAndDropFiles = () => {
                           <div className="justify-center items-center gap-2 inline-flex">
                           <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
                               <div className="text-indigo-600 text-sm font-normal">Upload files</div>
-                              <input {...getInputProps()} accept={"application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document , text/plain, text/rtf"} />    
+                              <input {...getInputProps()} accept={"application/pdf, .docx, .txt, text/plain, text/rtf"} />    
                           </div>
                       </button>
                       </Tooltip>

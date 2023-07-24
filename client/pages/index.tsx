@@ -762,7 +762,7 @@ export default function Home() {
             </div>
           )}
           <div className="relative mx-auto max-w-screen-xl flex flex-col">
-            <div className={`mx-auto max-w-3xl text-center h-screen flex items-center justify-center ${isAuthenticated ? 'lg:h-full' : 'lg:min-h-[1100px]'} `}>
+            <div className={`mx-auto max-w-3xl text-center h-screen flex items-center justify-center  ${isAuthenticated ? 'lg:h-full' : keywords.length > 15 ?  `lg:max-h-[${1000+ (Math.round((keywords.length-15)/5))*32}px]` : 'lg:max-h-[1000px]'}`}>
               <div>
                 <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
                   Automate, <span className="text-indigo-700">Amplify,</span>{" "}
@@ -852,7 +852,7 @@ export default function Home() {
                           <Tooltip content="Add your content URLs, We will help you recreate blog on the basis of keywords and tones  selected by you.
 " direction='top' className='max-w-[100px]'>
                             <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
-                          </Tooltip>
+                          </Tooltip>  
                         </div>
                         <div className="w-full h-full justify-center items-center gap-2.5 inline-flex">
                           <div className="relative w-full min-h-[60px] bg-white rounded-[10px]  border border-gray-600 py-2.5">

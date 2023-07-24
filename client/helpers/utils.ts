@@ -5,6 +5,7 @@ export function maxFileSize(MB: number) {
 }
 
 
+
 export const allowedFormats = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain", "text/rtf"];
 export const allowedFormatsString = allowedFormats.join(", ");
 export const createBlogLink = (
