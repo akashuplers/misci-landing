@@ -987,6 +987,13 @@ export default function Home() {
                                   setkeywordsOfBlogs([]);
                                   setBlogLinks([]);
                                   setSelectedFiles([]);
+                                  setStateOfGenerate((prev)=>{
+                                    return {
+                                      url: null,
+                                      file: null,
+                                    }
+                                  }
+                                  )
                                 }
                               }
                             >
