@@ -1003,7 +1003,7 @@ export default function Home() {
                               <span
                                 className="mr-2 text-slate-800"
                               >Keywords from URL:</span> {
-                                stateOfGenerate.url == STATESOFKEYWORDS.LOADING ? <ReactLoading round={true}  height={20} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                                stateOfGenerate.url == STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} color={"#2563EB"} height={20} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />
                               }
                             </div>
                             <div className="flex items-center gap-1.5">
@@ -1013,7 +1013,7 @@ export default function Home() {
                                 Keywords from File:
                               </span>
                               {
-                                stateOfGenerate.file == STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} height={20} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                                stateOfGenerate.file == STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} height={20} color={"#2563EB"} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />
                               }
 
                             </div>
