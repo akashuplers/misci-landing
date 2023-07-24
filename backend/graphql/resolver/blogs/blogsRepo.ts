@@ -155,11 +155,12 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                         return mapObj[matched];
                     });
                     text = `Please act as an expert Twitter Thread writer who has to write a Twitter Thread From this Blog: "${blogPostToSendForLinkedin}"
+                    'Donot include serial numbers'
                     ${keywords.length ? `Keywords are "${keywords.join('","')}"`: `Topic of Blog is "${title}"`}, go through the Blog to understand and write twitter thread.
                     "Insert Emoticons in Twitter Thread".
                     "${cond || "Thread limit to not exceed 10 tweets"}".
                     "Insert hashtags at the end of tweets".
-                    “Character limit per tweet to be exactly less then 200 characters".
+                    'Character limit per tweet to be exactly less then 200 characters'
                     "Trim unwanted new lines and spaces".
                     "Do not show the Tweet Number count inside the Tweets".`
                     console.log(text, "text")
@@ -578,7 +579,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         )
         return {
             updatedBlogs: updated,
-            usedIdeasArr,
+            usedIdeasArr: usedIdeasArr || [],
             description,
             title
         }
