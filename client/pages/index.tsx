@@ -25,7 +25,7 @@ import PreferencesModal from "../modals/PreferencesModal";
 import useStore, { useFunctionStore } from "../store/store";
 import { Tab } from "@headlessui/react";
 import ReactLoading from "react-loading";
-import { CloudArrowUpIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { CheckCircleIcon, CloudArrowUpIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { checkFileFormatAndSize } from "@/components/DashboardInsights";
 import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
 import DragAndDropFiles, { REPURPOSE_MAX_SIZE_MB } from "@/components/ui/DragAndDropFiles";
@@ -77,6 +77,10 @@ export interface BlogLink {
   type: 'file' | 'url';
 }
 
+const STATESOFKEYWORDS = {
+  LOADING: 'loading',
+  LOADED: 'loaded',
+}
 export default function Home() {
   var getUserId;
   var getTempId;
@@ -92,7 +96,11 @@ export default function Home() {
   const [repurposeTones, setRepurposeTones] = useState(newTones);
   const [showFileUploadUI, setShowFileUploadUI] = useState(false);
   const addToFunctionStack = useFunctionStore((state) => state.addToStack);
-
+  const [stateOfGenerate, setStateOfGenerate] = useState({
+    url : null,
+    file: null,
+  });
+  const [showLoadingInfo, setShowLoadingInfo] = useState(false);
   const selectedFiles = useRepurposeFileStore((state) => state.selectedFiles);
   const removeSelectedFile = useRepurposeFileStore((state) => state.removeSelectedFile);
   const setSelectedFiles = useRepurposeFileStore((state) => state.setSelectedFiles); 
@@ -175,6 +183,7 @@ export default function Home() {
     const query = { type: TYPES_OF_GENERATE.REPURPOSE };
     router.push({ pathname, query });
   };
+ 
   function handleRepourpose() {
     setLoadingForKeywords(true);
     // key all keywords which are selected
@@ -244,7 +253,12 @@ export default function Home() {
             const processedKeywords = processDataForKeywords(updatedKeywords);
             return processedKeywords;
           });
-
+          setStateOfGenerate((prev)=>{
+            return {
+              ...prev,
+              file: STATESOFKEYWORDS.LOADED,
+            }
+          });
           setShowUserLoadingModal({ show: false });
           setLoadingForKeywords(false); // Set loading state back to false on successful response
         })
@@ -252,6 +266,12 @@ export default function Home() {
           console.log('ERROR');
           console.log(error);
           // Handle errors here
+          setStateOfGenerate((prev)=>{
+            return {
+              ...prev,
+              file: STATESOFKEYWORDS.LOADED,
+            }
+          });
           setShowUserLoadingModal({ show: false });
           setLoadingForKeywords(false); // Set loading state back to false on error
         });
@@ -286,6 +306,23 @@ export default function Home() {
       return acc;
     }, { files: 0, urls: 0 });// Replace `keywords` with your actual keywords array/state
     // Replace `fileInput` with your actual file input state or variable
+    console.log('countByType');
+    if(countByType.files > 0){
+      setStateOfGenerate((prev)=>{
+        return {
+          ...prev,
+          file: STATESOFKEYWORDS.LOADING,
+        }
+      });
+    }    
+    if(countByType.urls > 0){
+      setStateOfGenerate((prev)=>{
+        return {
+          ...prev,
+          url: STATESOFKEYWORDS.LOADING,
+        }
+      });
+    }
     console.log('countByType');
     console.log(countByType);
     if (countByType.files > 0 && countByType.urls > 0) {
@@ -348,8 +385,7 @@ export default function Home() {
         if (doesUnprocessedUrlsExist) {
           toast.warn(`Success but we could not resolve ${result.unprocessedUrls.length > 1 ? "these URLs" : "this URL"} : ` + result.unprocessedUrls.join(', '));
         }
-        const { keywords,
-          keywordIdMap,
+        const { keywords,keywordIdMap,
           articleIds, } = extractKeywordsAndIds(result);
         // setkeywordsOfBlogs(prev => [...prev, ...keywords]);
         const prevKeywords = [...keywordsOFBlogs];
@@ -357,11 +393,29 @@ export default function Home() {
         const processedKeywords = processDataForKeywords(updatedKeywords);
         setkeywordsOfBlogs(processedKeywords);
         setKeywordsMap(keywordIdMap);
+        setStateOfGenerate((prev)=>{
+          return {
+            ...prev,
+            url: STATESOFKEYWORDS.LOADED,
+          }
+        });
       })
       .catch(error => {
         console.log('error', error)
+        setStateOfGenerate((prev)=>{
+          return {
+            ...prev,
+            url: STATESOFKEYWORDS.LOADED,
+          }
+        });
       })
       .finally(() => {
+        setStateOfGenerate((prev)=>{
+          return {
+            ...prev,
+            url: STATESOFKEYWORDS.LOADED,
+          }
+        });
         setShowUserLoadingModal({ show: false });
       });
   }
@@ -762,8 +816,12 @@ export default function Home() {
             </div>
           )}
           <div className="relative mx-auto max-w-screen-xl flex flex-col">
-            <div className={`mx-auto max-w-3xl text-center h-screen flex items-center justify-center  ${isAuthenticated ? 'lg:h-full' : keywords.length > 15 ?  `lg:max-h-[${1000+ (Math.round((keywords.length-15)/5))*32}px]` : 'lg:max-h-[1000px]'}`}>
-              <div>
+            <div className={`mx-auto max-w-3xl text-center h-screen  lg:min-h-screen flex items-center justify-center `}
+            style={{
+              height: '100%'
+            }}
+            >
+              <div className="mt-[-10%]">
                 <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
                   Automate, <span className="text-indigo-700">Amplify,</span>{" "}
                   Achieve.
@@ -929,6 +987,13 @@ export default function Home() {
                                   setkeywordsOfBlogs([]);
                                   setBlogLinks([]);
                                   setSelectedFiles([]);
+                                  setStateOfGenerate((prev)=>{
+                                    return {
+                                      url: null,
+                                      file: null,
+                                    }
+                                  }
+                                  )
                                 }
                               }
                             >
@@ -939,6 +1004,28 @@ export default function Home() {
                         <div className="w-full h-6 justify-start items-center gap-1.5 inline-flex">
                           <span className={`text-center  text-sm font-normal ${showRepourposeError ? 'text-red-500' : 'text-slate-500'}`}>You can add max. 3 URLs (or Files) Use comma or press enter to add multiple URLs. Use upload button to select files</span>
                         </div>
+                        { 
+                          stateOfGenerate.url != null && stateOfGenerate.url != null && <div className="w-full h-6 justify-center items-center gap-1.5 inline-flex">
+                            <div className="flex items-center gap-1.5">
+                              <span
+                                className="mr-2 text-slate-800"
+                              >Keywords from URL:</span> {
+                                stateOfGenerate.url == STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} color={"#2563EB"} height={20} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                              }
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <span
+                                className="mr-2 text-slate-800"
+                              >
+                                Keywords from File:
+                              </span>
+                              {
+                                stateOfGenerate.file == STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} height={20} color={"#2563EB"} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                              }
+
+                            </div>
+                          </div>
+                        }
                         <div className='flex items-center flex-col mt-5'>
                           {keywordsOFBlogs.length > 0 && <div className="flex items-center gap-1.5" >
                             <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="Select keywords as per your choice to add focus, URLs containing the selected keywords will be used to recreate a high ranking SEO blog." direction='top' className='max-w-[100px]'>
