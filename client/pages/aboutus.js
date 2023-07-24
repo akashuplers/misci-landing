@@ -34,7 +34,7 @@ const AboutUS = () => {
     <Layout>
 
       <div>
-        <div className="relative bg-gradient-to-b from-violet-50 to-violet-50 pt-20">
+        <div className="relative bg-gradient-to-b from-violet-50 to-violet-50 pt-20 min-h-screen">
           <div className="flex lg:flex-row flex-col mx-auto max-w-5xl items-center justify-center lg:justify-between">
             <div className="lg:w-[40%] flex flex-col lg:gap-16 items-center justify-center lg:justify-between lg:block">
               <div className="w-full flex-col justify-start items-center ">
@@ -45,14 +45,6 @@ const AboutUS = () => {
               <div className="opacity-70  text-center lg:text-start text-slate-600 text-[16px] font-normal leading-7">
                 {`Lille is your secret weapon for automating backlinking by leveraging existing URLs on your website. Plus, it can read word documents, text files, and PDFs to generate fresh, engaging content.`}
               </div>
-              <button className="pl-[30px] pr-6 py-[17px] mt-9 lg:w-full  rounded-lg shadow border  border-indigo-600 justify-center items-center gap-2.5 flex"
-                onClick={scrollToUserDemo}
-              >
-                <span className="text-indigo-600 text-[18px] font-semibold">
-                  Start for free
-                </span>
-                <ArrowRightIcon className="w-5 h-5 text-indigo-600" />
-              </button>
             </div>
             <div className="lg:hidden">
               <SectionSpacer />

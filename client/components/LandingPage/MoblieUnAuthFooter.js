@@ -58,7 +58,7 @@ const MoblieUnAuthFooter = () => {
               </Link>
             </p>
             <p>
-              <a href="#!" className="text-white-600 hover:opacity-90 ">
+              <a href="/faqs" className="text-white-600 hover:opacity-90 ">
                 FAQs
               </a>
             </p>
@@ -77,14 +77,14 @@ const MoblieUnAuthFooter = () => {
             </p>
             <p className="mb-4">
               <Link
-                href="/faq"
+                href="https://nowigence.com/privacy-policy"
                 className="text-white-600 hover:opacity-90  justify-start ss"
               >
                 Privacy & Policy
               </Link>
             </p>
             <p className="mb-4">
-              <Link href="https://nowigence.com/privacy-policy/p" className="text-white-600 hover:opacity-90 ">
+              <Link href="https://nowigence.com/privacy-policy/" className="text-white-600 hover:opacity-90 ">
                 Terms & Conditions
               </Link>
             </p>

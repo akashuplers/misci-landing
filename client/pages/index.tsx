@@ -28,6 +28,9 @@ import ReactLoading from "react-loading";
 import { CloudArrowUpIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { checkFileFormatAndSize } from "@/components/DashboardInsights";
 import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
+import DragAndDropFiles, { REPURPOSE_MAX_SIZE_MB } from "@/components/ui/DragAndDropFiles";
+import { maxFileSize } from "@/helpers/utils";
+import {useBlogLinkStore, useRepurposeFileStore} from "@/store/appState";
 
 const PAYMENT_PATH = "/?payment=true";
 const TONES = [
@@ -65,6 +68,15 @@ export const TYPES_OF_GENERATE = {
 }
 export const BASE_PRICE = 100;
 
+export interface BlogLink {
+  label: string;
+  value: string;
+  selected: boolean;
+  id: string;
+  index: number;
+  type: 'file' | 'url';
+}
+
 export default function Home() {
   var getUserId;
   var getTempId;
@@ -72,40 +84,31 @@ export default function Home() {
   const updateAuthentication = useStore((state) => state.updateAuthentication);
   // check if url container ?payment=true
   const [isPayment, setIsPayment] = useState(false);
-  const [showContributionModal, setShowContributionModal] = useState(false);
-  const [contributinoModalLoader, setContributionModalLoader] = useState(false);
-  const [contributionAmout, setContributionAmount] = useState(5);
-  const [blogLinks, setBlogLinks] = useState([]);
+  const blogLinks = useBlogLinkStore((state) => state.blogLinks);
   const [keywordsOFBlogs, setkeywordsOfBlogs] = useState([]);
   const [articleIds, setArticleIds] = useState([]);
-  const [keywordsMap, setKeywordsMap] = useState({});
+  const setBlogLinks = useBlogLinkStore((state) => state.setBlogLinks);
   const [currentTabIndex, setCurrentTabIndex] = useState(0);
   const [repurposeTones, setRepurposeTones] = useState(newTones);
-  const [fileInput, setFileInput] = useState([]);
-  const [fileValid, setFileValid] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [fileInputNames, setFileInputNames] = useState([]);
   const [showFileUploadUI, setShowFileUploadUI] = useState(false);
   const addToFunctionStack = useFunctionStore((state) => state.addToStack);
 
+  const selectedFiles = useRepurposeFileStore((state) => state.selectedFiles);
+  const removeSelectedFile = useRepurposeFileStore((state) => state.removeSelectedFile);
+  const setSelectedFiles = useRepurposeFileStore((state) => state.setSelectedFiles); 
   const executeLastFunction = useFunctionStore((state) => state.executeLastFunction);
-  const inputFilesRef = useRef(null);
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') {
         executeLastFunction();
       }
     };
-
     document.addEventListener('keydown', handleKeyDown);
-
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [executeLastFunction]);
-  const removeFile = (fileName) => {
-    setSelectedFiles((prevFiles) => prevFiles.filter((file) => file !== fileName));
-  };
+  
   const handleChipClick = (index) => {
     const idOfKeyword = getIdFromUniqueName(keywordsOFBlogs[index].id);
 
@@ -142,6 +145,10 @@ export default function Home() {
   useEffect(() => {
     updateAuthentication();
   }, []);
+  useEffect(()=>{
+    console.log('SELECTED FILES with blog links');
+    console.log(selectedFiles, blogLinks);
+  },[selectedFiles, blogLinks])
 
   useEffect(() => {
     console.log('articleids');
@@ -192,9 +199,11 @@ export default function Home() {
   }, [loadingForKeywords]);
   function uploadFilesForKeywords() {
     setShowUserLoadingModal({ show: true });
-    console.log(fileInput.files);
-    if (fileInput.files.length > 0) {
-      uploadAndExtractKeywords(selectedFiles)
+    console.log(selectedFiles);
+    if (selectedFiles.length > 0) {
+      const selectedFilesForPayload = selectedFiles.map((fileObject) => fileObject.file);
+      console.log('selectedFilesForPayload', selectedFilesForPayload);      
+      uploadAndExtractKeywords(selectedFilesForPayload)
         .then((response) => {
           console.log('Response:', response);
           // Handle the response here
@@ -244,12 +253,10 @@ export default function Home() {
           console.log(error);
           // Handle errors here
           setShowUserLoadingModal({ show: false });
-
           setLoadingForKeywords(false); // Set loading state back to false on error
         });
     } else {
       toast.error('Please select a file');
-      setShowUserLoadingModal({ show: false });
       setLoadingForKeywords(false); // Set loading state back to false if no file is selected
     }
   }
@@ -355,9 +362,8 @@ export default function Home() {
         console.log('error', error)
       })
       .finally(() => {
-        ; // Move the  inside the then block
+        setShowUserLoadingModal({ show: false });
       });
-    setShowUserLoadingModal({ show: false });
   }
 
   var getToken;
@@ -372,7 +378,6 @@ export default function Home() {
   const router = useRouter();
   const setKeywordInStore = useStore((state) => state.setKeyword);
   const [index, setIndex] = React.useState(0);
-  const [selectedFiles, setSelectedFiles] = useState([]);
   const [showUserLoadingModal, setShowUserLoadingModal] = useState({
     show: false,
   });
@@ -757,7 +762,7 @@ export default function Home() {
             </div>
           )}
           <div className="relative mx-auto max-w-screen-xl flex flex-col">
-            <div className={`mx-auto max-w-3xl text-center h-screen flex items-center justify-center ${isAuthenticated ? 'lg:h-full' : 'lg:max-h-[1000px]'} `}>
+            <div className={`mx-auto max-w-3xl text-center h-screen flex items-center justify-center ${isAuthenticated ? 'lg:h-full' : 'lg:min-h-[1100px]'} `}>
               <div>
                 <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
                   Automate, <span className="text-indigo-700">Amplify,</span>{" "}
@@ -783,13 +788,13 @@ export default function Home() {
                               xmlns="http://www.w3.org/2000/svg"
                               fill="none"
                               viewBox="0 0 24 24"
-                              stroke-width="1.5"
+                              strokeWidth="1.5"
                               stroke="currentColor"
-                              class="w-6 h-6 "
+                              className="w-6 h-6 "
                             >
                               <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                                 d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
                               />
                             </svg>
@@ -808,13 +813,13 @@ export default function Home() {
                               xmlns="http://www.w3.org/2000/svg"
                               fill="none"
                               viewBox="0 0 24 24"
-                              stroke-width="1.5"
+                              strokeWidth="1.5"
                               stroke="currentColor"
-                              class="w-6 h-6"
+                              className="w-6 h-6"
                             >
                               <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                                 d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
                               />
                             </svg>
@@ -855,7 +860,7 @@ export default function Home() {
                             {showFileUploadUI == true &&
 
                               <div className="flex items-center justify-between px-5">
-                                <h1></h1>
+                            <h1 className="grow shrink basis-0 text-slate-800 text-lg font-normal text-left">Upload</h1>
                                 <button onClick={
                                   () => { setShowFileUploadUI(false) }}
                                 >
@@ -864,20 +869,27 @@ export default function Home() {
                               </div>
                             }
                             <div className="flex items-center px-2  gap-2.5">
-                              <RePurpose removeFile={removeFile} value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
+                              {/* <RePurpose removeFile={removeFile} value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} /> */}
+                              {
+                                showFileUploadUI == true && blogLinks.length == 0 ?
+                                  <></>
+                                  :
+                                  <RePurpose removeFile={removeSelectedFile} value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
+
+                              }
 
                               {showFileUploadUI != true && 
                               
-                              <Tooltip content="Select file formats like PDF, DOCX, TXT (size <7mb)" direction='top' className='max-w-[100px] mt-4'>
+                              <Tooltip content={`Select file formats like PDF, DOCX, TXT (size <${REPURPOSE_MAX_SIZE_MB}MB)`} direction='top' className='max-w-[100px] mt-4'>
                               
                               <div onClick={
                                 () => {
                                   setShowFileUploadUI(true);
                                       addToFunctionStack(() => { setShowFileUploadUI(false) })
                                     }
-                                  } className="w-[100.81px] h-10 flex justify-around cursor-pointer px-2 rounded-lg border border-indigo-600 items-center gap-2.5">
+                                  } className="w-full h-10 flex justify-around cursor-pointer px-2 rounded-lg border border-indigo-600 items-center gap-2.5">
                                     <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
-                                    <button className="justify-center items-center gap-2 inline-flex ">
+                                    <button className="justify-center items-center gap-2 inline-flex w-full ">
                                       <span className="text-indigo-600 text-sm font-normal">Upload</span>
                                     </button>
                                   </div>
@@ -886,10 +898,10 @@ export default function Home() {
                             </div>
 
                             {showFileUploadUI == true &&
-                              <div>
+                              <div className="px-5">
 
                                 <h3>
-                                  <Tooltip content="Select file formats like PDF, DOCX, TXT (size <7mb)" direction='top' className='max-w-[100px] mt-4'>
+                                  {/* <Tooltip content="Select file formats like PDF, DOCX, TXT (size <7mb)" direction='top' className='max-w-[100px] mt-4'>
                                     <button 
                                     onClick={
                                       () => {
@@ -902,110 +914,9 @@ export default function Home() {
                                         <span className="text-indigo-600 text-sm font-normal">Upload</span>
                                       </button>
                                     </button>
-                                  </Tooltip>
+                                  </Tooltip> */}
 
-                                    <input
-                                      id="refileupload"
-                                      accept="application/pdf, .docx, .txt, .rtf"
-                                      type="file"
-                                      multiple={true}
-                                      ref={inputFilesRef}
-                                      max-size="500000"
-                                      onChange={(e) => {
-                                        const allowedFormats = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain", "text/rtf"];
-                                        // const maxSize = 500000; // 5MB in bytes
-                                        const maxSize = 7 * 1024 * 1024;
-                                        const files = e.target.files;
-
-                                        // Check if files are selected
-                                        if (files.length === 0) {
-                                          toast.warn("Please select at least one file.");
-                                          return;
-                                        }
-
-                                        // Iterate through each selected file
-                                        for (let i = 0; i < files.length; i++) {
-                                          const file = files[i];
-
-                                          // Check file format
-                                          if (!allowedFormats.includes(file.type)) {
-                                            toast.error(`File format not allowed for ${file.name}.`);
-                                            e.target.value = ''; // Reset file input to clear selected files
-                                            return;
-                                          }
-
-                                          // Check file size
-                                          if (file.size > maxSize) {
-                                            toast.error(`File size exceeds the limit for ${file.name}. Maximum size allowed is 5MB.`);
-                                            e.target.value = ''; // Reset file input to clear selected files
-                                            return;
-                                          }
-                                        }
-                                        const fileInput = e.target;
-                                        setFileInput(fileInput);
-                                        setSelectedFile(e.target.files[0]);
-                                        const filesArray = Array.from(e.target.files);
-                                        // check if file with this name and last modified date already exists
-                                        const currentFiles = blogLinks.filter((link) => link.type === 'file');
-                                        const selectedFilesByUser = filesArray.map((file, index) => ({
-                                          label: file.name,
-                                          value: file.name,
-                                          selected: false,
-                                          id: file.name,
-                                          index: currentFiles.length + index + 1,
-                                          type: 'file',
-                                        }));
-
-                                        let isFileExists = false;
-                                        selectedFilesByUser.forEach((file) => {
-                                          const doesFileExist = currentFiles.find((currentFile) => currentFile.id === file.id);
-                                          if (doesFileExist) {
-                                            toast.error(`File ${file.name} already exists`);
-                                            isFileExists = true;
-                                            return;
-                                          }
-                                        });
-                                        if (isFileExists) {
-                                          return;
-                                        } else {
-                                          const currentFiles = [...selectedFiles];
-                                          currentFiles.push(...filesArray);
-                                          setSelectedFiles(currentFiles);
-                                        }
-                                        console.log("FILE ARRAY |")
-                                        console.log(filesArray);
-                                        if (blogLinks.length > 3) {
-                                          toast.error('You can upload max 3 files or URLs');
-                                          return;
-                                        }
-                                        if (Array.from(e.target.files).length > 0) {
-                                          if (fileInput.files && fileInput.files.length > 0) {
-                                            console.log(Array.from(e.target.files).length);
-                                            const newLinks = Array.from(e.target.files).map((file, index) => ({
-                                              label: file.name,
-                                              value: file.name,
-                                              selected: false,
-                                              id: file.name,
-                                              index: blogLinks.length + index + 1,
-                                              type: 'file',
-                                            }));
-                                            console.log('PREV BLOG LINKS');
-                                            console.log(blogLinks)
-                                            const updatedBlogLinks = [...blogLinks, ...newLinks];
-                                            // filter with uniqu id's 
-                                            updatedBlogLinks.filter((link, index, self) =>
-                                              index === self.findIndex((t) => (
-                                                t.id === link.id
-                                              ))
-                                            )
-                                            setBlogLinks(updatedBlogLinks);
-                                          } else {
-                                            toast.error('File not uploaded');
-                                          }
-                                        }
-                                      }}
-                                      className="hidden"
-                                    />
+                                  <DragAndDropFiles blogLinks={blogLinks} setBlogLinks={setBlogLinks} />
                                 </h3>
                               </div>
                             }
@@ -1117,13 +1028,13 @@ export default function Home() {
                                   xmlns="http://www.w3.org/2000/svg"
                                   fill="none"
                                   viewBox="0 0 24 24"
-                                  stroke-width="1.5"
+                                  strokeWidth="1.5"
                                   stroke="currentColor"
-                                  class="w-6 h-6"
+                                  className="w-6 h-6"
                                 >
                                   <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
                                     d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
                                   />
                                 </svg>
@@ -1275,12 +1186,12 @@ export const Chip = ({ selected, text, handleClick, index, wholeData }) => {
     {
       wholeData != null ? (
         <Tooltip content={wholeData.realSource} direction="top" className="text-xs">
-          <button className={`h-5 px-[18px] py-1.5  rounded-full justify-center items-center inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick(index)}>
-            <span className=" text-[10px] font-normal leading-tight">{text}</span>
+          <button className={`h-8 px-[18px] py-1.5  rounded-full justify-center items-center inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick(index)}>
+            <span className=" text-sm font-normal leading-tight">{text}</span>
           </button>
         </Tooltip>
       ) : (
-        <button className={`h-6 px-[18px] py-1.5  rounded-full justify-center items-center gap-2.5 inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick(index)}>
+        <button className={`h-8 px-[18px] py-1.5  rounded-full justify-center items-center gap-2.5 inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick(index)}>
           <span className=" text-sm font-normal leading-tight">{text}</span>
         </button>
       )
