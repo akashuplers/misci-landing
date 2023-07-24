@@ -563,6 +563,7 @@ input[type=number] {
 .Tooltip-Wrapper {
   display: inline-block;
   position: relative;
+  z-index: 9999;
 }
 
 /* Absolute positioning */
@@ -574,9 +575,9 @@ input[type=number] {
   padding: 6px;
   color: var(--tooltip-text-color);
   background: var(--tooltip-background-color);
-  font-size: 14px;
+  font-size: 11px;
   font-family: sans-serif;
-  z-index: 100;
+  z-index: 99999;
   white-space: nowrap;
   height: auto;
 }
