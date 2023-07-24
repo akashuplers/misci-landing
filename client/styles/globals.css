@@ -575,7 +575,7 @@ input[type=number] {
   padding: 6px;
   color: var(--tooltip-text-color);
   background: var(--tooltip-background-color);
-  font-size: 14px;
+  font-size: 11px;
   font-family: sans-serif;
   z-index: 99999;
   white-space: nowrap;
