@@ -148,7 +148,6 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                             cond = `${tweetQuota && `Thread limit to not exceed ${tweetQuota.remainingQuota} tweets `}`
                         } else {
                             newsLetter = {...newsLetter, [key]: null}            
-                            return
                         }
                     }
                     const blogPostToSendForLinkedin = newsLetter["wordpress"]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
