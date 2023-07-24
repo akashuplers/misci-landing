@@ -181,7 +181,18 @@ export default function Home() {
     localStorage.setItem("optionsForRepurpose", JSON.stringify(options));
     const pathname = "/dashboard";
     const query = { type: TYPES_OF_GENERATE.REPURPOSE };
-    router.push({ pathname, query });
+    router.push({ pathname, query }).then(()=> {
+      setkeywordsOfBlogs([]);
+      setBlogLinks([]);
+      setSelectedFiles([]);
+      setStateOfGenerate((prev)=>{
+        return {
+          url: null,
+          file: null,
+        }
+      }
+      )
+    })
   };
  
   function handleRepourpose() {
@@ -1005,17 +1016,17 @@ export default function Home() {
                           <span className={`text-center  text-sm font-normal ${showRepourposeError ? 'text-red-500' : 'text-slate-500'}`}>You can add max. 3 URLs (or Files) Use comma or press enter to add multiple URLs. Use upload button to select files</span>
                         </div>
                         { 
-                          stateOfGenerate.url != null && stateOfGenerate.url != null && <div className="w-full h-6 justify-center items-center gap-1.5 inline-flex">
+                          stateOfGenerate.url != null && stateOfGenerate.file != null && <div className="w-full h-6 justify-center items-center gap-2.5 inline-flex">
                             <div className="flex items-center gap-1.5">
                               <span
-                                className="mr-2 text-slate-800"
+                                className="text-slate-800"
                               >Keywords from URL:</span> {
                                 stateOfGenerate.url == STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} color={"#2563EB"} height={20} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />
                               }
                             </div>
                             <div className="flex items-center gap-1.5">
                               <span
-                                className="mr-2 text-slate-800"
+                                className="text-slate-800"
                               >
                                 Keywords from File:
                               </span>
