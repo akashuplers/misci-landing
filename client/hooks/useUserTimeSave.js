@@ -9,14 +9,25 @@ const useUserTimeSave = () => {
   const fetchData = async () => {
     const URL = API_BASE_PATH + API_ROUTES.GET_SAVED_TIME
     const headers = new Headers();
+    const getToken = localStorage.getItem("token");
+    var getUserId;
+    if (typeof window !== "undefined") {
+      getUserId = localStorage.getItem("userId");
+    }
+    var getTempId;
+    if (typeof window !== "undefined") {
+      getTempId = localStorage.getItem("tempId");
+    }
     headers.append('Content-Type', 'application/json');
-    headers.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
+    headers.append("Authorization", `Bearer ${getToken}`);
+
       try {
         const response = await fetch(URL, {
             method: 'GET',
             headers: headers,
         });
         if (!response.ok) {
+          setLoading(false);
           throw new Error('Network response was not ok');
         }
 
