@@ -29,7 +29,7 @@ import { meeAPI } from "../graphql/querys/mee";
 import { logout } from "../helpers/helper";
 import { LocalCreditCardIcon } from "./localicons/localicons";
 import useUserTimeSave from "@/hooks/useUserTimeSave";
-import { useSideBarChangeFunctions } from "@/store/appState";
+import { useSideBarChangeFunctions, useUserTimeSaveStore } from "@/store/appState";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -200,23 +200,11 @@ export default function Sidebar() {
     runFunctions();
   }
   useEffect(() => { console.log('mee data'); console.log(meeData) }, [meeData]);
-  const [selectedOption, setSelectedOption] = useState('today');
-  const [savedTime, setSavedTime] = useState('00:00');
-
-  // Function to update the saved time based on the selected option
-  const updateSavedTime = (option) => {
-    // You can implement the logic to fetch the saved time from the API based on the selected option
-    // For now, we'll just use a dummy value.
-    let newSavedTime = '00:00';
-    if (option === 'week') {
-      newSavedTime = '10:30';
-    } else if (option === 'month') {
-      newSavedTime = '25:15';
-    }
-
-    setSavedTime(newSavedTime);
-  };
-  const { userTimeSave, loading: userTimeSaveLoading, error} = useUserTimeSave();
+  // const { userTimeSave, loading: userTimeSaveLoading, error} = useUserTimeSave();
+  const {userTimeSave, refetchData: userTimeSaveUpdateData, loading:  userTimeSaveLoading, error}=   useUserTimeSaveStore()
+  useEffect(()=> {
+    userTimeSaveUpdateData();
+  }, [])
 
   return (
     <>
@@ -696,7 +684,7 @@ export function UserSaveTime(data, dataLoading) {
   // firstdata
   console.log(data.data);
   data = data.data;
-  const [selectedOption, setSelectedOption] = useState('Day');
+  const [selectedOption, setSelectedOption] = useState('Month');
 
   return (
     <Menu as="div" className="relative inline-block text-left">
@@ -745,7 +733,7 @@ export function UserSaveTime(data, dataLoading) {
                     }}
                   >
                     <div className="flex text-indigo-600 justify-between items-center">
-                      <div>{key}</div>
+                      <div>{key=='Day'? "Today": key=='Week'? "Last 7 days": key=='Month'? "Last 30 days":key}</div>
                       <div>{data[key]?.seconds}</div>
                     </div>
                   </a>

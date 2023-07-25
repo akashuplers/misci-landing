@@ -161,7 +161,7 @@ export default function RePurpose({value, setValue, setShowRepourposeError, remo
       onChange={(newValue) => setValue(newValue)}
       onInputChange={(newValue) => setInputValue(newValue)}
       onKeyDown={handleKeyDown}
-      placeholder="Enter URL of blog..."
+      placeholder="Enter URL or Upload a PDF, Docx or Txt"
       value={value}
     />
     </div>

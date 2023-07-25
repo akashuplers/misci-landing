@@ -1,3 +1,5 @@
+import { API_BASE_PATH, API_ROUTES } from '@/constants/apiEndpoints';
+import { getTimeObject } from '@/helpers/helper';
 import { BlogLink } from '@/pages';
 import {create} from 'zustand';
 
@@ -60,4 +62,78 @@ export const useSideBarChangeFunctions = create<SideBarChangeFunctionsState>((se
     state.functionsToRun.forEach((func) => func());
     return { functionsToRun: [] };
   }),
+}));
+
+interface UserTimeSave {
+  Day: {
+      hours: number;
+      minutes: number;
+  };
+  Week: {
+      hours: number;
+      minutes: number;
+  };
+  Month: {
+      hours: number;
+      minutes: number;
+  };
+}
+
+const initailUserTimeSave: UserTimeSave = {
+  Day: {
+      hours: 0,
+      minutes: 0,
+  },
+  Week: {
+      hours: 0,
+      minutes: 0,
+  },
+  Month: {
+      hours: 0,
+      minutes: 0,
+  },
+};
+
+type UserTimeSaveStore = {
+  userTimeSave: UserTimeSave;
+  loading: boolean;
+  error: any;
+  refetchData: () => void;
+};
+
+export const useUserTimeSaveStore = create<UserTimeSaveStore>((set) => ({
+  userTimeSave: initailUserTimeSave,
+  loading: true,
+  error: null,
+  refetchData: async () => {
+    set({ loading: true, error: null });
+    const URL = API_BASE_PATH + API_ROUTES.GET_SAVED_TIME;
+    const headers = new Headers();
+    const getToken = localStorage.getItem('token');
+
+    headers.append('Content-Type', 'application/json');
+    headers.append('Authorization', `Bearer ${getToken}`);
+
+    try {
+      const response = await fetch(URL, {
+        method: 'GET',
+        headers: headers,
+      });
+
+      if (!response.ok) {
+        set({ loading: false, error: new Error('Network response was not ok') });
+        return;
+      }
+
+      const jsonData = await response.json();
+      const improvedData = {
+        Day: getTimeObject(jsonData.data.oneDaySavedTime),
+        Week: getTimeObject(jsonData.data.oneWeekSavedTime),
+        Month: getTimeObject(jsonData.data.oneMonthSavedTime),
+      };
+      set({ userTimeSave: improvedData, loading: false, error: null });
+    } catch (error) {
+      set({ error, loading: false });
+    }
+  },
 }));
