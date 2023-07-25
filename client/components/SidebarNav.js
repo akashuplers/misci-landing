@@ -692,7 +692,7 @@ export function UserSaveTime(data, dataLoading) {
         <Menu.Button className="relative inline-flex w-full justify-center items-center gap-x-1.5 rounded-md bg-indigo-100 px-3 py-2 text-sm font-semibold text-gray-900 hover:opacity-75 border-indigo-600 border-l-8  outline-white">
           {/* small width verticial line */}
           <ClockIcon className="h-5 w-5" aria-hidden="true" />
-          <span className="font-light">Time Saved for the {selectedOption}</span> {dataLoading == true ? <ReactLoading
+          <span className="font-light">Time Saved {selectedOption =='Day'? "for a Day": selectedOption=='Week'? "in last 7 days": selectedOption=='Month'? "in last 30 days":selectedOption}</span> {dataLoading == true ? <ReactLoading
             width={25}
             height={25}
             round={true}

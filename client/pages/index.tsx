@@ -58,9 +58,9 @@ const TEXTS = [
 ];
 
 const TEXTS2 = [
+  "Writing", 
   "Research",
   "Knowledge",
-  "Writing",
 ];
 export const TYPES_OF_GENERATE = {
   REPURPOSE: 'repurpose',
@@ -768,7 +768,7 @@ export default function Home() {
 
           {!isAuthenticated && (
             <div className="hidden lg:flex">
-              <div
+              {/* <div
                 className="absolute top-[3%] w-32 h-32 hidden lg:flex left-[10%] hover:scale-105 cursor-pointer transform-gpu -translate-x-1/2 -translate-y-1/2 animate-float"
                 style={{
                   padding: 10.23,
@@ -839,7 +839,7 @@ export default function Home() {
                 <div className="self-stretch opacity-80 text-center text-white text-sm font-normal leading-none tracking-wide">
                   Time reduced on 1st Drafts
                 </div>
-              </div>
+              </div> */}
             </div>
           )}
           <div className="relative mx-auto max-w-screen-xl flex flex-col">
@@ -849,11 +849,18 @@ export default function Home() {
               }}
             >
               <div className={`${isAuthenticated ? 'mt-[10%]': 'mt-[-10%]'}`}>
-                <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
-                  Lille is your content <TextTransitionEffect text={TEXTS2}/> Co-Pilot
+                <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing "
+                style={{
+                  minWidth: '800px'
+                }}
+                >
+                  Lille is your content 
+                    
+                   <TextTransitionEffect text={TEXTS2}/>
+                    Co-Pilot
                 </div>
                 <div className="flex flex-col items-center justify-center gap-2.5">
-                <span className="relative flex text-xl items-center  justify-center font-medium tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap custom-spacing">Two ways to get started with <span className="font-bold text-indigo-600">Lille.ai</span></span>
+                <span className="relative flex text-xl items-center  justify-center font-medium tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap">Two ways to get started with &nbsp;<span className="font-bold text-indigo-600">Lille.ai</span></span>
                 <span className="text-base font-normal text-gray-600">
                 Ask questions or upload multiple documents / URL’S.
                 </span>
@@ -920,7 +927,7 @@ export default function Home() {
                   <Tab.Panels className={`outline-none`}>
                     <Tab.Panel className={`outline-none`}>
                       <AIInputComponent />
-                      {/* {!loading ? (
+                      {!loading ? (
                         <div className="flex flex-col  lg:grid grid-cols-3 gap-4 py-4 mt-16">
                           {updatedArr}
                         </div>
@@ -928,7 +935,7 @@ export default function Home() {
                         <div style={{ margin: "0 auto" }}>
                           <LoaderPlane />
                         </div>
-                      )} */}
+                      )}
                     </Tab.Panel>
                     <Tab.Panel className={`outline-none`}>
                       <div className="w-full lg:w-[700px] h-full opacity-90 flex-col justify-center mt-10 items-center gap-[18px] inline-flex bg-transparent rounded-[10px]">
@@ -1057,7 +1064,7 @@ export default function Home() {
                         }
                         <div className='flex items-center flex-col mt-5'>
                           {keywordsOFBlogs.length > 0 && <div className="flex items-center gap-1.5" >
-                            <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="Select keywords as per your choice to add focus, URLs containing the selected keywords will be used to recreate a high ranking SEO blog." direction='top' className='max-w-[100px]'>
+                            <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="Select keywords as per your choice to add focus, URLs / Files containing the selected keywords will be used to recreate a high ranking SEO blog." direction='top' className='max-w-[100px]'>
                               <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
                             </Tooltip></div>}
                           <div className='flex flex-wrap justify-center gap-2 mt-5'>
@@ -1283,7 +1290,7 @@ const AIInputComponent = () => {
       <input
         id="search"
         name="search"
-        className="flex-grow h-full border-0 bg-white py-2.5 px-3 text-gray-900 ring-1   ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 disabled:opacity-50 rounded-[10px]"
+        className="flex-grow h-full border-0 bg-white py-2.5 px-3 text-gray-900 ring-1   ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 disabled:opacity-50 rounded-[10px] min-h-[60px]"
         placeholder="Enter a topic name, keywords or  a sentence"
         type="search"
         onChange={(e) => {
@@ -1301,8 +1308,12 @@ const AIInputComponent = () => {
         style={{
         }}
       >
-        <span> <span className='flex flex-row w-full items-center justify-center gap-1'>Generate 1st Drafts for Articles <FaFacebook className="h-5 w-5 " /> <FaTwitter className="h-5 w-5" /> <FaLinkedin className="h-5 w-5" /> 
+        {/* <span> <span className='flex flex-row w-full items-center justify-center gap-1'>Generate 1st Drafts for Articles <FaFacebook className="h-5 w-5 " /> <FaTwitter className="h-5 w-5" /> <FaLinkedin className="h-5 w-5" /> 
         <ArrowLongRightIcon className="h-5 w-5" />
+        </span></span> */}
+        <span>Generate 1 <sup>st</sup> Drafts for Articles <span className='flex flex-row w-full items-center justify-center'><FaFacebook className="h-5 w-5 mr-3 rounded-full" /> <FaTwitter className="h-5 w-5 mr-3 rounded-full" /> <FaLinkedin className="h-5 w-5 mr-3 rounded-full" /> 
+        <ArrowLongRightIcon className="h-5 w-5" />
+
         </span></span>
       </button>
     </div>
@@ -1342,8 +1353,11 @@ export const TextTransitionEffect = ({ text }) => {
 
   return <span style={{ color: "var(--primary-blue)" }} className="">
   <TextTransition springConfig={presets.gentle}>
-    <span className="newsletter">
-      {text[index % text.length]}
+    <span className="">
+      {text[index % text.length] =='Writing' ?
+      <>&nbsp;&nbsp;Writing&nbsp;&nbsp;</>: 
+      <>{text[index % text.length]}</> 
+      }  
     </span>
   </TextTransition>
 </span>
