@@ -926,7 +926,7 @@ export default function Home() {
                       )} */}
                     </Tab.Panel>
                     <Tab.Panel className={`outline-none`}>
-                      <div className="w-full lg:w-[750px] h-full opacity-90 flex-col justify-center mt-10 items-center gap-[18px] inline-flex bg-transparent rounded-[10px]">
+                      <div className="w-full lg:w-[650px] h-full opacity-90 flex-col justify-center mt-10 items-center gap-[18px] inline-flex bg-transparent rounded-[10px]">
                         <div className="w-full h-6 justify-center items-center gap-1.5 inline-flex">
                           <div className="text-center text-slate-600 text-base font-normal flex">You have URLs or Documents <ArrowLongRightIcon className="mx-2 h-5 w-5 text-slate-600" /> Let lille generate first draft for your article for <span className="mx-2 flex items-center justify-center text-blue-600"><FaFacebook className="h-5 w-5 mr-3" /> <FaTwitter className="h-5 w-5 mr-3" /> <FaLinkedin className="h-5 w-5 mr-3" /></span></div>
                           <span className="justify-self-end flex">
