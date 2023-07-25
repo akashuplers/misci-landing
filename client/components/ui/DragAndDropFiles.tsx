@@ -27,6 +27,10 @@ const DragAndDropFiles = () => {
       toast.warn("Please select at least one file.");
       return;
     }
+    if((files.length + blogLinks.length)> 3){
+      toast.warn("You can add max 3 files or URLs");
+      return;
+    }
     if(files.length > 3){
       console.log("IFLES LENGHT", files.length)
       toast.warn("You can add max 3 ");

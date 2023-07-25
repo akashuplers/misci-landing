@@ -42,3 +42,22 @@ export const useBlogLinkStore = create<BlogLinkStoreState>((set) => ({
     }),
     removeBlogLink: (id) => set((state) => ({ blogLinks: state.blogLinks.filter((link) => link.id !== id) })),
 }));
+
+// make a [] of functions,
+
+
+interface SideBarChangeFunctionsState {
+  functionsToRun: (() => void)[];
+  addFunction: (func: () => void) => void;
+  removeFunction: (func: () => void) => void;
+  runFunctions: () => void;
+}
+export const useSideBarChangeFunctions = create<SideBarChangeFunctionsState>((set) => ({
+  functionsToRun: [],
+  addFunction: (func) => set((state) => ({ functionsToRun: [...state.functionsToRun, func] })),
+  removeFunction: (func) => set((state) => ({ functionsToRun: state.functionsToRun.filter((f) => f !== func) })),
+  runFunctions: () => set((state) => {
+    state.functionsToRun.forEach((func) => func());
+    return { functionsToRun: [] };
+  }),
+}));
