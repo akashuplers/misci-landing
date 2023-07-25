@@ -29,6 +29,7 @@ import { meeAPI } from "../graphql/querys/mee";
 import { logout } from "../helpers/helper";
 import { LocalCreditCardIcon } from "./localicons/localicons";
 import useUserTimeSave from "@/hooks/useUserTimeSave";
+import { useSideBarChangeFunctions } from "@/store/appState";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -43,6 +44,7 @@ export default function Sidebar() {
     linkedInUserData = localStorage.getItem("linkedInAccessToken");
   }
   const creditLeft = useStore((state) => state.creditLeft);
+  const {runFunctions } = useSideBarChangeFunctions();
   const [url, setUrl] = useState("");
   const router = useRouter();
   const path = router.pathname;
@@ -195,6 +197,7 @@ export default function Sidebar() {
     setBlogData([]);
     setShowTwitterThreadUI(false);
     setTwitterThreadData([]);
+    runFunctions();
   }
   useEffect(() => { console.log('mee data'); console.log(meeData) }, [meeData]);
   const [selectedOption, setSelectedOption] = useState('today');

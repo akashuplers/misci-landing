@@ -58,9 +58,9 @@ const MoblieUnAuthFooter = () => {
               </Link>
             </p>
             <p>
-              <a href="/faqs" className="text-white-600 hover:opacity-90 ">
+              <Link href="/faq" className="text-white-600 hover:opacity-90 ">
                 FAQs
-              </a>
+              </Link>
             </p>
           </div>
           <div className="w-full flex flex-col  items-start">
