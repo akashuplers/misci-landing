@@ -101,7 +101,11 @@ export function TotalTImeSaved({
             How much time do you believe we have saved for you?
           </p>
 
-          <div className="flex items-center justify-center ">
+          <div className="flex items-center justify-center "
+          style={{
+            gap: '0.25rem'
+          }}
+          >
           <input
             type="number" 
             value={editedHours.minutes}
