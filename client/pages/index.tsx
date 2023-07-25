@@ -860,7 +860,7 @@ export default function Home() {
                     Co-Pilot
                 </div>
                 <div className="flex flex-col items-center justify-center gap-2.5">
-                <span className="relative flex text-xl items-center  justify-center font-medium tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap">Two ways to get started with <span className="font-bold text-indigo-600">Lille.ai</span></span>
+                <span className="relative flex text-xl items-center  justify-center font-medium tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap">Two ways to get started with &nbsp;<span className="font-bold text-indigo-600">Lille.ai</span></span>
                 <span className="text-base font-normal text-gray-600">
                 Ask questions or upload multiple documents / URL’S.
                 </span>
@@ -1064,7 +1064,7 @@ export default function Home() {
                         }
                         <div className='flex items-center flex-col mt-5'>
                           {keywordsOFBlogs.length > 0 && <div className="flex items-center gap-1.5" >
-                            <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="Select keywords as per your choice to add focus, URLs containing the selected keywords will be used to recreate a high ranking SEO blog." direction='top' className='max-w-[100px]'>
+                            <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="Select keywords as per your choice to add focus, URLs / Files containing the selected keywords will be used to recreate a high ranking SEO blog." direction='top' className='max-w-[100px]'>
                               <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
                             </Tooltip></div>}
                           <div className='flex flex-wrap justify-center gap-2 mt-5'>
@@ -1290,7 +1290,7 @@ const AIInputComponent = () => {
       <input
         id="search"
         name="search"
-        className="flex-grow h-full border-0 bg-white py-2.5 px-3 text-gray-900 ring-1   ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 disabled:opacity-50 rounded-[10px]"
+        className="flex-grow h-full border-0 bg-white py-2.5 px-3 text-gray-900 ring-1   ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 disabled:opacity-50 rounded-[10px] min-h-[60px]"
         placeholder="Enter a topic name, keywords or  a sentence"
         type="search"
         onChange={(e) => {
