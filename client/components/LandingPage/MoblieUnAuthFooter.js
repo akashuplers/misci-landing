@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { FacebookIcon, LinkedinIcon, TwitterIcon } from "react-share";
-const socialLinks = [
+export const socialLinks = [
   {
     name: "Facebook",
     link: "https://www.facebook.com/",
