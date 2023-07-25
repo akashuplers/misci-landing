@@ -853,7 +853,7 @@ export default function Home() {
                   Lille is your content <TextTransitionEffect text={TEXTS2}/>  Assistant
                 </div>
                 <div className="relative flex text-xl items-center  justify-center font-medium tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap custom-spacing">
-                Two ways to use <span className="font-bold text-indigo-600">Lille.ai</span>:
+                Two ways to use <span className="font-bold text-indigo-600">Lille.ai</span>
                 </div>
 
                 <Tab.Group
