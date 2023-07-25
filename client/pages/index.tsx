@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable @next/next/no-html-link-for-pages */
 // @ts-nocheck
-import MoblieUnAuthFooter from "@/components/LandingPage/MoblieUnAuthFooter";
+import MoblieUnAuthFooter, { socialLinks } from "@/components/LandingPage/MoblieUnAuthFooter";
 import RePurpose from "@/components/LandingPage/RePurpose";
 import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 import { gql, useQuery } from "@apollo/client";
@@ -25,12 +25,14 @@ import PreferencesModal from "../modals/PreferencesModal";
 import useStore, { useFunctionStore } from "../store/store";
 import { Tab } from "@headlessui/react";
 import ReactLoading from "react-loading";
-import { CheckCircleIcon, CloudArrowUpIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { ArrowLongRightIcon, CheckCircleIcon, CloudArrowUpIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { checkFileFormatAndSize } from "@/components/DashboardInsights";
 import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
 import DragAndDropFiles, { REPURPOSE_MAX_SIZE_MB } from "@/components/ui/DragAndDropFiles";
 import { maxFileSize } from "@/helpers/utils";
-import {useBlogLinkStore, useRepurposeFileStore, useSideBarChangeFunctions} from "@/store/appState";
+import { useBlogLinkStore, useRepurposeFileStore, useSideBarChangeFunctions } from "@/store/appState";
+// import { FacebookIcon, LinkedinIcon, TwitterIcon } from "react-share";
+import { FaFacebook, FaTwitter, FaLinkedin } from 'react-icons/fa';
 
 const PAYMENT_PATH = "/?payment=true";
 const TONES = [
@@ -97,20 +99,20 @@ export default function Home() {
   const [showFileUploadUI, setShowFileUploadUI] = useState(false);
   const addToFunctionStack = useFunctionStore((state) => state.addToStack);
   const [stateOfGenerate, setStateOfGenerate] = useState({
-    url : null,
+    url: null,
     file: null,
   });
   const [showLoadingInfo, setShowLoadingInfo] = useState(false);
   const selectedFiles = useRepurposeFileStore((state) => state.selectedFiles);
   const removeSelectedFile = useRepurposeFileStore((state) => state.removeSelectedFile);
-  const setSelectedFiles = useRepurposeFileStore((state) => state.setSelectedFiles); 
+  const setSelectedFiles = useRepurposeFileStore((state) => state.setSelectedFiles);
   const executeLastFunction = useFunctionStore((state) => state.executeLastFunction);
-  const {addFunction}=useSideBarChangeFunctions()
+  const { addFunction } = useSideBarChangeFunctions()
   const handleGenerateReset = () => {
     setkeywordsOfBlogs([]);
     setBlogLinks([]);
     setSelectedFiles([]);
-    setStateOfGenerate((prev)=>{
+    setStateOfGenerate((prev) => {
       return {
         url: null,
         file: null,
@@ -118,9 +120,9 @@ export default function Home() {
     }
     )
   }
-  useEffect(()=>{
+  useEffect(() => {
     addFunction(handleGenerateReset);
-  },[blogLinks]);
+  }, [blogLinks]);
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') {
@@ -132,7 +134,7 @@ export default function Home() {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [executeLastFunction]);
-  
+
   const handleChipClick = (index) => {
     const idOfKeyword = getIdFromUniqueName(keywordsOFBlogs[index].id);
 
@@ -169,10 +171,10 @@ export default function Home() {
   useEffect(() => {
     updateAuthentication();
   }, []);
-  useEffect(()=>{
+  useEffect(() => {
     console.log('SELECTED FILES with blog links');
     console.log(selectedFiles, blogLinks);
-  },[selectedFiles, blogLinks])
+  }, [selectedFiles, blogLinks])
 
   useEffect(() => {
     console.log('articleids');
@@ -197,11 +199,11 @@ export default function Home() {
     localStorage.setItem("optionsForRepurpose", JSON.stringify(options));
     const pathname = "/dashboard";
     const query = { type: TYPES_OF_GENERATE.REPURPOSE };
-    router.push({ pathname, query }).then(()=> {
+    router.push({ pathname, query }).then(() => {
       setkeywordsOfBlogs([]);
       setBlogLinks([]);
       setSelectedFiles([]);
-      setStateOfGenerate((prev)=>{
+      setStateOfGenerate((prev) => {
         return {
           url: null,
           file: null,
@@ -210,7 +212,7 @@ export default function Home() {
       )
     })
   };
- 
+
   function handleRepourpose() {
     setLoadingForKeywords(true);
     // key all keywords which are selected
@@ -238,7 +240,7 @@ export default function Home() {
     console.log(selectedFiles);
     if (selectedFiles.length > 0) {
       const selectedFilesForPayload = selectedFiles.map((fileObject) => fileObject.file);
-      console.log('selectedFilesForPayload', selectedFilesForPayload);      
+      console.log('selectedFilesForPayload', selectedFilesForPayload);
       uploadAndExtractKeywords(selectedFilesForPayload)
         .then((response) => {
           console.log('Response:', response);
@@ -280,7 +282,7 @@ export default function Home() {
             const processedKeywords = processDataForKeywords(updatedKeywords);
             return processedKeywords;
           });
-          setStateOfGenerate((prev)=>{
+          setStateOfGenerate((prev) => {
             return {
               ...prev,
               file: STATESOFKEYWORDS.LOADED,
@@ -293,7 +295,7 @@ export default function Home() {
           console.log('ERROR');
           console.log(error);
           // Handle errors here
-          setStateOfGenerate((prev)=>{
+          setStateOfGenerate((prev) => {
             return {
               ...prev,
               file: STATESOFKEYWORDS.LOADED,
@@ -334,16 +336,16 @@ export default function Home() {
     }, { files: 0, urls: 0 });// Replace `keywords` with your actual keywords array/state
     // Replace `fileInput` with your actual file input state or variable
     console.log('countByType');
-    if(countByType.files > 0){
-      setStateOfGenerate((prev)=>{
+    if (countByType.files > 0) {
+      setStateOfGenerate((prev) => {
         return {
           ...prev,
           file: STATESOFKEYWORDS.LOADING,
         }
       });
-    }    
-    if(countByType.urls > 0){
-      setStateOfGenerate((prev)=>{
+    }
+    if (countByType.urls > 0) {
+      setStateOfGenerate((prev) => {
         return {
           ...prev,
           url: STATESOFKEYWORDS.LOADING,
@@ -412,7 +414,7 @@ export default function Home() {
         if (doesUnprocessedUrlsExist) {
           toast.warn(`Success but we could not resolve ${result.unprocessedUrls.length > 1 ? "these URLs" : "this URL"} : ` + result.unprocessedUrls.join(', '));
         }
-        const { keywords,keywordIdMap,
+        const { keywords, keywordIdMap,
           articleIds, } = extractKeywordsAndIds(result);
         // setkeywordsOfBlogs(prev => [...prev, ...keywords]);
         const prevKeywords = [...keywordsOFBlogs];
@@ -420,7 +422,7 @@ export default function Home() {
         const processedKeywords = processDataForKeywords(updatedKeywords);
         setkeywordsOfBlogs(processedKeywords);
         setKeywordsMap(keywordIdMap);
-        setStateOfGenerate((prev)=>{
+        setStateOfGenerate((prev) => {
           return {
             ...prev,
             url: STATESOFKEYWORDS.LOADED,
@@ -429,7 +431,7 @@ export default function Home() {
       })
       .catch(error => {
         console.log('error', error)
-        setStateOfGenerate((prev)=>{
+        setStateOfGenerate((prev) => {
           return {
             ...prev,
             url: STATESOFKEYWORDS.LOADED,
@@ -437,7 +439,7 @@ export default function Home() {
         });
       })
       .finally(() => {
-        setStateOfGenerate((prev)=>{
+        setStateOfGenerate((prev) => {
           return {
             ...prev,
             url: STATESOFKEYWORDS.LOADED,
@@ -731,7 +733,7 @@ export default function Home() {
         )}
 
         {/* <TotalTImeSaved   /> */}
-        
+
         {!meeData?.me?.isSubscribed && meeData?.me?.credits === 0 && (
           <TrialEndedModal setTrailModal={() => { }} topic={null} />
         )}
@@ -843,15 +845,14 @@ export default function Home() {
             </div>
           )}
           <div className="relative mx-auto max-w-screen-xl flex flex-col">
-            <div className={`mx-auto max-w-3xl text-center h-screen  lg:min-h-screen flex items-center justify-center `}
-            style={{
-              height: '100%'
-            }}
+            <div className={`mx-auto max-w-5xl text-center h-screen  ${isAuthenticated ? "": 'lg:min-h-screen'} flex items-center justify-center `}
+              style={{
+                height: '100%'
+              }}
             >
-              <div className="mt-[-10%]">
+              <div className={`${isAuthenticated ? 'mt-[10%]': 'mt-[-10%]'}`}>
                 <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing">
-                  Automate, <span className="text-indigo-700">Amplify,</span>{" "}
-                  Achieve.
+                  Lille is your content <span className="text-indigo-700">Research</span> Assistant
                 </div>
                 <div className="relative flex text-xl items-center  justify-center font-medium tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap custom-spacing">
                   Your AI-powered content partner that doesn't dream, it
@@ -916,11 +917,9 @@ export default function Home() {
                   </Tab.List>
                   <Tab.Panels className={`outline-none`}>
                     <Tab.Panel className={`outline-none`}>
-                      <div className="p-4 mt-4 lg:mt-2">
-                        Try some of our trending topics.
-                      </div>
+                      <AIInputComponent />
                       {!loading ? (
-                        <div className="flex flex-col  lg:grid grid-cols-3 gap-4 py-4">
+                        <div className="flex flex-col  lg:grid grid-cols-3 gap-4 py-4 mt-16">
                           {updatedArr}
                         </div>
                       ) : (
@@ -928,16 +927,17 @@ export default function Home() {
                           <LoaderPlane />
                         </div>
                       )}
-                      <AIInputComponent />
                     </Tab.Panel>
                     <Tab.Panel className={`outline-none`}>
-                      <div className="w-full lg:w-[650px] h-full opacity-90 flex-col justify-center mt-10 items-center gap-[18px] inline-flex bg-transparent rounded-[10px]">
+                      <div className="w-full lg:w-[750px] h-full opacity-90 flex-col justify-center mt-10 items-center gap-[18px] inline-flex bg-transparent rounded-[10px]">
                         <div className="w-full h-6 justify-center items-center gap-1.5 inline-flex">
-                          <div className="text-center text-slate-600 text-ase font-normal">Lille will help you to Repurpose the whole blog</div>
+                          <div className="text-center text-slate-600 text-base font-normal flex">You have URLs or Document <ArrowLongRightIcon className="mx-2 h-5 w-5 text-slate-600" /> Let lille generate first draft for your article <span className="mx-2 flex items-center justify-center text-blue-600"><FaFacebook className="h-5 w-5 mr-3 rounded-full" /> <FaTwitter className="h-5 w-5 mr-3 rounded-full" /> <FaLinkedin className="h-5 w-5 mr-3 rounded-full" /></span></div>
+                          <span className="justify-self-end flex">
                           <Tooltip content="Add your content URLs, We will help you recreate blog on the basis of keywords and tones  selected by you.
 " direction='top' className='max-w-[100px]'>
                             <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
-                          </Tooltip>  
+                          </Tooltip>
+                          </span>
                         </div>
                         <div className="w-full h-full justify-center items-center gap-2.5 inline-flex">
                           <div className="relative w-full min-h-[60px] bg-white rounded-[10px]  border border-gray-600 py-2.5">
@@ -945,7 +945,7 @@ export default function Home() {
                             {showFileUploadUI == true &&
 
                               <div className="flex items-center justify-between px-5">
-                            <h1 className="grow shrink basis-0 text-slate-800 text-lg font-normal text-left">Upload</h1>
+                                <h1 className="grow shrink basis-0 text-slate-800 text-lg font-normal text-left">Upload</h1>
                                 <button onClick={
                                   () => { setShowFileUploadUI(false) }}
                                 >
@@ -963,13 +963,13 @@ export default function Home() {
 
                               }
 
-                              {showFileUploadUI != true && 
-                              
-                              <Tooltip content={`Select file formats like PDF, DOCX, TXT (size <${REPURPOSE_MAX_SIZE_MB}MB)`} direction='top' className='max-w-[100px] mt-4'>
-                              
-                              <div onClick={
-                                () => {
-                                  setShowFileUploadUI(true);
+                              {showFileUploadUI != true &&
+
+                                <Tooltip content={`Select file formats like PDF, DOCX, TXT (size <${REPURPOSE_MAX_SIZE_MB}MB)`} direction='top' className='max-w-[100px] mt-4'>
+
+                                  <div onClick={
+                                    () => {
+                                      setShowFileUploadUI(true);
                                       addToFunctionStack(() => { setShowFileUploadUI(false) })
                                     }
                                   } className="w-full h-10 flex justify-around cursor-pointer px-2 rounded-lg border border-indigo-600 items-center gap-2.5">
@@ -1014,7 +1014,7 @@ export default function Home() {
                                   setkeywordsOfBlogs([]);
                                   setBlogLinks([]);
                                   setSelectedFiles([]);
-                                  setStateOfGenerate((prev)=>{
+                                  setStateOfGenerate((prev) => {
                                     return {
                                       url: null,
                                       file: null,
@@ -1031,7 +1031,7 @@ export default function Home() {
                         <div className="w-full h-6 justify-start items-center gap-1.5 inline-flex">
                           <span className={`text-center  text-sm font-normal ${showRepourposeError ? 'text-red-500' : 'text-slate-500'}`}>You can add max. 3 URLs (or Files) Use comma or press enter to add multiple URLs. Use upload button to select files</span>
                         </div>
-                        { 
+                        {
                           stateOfGenerate.url != null && stateOfGenerate.file != null && <div className="w-full h-6 justify-center items-center gap-2.5 inline-flex">
                             <div className="flex items-center gap-1.5">
                               <span
@@ -1247,6 +1247,8 @@ const AIInputComponent = () => {
   const [keyword, setkeyword] = useState("");
   const router = useRouter();
   const setKeywordInStore = useStore((state) => state.setKeyword);
+  const buttonHeightRef = useRef(null);
+  const [buttonHeight, setButtonHeight] = useState(0);
   const handleEnterKeyPress = (e: { key: string }) => {
     if (e.key === "Enter") {
       setKeywordInStore(keyword);
@@ -1263,18 +1265,24 @@ const AIInputComponent = () => {
   };
 
   const isDisabled = keyword.trim().length === 0;
+  useEffect(() => {
+    if (buttonHeightRef.current) {
+      setButtonHeight(buttonHeightRef.current.clientHeight);
+    }
+  }
+    , [buttonHeightRef.current])
 
   return (
-    <div
-      className={`
-  mt-10 flex items-center justify-center gap-x-6 
-  w-[100%] rounded-md`}
-    >
+    <div className="mt-10 flex items-center h-full justify-center gap-x-6 w-[100%] rounded-lg"style={{
+      height: '100%'
+    }}>
+      <div className={`flex-grow flex-shrink-0 flex flex-row items-center min-h-[86px] justify-center gap-2.5 w-[70%] transition-all duration-500 ease-in-out rounded-md`} style={{ height: buttonHeightRef.current ? buttonHeightRef.current.clientHeight+'px' :`100%`, minHeight: '86px'
+      }}>
       <input
         id="search"
         name="search"
-        className="block w-full rounded-md border-0 bg-white py-2.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 disabled:opacity-50"
-        placeholder="Search"
+        className="flex-grow h-full min-h-[86px] rounded-md border-0 bg-white py-2.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 disabled:opacity-50"
+        placeholder="Enter a topic keywords or a sentence"
         type="search"
         onChange={(e) => {
           setkeyword(e.target.value);
@@ -1282,14 +1290,21 @@ const AIInputComponent = () => {
         }}
         onKeyPress={handleEnterKeyPress}
       />
+      </div>
       <button
-        className={`cta-invert ${isDisabled ? "disabled:opacity-50" : ""}`}
+        ref={buttonHeightRef}
+        className={`cta-invert flex flex-row ${isDisabled ? "disabled:opacity-50" : ""}`}
         onClick={handleButtonClick}
         disabled={isDisabled}
+        style={{
+          width: '30%',
+          height: '100%'
+        }}
       >
-        Generate
+        <span>Click to Generate first drafts for Articles  for  <span className='flex flex-row w-full items-center justify-center'><FaFacebook className="h-5 w-5 mr-3 rounded-full" /> <FaTwitter className="h-5 w-5 mr-3 rounded-full" /> <FaLinkedin className="h-5 w-5 mr-3 rounded-full" /></span></span>
       </button>
     </div>
+
   );
 };
 
