@@ -60,7 +60,7 @@ export default function RePurpose({value, setValue, setShowRepourposeError, remo
     function handleClick(){
       const typeOfData = props.data.type;
       if(typeOfData ==='file'){
-        
+        removeFile(props.data.id);
       }
       const newValues = value.filter((item) => item.id !== props.data.id);
       setValue(newValues);

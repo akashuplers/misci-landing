@@ -8,6 +8,11 @@ const faqs =  [
     "answer": "Lille.ai is an AI-powered content creation platform. It helps users generate and optimize content for general contents, Twitter, and LinkedIn. It allows users to provide topics and offers a wide range of trending topics to base your content on."
   },
   {
+    "question": "Repurpose Content - What is this?",
+    "answer": `Lille allows user to upload maximum three URLs ( or Files ) from where a user can re-purpose the content creating a blog.
+    User can use the "Repurpose Content" button at home page and add URLs/Files, click on 'Generate' that shows the extracted keywords from the uploaded content. User is asked to select some keywords from the given keywords, URL(s) or File(s) related to selected keywords are used to generate the blog. Paid users have the option to choose the tone setting and few other instructions for the blog creation. The URLs or Files that are used to generate the blog based on the selected keywords are shown at the end of the generated blog as references.`
+  },
+  {
     "question": "What kind of content can I generate with Lille.ai?",
     "answer": "With Lille.ai, you can generate Twitter posts, LinkedIn posts, and even full contents based on the topics you provide, choose, or from our trending topic suggestions."
   },
