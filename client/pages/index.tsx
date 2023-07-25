@@ -30,7 +30,7 @@ import { checkFileFormatAndSize } from "@/components/DashboardInsights";
 import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
 import DragAndDropFiles, { REPURPOSE_MAX_SIZE_MB } from "@/components/ui/DragAndDropFiles";
 import { maxFileSize } from "@/helpers/utils";
-import {useBlogLinkStore, useRepurposeFileStore} from "@/store/appState";
+import {useBlogLinkStore, useRepurposeFileStore, useSideBarChangeFunctions} from "@/store/appState";
 
 const PAYMENT_PATH = "/?payment=true";
 const TONES = [
@@ -105,6 +105,22 @@ export default function Home() {
   const removeSelectedFile = useRepurposeFileStore((state) => state.removeSelectedFile);
   const setSelectedFiles = useRepurposeFileStore((state) => state.setSelectedFiles); 
   const executeLastFunction = useFunctionStore((state) => state.executeLastFunction);
+  const {addFunction}=useSideBarChangeFunctions()
+  const handleGenerateReset = () => {
+    setkeywordsOfBlogs([]);
+    setBlogLinks([]);
+    setSelectedFiles([]);
+    setStateOfGenerate((prev)=>{
+      return {
+        url: null,
+        file: null,
+      }
+    }
+    )
+  }
+  useEffect(()=>{
+    addFunction(handleGenerateReset);
+  },[blogLinks])
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') {
