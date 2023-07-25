@@ -5,11 +5,12 @@ import ReactModal from "react-modal";
 import { toast } from "react-toastify";
 import { formatMinutesToTimeString } from "@/helpers/helper";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
+import { useUserTimeSaveStore } from "@/store/appState";
 export function TotalTImeSaved({
   timeSaved,
   blogId,
   refreshDataForUserTime
-}:any) 
+}:any)
 
 {
  const [modalIsOpen, setIsOpen] = useState(true);
@@ -20,15 +21,18 @@ export function TotalTImeSaved({
  const [showPannel, setShowPannel] = useState('MAIN');
 //  AGREEE, DISAGREE
  const {response, error, loading, sendSavedTime}:any = useSendSavedTimeOfUser();
+ const {userTimeSave, refetchData: userTimeSaveUpdateData, loading:  userTimeSaveLoading, }=   useUserTimeSaveStore()
  useEffect(() => {
   if(response!=null){
     if(response?.type === "SUCCESS"){
       toast.success(response?.message);
-      refreshDataForUserTime();
+      // refreshDataForUserTime();
+      userTimeSaveUpdateData();
     }
     else{
       toast.error(response?.message);
-      refreshDataForUserTime();
+      // refreshDataForUserTime();
+      userTimeSaveUpdateData();
     }
 
     setIsOpen(false);
@@ -75,8 +79,7 @@ export function TotalTImeSaved({
                   style={{ width: getInputWidth(editedHours.minutes) }}
                 className="text-2xl font-bold w-14 border-none outline-0 p-0"
               />{" "}
-              minutes and{" "}
-              <input
+              minutes and{" "}<input
                 type="number"
                 value={editedHours.seconds}
                 onChange={(e) => setEditedMinutes((prev:any)=>{
@@ -100,7 +103,7 @@ export function TotalTImeSaved({
 
           <div className="flex items-center justify-center ">
           <input
-            type="number"
+            type="number" 
             value={editedHours.minutes}
             onChange={(e) => 
               setEditedMinutes((prev :any)=>{
@@ -108,10 +111,9 @@ export function TotalTImeSaved({
                   ...prev,
                   minutes: e.target.value
                 }
-
               }
               )}
-              style={{ width: getInputWidth(editedHours.minutes) }}
+              style={{ width: getInputWidth(editedHours.minutes), marginRight: '0.5rem' }}
             className="text-2xl font-bold w-14 border border-gray-400 outline-0"
           />{" "}
           minutes and
@@ -124,7 +126,7 @@ export function TotalTImeSaved({
                 seconds: e.target.value
               }
             })}
-            style={{ width: getInputWidth(editedHours.seconds) }}
+            style={{ width: getInputWidth(editedHours.seconds), marginRight: '0.5rem' }}
             className="text-2xl font-bold w-14 border border-gray-400 outline-0 "
           />{" "}
           seconds.

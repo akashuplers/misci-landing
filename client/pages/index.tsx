@@ -120,7 +120,7 @@ export default function Home() {
   }
   useEffect(()=>{
     addFunction(handleGenerateReset);
-  },[blogLinks])
+  },[blogLinks]);
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') {
