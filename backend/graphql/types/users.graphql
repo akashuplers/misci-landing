@@ -12,6 +12,7 @@ type User {
     upcomingInvoicedDate: Int
     subscribeStatus: String
     freeTrial: Boolean
+    userName: String
     freeTrailEndsDate: String
     freeTrialDays: Int!
     subscriptionId: String
