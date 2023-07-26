@@ -206,7 +206,7 @@ export default function TinyMCEEditor({
     setAutoSaveSavingStatus(SAVING_STATUS.SAVING);
     const newTimeout = resetTimeout(twitterTimeOut, setTimeout(() => {
       // saveValu
-    console.log('sending this...: '+ threadData);
+    // console.log('sending this...: '+ threadData);
       handleRawTwitterMutation(threadData);
     }, 400));
     setTwitterTimeOut(newTimeout);
@@ -1394,6 +1394,24 @@ export default function TinyMCEEditor({
     setIRanNumberOfTimes(1);
   }, [option]);
 
+  useEffect(() => {
+    // Log condition 1
+    console.log("Condition 1: meeData?.me?.remaining_twitter_quota == undefined");
+    console.log(meeData?.me?.remaining_twitter_quota == undefined);
+
+    // Log condition 2
+    console.log("Condition 2: meeData?.me?.remaining_twitter_quota < 1");
+    console.log(meeData?.me?.remaining_twitter_quota < 1);
+
+    // Log condition 3
+    console.log("Condition 3: meeData?.me?.remaining_twitter_quota == null");
+    console.log(meeData?.me?.remaining_twitter_quota == null);
+
+    // Log condition 4
+    console.log("Condition 4: pauseTwitterPublish");
+    console.log(pauseTwitterPublish);
+
+  }, [pauseTwitterPublish]);
   function runMeeRefetch() {
     meeRefetch().then((res) => {
       setTwitterThreadAlertOption(
