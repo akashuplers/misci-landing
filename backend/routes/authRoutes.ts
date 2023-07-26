@@ -189,6 +189,17 @@ router.post("/user/create", async (req: any, res: any) => {
       delete data.paymentMethodId;
       console.log(data, "data")
       let user = null
+      if(data.userName) {
+        const userNameExist = await db.db('lilleAdmin').collection('users').count({
+          userName: data.userName
+        })
+        if(userNameExist) {
+          return res.status(401).send({
+            type: "ERROR",
+            message: "User Name exists!"
+          })
+        }
+      }
       if(data.paid) {
         delete data._id;
         // data.credits = process.env.PAID_CREDIT_COUNT
@@ -1477,6 +1488,61 @@ router.post('/request-trial', async (req: any, res: any) => {
   })
 })
 
+router.post('/save/user-name', authMiddleware, async (req: any, res: any) => {
+  const db = req.app.get('db')
+  const {userName} = req.body
+  try {
+    const user = req.user
+    if(!user) {
+      return res.status(401).send({
+        type: "ERROR",
+        message: "Not authorised!"
+      })
+    }
+    const userDetails = await fetchUser({id: user.id, db})
+    if(!userDetails) {
+      return res.status(401).send({
+        type: "ERROR",
+        message: "User not found!"
+      })
+    }
+    if(!userName) {
+      return res.status(400).send({
+        type: "ERROR",
+        message: "Please provide username!"
+      })
+    }
+    const userNameExist = await db.db('lilleAdmin').collection('users').count({
+      userName,
+      _id: {
+        $ne: new ObjectID(userDetails._id)
+      }
+    })
+    console.log(userNameExist, userDetails._id)
+    if(userNameExist) {
+      return res.status(401).send({
+        type: "ERROR",
+        message: "User Name exists!"
+      })
+    }
+    await db.db('lilleAdmin').collection('users').updateOne({
+      _id: userDetails._id
+    }, {
+      $set: {
+        userName
+      }
+    })
+    return res.status(200).send({
+      type: "SUCCESS",
+      message: "User Name Added!"
+  })
+  }catch(e) {
+    return res.status(500).send({
+      type: "ERROR",
+      message: e.message
+    })
+  }
+})
 router.get('/saved-time', authMiddleware, async (req: any, res: any) => {
   const db = req.app.get('db')
   try {

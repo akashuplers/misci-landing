@@ -50,6 +50,7 @@ type User {
     twitterUserName: String
     name: String
     lastName: String
+    userName: String
 }
 
 type Comments {
