@@ -30,7 +30,24 @@ const Threads = ({
     textComponent, // component
     toggleModal,
   } = useTwitterThreadALertModal();
-
+  useEffect(() => {
+    const updatedThreads = [...threadData];
+    let thisValueForPause = false;
+  
+    updatedThreads.forEach((thread: any) => {
+      if (thread.length > MAX_THREAD_COUNT) {
+        thisValueForPause = true;
+      }
+    });
+  
+    if (thisValueForPause) {
+      setPauseTwitterPublish(true);
+    } else {
+      setPauseTwitterPublish(false);
+    }
+  
+    console.log(thisValueForPause);
+  }, [threadData]);
   //console.log(threadData);
   const addTextArea = () => {
     if (threadData.length === 0) {
