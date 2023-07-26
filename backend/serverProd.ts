@@ -27,6 +27,7 @@ const waitlist = require('./routes/waitlistRoutes')
 const upload = require('./routes/uploadRoutes')
 const stripe = require('./routes/stripeRoutes')
 const quickupload = require('./routes/quickuploadRoutes')
+const commentBlogRoutes = require('./routes/commentBlogRoutes')
 
 const PORT = process.env.PORT || 5000
 
@@ -53,6 +54,7 @@ const startServer = async () => {
   app.use('/upload', upload)
   app.use('/stripe', stripe)
   app.use('/quickupload', quickupload)
+  app.use('/blog', commentBlogRoutes)
   const httpServer = createServer(app);
   const database = await db()
   app.set('db', database)

@@ -55,11 +55,13 @@ export const blogResolvers = {
                 blogIdeas?.freshIdeas?.forEach((idea: any) => idea.article_id ? freshIdeasArticle.push(idea.article_id) : false)
                 if(blogDetails && freshIdeasArticle && freshIdeasArticle.length) refUrlsFreshIdeas = await fetchArticleUrls({db, articleId: freshIdeasArticle})
                 const savedTimeData = await getSavedTime(db, blogDetails._id)
+                const comments = await db.db('lilleBlogs').collection('comments').find({blogId: new ObjectID(id)}).toArray()
+                const userDetail = await fetchUser({db, id: blogDetails.userId})
                 return {...blogDetails, ideas: {
                     ...blogIdeas,
                     ideas: updatedIdeas,
                     freshIdeas: updatedFreshIdeas?.length ? updatedFreshIdeas : null
-                }, references: refUrls, freshIdeasReferences:refUrlsFreshIdeas, savedTime: savedTimeData ? savedTimeData.time : null}
+                }, references: refUrls, freshIdeasReferences:refUrlsFreshIdeas, savedTime: savedTimeData ? savedTimeData.time : null, comments, userDetail}
             }catch(e) {
                 console.log(e)
             }

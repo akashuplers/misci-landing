@@ -290,6 +290,7 @@ router.post('/linkedin/token', async (request: any, reply: any) => {
 
 router.post('/linkedin/me', async (request: any, reply: any) => {
   const body = request.body
+  const db = request.app.get('db')
   try {
     const user = await axios.get('https://api.linkedin.com/v2/me', {
       headers: {
@@ -303,6 +304,15 @@ router.post('/linkedin/me', async (request: any, reply: any) => {
         }
       })
       user.data.email = contact?.data?.elements && contact?.data?.elements.length > 0 && contact?.data?.elements[0]['handle~'].emailAddress
+    }
+    if(user.data && user.data) {
+      await db.db('lilleAdmin').collection('users').updateOne({
+        email: user.data.email
+      }, {
+        $set: {
+          linkedInUserName: `${user.data.localizedFirstName} ${user.data.localizedLastName}`
+        }
+      })
     }
     return reply
       .status(200)
@@ -676,9 +686,24 @@ router.post('/twitter/post',authMiddleware, async (request: any, reply: any) => 
   }
 })
 
-router.post('/twitter/me', async (request: any, reply: any) => {
+router.post('/twitter/me', authMiddleware, async (request: any, reply: any) => {
+  const db = request.app.get('db')
   const options = request.body
   console.log(options)
+  const user = request.user
+  if(!user) {
+    return reply.status(401).send({
+      type: "ERROR",
+      message: "Not authorised!"
+    })
+  }
+  const userDetails = await fetchUser({id: user.id, db})
+  if(!userDetails) {
+    return reply.status(401).send({
+      type: "ERROR",
+      message: "User not found!"
+    })
+  }
   const body = options
   const secretKey: string = process.env.TWITTER_API_Key_Secret || "Hjy1ujvoQpHvYBRisBz3deCWKfjsH6peapdTLPx3p8eCKt43YU"
   const accessToken = (body.token).split('=')[1]
@@ -711,6 +736,15 @@ router.post('/twitter/me', async (request: any, reply: any) => {
         "Content-Type": "application/json"
         }
     });
+    if(response.data) {
+      await db.db('lilleAdmin').collection('users').updateOne({
+        email: userDetails.email
+      }, {
+        $set: {
+          twitterUserName: `${response.data.data.username}`
+        }
+      })
+    }
     return reply.status(200).send({data: response.data})
   } catch(e) {
       console.log(e)
