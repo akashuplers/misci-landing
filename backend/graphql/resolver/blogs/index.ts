@@ -61,7 +61,7 @@ export const blogResolvers = {
                     ...blogIdeas,
                     ideas: updatedIdeas,
                     freshIdeas: updatedFreshIdeas?.length ? updatedFreshIdeas : null
-                }, references: refUrls, freshIdeasReferences:refUrlsFreshIdeas, savedTime: savedTimeData ? savedTimeData.time : null, comments, userDetail}
+                }, likes: blogDetails.likes || 0,  references: refUrls, freshIdeasReferences:refUrlsFreshIdeas, savedTime: savedTimeData ? savedTimeData.time : null, comments, userDetail}
             }catch(e) {
                 console.log(e)
             }
