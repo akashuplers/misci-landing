@@ -661,7 +661,7 @@ export default function Home() {
   useEffect(() => {
     function sendOpt() {
       const SEND_OTP_URL = API_BASE_PATH + "/auth/send-otp";
-      // var getToken = localStorage.getItem("token");
+      var getToken = localStorage.getItem("token");
       const requestOptions = {
         method: "GET",
         headers: {
@@ -679,7 +679,7 @@ export default function Home() {
     }
     if (showOTPModal === true) {
       sendOpt();
-    }
+    }  
   }, [showOTPModal]);
   const [windowWidth, setWindowWidth] = useState(0);
   useEffect(() => {
