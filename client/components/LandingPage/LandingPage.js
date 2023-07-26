@@ -944,7 +944,7 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
-export const SectionSpacer = () => {
+const SectionSpacer = () => {
     const id = "section-spacer";
     const randomId = Math.random().toString(36).substring(7);
     return <div className="my-8"></div>;

@@ -1,7 +1,6 @@
 // components/FileUploader.js
 
 import { allowedFormats, allowedFormatsString, createBlogLink, maxFileSize } from '@/helpers/utils';
-import { BlogLink } from '@/pages';
 import {useBlogLinkStore, useRepurposeFileStore} from '@/store/appState';
 import { CloudArrowUpIcon } from '@heroicons/react/24/outline';
 import React, { useCallback, useState } from 'react';

@@ -83,6 +83,6 @@ const AboutUS = () => {
 }
 
 export default AboutUS
-export const SectionSpacer = () => {
+const SectionSpacer = () => {
   return <div className="my-8"></div>;
 };

@@ -9,6 +9,23 @@ export const getBlogbyId = gql`
         url
         source    
     }
+    likes
+    comments {
+        _id
+        userId
+        blogId
+        text
+        name
+        email
+    }
+    userDetail {
+        profileImage
+        linkedInUserName
+        twitterUserName
+        name
+        lastName
+    }
+    savedTime
     freshIdeasReferences {
         url
         source    
