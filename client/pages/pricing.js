@@ -4,56 +4,14 @@ import axios from "axios";
 import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import AuthenticationModal from "../components/AuthenticationModal";
-import { FeaturesItem, UpgradeFeatures } from "../components/FeatureItem";
+import { FeaturesItem } from "../components/FeatureItem";
 import Navbar from "../components/Navbar";
 import { API_BASE_PATH } from "../constants/apiEndpoints";
 import styles from "../styles/price.module.css";
-
-const featuresData = [
-  {
-    // icon: Search,
-    heading: "Advanced Searches",
-    description: "Replacing contemporary keyword searches",
-  },
-  {
-    // icon: Information,
-    heading: "Precise Information Retrieval",
-    description: "It pulls Data from tools used daily",
-  },
-  {
-    // icon: Reading,
-    heading: "Intelligent Reading",
-    description: "Reads, Analyzes, and Stores Knowledge",
-  },
-];
-
+import { MonthlyPlans, STRIPE_CONST_AMOUNT, UpgradeFeatures } from "@/store/appContants";
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
-
-export const MonthlyPlans = [
-  {
-    name: "Personal",
-    description: "Perfect for side or hobby project",
-    price: "$10",
-    duration: "/ Month",
-    features: [...UpgradeFeatures],
-  },
-  {
-    name: "Startup",
-    description: "Perfect for small teams",
-    price: "$50",
-    duration: "/ Month",
-    features: [...UpgradeFeatures],
-  },
-  {
-    name: "Organization",
-    description: "Perfect for organization",
-    price: "$70",
-    duration: "/ Month",
-    features: [...UpgradeFeatures],
-  },
-];
 export default function Pricing() {
   const [priceData, setPriceData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -72,10 +30,6 @@ export default function Pricing() {
       console.log(pricesRes.data.data);
     };
   }, []);
-
-  useEffect(() => {
-    console.log(priceData);
-  }, [priceData]);
 
   const [plans, setPlans] = useState([]);
   const [currentPlan, setCurrentPlan] = useState();
@@ -379,41 +333,3 @@ export default function Pricing() {
   );
 }
 
-export function PricingCard({ plan, onClick }) {
-  return (
-    <div className="bg-white rounded-lg shadow-md p-6 h-full w-full">
-      <h3 className="text-lg font-semibold mb-2">{plan.name}</h3>
-      <p className="text-gray-500 text-sm mb-4">{plan.description}</p>
-      <div className="flex items-center mb-6">
-        <span className="text-5xl font-semibold">{plan.price}</span>
-        <span className="text-gray-500 text-sm ml-2">{plan.duration}</span>
-      </div>
-      <ul className="space-y-2">
-        {plan.features.map((feature, i) => (
-          <li key={feature} className="flex items-center">
-            <CheckIcon className="h-4 w-4 text-purple-500" />
-            <span className="ml-2">{feature}</span>
-          </li>
-        ))}
-      </ul>
-      <div className="w-full flex justify-center mt-6">
-        <button
-          onClick={onClick}
-          className="mt-6 border-2 w-full border-purple-500 text-purple-500 rounded-lg py-2 px-4 hover:bg-purple-500 hover:text-white transition-colors duration-300"
-        >
-          Upgrade
-        </button>
-      </div>
-    </div>
-  );
-}
-
-export function PricingCards() {
-  return (
-    <div className="flex flex-wrap w-full gap-3 mt-5">
-      {MonthlyPlans.map((plan) => (
-        <PricingCard key={plan.name} plan={plan} />
-      ))}
-    </div>
-  );
-}

@@ -34,6 +34,7 @@ import { maxFileSize } from "@/helpers/utils";
 import { useBlogLinkStore, useRepurposeFileStore, useSideBarChangeFunctions } from "@/store/appState";
 // import { FacebookIcon, LinkedinIcon, TwitterIcon } from "react-share";
 import { FaFacebook, FaTwitter, FaLinkedin } from 'react-icons/fa';
+import { TextTransitionEffect } from "@/components/ui/TextTransitionEffect";
 
 const PAYMENT_PATH = "/?payment=true";
 const TONES = [
@@ -62,20 +63,6 @@ const TEXTS2 = [
   "Research",
   "Knowledge",
 ];
-export const TYPES_OF_GENERATE = {
-  REPURPOSE: 'repurpose',
-  NORMAL: 'normal'
-}
-export const BASE_PRICE = 100;
-
-export interface BlogLink {
-  label: string;
-  value: string;
-  selected: boolean;
-  id: string;
-  index: number;
-  type: 'file' | 'url';
-}
 
 const STATESOFKEYWORDS = {
   LOADING: 'loading',
@@ -1320,45 +1307,3 @@ const AIInputComponent = () => {
 
   );
 };
-
-
-export const Chip = ({ selected, text, handleClick, index, wholeData }) => {
-  console.log(wholeData);
-  return <>
-    {
-      wholeData != null ? (
-        <Tooltip content={wholeData.realSource} direction="top" className="text-xs">
-          <button className={`h-8 px-[18px] py-1.5  rounded-full justify-center items-center inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick(index)}>
-            <span className=" text-sm font-normal leading-tight">{text}</span>
-          </button>
-        </Tooltip>
-      ) : (
-        <button className={`h-8 px-[18px] py-1.5  rounded-full justify-center items-center gap-2.5 inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick(index)}>
-          <span className=" text-sm font-normal leading-tight">{text}</span>
-        </button>
-      )
-    }
-  </>
-};
-
-export const TextTransitionEffect = ({ text }) => {
-  const [index, setIndex] = useState(0);
-  useEffect(() => {
-    const intervalId = setInterval(
-      () => setIndex((index) => index + 1),
-      3000 // every 3 seconds
-    );
-    return () => clearTimeout(intervalId);
-  }, []);
-
-  return <span style={{ color: "var(--primary-blue)" }} className="">
-  <TextTransition springConfig={presets.gentle}>
-    <span className="">
-      {text[index % text.length] =='Writing' ?
-      <>&nbsp;&nbsp;Writing&nbsp;&nbsp;</>: 
-      <>{text[index % text.length]}</> 
-      }  
-    </span>
-  </TextTransition>
-</span>
-}
