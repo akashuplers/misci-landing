@@ -6,9 +6,10 @@ import { useEffect, useState } from "react";
 import CheckoutForm from "../components/CheckoutForm";
 import Navbar from "../components/Navbar";
 import { API_BASE_PATH } from "../constants/apiEndpoints";
-import { FeaturesItem, UpgradeFeatures } from "../components/FeatureItem";
+import { FeaturesItem } from "../components/FeatureItem";
+import { MonthlyPlans, STRIPE_CONST_AMOUNT , UpgradeFeatures} from "@/store/appContants";
 
-export const STRIPE_CONST_AMOUNT = 100;
+
 async function fetchDynamicPriceData() {
   var priceData = [];
   const response = await axios({
@@ -52,9 +53,9 @@ export default function Subscription({ query }) {
   const stripePromise = loadStripe(STRIPE_PROMISE);
   const [plans, setPlans] = useState([]);
 
-  const [currentPlan, setCurrentPlan] = useState(JSON.parse(query.currentPlan));
+  const [currentPlan, setCurrentPlan] = useState(JSON?.parse(query?.currentPlan));
 
-  const [priceId, setPriceId] = useState(JSON.parse(query.currentPlan).priceId);
+  const [priceId, setPriceId] = useState(JSON?.parse(query?.currentPlan)?.priceId);
   const [clickOnSubscibe, setClickOnSubscibe] = useState(false);
 
   const subscriptionPlan = (plan) => {

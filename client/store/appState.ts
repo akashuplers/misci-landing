@@ -1,6 +1,6 @@
 import { API_BASE_PATH, API_ROUTES } from '@/constants/apiEndpoints';
 import { getTimeObject } from '@/helpers/helper';
-import { BlogLink } from '@/pages';
+import { BlogLink } from '@/types/type';
 import {create} from 'zustand';
 
 
