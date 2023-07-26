@@ -1,4 +1,4 @@
-import { BlogLink } from "@/pages";
+import { BlogLink } from "@/types/type";
 
 export function maxFileSize(MB: number) {
     return MB * 1024 * 1024;
