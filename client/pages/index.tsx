@@ -677,9 +677,6 @@ export default function Home() {
           console("ERROR FROM SEND OTP");
         });
     }
-    if (showOTPModal === true) {
-      sendOpt();
-    }
   }, [showOTPModal]);
   const [windowWidth, setWindowWidth] = useState(0);
   useEffect(() => {
