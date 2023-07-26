@@ -377,7 +377,7 @@ router.post('/files/extract-keywords', [mulitUploadStrategy.array('files')], asy
     } else if(unprocessedFiles && unprocessedFiles?.length && unprocessedFiles.length === files.length) {
         return res.status(400).send({
             type: "ERROR",
-            message: "Host has denied the extraction from this URL. Please try again or try some other URL.",
+            message: "File uploaded by you has denied the extraction, Please try some other file.",
             unprocessedFiles
         })    
     } else {
