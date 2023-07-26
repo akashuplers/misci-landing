@@ -39,6 +39,26 @@ type Blog {
     imageSrc: String
     imageUrl: String
     savedTime: String
+    likes: Int
+    userDetail: User
+    comments: [Comments]
+}
+
+type User {
+    profileImage: String
+    linkedInUserName: String
+    twitterUserName: String
+    name: String
+    lastName: String
+}
+
+type Comments {
+    _id: ID!
+    userId: ID!
+    blogId: ID!
+    text: String
+    name: String
+    email: String
 }
 
 type UrlObj {
