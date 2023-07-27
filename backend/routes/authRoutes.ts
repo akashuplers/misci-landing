@@ -200,6 +200,28 @@ router.post("/user/create", async (req: any, res: any) => {
           })
         }
       }
+      if(data.linkedInUserName) {
+        const userNameExist = await db.db('lilleAdmin').collection('users').count({
+          linkedInUserName: data.linkedInUserName
+        })
+        if(userNameExist) {
+          return res.status(401).send({
+            type: "ERROR",
+            message: "User Name exists!"
+          })
+        }
+      }
+      if(data.googleUserName) {
+        const userNameExist = await db.db('lilleAdmin').collection('users').count({
+          googleUserName: data.googleUserName
+        })
+        if(userNameExist) {
+          return res.status(401).send({
+            type: "ERROR",
+            message: "User Name exists!"
+          })
+        }
+      }
       if(data.paid) {
         delete data._id;
         // data.credits = process.env.PAID_CREDIT_COUNT
