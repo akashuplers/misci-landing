@@ -420,8 +420,8 @@ const CommentSection = ({data,comments,  setShowModalComment,setShareModal, blog
           </button>
         </div>
        {
-        dataForComment && dataForComment.map((comment) => {
-          return <UserComment key={comment?.userId+comment?.text} name={comment?.name} comment={comment?.text} date={comment?.date} avatar={comment?.avatar} userId={comment?.userId} />
+        dataForComment && dataForComment.map((comment, index) => {
+          return <UserComment key={comment?.userId+comment?.text +index} name={comment?.name} comment={comment?.text} date={comment?.date} avatar={comment?.avatar} userId={comment?.userId} />
         } )
        }
         {/* Add your other comments component(s) here */}
