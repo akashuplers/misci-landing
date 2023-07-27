@@ -104,7 +104,7 @@ export default function Post() {
   return (
     <div className="bg-[#00000014] min-h-screen">
       <Navbar />
-      <div className="flex items-center justify-center max-w-[1056px] mx-auto flex-col ">
+      <div className="flex items-center justify-center w-full lg:max-w-[1056px] mx-auto flex-col ">
         <div className={styles.publishContainer} id="publishContainer"></div>
         <ShareLinkModal openModal={showShareModal} setOpenModal={setShareModal} blog_id={gqlData.fetchBlog._id} text={text} closeModal={() => setShareModal(false)} />
         <ReactModal
@@ -300,7 +300,7 @@ const CommentSection = ({data,comments,  setShowModalComment,setShareModal, blog
     sendAComment({
       text: commmentValue,
       blogId: data.fetchBlog._id,
-      email: meeData?.me?.email,
+      email: meeData?.me?.email || email,
       name: data.fetchBlog.userDetail.name, 
     }).then(
       (res) => {
@@ -333,7 +333,7 @@ const CommentSection = ({data,comments,  setShowModalComment,setShareModal, blog
           Write a comment 
       </h1>
       {/* cross btn */}
-      <h2>
+      <h2 className="hidden lg:block">
         Other Reviews ({data.fetchBlog.comments.length})
       </h2>
       <button  onClick={
@@ -344,7 +344,7 @@ const CommentSection = ({data,comments,  setShowModalComment,setShareModal, blog
     </div>
     </div>
     {/*  */}
-    <div className="grid grid-cols-2 gap-4 h-full mt-8 max-h-[600px]">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-full mt-8 max-h-[600px]">
       {/* Left side for comments */}
       <div className="h-full">
         
@@ -400,7 +400,10 @@ const CommentSection = ({data,comments,  setShowModalComment,setShareModal, blog
       </div>
 
       {/* Right side for other comments */}
-      <div className="flex flex-col gap-2 h-full  overflow-y-scroll max-h-[600px]">
+      <div className="flex flex-col gap-2 h-full  overflow-y-scroll max-h-[350px]">
+      <h2 className="lg:hidden">
+        Other Reviews ({data.fetchBlog.comments.length})
+      </h2>
         <div className="w-[132px] h-9 p-1.5 bg-white rounded-lg border border-gray-300 justify-start items-center gap-1 inline-flex">
           <button  onClick={
             ()=> handleTabChange(typesOfTabForComments.newest)
