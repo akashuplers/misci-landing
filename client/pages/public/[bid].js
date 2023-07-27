@@ -1,4 +1,5 @@
 import { concat, useQuery } from "@apollo/client";
+import ReactLoading from "react-loading";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
@@ -214,7 +215,7 @@ const CommentSection = ({data,comments,  setShowModalComment,setShareModal, blog
   const [email, setEmail] = useState("");
   // const isAuthenticated = useStore((state) => state.isAuthenticated);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
+  const [commentLoading, setCommentLoading] = useState(false);
   useEffect(() => {
     if(typeof window !== "undefined"){
       setIsAuthenticated(localStorage.getItem("token") ? true : false);
@@ -242,6 +243,7 @@ const CommentSection = ({data,comments,  setShowModalComment,setShareModal, blog
     }
   });
   function handleCommentSend(){
+    setCommentLoading(true);
     // verify 
     if(!commmentValue  || commmentValue.trim() == ""){
       toast.warn("Please write a comment");  
@@ -257,6 +259,7 @@ const CommentSection = ({data,comments,  setShowModalComment,setShareModal, blog
           }
         });
         toast.warn("Please enter your name");
+        setCommentLoading(false);
         return;
       }
       if(!email || email.trim() == ""){
@@ -267,6 +270,7 @@ const CommentSection = ({data,comments,  setShowModalComment,setShareModal, blog
             message: "Please enter your email"
           }
         });
+        setCommentLoading(false);
         toast.warn("Please enter your email");
         return;
       }
@@ -287,6 +291,7 @@ const CommentSection = ({data,comments,  setShowModalComment,setShareModal, blog
             toast.error(res.message);
           }
         }
+        setCommentLoading(false);
         setCommentValue("");
       }
     )
@@ -358,7 +363,15 @@ const CommentSection = ({data,comments,  setShowModalComment,setShareModal, blog
               <span className="text-slate-600 text-base font-normal leading-7">Cancel</span>
             </button>
             <button className="px-[18px] py-1.5 bg-indigo-600 rounded-lg justify-start items-start gap-2 flex" onClick={handleCommentSend}>
-              <span className="text-white text-base font-bold leading-7">Comment</span>
+              <span className="text-white text-base font-bold leading-7">
+                {
+                  commentLoading ? <ReactLoading
+                  width={25}
+                  height={25}
+                  round={true}
+                />  : "Comment"
+                }
+              </span>
             </button>
           </div>
         </div>
