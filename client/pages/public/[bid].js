@@ -13,6 +13,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import ShareLinkModal from "../../components/component/ShareLinkModal";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { toast } from "react-toastify";
+import { meeAPI } from "../../graphql/querys/mee";
 import ReactModal from "react-modal";
 import { useStore } from "zustand";
 export default function Post() {
@@ -221,6 +222,26 @@ const CommentSection = ({data,comments,  setShowModalComment,setShareModal, blog
       setIsAuthenticated(localStorage.getItem("token") ? true : false);
     }
   }, []);
+  var getToken;
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      getToken = localStorage.getItem("token");
+      if (getToken) setIsAuthenticated(true);
+    }
+  }, []);
+   const {
+    data: meeData,
+    loading: meeLoading,
+    error: meeError,
+  } = useQuery(meeAPI, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken,
+      },
+    },
+  });
+
 
   useEffect(() => {
     // setDataForComment(comments.slice().reverse());
@@ -279,7 +300,8 @@ const CommentSection = ({data,comments,  setShowModalComment,setShareModal, blog
     sendAComment({
       text: commmentValue,
       blogId: data.fetchBlog._id,
-      email: data.fetchBlog.userDetail.email
+      email: meeData?.me?.email,
+      name: data.fetchBlog.userDetail.name, 
     }).then(
       (res) => {
         console.log(res);
@@ -378,7 +400,7 @@ const CommentSection = ({data,comments,  setShowModalComment,setShareModal, blog
       </div>
 
       {/* Right side for other comments */}
-      <div className="flex flex-col gap-2 h-full  overflow-y-scroll max-h-[300px]">
+      <div className="flex flex-col gap-2 h-full  overflow-y-scroll max-h-[600px]">
         <div className="w-[132px] h-9 p-1.5 bg-white rounded-lg border border-gray-300 justify-start items-center gap-1 inline-flex">
           <button  onClick={
             ()=> handleTabChange(typesOfTabForComments.newest)
