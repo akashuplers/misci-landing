@@ -5,6 +5,7 @@ interface IApiMethodsHelpers {
     blogId: string;
     name: string;
     email: string;
+    
 }
 
 export const sendAComment = ({ text, blogId, name, email }: IApiMethodsHelpers) => {
@@ -22,7 +23,7 @@ export const sendAComment = ({ text, blogId, name, email }: IApiMethodsHelpers) 
         "blogId": blogId,
         "name": name,
         "email": email,
-        "userId": (getToken ? getUserId : getTempId) || null
+        "userId" : getUserId ? getUserId : null,
     });
 
     var requestOptions: RequestInit = {
