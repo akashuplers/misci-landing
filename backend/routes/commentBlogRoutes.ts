@@ -1,5 +1,6 @@
 import { ObjectID, ObjectId } from "mongodb";
 import { fetchBlog, fetchUser } from "../graphql/resolver/blogs/blogsRepo";
+import { getTimeStamp } from "../utils/date";
 
 const express = require("express");
 const router = express.Router();
@@ -31,7 +32,8 @@ router.post('/comment', async (req: any, res: any) => {
             name,
             email,
             parentCommentId: null,
-            like: null
+            like: null,
+            date: getTimeStamp(),
         }
         await db.db('lilleBlogs').collection('comments').insertOne(commentObject)
         return res.status(200).send({

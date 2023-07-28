@@ -70,9 +70,22 @@ export const blogResolvers = {
             parent: unknown, args: { options: BlogListArgs }, {db, pubsub, user}: any
         ) => {
             const options = args.options
-            console.log(user)
-            let baseMatch: any = {
-                userId: new ObjectID(user.id)
+            let baseMatch: any = null
+            if(user) {
+                baseMatch = {
+                    userId: new ObjectID(user.id)
+                }
+            }
+            if(options.userName) {
+                const userDetails = await db.db('lilleAdmin').collection('users').findOne({
+                    userName: options.userName
+                })
+                if(!userDetails) {
+                    throw "No user found!"
+                }
+                baseMatch = {
+                    userId: new ObjectID(userDetails._id)
+                }
             }
             if(options.status) {
                 baseMatch = {
