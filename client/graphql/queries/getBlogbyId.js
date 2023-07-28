@@ -16,7 +16,6 @@ export const getBlogbyId = gql`
         blogId
         text
         name
-        email
     }
     userDetail {
         profileImage

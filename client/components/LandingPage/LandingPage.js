@@ -445,9 +445,9 @@ const LandingPage = () => {
                 </div>
                 <div className="flex-col justify-start items-start gap-10 flex">
                     <div className="justify-start items-center gap-[117px] inline-flex">
-                        <div className="w-[484px] h-[430.03px] relative">
+                        <div className="w-full h-[430.03px] relative">
                             <div className="Designcircle" />
-                            <div className="w-[424px] h-56 left-[60px] top-[103.01px] absolute flex-col justify-start items-start gap-5 inline-flex">
+                            <div className="w-full h-56 left-[60px] top-[103.01px] absolute flex-col justify-start items-start gap-5 inline-flex">
                                 <div className="w-10 px-[13px] py-[2.50px] bg-indigo-600 rounded-[200px] justify-center items-center inline-flex">
                                     <div className="text-white text-[24px] font-bold">1</div>
                                 </div>
@@ -455,7 +455,7 @@ const LandingPage = () => {
                                     <div className="text-slate-800 text-[32px] font-medium leading-10">
                                         Search Anything
                                     </div>
-                                    <p className="text-center lg:text-left w-[424px] opacity-70 text-slate-600 text-[16px] font-normal leading-7">
+                                    <p className="text-center lg:text-left w-full opacity-70 text-slate-600 text-[16px] font-normal leading-7">
                                         Simply type in any keyword or topic of interest into the
                                         search input field and our website will present you with a
                                         comprehensive list of articles, guides, and case studies

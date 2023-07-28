@@ -21,6 +21,8 @@ export const API_ROUTES = {
   EXTRACT_KEYWORDS_FROM_FILE : '/quickupload/files/extract-keywords',
   GET_SAVED_TIME: '/auth/saved-time',
   ADD_SAVED_TIME: '/auth/add-time-saved',
+  BLOG_COMMENT: '/blog/comment',
+  BLOG_LIKE: '/blog/like'
 };
 
 export const LI_API_ENDPOINTS = {
