@@ -144,8 +144,7 @@ export default function RePurpose({value, setValue, setShowRepourposeError, remo
       onBlur={(event) => {
         const elementId = generateRandomId();
         const inputLength = value.length;
-        if (inputLength > 2) {
-          // toast.error('You can only add 3 blogs');
+        if (inputLength >=3) {
           setShowRepourposeError(true);
           return;
         } else {

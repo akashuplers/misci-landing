@@ -414,3 +414,4 @@ const checkAndAddFiles = (files, fileInput, setSelectedFile, blogLinks, setBlogL
     toast.error('File not uploaded');
   }
 };
+

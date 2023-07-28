@@ -26,16 +26,16 @@ const DragAndDropFiles = () => {
       toast.warn("Please select at least one file.");
       return;
     }
-    if((files.length + blogLinks.length)> 3){
+    if((files.length + blogLinks.length)> 6){
       toast.warn("You can add max 3 files or URLs");
       return;
     }
-    if(files.length > 3){
+    if(files.length > 6){
       console.log("IFLES LENGHT", files.length)
       toast.warn("You can add max 3 ");
       return;
     }
-    if (blogLinks.length >= 3) {
+    if (blogLinks.length >= 6) {
       toast.error('You can add max 3 files or URLs');
       return;
     }
@@ -87,7 +87,7 @@ const DragAndDropFiles = () => {
     console.log('prev blogs links');
     console.log(blogLinks);
     console.log("IFLES LENGHT", acceptedFiles.length, acceptedFiles);
-    if(acceptedFiles.length >3){
+    if(acceptedFiles.length > 3){
       toast.warn('You can upload max 3 files or URLs');
       return;
     }
@@ -97,7 +97,7 @@ const DragAndDropFiles = () => {
       return;
     }
      
-    if (blogLinks.length > 3) {
+    if (blogLinks.length > 6) {
       toast.error('You can upload max 3 files or URLs');
       return;
     }

@@ -56,6 +56,12 @@ const TwitterUserDetails = async (
   console.log("TwitterUserDetails");
   localStorage.setItem("twitterAccessToken", accessToken);
   localStorage.setItem("twitterAccessTokenSecret", accessTokenSecret);
+  var getToken;
+  if (typeof window !== "undefined") {
+    getToken = localStorage.getItem("token");
+  }
+  Headers["Authorization"] = `Bearer ${getToken}`;
+  
   axios
     .post(
       `${API_BASE_PATH}${LI_API_ENDPOINTS.TW_PROFILE}`,
