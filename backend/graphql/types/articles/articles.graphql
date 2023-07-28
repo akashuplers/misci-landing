@@ -9,6 +9,7 @@ input BlogListInput {
     page_limit: Int
     page_skip: Int
     status: [String]
+    userName: String
 }
 
 type BlogListRes {
@@ -60,6 +61,7 @@ type Comments {
     text: String
     name: String
     email: String
+    date: Int
 }
 
 type UrlObj {

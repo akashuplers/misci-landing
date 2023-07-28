@@ -1565,6 +1565,27 @@ router.post('/save/user-name', authMiddleware, async (req: any, res: any) => {
     })
   }
 })
+router.get('/assign-username', async (req: any, res: any) => {
+  const db = req.app.get('db')
+  const usersWithNoUserName = await db.db('lilleAdmin').collection('users').find(
+    {$or: [{userName: {$exists: false}}, {userName: null}]}
+  ).toArray()
+  for (let index = 0; index < usersWithNoUserName.length; index++) {
+    const user = usersWithNoUserName[index];
+    const userName = `${user.name}${user.lastName}${Math.floor(Math.random()*(999-100+1)+100)}`
+    await db.db('lilleAdmin').collection('users').updateOne({
+      _id: new ObjectID(user._id)
+    }, {
+      $set: {
+        userName
+      }
+    })
+  }
+  return res.status(200).send({
+    type: "SUCCESS",
+    message: "User Name Added!"
+  })
+})
 router.get('/saved-time', authMiddleware, async (req: any, res: any) => {
   const db = req.app.get('db')
   try {
