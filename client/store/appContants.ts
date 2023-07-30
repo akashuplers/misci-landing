@@ -10,7 +10,10 @@ export const UpgradeFeatures = [
     'Customization possibilities, Talk to our support team'
 ]
 export const STRIPE_CONST_AMOUNT = 100;
-
+export const APP_REGEXP = {
+  EMAIL_VALIDATION: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+}
+export const DEFAULT_USER_PROFILE_IMAGE = 'https://github.com/identicons/jasonlong.png';
 export const MonthlyPlans = [
     {
       name: "Personal",
