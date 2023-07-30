@@ -16,7 +16,7 @@ import { toast } from "react-toastify";
 import { meeAPI } from "../../graphql/querys/mee";
 import ReactModal from "react-modal";
 import { useStore } from "zustand";
-import { APP_REGEXP } from '../../store/appContants';
+import { APP_REGEXP, DEFAULT_USER_PROFILE_IMAGE } from '../../store/appContants';
 import { useUserDataStore } from '../../store/appState';
 import { UserDataResponse } from "@/types/type";
 import { getRelativeTimeString,  } from "@/store/appHelpers";
@@ -337,6 +337,18 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
         toast.warn("Please enter your email");
         return;
       }
+      if(!validateEmail(email)){
+        setErrors({
+          ...errors,
+          email: {
+            status: true,
+            message: "Please enter a valid email"
+          }
+        });
+        setCommentLoading(false);
+        toast.warn("Please enter a valid email");
+        return;
+      }
 
     }
     sendAComment({
@@ -422,7 +434,7 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
                 className="" onBlur={() => { }} placeholder={'e.g john@doe'} touched={false} type={'email'} />
                 </> : <>
                 <div className="justify-start items-center gap-2 inline-flex">
-                  <img className="w-10 h-10 rounded-full" src={userData?.data.me.profileImage ?? "https://via.placeholder.com/40x40"} />
+                  <img className="w-10 h-10 rounded-full" src={userData?.data.me.profileImage ?? DEFAULT_USER_PROFILE_IMAGE} />
                   <div className="text-black text-lg font-bold">{userData?.data.me.name + " " + userData?.data.me.lastName}</div>
                 </div>
                 </>
@@ -464,11 +476,12 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
       </div>
 
       {/* Right side for other comments */}
-      <div className="flex flex-col gap-2 h-full  overflow-y-scroll max-h-[350px]">
+      <div className="flex flex-col gap-2 h-full  overflow-y-scroll max-h-[350px] relative">
         <h2 className="lg:hidden">
           Other Reviews ({data.fetchBlog.comments.length})
         </h2>
-        <div className="w-[132px] h-9 p-1.5 bg-white rounded-lg border border-gray-300 justify-start items-center gap-1 inline-flex">
+        <div className="bg-white w-full  sticky top-0">
+        <div className=" top-0 w-[132px] h-9 p-1.5 bg-white rounded-lg border border-gray-300 justify-start items-center gap-1 inline-flex">
           <button onClick={
             () => handleTabChange(typesOfTabForComments.newest)
           } className={`px-2.5 py-[3px]  rounded justify-center items-center gap-2.5 transition-colors  flex ${tabToShow == typesOfTabForComments.newest ? "bg-indigo-600 bg-opacity-10 text-indigo-600" : "text-gray-900"
@@ -483,6 +496,7 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
           `}>
             <span className=" text-xs font-normal leading-[18px]">Oldest</span>
           </button>
+        </div>
         </div>
         {
           dataForComment && dataForComment.map((comment: any, index) => {
@@ -503,11 +517,10 @@ const UserComment = ({ name, comment, date, avatar, userId }: {
   avatar: string,
   userId: string
 }) => {
-  const STATIC_AVATAR = 'https://via.placeholder.com/40x40';
 
   return <div className="w-full p-5 bg-white  border-b border-neutral-200 flex-col justify-start items-start gap-[15px] inline-flex">
     <div className="justify-start items-center gap-2 inline-flex">
-      <img className="w-10 h-10 rounded-full" src={avatar || STATIC_AVATAR} />
+      <img className="w-10 h-10 rounded-full" src={avatar || DEFAULT_USER_PROFILE_IMAGE} />
       <span className="text-black text-lg font-bold">{name}</span>
       <span className="font-normal leading-[21px] text-opacity-60 text-black text-sm">
         <RelativeTimeString date={Number(date)} />
@@ -539,12 +552,12 @@ const InputBox = ({
 }: {
   label: string, placeholder: string, type: string, value: string, onChange: any, error: boolean, onBlur: any, name: string, touched: boolean, className: string
 }) => {
+  console.log("error", error);
   return <div className="w-full h-full flex-col justify-start items-start gap-1 inline-flex">
     <div className="text-black text-sm font-normal">
       {label} {error && <span className="text-red-500">*</span>}
     </div>
-    <div className={`w-full h-11 bg-white rounded-lg border border-neutral-200 flex-col justify-center items-start gap-[15px] flex ${error ? 'border-red-500' : ''
-      }`}>
+    <div className={`w-full h-11 bg-white rounded-lg border border-neutral-200 flex-col justify-center items-start gap-[15px] flex ${error ? 'border border-red-500 outline-none' : ''}`}>
       {/* <div className="opacity-50 text-black text-sm font-normal">e.g. Kiran Singla</div> */}
       <input className="w-full h-full p-2 rounded-lg" placeholder={placeholder} type={type} value={value} onChange={onChange} onBlur={onBlur} name={name} />
     </div>
