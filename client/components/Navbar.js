@@ -30,8 +30,7 @@ export default function Navbar({ isOpen }) {
           handleSave={() => (window.location = "/")}
           bid={Gbid}
         />
-        <div className="lg:hidden sticky top-0 z-50 bg-white backdrop-filter backdrop-blur-lg bg-opacity-30"
-        >
+        <div className="lg:hidden sticky top-0 z-50 bg-white backdrop-filter backdrop-blur-lg bg-opacity-30">
           <MobileNavigation
             navigation={navigation}
             userNavigation={userNavigation}
