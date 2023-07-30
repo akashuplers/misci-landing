@@ -46,7 +46,7 @@
   font-size: 1.5rem;
 }
 .publishContainer h3 > * {
-  text-align: center;
+  text-align: left;
   display: block;
   margin: 0 auto;
 }

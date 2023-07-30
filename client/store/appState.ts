@@ -1,7 +1,9 @@
 import { API_BASE_PATH, API_ROUTES } from '@/constants/apiEndpoints';
 import { getTimeObject } from '@/helpers/helper';
-import { BlogLink } from '@/types/type';
+import { BlogLink, UserDataResponse } from '@/types/type';
 import {create} from 'zustand';
+import { meeGetState } from '@/graphql/querys/mee';
+import axios from 'axios';
 
 
 interface IRePurposeFileState {
@@ -137,3 +139,40 @@ export const useUserTimeSaveStore = create<UserTimeSaveStore>((set) => ({
     }
   },
 }));
+
+
+interface IUserDataStore {
+  userData: UserDataResponse | null;
+  loading: boolean;
+  fetchUserData: (token: string) => void;
+}
+
+// Define the store
+export const useUserDataStore = create<IUserDataStore>((set) => ({
+  userData: null,
+  loading: false,
+
+  fetchUserData: async (token: string) => {
+    set({ loading: true });
+    try {
+      const response = await axios.post<UserDataResponse>(
+        'https://maverick.lille.ai/graphql',
+        {
+          query: meeGetState,
+        },
+        {
+          headers: {
+            'content-type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+        }
+      );
+      console.log(response.data);
+      set({ userData: response.data, loading: false });
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      set({ loading: false });
+    }
+  },
+}));
+ 
