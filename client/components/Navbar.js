@@ -31,9 +31,6 @@ export default function Navbar({ isOpen }) {
           bid={Gbid}
         />
         <div className="lg:hidden sticky top-0 z-50 bg-white backdrop-filter backdrop-blur-lg bg-opacity-30"
-        style={{
-          minWidth: '100vh'
-        }}
         >
           <MobileNavigation
             navigation={navigation}
