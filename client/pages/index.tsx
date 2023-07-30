@@ -1299,7 +1299,7 @@ const AIInputComponent = () => {
         {/* <span> <span className='flex flex-row w-full items-center justify-center gap-1'>Generate 1st Drafts for Articles <FaFacebook className="h-5 w-5 " /> <FaTwitter className="h-5 w-5" /> <FaLinkedin className="h-5 w-5" /> 
         <ArrowLongRightIcon className="h-5 w-5" />
         </span></span> */}
-        <span>Generate 1 <sup>st</sup> Drafts for Articles <span className='flex flex-row w-full items-center justify-center'><FaFacebook className="h-5 w-5 mr-3 rounded-full" /> <FaTwitter className="h-5 w-5 mr-3 rounded-full" /> <FaLinkedin className="h-5 w-5 mr-3 rounded-full" /> 
+        <span>Generate 1 <sup>st</sup> Drafts for Articles <span className='flex flex-row w-full items-center justify-center'><FaFacebook className="h-5 w-5 mr-3" /> <FaTwitter className="h-5 w-5 mr-3" /> <FaLinkedin className="h-5 w-5 mr-3" /> 
         <ArrowLongRightIcon className="h-5 w-5" />
 
         </span></span>
