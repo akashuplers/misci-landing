@@ -176,6 +176,7 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
         email: res.data.email,
         password: null,
         tempUserId: "",
+        linkedInUserName: res.data.localizedFirstName+res.data.localizedFirstName + (Math.floor(Math.random() * 900) + 100)
       };
 
       if (!getToken) {
