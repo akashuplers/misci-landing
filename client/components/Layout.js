@@ -25,7 +25,9 @@ export default function Layout({ children }) {
   return (
     <Fragment>
       {isAuthenticated ? <Sidebar /> : <Navbar isOpen={false} />}
-      <div className={isAuthenticated ? `authenticatedLayout` : ''}>{children}</div>
+      <div className={isAuthenticated ? `authenticatedLayout` : ''} style={{
+        minWidth: '100vh'
+      }}>{children}</div>
     </Fragment>
   );
 }
