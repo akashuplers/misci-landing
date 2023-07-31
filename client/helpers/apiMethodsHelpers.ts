@@ -90,7 +90,19 @@ interface ApiRequestForKeyword {
   keyword: string;
 }
 
-export async function extractKeywordsFromKeywords(keyword: string): Promise<ApiResponse> {
+// user ApiResponse and make new interface
+interface IExtractKeywordsFromKeywordResponse  extends ApiResponse {
+ data: [
+  {
+    id: string;
+    url: string;
+    source: string;
+    keywords: string[];
+  }
+ ]
+ pythonRespTime: number;
+}
+export async function extractKeywordsFromKeywords(keyword: string): Promise<IExtractKeywordsFromKeywordResponse> {
   // const url = "https://maverick.lille.ai/quickupload/keyword/extract-keywords";
   const url = API_BASE_PATH + API_ROUTES.EXTRACT_KEYWORDS_FROM_KEYWORDS;
   const myHeaders = new Headers();
@@ -102,8 +114,8 @@ export async function extractKeywordsFromKeywords(keyword: string): Promise<ApiR
     getTempId = localStorage.getItem('tempId');
   }
   const requestBody: ApiRequestForKeyword = {
-    userId : getUserId ? getUserId : null,
-    keyword,
+    userId : getUserId || getTempId || null,
+    keyword: keyword,
   };
 
   const requestOptions: RequestInit = {
@@ -118,6 +130,6 @@ export async function extractKeywordsFromKeywords(keyword: string): Promise<ApiR
     throw new Error(`Request failed with status: ${response.status}`);
   }
 
-  const result: ApiResponse = await response.json();
+  const result: IExtractKeywordsFromKeywordResponse = await response.json();
   return result;
 }

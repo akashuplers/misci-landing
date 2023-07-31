@@ -36,3 +36,62 @@ export function randomNumberBetween20And50() {
   const randomInteger = Math.floor(randomNumber * (50 - 20) + 1);
   return randomInteger + 20;
 }
+
+export function uppercaseFirstChar(input: string): string {
+  if (input.length === 0) {
+    return input; // Return the same string if it's empty
+  }
+
+  const firstChar = input.charAt(0).toUpperCase();
+  const restOfChars = input.slice(1);
+
+  return firstChar + restOfChars;
+}
+interface Item {
+  id: number;
+  keywords: string[];
+  source?: string;
+  url: string;
+}
+
+interface KeywordObj {
+  id: number;
+  text: string;
+  selected: boolean;
+  source: string | null;
+  realSource?: string;
+  url: string;
+  articleId: number;
+}
+
+export function processKeywords(data: Item[]): KeywordObj[] {
+  const keywordsForBlog: KeywordObj[] = [];
+
+  data.forEach((item) => {
+    item.keywords.forEach((keyword) => {
+      const keywordObj: KeywordObj = {
+        id: item.id,
+        text: uppercaseFirstChar(keyword),
+        selected: false,
+        source: keywordsForBlog.some((keywordObj) => keywordObj.text === keyword)
+          ? (item.source ? uppercaseFirstChar(item.source) : '')
+          : null,
+        realSource: item.source,
+        url: item.url,
+        articleId: item.id,
+      };
+
+      if (keywordObj.source !== null && item.source !== undefined && item.source !== '') {
+        const keywordObjFromKeywords = keywordsForBlog.find((keywordObj) => keywordObj.text === keyword);
+        if (keywordObjFromKeywords !== undefined) {
+          keywordObjFromKeywords.source = keywordObj.realSource
+            ? uppercaseFirstChar(keywordObj.realSource)
+            : '';
+        }
+      }
+      keywordsForBlog.push(keywordObj);
+    });
+  });
+
+  return keywordsForBlog;
+}
