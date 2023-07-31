@@ -41,3 +41,8 @@ export interface UserDataResponse {
     };
   }
   
+  export interface InputData {
+    urls: string[];
+    keywords: string[];
+    files: File[];
+  }

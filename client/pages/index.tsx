@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable @next/next/no-html-link-for-pages */
 // @ts-nocheck
+import { getStaticProps } from "next";
 import MoblieUnAuthFooter, { socialLinks } from "@/components/LandingPage/MoblieUnAuthFooter";
 import RePurpose from "@/components/LandingPage/RePurpose";
 import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
@@ -31,11 +32,14 @@ import { checkFileFormatAndSize } from "@/components/DashboardInsights";
 import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
 import DragAndDropFiles, { REPURPOSE_MAX_SIZE_MB } from "@/components/ui/DragAndDropFiles";
 import { maxFileSize } from "@/helpers/utils";
-import { useBlogLinkStore, useRepurposeFileStore, useSideBarChangeFunctions } from "@/store/appState";
+import { useBlogLinkStore, useRepurposeFileStore, useSideBarChangeFunctions, useTotalSavedTimeStore } from "@/store/appState";
 // import { FacebookIcon, LinkedinIcon, TwitterIcon } from "react-share";
 import { FaFacebook, FaTwitter, FaLinkedin } from 'react-icons/fa';
 import { TextTransitionEffect } from "@/components/ui/TextTransitionEffect";
 import { Chip } from "@/components/ui/Chip";
+import { InputData } from "@/types/type";
+import { randomNumberBetween20And50 } from "@/store/appHelpers";
+import { extractKeywordsFromKeywords } from "@/helpers/apiMethodsHelpers";
 
 const PAYMENT_PATH = "/?payment=true";
 const TONES = [
@@ -60,7 +64,7 @@ const TEXTS = [
 ];
 
 const TEXTS2 = [
-  "Writing", 
+  "Writing",
   "Research",
   "Knowledge",
 ];
@@ -87,7 +91,9 @@ export default function Home() {
   const [stateOfGenerate, setStateOfGenerate] = useState({
     url: null,
     file: null,
+    keyword: null,
   });
+  const [inputData, setInputData] = useState<InputData>({})
   const [showLoadingInfo, setShowLoadingInfo] = useState(false);
   const selectedFiles = useRepurposeFileStore((state) => state.selectedFiles);
   const removeSelectedFile = useRepurposeFileStore((state) => state.removeSelectedFile);
@@ -120,7 +126,11 @@ export default function Home() {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [executeLastFunction]);
-
+  const {data:usersTotalTimeSavedData, fetchTotalSavedTime, error, isLoading} = useTotalSavedTimeStore();
+  // INITAIL DATA FETCH USEEFFECT:
+  useEffect(() => {
+      fetchTotalSavedTime();
+  }, []);
   const handleChipClick = (index) => {
     const idOfKeyword = getIdFromUniqueName(keywordsOFBlogs[index].id);
 
@@ -317,9 +327,12 @@ export default function Home() {
         acc.files++;
       } else if (link.type === 'url') {
         acc.urls++;
+      } else if (link.type === 'keyword') {
+        acc.keyword++;
       }
       return acc;
-    }, { files: 0, urls: 0 });// Replace `keywords` with your actual keywords array/state
+    }, { files: 0, urls: 0, keyword: 0 });
+    // Replace `keywords` with your actual keywords array/state
     // Replace `fileInput` with your actual file input state or variable
     console.log('countByType');
     if (countByType.files > 0) {
@@ -335,6 +348,14 @@ export default function Home() {
         return {
           ...prev,
           url: STATESOFKEYWORDS.LOADING,
+        }
+      });
+    }
+    if (countByType.keyword > 0) {
+      setStateOfGenerate((prev) => {
+        return {
+          ...prev,
+          keyword: STATESOFKEYWORDS.LOADING,
         }
       });
     }
@@ -355,6 +376,15 @@ export default function Home() {
       // Call the default method when both keywords and files are zero
       uploadExtractKeywords();
     }
+    // extractKeywordsFromKeywords();
+  }
+
+  function uploadExtractKeywordsFromKeywords(){
+    setShowUserLoadingModal({ show: true });
+    const getToken = localStorage.getItem("token");
+    const keywords = keywordsOFBlogs.map((keyword) => keyword.keyword);
+    const data = extractKeywordsFromKeywords(keywords);
+    
   }
 
   function uploadExtractKeywords() {
@@ -450,6 +480,10 @@ export default function Home() {
   const [showUserLoadingModal, setShowUserLoadingModal] = useState({
     show: false,
   });
+  useEffect(() => {
+      console.log('INPUT DATA');
+      console.log(inputData);
+  }, [inputData]);
 
   useEffect(() => {
     if (router.asPath === PAYMENT_PATH) {
@@ -667,7 +701,7 @@ export default function Home() {
     }
     if (showOTPModal === true) {
       sendOpt();
-    }  
+    }
   }, [showOTPModal]);
   const [windowWidth, setWindowWidth] = useState(0);
   useEffect(() => {
@@ -725,9 +759,16 @@ export default function Home() {
         )}
 
         <div
-          className={`relative px-6 pt-5 lg:px-8 ${!isAuthenticated && "md:min-h-screen"
+          className={`maincontainer relative px-6 pt-5 lg:px-8 ${!isAuthenticated && "md:min-h-screen"
             }`}
         >
+    <FloatingBalls className="hidden absolute top-[4%] rotate-45 md:block" />
+    <FloatingBalls className="hidden absolute top-[2%] w-10 right-[2%] md:block" />
+    <FloatingBalls className="hidden absolute top-[9%] right-0 md:block" />
+    <FloatingBalls className="hidden absolute top-[10%] w-8 rotate-90 left-[3%] md:block" />
+
+<div className="w-full lg:w-[1214.42px]" style={{ height: 1093.78, transform: 'rotate(0deg)', transformOrigin: '0 0', background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)', top: '-10px', right: '0px', position: 'absolute',  zIndex: -1}}></div>
+<div className="w-full lg:w-[1214.42px]" style={{ height: 1093.78, transform: 'rotate(180deg)', background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)', top: '-10px', left: '0px', position: 'absolute',  zIndex: -1}}></div>
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
             <svg
               className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
@@ -830,154 +871,110 @@ export default function Home() {
               </div> */}
             </div>
           )}
-          <div className="relative mx-auto max-w-screen-xl flex flex-col">
-            <div className={`mx-auto max-w-5xl text-center h-screen  ${isAuthenticated ? "": 'lg:min-h-screen'} flex items-center justify-center `}
+          <div className=" relative mx-auto max-w-screen-xl flex flex-col">
+            <div className={`mx-auto max-w-5xl text-center h-screen  ${isAuthenticated ? "" : 'lg:min-h-screen'} flex items-center justify-center `}
               style={{
                 height: '100%'
               }}
             >
-              <div className={`mt-[10%] ${isAuthenticated ? 'lg:mt-[10%]': 'lg:mt-[-10%]'}`}>
+              <div className={`mt-[10%] ${isAuthenticated ? 'lg:mt-[10%]' : 'lg:mt-[-10%]'}`}>
                 <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing lg:min-w-[900px]">
-                  Lille is your content <TextTransitionEffect text={TEXTS2}/>
-                    Co-Pilot
+                  Lille is your Content <TextTransitionEffect text={TEXTS2} />
+                  Co-Pilot
+                  <div className="absolute right-[-10%]">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="240" height="261" viewBox="0 0 240 261" fill="none">
+                    <path d="M144.552 98.8563C164.626 112.575 180.188 128.559 189.173 143.197C193.667 150.52 196.44 157.382 197.391 163.365C198.339 169.327 197.46 174.237 194.896 177.989C192.332 181.741 188.076 184.343 182.178 185.626C176.258 186.914 168.857 186.824 160.402 185.297C143.501 182.244 122.954 173.553 102.88 159.834C82.8064 146.116 67.2442 130.131 58.26 115.493C53.7659 108.171 50.993 101.309 50.0418 95.3256C49.0941 89.3642 49.9729 84.4535 52.5368 80.7018C55.1007 76.9501 59.3566 74.3473 65.255 73.0645C71.1747 71.777 78.5758 71.8673 87.0304 73.3941C103.932 76.4464 124.478 85.1379 144.552 98.8563Z" stroke="url(#paint0_linear_2158_42358)" stroke-width="6" />
+                    <path d="M147.927 99.2697C166.631 117.075 179.874 136.963 186.206 154.666C192.571 172.461 191.82 187.578 183.39 196.434C174.96 205.29 159.898 206.783 141.811 201.301C123.818 195.847 103.303 183.598 84.5991 165.793C65.8957 147.988 52.6529 128.1 46.3203 110.396C39.9549 92.6012 40.7059 77.4839 49.1363 68.6282C57.5668 59.7724 72.6288 58.2789 90.7152 63.7615C108.709 69.2158 129.224 81.4645 147.927 99.2697Z" stroke="url(#paint1_linear_2158_42358)" stroke-width="3" />
+                    <defs>
+                      <linearGradient id="paint0_linear_2158_42358" x1="146.054" y1="82.7086" x2="81.9961" y2="165.72" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#F7938B" />
+                        <stop offset="1" stop-color="white" stop-opacity="0" />
+                      </linearGradient>
+                      <linearGradient id="paint1_linear_2158_42358" x1="47.5691" y1="48.2032" x2="82.6596" y2="126.602" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#F9948C" />
+                        <stop offset="1" stop-color="white" stop-opacity="0" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  </div>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-2.5">
-                <span className="relative flex text-xl items-center  justify-center font-medium tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap">Two ways to get started with &nbsp;<span className="font-bold text-indigo-600">Lille.ai</span></span>
-                <span className="text-base font-normal text-gray-600">
-                Ask questions or upload multiple documents / URL’S.
-                </span>
+                  <span className="relative flex text-xl items-center  justify-center font-medium tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap">Two ways to get started with &nbsp;<span className="font-bold text-indigo-600">Lille.ai</span></span>
+                  <span className="text-center text-slate-800 text-xl font-bold leading-relaxed">
+                    Ask questions or upload multiple documents / URL’S.
+                  </span>
 
-                
+
                 </div>
-              
-                <Tab.Group
-                  defaultIndex={currentTabIndex}
+
+                <div className="w-full lg:w-[700px] h-full opacity-90  shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.5)',
+                }}
                 >
-                  <Tab.List className="p-2 mt-10 bg-slate-50 h-14 focus:outline-none  border border-neutral-400 text-gray-600 border-opacity-25 justify-start items-center gap-3 inline-flex rounded-xl">
-                    <Tab>
-                      {({ selected }) => (
-                        <div className={`rounded-xl h-10 px-2 focus:outline-none justify-center items-center gap-2 inline-flex ${selected ? 'bg-white border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`}
-                          onClick={() => setCurrentTabIndex(0)}
-                        >
-                          <span className="">
-                            {" "}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth="1.5"
-                              stroke="currentColor"
-                              className="w-6 h-6 "
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-                              />
-                            </svg>
-                          </span>{" "}
-                          Generate new
+                  <div className="w-full h-8 justify-center items-start gap-4 inline-flex">
+                    <div className="px-3 py-1.5 bg-green-100 rounded-3xl justify-start items-center gap-1.5 flex">
+                      <div className="w-3 h-3 bg-green-600 rounded-full border border-white" />
+                      <div className="w-3.5 h-3.5 relative">
+                      </div>
+                      <div><span className="text-green-600 text-sm font-extrabold"
+                      >{randomNumberBetween20And50()} users</span><span className="text-green-600 text-sm font-medium"> are online now</span></div>
+                    </div>
+                    <div className="px-3 py-1.5 bg-violet-100 rounded-3xl justify-start items-center gap-1.5 flex">
+                      <div><span className="text-blue-500 text-sm font-extrabold">{usersTotalTimeSavedData?.data.totalSavedTime} Hrs</span><span className="text-blue-500 text-sm font-medium"> we have saved collectively of our users</span></div>
+                    </div>
+                  </div>
+                  <div className="w-full h-full justify-center items-center gap-2.5 inline-flex">
+                    <div className="relative w-full min-h-[60px] bg-white rounded-[10px]  border border-gray-600 py-2.5">
+
+                      {showFileUploadUI == true &&
+
+                        <div className="flex items-center justify-between px-5">
+                          <h1 className="grow shrink basis-0 text-slate-800 text-lg font-normal text-left">Upload</h1>
+                          <button onClick={
+                            () => { setShowFileUploadUI(false) }}
+                          >
+                            <XCircleIcon className='h-6 w-6 text-indigo-600' />
+                          </button>
                         </div>
-                      )}
-                    </Tab>
-                    <Tab>
-                      {({ selected }) => (
-                        <div className={`rounded-xl h-10 focus:outline-none focus:border-transparent focus-visible:hidden justify-center items-center gap-2 px-2 inline-flex ${selected ? 'bg-white  border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`}
-                          onClick={() => { setCurrentTabIndex(1) }}
-                        >
-                          <span>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth="1.5"
-                              stroke="currentColor"
-                              className="w-6 h-6"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-                              />
-                            </svg>
-                          </span>{" "}
-                          Repurpose Content
-                        </div>
-                      )}
-                    </Tab>
-                  </Tab.List>
-                  <Tab.Panels className={`outline-none`}>
-                    <Tab.Panel className={`outline-none`}>
-                      <AIInputComponent />
-                      {!loading ? (
-                        <div className="flex flex-col  lg:grid grid-cols-3 gap-4 py-4 mt-16">
-                          {updatedArr}
-                        </div>
-                      ) : (
-                        <div style={{ margin: "0 auto" }}>
-                          <LoaderPlane />
-                        </div>
-                      )}
-                    </Tab.Panel>
-                    <Tab.Panel className={`outline-none`}>
-                      <div className="w-full lg:w-[700px] h-full opacity-90 flex-col justify-center mt-10 items-center gap-[18px] inline-flex bg-transparent rounded-[10px]">
-                        <div className="w-full h-6 justify-center items-center gap-1.5 inline-flex">
-                          <div className="text-center text-slate-600 text-base font-normal flex mb-4 lg:mb-0 flex-wrap lg:flex-nowrap">You have URLs or Documents <ArrowLongRightIcon className="mx-2 h-5 w-5 text-slate-600" /> Let lille generate first draft for your article for <span className="mx-2 flex items-center justify-center text-blue-600"><FaFacebook className="h-5 w-5 mr-3" /> <FaTwitter className="h-5 w-5 mr-3" /> <FaLinkedin className="h-5 w-5 mr-3" /></span></div>
-                          <span className="justify-self-end flex">
-                          <Tooltip content="Add your content URLs, We will help you recreate blog on the basis of keywords and tones  selected by you.
-" direction='top' className='max-w-[100px]'>
-                            <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
+                      }
+                      <div className="flex items-center px-2  gap-2.5">
+                        {/* <RePurpose removeFile={removeFile} value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} /> */}
+                        {
+                          showFileUploadUI == true && blogLinks.length == 0 ?
+                            <></>
+                            :
+                            <RePurpose allInputs={inputData} setAllInput={setInputData} removeFile={removeSelectedFile} value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
+
+                        }
+
+                        {showFileUploadUI != true &&
+
+                          <Tooltip content={`Select file formats like PDF, DOCX, TXT (size <${REPURPOSE_MAX_SIZE_MB}MB)`} direction='top' className='max-w-[100px] mt-4'>
+
+                            <button onClick={
+                              () => {
+                                setShowFileUploadUI(true);
+                                addToFunctionStack(() => { setShowFileUploadUI(false) })
+                              }
+                            }  className="w-48 h-10 px-4 py-2.5 rounded-lg border border-indigo-300 justify-center items-center gap-2 inline-flex">
+                                <div className="text-indigo-600 text-sm font-medium">Upload a </div>
+                                <div className="justify-center items-center gap-1 flex">
+                                  <img className="w-5 h-5" src="./icons/pdficon.svg" />
+                                  <img className="w-5 h-5" src="./icons/texticon.png" />
+                                  <img className="w-5 h-5" src="./icons/wordicon.png" />
+                                  <div className="w-5 h-5 relative" />
+                                </div>
+                              </button>
                           </Tooltip>
-                          </span>
-                        </div>
-                        <div className="w-full h-full justify-center items-center gap-2.5 inline-flex">
-                          <div className="relative w-full min-h-[60px] bg-white rounded-[10px]  border border-gray-600 py-2.5">
+                        }
+                      </div>
 
-                            {showFileUploadUI == true &&
+                      {showFileUploadUI == true &&
+                        <div className="px-5">
 
-                              <div className="flex items-center justify-between px-5">
-                                <h1 className="grow shrink basis-0 text-slate-800 text-lg font-normal text-left">Upload</h1>
-                                <button onClick={
-                                  () => { setShowFileUploadUI(false) }}
-                                >
-                                  <XCircleIcon className='h-6 w-6 text-indigo-600' />
-                                </button>
-                              </div>
-                            }
-                            <div className="flex items-center px-2  gap-2.5">
-                              {/* <RePurpose removeFile={removeFile} value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} /> */}
-                              {
-                                showFileUploadUI == true && blogLinks.length == 0 ?
-                                  <></>
-                                  :
-                                  <RePurpose removeFile={removeSelectedFile} value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
-
-                              }
-
-                              {showFileUploadUI != true &&
-
-                                <Tooltip content={`Select file formats like PDF, DOCX, TXT (size <${REPURPOSE_MAX_SIZE_MB}MB)`} direction='top' className='max-w-[100px] mt-4'>
-
-                                  <div onClick={
-                                    () => {
-                                      setShowFileUploadUI(true);
-                                      addToFunctionStack(() => { setShowFileUploadUI(false) })
-                                    }
-                                  } className="w-full h-10 flex justify-around cursor-pointer px-2 rounded-lg border border-indigo-600 items-center gap-2.5">
-                                    <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
-                                    <button className="justify-center items-center gap-2 inline-flex w-full ">
-                                      <span className="text-indigo-600 text-sm font-normal">Upload</span>
-                                    </button>
-                                  </div>
-                                </Tooltip>
-                              }
-                            </div>
-
-                            {showFileUploadUI == true &&
-                              <div className="px-5">
-
-                                <h3>
-                                  {/* <Tooltip content="Select file formats like PDF, DOCX, TXT (size <7mb)" direction='top' className='max-w-[100px] mt-4'>
+                          <h3>
+                            {/* <Tooltip content="Select file formats like PDF, DOCX, TXT (size <7mb)" direction='top' className='max-w-[100px] mt-4'>
                                     <button 
                                     onClick={
                                       () => {
@@ -992,165 +989,164 @@ export default function Home() {
                                     </button>
                                   </Tooltip> */}
 
-                                  <DragAndDropFiles blogLinks={blogLinks} setBlogLinks={setBlogLinks} />
-                                </h3>
-                              </div>
-                            }
-                          </div>
-                          {
-                            keywordsOFBlogs.length > 0 &&
-                            <button className="h-5 px-4 py-6 flex items-center justify-center bg-indigo-600 rounded-lg text-white text-sm font-medium focus:outline-none"
-                              onClick={
-                                () => {
-                                  setkeywordsOfBlogs([]);
-                                  setBlogLinks([]);
-                                  setSelectedFiles([]);
-                                  setStateOfGenerate((prev) => {
-                                    return {
-                                      url: null,
-                                      file: null,
-                                    }
-                                  }
-                                  )
-                                }
-                              }
-                            >
-                              Reset
-                            </button>
-                          }
+                            <DragAndDropFiles blogLinks={blogLinks} setBlogLinks={setBlogLinks} />
+                          </h3>
                         </div>
-                        <div className="w-full h-6 justify-start items-center gap-1.5 inline-flex">
-                          <span className={`text-center  text-sm font-normal ${showRepourposeError ? 'text-red-500' : 'text-slate-500'}`}>You can add max. 3 URLs + 3 Files. Use comma or press enter to add multiple URLs. Use upload button to select files</span>
-                        </div>
-                        {
-                          stateOfGenerate.url != null && stateOfGenerate.file != null && <div className="w-full h-6 justify-center items-center gap-2.5 inline-flex">
-                            <div className="flex items-center gap-1.5">
-                              <span
-                                className="text-slate-800"
-                              >Keywords from URL:</span> {
-                                stateOfGenerate.url == STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} color={"#2563EB"} height={20} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                              }
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                              <span
-                                className="text-slate-800"
-                              >
-                                Keywords from File:
-                              </span>
-                              {
-                                stateOfGenerate.file == STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} height={20} color={"#2563EB"} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                              }
-
-                            </div>
-                          </div>
-                        }
-                        <div className='flex items-center flex-col mt-5'>
-                          {keywordsOFBlogs.length > 0 && <div className="flex items-center gap-1.5" >
-                            <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="Select keywords as per your choice to add focus, URLs / Files containing the selected keywords will be used to recreate a high ranking SEO blog." direction='top' className='max-w-[100px]'>
-                              <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
-                            </Tooltip></div>}
-                          <div className='flex flex-wrap justify-center gap-2 mt-5'>
-                            {keywordsOFBlogs.length > 0 && keywordsOFBlogs.map((chip, index) => (
-                              <Chip key={index} text={chip.text} handleClick={handleChipClick} index={index} selected={chip.selected} wholeData={chip} />
-                            ))}
-                          </div>
-                        </div>
-                        {
-                          keywordsOFBlogs.length > 0 && isAuthenticated &&
-                          (
-                            <div className='flex items-center flex-col mt-5 relative' onMouseEnter={
-                              () => {
-                                setShowHoveUpgradeNow(true)
+                      }
+                    </div>
+                    {
+                      keywordsOFBlogs.length > 0 &&
+                      <button className="h-5 px-4 py-6 flex items-center justify-center bg-indigo-600 rounded-lg text-white text-sm font-medium focus:outline-none"
+                        onClick={
+                          () => {
+                            setkeywordsOfBlogs([]);
+                            setBlogLinks([]);
+                            setSelectedFiles([]);
+                            setStateOfGenerate((prev) => {
+                              return {
+                                url: null,
+                                file: null,
                               }
                             }
-                              onMouseLeave={
-                                () => {
-                                  setShowHoveUpgradeNow(false)
-                                }
-                              }
-
-                            >
-                              <div className="flex items-center">
-                                <h4>Choose Tone/Focus Topics </h4>
-                                <Tooltip content="Improve results by adding tones to your prompt" direction='top' className='max-w-[100px]'>
-                                  <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
-                                </Tooltip>
-                              </div>
-                              <div className='flex flex-wrap justify-center gap-2 mt-5'>
-                                {newTones.length > 0 && newTones.map((tone, index) => (
-                                  <div key={index} className="relative">
-                                    <Chip text={tone.text} handleClick={handleToneClick} index={index} selected={tone.selected} wholeData={null} />
-                                  </div>
-                                ))}
-                              </div>
-                              {
-                                meeData?.me?.isSubscribed === false && showHoveUpgradeNow === true && (
-                                  <div className="absolute top-0 left-0 w-full h-full bg-gray-700 opacity-70 flex flex-col items-center justify-center">
-                                    <p>
-                                      You are enjoying free trial. Upgrade your plan to get extra benefits
-                                    </p>
-                                    <button className="mt-2.5 text-white bg-indigo-600 rounded-[10px] shadow justify-center items-center gap-2.5 inline-flex
-                        active:bg-indigo-600 hover:bg-indigo-700 focus:shadow-outline-indigo px-4 py-2"
-                                      onClick={
-                                        () => {
-                                          typeof window !== 'undefined' && router.push(
-                                            {
-                                              pathname: '/upgrade',
-                                            }
-                                          )
-                                        }
-                                      }
-                                    >Upgrade now</button>
-                                  </div>
-                                )}
-                            </div>
-                          )
+                            )
+                          }
                         }
-
-                        <button className="p-4 mt-2.5 text-white bg-indigo-600 rounded-[10px] shadow justify-center items-center gap-2.5 inline-flex
-                        active:bg-indigo-600 hover:bg-indigo-700 focus:shadow-outline-indigo
-                        " onClick={
-                            keywordsOFBlogs.length > 0 ?
-                              handleRepourpose :
-                              handleGenerateClick
-                          }
-                        >
-                          {
-                            showUserLoadingModal.show == true ?
-                              <ReactLoading
-                                type="spin"
-                                color="#fff"
-                                height={20}
-                                width={20}
-                              />
-                              : <div className="flex items-center justify-between text-white text-lg font-medium" >
-                                <span>
-                                  {
-                                    keywordsOFBlogs.length > 0 ? 'Repurpose' : 'Generate'
-                                  }
-                                </span>
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  strokeWidth="1.5"
-                                  stroke="currentColor"
-                                  className="w-6 h-6"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
-                                  />
-                                </svg>
-                              </div>
-                          }
-
-                        </button>
+                      >
+                        Reset
+                      </button>
+                    }
+                  </div>
+                  <div className="w-full h-5 justify-start items-center gap-3 inline-flex">
+                    <div className="grow shrink basis-0 opacity-70 text-gray-600 text-sm font-normal text-left">Lille will search the web</div>
+                    <div className="opacity-70"><span className="text-zinc-500 text-sm font-normal text-right">Max. 3MB size. If you have more than 3MB</span><span className="text-gray-500 text-sm font-normal"> </span><span className="text-blue-500 text-sm font-normal">Click here</span></div>
+                  </div>
+                  {
+                    stateOfGenerate.url != null && stateOfGenerate.file != null && <div className="w-full h-6 justify-center items-center gap-2.5 inline-flex">
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          className="text-slate-800"
+                        >Keywords from URL:</span> {
+                          stateOfGenerate.url == STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} color={"#2563EB"} height={20} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                        }
                       </div>
-                    </Tab.Panel>
-                  </Tab.Panels>
-                </Tab.Group>
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          className="text-slate-800"
+                        >
+                          Keywords from File:
+                        </span>
+                        {
+                          stateOfGenerate.file == STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} height={20} color={"#2563EB"} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                        }
+
+                      </div>
+                    </div>
+                  }
+                  <div className='flex items-center flex-col mt-2'>
+                    {keywordsOFBlogs.length > 0 && <div className="flex items-center gap-1.5" >
+                      <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="Select keywords as per your choice to add focus, URLs / Files containing the selected keywords will be used to recreate a high ranking SEO blog." direction='top' className='max-w-[100px]'>
+                        <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
+                      </Tooltip></div>}
+                    <div className='flex flex-wrap justify-center gap-2 mt-5'>
+                      {keywordsOFBlogs.length > 0 && keywordsOFBlogs.map((chip, index) => (
+                        <Chip key={index} text={chip.text} handleClick={handleChipClick} index={index} selected={chip.selected} wholeData={chip} />
+                      ))}
+                    </div>
+                  </div>
+                  {
+                    keywordsOFBlogs.length > 0 && isAuthenticated &&
+                    (
+                      <div className='flex items-center flex-col mt-5 relative' onMouseEnter={
+                        () => {
+                          setShowHoveUpgradeNow(true)
+                        }
+                      }
+                        onMouseLeave={
+                          () => {
+                            setShowHoveUpgradeNow(false)
+                          }
+                        }
+
+                      >
+                        <div className="flex items-center">
+                          <h4>Choose Tone/Focus Topics </h4>
+                          <Tooltip content="Improve results by adding tones to your prompt" direction='top' className='max-w-[100px]'>
+                            <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
+                          </Tooltip>
+                        </div>
+                        <div className='flex flex-wrap justify-center gap-2 mt-5'>
+                          {newTones.length > 0 && newTones.map((tone, index) => (
+                            <div key={index} className="relative">
+                              <Chip text={tone.text} handleClick={handleToneClick} index={index} selected={tone.selected} wholeData={null} />
+                            </div>
+                          ))}
+                        </div>
+                        {
+                          meeData?.me?.isSubscribed === false && showHoveUpgradeNow === true && (
+                            <div className="absolute top-0 left-0 w-full h-full bg-gray-700 opacity-70 flex flex-col items-center justify-center">
+                              <p>
+                                You are enjoying free trial. Upgrade your plan to get extra benefits
+                              </p>
+                              <button className="mt-2.5 text-white bg-indigo-600 rounded-[10px] shadow justify-center items-center gap-2.5 inline-flex
+                        active:bg-indigo-600 hover:bg-indigo-700 focus:shadow-outline-indigo px-4 py-2"
+                                onClick={
+                                  () => {
+                                    typeof window !== 'undefined' && router.push(
+                                      {
+                                        pathname: '/upgrade',
+                                      }
+                                    )
+                                  }
+                                }
+                              >Upgrade now</button>
+                            </div>
+                          )}
+                      </div>
+                    )
+                  }
+                  <button className="h-14 px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-lg shadow justify-center items-center gap-2.5 inline-flex"
+                    onClick={
+                      keywordsOFBlogs.length > 0 ?
+                        handleRepourpose :
+                        handleGenerateClick
+                    }
+                  >
+
+                    {
+                      showUserLoadingModal.show == true ?
+                        <ReactLoading
+                          type="spin"
+                          color="#fff"
+                          height={20}
+                          width={20}
+                        />
+                        :
+                        <>
+                          <div className="text-white text-base font-medium leading-7">Generate your 1st draft for article, </div>
+                          <div className="justify-center items-center gap-2 flex">
+                            <div className="text-white"><FaFacebook className="h-5 w-5 mr-3" /></div>
+                            <div className="text-white"><FaLinkedin className="h-5 w-5 mr-3" /> </div>
+                            <div className="text-white"><FaTwitter className="h-5 w-5 mr-3" /> </div>
+                            <div className="text-white"><ArrowLongRightIcon className="h-5 w-5" /></div>
+                          </div>
+                        </>
+                    }
+                  </button>
+
+                  {/* <button className="cta-invert rounded-[10px] mt-2 lg:mt-0 w-full  items-center  flex flex-row bg-indigo-600" 
+                  >
+                    
+                        <>
+                          <div>
+                            <span className="w-full">Generate 1<sup>st</sup> Drafts for Articles <span className='flex flex-row w-full items-center justify-center'> 
+                     
+                            </span></span>
+                          </div>
+                        </>
+                    }
+
+                  </button> */}
+                </div>
                 <div
                   className="w-[80%] absolute top-[500px] lg:top-[350px] h-[200px] inset-x-0 -z-10"
                   style={{
@@ -1264,23 +1260,24 @@ const AIInputComponent = () => {
     , [buttonHeightRef.current])
 
   return (
-    <div className="mt-10 flex flex-col lg:flex-row  items-center h-full justify-center gap-x-6 w-[100%] rounded-lg  min-h-[60px] py-2.5"style={{
+    <div className="mt-10 flex flex-col lg:flex-row  items-center h-full justify-center gap-x-6 w-[100%] rounded-lg  min-h-[60px] py-2.5" style={{
       height: '100%'
     }}>
-      <div className={`flex-grow w-full lg:w-[65%]  flex-shrink-0 flex flex-row items-center justify-center gap-2.5 transition-all duration-500 ease-in-out rounded-[10px]`} style={{ height: buttonHeightRef.current ? buttonHeightRef.current.clientHeight+'px' :`100%`, 
+      <div className={`flex-grow w-full lg:w-[65%]  flex-shrink-0 flex flex-row items-center justify-center gap-2.5 transition-all duration-500 ease-in-out rounded-[10px]`} style={{
+        height: buttonHeightRef.current ? buttonHeightRef.current.clientHeight + 'px' : `100%`,
       }}>
-      <input
-        id="search"
-        name="search"
-        className="flex-grow h-full border-0 bg-white py-2.5 px-3 text-gray-900 ring-1   ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 disabled:opacity-50 rounded-[10px] min-h-[60px]"
-        placeholder="Enter a topic name, keywords or  a sentence"
-        type="search"
-        onChange={(e) => {
-          setkeyword(e.target.value);
-          setKeywordInStore(e.target.value); // Update the keyword in the store
-        }}
-        onKeyPress={handleEnterKeyPress}
-      />
+        <input
+          id="search"
+          name="search"
+          className="flex-grow h-full border-0 bg-white py-2.5 px-3 text-gray-900 ring-1   ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 disabled:opacity-50 rounded-[10px] min-h-[60px]"
+          placeholder="Enter a topic name, keywords or  a sentence"
+          type="search"
+          onChange={(e) => {
+            setkeyword(e.target.value);
+            setKeywordInStore(e.target.value); // Update the keyword in the store
+          }}
+          onKeyPress={handleEnterKeyPress}
+        />
       </div>
       <button
         ref={buttonHeightRef}
@@ -1293,11 +1290,37 @@ const AIInputComponent = () => {
         {/* <span> <span className='flex flex-row w-full items-center justify-center gap-1'>Generate 1st Drafts for Articles <FaFacebook className="h-5 w-5 " /> <FaTwitter className="h-5 w-5" /> <FaLinkedin className="h-5 w-5" /> 
         <ArrowLongRightIcon className="h-5 w-5" />
         </span></span> */}
-        <span className="w-full">Generate 1<sup>st</sup> Drafts for Articles <span className='flex flex-row w-full items-center justify-center'><FaFacebook className="h-5 w-5 mr-3" /> <FaTwitter className="h-5 w-5 mr-3" /> <FaLinkedin className="h-5 w-5 mr-3" /> 
-        <ArrowLongRightIcon className="h-5 w-5" />
+        <span className="w-full">Generate 1<sup>st</sup> Drafts for Articles <span className='flex flex-row w-full items-center justify-center'><FaFacebook className="h-5 w-5 mr-3" /> <FaTwitter className="h-5 w-5 mr-3" /> <FaLinkedin className="h-5 w-5 mr-3" />
+          <ArrowLongRightIcon className="h-5 w-5" />
         </span></span>
       </button>
     </div>
 
   );
 };
+
+export const FloatingBalls = ( { className }: { className?: string }) => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="51" height="51" viewBox="0 0 51 51" fill="none" className={className}>
+    <g filter="url(#filter0_d_2158_42436)">
+      <circle cx="25.8967" cy="21.3916" r="15.07" transform="rotate(-63.5145 25.8967 21.3916)" fill="url(#paint0_linear_2158_42436)"/>
+    </g>
+    <defs>
+      <filter id="filter0_d_2158_42436" x="0.824219" y="0.318359" width="50.1445" height="50.1465" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+        <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+        <feOffset dy="4"/>
+        <feGaussianBlur stdDeviation="5"/>
+        <feComposite in2="hardAlpha" operator="out"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 0.925 0 0 0 0 0.635938 0 0 0 0 0.669549 0 0 0 0.38 0"/>
+        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2158_42436"/>
+        <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2158_42436" result="shape"/>
+      </filter>
+      <linearGradient id="paint0_linear_2158_42436" x1="40.0358" y1="4.03629" x2="21.6639" y2="35.8573" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#4163FF"/>
+        <stop offset="1" stop-color="#F9948C"/>
+      </linearGradient>
+    </defs>
+  </svg>
+  )
+}
