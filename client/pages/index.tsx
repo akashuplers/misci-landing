@@ -838,9 +838,7 @@ export default function Home() {
             >
               <div className={`${isAuthenticated ? 'lg:mt-[10%]': 'lg:mt-[-10%]'}`}>
                 <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing lg:min-w-[900px]">
-                  Lille is your content 
-                    
-                   <TextTransitionEffect text={TEXTS2}/>
+                  Lille is your content <TextTransitionEffect text={TEXTS2}/>
                     Co-Pilot
                 </div>
                 <div className="flex flex-col items-center justify-center gap-2.5">
