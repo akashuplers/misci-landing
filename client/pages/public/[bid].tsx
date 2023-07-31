@@ -391,7 +391,7 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
         </h1>
         {/* cross btn */}
         <h2 className="hidden lg:block">
-          Other Reviews ({data.fetchBlog.comments.length})
+          Other Comments ({data.fetchBlog.comments.length})
         </h2>
         <button onClick={
           () => setShowModalComment(false)
@@ -439,7 +439,7 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
                 </div>
                 </>
           }
-          <h4 className="text-black text-base font-normal">{'Write a review'}</h4>
+          <h4 className="text-black text-base font-normal">{'Write a comment'}</h4>
           <TextareaAutosize
             maxRows={5}
             value={commmentValue}
