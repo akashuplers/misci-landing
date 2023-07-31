@@ -1666,6 +1666,55 @@ router.get('/saved-time', authMiddleware, async (req: any, res: any) => {
   }
 })
 
+router.get('/total-saved-time', async (req: any, res: any) => {
+  const db = req.app.get('db')
+  try {
+    const totalSavedData = await db.db('lilleBlogs').collection('blogsTime').find({}, {
+      projection: {
+        time: 1,
+        date: 1,
+        _id: 0
+      }
+    }).toArray()
+    let oneWeekAgoDate: any = new Date()
+    oneWeekAgoDate.setDate(oneWeekAgoDate.getDate() - 7)
+    oneWeekAgoDate = getTimeStamp(oneWeekAgoDate)
+    let oneMonthAgoDate: any = new Date()
+    oneMonthAgoDate.setMonth(oneMonthAgoDate.getMonth() - 1);
+    oneMonthAgoDate = getTimeStamp(oneMonthAgoDate)
+    console.log(totalSavedData.length)
+    if(totalSavedData && totalSavedData.length) {
+      let total = 0
+      totalSavedData?.forEach((data: {time: string, date: number}) => {
+        total += timeToMins(data.time)
+      })
+      const totalSavedTime = timeFromMins(total)
+      return res.status(200).send({
+        type: "SUCCESS",
+        message: "Total Saved Time!",
+        data: {
+          totalSavedTime
+        }
+      })
+    } else {
+      return res.status(200).send({
+        type: "SUCCESS",
+        message: "Total Saved Time!",
+        data: {
+          oneDaySavedTime: "00:00",
+          oneWeekSavedTime:"00:00",
+          oneMonthSavedTime:"00:00"
+        }
+      })
+    }
+  }catch(e){
+    return res.status(500).send({
+      type: "ERROR",
+      message: e.message
+    })
+  }
+})
+
 router.post('/add-time-saved', async (req: any, res: any) => {
   const db = req.app.get('db')
   const {userId, blogId, time, type} = req.body
