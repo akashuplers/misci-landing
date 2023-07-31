@@ -36,6 +36,7 @@ import { useBlogLinkStore, useRepurposeFileStore, useSideBarChangeFunctions } fr
 import { FaFacebook, FaTwitter, FaLinkedin } from 'react-icons/fa';
 import { TextTransitionEffect } from "@/components/ui/TextTransitionEffect";
 import { Chip } from "@/components/ui/Chip";
+import { TYPES_OF_GENERATE } from "@/store/appContants";
 
 const PAYMENT_PATH = "/?payment=true";
 const TONES = [
