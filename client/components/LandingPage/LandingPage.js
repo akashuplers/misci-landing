@@ -48,25 +48,25 @@ const Lillesteps = [
         details: `Lille offers you a cool feature where you can click on 'Fresh Ideas' to enter your relevant keywords
         and Lille will fetch new ideas that you can select to regenerate and take the content to next level.
         You can also upload a URL of a web page containing relevant content or upload a file to obtain the fresh ideas`,
-        image: imagesForScreenShots["home"]
+        image: imagesForScreenShots["filter"]
     },
     {
         step: 3,
         description: "Select fresh ideas",
         details: "Once you have some exciting fresh ideas, its time to select some or all of them or make a combination of used ideas and fresh ideas before you regenerate.",
-        image: imagesForScreenShots["home"]
+        image: imagesForScreenShots["filterresults"]
     },
     {
         step: 4,
         description: "Click on Regenerate",
         details: "After you've selected the ideas you want to focus on, its time to let Lille do its magic. Just click on the regenerate button, and our powerful algorithm will generate a whole new blog post based on the ideas you've selected. It's that easy!",
-        image: imagesForScreenShots["home"]
+        image: imagesForScreenShots["regenerate"]
     },
     {
         step: 5,
         description: "Publish",
         details: "Click on Publish. And last but not least, it's time to share your new post with the world. Simply click on the publish button, and your post will be available to read on your website. And why stop there? You also have the option to share your post on LinkedIn and Twitter to reach an even wider audience.",
-        image: imagesForScreenShots["home"]
+        image: imagesForScreenShots["publish"]
     }
 ];
 
@@ -624,7 +624,7 @@ const LandingPage = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className=" bg-white justify-center items-center inline-flex">
+                                <div className=" bg-white justify-center items-center inline-flex w-full" >
                                     <div className="grow shrink basis-0 self-stretch pl-[12.12px] pr-[12.13px] py-[0.61px] bg-white rounded-xl border border-gray-200 justify-center items-center inline-flex">
                                         <div className="grow shrink basis-0 self-stretch px-[1.31px] py-[37.62px] bg-white rounded justify-center items-center inline-flex">
                                             <img className="w-full h-full rounded shadow" src={image} />

@@ -836,12 +836,8 @@ export default function Home() {
                 height: '100%'
               }}
             >
-              <div className={`${isAuthenticated ? 'mt-[10%]': 'mt-[-10%]'}`}>
-                <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing "
-                style={{
-                  minWidth: '800px'
-                }}
-                >
+              <div className={`${isAuthenticated ? 'lg:mt-[10%]': 'lg:mt-[-10%]'}`}>
+                <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing lg:min-w-[900px]">
                   Lille is your content 
                     
                    <TextTransitionEffect text={TEXTS2}/>
@@ -928,7 +924,7 @@ export default function Home() {
                     <Tab.Panel className={`outline-none`}>
                       <div className="w-full lg:w-[700px] h-full opacity-90 flex-col justify-center mt-10 items-center gap-[18px] inline-flex bg-transparent rounded-[10px]">
                         <div className="w-full h-6 justify-center items-center gap-1.5 inline-flex">
-                          <div className="text-center text-slate-600 text-base font-normal flex">You have URLs or Documents <ArrowLongRightIcon className="mx-2 h-5 w-5 text-slate-600" /> Let lille generate first draft for your article for <span className="mx-2 flex items-center justify-center text-blue-600"><FaFacebook className="h-5 w-5 mr-3" /> <FaTwitter className="h-5 w-5 mr-3" /> <FaLinkedin className="h-5 w-5 mr-3" /></span></div>
+                          <div className="text-center text-slate-600 text-base font-normal flex mb-4 lg:mb-0 flex-wrap lg:flex-nowrap">You have URLs or Documents <ArrowLongRightIcon className="mx-2 h-5 w-5 text-slate-600" /> Let lille generate first draft for your article for <span className="mx-2 flex items-center justify-center text-blue-600"><FaFacebook className="h-5 w-5 mr-3" /> <FaTwitter className="h-5 w-5 mr-3" /> <FaLinkedin className="h-5 w-5 mr-3" /></span></div>
                           <span className="justify-self-end flex">
                           <Tooltip content="Add your content URLs, We will help you recreate blog on the basis of keywords and tones  selected by you.
 " direction='top' className='max-w-[100px]'>
@@ -1270,10 +1266,10 @@ const AIInputComponent = () => {
     , [buttonHeightRef.current])
 
   return (
-    <div className="mt-10 flex items-center h-full justify-center gap-x-6 w-[100%] rounded-lg  min-h-[60px] py-2.5"style={{
+    <div className="mt-10 flex flex-col lg:flex-row  items-center h-full justify-center gap-x-6 w-[100%] rounded-lg  min-h-[60px] py-2.5"style={{
       height: '100%'
     }}>
-      <div className={`flex-grow flex-shrink-0 flex flex-row items-center justify-center gap-2.5 transition-all duration-500 ease-in-out rounded-[10px]`} style={{ height: buttonHeightRef.current ? buttonHeightRef.current.clientHeight+'px' :`100%`, 
+      <div className={`flex-grow w-full lg:w-[65%]  flex-shrink-0 flex flex-row items-center justify-center gap-2.5 transition-all duration-500 ease-in-out rounded-[10px]`} style={{ height: buttonHeightRef.current ? buttonHeightRef.current.clientHeight+'px' :`100%`, 
       }}>
       <input
         id="search"
@@ -1290,7 +1286,7 @@ const AIInputComponent = () => {
       </div>
       <button
         ref={buttonHeightRef}
-        className={`cta-invert rounded-[10px]  items-center  flex flex-row bg-indigo-600 ${isDisabled ? "disabled:opacity-50" : ""}`}
+        className={`cta-invert rounded-[10px] mt-2 lg:mt-0 w-full lg:w-[35%]  items-center  flex flex-row bg-indigo-600 ${isDisabled ? "disabled:opacity-50" : ""}`}
         onClick={handleButtonClick}
         disabled={isDisabled}
         style={{
@@ -1299,7 +1295,7 @@ const AIInputComponent = () => {
         {/* <span> <span className='flex flex-row w-full items-center justify-center gap-1'>Generate 1st Drafts for Articles <FaFacebook className="h-5 w-5 " /> <FaTwitter className="h-5 w-5" /> <FaLinkedin className="h-5 w-5" /> 
         <ArrowLongRightIcon className="h-5 w-5" />
         </span></span> */}
-        <span>Generate 1 <sup>st</sup> Drafts for Articles <span className='flex flex-row w-full items-center justify-center'><FaFacebook className="h-5 w-5 mr-3 rounded-full" /> <FaTwitter className="h-5 w-5 mr-3 rounded-full" /> <FaLinkedin className="h-5 w-5 mr-3 rounded-full" /> 
+        <span className="w-full">Generate 1 <sup>st</sup> Drafts for Articles <span className='flex flex-row w-full items-center justify-center'><FaFacebook className="h-5 w-5 mr-3 rounded-full" /> <FaTwitter className="h-5 w-5 mr-3 rounded-full" /> <FaLinkedin className="h-5 w-5 mr-3 rounded-full" /> 
         <ArrowLongRightIcon className="h-5 w-5" />
 
         </span></span>
