@@ -12,6 +12,7 @@ export const UpgradeFeatures = [
 export const STRIPE_CONST_AMOUNT = 100;
 export const APP_REGEXP = {
   EMAIL_VALIDATION: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+  URL_VALIDATION: /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/ig,
 }
 export const DEFAULT_USER_PROFILE_IMAGE = 'https://github.com/identicons/jasonlong.png';
 export const MonthlyPlans = [

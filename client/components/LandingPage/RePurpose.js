@@ -12,6 +12,7 @@ import Select, {
 import Tooltip from '../ui/Tooltip';
 import { Chip } from '@/pages';
 import { DocumentIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { validateIfURL } from '@/store/appHelpers';
 
 function generateRandomId() {
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -25,16 +26,18 @@ function generateRandomId() {
 
   return randomId;
 }
-export const createOption = (label, id,index) => ({
+export const createOption = (label, id,index, type) => ({
   label,
   value: label,
   selected: false,
   id: id,
   index: index,
-  type: 'url'
+  type: type
 });
 
-export default function RePurpose({value, setValue, setShowRepourposeError, removeFile}){
+ 
+ 
+export default function RePurpose({setAllInput ,allInputs, value, setValue, setShowRepourposeError, removeFile}){
   const [inputValue, setInputValue] = React.useState('');
   const handleKeyDown = (event) => {
     const elementId = generateRandomId();
@@ -49,8 +52,14 @@ export default function RePurpose({value, setValue, setShowRepourposeError, remo
       }
   
       if (!inputValue) return;
-  
-      const newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1)];
+      const newInputValue = inputValue;
+      const allInputsClone = { ...allInputs };
+      var newBlogLinks =[];
+      if (validateIfURL(newInputValue)) {
+        newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1, 'url')];      
+      } else {
+        newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1, 'keyword')];
+      }
       setValue(newBlogLinks);
       setInputValue('');
       event.preventDefault();
@@ -160,7 +169,7 @@ export default function RePurpose({value, setValue, setShowRepourposeError, remo
       onChange={(newValue) => setValue(newValue)}
       onInputChange={(newValue) => setInputValue(newValue)}
       onKeyDown={handleKeyDown}
-      placeholder="Enter URL or Upload a PDF, Docx or Txt"
+      placeholder={'Enter a Topic, Keywords, Sentence, or Enter URLs'}
       value={value}
     />
     </div>

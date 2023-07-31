@@ -43,9 +43,9 @@ const DesktopNavigation = ({
               setAuthenticationModalOpen(true);
               setAuthneticationModalType("signup");
             }}
-            className="px-5 py-2.5 bg-indigo-600 rounded-lg shadow justify-center items-center gap-2.5 flex"
+            className="px-5 py-2.5 text-black border-indigo-600 border bg-white rounded-lg shadow justify-center items-center gap-2.5 flex"
           >
-            <span className="text-white text-[16px] font-bold">
+            <span className="text-[16px] font-bold">
               Start your free trial today
             </span>
           </button>
