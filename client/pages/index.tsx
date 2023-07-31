@@ -836,7 +836,7 @@ export default function Home() {
                 height: '100%'
               }}
             >
-              <div className={`${isAuthenticated ? 'lg:mt-[10%]': 'lg:mt-[-10%]'}`}>
+              <div className={`mt-[10%] ${isAuthenticated ? 'lg:mt-[10%]': 'lg:mt-[-10%]'}`}>
                 <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing lg:min-w-[900px]">
                   Lille is your content <TextTransitionEffect text={TEXTS2}/>
                     Co-Pilot
