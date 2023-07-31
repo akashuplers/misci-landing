@@ -38,8 +38,9 @@ import { FaFacebook, FaTwitter, FaLinkedin } from 'react-icons/fa';
 import { TextTransitionEffect } from "@/components/ui/TextTransitionEffect";
 import { Chip } from "@/components/ui/Chip";
 import { InputData } from "@/types/type";
-import { randomNumberBetween20And50 } from "@/store/appHelpers";
+import { processKeywords, randomNumberBetween20And50, uppercaseFirstChar } from "@/store/appHelpers";
 import { extractKeywordsFromKeywords } from "@/helpers/apiMethodsHelpers";
+import { KeyObject } from "crypto";
 
 const PAYMENT_PATH = "/?payment=true";
 const TONES = [
@@ -108,6 +109,7 @@ export default function Home() {
       return {
         url: null,
         file: null,
+        keyword: null,
       }
     }
     )
@@ -247,30 +249,7 @@ export default function Home() {
             return;
           }
           const { data } = response.data;
-          const keywordsForBlog = [];
-
-          data.forEach((item) => {
-            item.keywords.forEach((keyword) => {
-              const keywordObj = {
-                id: item.id,
-                text: keyword.toLowerCase().charAt(0).toUpperCase() + keyword.toLowerCase().slice(1),
-                selected: false,
-                source: keywordsForBlog.some((keywordObj) => keywordObj.text === keyword) ? (item.source ? item.source.toLowerCase().charAt(0).toUpperCase() + item.source.toLowerCase().slice(1) : '') : null,
-                realSource: item.source,
-                url: item.url,
-                articleId: item.id,
-              };
-
-              if (keywordObj.source !== null && item.source !== undefined && item.source !== '') {
-                const keywordObjFromKeywords = keywordsForBlog.find((keywordObj) => keywordObj.text === keyword);
-                if (keywordObjFromKeywords !== undefined) {
-                  keywordObjFromKeywords.source = keywordObj.realSource ? keywordObj.realSource.toLowerCase().charAt(0).toUpperCase() + keywordObj.realSource.toLowerCase().slice(1) : '';
-                }
-              }
-              keywordsForBlog.push(keywordObj);
-            });
-          });
-
+          const keywordsForBlog = processKeywords(data);
           // Update the state with processed keywords
           setkeywordsOfBlogs((prev) => {
             const prevKeywords = [...prev];
@@ -322,6 +301,7 @@ export default function Home() {
     return data;
   }
   function handleGenerateClick() {
+    console.log(blogLinks);
     const countByType = blogLinks.reduce((acc, link) => {
       if (link.type === 'file') {
         acc.files++;
@@ -389,11 +369,49 @@ export default function Home() {
     }
   }
 
-  function uploadExtractKeywordsFromKeywords(){
+ function uploadExtractKeywordsFromKeywords(){
     setShowUserLoadingModal({ show: true });
-    const keywords = keywordsOFBlogs.map((keyword) => keyword.keyword);
-    const data = extractKeywordsFromKeywords(keywords);
-    console.log(data);    
+    const keywords = blogLinks.filter((link) => link.type === 'keyword').map((link) => link.value);
+    console.log(keywords);
+    // const data =await extractKeywordsFromKeywords(keywords[keywords.length - 1]);
+    // console.log(data);
+  extractKeywordsFromKeywords(keywords[keywords.length - 1]).then((data) => {
+    if(data.type ==='ERROR'){
+      toast.error(data.message);
+      setShowUserLoadingModal({ show: false });
+      return;
+    }
+    const keywordsData = data.data;
+    const keywordsForBlog = processKeywords(keywordsData);
+    setkeywordsOfBlogs((prev) => {
+      const prevKeywords = [...prev];
+      const updatedKeywords = [...prevKeywords, ...keywordsForBlog];
+      const processedKeywords = processDataForKeywords(updatedKeywords);
+      return processedKeywords;
+    });
+    setStateOfGenerate((prev) => {
+      return {
+        ...prev,
+        keyword: STATESOFKEYWORDS.LOADED,
+      }
+    });
+    setShowUserLoadingModal({ show: false });
+    setLoadingForKeywords(false); 
+  }).catch((err) => {
+    console.log(err);
+    
+    toast.error(err.message)
+    setShowUserLoadingModal({ show: false });
+    setLoadingForKeywords(false); 
+    setStateOfGenerate((prev) => {
+      return {
+        ...prev,
+        keyword: STATESOFKEYWORDS.LOADED,
+      }
+    });
+  }).finally(() => {
+
+  })
   }
 
   function uploadExtractKeywords() {
@@ -776,8 +794,12 @@ export default function Home() {
     <FloatingBalls className="hidden absolute top-[9%] right-0 md:block" />
     <FloatingBalls className="hidden absolute top-[10%] w-8 rotate-90 left-[3%] md:block" />
 
-<div className="w-full lg:w-[1214.42px]" style={{ height: 1093.78, transform: 'rotate(0deg)', transformOrigin: '0 0', background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)', top: '-10px', right: '0px', position: 'absolute',  zIndex: -1}}></div>
-<div className="w-full lg:w-[1214.42px]" style={{ height: 1093.78, transform: 'rotate(180deg)', background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)', top: '-10px', left: '0px', position: 'absolute',  zIndex: -1}}></div>
+<div className="w-full lg:w-[1214.42px] h-full " style={{ transform: 'rotate(0deg)', transformOrigin: '0 0', background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)', top: '-10px', right: '0px', position: 'absolute',  zIndex: -1}}></div>
+<div className="w-full lg:w-[1214.42px] h-full " style={{
+   transform: 'rotate(180deg)',
+  //      transform: scaleX(-1); 
+  transform: 'scaleX(-1)',
+   background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)', top: '-10px', left: '0px', position: 'absolute',  zIndex: -1}}></div>
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
             <svg
               className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
@@ -972,7 +994,6 @@ export default function Home() {
                                   <img className="w-5 h-5" src="./icons/pdficon.svg" />
                                   <img className="w-5 h-5" src="./icons/texticon.png" />
                                   <img className="w-5 h-5" src="./icons/wordicon.png" />
-                                  <div className="w-5 h-5 relative" />
                                 </div>
                               </button>
                           </Tooltip>
@@ -1027,7 +1048,7 @@ export default function Home() {
                   </div>
                   <div className="w-full h-5 justify-start items-center gap-3 inline-flex">
                     <div className="grow shrink basis-0 opacity-70 text-gray-600 text-sm font-normal text-left">Lille will search the web</div>
-                    <div className="opacity-70"><span className="text-zinc-500 text-sm font-normal text-right">Max. 3MB size. If you have more than 3MB</span><span className="text-gray-500 text-sm font-normal"> </span><span className="text-blue-500 text-sm font-normal">Click here</span></div>
+                    <div className="opacity-70"><span className="text-zinc-500 text-sm font-normal text-right">Max. 7MB size. If you have more than 7MB</span><span className="text-gray-500 text-sm font-normal"> </span><span className="text-blue-500 text-sm font-normal">Click here</span></div>
                   </div>
                   {
                     stateOfGenerate.url != null && stateOfGenerate.file != null && <div className="w-full h-6 justify-center items-center gap-2.5 inline-flex">
@@ -1037,6 +1058,17 @@ export default function Home() {
                         >Keywords from URL:</span> {
                           stateOfGenerate.url == STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} color={"#2563EB"} height={20} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />
                         }
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          className="text-slate-800"
+                        >
+                          Keywords from Keyword:
+                        </span>
+                        {
+                          stateOfGenerate.keyword == STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} height={20} color={"#2563EB"} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                        }
+
                       </div>
                       <div className="flex items-center gap-1.5">
                         <span

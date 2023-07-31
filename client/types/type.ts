@@ -4,7 +4,7 @@ export interface BlogLink {
     selected: boolean;
     id: string;
     index: number;
-    type: 'file' | 'url';
+    type: 'file' | 'url' | 'keyword';
 }
 export interface UserDataResponse {
     data: {
