@@ -482,7 +482,7 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
       {/* Right side for other comments */}
       <div className="flex flex-col gap-2 h-full  overflow-y-scroll max-h-[350px] relative">
         <h2 className="lg:hidden">
-          Other Reviews ({data.fetchBlog.comments.length})
+          Other Comments ({data.fetchBlog.comments.length})
         </h2>
         <div className="bg-white w-full  sticky top-0">
         <div className=" top-0 w-[132px] h-9 p-1.5 bg-white rounded-lg border border-gray-300 justify-start items-center gap-1 inline-flex">
