@@ -389,6 +389,58 @@ router.post('/files/extract-keywords', [mulitUploadStrategy.array('files')], asy
     }
 })
 
+router.post('/keyword/extract-keywords', async (req: any, res: any) => {
+    let startRequest = new Date()
+    const db = req.app.get('db')
+    const {keyword, userId} = req.body
+    try {
+        let pythonStart = new Date()
+        const articleIds = await new Python({userId}).uploadKeyword({keyword})
+        let pythonEnd = new Date()
+        let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
+        let keywordsData: {
+            id: string;
+            keywords: string[];
+            url: string;
+            source: string;
+        }[] = []
+        await (
+            Promise.all(
+                articleIds?.map(async (id: string) => {
+                    const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
+                    if(article._source.driver) {
+                        keywordsData.push({
+                            id,
+                            url: article._source.orig_url,
+                            source: article._source.source.name,
+                            keywords: article._source.driver
+                        })
+                    }
+                })
+            )
+        )
+        if(keywordsData && keywordsData.length) {
+            return res.status(200).send({
+                type: "SUCCESS",
+                data: keywordsData,
+                pythonRespTime
+            })        
+        } else {
+            return res.status(400).send({
+                type: "SUCCESS",
+                data: "No keywords found!!",
+                pythonRespTime
+            })
+        }        
+
+    }catch (e) {
+        return res.status(400).send({
+            type: "ERROR",
+            message: `Currently we are not able to get keywords from "${keyword}". Please try again!`
+        })
+    }
+})
+
 router.post('/urls/extract-keywords', async (req: any, res: any) => {
     let startRequest = new Date()
     const db = req.app.get('db')
