@@ -436,7 +436,7 @@ router.post('/keyword/extract-keywords', async (req: any, res: any) => {
     }catch (e) {
         return res.status(400).send({
             type: "ERROR",
-            message: `Currently we are not able to get keywords from "${keyword}". Please try again!`
+            message: `Lille could not use "${keyword}" this time, you can try again.`
         })
     }
 })
