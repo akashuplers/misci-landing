@@ -361,30 +361,39 @@ export default function Home() {
     }
     console.log('countByType');
     console.log(countByType);
-    if (countByType.files > 0 && countByType.urls > 0) {
+    // if (countByType.files > 0 && countByType.urls > 0) {
 
-      // Call both methods when both keywords and files are greater than zero
-      uploadExtractKeywords();
-      uploadFilesForKeywords();
-    } else if (countByType.urls > 0) {
-      // Call only the keywords method when there are keywords but no files
-      uploadExtractKeywords();
-    } else if (countByType.files > 0) {
-      // Call only the files method when there are files but no keywords
-      uploadFilesForKeywords();
-    } else {
-      // Call the default method when both keywords and files are zero
+    //   // Call both methods when both keywords and files are greater than zero
+    //   uploadExtractKeywords();
+    //   uploadFilesForKeywords();
+    // } else if (countByType.urls > 0) {
+    //   // Call only the keywords method when there are keywords but no files
+    //   uploadExtractKeywords();
+    // } else if (countByType.files > 0) {
+    //   // Call only the files method when there are files but no keywords
+    //   uploadFilesForKeywords();
+    // } else {
+    //   // Call the default method when both keywords and files are zero
+    //   uploadExtractKeywords();
+    // }
+    // // extractKeywordsFromKeywords();
+    
+    if(countByType.urls > 0){
       uploadExtractKeywords();
     }
-    // extractKeywordsFromKeywords();
+    if(countByType.keyword > 0){
+      uploadExtractKeywordsFromKeywords();
+    }
+    if(countByType.files > 0){
+      uploadFilesForKeywords();
+    }
   }
 
   function uploadExtractKeywordsFromKeywords(){
     setShowUserLoadingModal({ show: true });
-    const getToken = localStorage.getItem("token");
     const keywords = keywordsOFBlogs.map((keyword) => keyword.keyword);
     const data = extractKeywordsFromKeywords(keywords);
-    
+    console.log(data);    
   }
 
   function uploadExtractKeywords() {

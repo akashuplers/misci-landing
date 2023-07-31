@@ -456,7 +456,11 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
             </div>
             <button className="px-5 py-2 rounded-lg justify-start items-start gap-2 flex"
               onClick={
-                () => setCommentValue("")
+                () => {
+                  setCommentValue("");
+                  setEmail("");
+                  setName("");
+                }
               }
             >
               <span className="text-slate-600 text-base font-normal leading-7">Cancel</span>
