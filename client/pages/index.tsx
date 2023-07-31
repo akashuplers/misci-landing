@@ -36,6 +36,7 @@ import { useBlogLinkStore, useRepurposeFileStore, useSideBarChangeFunctions } fr
 import { FaFacebook, FaTwitter, FaLinkedin } from 'react-icons/fa';
 import { TextTransitionEffect } from "@/components/ui/TextTransitionEffect";
 import { Chip } from "@/components/ui/Chip";
+import { TYPES_OF_GENERATE } from "@/store/appContants";
 
 const PAYMENT_PATH = "/?payment=true";
 const TONES = [
@@ -836,11 +837,9 @@ export default function Home() {
                 height: '100%'
               }}
             >
-              <div className={`${isAuthenticated ? 'lg:mt-[10%]': 'lg:mt-[-10%]'}`}>
+              <div className={`mt-[10%] ${isAuthenticated ? 'lg:mt-[10%]': 'lg:mt-[-10%]'}`}>
                 <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing lg:min-w-[900px]">
-                  Lille is your content 
-                    
-                   <TextTransitionEffect text={TEXTS2}/>
+                  Lille is your content <TextTransitionEffect text={TEXTS2}/>
                     Co-Pilot
                 </div>
                 <div className="flex flex-col items-center justify-center gap-2.5">
@@ -855,7 +854,7 @@ export default function Home() {
                 <Tab.Group
                   defaultIndex={currentTabIndex}
                 >
-                  <Tab.List className="p-2 mt-10 bg-slate-50 h-14 focus:outline-none rounded--xl border border-neutral-400 text-gray-600 border-opacity-25 justify-start items-center gap-3 inline-flex rounded-xl">
+                  <Tab.List className="p-2 mt-10 bg-slate-50 h-14 focus:outline-none  border border-neutral-400 text-gray-600 border-opacity-25 justify-start items-center gap-3 inline-flex rounded-xl">
                     <Tab>
                       {({ selected }) => (
                         <div className={`rounded-xl h-10 px-2 focus:outline-none justify-center items-center gap-2 inline-flex ${selected ? 'bg-white border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`}
@@ -1295,9 +1294,8 @@ const AIInputComponent = () => {
         {/* <span> <span className='flex flex-row w-full items-center justify-center gap-1'>Generate 1st Drafts for Articles <FaFacebook className="h-5 w-5 " /> <FaTwitter className="h-5 w-5" /> <FaLinkedin className="h-5 w-5" /> 
         <ArrowLongRightIcon className="h-5 w-5" />
         </span></span> */}
-        <span className="w-full">Generate 1 <sup>st</sup> Drafts for Articles <span className='flex flex-row w-full items-center justify-center'><FaFacebook className="h-5 w-5 mr-3 rounded-full" /> <FaTwitter className="h-5 w-5 mr-3 rounded-full" /> <FaLinkedin className="h-5 w-5 mr-3 rounded-full" /> 
+        <span className="w-full">Generate 1<sup>st</sup> Drafts for Articles <span className='flex flex-row w-full items-center justify-center'><FaFacebook className="h-5 w-5 mr-3" /> <FaTwitter className="h-5 w-5 mr-3" /> <FaLinkedin className="h-5 w-5 mr-3" /> 
         <ArrowLongRightIcon className="h-5 w-5" />
-
         </span></span>
       </button>
     </div>

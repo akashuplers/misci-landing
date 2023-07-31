@@ -18,9 +18,9 @@ import { generateBlog } from "../../graphql/mutations/generateBlog";
 import { jsonToHtml } from "../../helpers/helper";
 import ReactLoading from "react-loading";
 import useStore, { useBlogDataStore, useByMeCoffeModal, useTabOptionStore } from "../../store/store";
-import { TYPES_OF_GENERATE } from "..";
 import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
 import useUserTimeSave from "@/hooks/useUserTimeSave";
+import { TYPES_OF_GENERATE } from "@/store/appContants";
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
     event.stopImmediatePropagation();

@@ -88,7 +88,7 @@ const DragAndDropFiles = () => {
     console.log(blogLinks);
     console.log("IFLES LENGHT", acceptedFiles.length, acceptedFiles);
     if(acceptedFiles.length > 3){
-      toast.warn('You can upload max 3 files or URLs');
+      toast.warn('You can upload max 3 files');
       return;
     }
      // Check if files are selected
@@ -98,7 +98,7 @@ const DragAndDropFiles = () => {
     }
      
     if (blogLinks.length > 6) {
-      toast.error('You can upload max 3 files or URLs');
+      toast.error('You can upload max 6 items, URLs or Files or a combination of URLs and Files');
       return;
     }
     const newLinks = Array.from(acceptedFiles).map((file, index) =>
