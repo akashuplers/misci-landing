@@ -5,7 +5,7 @@ import { EmailIcon, EmailShareButton, FacebookIcon, FacebookShareButton, Telegra
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const ShareLinkModal = ({
-    openModal, setOpenModal, text, blog_id
+    openModal, setOpenModal, text, blog_id, closeModal
 } : { openModal: boolean, setOpenModal: any, text: string, blog_id: string })=>{
     return (<Modal
         isOpen={openModal}
