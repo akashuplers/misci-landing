@@ -853,7 +853,7 @@ export default function Home() {
                 <Tab.Group
                   defaultIndex={currentTabIndex}
                 >
-                  <Tab.List className="p-2 mt-10 bg-slate-50 h-14 focus:outline-none rounded--xl border border-neutral-400 text-gray-600 border-opacity-25 justify-start items-center gap-3 inline-flex rounded-xl">
+                  <Tab.List className="p-2 mt-10 bg-slate-50 h-14 focus:outline-none  border border-neutral-400 text-gray-600 border-opacity-25 justify-start items-center gap-3 inline-flex rounded-xl">
                     <Tab>
                       {({ selected }) => (
                         <div className={`rounded-xl h-10 px-2 focus:outline-none justify-center items-center gap-2 inline-flex ${selected ? 'bg-white border border-indigo-600 text-indigo-600' : 'border-none text-gray-600'}`}
@@ -1293,9 +1293,8 @@ const AIInputComponent = () => {
         {/* <span> <span className='flex flex-row w-full items-center justify-center gap-1'>Generate 1st Drafts for Articles <FaFacebook className="h-5 w-5 " /> <FaTwitter className="h-5 w-5" /> <FaLinkedin className="h-5 w-5" /> 
         <ArrowLongRightIcon className="h-5 w-5" />
         </span></span> */}
-        <span className="w-full">Generate 1 <sup>st</sup> Drafts for Articles <span className='flex flex-row w-full items-center justify-center'><FaFacebook className="h-5 w-5 mr-3 rounded-full" /> <FaTwitter className="h-5 w-5 mr-3 rounded-full" /> <FaLinkedin className="h-5 w-5 mr-3 rounded-full" /> 
+        <span className="w-full">Generate 1<sup>st</sup> Drafts for Articles <span className='flex flex-row w-full items-center justify-center'><FaFacebook className="h-5 w-5 mr-3" /> <FaTwitter className="h-5 w-5 mr-3" /> <FaLinkedin className="h-5 w-5 mr-3" /> 
         <ArrowLongRightIcon className="h-5 w-5" />
-
         </span></span>
       </button>
     </div>
