@@ -40,7 +40,8 @@ import { Chip } from "@/components/ui/Chip";
 import { InputData } from "@/types/type";
 import { processKeywords, randomNumberBetween20And50, uppercaseFirstChar } from "@/store/appHelpers";
 import { extractKeywordsFromKeywords } from "@/helpers/apiMethodsHelpers";
-import { KeyObject } from "crypto";
+import { TYPES_OF_GENERATE } from "@/store/appContants";
+
 
 const PAYMENT_PATH = "/?payment=true";
 const TONES = [
