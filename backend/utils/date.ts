@@ -88,9 +88,10 @@ export const timeToMins = (time:string) => {
 
 // Convert minutes to a time in format hh:mm
 // Returned value is in range 00  to 24 hrs
-export const timeFromMins = (mins: any) => {
-  function z(n: any){return (n<10? '0':'') + n;}
-  var h = (mins/60 |0) % 24;
-  var m = mins % 60;
-  return z(h) + ':' + z(m);
+export const timeFromMins = (minutes: any) => {
+  var h: any = Math.floor(minutes / 60);
+  var m: any = minutes % 60;
+  h = h < 10 ? '0' + h : h; 
+  m = m < 10 ? '0' + m : m; 
+  return h + ':' + m;
 }

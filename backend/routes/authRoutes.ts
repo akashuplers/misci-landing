@@ -1676,18 +1676,19 @@ router.get('/total-saved-time', async (req: any, res: any) => {
         _id: 0
       }
     }).toArray()
-    let oneWeekAgoDate: any = new Date()
-    oneWeekAgoDate.setDate(oneWeekAgoDate.getDate() - 7)
-    oneWeekAgoDate = getTimeStamp(oneWeekAgoDate)
-    let oneMonthAgoDate: any = new Date()
-    oneMonthAgoDate.setMonth(oneMonthAgoDate.getMonth() - 1);
-    oneMonthAgoDate = getTimeStamp(oneMonthAgoDate)
+    // let oneWeekAgoDate: any = new Date()
+    // oneWeekAgoDate.setDate(oneWeekAgoDate.getDate() - 7)
+    // oneWeekAgoDate = getTimeStamp(oneWeekAgoDate)
+    // let oneMonthAgoDate: any = new Date()
+    // oneMonthAgoDate.setMonth(oneMonthAgoDate.getMonth() - 1);
+    // oneMonthAgoDate = getTimeStamp(oneMonthAgoDate)
     console.log(totalSavedData.length)
     if(totalSavedData && totalSavedData.length) {
       let total = 0
       totalSavedData?.forEach((data: {time: string, date: number}) => {
         total += timeToMins(data.time)
       })
+      console.log(total)
       const totalSavedTime = timeFromMins(total)
       return res.status(200).send({
         type: "SUCCESS",
