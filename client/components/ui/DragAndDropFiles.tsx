@@ -32,10 +32,10 @@ const DragAndDropFiles = () => {
     }
     if(files.length > 6){
       console.log("IFLES LENGHT", files.length)
-      toast.warn("You can add max 6 ");
+      toast.warn("You can add max 6 files");
       return;
     }
-    if (blogLinks.length >= 6) {
+    if (blogLinks.length > 6) {
       toast.error('You can add max 6 files or URLs');
       return;
     }
