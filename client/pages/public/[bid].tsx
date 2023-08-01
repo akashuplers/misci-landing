@@ -28,6 +28,7 @@ export default function Post() {
   const [showShareModal, setShareModal] = useState(false);
   const [text, setText] = useState("");
   const [callBack, setCallBack] = useState();
+  const [blogComments, setBlogComments] = useState<any[]>([]);
   const [showModalComment, setShowModalComment] = useState(false);
   const {
     data: gqlData,
@@ -37,6 +38,9 @@ export default function Post() {
   } = useQuery(getBlogbyId, {
     variables: {
       fetchBlogId: bid,
+    },
+    onCompleted(data) {
+      setBlogComments(data.fetchBlog.comments);
     },
   });
 
@@ -180,7 +184,10 @@ export default function Post() {
               transform: "translate(-50%, -50%)",
             },
           }}>
-          <CommentSection userData={userData} comments={gqlData.fetchBlog.comments} text={text} data={gqlData} setShowModalComment={setShowModalComment} blogRefetch={blogRefetch} setShareModal={setShareModal} />
+            {/* //@ts-ignore */}
+            <CommentSection userData={userData}
+            // @ts-ignore
+            comments={blogComments} text={text} data={gqlData} setShowModalComment={setShowModalComment} blogRefetch={blogRefetch} setShareModal={setShareModal} />
         </ReactModal>
       </div>
       <div className="fixed bottom-0 pb-1 flex items-center bg-[#EBEBEB] left-0 w-full">
@@ -264,7 +271,7 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
    userData: UserDataResponse | null
   }) => {
 
-
+console.log(comments.length);
   var getToken: string | null = null;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -283,7 +290,17 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
       setIsAuthenticated(localStorage.getItem("token") ? true : false);
     }
   }, []);
+  useEffect(() => {
+    // setDataForComment(comments.slice().reverse());
+    if(tabToShow == typesOfTabForComments.newest){
+      setDataForComment(comments.slice().reverse());
+    }
+    else if(tabToShow == typesOfTabForComments.oldest){
+      setDataForComment(comments.slice());
+    }
+  }, [comments]);
 
+  
 
   // useEffect(() => {
   //   // setDataForComment(comments.slice().reverse());
@@ -363,6 +380,7 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
           if (res.type == "SUCCESS") {
             toast.success(res.message);
             blogRefetch();
+            setTabToShow(prev=>prev);
           } else {
             toast.error(res.message);
           }
