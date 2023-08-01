@@ -174,9 +174,9 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
     }
     if(newsLetter['title'] && (!title || !title?.length)) {
         title = newsLetter['title']
-        title = title?.replace(/<h1>|<\s*\/?h1>|H1:|H2:|Title:|Introduction:|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
+        title = title?.replace(/"|\n|H1:|H2:|Title:/gi, function(matched: any){
             return mapObj[matched];
-        }); 
+        })
         title = title?.trim()
     }
     delete newsLetter.title
@@ -372,7 +372,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                         "tag": "BODY",
                                         children: [
                                             {
-                                                "tag": "H1",
+                                                "tag": "H3",
                                                 "attributes": {
                                                     "style": "text-align: center;"
                                                 },
