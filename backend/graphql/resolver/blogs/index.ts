@@ -174,6 +174,7 @@ export const blogResolvers = {
             }[] = []
             let pythonStart = new Date()
             const cachedBlogData = await db.db('lilleBlogs').collection('cachedBlogs').find({keyword}).sort({date: -1}).toArray()
+            console.log(cachedBlogData)
             if(cachedBlogData.length) {
                 const cachedBlogIdeaData = await db.db('lilleBlogs').collection('cachedBlogIdeas').findOne({blog_id: new ObjectID(cachedBlogData[0]._id)})
                 delete cachedBlogData[0]._id
@@ -250,18 +251,6 @@ export const blogResolvers = {
             let tags: String[] = []
             let ideasText = ""
             let articlesData: any[] = []
-            if(articleIds && articleIds.length) {
-                console.log(articleIds, "articleIds")
-                const sortedArticle = await db.db('lilleArticles').collection('articles').find({
-                    _id: {$in: articleIds}
-                }, {
-                    projection: {
-                        _id: 1
-                    }
-                }).sort('_source.harvestDate', "DESC").toArray()
-                articleIds = sortedArticle.map((data: any) => data._id)
-                console.log(articleIds, "sortedArticleIds")
-            }
             if(articleIds) {
                 articlesData = await (
                     Promise.all(
@@ -301,6 +290,7 @@ export const blogResolvers = {
                     article_ids.push(data.id)
                 })
             }
+            console.log(ideasArr, keywords, article_ids)
             try {
                 let uniqueTags: String[] = [];
                 tags.forEach((c) => {
@@ -309,7 +299,6 @@ export const blogResolvers = {
                     }
                 });
                 if(articleIds && articleIds.length) refUrls = await fetchArticleUrls({db, articleId: articleIds})
-                console.log(ideasArr, keywords, article_ids)
                 const blogGeneratedData: any = await blogGeneration({
                     db,
                     text: !articlesData.length ? keyword : texts,
@@ -462,27 +451,15 @@ export const blogResolvers = {
                 return texts += `${index+1} - ${idea.text} \n`
             })
             console.log(articleIds, "articleIds")
-            let tags: string[] = []
-            let imageUrl: string | null = null
-            let imageSrc: string | null = null
-            if(articleIds && articleIds.length) {
-                console.log(articleIds, "articleIds")
-                const sortedArticle = await db.db('lilleArticles').collection('articles').find({
-                    _id: {$in: articleIds}
-                }, {
-                    projection: {
-                        _id: 1
-                    }
-                }).sort('_source.harvestDate', "DESC").toArray()
-                articleIds = sortedArticle.map((data: any) => data._id)
-                console.log(articleIds, "sortedArticleIds")
-            }
             let articleNames = await db.db('lilleArticles').collection('articles').find({_id: {
                 $in: articleIds
             }}, {projection: {
                 "_source.source.name": 1,
             }}).toArray()
             articleNames = articleNames.map((data: any) => ({_id: data._id, name: data?._source?.source.name}))
+            let tags: string[] = []
+            let imageUrl: string | null = null
+            let imageSrc: string | null = null
             await (
                 Promise.all(
                     articleIds.map(async (id: String, index: number) => {
@@ -828,7 +805,7 @@ export const blogResolvers = {
                         console.log(`running for data ${data.user_id}`)
                         const userId = data.user_id
                         const userDetails = await fetchUser({id: userId, db})
-                        let articles = data.sequence_ids
+                        const articles = data.sequence_ids
                         let texts = ""
                         let ideasText = ""
                         let keyword = null
@@ -840,16 +817,6 @@ export const blogResolvers = {
                             idea: string;
                             article_id: string;
                         }[] = []
-                        if(articles && articles.length) {
-                            const sortedArticle = await db.db('lilleArticles').collection('articles').find({
-                                _id: {$in: articles}
-                            }, {
-                                projection: {
-                                    _id: 1
-                                }
-                            }).sort('_source.harvestDate', "DESC").toArray()
-                            articles = sortedArticle.map((data: any) => data._id)
-                        }
                         const articlesData = await (
                             Promise.all(
                                 articles.map(async (id, index) => {
