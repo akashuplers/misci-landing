@@ -156,7 +156,7 @@ export const useUserDataStore = create<IUserDataStore>((set) => ({
     set({ loading: true });
     try {
       const response = await axios.post<UserDataResponse>(
-        'https://maverick.lille.ai/graphql',
+        API_BASE_PATH+ API_ROUTES.GQL_PATH,   
         {
           query: meeGetState,
         },
