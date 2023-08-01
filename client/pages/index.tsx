@@ -1021,7 +1021,7 @@ export default function Home() {
                           }
                         </div>
                         <div className="w-full h-6 justify-start items-center gap-1.5 inline-flex">
-                          <span className={`text-center  text-sm font-normal ${showRepourposeError ? 'text-red-500' : 'text-slate-500'}`}>You can add max. 3 URLs + 3 Files. Use comma or press enter to add multiple URLs. Use upload button to select files</span>
+                          <span className={`text-center  text-sm font-normal ${showRepourposeError ? 'text-red-500' : 'text-slate-500'}`}>{`You can add max. 6 items (URLs & Files or a combination). Use comma or press enter to add multiple URLs. Use upload button to select files.`}</span>
                         </div>
                         {
                           stateOfGenerate.url != null && stateOfGenerate.file != null && <div className="w-full h-6 justify-center items-center gap-2.5 inline-flex">
