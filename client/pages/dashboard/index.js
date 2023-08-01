@@ -491,9 +491,9 @@ export default function dashboard({ query }) {
           <div className="">
             <h2 className="text-2xl mb-4">Improvement Tip 💡</h2>
             <p className="text-gray-700 mb-4">
-              {`To further improve the AI-generated Lille Blog, to update it as per your likings you 
+              {`To further improve the AI-generated Lille Article, to update it as per your likings you 
 can edit the content, remove some of the used ideas that you don't want and/or generate and add fresh ideas, 
-or use a combination of used and freah ideas to update the blog content.
+or use a combination of used and freah ideas to update the article content.
 You can add your own image, click on the image and use image options icon.`}
             </p>
             <div className='flex flex-col lg:flex-row justify-between'>

@@ -1047,7 +1047,7 @@ export default function Home() {
                         }
                         <div className='flex items-center flex-col mt-5'>
                           {keywordsOFBlogs.length > 0 && <div className="flex items-center gap-1.5" >
-                            <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="Select keywords as per your choice to add focus, URLs / Files containing the selected keywords will be used to recreate a high ranking SEO blog." direction='top' className='max-w-[100px]'>
+                            <h4>Select some keywords to regenerate articles</h4> <Tooltip content="Select keywords as per your choice to add focus, URLs / Files containing the selected keywords will be used to recreate a high ranking SEO blog." direction='top' className='max-w-[100px]'>
                               <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
                             </Tooltip></div>}
                           <div className='flex flex-wrap justify-center gap-2 mt-5'>
