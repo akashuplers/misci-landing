@@ -1627,7 +1627,7 @@ export default function TinyMCEEditor({
         </div>
       </Modal>
       <Modal
-        isOpen={true}
+        isOpen={showContributionModal}
         ariaHideApp={false}
         className="w-[100%] sm:w-[38%] max-h-[95%]"
         style={{
