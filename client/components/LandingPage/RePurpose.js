@@ -44,7 +44,7 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
     const inputLength = value.length;
   
     if (event.key === 'Enter' || event.key === 'Tab' || event.key === ',') {
-      if (inputLength >= 3) {
+      if (inputLength >= 6) {
         setShowRepourposeError(true);
         return;
       } else {

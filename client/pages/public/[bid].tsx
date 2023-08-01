@@ -363,10 +363,12 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
           if (res.type == "SUCCESS") {
             toast.success(res.message);
             blogRefetch();
+            
           } else {
             toast.error(res.message);
           }
         }
+        setTabToShow(prev => prev);
         setCommentLoading(false);
         setCommentValue("");
       }
@@ -521,7 +523,6 @@ const UserComment = ({ name, comment, date, avatar, userId }: {
   avatar: string,
   userId: string
 }) => {
-
   return <div className="w-full p-5 bg-white  border-b border-neutral-200 flex-col justify-start items-start gap-[15px] inline-flex">
     <div className="justify-start items-center gap-2 inline-flex">
       <img className="w-10 h-10 rounded-full" src={avatar || DEFAULT_USER_PROFILE_IMAGE} />
