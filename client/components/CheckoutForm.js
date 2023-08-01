@@ -8,6 +8,7 @@ import React, { useState } from "react";
 import Confetti from "react-confetti";
 import { ToastContainer, toast } from "react-toastify";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import { meeGetState } from "../graphql/querys/mee";
 
 const CheckoutForm = ({
   priceId,
@@ -309,8 +310,8 @@ const CheckoutForm = ({
                 };
 
                 const raw = {
-                  query:
-                    "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n prefFilled\n profileImage\n  }\n}",
+                  query: meeGetState
+                
                 };
 
                 axios
