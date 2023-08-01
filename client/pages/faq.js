@@ -9,8 +9,8 @@ const faqs =  [
   },
   {
     "question": "Repurpose Content - What is this?",
-    "answer": `Lille allows user to upload maximum three URLs ( or Files ) from where a user can re-purpose the content creating a blog.
-    User can use the "Repurpose Content" button at home page and add URLs/Files, click on 'Generate' that shows the extracted keywords from the uploaded content. User is asked to select some keywords from the given keywords, URL(s) or File(s) related to selected keywords are used to generate the blog. Paid users have the option to choose the tone setting and few other instructions for the blog creation. The URLs or Files that are used to generate the blog based on the selected keywords are shown at the end of the generated blog as references.`
+    "answer": `Lille allows user to upload maximum six items ( a combination of URLs and Files ) from where a user can re-purpose the content creating a blog. User can use the "Repurpose Content" button at home page and add URLs/Files, click on 'Generate' that shows the extracted keywords from the uploaded content. User is asked to select some keywords from the given keywords, URL(s) or File(s) related to selected keywords are used to generate the blog. Paid users have the option to choose the tone setting and few other instructions for the blog creation. The URLs or Files that are used to generate the blog based on the selected keywords are shown at the end of the generated blog as references.
+    NOTE:  Bigger size files and lengthier articles from the URLs uploaded will add to response time.`
   },
   {
     "question": "What kind of content can I generate with Lille.ai?",
@@ -46,7 +46,7 @@ const faqs =  [
   },
   {
     "question": "What is the maximum file size one can upload to get the fresh ideas?",
-    "answer": "Lille allows maximum 3MB files to be uploaded. One can upload files of formats .pdf, .docx and .txt to generate fresh ideas."
+    "answer": "Lille allows maximum 7MB files to be uploaded. One can upload files of formats .pdf, .docx and .txt to generate fresh ideas. NOTE:  Bigger size files uploaded will add to response time."
   },
   {
     "question": "Can I publish my content directly to social media platforms?",
