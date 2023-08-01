@@ -391,7 +391,7 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
         </h1>
         {/* cross btn */}
         <h2 className="hidden lg:block">
-          Other Reviews ({data.fetchBlog.comments.length})
+          Other Comments ({data.fetchBlog.comments.length})
         </h2>
         <button onClick={
           () => setShowModalComment(false)
@@ -439,7 +439,7 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
                 </div>
                 </>
           }
-          <h4 className="text-black text-base font-normal">{'Write a review'}</h4>
+          <h4 className="text-black text-base font-normal">{'Write a comment'}</h4>
           <TextareaAutosize
             maxRows={5}
             value={commmentValue}
@@ -463,7 +463,7 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
                 }
               }
             >
-              <span className="text-slate-600 text-base font-normal leading-7">Cancel</span>
+              <span className="text-slate-600 text-base font-normal leading-7">Reset</span>
             </button>
             <button className="px-[18px] py-1.5 bg-indigo-600 rounded-lg justify-start items-start gap-2 flex" onClick={handleCommentSend}>
               <span className="text-white text-base font-bold leading-7">
@@ -482,7 +482,7 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
       {/* Right side for other comments */}
       <div className="flex flex-col gap-2 h-full  overflow-y-scroll max-h-[350px] relative">
         <h2 className="lg:hidden">
-          Other Reviews ({data.fetchBlog.comments.length})
+          Other Comments ({data.fetchBlog.comments.length})
         </h2>
         <div className="bg-white w-full  sticky top-0">
         <div className=" top-0 w-[132px] h-9 p-1.5 bg-white rounded-lg border border-gray-300 justify-start items-center gap-1 inline-flex">
