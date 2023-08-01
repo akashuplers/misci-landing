@@ -939,7 +939,7 @@ export default function Home() {
 
                 </div>
 
-                <div className="w-full lg:w-[700px] h-full opacity-90  shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
+                <div className="w-full lg:min-w-[700px] h-full opacity-90  shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
                 style={{
                   background: 'rgba(255, 255, 255, 0.5)',
                 }}
@@ -1052,38 +1052,30 @@ export default function Home() {
                     <div className="opacity-70"><span className="text-zinc-500 text-sm font-normal text-right">Max. 7MB size. If you have more than 7MB</span><span className="text-gray-500 text-sm font-normal"> </span><span className="text-blue-500 text-sm font-normal">Click here</span></div>
                   </div>
                   {
-                    stateOfGenerate.url != null && stateOfGenerate.file != null && <div className="w-full h-6 justify-center items-center gap-2.5 inline-flex">
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className="text-slate-800"
-                        >Keywords from URL:</span> {
-                          stateOfGenerate.url == STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} color={"#2563EB"} height={20} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                        }
+                    (stateOfGenerate.url != null && stateOfGenerate.file != null) || (stateOfGenerate.url != null && stateOfGenerate.keyword != null) || (stateOfGenerate.file != null && stateOfGenerate.keyword != null) ?
+                      <div className="w-full h-6 justify-center items-center gap-2.5 inline-flex">
+                        {(stateOfGenerate.url != null) && (
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-slate-800">Keywords from URL:</span>
+                            {stateOfGenerate.url === STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} color={"#2563EB"} height={20} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />}
+                          </div>
+                        )}
+                        {(stateOfGenerate.keyword != null) && (
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-slate-800">Keywords from Keyword:</span>
+                            {stateOfGenerate.keyword === STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} height={20} color={"#2563EB"} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />}
+                          </div>
+                        )}
+                        {(stateOfGenerate.file != null) && (
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-slate-800">Keywords from File:</span>
+                            {stateOfGenerate.file === STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} height={20} color={"#2563EB"} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />}
+                          </div>
+                        )}
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className="text-slate-800"
-                        >
-                          Keywords from Keyword:
-                        </span>
-                        {
-                          stateOfGenerate.keyword == STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} height={20} color={"#2563EB"} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                        }
-
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className="text-slate-800"
-                        >
-                          Keywords from File:
-                        </span>
-                        {
-                          stateOfGenerate.file == STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} height={20} color={"#2563EB"} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                        }
-
-                      </div>
-                    </div>
+                      : null
                   }
+
                   <div className='flex items-center flex-col mt-2'>
                     {keywordsOFBlogs.length > 0 && <div className="flex items-center gap-1.5" >
                       <h4>Select at least 3 keywords to regenerate blog </h4> <Tooltip content="Select keywords as per your choice to add focus, URLs / Files containing the selected keywords will be used to recreate a high ranking SEO blog." direction='top' className='max-w-[100px]'>
@@ -1164,13 +1156,33 @@ export default function Home() {
                         />
                         :
                         <>
-                          <div className="text-white text-base font-medium leading-7">Generate your 1st draft for article, </div>
-                          <div className="justify-center items-center gap-2 flex">
-                            <div className="text-white"><FaFacebook className="h-5 w-5 mr-3" /></div>
-                            <div className="text-white"><FaLinkedin className="h-5 w-5 mr-3" /> </div>
-                            <div className="text-white"><FaTwitter className="h-5 w-5 mr-3" /> </div>
-                            <div className="text-white"><ArrowLongRightIcon className="h-5 w-5" /></div>
-                          </div>
+                          {keywordsOFBlogs.length > 0 ? (
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-white">Regenerate Blog</span>
+                              <RefreshIcon className="h-5 w-5 text-white" />
+                            </div>
+                          ) : (
+                            <>
+                              <div className="text-white text-base font-medium leading-7">
+                                Generate your 1st draft for the article,{" "}
+                              </div>
+                              <div className="justify-center items-center gap-2 flex">
+                                <div className="text-white">
+                                  <FaFacebook className="h-5 w-5 mr-3" />
+                                </div>
+                                <div className="text-white">
+                                  <FaLinkedin className="h-5 w-5 mr-3" />
+                                </div>
+                                <div className="text-white">
+                                  <FaTwitter className="h-5 w-5 mr-3" />
+                                </div>
+                                <div className="text-white">
+                                  <ArrowLongRightIcon className="h-5 w-5" />
+                                </div>
+                              </div>
+                            </>
+                          )}
+
                         </>
                     }
                   </button>
