@@ -9,7 +9,7 @@ const faqs =  [
   },
   {
     "question": "Repurpose Content - What is this?",
-    "answer": `Lille allows user to upload maximum six items ( a combination of URLs and Files ) from where a user can re-purpose the content creating a blog. User can use the "Repurpose Content" button at home page and add URLs/Files, click on 'Generate' that shows the extracted keywords from the uploaded content. User is asked to select some keywords from the given keywords, URL(s) or File(s) related to selected keywords are used to generate the blog. Paid users have the option to choose the tone setting and few other instructions for the blog creation. The URLs or Files that are used to generate the blog based on the selected keywords are shown at the end of the generated blog as references.
+    "answer": `Lille allows user to upload maximum six items ( a combination of URLs and Files ) from where a user can re-purpose the content creating a article. User can use the "Repurpose Content" button at home page and add URLs/Files, click on 'Generate' that shows the extracted keywords from the uploaded content. User is asked to select some keywords from the given keywords, URL(s) or File(s) related to selected keywords are used to generate the article. Paid users have the option to choose the tone setting and few other instructions for the article creation. The URLs or Files that are used to generate the article based on the selected keywords are shown at the end of the generated article as references.
     NOTE:  Bigger size files and lengthier articles from the URLs uploaded will add to response time.`
   },
   {
@@ -21,8 +21,8 @@ const faqs =  [
     "answer": "You can sign up for Lille.ai using your email address, Google account, or LinkedIn account. If you already have an account with Lille.ai, just enter your email address and password in the 'Login' fields to access your dashboard."
   },
   {
-    "question": "What are the different ways of creating a blog in Lille.ai?",
-    "answer": "You can choose from the given trending topics on the home page or type in your own topic, e.g., 'Benefits of Ginger', and click the 'Generate' button to create a blog. Once a blog is created, we show the ideas that have been used to create the blog in the right-side panel. You can also provide a topic, URL, or a file (size < 3MB) to generate fresh ideas and then select some or all of the fresh ideas in combination with some or all or none of the used ideas, and click 'Regenerate' to regenerate the already created blog."
+    "question": "What are the different ways of creating a article in Lille.ai?",
+    "answer": "You can choose from the given trending topics on the home page or type in your own topic, e.g., 'Benefits of Ginger', and click the 'Generate' button to create a article. Once a article is created, we show the ideas that have been used to create the article in the right-side panel. You can also provide a topic, URL, or a file (size < 3MB) to generate fresh ideas and then select some or all of the fresh ideas in combination with some or all or none of the used ideas, and click 'Regenerate' to regenerate the already created article."
   },
   {
     "question": "How much does Lille.ai cost?",
@@ -38,7 +38,7 @@ const faqs =  [
   },
   {
     "question": "What does the Lille.ai dashboard offer?",
-    "answer": "You can generate any blog using the 'Generate New' link and access your previously saved contents in the saved list. Once you publish a blog, you can find it in the published list. A blog can be published to the Lille platform and shared via WhatsApp, Telegram, Twitter, LinkedIn, etc."
+    "answer": "You can generate any article using the 'Generate New' link and access your previously saved contents in the saved list. Once you publish a article, you can find it in the published list. A article can be published to the Lille platform and shared via WhatsApp, Telegram, Twitter, LinkedIn, etc."
   },
   {
     "question": "What are 'trending topics' on Lille.ai?",
