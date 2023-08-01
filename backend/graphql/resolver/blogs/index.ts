@@ -462,12 +462,6 @@ export const blogResolvers = {
                 return texts += `${index+1} - ${idea.text} \n`
             })
             console.log(articleIds, "articleIds")
-            let articleNames = await db.db('lilleArticles').collection('articles').find({_id: {
-                $in: articleIds
-            }}, {projection: {
-                "_source.source.name": 1,
-            }}).toArray()
-            articleNames = articleNames.map((data: any) => ({_id: data._id, name: data?._source?.source.name}))
             let tags: string[] = []
             let imageUrl: string | null = null
             let imageSrc: string | null = null
@@ -483,6 +477,12 @@ export const blogResolvers = {
                 articleIds = sortedArticle.map((data: any) => data._id)
                 console.log(articleIds, "sortedArticleIds")
             }
+            let articleNames = await db.db('lilleArticles').collection('articles').find({_id: {
+                $in: articleIds
+            }}, {projection: {
+                "_source.source.name": 1,
+            }}).toArray()
+            articleNames = articleNames.map((data: any) => ({_id: data._id, name: data?._source?.source.name}))
             await (
                 Promise.all(
                     articleIds.map(async (id: String, index: number) => {
