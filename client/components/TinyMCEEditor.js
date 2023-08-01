@@ -1009,6 +1009,7 @@ export default function TinyMCEEditor({
               var userPublishCount = Number(meeData?.me?.publishCount);
               //console.log('pubb', userPublishCount)
               //console.log('USER PUBLISH COUNT: ' + userPublishCount);
+              
               const SHOW_CONTRIBUTION_MODAL =
                 (localStorage.getItem("payment") === undefined ||
                   localStorage.getItem("payment") === null) &&

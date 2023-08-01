@@ -675,6 +675,8 @@ export default function Home() {
     setWindowWidth(window.innerWidth);
   }, []);
 
+  console.log("MEE API");
+  console.log(meeAPI);
   return (
     <>
       <Head>
