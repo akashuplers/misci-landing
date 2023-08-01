@@ -105,7 +105,7 @@ export default function Post() {
         nullElement.parentNode.replaceChild(divElement, nullElement);
       }
       // get the first h3 tag
-      const h3Element = tempElement.querySelector('h3');
+      const h3Element = tempElement.querySelector('h1');
       if (h3Element) {
         console.log(gqlData);
         // make a sibling div element to ti showing randoem author name and time to read. 
