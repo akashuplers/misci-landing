@@ -4,10 +4,10 @@ import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
 import { useEffect, useLayoutEffect, useState } from "react";
 import CheckoutFormUpgrade from "../components/CheckoutFormUpgrade";
-import { FeaturesItem, UpgradeFeatures } from "../components/FeatureItem";
+import { FeaturesItem } from "../components/FeatureItem";
 import Layout from "../components/Layout";
 import { API_BASE_PATH } from "../constants/apiEndpoints";
-
+import {UpgradeFeatures} from '../store/appContants'
 export default function Upgrade() {
   const stripePromise = loadStripe(STRIPE_PROMISE);
   const [priceData, setPriceData] = useState([]);

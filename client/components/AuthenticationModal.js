@@ -16,6 +16,7 @@ import { useRouter } from "next/router";
 import ReactLoading from "react-loading";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { meeGetState } from "@/graphql/querys/mee";
 
 function IconClose() {
   return (
@@ -172,9 +173,7 @@ export default function AuthenticationModal({
       };
 
       const raw = {
-        query:
-          "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n prefFilled\n profileImage\n  }\n}",
-      };
+        query:meeGetState};
 
       axios
         .post(API_BASE_PATH + API_ROUTES.GQL_PATH, raw, {
