@@ -958,7 +958,7 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="w-full h-full justify-center items-center gap-2.5 inline-flex">
-                    <div className="relative w-full min-h-[60px] bg-white rounded-[10px]  border border-gray-600 py-2.5">
+                    <div className="relative w-full min-h-[60px] bg-white rounded-[10px]  border border-indigo-600 py-2.5">
 
                       {showFileUploadUI == true &&
 
@@ -1139,7 +1139,7 @@ export default function Home() {
                       </div>
                     )
                   }
-                  <button className="h-14 px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-lg shadow justify-center items-center gap-2.5 inline-flex"
+                  <button className="h-14 px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-lg shadow justify-center items-center gap-2.5 inline-flex hover:from-indigo-700 hover:to-violet-700 focus:shadow-outline-indigo"
                     onClick={
                       keywordsOFBlogs.length > 0 ?
                         handleRepourpose :
