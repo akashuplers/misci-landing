@@ -119,9 +119,6 @@ function ProfileTab({ meeData }) {
   const [imageLoader, setImageLoader] = useState(false);
   const [forgotPass, setForgotPass] = useState(false);
 
-  const [linkedin, setlinkedin] = useState(false);
-  const [twitter, settwitter] = useState(false);
-
   useEffect(() => {
     if (meeData != null) {
       setUpdateProfileData({
