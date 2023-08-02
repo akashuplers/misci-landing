@@ -41,6 +41,7 @@ import { InputData } from "@/types/type";
 import { processKeywords, randomNumberBetween20And50, uppercaseFirstChar } from "@/store/appHelpers";
 import { extractKeywordsFromKeywords } from "@/helpers/apiMethodsHelpers";
 import { TYPES_OF_GENERATE } from "@/store/appContants";
+import GoogleDriveModal from "@/modals/GoogleDriveModal";
 
 
 const PAYMENT_PATH = "/?payment=true";
@@ -101,6 +102,7 @@ export default function Home() {
   const removeSelectedFile = useRepurposeFileStore((state) => state.removeSelectedFile);
   const setSelectedFiles = useRepurposeFileStore((state) => state.setSelectedFiles);
   const executeLastFunction = useFunctionStore((state) => state.executeLastFunction);
+  const [showGDriveModal, setShowGDriveModal] = useState(false);
   const { addFunction } = useSideBarChangeFunctions()
   const handleGenerateReset = () => {
     setkeywordsOfBlogs([]);
@@ -787,21 +789,23 @@ export default function Home() {
         {!meeData?.me?.isSubscribed && meeData?.me?.credits === 0 && (
           <TrialEndedModal setTrailModal={() => { }} topic={null} />
         )}
+        <GoogleDriveModal showModal={showGDriveModal} setShowModal={setShowGDriveModal} />
 
         <div
           className={`maincontainer relative md:px-6 pt-5 lg:px-8 ${!isAuthenticated && "md:min-h-screen"
             }`}
         >
-    <FloatingBalls className="hidden absolute top-[4%] rotate-45 md:block" />
-    <FloatingBalls className="hidden absolute top-[2%] w-10 right-[2%] md:block" />
-    <FloatingBalls className="hidden absolute top-[9%] right-0 md:block" />
-    <FloatingBalls className="hidden absolute top-[10%] w-8 rotate-90 left-[3%] md:block" />
+          <FloatingBalls className="hidden absolute top-[4%] rotate-45 md:block" />
+          <FloatingBalls className="hidden absolute top-[2%] w-10 right-[2%] md:block" />
+          <FloatingBalls className="hidden absolute top-[9%] right-0 md:block" />
+          <FloatingBalls className="hidden absolute top-[10%] w-8 rotate-90 left-[3%] md:block" />
 
-<div className="w-full lg:w-[51%] h-full " style={{display: isAuthenticated ? 'none' : 'block,', transform: 'rotate(0deg)', transformOrigin: '0 0', background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)', top: '-10px', right: '0px', position: 'absolute',  zIndex: -1}}></div>
-<div className="w-full lg:w-[51%] h-full " style={{
-   transform: 'rotate(180deg)', display: isAuthenticated ? 'none' : 'block,',  //      transform: scaleX(-1); 
-  transform: 'scaleX(-1)',
-   background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)', top: '-10px', left: '0px', position: 'absolute',  zIndex: -1}}></div>
+          <div className="w-full lg:w-[51%] h-full " style={{ display: isAuthenticated ? 'none' : 'block,', transform: 'rotate(0deg)', transformOrigin: '0 0', background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)', top: '-10px', right: '0px', position: 'absolute', zIndex: -1 }}></div>
+          <div className="w-full lg:w-[51%] h-full " style={{
+            transform: 'rotate(180deg)', display: isAuthenticated ? 'none' : 'block,',  //      transform: scaleX(-1); 
+            transform: 'scaleX(-1)',
+            background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)', top: '-10px', left: '0px', position: 'absolute', zIndex: -1
+          }}></div>
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
             <svg
               className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
@@ -910,7 +914,7 @@ export default function Home() {
                 height: '100%'
               }}
             >
-              <div className={`mt-[10%] ${isAuthenticated ? 'lg:mt-[10%]' : 'lg:mt-[-10%]'}`}>
+              <div className={`mt-[10%] ${isAuthenticated ?  ( keywordsOFBlogs.length==0 && 'lg:mt-[10%]' ): (keywordsOFBlogs.length==0 && 'lg:mt-[-10%]')}`}>
                 <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing lg:min-w-[900px]">
                   Lille is your Content <TextTransitionEffect text={TEXTS2} />
                   Co-Pilot
@@ -1050,7 +1054,9 @@ export default function Home() {
                   </div>
                   <div className="w-full h-5 lg:flex-row flex-col justify-start items-center gap-3 inline-flex">
                     <div className="grow shrink basis-0 opacity-70 text-gray-600 text-sm font-normal text-left">Lille will search the web</div>
-                    <div className="opacity-70"><span className="text-zinc-500 text-sm font-normal text-right">Max. 7MB size. If you have more than 7MB</span><span className="text-gray-500 text-sm font-normal"> </span><span className="text-blue-500 text-sm font-normal">Click here</span></div>
+                    <div className="opacity-70"><span className="text-zinc-500 text-sm font-normal text-right">Max. 7MB size. If you have more than 7MB</span><span className="text-gray-500 text-sm font-normal"> </span><button
+                    onClick={()=>setShowGDriveModal(true)}
+                    ><span className="text-blue-500 text-sm font-normal">Click here</span></button></div>
                   </div>
                   {
                     (stateOfGenerate.url != null && stateOfGenerate.file != null) || (stateOfGenerate.url != null && stateOfGenerate.keyword != null) || (stateOfGenerate.file != null && stateOfGenerate.keyword != null) ?
