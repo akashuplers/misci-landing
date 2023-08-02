@@ -129,6 +129,7 @@ input GenerateTMBlogOptions {
     companyProfile: [String]
     latestLaunch: [String]
     strategicFocusAreas: [String]
+    keyInvestment: [String]
     risks: [String]
 }
 
