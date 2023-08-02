@@ -127,29 +127,6 @@ const CheckoutForm = ({
           theme: "light",
         });
       } else {
-        /*const response = await fetch(`${API_BASE_PATH}/stripe/subscribe`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          paymentMethodId: paymentMethod?.paymentMethod?.id,
-          firstName: firstName,
-          lastName: lastName,
-          tempUserId: tempUserId,
-          email: email,
-          priceId: priceId,
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data.data);
-          console.log(data.data.status);
-          if (data.data.status === "requires_action") {
-            //confirmPaymentFunction(data.data.clientSecret);
-          }
-        })
-        .catch((err) => console.log(err));*/
         var response;
         try {
           response = await axios({
@@ -163,6 +140,7 @@ const CheckoutForm = ({
               firstName: firstName,
               lastName: lastName,
               tempUserId: tempUserId,
+              userName: firstName+lastName+ (Math.floor(Math.random() * 900) + 100),
               email: email,
               priceId: priceId,
             },
@@ -373,6 +351,7 @@ const CheckoutForm = ({
           interval: currentPlan,
           paid: true,
           isSubscribed: true,
+          userName: firstName+lastName+ (Math.floor(Math.random() * 900) + 100)
         });
       } else {
         console.log("err", confirmPayment?.error);

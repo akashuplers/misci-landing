@@ -189,6 +189,7 @@ const TwitterUserDetails = async (
           lastName: res?.data?.localizedLastName,
           email: res?.data?.email,
           password: null,
+          twitter: res?.data?.localizedFirstName+res?.data?.localizedLastName+ (Math.floor(Math.random() * 900) + 100),
           tempUserId: "",
         };
         axios
