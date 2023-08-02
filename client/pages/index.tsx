@@ -1168,13 +1168,13 @@ export default function Home() {
                               </div>
                               <div className="justify-center items-center gap-2 flex">
                                 <div className="text-white">
-                                  <FaFacebook className="h-5 w-5 mr-3" />
+                                  <FaFacebook className="h-5 w-5 mr-1 lg:mr-3" />
                                 </div>
                                 <div className="text-white">
-                                  <FaLinkedin className="h-5 w-5 mr-3" />
+                                  <FaLinkedin className="h-5 w-5 mr-1 lg:mr-3" />
                                 </div>
                                 <div className="text-white">
-                                  <FaTwitter className="h-5 w-5 mr-3" />
+                                  <FaTwitter className="h-5 w-5 mr-1 lg:mr-3" />
                                 </div>
                                 <div className="text-white">
                                   <ArrowLongRightIcon className="h-5 w-5" />
@@ -1344,7 +1344,7 @@ const AIInputComponent = () => {
         {/* <span> <span className='flex flex-row w-full items-center justify-center gap-1'>Generate 1st Drafts for Articles <FaFacebook className="h-5 w-5 " /> <FaTwitter className="h-5 w-5" /> <FaLinkedin className="h-5 w-5" /> 
         <ArrowLongRightIcon className="h-5 w-5" />
         </span></span> */}
-        <span className="w-full">Generate 1<sup>st</sup> Drafts for Articles <span className='flex flex-row w-full items-center justify-center'><FaFacebook className="h-5 w-5 mr-3" /> <FaTwitter className="h-5 w-5 mr-3" /> <FaLinkedin className="h-5 w-5 mr-3" />
+        <span className="w-full">Generate 1<sup>st</sup> Drafts for Articles <span className='flex flex-row w-full items-center justify-center'><FaFacebook className="h-5 w-5 mr-1 lg:mr-3" /> <FaTwitter className="h-5 w-5 mr-1 lg:mr-3" /> <FaLinkedin className="h-5 w-5 mr-1 lg:mr-3" />
           <ArrowLongRightIcon className="h-5 w-5" />
         </span></span>
       </button>
