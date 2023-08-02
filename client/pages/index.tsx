@@ -789,7 +789,7 @@ export default function Home() {
         {!meeData?.me?.isSubscribed && meeData?.me?.credits === 0 && (
           <TrialEndedModal setTrailModal={() => { }} topic={null} />
         )}
-        <GoogleDriveModal showModal={showGDriveModal} setShowModal={setShowGDriveModal} />
+        <GoogleDriveModal showModal={showGDriveModal} setShowModal={setShowGDriveModal} meeData={meeData} />
 
         <div
           className={`maincontainer relative md:px-6 pt-5 lg:px-8 ${!isAuthenticated && "md:min-h-screen"
@@ -1085,7 +1085,7 @@ export default function Home() {
 
                   <div className='flex items-center flex-col mt-2'>
                     {keywordsOFBlogs.length > 0 && <div className="flex items-center gap-1.5" >
-                      <h4>Select some keywords to regenerate blog </h4> <Tooltip content="Select keywords as per your choice to add focus, URLs / Files containing the selected keywords will be used to recreate a high ranking SEO blog." direction='top' className='max-w-[100px]'>
+                      <h4>Select some keywords to generate article </h4> <Tooltip content="Select keywords as per your choice to add focus, URLs / Files containing the selected keywords will be used to recreate a high ranking SEO blog." direction='top' className='max-w-[100px]'>
                         <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
                       </Tooltip></div>}
                     <div className='flex flex-wrap justify-center gap-2 mt-5'>
