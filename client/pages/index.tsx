@@ -797,8 +797,8 @@ export default function Home() {
     <FloatingBalls className="hidden absolute top-[9%] right-0 md:block" />
     <FloatingBalls className="hidden absolute top-[10%] w-8 rotate-90 left-[3%] md:block" />
 
-<div className="w-full lg:w-[1214.42px] h-full " style={{display: isAuthenticated ? 'none' : 'block,', transform: 'rotate(0deg)', transformOrigin: '0 0', background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)', top: '-10px', right: '0px', position: 'absolute',  zIndex: -1}}></div>
-<div className="w-full lg:w-[1214.42px] h-full " style={{
+<div className="w-full lg:w-[51%] h-full " style={{display: isAuthenticated ? 'none' : 'block,', transform: 'rotate(0deg)', transformOrigin: '0 0', background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)', top: '-10px', right: '0px', position: 'absolute',  zIndex: -1}}></div>
+<div className="w-full lg:w-[51%] h-full " style={{
    transform: 'rotate(180deg)', display: isAuthenticated ? 'none' : 'block,',  //      transform: scaleX(-1); 
   transform: 'scaleX(-1)',
    background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)', top: '-10px', left: '0px', position: 'absolute',  zIndex: -1}}></div>
