@@ -19,7 +19,7 @@ import { useStore } from "zustand";
 import { APP_REGEXP, DEFAULT_USER_PROFILE_IMAGE } from '../../store/appContants';
 import { useUserDataStore } from '../../store/appState';
 import { UserDataResponse } from "@/types/type";
-import { getRelativeTimeString,  } from "@/store/appHelpers";
+import { getRelativeTimeString, unixToLocalYear,  } from "@/store/appHelpers";
 import { RelativeTimeString } from "@/components/ui/RelativeTimeString";
 export default function Post() {
   const router = useRouter();
@@ -30,6 +30,7 @@ export default function Post() {
   const [callBack, setCallBack] = useState();
   const [blogComments, setBlogComments] = useState<any[]>([]);
   const [showModalComment, setShowModalComment] = useState(false);
+  const [publishDate, setPublishDate] = useState<any>(null);
   const {
     data: gqlData,
     loading,
@@ -41,6 +42,12 @@ export default function Post() {
     },
     onCompleted(data) {
       setBlogComments(data.fetchBlog.comments);
+      const dataForDate = data?.fetchBlog?.publish_data?.filter(
+        (obj:any) => obj?.platform === "wordpress"
+      );
+      // console.log(dataForDate[0].creation_date);
+      const date = unixToLocalYear(Number(dataForDate[0].creation_date));
+      setPublishDate(date);
     },
   });
 
@@ -120,7 +127,7 @@ export default function Post() {
       ${(gqlData.fetchBlog?.userDetail?.name) ?? ""}
       </strong>
         </div>
-        <div style="opacity: 0.50; color: black; font-size: 12px; font-weight: 500; word-wrap: break-word">5 min read</div>
+        <div style="opacity: 0.50; color: black; font-size: 12px; font-weight: 500; word-wrap: break-word">${publishDate}</div>
       </div>
     </div>
       `;
