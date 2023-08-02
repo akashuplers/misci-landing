@@ -1,3 +1,4 @@
+import { format, fromUnixTime } from "date-fns";
 import { APP_REGEXP } from "./appContants";
 
 export function getRelativeTimeString(
@@ -95,3 +96,11 @@ export function processKeywords(data: Item[]): KeywordObj[] {
 
   return keywordsForBlog;
 }
+export const unixToLocalYear = (unixTime:number) => {
+  const unixTimestamp = unixTime;
+  const date = fromUnixTime(unixTimestamp);
+  const formattedDate = format(date, "EEE' 'do', 'yyyy");
+  console.log(formattedDate)
+
+  return formattedDate
+};
