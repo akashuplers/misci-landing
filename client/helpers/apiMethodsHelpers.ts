@@ -133,3 +133,32 @@ export async function extractKeywordsFromKeywords(keyword: string): Promise<IExt
   const result: IExtractKeywordsFromKeywordResponse = await response.json();
   return result;
 }
+interface IUploadGoogleDriveResponse extends ApiResponse {
+  [key: string]: any;
+}
+export async function uploadGoogleDriveURL({ url, email }: { url: string, email: string })  : Promise<IUploadGoogleDriveResponse> {
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+
+  const raw = JSON.stringify({
+    "url": url,
+    "email": email
+  });
+
+  const requestOptions: RequestInit = {
+    method: 'POST',
+    headers: myHeaders,
+    body: raw,
+    redirect: 'follow'
+  };
+
+  const URL = API_BASE_PATH + API_ROUTES.UPLOAD_GOOGLE_DRIVE_URL;
+  try {
+    const response = await fetch(URL, requestOptions);
+    const result = await response.json();
+    return result as ApiResponse;
+  } catch (error) {
+    console.log('error', error);
+    return error as ApiResponse;
+  }
+}

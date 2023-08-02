@@ -54,6 +54,7 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
       const newInputValue = inputValue;
       const allInputsClone = { ...allInputs };
       var newBlogLinks =[];
+      console.log(newInputValue);
       if (validateIfURL(newInputValue)) {
         newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1, 'url')];      
       } else {
@@ -159,7 +160,15 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
           setShowRepourposeError(false);
         }
         if (!inputValue) return;
-        const newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1)];
+        const newInputValue = inputValue;
+        // const newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1)];
+        var newBlogLinks =[];
+        console.log(newInputValue);
+        if (validateIfURL(newInputValue)) {
+          newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1, 'url')];      
+        } else {
+          newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1, 'keyword')];
+        }
         setValue(newBlogLinks);
         setInputValue('');
         event.preventDefault();
