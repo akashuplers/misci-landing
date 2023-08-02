@@ -10,7 +10,6 @@ interface Props {
 }
 
 export const Chip = ({ selected, text, handleClick, index, wholeData }: Props) => {
-    console.log(wholeData);
     return <>
         {
             wholeData != null ? (
