@@ -4,6 +4,7 @@ import { BlogLink, UserDataResponse } from '@/types/type';
 import {create} from 'zustand';
 import { meeGetState } from '@/graphql/querys/mee';
 import axios from 'axios';
+import { GRAPHQL_URL } from '@/constants';
 
 
 interface IRePurposeFileState {
@@ -176,3 +177,47 @@ export const useUserDataStore = create<IUserDataStore>((set) => ({
   },
 }));
  
+
+interface ApiResponseForTotalSavedTime {
+  type: string;
+  message: string;
+  data: {
+    totalSavedTime: string;
+  };
+  error: string;
+}
+
+interface TotalSavedTimeState {
+  data: ApiResponseForTotalSavedTime | null;
+  isLoading: boolean;
+  error: string | null;
+  fetchTotalSavedTime: () => Promise<void>;
+}
+
+export const useTotalSavedTimeStore = create<TotalSavedTimeState>((set) => ({
+  data: null,
+  isLoading: false,
+  error: null,
+  fetchTotalSavedTime: async () => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const requestOptions: RequestInit = {
+        method: 'GET',
+        redirect: 'follow',
+      };
+
+      const response = await fetch(API_BASE_PATH + API_ROUTES.TOTAL_TIME, requestOptions);
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status: ${response.status}`);
+      }
+      const data = await response.json();
+      data.data.totalSavedTime = parseInt(data.data.totalSavedTime.split(':')[0], 10);
+      const result: ApiResponseForTotalSavedTime = data;
+      set({ data: result, isLoading: false });
+    } catch (error : any) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
+}));
