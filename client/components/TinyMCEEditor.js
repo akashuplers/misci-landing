@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { meeAPI } from "@/graphql/querys/mee";
-import { BASE_PRICE } from "@/pages";
 import { useMutation, useQuery } from "@apollo/client";
 import { CheckCircleIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { loadStripe } from "@stripe/stripe-js";
@@ -50,6 +49,7 @@ import LoaderPlane from "./LoaderPlane";
 import Threads from "./ThreadsUI";
 import TrialEndedModal from "./TrialEndedModal";
 import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
+import { BASE_PRICE } from "@/store/appContants";
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 );
@@ -1009,6 +1009,7 @@ export default function TinyMCEEditor({
               var userPublishCount = Number(meeData?.me?.publishCount);
               //console.log('pubb', userPublishCount)
               //console.log('USER PUBLISH COUNT: ' + userPublishCount);
+              
               const SHOW_CONTRIBUTION_MODAL =
                 (localStorage.getItem("payment") === undefined ||
                   localStorage.getItem("payment") === null) &&
@@ -1038,11 +1039,14 @@ export default function TinyMCEEditor({
     //console.log(localStorage);
     setContributionModalLoader(true);
     const stripe = await stripePromise;
+    console.log('Change')
+    console.log(BASE_PRICE * multiplier * contributionAmout)
     const res = await fetch(API_BASE_PATH + "/stripe/api/payment", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+
       body: JSON.stringify({
         customer_email: meeData?.me?.email,
         line_items: [
@@ -1718,7 +1722,7 @@ export default function TinyMCEEditor({
                 ml-[10px] hover:bg-indigo-700 cursor-pointer ${multiplier === item && "bg-indigo-700 "
                   }  
                 `}
-                onClick={() => setMultiplier(item)}
+                onClick={() => setMultiplier(Number(item))}
               >
                 {item}
               </div>

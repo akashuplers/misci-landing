@@ -19,7 +19,7 @@ import { useStore } from "zustand";
 import { APP_REGEXP, DEFAULT_USER_PROFILE_IMAGE } from '../../store/appContants';
 import { useUserDataStore } from '../../store/appState';
 import { UserDataResponse } from "@/types/type";
-import { getRelativeTimeString,  } from "@/store/appHelpers";
+import { getRelativeTimeString, unixToLocalYear,  } from "@/store/appHelpers";
 import { RelativeTimeString } from "@/components/ui/RelativeTimeString";
 export default function Post() {
   const router = useRouter();
@@ -30,6 +30,7 @@ export default function Post() {
   const [callBack, setCallBack] = useState();
   const [blogComments, setBlogComments] = useState<any[]>([]);
   const [showModalComment, setShowModalComment] = useState(false);
+  const [publishDate, setPublishDate] = useState<any>(null);
   const {
     data: gqlData,
     loading,
@@ -41,6 +42,12 @@ export default function Post() {
     },
     onCompleted(data) {
       setBlogComments(data.fetchBlog.comments);
+      const dataForDate = data?.fetchBlog?.publish_data?.filter(
+        (obj:any) => obj?.platform === "wordpress"
+      );
+      // console.log(dataForDate[0].creation_date);
+      const date = unixToLocalYear(Number(dataForDate[0].creation_date));
+      setPublishDate(date);
     },
   });
 
@@ -120,7 +127,7 @@ export default function Post() {
       ${(gqlData.fetchBlog?.userDetail?.name) ?? ""}
       </strong>
         </div>
-        <div style="opacity: 0.50; color: black; font-size: 12px; font-weight: 500; word-wrap: break-word">5 min read</div>
+        <div style="opacity: 0.50; color: black; font-size: 12px; font-weight: 500; word-wrap: break-word">${publishDate}</div>
       </div>
     </div>
       `;
@@ -192,7 +199,7 @@ export default function Post() {
       </div>
       <div className="fixed bottom-0 pb-1 flex items-center bg-[#EBEBEB] left-0 w-full">
         <div className="border-y border-neutral-300 max-w-[1056px] mx-auto w-full  h-[80.18px] bg-[#EBEBEB] justify-center items-center gap-6 inline-flex">
-          <div className="h-full justify-start items-center flex w-[75%]">
+          <div className="h-full justify-start items-center flex md:w-[75%]">
             <CommentButton icon={CommentButtonMap.like.icon} text={gqlData.fetchBlog.likes + " " + CommentButtonMap.like.text} onClick={handleLikeBlog} />
             <CommentButton icon={CommentButtonMap.comment.icon} text={CommentButtonMap.comment.text}
               onClick={
@@ -201,7 +208,7 @@ export default function Post() {
             />
 
           </div>
-          <div className="justify-end items-center flex w-[25%]">
+          <div className="justify-end items-center flex md:w-[25%]">
             <CopyToClipboard text={text + gqlData.fetchBlog._id} onCopy={() => {
               setCopyStart(true);
               setTimeout(() => {
@@ -385,6 +392,7 @@ console.log(comments.length);
             toast.error(res.message);
           }
         }
+        setTabToShow(prev => prev);
         setCommentLoading(false);
         setCommentValue("");
       }
@@ -539,7 +547,6 @@ const UserComment = ({ name, comment, date, avatar, userId }: {
   avatar: string,
   userId: string
 }) => {
-
   return <div className="w-full p-5 bg-white  border-b border-neutral-200 flex-col justify-start items-start gap-[15px] inline-flex">
     <div className="justify-start items-center gap-2 inline-flex">
       <img className="w-10 h-10 rounded-full" src={avatar || DEFAULT_USER_PROFILE_IMAGE} />
