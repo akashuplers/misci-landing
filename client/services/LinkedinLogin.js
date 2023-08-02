@@ -6,6 +6,7 @@ import {
 
 import { toast } from "react-toastify";
 import axios from "axios";
+import { meeGetState } from "@/graphql/querys/mee";
 
 const Headers = {
   "Content-Type": "application/json",
@@ -132,8 +133,7 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
 
           var raw = {
             query:
-              "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  prefFilled\n  profileImage\n  }\n}",
-          };
+            meeGetState};
 
           axios
             .post(API_BASE_PATH + API_ROUTES.GQL_PATH, raw, {
@@ -176,6 +176,7 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
         email: res.data.email,
         password: null,
         tempUserId: "",
+        linkedInUserName: res.data.localizedFirstName+res.data.localizedFirstName + (Math.floor(Math.random() * 900) + 100)
       };
 
       if (!getToken) {

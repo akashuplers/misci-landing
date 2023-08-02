@@ -34,6 +34,7 @@ html {
   --sidebar-width: 12.5rem;
   --topbar-height: 14vh;
   --primary-blue: #4a3afe;
+  --primary-orange: #F9948C;
   --tinymce-width: 70%;
   --dashboardInsight-width: 40%;
   --scrollbar-width: 5px;
@@ -679,3 +680,8 @@ input[type=number] {
 .css-1jqq78o-placeholder{
   text-align: left !important;
 } */
+
+
+.maincontainer{
+/* overflow-x: ; */
+}

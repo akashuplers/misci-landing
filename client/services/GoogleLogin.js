@@ -4,6 +4,7 @@ import { initializeApp } from "firebase/app";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { toast } from "react-toastify";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import { meeGetState } from "@/graphql/querys/mee";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -91,9 +92,7 @@ export const signUpWithGoogle = (handleSave, blogId) => {
           };
 
           var raw = {
-            query:
-              "query Query {\n  me {\n    upcomingInvoicedDate\n    name\n    lastName\n    subscriptionId\n    subscribeStatus\n    paid\n    lastInvoicedDate\n    isSubscribed\n    interval\n    freeTrialDays\n    freeTrial\n    freeTrailEndsDate\n    email\n    date\n    admin\n    _id\n  credits\n  }\n}",
-          };
+            query:meeGetState};
 
           axios
             .post(API_BASE_PATH + API_ROUTES.GQL_PATH, raw, {

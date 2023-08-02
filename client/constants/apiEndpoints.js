@@ -18,11 +18,13 @@ export const API_ROUTES = {
   GQL_PATH: "/graphql",
   TEMP_USER: '/auth/request-trial',
   EXTRACT_KEYWORDS : '/quickupload/urls/extract-keywords',
+  EXTRACT_KEYWORDS_FROM_KEYWORDS : '/quickupload/keyword/extract-keywords',
   EXTRACT_KEYWORDS_FROM_FILE : '/quickupload/files/extract-keywords',
   GET_SAVED_TIME: '/auth/saved-time',
   ADD_SAVED_TIME: '/auth/add-time-saved',
   BLOG_COMMENT: '/blog/comment',
-  BLOG_LIKE: '/blog/like'
+  BLOG_LIKE: '/blog/like',
+  TOTAL_TIME: '/auth/total-saved-time'
 };
 
 export const LI_API_ENDPOINTS = {
