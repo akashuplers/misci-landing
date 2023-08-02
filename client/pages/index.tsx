@@ -1161,7 +1161,6 @@ export default function Home() {
                           {keywordsOFBlogs.length > 0 ? (
                             <div className="flex items-center gap-1.5">
                               <span className="text-white">Regenerate Blog</span>
-                              <RefreshIcon className="h-5 w-5 text-white" />
                             </div>
                           ) : (
                             <>
