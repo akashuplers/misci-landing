@@ -199,7 +199,7 @@ export default function Post() {
       </div>
       <div className="fixed bottom-0 pb-1 flex items-center bg-[#EBEBEB] left-0 w-full">
         <div className="border-y border-neutral-300 max-w-[1056px] mx-auto w-full  h-[80.18px] bg-[#EBEBEB] justify-center items-center gap-6 inline-flex">
-          <div className="h-full justify-start items-center flex w-[75%]">
+          <div className="h-full justify-start items-center flex md:w-[75%]">
             <CommentButton icon={CommentButtonMap.like.icon} text={gqlData.fetchBlog.likes + " " + CommentButtonMap.like.text} onClick={handleLikeBlog} />
             <CommentButton icon={CommentButtonMap.comment.icon} text={CommentButtonMap.comment.text}
               onClick={
@@ -208,7 +208,7 @@ export default function Post() {
             />
 
           </div>
-          <div className="justify-end items-center flex w-[25%]">
+          <div className="justify-end items-center flex md:w-[25%]">
             <CopyToClipboard text={text + gqlData.fetchBlog._id} onCopy={() => {
               setCopyStart(true);
               setTimeout(() => {
