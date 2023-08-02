@@ -51,7 +51,7 @@ export default function GoogleDriveModal({ showModal, setShowModal} : Props) {
     >
         {
             screen == SCREENS_FOR_GD.MAIN ? 
-            <div className='flex items-center justify-center'>
+            <div className='flex items-center justify-center h-full py-10'>
                         <img className="w-[232.75px] h-[178.29px] max-w-[50%] max-h-[70%]" src="./gdrive.gif" style={{
                             maxWidth: '50%',
                             maxHeight: '70%'
@@ -71,7 +71,7 @@ export default function GoogleDriveModal({ showModal, setShowModal} : Props) {
                                     </div>
                                 </div>
                             </div>
-                            <button className="self-stretch h-full px-4 py-1.5 bg-indigo-600 rounded-lg flex-col justify-center items-center gap-2.5 flex"
+                            <button className="self-stretch h-11 p-5 bg-indigo-600 rounded-lg flex-col justify-center items-center gap-2.5 flex"
                             onClick={
                                 () => {
                                     setScreen(SCREENS_FOR_GD.THANK_YOU)
