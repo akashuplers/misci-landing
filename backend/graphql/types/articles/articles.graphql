@@ -116,6 +116,22 @@ input GenerateBlogOptions {
     tones: [String]
 }
 
+
+input GenerateTMBlogOptions {
+    type: String
+    strengths: [String]
+    weaknesses: [String]
+    opportunities: [String]
+    threats: [String]
+    problems: [String]
+    painPoints: [String]
+    challenges: [String]
+    companyProfile: [String]
+    latestLaunch: [String]
+    strategicFocusAreas: [String]
+    risks: [String]
+}
+
 type Ideas {
     text: String!
     article_id: String!
@@ -157,6 +173,7 @@ input PublisOptions {
 
 type Mutation {
     generate(options: GenerateBlogOptions!): Blog
+    generateTMBlog(options: GenerateTMBlogOptions!): Blog
     updateBlog(options: UpdateBlogOptions!): Blog!
     regenerateBlog(options: RegenerateBlogOptions!): Blog!
     irNotify(options: [IRNotifiyOptions]!): Boolean

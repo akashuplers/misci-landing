@@ -146,6 +146,18 @@ export const blogResolvers = {
             pubsub.publish(SOMETHING_CHANGED_TOPIC, { newLink: currentNumber });
             return currentNumber
         },
+        generateTMBlog: async (
+            parent: unknown, args:{options: GenerateBlogMutationArg}, {req, res, db, pubsub, user}: any
+        ) => {
+            console.log(args.options)
+            const userDetails = await fetchUser({id: user.id, db})
+            if(!userDetails) {
+                throw "@No user found"
+            }
+            if(userDetails.credits <= 0) {
+                throw "@Credit exhausted"
+            }
+        },  
         generate: async (
             parent: unknown, args:{options: GenerateBlogMutationArg}, {req, res, db, pubsub, user}: any
         ) => {
