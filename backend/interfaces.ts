@@ -18,6 +18,7 @@ export interface GenerateTMBlogOptions {
     companyProfile: string[]
     latestLaunch: string[]
     strategicFocusAreas: string[]
+    keyInvestment: string[]
     risks: string[]
 }
 
