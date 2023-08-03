@@ -14,7 +14,7 @@ export default function GoogleDriveModal({ showModal, setShowModal, meeData} : P
     const [screen, setScreen] = useState(SCREENS_FOR_GD.MAIN);
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const [userGDUrl, setUserGDUrl] = useState<string>("");
-  const [userEmail, setUserEmail] = useState<string>(isAuthenticated ? meeData.data.me.email : "");
+  const [userEmail, setUserEmail] = useState<string>("");
 
   useEffect(() => { 
         return () => {
@@ -22,7 +22,8 @@ export default function GoogleDriveModal({ showModal, setShowModal, meeData} : P
         }
     }, [])
 function handleUploadGoogleDrive(){
-    const data = uploadGoogleDriveURL({url: userGDUrl, email: userEmail});
+    const email = isAuthenticated ? meeData?.data?.me?.email : userEmail;
+    const data = uploadGoogleDriveURL({url: userGDUrl, email: email});
     console.log(data);
     data.then((res) => { 
         toast.success(res.message);
