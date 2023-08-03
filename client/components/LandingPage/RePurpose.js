@@ -58,6 +58,13 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
       if (validateIfURL(newInputValue)) {
         newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1, 'url')];      
       } else {
+        const previousValues = [...value];
+        // check for objc with keyword
+        const previousKeyword = previousValues.filter((item) => item.type === 'keyword');
+        if (previousKeyword.length >=1) {
+          toast.error('You can only add one keyword');
+          return;
+        }
         newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1, 'keyword')];
       }
       setValue(newBlogLinks);
@@ -167,6 +174,13 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
         if (validateIfURL(newInputValue)) {
           newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1, 'url')];      
         } else {
+          const previousValues = [...value];
+          // check for objc with keyword
+          const previousKeyword = previousValues.filter((item) => item.type === 'keyword');
+          if (previousKeyword.length >=1) {
+            toast.error('You can only add one keyword');
+            return;
+          }
           newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1, 'keyword')];
         }
         setValue(newBlogLinks);
