@@ -71,6 +71,27 @@ function handleUploadGoogleDrive(){
             },
         }}
     >
+          <button
+          onClick={() => {
+            setShowModal(false);
+          }}
+          className="absolute top-3 right-3"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
+          </svg>
+        </button>
         {
             screen == SCREENS_FOR_GD.MAIN ? 
             <div className='flex items-center justify-center h-full py-10'>

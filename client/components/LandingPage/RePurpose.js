@@ -192,7 +192,7 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
       onChange={(newValue) => setValue(newValue)}
       onInputChange={(newValue) => setInputValue(newValue)}
       onKeyDown={handleKeyDown}
-      placeholder={'Enter a Topic, Keywords, Sentence, or Enter URLs'}
+      placeholder={'Ask Questions or Enter URLs'}
       value={value}
     />
     </div>
