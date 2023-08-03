@@ -21,14 +21,10 @@ export default function GoogleDriveModal({ showModal, setShowModal, meeData} : P
             setScreen(SCREENS_FOR_GD.MAIN);
         }
     }, [])
-function handleUploadGoogleDrive(){
+function handleUploadGoogleDrive(e:any){
+    e.preventDefault();
     console.log(meeData)
-    
     const email = isAuthenticated ? meeData?.me?.email : userEmail;
-    if(email === ""  || email === undefined || userGDUrl === "" || userGDUrl === undefined){
-        toast.error("Please enter valid email and url");
-        return;
-    }
     const data = uploadGoogleDriveURL({url: userGDUrl, email: email});
     console.log(data);
     data.then((res) => { 
@@ -46,6 +42,8 @@ function handleUploadGoogleDrive(){
         onRequestClose={() =>{
             setShowModal(false);
             setScreen(SCREENS_FOR_GD.MAIN);
+            setUserGDUrl("");
+            setUserEmail("");
         }}
         ariaHideApp={false}
         className="modalModalWidth sm:w-[38%] max-h-[95%]"
@@ -79,6 +77,9 @@ function handleUploadGoogleDrive(){
           <button
           onClick={() => {
             setShowModal(false);
+            setScreen(SCREENS_FOR_GD.MAIN);
+            setUserGDUrl("");
+            setUserEmail("");
           }}
           className="absolute top-3 right-3"
         >
@@ -104,7 +105,9 @@ function handleUploadGoogleDrive(){
                             maxWidth: '50%',
                             maxHeight: '70%'
                         }}  />
-                        <form className="w-full h-full p-6 bg-white rounded-lg flex-col justify-center items-start gap-8 inline-flex">
+                        <form className="w-full h-full p-6 bg-white rounded-lg flex-col justify-center items-start gap-8 inline-flex"
+                                onSubmit={handleUploadGoogleDrive}
+                        >
                             <div className="text-center text-black text-[19px] font-bold leading-normal">
                                 Paste URL of Google drive link. Lille will notify on your email
                             </div>
@@ -145,7 +148,6 @@ function handleUploadGoogleDrive(){
                             <button
                                 type="submit"
                                 className="self-stretch h-11 p-5 bg-indigo-600 rounded-lg flex-col justify-center items-center gap-2.5 flex"
-                                onClick={handleUploadGoogleDrive}
                             >
                                 <div className="justify-center items-center inline-flex">
                                     <div className="px-1 justify-start items-center gap-2.5 flex">
