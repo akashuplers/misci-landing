@@ -9,12 +9,12 @@ const SCREENS_FOR_GD = {
     'MAIN': 0,
     'THANK_YOU': 1,
 }
-interface Props { showModal: boolean, setShowModal: (showModal: boolean) => void, meeData: UserDataResponse }
+interface Props { showModal: boolean, setShowModal: (showModal: boolean) => void, meeData: any }
 export default function GoogleDriveModal({ showModal, setShowModal, meeData} : Props) {
     const [screen, setScreen] = useState(SCREENS_FOR_GD.MAIN);
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const [userGDUrl, setUserGDUrl] = useState<string>("");
-  const [userEmail, setUserEmail] = useState<string>(isAuthenticated ? meeData.data.me.email : "");
+  const [userEmail, setUserEmail] = useState<string>("");
 
   useEffect(() => { 
         return () => {
@@ -22,7 +22,9 @@ export default function GoogleDriveModal({ showModal, setShowModal, meeData} : P
         }
     }, [])
 function handleUploadGoogleDrive(){
-    const data = uploadGoogleDriveURL({url: userGDUrl, email: userEmail});
+    console.log(meeData)
+    const email = isAuthenticated ? meeData?.me?.email : userEmail;
+    const data = uploadGoogleDriveURL({url: userGDUrl, email: email});
     console.log(data);
     data.then((res) => { 
         toast.success(res.message);
