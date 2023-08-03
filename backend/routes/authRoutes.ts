@@ -281,8 +281,9 @@ router.post("/user/create", async (req: any, res: any) => {
           { _id: user.insertedId },
           { $set: { resetPasswordToken: token } }
         );
+      const addedUser = await db.db('lilleAdmin').collection('users').findOne({_id: new ObjectID(user.insertedId)})  
       // DONE!!
-      return res.status(201).send({ error: false, message: "User added!" });
+      return res.status(201).send({ error: false, message: "User added!", user: addedUser });
     } catch (error) {
       console.log(error, "error")
       return res.status(500).send({ error: true, message: `${error}` });
