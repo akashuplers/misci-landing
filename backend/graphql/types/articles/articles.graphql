@@ -132,9 +132,7 @@ input GenerateTMBlogOptions {
     keyInvestment: [String]
     keyMembers: [String]
     risks: [String]
-    expansionPlans: [String]
-    financials: [String]
-    itExpenses: [String]
+    graphData: [JSON]
 }
 
 type Ideas {
