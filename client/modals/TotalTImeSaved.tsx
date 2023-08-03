@@ -77,7 +77,7 @@ export function TotalTImeSaved({
                   }
                   )}
                   style={{ width: getInputWidth(editedHours.minutes) }}
-                className="text-2xl font-bold w-14 border-none outline-0 p-0"
+                className="text-2xl font-bold w-14  border border-gray-400 outline-0 p-0"
               />{" "}
               minutes and{" "}<input
                 type="number"
@@ -89,7 +89,7 @@ export function TotalTImeSaved({
                   }
                 })}
                 style={{ width: getInputWidth(editedHours.seconds) }}
-                className="text-2xl font-bold w-14 border-none outline-0 p-0"
+                className="text-2xl font-bold w-14  border border-gray-400 outline-0 p-0"
               />{" "}
               seconds.
             </p>

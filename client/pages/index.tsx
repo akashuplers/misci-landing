@@ -172,17 +172,6 @@ export default function Home() {
   useEffect(() => {
     updateAuthentication();
   }, []);
-  useEffect(() => {
-    console.log('SELECTED FILES with blog links');
-    console.log(selectedFiles, blogLinks);
-  }, [selectedFiles, blogLinks])
-
-  useEffect(() => {
-    console.log('articleids');
-    console.log(articleIds);
-    console.log('keywords');
-    console.log(keywordsOFBlogs);
-  }, [articleIds]);
   const keywords = gql`
     query keywords {
       trendingTopics
@@ -287,10 +276,6 @@ export default function Home() {
       setLoadingForKeywords(false); // Set loading state back to false if no file is selected
     }
   }
-  useEffect(() => {
-    console.log('keywordsOFBlogs');
-    console.log(keywordsOFBlogs);
-  }, [keywordsOFBlogs]);
   function processDataForKeywords(data) {
     const keywordsMap = {};
     data.forEach((item) => {
@@ -510,11 +495,6 @@ export default function Home() {
   const [showUserLoadingModal, setShowUserLoadingModal] = useState({
     show: false,
   });
-  useEffect(() => {
-      console.log('INPUT DATA');
-      console.log(inputData);
-  }, [inputData]);
-
   useEffect(() => {
     if (router.asPath === PAYMENT_PATH) {
       if (localStorage.getItem("userContribution") !== null) {
@@ -738,8 +718,6 @@ export default function Home() {
     setWindowWidth(window.innerWidth);
   }, []);
 
-  console.log("MEE API");
-  console.log(meeAPI);
   return (
     <>
       <Head>
@@ -831,7 +809,7 @@ export default function Home() {
               </defs>
             </svg>
           </div>
-
+            
           {!isAuthenticated && (
             <div className="hidden lg:flex">
               {/* <div
@@ -1085,7 +1063,7 @@ export default function Home() {
 
                   <div className='flex items-center flex-col mt-2'>
                     {keywordsOFBlogs.length > 0 && <div className="flex items-center gap-1.5" >
-                      <h4>Select some keywords to generate article </h4> <Tooltip content="Select keywords as per your choice to add focus, URLs / Files containing the selected keywords will be used to recreate a high ranking SEO blog." direction='top' className='max-w-[100px]'>
+                      <h4>Select some keywords to generate article </h4> <Tooltip content="Select keywords to focus on. Sources/URLs/Files with the chosen keywords will be used to create a high-ranking SEO article." direction='top' className='max-w-[100px]'>
                         <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
                       </Tooltip></div>}
                     <div className='flex flex-wrap justify-center gap-2 mt-5'>
