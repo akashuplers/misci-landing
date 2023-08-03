@@ -21,6 +21,7 @@ export const meeGetState = `query Query {
     credits
     prefFilled
     profileImage
+    userName
     publishCount
     prefData
     totalCredits
