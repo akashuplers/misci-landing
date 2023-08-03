@@ -78,6 +78,7 @@ export default function Settings() {
     firstName: "",
     lastName: "",
     profileImage: "",
+    userName: "",
   });
   const [updateLoader, setUpdateLoader] = useState(false);
 
@@ -174,6 +175,7 @@ export default function Settings() {
       setUpdateProfileData({
         firstName: meeData.me.name,
         lastName: meeData.me.lastName,
+        userName: meeData.me.userName,
         profileImage: meeData.me.profileImage ?? fillerProfileImage,
       });
       const arr = [];
@@ -223,7 +225,8 @@ export default function Settings() {
     if (
       meeData.me.name === updateProfileData.firstName &&
       meeData.me.lastName === updateProfileData.lastName &&
-      meeData.me.profileImage === updateProfileData.profileImage
+      meeData.me.profileImage === updateProfileData.profileImage &&
+      meeData.me.userName === updateProfileData.userName
     ) {
       toast.success("Profile up to Date!", {
         position: "top-center",
@@ -597,6 +600,24 @@ export default function Settings() {
                                       value={updateProfileData.lastName}
                                       onChange={handleInputChange}
                                       name="lastName"
+                                      style={{
+                                        border: "none",
+                                        padding: "0 0.25em",
+                                      }}
+                                    />
+                                  </dd>
+                                </div>
+                                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
+                                  <dt className="text-sm font-medium text-gray-500">
+                                    User Name
+                                  </dt>
+                                  <dd className="updateSettingsField lastName mt-1 flex text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                    <input
+                                      type="text"
+                                      className="flex-grow"
+                                      value={updateProfileData.userName}
+                                      onChange={handleInputChange}
+                                      name="userName"
                                       style={{
                                         border: "none",
                                         padding: "0 0.25em",
