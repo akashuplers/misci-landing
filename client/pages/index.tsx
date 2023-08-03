@@ -944,7 +944,7 @@ export default function Home() {
 
                 </div>
 
-                <div className="w-full lg:min-w-[700px] h-full opacity-90  shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
+                <div className="w-full lg:min-w-[700px] lg:max-w-[700px] h-full opacity-90  shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
                 style={{
                   background: 'rgba(255, 255, 255, 0.5)',
                 }}
