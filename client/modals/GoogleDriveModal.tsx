@@ -114,7 +114,10 @@ function handleUploadGoogleDrive(){
             </div> : 
             <>
                         <div className="w-full h-full px-6 py-10 bg-white rounded-lg flex-col justify-center items-center gap-10 inline-flex">
-                            <img className="w-[232.75px] h-[178.29px]" src="./thanku.gif" />
+                            <img className="w-[232.75px] h-[80%]" src="./thanku.gif" style={{
+                                maxWidth: '50%',
+                                maxHeight: '70%'
+                            }} />
                             <div className="self-stretch text-center text-black text-[19px] font-medium leading-normal">Thank you! Lille Team will mail back with a creative blog url</div>
                         </div>
             </>

@@ -104,3 +104,13 @@ export const unixToLocalYear = (unixTime:number) => {
 
   return formattedDate
 };
+
+
+export function calculateUsedCredits(userData: {
+  totalCredits: number;
+  creditsLeft: number;
+}): number {
+  const { totalCredits, creditsLeft } = userData;
+  const usedCredits = totalCredits - creditsLeft;
+  return usedCredits;
+}
