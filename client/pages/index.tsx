@@ -944,7 +944,7 @@ export default function Home() {
 
                 </div>
 
-                <div className="w-full lg:min-w-[700px] h-full opacity-90  shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
+                <div className="w-full lg:min-w-[700px] lg:max-w-[700px] h-full opacity-90  shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
                 style={{
                   background: 'rgba(255, 255, 255, 0.5)',
                 }}
@@ -1163,11 +1163,11 @@ export default function Home() {
                         />
                         :
                         <>
-                          {keywordsOFBlogs.length > 0 ? (
+                          {/* {keywordsOFBlogs.length > 0 ? (
                             <div className="flex items-center gap-1.5">
-                              <span className="text-white">Regenerate Blog</span>
+                              <span className="text-white">Generate Blog Blog</span>
                             </div>
-                          ) : (
+                          ) : ( */}
                             <>
                               <div className="text-white text-base font-medium leading-7">
                                 Generate your 1st draft for the article,{" "}
@@ -1187,7 +1187,8 @@ export default function Home() {
                                 </div>
                               </div>
                             </>
-                          )}
+                          {/* ) */}
+                          {/* } */}
 
                         </>
                     }
