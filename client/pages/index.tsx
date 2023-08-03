@@ -973,7 +973,7 @@ export default function Home() {
                                 addToFunctionStack(() => { setShowFileUploadUI(false) })
                               }
                             }  className="w-48 h-10 px-4 py-2.5 rounded-lg border border-indigo-300 justify-center items-center gap-2 inline-flex">
-                                <div className="text-indigo-600 text-sm font-medium">Upload a </div>
+                                <div className="text-indigo-600 text-sm font-medium">Upload </div>
                                 <div className="justify-center items-center gap-1 flex">
                                   <img className="w-5 h-5" src="./icons/pdficon.svg" />
                                   <img className="w-5 h-5" src="./icons/texticon.png" />
@@ -1030,9 +1030,9 @@ export default function Home() {
                       </button>
                     }
                   </div>
-                  <div className="w-full h-5 lg:flex-row flex-col justify-start items-center gap-3 inline-flex">
-                    <div className="grow shrink basis-0 opacity-70 text-gray-600 text-sm font-normal text-left">Lille will search the web</div>
-                    <div className="opacity-70"><span className="text-zinc-500 text-sm font-normal text-right">Max. 7MB size. If you have more than 7MB</span><span className="text-gray-500 text-sm font-normal"> </span><button
+                  <div className="w-full h-5 lg:flex-row flex-col justify-start items-start gap-3 inline-flex">
+                    <div className="grow shrink basis-0 opacity-70 text-gray-600 text-sm font-normal text-left">Let Lille search the web to generate article, Linkedin Post & Tweets</div>
+                    <div className="opacity-70 w-52"><span className="text-zinc-500 text-sm font-normal text-right">Max 7MB size. If you have more than 7MB</span><span className="text-gray-500 text-sm font-normal"> </span><button
                     onClick={()=>setShowGDriveModal(true)}
                     ><span className="text-blue-500 text-sm font-normal">Click here</span></button></div>
                   </div>
@@ -1047,7 +1047,7 @@ export default function Home() {
                         )}
                         {(stateOfGenerate.keyword != null) && (
                           <div className="flex items-center gap-1.5">
-                            <span className="text-slate-800">Keywords from Keyword:</span>
+                            <span className="text-slate-800">Keywords from Topic::</span>
                             {stateOfGenerate.keyword === STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} height={20} color={"#2563EB"} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />}
                           </div>
                         )}
@@ -1141,16 +1141,16 @@ export default function Home() {
                         />
                         :
                         <>
-                          {/* {keywordsOFBlogs.length > 0 ? (
+                          {keywordsOFBlogs.length > 0 ? (
                             <div className="flex items-center gap-1.5">
-                              <span className="text-white">Generate Blog Blog</span>
+                              <span className="text-white">Proceed to your 1<sup>st</sup> draft</span>
                             </div>
-                          ) : ( */}
+                          ) : (
                             <>
                               <div className="text-white text-base font-medium leading-7">
-                                Generate your 1st draft for the article,{" "}
+                                Generate your 1<sup>st</sup> draft{" "}
                               </div>
-                              <div className="justify-center items-center gap-2 flex">
+                              {/* <div className="justify-center items-center gap-2 flex">
                                 <div className="text-white">
                                   <FaFacebook className="h-5 w-5 mr-1 lg:mr-3" />
                                 </div>
@@ -1163,10 +1163,10 @@ export default function Home() {
                                 <div className="text-white">
                                   <ArrowLongRightIcon className="h-5 w-5" />
                                 </div>
-                              </div>
+                              </div> */}
                             </>
-                          {/* ) */}
-                          {/* } */}
+                          )
+                          }
 
                         </>
                     }
