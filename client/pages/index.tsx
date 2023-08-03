@@ -1163,11 +1163,11 @@ export default function Home() {
                         />
                         :
                         <>
-                          {keywordsOFBlogs.length > 0 ? (
+                          {/* {keywordsOFBlogs.length > 0 ? (
                             <div className="flex items-center gap-1.5">
-                              <span className="text-white">Regenerate Blog</span>
+                              <span className="text-white">Generate Blog Blog</span>
                             </div>
-                          ) : (
+                          ) : ( */}
                             <>
                               <div className="text-white text-base font-medium leading-7">
                                 Generate your 1st draft for the article,{" "}
@@ -1187,7 +1187,8 @@ export default function Home() {
                                 </div>
                               </div>
                             </>
-                          )}
+                          {/* ) */}
+                          {/* } */}
 
                         </>
                     }
