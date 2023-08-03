@@ -114,3 +114,9 @@ export function calculateUsedCredits(userData: {
   const usedCredits = totalCredits - creditsLeft;
   return usedCredits;
 }
+
+// ^(https?://)?drive\.google\.com/
+
+export function validateIfGoogleDriveURL(url: string): boolean {
+  return APP_REGEXP.GOOGLE_DRIVE_URL_VALIDATION.test(url);
+}

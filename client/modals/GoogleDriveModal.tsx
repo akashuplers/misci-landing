@@ -1,4 +1,5 @@
 import { uploadGoogleDriveURL } from "@/helpers/apiMethodsHelpers";
+import { validateIfGoogleDriveURL } from "@/store/appHelpers";
 import useStore from "@/store/store";
 import { UserDataResponse } from "@/types/type";
 import { useEffect, useState } from "react"
@@ -24,6 +25,11 @@ export default function GoogleDriveModal({ showModal, setShowModal, meeData} : P
 function handleUploadGoogleDrive(e:any){
     e.preventDefault();
     console.log(meeData)
+    const checkForGoogleDriveUrl = validateIfGoogleDriveURL(userGDUrl);
+    if(!checkForGoogleDriveUrl){
+        toast.error("Please enter a valid Google Drive URL");
+        return;
+    }
     const email = isAuthenticated ? meeData?.me?.email : userEmail;
     const data = uploadGoogleDriveURL({url: userGDUrl, email: email});
     console.log(data);
