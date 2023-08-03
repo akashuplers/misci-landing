@@ -4,6 +4,7 @@ import { diff_minutes, getTimeStamp } from "../../../utils/date";
 import { URL } from "url";
 import { Python } from "../../../services/python";
 import { title } from "process";
+import { GenerateTMBlogOptions } from "interfaces";
 const natural = require('natural');
 
 export const fetchBlog = async ({id, db}: {
@@ -26,6 +27,148 @@ export const fetchBlogIdeas = async ({id, db}: {
     db: any
 }) => {
    return await db.db('lilleBlogs').collection('blogIdeas').findOne({blog_id: new ObjectID(id)})
+}
+
+export const TMBlogGeneration = async ({db, text}: {
+    db: any;
+    text: string[];
+}) => {
+    const mapObj: any = {
+        "H1:":" ",
+        "H2:":" ",
+        "<p/><p/>":"<p/>",
+        "Conclusions:<p/>":"<h3>Conclusions</h3><p/>",
+        "Conclusion:<p/>":"<h3>Conclusions</h3><p/>",
+        "Conclusion<p/>":"<h3>Conclusion</h3><p/>",
+        "Conclusions<p/>":"<h3>Conclusion</h3><p/>",
+        "<h1>":" ",
+        "Title:":" ",
+        "Introduction::":" ",
+        "</h1>":" ",
+        "<h2>":" ",
+        "</h2>":" ",
+        "\n":" ",
+        "\"":" ",
+    };
+    const chatgptApis = await db.db('lilleAdmin').collection('chatGPT').findOne()
+    let availableApi: any = null
+    if(chatgptApis) {
+        availableApi = chatgptApis.apis?.find((api: any) => !api.quotaFull)
+    } else {
+        throw "Something went wrong! Please connect with support team";
+    }
+    if(!availableApi) {
+        throw "Something went wrong! Please connect with support team";
+    }
+    let newsLetter: any = {
+        salesPitch: null,
+        title: null,
+        linkedin: null,
+        twitter: null,
+        blog: null
+    }
+    const keys = Object.keys(newsLetter)
+    for (let index = 0; index < keys.length; index++) {
+        const key = keys[index];
+        try {
+            if(key === "salesPitch") {
+                const gptPrompt = "Act as an expert content writer who has to create a personalized sales pitch by identifying the pain points or challenges. Clearly define the problem to capture the user's attention. Describe how the product/service provides the ideal solution to the problem outlined earlier. List the benefits to improve customers' lives or businesses. Briefly compare the product/service with competitors. \n"+
+                "The sales pitch content must have the highest degree of perplexity and the highest degree of burstiness.\n"+
+                "The sales pitch content will be over 500 words.\n"+
+                "The following inputs will have to be used to write a sales pitch: ["+text.join(',')+"].\n" +
+                "End the sales pitch with a clear and concise call to action."
+                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: gptPrompt, db}).textCompletion(chatgptApis.timeout)
+                newsLetter = {...newsLetter, [key]: chatGPTText}
+            }
+            if(key === 'title') {
+                const blogPostToSend = newsLetter["wordpress"]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
+                    return mapObj[matched];
+                });            
+                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `Create a SEO based title using this blog: ${blogPostToSend}`, db}).textCompletion(chatgptApis.timeout)
+                newsLetter = {...newsLetter, [key]: chatGPTText}
+            }
+        } catch(e: any) {
+            console.log(e, "error from chat gpt")
+            throw e
+        }
+    }
+    let title : string = ""
+    console.log(newsLetter.salesPitch, "akash")
+    if(newsLetter['title'] && (!title || !title?.length)) {
+        title = newsLetter['title']
+        title = title?.replace(/"|\n|H1:|H2:|Title:/gi, function(matched: any){
+            return mapObj[matched];
+        })
+        title = title?.trim()
+    }
+    let description = ""
+    const updated = Object.keys(newsLetter).map((key: string) => {
+        switch(key) {
+            case "image":
+                break;
+            case "title":
+                break;    
+            case "salesPitch":
+                const content = newsLetter[key]
+                description = newsLetter[key]?.replace(/<h1>|<\s*\/?h1>|Title:|Introduction:|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
+                    return mapObj[matched];
+                }); 
+                return {
+                    published: false,
+                    published_date: false,
+                    platform: "salesPitch",
+                    creation_date: Math.round(new Date().getTime() / 1000) ,
+                    tiny_mce_data: {
+                        "tag": "BODY",
+                        children: [
+                            {
+                                "tag": "H3",
+                                "attributes": {
+                                    "style": "text-align: center;"
+                                },
+                                "children": [
+                                    {
+                                        "tag": "STRONG",
+                                        "attributes": {},
+                                        "children": [
+                                            title
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "tag": "P",
+                                "attributes": {
+                                    "style": "text-align: left;"
+                                },
+                                "children": []
+                            },
+                            {
+                                "tag": "P",
+                                "attributes": {},
+                                "children": [
+                                    content && content.length ? content : "Sorry, We were unable to generate the blog at this time, Please try again after some time or try with different topic."
+                                ]
+                            },
+                            {
+                                "tag": "P",
+                                "attributes": {},
+                                "children": []
+                            }
+                        ]
+                    }  
+                }
+            default:
+                return newsLetter[key]    
+        }      
+    })
+    console.log(updated, "akash")
+    console.log(updated.filter((data) => data), "akash1")
+    return {
+        publishedData: updated.filter((data) => data),
+        title,
+        description
+    }
 }
 
 export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null, userId = null, keywords = [], tones = []}: {
@@ -950,4 +1093,36 @@ export const fetchBlogFromTopic = async (db: any, topics: string[], userId: stri
     }catch(e) {
         throw e
     }
+}
+
+export const generateAtrributesList = (attributes: any) => {
+    const order: any = {
+        strengths: 2,
+        weaknesses: 3,
+        opportunities: 4,
+        threats: 5,
+        problems: 7,
+        painPoints: 8,
+        challenges: 9,
+        companyProfile: 1,
+        latestLaunch: 10,
+        strategicFocusAreas: 11,
+        keyInvestment: 13,
+        keyMembers: 14,
+        risks: 12
+    }
+    let attributesArray: string[] = []
+    const sortedOrder = Object.keys(order).sort((a, b) => {
+        console.log(a, b, order[b])
+        if(order[a] < order[b]) return -1
+        else return 1
+    })
+    console.log(sortedOrder)
+    sortedOrder.map((key:any) => {
+        if(attributes[key]) {
+            attributesArray.push(`"${attributes[key].join('", "')}"`)   
+        }
+    })
+    console.log(attributesArray)
+    return attributesArray
 }

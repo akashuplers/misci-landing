@@ -130,7 +130,11 @@ input GenerateTMBlogOptions {
     latestLaunch: [String]
     strategicFocusAreas: [String]
     keyInvestment: [String]
+    keyMembers: [String]
     risks: [String]
+    expansionPlans: [String]
+    financials: [String]
+    itExpenses: [String]
 }
 
 type Ideas {
