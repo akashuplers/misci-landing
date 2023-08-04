@@ -172,10 +172,8 @@ export default function Post() {
       }
 
       var modifiedHtml = tempElement.innerHTML;
-      console.log(modifiedHtml);
       const phraseToRemove = 'A placeholder image has been added, you can upload your own image.';
       const modifiedString = modifiedHtml.replace(new RegExp(`<span[^>]*>${phraseToRemove}</span>`, 'g'), '');
-      console.log(modifiedString);
       publishContainer.innerHTML = modifiedString;
     }
 
