@@ -22,6 +22,8 @@ export const getBlogbyId = gql`
         profileImage
         linkedInUserName
         twitterUserName
+        userName
+        googleUserName
         name
         lastName
     }
