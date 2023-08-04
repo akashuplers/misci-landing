@@ -83,7 +83,6 @@ export default function App({ Component, pageProps }: AppProps) {
     "/faq",
     "/aboutus",
     '/public/[[...slug]]',
-    '/public/[bid]/[bid]/[bid]',
   ];
 
   useEffect(() => {
