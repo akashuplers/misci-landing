@@ -130,6 +130,10 @@ export default function Post() {
           authorProfilePath = "/linkedin/" + userData?.data.me.linkedInUserName.replace(/\s/g, '') + "/" + bid;
         }
       }
+      if(userData?.data.me.userName){
+        authorProfilePath = "/user/" + userData?.data.me.userName.replace(/\s/g, '') + "/" + bid;
+      }
+      
       // remvove blacnk spaces  
       authorProfilePath.replace(/\s/g, '');
       // 
