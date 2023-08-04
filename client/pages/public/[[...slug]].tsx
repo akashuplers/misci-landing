@@ -1,5 +1,5 @@
-import { RelativeTimeString } from '@/components/ui/RelativeTimeString';
-import { APP_REGEXP, DEFAULT_USER_PROFILE_IMAGE } from '@/store/appContants';
+import { RelativeTimeString } from '../../components/ui/RelativeTimeString';
+import { APP_REGEXP, DEFAULT_USER_PROFILE_IMAGE } from '../../store/appContants';
 import { NextPageContext } from 'next';
 import ReactLoading from "react-loading";
 import { useRouter } from 'next/router'
@@ -7,20 +7,21 @@ import TextareaAutosize from "react-textarea-autosize";
 import { ChatBubbleOvalLeftIcon, CheckCircleIcon, DocumentDuplicateIcon, ShareIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import ReactModal from 'react-modal';
-import ShareLinkModal from '@/components/component/ShareLinkModal';
-import Navbar from '@/components/Navbar';
+import ShareLinkModal from '../../components/component/ShareLinkModal';
+import Navbar from '../../components/Navbar';
 import Head from 'next/head';
-import LoaderPlane from '@/components/LoaderPlane';
+import LoaderPlane from '../../components/LoaderPlane';
 import { toast } from 'react-toastify';
-import { sendAComment, sendLikeToBlog } from '@/helpers/apiMethodsHelpers';
+import { sendAComment, sendLikeToBlog } from '../../helpers/apiMethodsHelpers';
 import { useEffect, useState } from 'react';
-import { jsonToHtml } from '@/helpers/helper';
+import { jsonToHtml } from '../../helpers/helper';
 import styles from "../../styles/publish.module.css"
-import { unixToLocalYear } from '@/store/appHelpers';
-import { useUserDataStore } from '@/store/appState';
-import { getBlogbyId } from '@/graphql/queries/getBlogbyId';
+import { unixToLocalYear } from '../../store/appHelpers';
+import { useUserDataStore } from '../../store/appState';
+import { getBlogbyId } from '../../graphql/queries/getBlogbyId';
 import { useQuery } from '@apollo/client';
-import { UserDataResponse } from '@/types/type';
+import { UserDataResponse } from '../../types/type';
+import React from 'react';
 interface PageProps {
 authorSocialMedia: string
 authorUserName: string
@@ -37,6 +38,7 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
   const [callBack, setCallBack] = useState();
   const [blogComments, setBlogComments] = useState<any[]>([]);
   const [showModalComment, setShowModalComment] = useState(false);
+  const [blogTitle, setBlogTitle] = useState('');
   const [publishDate, setPublishDate] = useState<any>(null);
   const {
     data: gqlData,
@@ -55,6 +57,12 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
       // console.log(dataForDate[0].creation_date);
       const date = unixToLocalYear(Number(dataForDate[0].creation_date));
       setPublishDate(date);
+      console.log("Tile", dataForDate);
+      console.log("Tile", dataForDate.tiny_mce_data);
+      const title = dataForDate?.tiny_mce_data?.children[0]?.children[0]?.children[0];
+      console.log("Tile", title, dataForDate?.tiny_mce_data);
+      console.log(dataForDate?.tiny_mce_data)
+      setBlogTitle(title);
     },
   });
 
@@ -99,10 +107,13 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
   useEffect(() => {
     // const html = jsonToHtml(gqlData?.fetchBlog?.publish_data[2].tiny_mce_data);
     // @ts-ignore
+
     const aa = gqlData?.fetchBlog?.publish_data.find((pd) => pd.platform === "wordpress"
     ).tiny_mce_data;
+    console.log("ADD");
+    console.log(aa?.children[0].children[0].children[0]);
+setBlogTitle(aa?.children[0].children[0].children[0])
     const html = jsonToHtml(aa);
-
     setData(html);
   }, [gqlData]);
 
@@ -120,28 +131,57 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
       }
       // get the first h3 tag
       const h3Element = tempElement.querySelector('h3');
+      var authorProfilePath = "";
+      if (userData?.data.me.googleUserName) {
+        {
+          authorProfilePath = "/google/" + userData?.data.me.googleUserName.replace(/\s/g, '')+ "/" + authorBlogId;
+        }
+        if (userData?.data.me.twitterUserName) {
+          {
+            authorProfilePath = "/twitter/" + userData?.data.me.twitterUserName.replace(/\s/g, '') + "/" + authorBlogId;
+          }
+        }
+      }
+      if (userData?.data.me.linkedInUserName) {
+        {
+          authorProfilePath = "/linkedin/" + userData?.data.me.linkedInUserName.replace(/\s/g, '') + "/" + authorBlogId;
+        }
+      }
+      if(userData?.data.me.userName){
+        authorProfilePath = "/user/" + userData?.data.me.userName.replace(/\s/g, '') + "/" + authorBlogId;
+      }
+      
+      // remvove blacnk spaces  
+      authorProfilePath.replace(/\s/g, '');
+      // 
+    //   router.push('/public'+ authorProfilePath);
       if (h3Element) {
         console.log(gqlData);
+        console.log('MEED DATA');
+        console.log(userData);
         // make a sibling div element to ti showing randoem author name and time to read. 
         const divElement = document.createElement('div');
         divElement.innerHTML = ` 
-      <div style="width: 100%; height: 44px; justify-content: flex-start; align-items: center; gap: 12px; display: inline-flex; margin-top: 24px; margin-bottom: 24px">
-      <img style="width: 44px; height: 44px; position: relative; background: linear-gradient(0deg, black 0%, black 100%); border-radius: 200px" src=${gqlData.fetchBlog?.userDetail?.profileImage ?? "https://github.com/identicons/jasonlong.png"
-          } />
-      <div style="flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 4px; display: inline-flex">
-        <div style="color: #272C47; font-size: 16px;font-weight: 400; word-wrap: break-word; font-style: italic">
-      <strong>
-      ${(gqlData.fetchBlog?.userDetail?.name) ?? ""}
-      </strong>
+          <a href="${"/public"+authorProfilePath}" class="flex items-center space-x-2">
+          <div style="width: 100%; height: 44px; justify-content: flex-start; align-items: center; gap: 12px; display: inline-flex; margin-top: 24px; margin-bottom: 24px">
+          <img style="width: 44px; height: 44px; position: relative; background: linear-gradient(0deg, black 0%, black 100%); border-radius: 200px" src=${gqlData?.fetchBlog?.userDetail?.profileImage ?? "https://github.com/identicons/jasonlong.png"
+              } />
+          <div style="flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 4px; display: inline-flex">
+            <div style="color: #272C47; font-size: 16px;font-weight: 400; word-wrap: break-word; font-style: italic">
+          <strong>
+          ${(gqlData?.fetchBlog?.userDetail?.name) ?? ""}
+          </strong>
+            </div>
+            <div style="opacity: 0.50; color: black; font-size: 12px; font-weight: 500; word-wrap: break-word">${publishDate}</div>
+          </div>
         </div>
-        <div style="opacity: 0.50; color: black; font-size: 12px; font-weight: 500; word-wrap: break-word">${publishDate}</div>
-      </div>
-    </div>
+        </a>
       `;
         // insert after h3 tag
         // @ts-ignore
         h3Element.parentNode.insertBefore(divElement, h3Element.nextSibling);
       }
+
 
       var modifiedHtml = tempElement.innerHTML;
       console.log(modifiedHtml);
@@ -169,7 +209,7 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
   return (
     <div className="bg-[#00000014] min-h-screen">
       <Head>
-    <title>Blog Header Title</title>
+      <title>{blogTitle}</title>
    </Head>
       <Navbar isOpen={false} />
       <div className="flex items-center justify-center w-full lg:max-w-[1056px] mx-auto flex-col ">
