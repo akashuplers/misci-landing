@@ -41,7 +41,7 @@ export default function Post() {
   } = useQuery(getBlogbyId, {
     variables: {
       fetchBlogId: bid,
-    },
+    },  
     onCompleted(data) {
       setBlogComments(data.fetchBlog.comments);
       const dataForDate = data?.fetchBlog?.publish_data?.filter(
@@ -103,7 +103,9 @@ export default function Post() {
     const aa = gqlData?.fetchBlog?.publish_data.find((pd) => pd.platform === "wordpress"
     ).tiny_mce_data;
     const html = jsonToHtml(aa);
-
+    console.log("ADD");
+    console.log(aa?.children[0].children[0].children[0]);
+    setBlogTitle(aa?.children[0].children[0].children[0])
     setData(html);
   }, [router, gqlData]);
 
