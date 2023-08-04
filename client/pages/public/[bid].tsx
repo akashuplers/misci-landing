@@ -31,6 +31,7 @@ export default function Post() {
   const [callBack, setCallBack] = useState();
   const [blogComments, setBlogComments] = useState<any[]>([]);
   const [showModalComment, setShowModalComment] = useState(false);
+  const [blogTitle, setBlogTitle] = useState('');
   const [publishDate, setPublishDate] = useState<any>(null);
   const {
     data: gqlData,
@@ -40,7 +41,7 @@ export default function Post() {
   } = useQuery(getBlogbyId, {
     variables: {
       fetchBlogId: bid,
-    },
+    },  
     onCompleted(data) {
       setBlogComments(data.fetchBlog.comments);
       const dataForDate = data?.fetchBlog?.publish_data?.filter(
@@ -49,6 +50,12 @@ export default function Post() {
       // console.log(dataForDate[0].creation_date);
       const date = unixToLocalYear(Number(dataForDate[0].creation_date));
       setPublishDate(date);
+      const tinyData = data?.fetchBlog?.publish_data?.filter(
+        (obj:any) => obj?.platform === "wordpress"
+      );
+      const title = tinyData?.tiny_mce_data?.children[0]?.children[0]?.children[0];
+      console.log("Tile", title,  tinyData?.tiny_mce_data)    
+      setBlogTitle(title);
     },
   });
 
@@ -96,7 +103,9 @@ export default function Post() {
     const aa = gqlData?.fetchBlog?.publish_data.find((pd) => pd.platform === "wordpress"
     ).tiny_mce_data;
     const html = jsonToHtml(aa);
-
+    console.log("ADD");
+    console.log(aa?.children[0].children[0].children[0]);
+    setBlogTitle(aa?.children[0].children[0].children[0])
     setData(html);
   }, [router, gqlData]);
 
@@ -147,12 +156,12 @@ export default function Post() {
         divElement.innerHTML = ` 
           <a href="${"/public"+authorProfilePath}" class="flex items-center space-x-2">
           <div style="width: 100%; height: 44px; justify-content: flex-start; align-items: center; gap: 12px; display: inline-flex; margin-top: 24px; margin-bottom: 24px">
-          <img style="width: 44px; height: 44px; position: relative; background: linear-gradient(0deg, black 0%, black 100%); border-radius: 200px" src=${gqlData.fetchBlog?.userDetail?.profileImage ?? "https://github.com/identicons/jasonlong.png"
+          <img style="width: 44px; height: 44px; position: relative; background: linear-gradient(0deg, black 0%, black 100%); border-radius: 200px" src=${gqlData?.fetchBlog?.userDetail?.profileImage ?? "https://github.com/identicons/jasonlong.png"
               } />
           <div style="flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 4px; display: inline-flex">
             <div style="color: #272C47; font-size: 16px;font-weight: 400; word-wrap: break-word; font-style: italic">
           <strong>
-          ${(gqlData.fetchBlog?.userDetail?.name) ?? ""}
+          ${(gqlData?.fetchBlog?.userDetail?.name) ?? ""}
           </strong>
             </div>
             <div style="opacity: 0.50; color: black; font-size: 12px; font-weight: 500; word-wrap: break-word">${publishDate}</div>
@@ -176,7 +185,7 @@ export default function Post() {
   }, [data]);
   function handleLikeBlog() {
     sendLikeToBlog({
-      blogId: gqlData.fetchBlog._id
+      blogId: gqlData?.fetchBlog._id
     }).then((res) => {
       if (res.type == 'SUCCESS') {
         toast.success('Liked Successfully');
@@ -191,7 +200,7 @@ export default function Post() {
   return (
     <div className="bg-[#00000014] min-h-screen">
       <Head>
-    <title>Blog Header Title</title>
+    <title>{blogTitle}</title>
    </Head>
       <Navbar isOpen={false} />
       <div className="flex items-center justify-center w-full lg:max-w-[1056px] mx-auto flex-col ">
@@ -232,7 +241,7 @@ export default function Post() {
       <div className="fixed bottom-0 pb-1 flex items-center bg-[#EBEBEB] left-0 w-full">
         <div className="border-y border-neutral-300 max-w-[1056px] mx-auto w-full  h-[80.18px] bg-[#EBEBEB] justify-center items-center gap-6 inline-flex">
           <div className="h-full justify-start items-center flex md:w-[75%]">
-            <CommentButton icon={CommentButtonMap.like.icon} text={gqlData.fetchBlog.likes + " " + CommentButtonMap.like.text} onClick={handleLikeBlog} />
+            <CommentButton icon={CommentButtonMap.like.icon} text={gqlData?.fetchBlog.likes + " " + CommentButtonMap.like.text} onClick={handleLikeBlog} />
             <CommentButton icon={CommentButtonMap.comment.icon} text={CommentButtonMap.comment.text}
               onClick={
                 () => setShowModalComment(true)
@@ -241,7 +250,7 @@ export default function Post() {
 
           </div>
           <div className="justify-end items-center flex md:w-[25%]">
-            <CopyToClipboard text={text + gqlData.fetchBlog._id} onCopy={() => {
+            <CopyToClipboard text={text + gqlData?.fetchBlog._id} onCopy={() => {
               setCopyStart(true);
               setTimeout(() => {
                 setCopyStart(false);
