@@ -82,6 +82,8 @@ export default function App({ Component, pageProps }: AppProps) {
     "/cancellation-policy",
     "/faq",
     "/aboutus",
+    '/public/[[...slug]]',
+    '/public/[bid]/[bid]/[bid]',
   ];
 
   useEffect(() => {

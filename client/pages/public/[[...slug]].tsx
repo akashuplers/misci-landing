@@ -1,5 +1,5 @@
-import { RelativeTimeString } from '@/components/ui/RelativeTimeString';
-import { APP_REGEXP, DEFAULT_USER_PROFILE_IMAGE } from '@/store/appContants';
+import { RelativeTimeString } from '../../components/ui/RelativeTimeString';
+import { APP_REGEXP, DEFAULT_USER_PROFILE_IMAGE } from '../../store/appContants';
 import { NextPageContext } from 'next';
 import ReactLoading from "react-loading";
 import { useRouter } from 'next/router'
@@ -7,20 +7,21 @@ import TextareaAutosize from "react-textarea-autosize";
 import { ChatBubbleOvalLeftIcon, CheckCircleIcon, DocumentDuplicateIcon, ShareIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import ReactModal from 'react-modal';
-import ShareLinkModal from '@/components/component/ShareLinkModal';
-import Navbar from '@/components/Navbar';
+import ShareLinkModal from '../../components/component/ShareLinkModal';
+import Navbar from '../../components/Navbar';
 import Head from 'next/head';
-import LoaderPlane from '@/components/LoaderPlane';
+import LoaderPlane from '../../components/LoaderPlane';
 import { toast } from 'react-toastify';
-import { sendAComment, sendLikeToBlog } from '@/helpers/apiMethodsHelpers';
+import { sendAComment, sendLikeToBlog } from '../../helpers/apiMethodsHelpers';
 import { useEffect, useState } from 'react';
-import { jsonToHtml } from '@/helpers/helper';
+import { jsonToHtml } from '../../helpers/helper';
 import styles from "../../styles/publish.module.css"
-import { unixToLocalYear } from '@/store/appHelpers';
-import { useUserDataStore } from '@/store/appState';
-import { getBlogbyId } from '@/graphql/queries/getBlogbyId';
+import { unixToLocalYear } from '../../store/appHelpers';
+import { useUserDataStore } from '../../store/appState';
+import { getBlogbyId } from '../../graphql/queries/getBlogbyId';
 import { useQuery } from '@apollo/client';
-import { UserDataResponse } from '@/types/type';
+import { UserDataResponse } from '../../types/type';
+import React from 'react';
 interface PageProps {
 authorSocialMedia: string
 authorUserName: string
@@ -37,6 +38,7 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
   const [callBack, setCallBack] = useState();
   const [blogComments, setBlogComments] = useState<any[]>([]);
   const [showModalComment, setShowModalComment] = useState(false);
+  const [blogTitle, setBlogTitle] = useState('');
   const [publishDate, setPublishDate] = useState<any>(null);
   const {
     data: gqlData,
@@ -55,6 +57,12 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
       // console.log(dataForDate[0].creation_date);
       const date = unixToLocalYear(Number(dataForDate[0].creation_date));
       setPublishDate(date);
+      console.log("Tile", dataForDate);
+      console.log("Tile", dataForDate.tiny_mce_data);
+      const title = dataForDate?.tiny_mce_data?.children[0]?.children[0]?.children[0];
+      console.log("Tile", title, dataForDate?.tiny_mce_data);
+      console.log(dataForDate?.tiny_mce_data)
+      setBlogTitle(title);
     },
   });
 
@@ -99,10 +107,13 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
   useEffect(() => {
     // const html = jsonToHtml(gqlData?.fetchBlog?.publish_data[2].tiny_mce_data);
     // @ts-ignore
+
     const aa = gqlData?.fetchBlog?.publish_data.find((pd) => pd.platform === "wordpress"
     ).tiny_mce_data;
+    console.log("ADD");
+    console.log(aa?.children[0].children[0].children[0]);
+setBlogTitle(aa?.children[0].children[0].children[0])
     const html = jsonToHtml(aa);
-
     setData(html);
   }, [gqlData]);
 
@@ -169,7 +180,7 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
   return (
     <div className="bg-[#00000014] min-h-screen">
       <Head>
-    <title>Blog Header Title</title>
+      <title>{blogTitle}</title>
    </Head>
       <Navbar isOpen={false} />
       <div className="flex items-center justify-center w-full lg:max-w-[1056px] mx-auto flex-col ">

@@ -36,7 +36,7 @@ export interface UserDataResponse {
         twitterUserName:string | null, 
         linkedInUserName:string | null,
         googleUserName:string | null,
-        userName:string,
+        userName:string,        
         hours_left_for_quota_renew: number,
         remaining_twitter_quota: number,
         total_twitter_quota: number,
