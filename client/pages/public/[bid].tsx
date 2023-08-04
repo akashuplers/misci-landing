@@ -43,7 +43,7 @@ export default function Post() {
       fetchBlogId: bid,
     },  
     onCompleted(data) {
-      setBlogComments(data.fetchBlog.comments);
+      setBlogComments(data?.fetchBlog.comments);
       const dataForDate = data?.fetchBlog?.publish_data?.filter(
         (obj:any) => obj?.platform === "wordpress"
       );
@@ -53,9 +53,6 @@ export default function Post() {
       const tinyData = data?.fetchBlog?.publish_data?.filter(
         (obj:any) => obj?.platform === "wordpress"
       );
-      const title = tinyData?.tiny_mce_data?.children[0]?.children[0]?.children[0];
-      console.log("Tile", title,  tinyData?.tiny_mce_data)    
-      setBlogTitle(title);
     },
   });
 
@@ -418,7 +415,7 @@ console.log(comments.length);
     }
     sendAComment({
       text: commmentValue,
-      blogId: data.fetchBlog._id,
+      blogId: data?.fetchBlog._id,
       email: email || userData?.data.me.email || "Anonymous",
       name: name || userData?.data.me.name || "Anonymous",
     }).then(
@@ -458,7 +455,7 @@ console.log(comments.length);
         </h1>
         {/* cross btn */}
         <h2 className="hidden lg:block">
-          Other Comments ({data.fetchBlog.comments.length})
+          Other Comments ({data?.fetchBlog.comments.length})
         </h2>
         <button onClick={
           () => setShowModalComment(false)
@@ -549,7 +546,7 @@ console.log(comments.length);
       {/* Right side for other comments */}
       <div className="flex flex-col gap-2 h-full  overflow-y-scroll max-h-[350px] relative">
         <h2 className="lg:hidden">
-          Other Comments ({data.fetchBlog.comments.length})
+          Other Comments ({data?.fetchBlog.comments.length})
         </h2>
         <div className="bg-white w-full  sticky top-0">
         <div className=" top-0 w-[132px] h-9 p-1.5 bg-white rounded-lg border border-gray-300 justify-start items-center gap-1 inline-flex">
