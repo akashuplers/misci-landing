@@ -175,7 +175,7 @@ export default function Settings() {
       setUpdateProfileData({
         firstName: meeData.me.name,
         lastName: meeData.me.lastName,
-        userName: meeData.me.userName,
+        userName: meeData.me.googleUserName ?? meeData.me.linkedInUserName ?? meeData.me.userName?? "",
         profileImage: meeData.me.profileImage ?? fillerProfileImage,
       });
       const arr = [];
@@ -241,9 +241,24 @@ export default function Settings() {
       return;
     }
 
+    const newUserProfileData = {
+      ...updateProfileData
+    }
+    // check for which username
+    if (meeData.me.googleUserName) {
+      newUserProfileData.googleUserName = updateProfileData.userName
+      newUserProfileData.userName = null;
+    } else if (meeData.me.linkedinUserName) {
+      newUserProfileData.linkedinUserName = updateProfileData.userName
+      newUserProfileData.userName = null;
+    } else {
+      newUserProfileData.userName = updateProfileData.userName
+      newUserProfileData.userName = null;
+    }
+
     setUpdateLoader(true);
     axios
-      .put(API_BASE_PATH + API_ROUTES.UPDATE_PROFILE, updateProfileData, {
+      .put(API_BASE_PATH + API_ROUTES.UPDATE_PROFILE, newUserProfileData, {
         headers: {
           Authorization: `Bearer ${getToken}`,
           "Content-Type": "application/json",
@@ -623,7 +638,7 @@ export default function Settings() {
                                         padding: "0 0.25em",
                                       }}
                                     />
-                                  </dd>
+                                  </dd> 
                                 </div>
                                 <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:pt-5">
                                   <dt className="text-sm font-medium text-gray-500">
