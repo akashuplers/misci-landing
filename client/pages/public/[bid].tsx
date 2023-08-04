@@ -33,6 +33,13 @@ export default function Post() {
   const [showModalComment, setShowModalComment] = useState(false);
   const [blogTitle, setBlogTitle] = useState('');
   const [publishDate, setPublishDate] = useState<any>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [commentLoading, setCommentLoading] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsAuthenticated(localStorage.getItem("token") ? true : false);
+    }
+  }, []);
   const[authorPath, setAuthorPath] = useState('');
   const {
     data: gqlData,
@@ -135,7 +142,7 @@ export default function Post() {
   }, [router, gqlData]);
   useEffect(() => { 
     if(authorPath!=""){
-      isAuthenticated && router.push("/publish"+authorPath);
+      isAuthenticated && router.push("/public"+authorPath);
     }
   }
   , [authorPath])
