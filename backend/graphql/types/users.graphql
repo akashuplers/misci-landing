@@ -13,6 +13,9 @@ type User {
     subscribeStatus: String
     freeTrial: Boolean
     userName: String
+    twitterUserName: String
+    linkedInUserName: String
+    googleUserName: String
     freeTrailEndsDate: String
     freeTrialDays: Int!
     subscriptionId: String
