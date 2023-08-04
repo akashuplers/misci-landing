@@ -203,7 +203,7 @@ export default function App({ Component, pageProps }: AppProps) {
         </ApolloProvider>
       </>
     );
-  } else if (!isAuthenticated && allowedRoutes.includes(pathName)) {
+  } else if (!isAuthenticated && (allowedRoutes.includes(pathName) || pathName.includes('public'))) {
     return (
       <>
         <ApolloProvider client={client}>
