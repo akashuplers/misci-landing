@@ -145,6 +145,7 @@ setBlogTitle(aa?.children[0].children[0].children[0])
       
       // remvove blacnk spaces  
       authorProfilePath.replace(/\s/g, '');
+      console.log('fine till here');
       // 
     //   router.push('/public'+ authorProfilePath);
       if (h3Element) {
@@ -176,10 +177,8 @@ setBlogTitle(aa?.children[0].children[0].children[0])
 
 
       var modifiedHtml = tempElement.innerHTML;
-      console.log(modifiedHtml);
       const phraseToRemove = 'A placeholder image has been added, you can upload your own image.';
       const modifiedString = modifiedHtml.replace(new RegExp(`<span[^>]*>${phraseToRemove}</span>`, 'g'), '');
-      console.log(modifiedString);
       publishContainer.innerHTML = modifiedString;
     }
 
@@ -320,7 +319,6 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
    userData: UserDataResponse | null
   }) => {
 
-console.log(comments.length);
   var getToken: string | null = null;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -424,7 +422,6 @@ console.log(comments.length);
       name: name || userData?.data.me.name || "Anonymous",
     }).then(
       (res) => {
-        console.log(res);
         if (res.type) {
           if (res.type == "SUCCESS") {
             toast.success(res.message);
