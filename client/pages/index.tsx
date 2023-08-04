@@ -931,11 +931,10 @@ export default function Home(
                   </div>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-2.5">
-                  <span className="relative flex text-xl items-center  justify-center font-medium tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap">Two ways to get started with &nbsp;<span className="font-bold text-indigo-600">Lille.ai</span></span>
+                  {/* <span className="relative flex text-xl items-center  justify-center font-medium tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap">Two ways to get started with &nbsp;<span className="font-bold text-indigo-600">Lille.ai</span></span>
                   <span className="text-center text-slate-800 text-xl font-bold leading-relaxed">
                     Ask questions or upload multiple documents / URL’S.
-                  </span>
-
+                  </span> */}
 
                 </div>
 
