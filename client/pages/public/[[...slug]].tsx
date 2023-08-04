@@ -57,12 +57,6 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
       // console.log(dataForDate[0].creation_date);
       const date = unixToLocalYear(Number(dataForDate[0].creation_date));
       setPublishDate(date);
-      console.log("Tile", dataForDate);
-      console.log("Tile", dataForDate.tiny_mce_data);
-      const title = dataForDate?.tiny_mce_data?.children[0]?.children[0]?.children[0];
-      console.log("Tile", title, dataForDate?.tiny_mce_data);
-      console.log(dataForDate?.tiny_mce_data)
-      setBlogTitle(title);
     },
   });
 
@@ -110,8 +104,6 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
 
     const aa = gqlData?.fetchBlog?.publish_data.find((pd) => pd.platform === "wordpress"
     ).tiny_mce_data;
-    console.log("ADD");
-    console.log(aa?.children[0].children[0].children[0]);
 setBlogTitle(aa?.children[0].children[0].children[0])
     const html = jsonToHtml(aa);
     setData(html);
