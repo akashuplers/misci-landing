@@ -45,16 +45,6 @@ axios.interceptors.response.use(
       console.log("User Not Unauthorized");
       localStorage.clear();
       window.location.href = "/";
-      // toast.success("User Not Unauthorized", {
-      //   position: "top-center",
-      //   autoClose: 5000,
-      //   hideProgressBar: false,
-      //   closeOnClick: true,
-      //   pauseOnHover: true,
-      //   draggable: true,
-      //   progress: undefined,
-      //   theme: "light",
-      // });
     }
     return response;
   },
@@ -68,24 +58,12 @@ axios.interceptors.response.use(
       console.log("User Not Unauthorized");
       localStorage.clear();
       window.location.href = "/";
-      // toast.success("User Not Unauthorized", {
-      //   position: "top-center",
-      //   autoClose: 5000,
-      //   hideProgressBar: false,
-      //   closeOnClick: true,
-      //   pauseOnHover: true,
-      //   draggable: true,
-      //   progress: undefined,
-      //   theme: "light",
-      // });
     }
     return Promise.reject(error);
   }
 );
 
 export default function App({ Component, pageProps }: AppProps) {
-  // const changeTempId = useTempId((state) => state.changeTempId);
-  // const tempId = useTempId((state) => state.tempId);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const router = useRouter();
@@ -133,17 +111,6 @@ export default function App({ Component, pageProps }: AppProps) {
     }
   }, []);
 
-  /*useEffect(() => {
-    if (
-      localStorage.getItem("token") &&
-      (router.asPath === "/login" ||
-        router.asPath === "/signUp" ||
-        router.asPath === "/")
-    ) {
-      // router.push("/dashboard");
-    }
-  }, []);*/
-
   if (typeof window !== "undefined") {
     // Perform localStorage action
     var getToken = localStorage.getItem("token");
@@ -185,31 +152,10 @@ export default function App({ Component, pageProps }: AppProps) {
     );
 
     return forward(operation).map((response) => {
-      // console.log("852");
-
-      // if (response.errors?.[0]?.extensions?.code === "UNAUTHENTICATED") {
-      //   window.location.href = "/";
-      //   localStorage.clear();
-      //   toast.success("Bad Request!!", {
-      //     position: "top-center",
-      //     autoClose: 5000,
-      //     hideProgressBar: false,
-      //     closeOnClick: true,
-      //     pauseOnHover: true,
-      //     draggable: true,
-      //     progress: undefined,
-      //     theme: "light",
-      //   });
-      // }
       console.log(`[GraphQL] Response: ${operation.operationName}`, response);
       return response;
     });
   });
-
-  // const client = new ApolloClient({
-  //   link: authLink.concat(link),
-  //   cache: new InMemoryCache(),
-  // });
 
   const client = new ApolloClient({
     link: authLink.concat(link),
