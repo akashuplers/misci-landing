@@ -6,6 +6,7 @@ import Select, {
   components,
   ControlProps,
   Props,
+  IndicatorSeparatorProps,
   MultiValueRemoveProps,
   StylesConfig,
 } from 'react-select';
@@ -55,7 +56,21 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
       const allInputsClone = { ...allInputs };
       var newBlogLinks =[];
       console.log(newInputValue);
+      const previousValues = [...value];
+      const previousUrl = previousValues.filter((item) => item.type === 'url');
+      const previousKeyword = previousValues.filter((item) => item.type === 'keyword');
+      if(previousUrl.length + previousKeyword.length >=3){
+        toast.error('You can only add three links (including 1 keyword)');
+        return;
+      }
       if (validateIfURL(newInputValue)) {
+        const previousValues = [...value];
+        // check for objc with url
+        const previousUrl = previousValues.filter((item) => item.type === 'url');
+        if (previousUrl.length >=3) {
+          toast.error('You can only add three links');
+          return;
+        }
         newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1, 'url')];      
       } else {
         const previousValues = [...value];
@@ -72,6 +87,9 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
       event.preventDefault();
     }
   };
+  useEffect(() => {
+    console.log(value);
+  }, [value]);
   const MultiValueRemove = (props) => {
     function handleClick(){
       const typeOfData = props.data.type;
@@ -100,14 +118,30 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
         </components.MultiValueLabel>
     )
   }
-
-
+  const Separator = () => {
+    return <div className='text-sm mr-1 ml-1'>OR</div>;
+  };
+  const indicatorSeparatorStyle = {
+    alignSelf: 'stretch',
+    marginBottom: 8,
+    marginTop: 8,
+    width: 1,
+    
+  };
+  
   const DropdownIndicator = () => {
     return null; // Return null to hide the default separator
   };
   const ClearIndicator = (props) => {
     return null; // Return null to hide the default separator
   };
+  const ValueContainer = ({ children, ...props }) => {
+    return (
+      <components.ValueContainer {...props} className='custom-scrollbar'>
+        {children}
+      </components.ValueContainer>
+    );
+  }
 
   return (
     <div style={{
@@ -116,10 +150,11 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
     }}
     >
       <CreatableSelect
-      components={{DropdownIndicator , MultiValueRemove, ClearIndicator, MultiValueLabel}}
+      components={{DropdownIndicator , MultiValueRemove, ClearIndicator, MultiValueLabel, IndicatorSeparator : () => <Separator />}}
       inputValue={inputValue}
-      
+      classNamePrefix="react-select"      
       styles={{
+         
         multiValue: (baseStyles, state) => ({
           ...baseStyles,
           backgroundColor: 'transparent',
@@ -128,7 +163,8 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '0.25rem'
+          padding: '0.25rem',
+          minWidth: 'auto',
         }), 
         
         multiValueRemove: (baseStyles, state) => ({
@@ -145,15 +181,21 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
           ...baseStyles, 
           gap: '0.75rem',
           flexWrap: 'nowrap',
+          overflowX: 'auto',
+          className: 'custom-scrollbar'
         }),
-        control: (baseStyles, state)=>({
-          ...baseStyles, 
-          border: 'unset'
+        control: (base, state) => ({
+          
+          ...base,
+          border: 'none',
+          "*": {
+            boxShadow: "none !important",
+          },
         }),
         placeholder: (baseStyles, state)=>({
           ...baseStyles, 
           textAlign: 'left'
-        })
+        }),
       }}
       isClearable
       isMulti
@@ -172,6 +214,14 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
         var newBlogLinks =[];
         console.log(newInputValue);
         if (validateIfURL(newInputValue)) {
+          const previousValues = [...value];
+          // check for objc with url
+          const previousUrl = previousValues.filter((item) => item.type === 'url');
+          if (previousUrl.length >= 3) {
+            toast.error('You can only add three links');
+            return;
+          }
+
           newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1, 'url')];      
         } else {
           const previousValues = [...value];
@@ -192,7 +242,7 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
       onChange={(newValue) => setValue(newValue)}
       onInputChange={(newValue) => setInputValue(newValue)}
       onKeyDown={handleKeyDown}
-      placeholder={'Ask Questions or Enter URLs'}
+      placeholder={'Give me a Prompt, URLs'}
       value={value}
     />
     </div>
