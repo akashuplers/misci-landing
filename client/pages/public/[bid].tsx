@@ -33,6 +33,7 @@ export default function Post() {
   const [showModalComment, setShowModalComment] = useState(false);
   const [blogTitle, setBlogTitle] = useState('');
   const [publishDate, setPublishDate] = useState<any>(null);
+  const[authorPath, setAuthorPath] = useState('');
   const {
     data: gqlData,
     loading,
@@ -101,10 +102,44 @@ export default function Post() {
     ).tiny_mce_data;
     const html = jsonToHtml(aa);
     console.log("ADD");
+    console.log(gqlData?.fetchBlog);
     console.log(aa?.children[0].children[0].children[0]);
-    setBlogTitle(aa?.children[0].children[0].children[0])
+    setBlogTitle(aa?.children[0].children[0].children[0]);
+    console.log(gqlData);
+    const userDetails = gqlData?.fetchBlog?.userDetail;
+    console.log(userDetails);
+    var authorProfilePath = "";
+    if (userDetails?.googleUserName) {
+      {
+        authorProfilePath = "/google/" + userDetails?.googleUserName.replace(/\s/g, '') + "/" + bid;
+      }
+
+    }
+    if (userDetails?.twitterUserName) {
+      {
+        authorProfilePath = "/twitter/" + userDetails.twitterUserName.replace(/\s/g, '') + "/" + bid;
+      }
+    }
+    if (userDetails?.linkedInUserName) {
+      {
+        authorProfilePath = "/linkedin/" + userDetails?.linkedInUserName.replace(/\s/g, '') + "/" + bid;
+      }
+    }
+    if (userDetails?.userName) {
+      authorProfilePath = "/user/" + userDetails?.userName.replace(/\s/g, '') + "/" + bid;
+    }
+    
+    console.log("username"+authorProfilePath);
+    setAuthorPath(authorProfilePath);
     setData(html);
   }, [router, gqlData]);
+  useEffect(() => { 
+    if(authorPath!=""){
+      router.push("/publish"+authorPath);
+    }
+  }
+  , [authorPath])
+
 
   useEffect(() => {
     const publishContainer = document.getElementById("publishContainer");
@@ -121,29 +156,13 @@ export default function Post() {
       // get the first h3 tag
       const h3Element = tempElement.querySelector('h3');
       var authorProfilePath = "";
-      if (userData?.data.me.googleUserName) {
-        {
-          authorProfilePath = "/google/" + userData?.data.me.googleUserName.replace(/\s/g, '')+ "/" + bid;
-        }
-        if (userData?.data.me.twitterUserName) {
-          {
-            authorProfilePath = "/twitter/" + userData?.data.me.twitterUserName.replace(/\s/g, '') + "/" + bid;
-          }
-        }
-      }
-      if (userData?.data.me.linkedInUserName) {
-        {
-          authorProfilePath = "/linkedin/" + userData?.data.me.linkedInUserName.replace(/\s/g, '') + "/" + bid;
-        }
-      }
-      if(userData?.data.me.userName){
-        authorProfilePath = "/user/" + userData?.data.me.userName.replace(/\s/g, '') + "/" + bid;
-      }
+     
       
       // remvove blacnk spaces  
-      authorProfilePath.replace(/\s/g, '');
-      // 
-      router.push('/public'+ authorProfilePath);
+
+      console.log("PUSHING TO ROUTER")
+      console.log(authorProfilePath)
+      // router.push('/public'+ authorProfilePath);
       if (h3Element) {
         console.log(gqlData);
         console.log('MEED DATA');
