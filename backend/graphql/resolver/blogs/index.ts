@@ -78,7 +78,20 @@ export const blogResolvers = {
             }
             if(options.userName) {
                 const userDetails = await db.db('lilleAdmin').collection('users').findOne({
-                    userName: options.userName
+                    $or: [
+                        {
+                            userName: options.userName
+                        },
+                        {
+                            linkedinUserName: options.userName
+                        },
+                        {
+                            googleUserName: options.userName
+                        },
+                        {
+                            twitterUserName: options.userName
+                        }
+                    ]
                 })
                 if(!userDetails) {
                     throw "No user found!"
