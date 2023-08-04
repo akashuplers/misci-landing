@@ -226,7 +226,7 @@ export default function App({ Component, pageProps }: AppProps) {
         </ApolloProvider>
       </>
     );
-  } else if (!isAuthenticated && notAllowedRoutes.includes(pathName)) {
+  } else if (!isAuthenticated && ( notAllowedRoutes.includes(pathName) || pathName.includes('public'))) {
     return <>{/* <LoginComponent {...pageProps} /> */}</>;
   }
 }
