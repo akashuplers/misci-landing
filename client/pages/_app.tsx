@@ -77,6 +77,7 @@ export default function App({ Component, pageProps }: AppProps) {
     "/pricing",
     "/subscription",
     "/public/[bid]",
+    "/profile/[bid]",
     "/resetPass",
     "/cancellation-policy",
     "/faq",

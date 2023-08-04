@@ -1075,7 +1075,7 @@ export default function Home(
                   </div>
                   <div className="w-full h-5 lg:flex-row flex-col justify-start items-start gap-3 inline-flex">
                     <div className="grow shrink basis-0 opacity-70 text-gray-600 text-sm font-normal text-left">Let Lille search the web to generate article, Linkedin Post & Tweets</div>
-                    <div className="opacity-70 w-52"><span className="text-zinc-500 text-sm font-normal text-right">Max 7MB size. If you have more than 7MB</span><span className="text-gray-500 text-sm font-normal"> </span><button
+                    <div className="opacity-70 w-52 text-right"><span className="text-zinc-500 text-sm font-normal text-right">Max 7MB size. If you have more than 7MB</span><span className="text-gray-500 text-sm font-normal"> </span><button
                     onClick={()=>setShowGDriveModal(true)}
                     ><span className="text-blue-500 text-sm font-normal">Click here</span></button></div>
                   </div>
