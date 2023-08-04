@@ -114,23 +114,47 @@ export default function Post() {
       }
       // get the first h3 tag
       const h3Element = tempElement.querySelector('h3');
+      var authorProfilePath = "";
+      if (userData?.data.me.googleUserName) {
+        {
+          authorProfilePath = "/google/" + userData?.data.me.googleUserName.replace(/\s/g, '')+ "/" + bid;
+        }
+        if (userData?.data.me.twitterUserName) {
+          {
+            authorProfilePath = "/twitter/" + userData?.data.me.twitterUserName.replace(/\s/g, '') + "/" + bid;
+          }
+        }
+      }
+      if (userData?.data.me.linkedInUserName) {
+        {
+          authorProfilePath = "/linkedin/" + userData?.data.me.linkedInUserName.replace(/\s/g, '') + "/" + bid;
+        }
+      }
+      // remvove blacnk spaces  
+      authorProfilePath.replace(/\s/g, '');
+      // 
+      router.push('/public'+ authorProfilePath);
       if (h3Element) {
         console.log(gqlData);
+        console.log('MEED DATA');
+        console.log(userData);
         // make a sibling div element to ti showing randoem author name and time to read. 
         const divElement = document.createElement('div');
         divElement.innerHTML = ` 
-      <div style="width: 100%; height: 44px; justify-content: flex-start; align-items: center; gap: 12px; display: inline-flex; margin-top: 24px; margin-bottom: 24px">
-      <img style="width: 44px; height: 44px; position: relative; background: linear-gradient(0deg, black 0%, black 100%); border-radius: 200px" src=${gqlData.fetchBlog?.userDetail?.profileImage ?? "https://github.com/identicons/jasonlong.png"
-          } />
-      <div style="flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 4px; display: inline-flex">
-        <div style="color: #272C47; font-size: 16px;font-weight: 400; word-wrap: break-word; font-style: italic">
-      <strong>
-      ${(gqlData.fetchBlog?.userDetail?.name) ?? ""}
-      </strong>
+          <a href="${"/public"+authorProfilePath}" class="flex items-center space-x-2">
+          <div style="width: 100%; height: 44px; justify-content: flex-start; align-items: center; gap: 12px; display: inline-flex; margin-top: 24px; margin-bottom: 24px">
+          <img style="width: 44px; height: 44px; position: relative; background: linear-gradient(0deg, black 0%, black 100%); border-radius: 200px" src=${gqlData.fetchBlog?.userDetail?.profileImage ?? "https://github.com/identicons/jasonlong.png"
+              } />
+          <div style="flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 4px; display: inline-flex">
+            <div style="color: #272C47; font-size: 16px;font-weight: 400; word-wrap: break-word; font-style: italic">
+          <strong>
+          ${(gqlData.fetchBlog?.userDetail?.name) ?? ""}
+          </strong>
+            </div>
+            <div style="opacity: 0.50; color: black; font-size: 12px; font-weight: 500; word-wrap: break-word">${publishDate}</div>
+          </div>
         </div>
-        <div style="opacity: 0.50; color: black; font-size: 12px; font-weight: 500; word-wrap: break-word">${publishDate}</div>
-      </div>
-    </div>
+        </a>
       `;
         // insert after h3 tag
         // @ts-ignore
@@ -168,7 +192,7 @@ export default function Post() {
       <Navbar isOpen={false} />
       <div className="flex items-center justify-center w-full lg:max-w-[1056px] mx-auto flex-col ">
         <div className={styles.publishContainer} id="publishContainer"></div>
-        <ShareLinkModal openModal={showShareModal} setOpenModal={setShareModal} blog_id={gqlData.fetchBlog._id} text={text} />
+        <ShareLinkModal openModal={showShareModal} setOpenModal={setShareModal} blog_id={gqlData?.fetchBlog?._id} text={text} />
         <ReactModal
           isOpen={showModalComment}
           onRequestClose={() => setShowModalComment(false)}
