@@ -99,12 +99,10 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
   const [copyStart, setCopyStart] = useState(false);
 
   useEffect(() => {
-    // const html = jsonToHtml(gqlData?.fetchBlog?.publish_data[2].tiny_mce_data);
     // @ts-ignore
-
     const aa = gqlData?.fetchBlog?.publish_data.find((pd) => pd.platform === "wordpress"
     ).tiny_mce_data;
-setBlogTitle(aa?.children[0].children[0].children[0])
+    setBlogTitle(aa?.children[0].children[0].children[0])
     const html = jsonToHtml(aa);
     setData(html);
   }, [gqlData]);
@@ -155,7 +153,6 @@ setBlogTitle(aa?.children[0].children[0].children[0])
         // make a sibling div element to ti showing randoem author name and time to read. 
         const divElement = document.createElement('div');
         divElement.innerHTML = ` 
-          <a href="${"/public"+authorProfilePath}" class="flex items-center space-x-2">
           <div style="width: 100%; height: 44px; justify-content: flex-start; align-items: center; gap: 12px; display: inline-flex; margin-top: 24px; margin-bottom: 24px">
           <img style="width: 44px; height: 44px; position: relative; background: linear-gradient(0deg, black 0%, black 100%); border-radius: 200px" src=${gqlData?.fetchBlog?.userDetail?.profileImage ?? "https://github.com/identicons/jasonlong.png"
               } />
@@ -168,7 +165,6 @@ setBlogTitle(aa?.children[0].children[0].children[0])
             <div style="opacity: 0.50; color: black; font-size: 12px; font-weight: 500; word-wrap: break-word">${publishDate}</div>
           </div>
         </div>
-        </a>
       `;
         // insert after h3 tag
         // @ts-ignore
