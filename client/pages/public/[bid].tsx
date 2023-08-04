@@ -21,6 +21,7 @@ import { useUserDataStore } from '../../store/appState';
 import { UserDataResponse } from "@/types/type";
 import { getRelativeTimeString, unixToLocalYear,  } from "@/store/appHelpers";
 import { RelativeTimeString } from "@/components/ui/RelativeTimeString";
+import Head from "next/head";
 export default function Post() {
   const router = useRouter();
   const { bid } = router.query;
@@ -161,6 +162,9 @@ export default function Post() {
   if (loading) return <LoaderPlane />;
   return (
     <div className="bg-[#00000014] min-h-screen">
+      <Head>
+    <title>Blog Header Title</title>
+   </Head>
       <Navbar isOpen={false} />
       <div className="flex items-center justify-center w-full lg:max-w-[1056px] mx-auto flex-col ">
         <div className={styles.publishContainer} id="publishContainer"></div>

@@ -76,7 +76,23 @@ const STATESOFKEYWORDS = {
   LOADING: 'loading',
   LOADED: 'loaded',
 }
-export default function Home() {
+export const getServerSideProps = async (context) => {
+  const { payment } = context.query;
+  const randomLiveUsersCount = randomNumberBetween20And50();
+  return {
+    props: {
+      payment: payment || false,
+      randomLiveUsersCount,
+    },
+  };
+}
+
+export default function Home(
+  {
+    payment,
+    randomLiveUsersCount,
+  }
+) {
   var getUserId;
   var getTempId;
   const isAuthenticated = useStore((state) => state.isAuthenticated);
@@ -101,6 +117,7 @@ export default function Home() {
   const selectedFiles = useRepurposeFileStore((state) => state.selectedFiles);
   const removeSelectedFile = useRepurposeFileStore((state) => state.removeSelectedFile);
   const setSelectedFiles = useRepurposeFileStore((state) => state.setSelectedFiles);
+  const [inputMouseIn, setInputMouseIn] = useState(false);
   const executeLastFunction = useFunctionStore((state) => state.executeLastFunction);
   const [showGDriveModal, setShowGDriveModal] = useState(false);
   const { addFunction } = useSideBarChangeFunctions()
@@ -564,6 +581,7 @@ export default function Home() {
       },
     },
     onError: ({ graphQLErrors, networkError }) => {
+      console.log(graphQLErrors, networkError)
       if (graphQLErrors) {
         for (let err of graphQLErrors) {
           switch (err.extensions.code) {
@@ -575,7 +593,6 @@ export default function Home() {
       }
       if (networkError) {
         console.log(`[Network error]: ${networkError}`);
-
         if (
           `${networkError}` ===
           "ServerError: Response not successful: Received status code 401" &&
@@ -914,11 +931,10 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-2.5">
-                  <span className="relative flex text-xl items-center  justify-center font-medium tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap">Two ways to get started with &nbsp;<span className="font-bold text-indigo-600">Lille.ai</span></span>
+                  {/* <span className="relative flex text-xl items-center  justify-center font-medium tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap">Two ways to get started with &nbsp;<span className="font-bold text-indigo-600">Lille.ai</span></span>
                   <span className="text-center text-slate-800 text-xl font-bold leading-relaxed">
                     Ask questions or upload multiple documents / URL’S.
-                  </span>
-
+                  </span> */}
 
                 </div>
 
@@ -933,10 +949,10 @@ export default function Home() {
                       <div className="w-3.5 h-3.5 relative">
                       </div>
                       <div><span className="text-green-600 text-sm font-extrabold"
-                      >{randomNumberBetween20And50()} users</span><span className="text-green-600 text-sm font-medium"> are online now</span></div>
+                      >{randomLiveUsersCount} users</span><span className="text-green-600 text-sm font-medium"> are online now</span></div>
                     </div>
                     <div className="px-3 py-1.5 bg-violet-100 rounded-3xl justify-start items-center gap-1.5 flex">
-                      <div><span className="text-blue-500 text-sm font-extrabold">{usersTotalTimeSavedData?.data.totalSavedTime} Hrs</span><span className="text-blue-500 text-sm font-medium"> we have saved collectively of our users</span></div>
+                      <div><span className="text-blue-500 text-sm font-extrabold">{usersTotalTimeSavedData?.data.totalSavedTime} Hrs</span><span className="text-blue-500 text-sm font-medium"> saved collectively of our users</span></div>
                     </div>
                   </div>
                   <div className="w-full h-full justify-center items-center gap-2.5 inline-flex">
@@ -953,7 +969,34 @@ export default function Home() {
                           </button>
                         </div>
                       }
-                      <div className="flex items-center flex-col md:flex-row px-2  gap-2.5">
+                      <div className="flex items-center flex-col md:flex-row px-2  gap-2.5 relative "
+                      onMouseEnter={
+                        () => {
+                          setInputMouseIn(true)
+                          setTimeout(() => {
+                            setInputMouseIn(false)
+                          }
+                            , 3000)
+                         }
+                        
+                      }
+                      onMouseLeave={
+                        () => { setInputMouseIn(false) }
+                      }
+                      >
+                        
+                        {
+                          inputMouseIn && <div className="transition-all transform   min-w-80 min-h-32 p-2.5 bg-black bg-opacity-90 rounded backdrop-blur-2xl absolute bottom-[60px] justify-start items-start gap-2.5 inline-flex">
+                          <div className="text-white text-sm text-left font-normal leading-7">
+                              <h4>Example for Give me a prompt:</h4>
+                              <p>'Worldcoin project' or 'How is Worldcoin Project by Sam Altman different?'</p>
+
+                              <h4>Example of URL:</h4>
+                              <p>https://www.health.harvard.edu/staying-healthy/give-yourself-a-health-self-assessment</p>
+
+                        </div> 
+                        </div>
+                        }
                         {/* <RePurpose removeFile={removeFile} value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} /> */}
                         {
                           showFileUploadUI == true && blogLinks.length == 0 ?
@@ -1032,7 +1075,7 @@ export default function Home() {
                   </div>
                   <div className="w-full h-5 lg:flex-row flex-col justify-start items-start gap-3 inline-flex">
                     <div className="grow shrink basis-0 opacity-70 text-gray-600 text-sm font-normal text-left">Let Lille search the web to generate article, Linkedin Post & Tweets</div>
-                    <div className="opacity-70 w-52"><span className="text-zinc-500 text-sm font-normal text-right">Max 7MB size. If you have more than 7MB</span><span className="text-gray-500 text-sm font-normal"> </span><button
+                    <div className="opacity-70 w-52 text-right"><span className="text-zinc-500 text-sm font-normal text-right">Max 7MB size. If you have more than 7MB</span><span className="text-gray-500 text-sm font-normal"> </span><button
                     onClick={()=>setShowGDriveModal(true)}
                     ><span className="text-blue-500 text-sm font-normal">Click here</span></button></div>
                   </div>
@@ -1143,12 +1186,12 @@ export default function Home() {
                         <>
                           {keywordsOFBlogs.length > 0 ? (
                             <div className="flex items-center gap-1.5">
-                              <span className="text-white">Proceed to your 1<sup>st</sup> draft</span>
+                              <span className="text-white">Proceed to your draft</span>
                             </div>
                           ) : (
                             <>
                               <div className="text-white text-base font-medium leading-7">
-                                Generate your 1<sup>st</sup> draft{" "}
+                                Generate draft{" "}
                               </div>
                               {/* <div className="justify-center items-center gap-2 flex">
                                 <div className="text-white">
