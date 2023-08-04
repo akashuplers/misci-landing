@@ -31,7 +31,7 @@ router.post('/drive-link', async (req: any, res: any) => {
                 message: 'Please provide sufficient data!'
             })
         }
-        await db.db('lilleBlog').collection('drive').insertOne({
+        await db.db('lilleBlogs').collection('drive').insertOne({
             url,
             email
         })
