@@ -944,8 +944,8 @@ export default function Home(
                 }}
                 >
                   <div className="w-full lg:h-8 justify-center items-start gap-4 inline-flex">
-                    <div className="px-3 py-1.5 bg-green-100 rounded-3xl justify-start items-center gap-1.5 flex">
-                      <div className="w-3 h-3 bg-green-600 rounded-full border border-white" />
+                    <div className="px-3 py-1.5 bg-green-100 rounded-3xl justify-start items-center flex">
+                      <div className="w-3 h-3 bg-green-600 rounded-full border border-white animate-pulse" />
                       <div className="w-3.5 h-3.5 relative">
                       </div>
                       <div><span className="text-green-600 text-sm font-extrabold"
@@ -972,7 +972,7 @@ export default function Home(
                       <div className="flex items-center flex-col md:flex-row px-2  gap-2.5 relative "
                       onMouseEnter={
                         () => {
-                          setInputMouseIn(true)
+                          setInputMouseIn(false)
                           setTimeout(() => {
                             setInputMouseIn(false)
                           }
@@ -1015,13 +1015,13 @@ export default function Home(
                                 setShowFileUploadUI(true);
                                 addToFunctionStack(() => { setShowFileUploadUI(false) })
                               }
-                            }  className="w-48 h-10 px-4 py-2.5 rounded-lg border border-indigo-300 justify-center items-center gap-2 inline-flex">
-                                <div className="text-indigo-600 text-sm font-medium">Upload </div>
-                                <div className="justify-center items-center gap-1 flex">
+                            }  className="w-20 h-10 px-4 py-4 rounded-lg border border-indigo-300 justify-center items-center gap-2 inline-flex">
+                                <div className="text-indigo-600 text-sm font-medium">File ↑ </div>
+                                {/* <div className="justify-center items-center gap-1 flex">
                                   <img className="w-5 h-5" src="./icons/pdficon.svg" />
                                   <img className="w-5 h-5" src="./icons/texticon.png" />
                                   <img className="w-5 h-5" src="./icons/wordicon.png" />
-                                </div>
+                                </div> */}
                               </button>
                           </Tooltip>
                         }
