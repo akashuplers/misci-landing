@@ -27,7 +27,7 @@ import useStore, { useFunctionStore } from "../store/store";
 import { Tab } from "@headlessui/react";
 import ReactLoading from "react-loading";
 import TextTransition, { presets } from "react-text-transition";
-import { ArrowLongRightIcon, CheckCircleIcon, CloudArrowUpIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { ArrowLongRightIcon, ArrowLongUpIcon, CheckCircleIcon, CloudArrowUpIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { checkFileFormatAndSize } from "@/components/DashboardInsights";
 import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
 import DragAndDropFiles, { REPURPOSE_MAX_SIZE_MB } from "@/components/ui/DragAndDropFiles";
@@ -214,6 +214,7 @@ export default function Home(
         return {
           url: null,
           file: null,
+          keyword: null
         }
       }
       )
@@ -287,7 +288,7 @@ export default function Home(
           });
           setShowUserLoadingModal({ show: false });
           setLoadingForKeywords(false); // Set loading state back to false on error
-        });
+        }).finally(() => { setStateOfGenerate((prev) => { return { ...prev, file: STATESOFKEYWORDS.LOADED, } }) });
     } else {
       toast.error('Please select a file');
       setLoadingForKeywords(false); // Set loading state back to false if no file is selected
@@ -319,31 +320,15 @@ export default function Home(
     }, { files: 0, urls: 0, keyword: 0 });
     // Replace `keywords` with your actual keywords array/state
     // Replace `fileInput` with your actual file input state or variable
-    console.log('countByType');
-    if (countByType.files > 0) {
-      setStateOfGenerate((prev) => {
-        return {
-          ...prev,
-          file: STATESOFKEYWORDS.LOADING,
-        }
-      });
-    }
-    if (countByType.urls > 0) {
-      setStateOfGenerate((prev) => {
-        return {
-          ...prev,
-          url: STATESOFKEYWORDS.LOADING,
-        }
-      });
-    }
-    if (countByType.keyword > 0) {
-      setStateOfGenerate((prev) => {
-        return {
-          ...prev,
-          keyword: STATESOFKEYWORDS.LOADING,
-        }
-      });
-    }
+    const typeKeys = Object.keys(countByType);
+
+    typeKeys.forEach((type) => {
+      setStateOfGenerate((prev) => ({
+        ...prev,
+        [type]: countByType[type] === 0 ? null : STATESOFKEYWORDS.LOADING,
+      }));
+    });
+
     console.log('countByType');
     console.log(countByType);
     // if (countByType.files > 0 && countByType.urls > 0) {
@@ -415,7 +400,12 @@ export default function Home(
       }
     });
   }).finally(() => {
-
+    setStateOfGenerate((prev) => {
+      return {
+        ...prev,
+        keyword: STATESOFKEYWORDS.LOADED,
+      }
+    });
   })
   }
 
@@ -970,33 +960,10 @@ export default function Home(
                         </div>
                       }
                       <div className="flex items-center flex-col md:flex-row px-2  gap-2.5 relative "
-                      onMouseEnter={
-                        () => {
-                          setInputMouseIn(false)
-                          setTimeout(() => {
-                            setInputMouseIn(false)
-                          }
-                            , 3000)
-                         }
-                        
-                      }
-                      onMouseLeave={
-                        () => { setInputMouseIn(false) }
-                      }
+                       
                       >
                         
-                        {
-                          inputMouseIn && <div className="transition-all transform   min-w-80 min-h-32 p-2.5 bg-black bg-opacity-90 rounded backdrop-blur-2xl absolute bottom-[60px] justify-start items-start gap-2.5 inline-flex">
-                          <div className="text-white text-sm text-left font-normal leading-7">
-                              <h4>Example for Give me a prompt:</h4>
-                              <p>'Worldcoin project' or 'How is Worldcoin Project by Sam Altman different?'</p>
-
-                              <h4>Example of URL:</h4>
-                              <p>https://www.health.harvard.edu/staying-healthy/give-yourself-a-health-self-assessment</p>
-
-                        </div> 
-                        </div>
-                        }
+                        
                         {/* <RePurpose removeFile={removeFile} value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} /> */}
                         {
                           showFileUploadUI == true && blogLinks.length == 0 ?
@@ -1016,7 +983,7 @@ export default function Home(
                                 addToFunctionStack(() => { setShowFileUploadUI(false) })
                               }
                             }  className="w-20 h-10 px-4 py-4 rounded-lg border border-indigo-300 justify-center items-center gap-2 inline-flex">
-                                <div className="text-indigo-600 text-sm font-medium">File ↑ </div>
+                                <div className="text-indigo-600 text-sm font-medium flex items-center justify-center">File <ArrowLongUpIcon className="h-4 w-4" /></div>
                                 {/* <div className="justify-center items-center gap-1 flex">
                                   <img className="w-5 h-5" src="./icons/pdficon.svg" />
                                   <img className="w-5 h-5" src="./icons/texticon.png" />
@@ -1063,6 +1030,7 @@ export default function Home(
                               return {
                                 url: null,
                                 file: null,
+                                keyword: null
                               }
                             }
                             )
@@ -1074,8 +1042,8 @@ export default function Home(
                     }
                   </div>
                   <div className="w-full h-5 lg:flex-row flex-col justify-start items-start gap-3 inline-flex">
-                    <div className="grow shrink basis-0 opacity-70 text-gray-600 text-sm font-normal text-left">Let Lille search the web to generate article, Linkedin Post & Tweets</div>
-                    <div className="opacity-70 w-52 text-right"><span className="text-zinc-500 text-sm font-normal text-right">Max 7MB size. If you have more than 7MB</span><span className="text-gray-500 text-sm font-normal"> </span><button
+                    <div className="grow shrink basis-0 opacity-70 text-gray-600 text-sm font-normal text-left"></div>
+                    <div className="opacity-70 w-[50%] text-right"><span className="text-zinc-500 text-sm font-normal text-right">Max 7MB size. If you have more than 7MB</span><span className="text-gray-500 text-sm font-normal"> </span><button
                     onClick={()=>setShowGDriveModal(true)}
                     ><span className="text-blue-500 text-sm font-normal">Click here</span></button></div>
                   </div>
@@ -1090,7 +1058,7 @@ export default function Home(
                         )}
                         {(stateOfGenerate.keyword != null) && (
                           <div className="flex items-center gap-1.5">
-                            <span className="text-slate-800">Keywords from Topic::</span>
+                            <span className="text-slate-800">Keywords from Topic:</span>
                             {stateOfGenerate.keyword === STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} height={20} color={"#2563EB"} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />}
                           </div>
                         )}
@@ -1106,7 +1074,7 @@ export default function Home(
 
                   <div className='flex items-center flex-col mt-2'>
                     {keywordsOFBlogs.length > 0 && <div className="flex items-center gap-1.5" >
-                      <h4>Select some keywords to generate article </h4> <Tooltip content="Select keywords to focus on. Sources/URLs/Files with the chosen keywords will be used to create a high-ranking SEO article." direction='top' className='max-w-[100px]'>
+                      <h4>Select some keywords to generate draft </h4> <Tooltip content="Select keywords to focus on. Sources/URLs/Files with the chosen keywords will be used to create a high-ranking SEO article." direction='top' className='max-w-[100px]'>
                         <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
                       </Tooltip></div>}
                     <div className='flex flex-wrap justify-center gap-2 mt-5'>
@@ -1186,7 +1154,7 @@ export default function Home(
                         <>
                           {keywordsOFBlogs.length > 0 ? (
                             <div className="flex items-center gap-1.5">
-                              <span className="text-white">Proceed to your draft</span>
+                              <span className="text-white">Generate Draft</span>
                             </div>
                           ) : (
                             <>
