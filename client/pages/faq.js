@@ -5,7 +5,7 @@ import { useState } from 'react'
 const faqs =  [
   {
     "question": "What is Lille.ai?",
-    "answer": "Lille.ai is an AI-powered content creation platform. It helps users generate and optimize content for general contents, Twitter, and LinkedIn. It allows users to provide topics and offers a wide range of trending topics to base your content on."
+    "answer": "Lille.ai is an AI-powered co-pilot for content research, discovery, and writing. It can read tons of stuff from the internet and documents you give it, and then it helps you write about it. And the best part? It tells you exactly where it found the information, so you know it's trustworthy. Plus, it works with tools like Google Drive and social media sites. It serves as a one shop stop for you to efficiently interact with and manage information."
   },
   {
     "question": "Generate Draft  - What is this?",
@@ -18,6 +18,13 @@ const faqs =  [
   {
     "question": "How do I sign up or login to Lille.ai?",
     "answer": "You can sign up for Lille.ai using your email address, Google account, or LinkedIn account. If you already have an account with Lille.ai, just enter your email address and password in the 'Login' fields to access your dashboard."
+  },{
+    "question": "Why was Lille.ai created?",
+    answer: `Lille.ai, a SaaS application was created to help people deal with too much information. It serves as a powerful memory that helps you find, organize, and share information easily.`
+  },
+  {
+    'question': 'Who should use Lille.ai?',
+    answer: `Lille.ai is great for people who write a lot or need to find information quickly. It quickly assists you by providing the structure and the various views that can help you write or research large volumes of content efficiently. If you write for websites (content creators) or help websites get found (SEO specialists), or post a lot on social media (influencers), Lille is then your co-pilot. It's also super helpful for teams who use writing to connect with their customers, and for anyone who has a lot of information to sort through, like researchers, teachers, and students.`
   },
   {
     "question": "What are the different ways of creating a article in Lille.ai?",
@@ -26,6 +33,14 @@ const faqs =  [
   {
     "question": "How much does Lille.ai cost?",
     "answer": "Lille.ai has a free plan with a limited number of credits. We also offer paid plans with additional features: $15.95 monthly, $39.95 quarterly, and $149.95 yearly."
+  },{
+
+    "question": 'What value does Lille.ai offer?',
+    answer: `With Lille.ai, you can write your first draft super fast - 80% faster than before! It boosts your content marketing outputs by 27x, gets more than 590% more impressions in 60 days or less. It's like having a super-power for writing! And the best part? Your writing will always sound like you, and you won't have to spend weeks making changes.`
+  },
+  {
+    "question": "How is Lille.ai different from other writing tools like ChatGPT?",
+    answer: `Lille doesn't make things up - it always tells you where the information comes from. Plus, it lets you control how your writing sounds and how long it is. And, it helps you find the most important points for your writing and makes sure your writing is ready to be shared on any platform. Its content research auto-pilot brings the most relevant points for you to consider while generating outputs that automates SEO with backlinking.`
   },
   {
     "question": "What are the benefits of a paid plan?",
