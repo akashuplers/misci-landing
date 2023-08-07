@@ -87,6 +87,12 @@ export const getServerSideProps = async (context) => {
   };
 }
 
+interface KeysForStateOfGenerate {
+  file: number|null,
+  url: number|null,
+  keyword: number|null,
+}
+
 export default function Home(
   {
     payment,
@@ -308,27 +314,28 @@ export default function Home(
   }
   function handleGenerateClick() {
     console.log(blogLinks);
-    const countByType = blogLinks.reduce((acc, link) => {
+    const countByType : KeysForStateOfGenerate = blogLinks.reduce((acc, link) => {
       if (link.type === 'file') {
-        acc.files++;
+        acc.file++;
       } else if (link.type === 'url') {
-        acc.urls++;
+        acc.url++;
       } else if (link.type === 'keyword') {
         acc.keyword++;
       }
       return acc;
-    }, { files: 0, urls: 0, keyword: 0 });
+    }, { file: 0, url: 0, keyword: 0 });
     // Replace `keywords` with your actual keywords array/state
     // Replace `fileInput` with your actual file input state or variable
-    const typeKeys = Object.keys(countByType);
+  
+    var typeKeys = Object.keys(countByType);
 
+    const prevStateOfGenerate = { ...stateOfGenerate };
     typeKeys.forEach((type) => {
-      setStateOfGenerate((prev) => ({
-        ...prev,
-        [type]: countByType[type] === 0 ? null : STATESOFKEYWORDS.LOADING,
-      }));
+      prevStateOfGenerate[type] = countByType[type] === 0 ? null : STATESOFKEYWORDS.LOADING;
     });
-
+    console.log('prevStateOfGenerate');
+    console.log(prevStateOfGenerate);
+    setStateOfGenerate(prevStateOfGenerate); 
     console.log('countByType');
     console.log(countByType);
     // if (countByType.files > 0 && countByType.urls > 0) {
@@ -348,13 +355,13 @@ export default function Home(
     // }
     // // extractKeywordsFromKeywords();
     
-    if(countByType.urls > 0){
+    if(countByType.url > 0){
       uploadExtractKeywords();
     }
     if(countByType.keyword > 0){
       uploadExtractKeywordsFromKeywords();
     }
-    if(countByType.files > 0){
+    if(countByType.file > 0){
       uploadFilesForKeywords();
     }
   }
