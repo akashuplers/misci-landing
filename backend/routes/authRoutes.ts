@@ -326,6 +326,17 @@ router.post('/linkedin/me', async (request: any, reply: any) => {
   const body = request.body
   const db = request.app.get('db')
   try {
+    const authUser = request.user
+    let userDetails = null
+    if(authUser) {
+      userDetails = await fetchUser({id: authUser.id, db})
+      if(!userDetails) {
+        return reply.status(400).send({
+          type: "SUCCESS",
+          message: "No user found!"
+        })
+      }
+    }
     const user = await axios.get('https://api.linkedin.com/v2/me', {
       headers: {
         Authorization: `Bearer ${body.accessToken}`
@@ -341,7 +352,7 @@ router.post('/linkedin/me', async (request: any, reply: any) => {
     }
     if(user.data && user.data) {
       await db.db('lilleAdmin').collection('users').updateOne({
-        email: user.data.email
+        email: userDetails ? userDetails.email : user.data.email
       }, {
         $set: {
           linkedInUserName: `${user.data.localizedFirstName} ${user.data.localizedLastName}`
