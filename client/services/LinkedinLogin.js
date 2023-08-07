@@ -49,12 +49,19 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
   console.log("linkedinUserDetails");
   localStorage.setItem("linkedInAccessToken", token);
 
-  const getToken = localStorage.getItem('token')
+  var getToken = localStorage.getItem('token')
 
 
   const modifiedHeaders = {
     ...Headers,
-    "Authorization": `Bearer ${getToken}` 
+  }
+  if (typeof window !== "undefined") {
+    getToken = localStorage.getItem("token");
+
+    if (getToken) {
+      modifiedHeaders['Authorization'] = `Bearer ${getToken}`
+    }
+
   }
 
   axios
