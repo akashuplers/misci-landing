@@ -8,12 +8,13 @@ export const authMiddleware = async (req: any, res: any, next: any) => {
     const accessToken = authHeaders.split(" ")[1];
     const temp1 = req?.headers?.[process.env.PYKEY1!];
     const temp2 = req?.headers?.[process.env.PYKEY2!];
+    const path = req.originalUrl
     if (temp1 && temp2) {
     if (process.env.PYVAL1 !== temp1 || process.env.PYVAL2 !== temp2) {
         return res.status(403).send({ error: true, message: "FORBIDDEN" });
     }
     } else {
-        if (!accessToken) {
+        if (path !== "/auth/linkedin/me" && !accessToken) {
           return res
             .status(401)
             .send({ error: true, message: "Please Register or Login" });
