@@ -20,6 +20,8 @@ const Headers = {
 export const LinkedinLogin = (code, loaderFunction, handleSave) => {
   console.log("called LinkedinLogin");
   const path = window.location.pathname === "/" ? "" : "/dashboard";
+
+
   axios
     .post(
       `${API_BASE_PATH}${LI_API_ENDPOINTS.LI_ACCESS_TOKEN}`,
@@ -28,7 +30,7 @@ export const LinkedinLogin = (code, loaderFunction, handleSave) => {
         url: window.location.origin + path,
       },
       {
-        headers: Headers,
+        headers:Headers
       }
     )
     .then((result) => result.data)
@@ -46,11 +48,20 @@ export const LinkedinLogin = (code, loaderFunction, handleSave) => {
 const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
   console.log("linkedinUserDetails");
   localStorage.setItem("linkedInAccessToken", token);
+
+  const getToken = localStorage.getItem('token')
+
+
+  const modifiedHeaders = {
+    ...Headers,
+    "Authorization": `Bearer ${getToken}` 
+  }
+
   axios
     .post(
       `${API_BASE_PATH}${LI_API_ENDPOINTS.LI_PROFILE}`,
       { accessToken: token },
-      { headers: Headers }
+      { headers: modifiedHeaders }
     )
     .then((res) => res.data)
     .then((res) => {
