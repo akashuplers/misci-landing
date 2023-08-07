@@ -322,7 +322,7 @@ router.post('/linkedin/token', async (request: any, reply: any) => {
   }
 })
 
-router.post('/linkedin/me', async (request: any, reply: any) => {
+router.post('/linkedin/me', authMiddleware, async (request: any, reply: any) => {
   const body = request.body
   const db = request.app.get('db')
   try {
