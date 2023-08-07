@@ -8,13 +8,12 @@ const faqs =  [
     "answer": "Lille.ai is an AI-powered content creation platform. It helps users generate and optimize content for general contents, Twitter, and LinkedIn. It allows users to provide topics and offers a wide range of trending topics to base your content on."
   },
   {
-    "question": "Repurpose Content - What is this?",
-    "answer": `Lille allows user to upload maximum six items ( a combination of URLs and Files ) from where a user can re-purpose the content creating a article. User can use the "Repurpose Content" button at home page and add URLs/Files, click on 'Generate' that shows the extracted keywords from the uploaded content. User is asked to select some keywords from the given keywords, URL(s) or File(s) related to selected keywords are used to generate the article. Paid users have the option to choose the tone setting and few other instructions for the article creation. The URLs or Files that are used to generate the article based on the selected keywords are shown at the end of the generated article as references.
-    NOTE:  Bigger size files and lengthier articles from the URLs uploaded will add to response time.`
+    "question": "Generate Draft  - What is this?",
+    "answer": `Lille allows user to upload maximum six items ( A prompt i.e. a topic and combination of URLs and Files ) from where a user can generate the content for an article. User can use the input box at home page to add a prompt, URLs and Files, click on 'Generate Draft' that shows the extracted keywords from the uploaded content. User is asked to select some keywords from the given keywords, URL(s) or File(s) related to selected keywords are used to generate the article. Paid users have the option to choose the tone setting and few other instructions for the article creation. The URLs or Files that are used to generate the article based on the selected keywords are shown at the end of the generated article as references. NOTE: Bigger size files and lengthier articles from the URLs uploaded will add to response time.`
   },
   {
     "question": "What kind of content can I generate with Lille.ai?",
-    "answer": "With Lille.ai, you can generate Twitter posts, LinkedIn posts, and even full contents based on the topics you provide, choose, or from our trending topic suggestions."
+    "answer": "You can choose to send a prompt or add URLs/Files on the home page, e.g., use 'Benefits of Ginger' as a prompt, and click the 'Generate Draft' button to see and select the extracted keywords. Once a article is created after you process to generate the draft, Lille show the ideas that have been used to create the article in the right-side panel. You can also provide a topic, URL, or a file (size < 3MB) to generate fresh ideas and then select some or all of the fresh ideas in combination with some or all or none of the used ideas, and click 'Regenerate' to regenerate the already created article."
   },
   {
     "question": "How do I sign up or login to Lille.ai?",
