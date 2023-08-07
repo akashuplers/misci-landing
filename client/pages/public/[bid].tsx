@@ -134,7 +134,7 @@ export default function Post() {
   }, [router, gqlData]);
   useEffect(() => { 
     if(authorPath!=""){
-      isAuthenticated && router.push("/public"+authorPath);
+      router.push("/public"+authorPath);
     }
   }
   , [authorPath])
