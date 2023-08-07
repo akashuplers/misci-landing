@@ -57,12 +57,6 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
       // console.log(dataForDate[0].creation_date);
       const date = unixToLocalYear(Number(dataForDate[0].creation_date));
       setPublishDate(date);
-      console.log("Tile", dataForDate);
-      console.log("Tile", dataForDate.tiny_mce_data);
-      const title = dataForDate?.tiny_mce_data?.children[0]?.children[0]?.children[0];
-      console.log("Tile", title, dataForDate?.tiny_mce_data);
-      console.log(dataForDate?.tiny_mce_data)
-      setBlogTitle(title);
     },
   });
 
@@ -105,14 +99,10 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
   const [copyStart, setCopyStart] = useState(false);
 
   useEffect(() => {
-    // const html = jsonToHtml(gqlData?.fetchBlog?.publish_data[2].tiny_mce_data);
     // @ts-ignore
-
     const aa = gqlData?.fetchBlog?.publish_data.find((pd) => pd.platform === "wordpress"
     ).tiny_mce_data;
-    console.log("ADD");
-    console.log(aa?.children[0].children[0].children[0]);
-setBlogTitle(aa?.children[0].children[0].children[0])
+    setBlogTitle(aa?.children[0].children[0].children[0])
     const html = jsonToHtml(aa);
     setData(html);
   }, [gqlData]);
@@ -153,6 +143,7 @@ setBlogTitle(aa?.children[0].children[0].children[0])
       
       // remvove blacnk spaces  
       authorProfilePath.replace(/\s/g, '');
+      console.log('fine till here');
       // 
     //   router.push('/public'+ authorProfilePath);
       if (h3Element) {
@@ -162,7 +153,6 @@ setBlogTitle(aa?.children[0].children[0].children[0])
         // make a sibling div element to ti showing randoem author name and time to read. 
         const divElement = document.createElement('div');
         divElement.innerHTML = ` 
-          <a href="${"/public"+authorProfilePath}" class="flex items-center space-x-2">
           <div style="width: 100%; height: 44px; justify-content: flex-start; align-items: center; gap: 12px; display: inline-flex; margin-top: 24px; margin-bottom: 24px">
           <img style="width: 44px; height: 44px; position: relative; background: linear-gradient(0deg, black 0%, black 100%); border-radius: 200px" src=${gqlData?.fetchBlog?.userDetail?.profileImage ?? "https://github.com/identicons/jasonlong.png"
               } />
@@ -175,7 +165,6 @@ setBlogTitle(aa?.children[0].children[0].children[0])
             <div style="opacity: 0.50; color: black; font-size: 12px; font-weight: 500; word-wrap: break-word">${publishDate}</div>
           </div>
         </div>
-        </a>
       `;
         // insert after h3 tag
         // @ts-ignore
@@ -184,10 +173,8 @@ setBlogTitle(aa?.children[0].children[0].children[0])
 
 
       var modifiedHtml = tempElement.innerHTML;
-      console.log(modifiedHtml);
       const phraseToRemove = 'A placeholder image has been added, you can upload your own image.';
       const modifiedString = modifiedHtml.replace(new RegExp(`<span[^>]*>${phraseToRemove}</span>`, 'g'), '');
-      console.log(modifiedString);
       publishContainer.innerHTML = modifiedString;
     }
 
@@ -328,7 +315,6 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
    userData: UserDataResponse | null
   }) => {
 
-console.log(comments.length);
   var getToken: string | null = null;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -432,7 +418,6 @@ console.log(comments.length);
       name: name || userData?.data.me.name || "Anonymous",
     }).then(
       (res) => {
-        console.log(res);
         if (res.type) {
           if (res.type == "SUCCESS") {
             toast.success(res.message);

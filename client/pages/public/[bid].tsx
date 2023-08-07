@@ -33,6 +33,14 @@ export default function Post() {
   const [showModalComment, setShowModalComment] = useState(false);
   const [blogTitle, setBlogTitle] = useState('');
   const [publishDate, setPublishDate] = useState<any>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [commentLoading, setCommentLoading] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsAuthenticated(localStorage.getItem("token") ? true : false);
+    }
+  }, []);
+  const[authorPath, setAuthorPath] = useState('');
   const {
     data: gqlData,
     loading,
@@ -43,7 +51,7 @@ export default function Post() {
       fetchBlogId: bid,
     },  
     onCompleted(data) {
-      setBlogComments(data.fetchBlog.comments);
+      setBlogComments(data?.fetchBlog.comments);
       const dataForDate = data?.fetchBlog?.publish_data?.filter(
         (obj:any) => obj?.platform === "wordpress"
       );
@@ -53,9 +61,6 @@ export default function Post() {
       const tinyData = data?.fetchBlog?.publish_data?.filter(
         (obj:any) => obj?.platform === "wordpress"
       );
-      const title = tinyData?.tiny_mce_data?.children[0]?.children[0]?.children[0];
-      console.log("Tile", title,  tinyData?.tiny_mce_data)    
-      setBlogTitle(title);
     },
   });
 
@@ -104,10 +109,44 @@ export default function Post() {
     ).tiny_mce_data;
     const html = jsonToHtml(aa);
     console.log("ADD");
+    console.log(gqlData?.fetchBlog);
     console.log(aa?.children[0].children[0].children[0]);
-    setBlogTitle(aa?.children[0].children[0].children[0])
+    setBlogTitle(aa?.children[0].children[0].children[0]);
+    console.log(gqlData);
+    const userDetails = gqlData?.fetchBlog?.userDetail;
+    console.log(userDetails);
+    var authorProfilePath = "";
+    if (userDetails?.googleUserName) {
+      {
+        authorProfilePath = "/google/" + userDetails?.googleUserName.replace(/\s/g, '') + "/" + bid;
+      }
+
+    }
+    if (userDetails?.twitterUserName) {
+      {
+        authorProfilePath = "/twitter/" + userDetails.twitterUserName.replace(/\s/g, '') + "/" + bid;
+      }
+    }
+    if (userDetails?.linkedInUserName) {
+      {
+        authorProfilePath = "/linkedin/" + userDetails?.linkedInUserName.replace(/\s/g, '') + "/" + bid;
+      }
+    }
+    if (userDetails?.userName) {
+      authorProfilePath = "/user/" + userDetails?.userName.replace(/\s/g, '') + "/" + bid;
+    }
+    
+    console.log("username"+authorProfilePath);
+    setAuthorPath(authorProfilePath);
     setData(html);
   }, [router, gqlData]);
+  useEffect(() => { 
+    if(authorPath!=""){
+      isAuthenticated && router.push("/public"+authorPath);
+    }
+  }
+  , [authorPath])
+
 
   useEffect(() => {
     const publishContainer = document.getElementById("publishContainer");
@@ -124,29 +163,13 @@ export default function Post() {
       // get the first h3 tag
       const h3Element = tempElement.querySelector('h3');
       var authorProfilePath = "";
-      if (userData?.data.me.googleUserName) {
-        {
-          authorProfilePath = "/google/" + userData?.data.me.googleUserName.replace(/\s/g, '')+ "/" + bid;
-        }
-        if (userData?.data.me.twitterUserName) {
-          {
-            authorProfilePath = "/twitter/" + userData?.data.me.twitterUserName.replace(/\s/g, '') + "/" + bid;
-          }
-        }
-      }
-      if (userData?.data.me.linkedInUserName) {
-        {
-          authorProfilePath = "/linkedin/" + userData?.data.me.linkedInUserName.replace(/\s/g, '') + "/" + bid;
-        }
-      }
-      if(userData?.data.me.userName){
-        authorProfilePath = "/user/" + userData?.data.me.userName.replace(/\s/g, '') + "/" + bid;
-      }
+     
       
       // remvove blacnk spaces  
-      authorProfilePath.replace(/\s/g, '');
-      // 
-      router.push('/public'+ authorProfilePath);
+
+      console.log("PUSHING TO ROUTER")
+      console.log(authorProfilePath)
+      // router.push('/public'+ authorProfilePath);
       if (h3Element) {
         console.log(gqlData);
         console.log('MEED DATA');
@@ -175,10 +198,8 @@ export default function Post() {
       }
 
       var modifiedHtml = tempElement.innerHTML;
-      console.log(modifiedHtml);
       const phraseToRemove = 'A placeholder image has been added, you can upload your own image.';
       const modifiedString = modifiedHtml.replace(new RegExp(`<span[^>]*>${phraseToRemove}</span>`, 'g'), '');
-      console.log(modifiedString);
       publishContainer.innerHTML = modifiedString;
     }
 
@@ -418,7 +439,7 @@ console.log(comments.length);
     }
     sendAComment({
       text: commmentValue,
-      blogId: data.fetchBlog._id,
+      blogId: data?.fetchBlog._id,
       email: email || userData?.data.me.email || "Anonymous",
       name: name || userData?.data.me.name || "Anonymous",
     }).then(
@@ -458,7 +479,7 @@ console.log(comments.length);
         </h1>
         {/* cross btn */}
         <h2 className="hidden lg:block">
-          Other Comments ({data.fetchBlog.comments.length})
+          Other Comments ({data?.fetchBlog.comments.length})
         </h2>
         <button onClick={
           () => setShowModalComment(false)
@@ -549,7 +570,7 @@ console.log(comments.length);
       {/* Right side for other comments */}
       <div className="flex flex-col gap-2 h-full  overflow-y-scroll max-h-[350px] relative">
         <h2 className="lg:hidden">
-          Other Comments ({data.fetchBlog.comments.length})
+          Other Comments ({data?.fetchBlog.comments.length})
         </h2>
         <div className="bg-white w-full  sticky top-0">
         <div className=" top-0 w-[132px] h-9 p-1.5 bg-white rounded-lg border border-gray-300 justify-start items-center gap-1 inline-flex">
