@@ -1018,28 +1018,7 @@ export default function Home(
                         </div>
                       }
                     </div>
-                    {
-                      keywordsOFBlogs.length > 0 &&
-                      <button className="h-5 px-4 py-6 flex items-center justify-center bg-indigo-600 rounded-lg text-white text-sm font-medium focus:outline-none"
-                        onClick={
-                          () => {
-                            setkeywordsOfBlogs([]);
-                            setBlogLinks([]);
-                            setSelectedFiles([]);
-                            setStateOfGenerate((prev) => {
-                              return {
-                                url: null,
-                                file: null,
-                                keyword: null
-                              }
-                            }
-                            )
-                          }
-                        }
-                      >
-                        Reset
-                      </button>
-                    }
+                    
                   </div>
                   <div className="w-full h-5 lg:flex-row flex-col justify-start items-start gap-3 inline-flex">
                     <div className="grow shrink basis-0 opacity-70 text-gray-600 text-sm font-normal text-left"></div>
@@ -1196,7 +1175,30 @@ export default function Home(
                     }
 
                   </button> */}
+                  {
+                      keywordsOFBlogs.length > 0 &&
+                      <button className="h-5 px-4 py-6 absolute top-[27%] right-[-12%] flex items-center justify-center bg-indigo-600 rounded-lg text-white text-sm font-medium focus:outline-none"
+                        onClick={
+                          () => {
+                            setkeywordsOfBlogs([]);
+                            setBlogLinks([]);
+                            setSelectedFiles([]);
+                            setStateOfGenerate((prev) => {
+                              return {
+                                url: null,
+                                file: null,
+                                keyword: null
+                              }
+                            }
+                            )
+                          }
+                        }
+                      >
+                        Reset
+                      </button>
+                    }
                 </div>
+                
                 <div
                   className="w-[80%] absolute top-[500px] lg:top-[350px] h-[200px] inset-x-0 -z-10"
                   style={{
