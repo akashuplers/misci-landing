@@ -117,25 +117,17 @@ export default function Post() {
     console.log(userDetails);
     var authorProfilePath = "";
     if (userDetails?.googleUserName) {
-      {
         authorProfilePath = "/google/" + userDetails?.googleUserName.replace(/\s/g, '') + "/" + bid;
-      }
-
     }
-    if (userDetails?.twitterUserName) {
-      {
+    else if (userDetails?.twitterUserName) {
         authorProfilePath = "/twitter/" + userDetails.twitterUserName.replace(/\s/g, '') + "/" + bid;
-      }
     }
-    if (userDetails?.linkedInUserName) {
-      {
+    else if (userDetails?.linkedInUserName) {
         authorProfilePath = "/linkedin/" + userDetails?.linkedInUserName.replace(/\s/g, '') + "/" + bid;
-      }
     }
-    if (userDetails?.userName) {
+    else if (userDetails?.userName) {
       authorProfilePath = "/user/" + userDetails?.userName.replace(/\s/g, '') + "/" + bid;
     }
-    
     console.log("username"+authorProfilePath);
     setAuthorPath(authorProfilePath);
     setData(html);
