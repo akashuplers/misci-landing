@@ -21,6 +21,31 @@ const getBlobName = (originalName: any) => {
     return `blogs/${originalName}`;
 };
 
+router.post('/drive-link', async (req: any, res: any) => {
+    const db = req.app.get('db')
+    const {url, email} = req.body
+    try{
+        if(!url || !email) {
+            return res.status(400).send({
+                type: "ERROR",
+                message: 'Please provide sufficient data!'
+            })
+        }
+        await db.db('lilleBlogs').collection('drive').insertOne({
+            url,
+            email
+        })
+        res.status(200).send({
+            type: "SUCCESS",
+            message: "Data Added!"
+        })
+    }catch(e){
+        return res.status(400).send({
+            type: "ERROR",
+            message: e.message
+        })
+    }
+})
 
 router.post('/image', uploadStrategy, async (req: any, res: any) => {
     const

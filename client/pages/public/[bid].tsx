@@ -19,8 +19,9 @@ import { useStore } from "zustand";
 import { APP_REGEXP, DEFAULT_USER_PROFILE_IMAGE } from '../../store/appContants';
 import { useUserDataStore } from '../../store/appState';
 import { UserDataResponse } from "@/types/type";
-import { getRelativeTimeString,  } from "@/store/appHelpers";
+import { getRelativeTimeString, unixToLocalYear,  } from "@/store/appHelpers";
 import { RelativeTimeString } from "@/components/ui/RelativeTimeString";
+import Head from "next/head";
 export default function Post() {
   const router = useRouter();
   const { bid } = router.query;
@@ -30,6 +31,16 @@ export default function Post() {
   const [callBack, setCallBack] = useState();
   const [blogComments, setBlogComments] = useState<any[]>([]);
   const [showModalComment, setShowModalComment] = useState(false);
+  const [blogTitle, setBlogTitle] = useState('');
+  const [publishDate, setPublishDate] = useState<any>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [commentLoading, setCommentLoading] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsAuthenticated(localStorage.getItem("token") ? true : false);
+    }
+  }, []);
+  const[authorPath, setAuthorPath] = useState('');
   const {
     data: gqlData,
     loading,
@@ -38,9 +49,18 @@ export default function Post() {
   } = useQuery(getBlogbyId, {
     variables: {
       fetchBlogId: bid,
-    },
+    },  
     onCompleted(data) {
-      setBlogComments(data.fetchBlog.comments);
+      setBlogComments(data?.fetchBlog.comments);
+      const dataForDate = data?.fetchBlog?.publish_data?.filter(
+        (obj:any) => obj?.platform === "wordpress"
+      );
+      // console.log(dataForDate[0].creation_date);
+      const date = unixToLocalYear(Number(dataForDate[0].creation_date));
+      setPublishDate(date);
+      const tinyData = data?.fetchBlog?.publish_data?.filter(
+        (obj:any) => obj?.platform === "wordpress"
+      );
     },
   });
 
@@ -88,9 +108,37 @@ export default function Post() {
     const aa = gqlData?.fetchBlog?.publish_data.find((pd) => pd.platform === "wordpress"
     ).tiny_mce_data;
     const html = jsonToHtml(aa);
-
+    console.log("ADD");
+    console.log(gqlData?.fetchBlog);
+    console.log(aa?.children[0].children[0].children[0]);
+    setBlogTitle(aa?.children[0].children[0].children[0]);
+    console.log(gqlData);
+    const userDetails = gqlData?.fetchBlog?.userDetail;
+    console.log(userDetails);
+    var authorProfilePath = "";
+    if (userDetails?.googleUserName) {
+        authorProfilePath = "/google/" + userDetails?.googleUserName.replace(/\s/g, '') + "/" + bid;
+    }
+    else if (userDetails?.twitterUserName) {
+        authorProfilePath = "/twitter/" + userDetails.twitterUserName.replace(/\s/g, '') + "/" + bid;
+    }
+    else if (userDetails?.linkedInUserName) {
+        authorProfilePath = "/linkedin/" + userDetails?.linkedInUserName.replace(/\s/g, '') + "/" + bid;
+    }
+    else if (userDetails?.userName) {
+      authorProfilePath = "/user/" + userDetails?.userName.replace(/\s/g, '') + "/" + bid;
+    }
+    console.log("username"+authorProfilePath);
+    setAuthorPath(authorProfilePath);
     setData(html);
   }, [router, gqlData]);
+  useEffect(() => { 
+    if(authorPath!=""){
+      isAuthenticated && router.push("/public"+authorPath);
+    }
+  }
+  , [authorPath])
+
 
   useEffect(() => {
     const publishContainer = document.getElementById("publishContainer");
@@ -106,23 +154,35 @@ export default function Post() {
       }
       // get the first h3 tag
       const h3Element = tempElement.querySelector('h3');
+      var authorProfilePath = "";
+     
+      
+      // remvove blacnk spaces  
+
+      console.log("PUSHING TO ROUTER")
+      console.log(authorProfilePath)
+      // router.push('/public'+ authorProfilePath);
       if (h3Element) {
         console.log(gqlData);
+        console.log('MEED DATA');
+        console.log(userData);
         // make a sibling div element to ti showing randoem author name and time to read. 
         const divElement = document.createElement('div');
         divElement.innerHTML = ` 
-      <div style="width: 100%; height: 44px; justify-content: flex-start; align-items: center; gap: 12px; display: inline-flex; margin-top: 24px; margin-bottom: 24px">
-      <img style="width: 44px; height: 44px; position: relative; background: linear-gradient(0deg, black 0%, black 100%); border-radius: 200px" src=${gqlData.fetchBlog?.userDetail?.profileImage ?? "https://github.com/identicons/jasonlong.png"
-          } />
-      <div style="flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 4px; display: inline-flex">
-        <div style="color: #272C47; font-size: 16px;font-weight: 400; word-wrap: break-word; font-style: italic">
-      <strong>
-      ${(gqlData.fetchBlog?.userDetail?.name) ?? ""}
-      </strong>
+          <div class="flex items-center space-x-2">
+          <div style="width: 100%; height: 44px; justify-content: flex-start; align-items: center; gap: 12px; display: inline-flex; margin-top: 24px; margin-bottom: 24px">
+          <img style="width: 44px; height: 44px; position: relative; background: linear-gradient(0deg, black 0%, black 100%); border-radius: 200px" src=${gqlData?.fetchBlog?.userDetail?.profileImage ?? "https://github.com/identicons/jasonlong.png"
+              } />
+          <div style="flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 4px; display: inline-flex">
+            <div style="color: #272C47; font-size: 16px;font-weight: 400; word-wrap: break-word; font-style: italic">
+          <strong>
+          ${(gqlData?.fetchBlog?.userDetail?.name) ?? ""}
+          </strong>
+            </div>
+            <div style="opacity: 0.50; color: black; font-size: 12px; font-weight: 500; word-wrap: break-word">${publishDate}</div>
+          </div>
         </div>
-        <div style="opacity: 0.50; color: black; font-size: 12px; font-weight: 500; word-wrap: break-word">5 min read</div>
-      </div>
-    </div>
+        </div>
       `;
         // insert after h3 tag
         // @ts-ignore
@@ -130,17 +190,15 @@ export default function Post() {
       }
 
       var modifiedHtml = tempElement.innerHTML;
-      console.log(modifiedHtml);
       const phraseToRemove = 'A placeholder image has been added, you can upload your own image.';
       const modifiedString = modifiedHtml.replace(new RegExp(`<span[^>]*>${phraseToRemove}</span>`, 'g'), '');
-      console.log(modifiedString);
       publishContainer.innerHTML = modifiedString;
     }
 
   }, [data]);
   function handleLikeBlog() {
     sendLikeToBlog({
-      blogId: gqlData.fetchBlog._id
+      blogId: gqlData?.fetchBlog._id
     }).then((res) => {
       if (res.type == 'SUCCESS') {
         toast.success('Liked Successfully');
@@ -154,10 +212,13 @@ export default function Post() {
   if (loading) return <LoaderPlane />;
   return (
     <div className="bg-[#00000014] min-h-screen">
+      <Head>
+    <title>{blogTitle}</title>
+   </Head>
       <Navbar isOpen={false} />
       <div className="flex items-center justify-center w-full lg:max-w-[1056px] mx-auto flex-col ">
         <div className={styles.publishContainer} id="publishContainer"></div>
-        <ShareLinkModal openModal={showShareModal} setOpenModal={setShareModal} blog_id={gqlData.fetchBlog._id} text={text} />
+        <ShareLinkModal openModal={showShareModal} setOpenModal={setShareModal} blog_id={gqlData?.fetchBlog?._id} text={text} />
         <ReactModal
           isOpen={showModalComment}
           onRequestClose={() => setShowModalComment(false)}
@@ -192,8 +253,8 @@ export default function Post() {
       </div>
       <div className="fixed bottom-0 pb-1 flex items-center bg-[#EBEBEB] left-0 w-full">
         <div className="border-y border-neutral-300 max-w-[1056px] mx-auto w-full  h-[80.18px] bg-[#EBEBEB] justify-center items-center gap-6 inline-flex">
-          <div className="h-full justify-start items-center flex w-[75%]">
-            <CommentButton icon={CommentButtonMap.like.icon} text={gqlData.fetchBlog.likes + " " + CommentButtonMap.like.text} onClick={handleLikeBlog} />
+          <div className="h-full justify-start items-center flex md:w-[75%]">
+            <CommentButton icon={CommentButtonMap.like.icon} text={gqlData?.fetchBlog.likes + " " + CommentButtonMap.like.text} onClick={handleLikeBlog} />
             <CommentButton icon={CommentButtonMap.comment.icon} text={CommentButtonMap.comment.text}
               onClick={
                 () => setShowModalComment(true)
@@ -201,8 +262,8 @@ export default function Post() {
             />
 
           </div>
-          <div className="justify-end items-center flex w-[25%]">
-            <CopyToClipboard text={text + gqlData.fetchBlog._id} onCopy={() => {
+          <div className="justify-end items-center flex md:w-[25%]">
+            <CopyToClipboard text={text + gqlData?.fetchBlog._id} onCopy={() => {
               setCopyStart(true);
               setTimeout(() => {
                 setCopyStart(false);
@@ -370,7 +431,7 @@ console.log(comments.length);
     }
     sendAComment({
       text: commmentValue,
-      blogId: data.fetchBlog._id,
+      blogId: data?.fetchBlog._id,
       email: email || userData?.data.me.email || "Anonymous",
       name: name || userData?.data.me.name || "Anonymous",
     }).then(
@@ -385,6 +446,7 @@ console.log(comments.length);
             toast.error(res.message);
           }
         }
+        setTabToShow(prev => prev);
         setCommentLoading(false);
         setCommentValue("");
       }
@@ -409,7 +471,7 @@ console.log(comments.length);
         </h1>
         {/* cross btn */}
         <h2 className="hidden lg:block">
-          Other Comments ({data.fetchBlog.comments.length})
+          Other Comments ({data?.fetchBlog.comments.length})
         </h2>
         <button onClick={
           () => setShowModalComment(false)
@@ -500,7 +562,7 @@ console.log(comments.length);
       {/* Right side for other comments */}
       <div className="flex flex-col gap-2 h-full  overflow-y-scroll max-h-[350px] relative">
         <h2 className="lg:hidden">
-          Other Comments ({data.fetchBlog.comments.length})
+          Other Comments ({data?.fetchBlog.comments.length})
         </h2>
         <div className="bg-white w-full  sticky top-0">
         <div className=" top-0 w-[132px] h-9 p-1.5 bg-white rounded-lg border border-gray-300 justify-start items-center gap-1 inline-flex">
@@ -539,7 +601,6 @@ const UserComment = ({ name, comment, date, avatar, userId }: {
   avatar: string,
   userId: string
 }) => {
-
   return <div className="w-full p-5 bg-white  border-b border-neutral-200 flex-col justify-start items-start gap-[15px] inline-flex">
     <div className="justify-start items-center gap-2 inline-flex">
       <img className="w-10 h-10 rounded-full" src={avatar || DEFAULT_USER_PROFILE_IMAGE} />

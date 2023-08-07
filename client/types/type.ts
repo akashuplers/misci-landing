@@ -4,7 +4,7 @@ export interface BlogLink {
     selected: boolean;
     id: string;
     index: number;
-    type: 'file' | 'url';
+    type: 'file' | 'url' | 'keyword';
 }
 export interface UserDataResponse {
     data: {
@@ -33,6 +33,10 @@ export interface UserDataResponse {
         totalCredits: 25,
         paymentsStarts: null,
         creditRenewDay: null,
+        twitterUserName:string | null, 
+        linkedInUserName:string | null,
+        googleUserName:string | null,
+        userName:string,        
         hours_left_for_quota_renew: number,
         remaining_twitter_quota: number,
         total_twitter_quota: number,
@@ -41,3 +45,8 @@ export interface UserDataResponse {
     };
   }
   
+  export interface InputData {
+    urls: string[];
+    keywords: string[];
+    files: File[];
+  }

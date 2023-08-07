@@ -6,6 +6,24 @@ export interface GenerateBlogMutationArg {
     tones: string[];
 }
 
+export interface GenerateTMBlogOptions {
+    keyword: String;
+    strengths: string[]
+    weaknesses: string[]
+    opportunities: string[]
+    threats: string[]
+    problems: string[]
+    painPoints: string[]
+    challenges: string[]
+    companyProfile: string[]
+    latestLaunch: string[]
+    strategicFocusAreas: string[]
+    keyInvestment: string[]
+    keyMembers: string[]
+    risks: string[]
+}
+
+
 export interface ReGenerateBlogMutationArg {
     ideas: [Ideas];
     blog_id: string;

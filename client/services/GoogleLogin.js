@@ -33,6 +33,7 @@ export const signUpWithGoogle = (handleSave, blogId) => {
         email: res.user.email,
         password: null,
         tempUserId: "",
+        googleUserName : firstName+lastName+ (Math.floor(Math.random() * 900) + 100),
       };
       console.log(signUpFormData);
       const handleLoginSubmit = (email) => {

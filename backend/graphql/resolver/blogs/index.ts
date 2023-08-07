@@ -2,7 +2,7 @@ import { withFilter } from 'graphql-subscriptions';
 import { BlogListArgs, FetchBlog, GenerateBlogMutationArg, IRNotifiyArgs, ReGenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
 import { pubsub } from '../../../pubsub';
 import { ObjectID } from 'bson';
-import { blogGeneration, deleteBlog, fetchBlog, fetchBlogByUser, fetchBlogIdeas, fetchUser, publishBlog, updateUserCredit, deleteBlogIdeas, fetchUsedBlogIdeasByIdea, fetchArticleById, fetchArticleUrls, getSavedTime } from './blogsRepo';
+import { blogGeneration, deleteBlog, fetchBlog, fetchBlogByUser, fetchBlogIdeas, fetchUser, publishBlog, updateUserCredit, deleteBlogIdeas, fetchUsedBlogIdeasByIdea, fetchArticleById, fetchArticleUrls, getSavedTime, generateAtrributesList, TMBlogGeneration } from './blogsRepo';
 import { Python } from '../../../services/python';
 import { diff_minutes, getTimeStamp } from '../../../utils/date';
 import { sendEmails } from '../../../utils/mailJetConfig';
@@ -78,7 +78,20 @@ export const blogResolvers = {
             }
             if(options.userName) {
                 const userDetails = await db.db('lilleAdmin').collection('users').findOne({
-                    userName: options.userName
+                    $or: [
+                        {
+                            userName: options.userName
+                        },
+                        {
+                            linkedinUserName: options.userName
+                        },
+                        {
+                            googleUserName: options.userName
+                        },
+                        {
+                            twitterUserName: options.userName
+                        }
+                    ]
                 })
                 if(!userDetails) {
                     throw "No user found!"
@@ -146,6 +159,132 @@ export const blogResolvers = {
             pubsub.publish(SOMETHING_CHANGED_TOPIC, { newLink: currentNumber });
             return currentNumber
         },
+        generateTMBlog: async (
+            parent: unknown, args:{options: GenerateBlogMutationArg}, {req, res, db, pubsub, user}: any
+        ) => {
+            let startRequest = new Date()
+            console.log(args.options)
+            const userDetails = await fetchUser({id: user.id, db})
+            if(!userDetails) {
+                throw "@No user found"
+            }
+            if(userDetails.credits <= 0) {
+                throw "@Credit exhausted"
+            }
+            const attributesList: string[] = generateAtrributesList(args.options)
+            try {
+                let uniqueTags: String[] = [];
+                const blogGeneratedData: any = await TMBlogGeneration({
+                    db,
+                    text: attributesList,
+                })
+                console.log(blogGeneratedData)
+                if(blogGeneratedData) {
+                    const {publishedData,title, description} = blogGeneratedData
+                    const finalBlogObj = {
+                        article_id: [],
+                        publish_data: publishedData,
+                        userId: new ObjectID(user._id),
+                        email: userDetails && userDetails.email,
+                        keyword: title,
+                        status: "draft",
+                        description,
+                        tags: uniqueTags,
+                        imageUrl: process.env.PLACEHOLDER_IMAGE,
+                        imageSrc: null,
+                        date: getTimeStamp(),
+                        updatedAt: getTimeStamp(),
+                    }
+                    // let updatedIdeas: any = []
+                    // articlesData.forEach((data) => {
+                    //     data.used_summaries.forEach((summary: string) => updatedIdeas.push({
+                    //         idea: summary,
+                    //         article_id: data.id,
+                    //         reference: null,
+                    //         name: data.name,
+                    //         used: 1,
+                    //     }))
+                    // })
+                    let updatedIdeas: any = []
+                    attributesList.forEach((idea: string) => updatedIdeas.push({
+                        idea,
+                        article_id: null,
+                        reference: null,
+                        used: 1,
+                    }))
+                    if(updatedIdeas && updatedIdeas.length) {
+                        updatedIdeas = await (
+                            Promise.all(
+                                updatedIdeas.map(async (ideasData: any) => {
+                                    if(ideasData.article_id) {
+                                        const article = await fetchArticleById({id: ideasData.article_id, db, userId: user._id})
+                                        return {
+                                            ...ideasData,
+                                            reference: {
+                                                type: "article",
+                                                link: article._source.orig_url,
+                                                id: ideasData.article_id
+                                            }
+                                        }
+                                    } else {
+                                        return {
+                                            ...ideasData
+                                        }
+                                    }
+                                })       
+                            )
+                        )
+                    }
+                    const insertBlog = await db.db('lilleBlogs').collection('blogs').insertOne(finalBlogObj)
+                    const insertBlogIdeas = await db.db('lilleBlogs').collection('blogIdeas').insertOne({
+                        blog_id: insertBlog.insertedId,
+                        ideas: updatedIdeas
+                    })
+                    let blogDetails = null
+                    let blogIdeasDetails = null
+                    if(insertBlog.insertedId){
+                        const id: any = insertBlog.insertedId
+                        blogDetails = await db.db('lilleBlogs').collection('blogs').findOne({_id: new ObjectID(id)})
+                    }
+                    if(insertBlogIdeas.insertedId){
+                        const id: any = insertBlogIdeas.insertedId
+                        blogIdeasDetails = await db.db('lilleBlogs').collection('blogIdeas').findOne({_id: new ObjectID(id)})
+                    }
+                    let endRequest = new Date()
+                    let respTime = diff_minutes(endRequest, startRequest)
+                    if(user && Object.keys(user).length) {
+                        const updateduser = await fetchUser({id: user.id, db})
+                        const updatedCredits = ((updateduser.credits || 25) - 1)
+                        await updateUserCredit({id: updateduser._id, credit: updatedCredits, db})
+                        if(updatedCredits <= 0) {
+                            await sendEmails({
+                                to: [
+                                { Email: `akash.sharma@nowigence.com`, Name: `Akash Sharma` },
+                                { Email: `arvind.ajimal@nowigence.com`, Name: `Arvind Ajimal` },
+                                { Email: `subham.mahanta@nowigence.com`, Name: `Subham Mahanta` },
+                                { Email: `vashisth@adesignguy.co`, Name: `Vashisth Bhushan` }
+                                ],
+                                subject: "Credit Exhausted",
+                                textMsg: "",
+                                htmlMsg: `
+                                    <p>Hello All,</p>
+                                    <p>Credit has been exhausted for below user</p>
+                                    <p>User Name: ${updateduser.name} ${userDetails.lastName}</p>
+                                    <p>User Email: ${updateduser.email}</p>
+                                `,
+                            });
+                        }
+                    }
+                    return {...blogDetails, ideas: blogIdeasDetails, references: [], pythonRespTime: null, respTime}
+                }else{
+                    console.log(blogGeneratedData, "blogGeneratedData")
+                    throw "Something went wrong"
+                }
+            } catch(e: any) {
+                console.log(e)
+                throw e
+            }
+        },  
         generate: async (
             parent: unknown, args:{options: GenerateBlogMutationArg}, {req, res, db, pubsub, user}: any
         ) => {

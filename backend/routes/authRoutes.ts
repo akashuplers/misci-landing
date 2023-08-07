@@ -281,8 +281,9 @@ router.post("/user/create", async (req: any, res: any) => {
           { _id: user.insertedId },
           { $set: { resetPasswordToken: token } }
         );
+      const addedUser = await db.db('lilleAdmin').collection('users').findOne({_id: new ObjectID(user.insertedId)})  
       // DONE!!
-      return res.status(201).send({ error: false, message: "User added!" });
+      return res.status(201).send({ error: false, message: "User added!", user: addedUser });
     } catch (error) {
       console.log(error, "error")
       return res.status(500).send({ error: true, message: `${error}` });
@@ -321,10 +322,21 @@ router.post('/linkedin/token', async (request: any, reply: any) => {
   }
 })
 
-router.post('/linkedin/me', async (request: any, reply: any) => {
+router.post('/linkedin/me', authMiddleware, async (request: any, reply: any) => {
   const body = request.body
   const db = request.app.get('db')
   try {
+    const authUser = request.user
+    let userDetails = null
+    if(authUser) {
+      userDetails = await fetchUser({id: authUser.id, db})
+      if(!userDetails) {
+        return reply.status(400).send({
+          type: "SUCCESS",
+          message: "No user found!"
+        })
+      }
+    }
     const user = await axios.get('https://api.linkedin.com/v2/me', {
       headers: {
         Authorization: `Bearer ${body.accessToken}`
@@ -340,7 +352,7 @@ router.post('/linkedin/me', async (request: any, reply: any) => {
     }
     if(user.data && user.data) {
       await db.db('lilleAdmin').collection('users').updateOne({
-        email: user.data.email
+        email: userDetails ? userDetails.email : user.data.email
       }, {
         $set: {
           linkedInUserName: `${user.data.localizedFirstName} ${user.data.localizedLastName}`

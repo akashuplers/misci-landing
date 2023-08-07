@@ -4,6 +4,7 @@ import { diff_minutes, getTimeStamp } from "../../../utils/date";
 import { URL } from "url";
 import { Python } from "../../../services/python";
 import { title } from "process";
+import { GenerateTMBlogOptions } from "interfaces";
 const natural = require('natural');
 
 export const fetchBlog = async ({id, db}: {
@@ -26,6 +27,247 @@ export const fetchBlogIdeas = async ({id, db}: {
     db: any
 }) => {
    return await db.db('lilleBlogs').collection('blogIdeas').findOne({blog_id: new ObjectID(id)})
+}
+
+export const TMBlogGeneration = async ({db, text}: {
+    db: any;
+    text: string[];
+}) => {
+    const mapObj: any = {
+        "H1:":" ",
+        "H2:":" ",
+        "<p/><p/>":"<p/>",
+        "Conclusions:<p/>":"<h3>Conclusions</h3><p/>",
+        "Conclusion:<p/>":"<h3>Conclusions</h3><p/>",
+        "Conclusion<p/>":"<h3>Conclusion</h3><p/>",
+        "Conclusions<p/>":"<h3>Conclusion</h3><p/>",
+        "<h1>":" ",
+        "Title:":" ",
+        "Introduction::":" ",
+        "</h1>":" ",
+        "<h2>":" ",
+        "</h2>":" ",
+        "\n":" ",
+        "\"":" ",
+    };
+    const chatgptApis = await db.db('lilleAdmin').collection('chatGPT').findOne()
+    let availableApi: any = null
+    if(chatgptApis) {
+        availableApi = chatgptApis.apis?.find((api: any) => !api.quotaFull)
+    } else {
+        throw "Something went wrong! Please connect with support team";
+    }
+    if(!availableApi) {
+        throw "Something went wrong! Please connect with support team";
+    }
+    let newsLetter: any = {
+        salesPitch: null,
+        title: null,
+        linkedin: null,
+        twitter: null,
+        blog: null
+    }
+    const keys = Object.keys(newsLetter)
+    for (let index = 0; index < keys.length; index++) {
+        const key = keys[index];
+        try {
+            if(key === "salesPitch") {
+                const gptPrompt = "Act as an expert content writer who has to create a personalized sales pitch by identifying the pain points or challenges. Clearly define the problem to capture the user's attention. Describe how the product/service provides the ideal solution to the problem outlined earlier. List the benefits to improve customers' lives or businesses. Briefly compare the product/service with competitors. \n"+
+                "The sales pitch content must have the highest degree of perplexity and the highest degree of burstiness.\n"+
+                "The sales pitch content will be over 500 words.\n"+
+                "The following inputs will have to be used to write a sales pitch: ["+text.join(',')+"].\n" +
+                "End the sales pitch with a clear and concise call to action."
+                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: gptPrompt, db}).textCompletion(chatgptApis.timeout)
+                newsLetter = {...newsLetter, [key]: chatGPTText}
+            }
+            if(key === 'title') {
+                const blogPostToSend = newsLetter["wordpress"]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
+                    return mapObj[matched];
+                });            
+                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `Create a SEO based title using this blog: ${blogPostToSend}`, db}).textCompletion(chatgptApis.timeout)
+                newsLetter = {...newsLetter, [key]: chatGPTText}
+            }
+            if(key === 'linkedin') {
+                const gptPrompt = "Please act as an expert LinkedIn article writer who has to write a LinkedIn post. The following inputs will have to be used to write a LinkedIn post: ["+text.join(',')+"].\n" +
+                "LinkedIn post word limit will be 300 words \n"+
+                "Suggest an attention-grabbing Title. \n" +
+                "Insert hashtags at the end of the post. \n"
+                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: gptPrompt, db}).textCompletion(chatgptApis.timeout)
+                newsLetter = {...newsLetter, [key]: chatGPTText}
+            }
+            if(key === 'twitter') {
+                const gptPrompt = "Please act as an expert Twitter Thread writer who has to write a Twitter Thread. The following inputs will have to be used to write a Twitter Thread: ["+text.join(',')+"].\n" +
+                "Insert Emoticons in Twitter Thread. \n"+
+                "Thread limit to not exceed 10 tweets. \n" +
+                "Insert hashtags at the end of tweets. \n" +
+                "Character limit per tweet to be maximum 280 characters. \n" +
+                "Do not show the Tweet Number count inside the Tweets. \n"
+                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: gptPrompt, db}).textCompletion(chatgptApis.timeout)
+                newsLetter = {...newsLetter, [key]: chatGPTText}
+            }
+        } catch(e: any) {
+            console.log(e, "error from chat gpt")
+            throw e
+        }
+    }
+    let title : string = ""
+    console.log(newsLetter.salesPitch, "akash")
+    if(newsLetter['title'] && (!title || !title?.length)) {
+        title = newsLetter['title']
+        title = title?.replace(/"|\n|H1:|H2:|Title:/gi, function(matched: any){
+            return mapObj[matched];
+        })
+        title = title?.trim()
+    }
+    let description = ""
+    const updated = Object.keys(newsLetter).map((key: string) => {
+        switch(key) {
+            case "image":
+                break;
+            case "title":
+                break;    
+            case "twitter":    
+                console.log(newsLetter[key])
+                let updatedThread = null;
+                if(newsLetter[key]) {
+                    let thread = newsLetter[key]?.replace(/\n/g, "<p/>")
+                    console.log(thread)
+                    // let thread = `<p/><p/>1. Looking to build a strong chest? Here are the top 10 exercises to help you get there! #chestexercises #fitness #mensfitness <p/>2. Bench Press: A classic exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/>3. Incline Bench Press: This exercise targets the upper chest muscles. Make sure to keep your back flat and your elbows tucked in. <p/>4. Push-Ups: A great bodyweight exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/>5. Decline Bench Press: This exercise targets the lower chest muscles. Make sure to keep your back flat and your elbows tucked in. <p/>6. Chest Flys: A great exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/>7. Chest Dips: A great bodyweight exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/>8. Cable Crossovers: A great exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/>9. Chest Press Machine: A great machine exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/>10. Chest Pullovers: A great exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/><p/>There you have it! These are the top 10 exercises for building a strong chest. #chestexercises #fitness #mensfitness <p/>This tweet was generated by @Lille_AI twitter`
+                    const matchTwitterObj: any = {
+                        "<p/><p/>":"<p/>",
+                        "Thread: ":"",
+                    };
+                    thread = thread.replace(/<p\s*\/?><p\s*\/?>/gi, function(matched: any){
+                        return matchTwitterObj[matched];
+                    });
+                    updatedThread = thread.split("<p/>")
+                    updatedThread = updatedThread.map((str: string) => {
+                        return str.replace(/^\d+\s*[-\\.\\\/)]?\s+/g, "")
+                    })
+                    updatedThread = updatedThread?.filter((text: string) => text.length > 0)
+                    if(updatedThread && updatedThread.length) updatedThread.push('This tweet was generated by @Lille_AI')
+                    console.log(updatedThread, "updatedThread") 
+                }
+                return {
+                    published: false,
+                    published_date: false,
+                    platform: "twitter",
+                    creation_date: Math.round(new Date().getTime() / 1000) ,
+                    tiny_mce_data: {
+                    },
+                    threads: updatedThread || [] 
+                } 
+            case "linkedin":
+                console.log(newsLetter[key], "linkedin")
+                newsLetter[key] = newsLetter[key].trim()
+                let linkedinTitle = ""
+                if(newsLetter[key]?.indexOf("Title: ") >= 0) {
+                    linkedinTitle = (newsLetter[key].substr(newsLetter[key].indexOf("Title: "), newsLetter[key].indexOf("\n"))).replace("Title: ", "")
+                }
+                if(linkedinTitle && linkedinTitle.length > 1) {
+                    newsLetter[key] = newsLetter[key].replace(newsLetter[key].substr(newsLetter[key].indexOf("Title: "), newsLetter[key].indexOf("\n")), "")
+                }
+                let linkedinContent = newsLetter[key]?.replace(/\n/g, "<p/>")
+                const matchObj: any = {
+                    "<p/><p/>":"<p/>",
+                };
+                linkedinContent = linkedinContent?.replace(/<p\s*\/?><p\s*\/?>/gi, function(matched: any){
+                    return matchObj[matched];
+                }); 
+                return {
+                    published: false,
+                    published_date: false,
+                    platform: "linkedin",
+                    creation_date: Math.round(new Date().getTime() / 1000) ,
+                    tiny_mce_data: {
+                        "tag": "BODY",
+                        children: [
+                            {
+                                "tag": "H3",
+                                "attributes": {
+                                    "style": "text-align: center;"
+                                },
+                                "children": [
+                                    {
+                                        "tag": "STRONG",
+                                        "attributes": {},
+                                        "children": [
+                                            (linkedinTitle && linkedinTitle.length > 1 && linkedinTitle) || title
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "tag": "P",
+                                "attributes": {},
+                                "children": [
+                                    linkedinContent
+                                ]
+                            }
+                        ]
+                    }
+            }
+            case "salesPitch":
+                const content = newsLetter[key]
+                description = newsLetter[key]?.replace(/<h1>|<\s*\/?h1>|Title:|Introduction:|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
+                    return mapObj[matched];
+                }); 
+                return {
+                    published: false,
+                    published_date: false,
+                    platform: "salesPitch",
+                    creation_date: Math.round(new Date().getTime() / 1000) ,
+                    tiny_mce_data: {
+                        "tag": "BODY",
+                        children: [
+                            {
+                                "tag": "H3",
+                                "attributes": {
+                                    "style": "text-align: center;"
+                                },
+                                "children": [
+                                    {
+                                        "tag": "STRONG",
+                                        "attributes": {},
+                                        "children": [
+                                            title
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "tag": "P",
+                                "attributes": {
+                                    "style": "text-align: left;"
+                                },
+                                "children": []
+                            },
+                            {
+                                "tag": "P",
+                                "attributes": {},
+                                "children": [
+                                    content && content.length ? content : "Sorry, We were unable to generate the blog at this time, Please try again after some time or try with different topic."
+                                ]
+                            },
+                            {
+                                "tag": "P",
+                                "attributes": {},
+                                "children": []
+                            }
+                        ]
+                    }  
+                }
+            default:
+                return newsLetter[key]    
+        }      
+    })
+    console.log(updated, "akash")
+    console.log(updated.filter((data) => data), "akash1")
+    return {
+        publishedData: updated.filter((data) => data),
+        title,
+        description
+    }
 }
 
 export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null, userId = null, keywords = [], tones = []}: {
@@ -106,14 +348,14 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                 //     Donot repeat sentence
                 //     Strictly Highlight the H1 & H2 using html tags
                 //     Provide the conclusion at the end`}`, db}).textCompletion(chatgptApis.timeout)
-                const gptPrompt = `Please forget old prompt and act as an new expert writer and using the below pasted ideas write a blog with inputs as follows:\n${title && title.length ? `Topic is "${title}"\n${tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"`}`: tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"` }\n${keywords.length ? `Use these keywords: "${keywords.join('","')}" \nMinimum limit is "1000 words"`: `Minimum limit is "1000 words"`}\nHighlight the H1 & H2 html tags\nProvide the conclusion at the end\nStrictly use all these points: ${text}`
+                const gptPrompt = `Please forget old prompt and act as an new expert writer and using the below pasted ideas write a blog with inputs as follows:\n${title && title.length ? `Topic is "${title}"\n${tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"`}`: tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"` }\n${keywords.length ? `Use these keywords: "${keywords.join('","')}" \nMinimum limit is "1000 words"`: `Minimum limit is "1000 words"`}\nHighlight the H1 & H2 html tags\nProvide the conclusion at the end with Conclusion as heading\nStrictly use all these points: ${text}`
                 const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? gptPrompt : 
                     `Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
                     ${title && title.length ? `'Topic is "${title}"'`: "" }
                     ${tones?.length ? tones.join('","') : `'Tone is "Authoritative, informative, Persuasive"'`}
                     ${keywords.length ? `'Use these keywords: "${keywords.join('","')}'" \n 'Minimum limit is "1000 words"'`: `Limit is "1000 words"`}
                     "Highlight the H1 & H2 html tags"
-                    "Provide the conclusion at the end"`}`, db}).textCompletion(chatgptApis.timeout)
+                    "Provide the conclusion at the end with Conclusion as heading"`}`, db}).textCompletion(chatgptApis.timeout)
                 console.log(chatGPTText, "blog")    
                 newsLetter = {...newsLetter, [key]: chatGPTText}
             } else {
@@ -203,14 +445,14 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 }
                                 console.log(title, "title", newsLetter[key]?.indexOf("Title: "))
                                 const content = newsLetter[key]?.replace(/\n/g, "<p/>")
-                                let updatedContent = content?.replace("In conclusion, ", "<p><h3>Conclusions:</h3></p>")
+                                let updatedContent = content?.replace("In conclusion, ", "")
                                 updatedContent = updatedContent.replace(/H1:|H2:|Title:|Introduction:|<p\s*\/?><p\s*\/?>|Conclusions:<p\s*\/?>|Conclusion:<p\s*\/?>|Conclusion<p\s*\/?>|Conclusions<p\s*\/?>/gi, function(matched: any){
                                     return mapObj[matched];
                                 }); 
                                 let contentWithRef = ""
                                 // console.log(updatedContent)
                                 // updatedContent = updatedContent?.replace("<p></p><p></p>", "<p></p>")
-                                description = newsLetter[key]?.replace(/<h1>|<\s*\/?h1>|Title:|Introduction:|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
+                                description = newsLetter[key]?.replace(/H1:|H2:|<h1>|<\s*\/?h1>|Title:|Introduction:|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
                                     return mapObj[matched];
                                 }); 
                                 // description = (newsLetter[key]?.replace("\n", ""))?.trimStart()
@@ -950,4 +1192,36 @@ export const fetchBlogFromTopic = async (db: any, topics: string[], userId: stri
     }catch(e) {
         throw e
     }
+}
+
+export const generateAtrributesList = (attributes: any) => {
+    const order: any = {
+        strengths: 2,
+        weaknesses: 3,
+        opportunities: 4,
+        threats: 5,
+        problems: 7,
+        painPoints: 8,
+        challenges: 9,
+        companyProfile: 1,
+        latestLaunch: 10,
+        strategicFocusAreas: 11,
+        keyInvestment: 13,
+        keyMembers: 14,
+        risks: 12
+    }
+    let attributesArray: string[] = []
+    const sortedOrder = Object.keys(order).sort((a, b) => {
+        console.log(a, b, order[b])
+        if(order[a] < order[b]) return -1
+        else return 1
+    })
+    console.log(sortedOrder)
+    sortedOrder.map((key:any) => {
+        if(attributes[key]) {
+            attributesArray.push(`"${attributes[key].join('", "')}"`)   
+        }
+    })
+    console.log(attributesArray)
+    return attributesArray
 }

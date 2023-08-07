@@ -21,7 +21,11 @@ export const meeGetState = `query Query {
     credits
     prefFilled
     profileImage
+    userName
     publishCount
+    twitterUserName
+    linkedInUserName
+    googleUserName
     prefData
     totalCredits
     paymentsStarts
