@@ -12,7 +12,7 @@ import Select, {
 } from 'react-select';
 import Tooltip from '../ui/Tooltip';
 import { DocumentIcon, XCircleIcon } from '@heroicons/react/24/outline';
-import { validateIfURL } from '@/store/appHelpers';
+import { ObjType, addObjectToSearchStore, validateIfURL } from '@/store/appHelpers';
 
 function generateRandomId() {
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -26,7 +26,9 @@ function generateRandomId() {
 
   return randomId;
 }
-export const createOption = (label, id,index, type) => ({
+export const createOption = (label: string, id: string, index: number, type:
+  ObjType
+) => ({
   label,
   value: label,
   selected: false,
@@ -35,52 +37,35 @@ export const createOption = (label, id,index, type) => ({
   type: type
 });
 
+ interface RePurPoseProps{
+  setAllInput : any;
+  allInputs: any;
+  value: any;
+  setValue: any;
+  setShowRepourposeError: any;
+  removeFile: (id: string) => void;
+ }
  
- 
-export default function RePurpose({setAllInput ,allInputs, value, setValue, setShowRepourposeError, removeFile}){
-  const [inputValue, setInputValue] = React.useState('');
-  const handleKeyDown = (event) => {
+export default function RePurpose({setAllInput ,allInputs, value, setValue, setShowRepourposeError, removeFile} : RePurPoseProps) {
+  const [inputValue, setInputValue] = React.useState<string>('');
+  const handleKeyDown = (event: any) => {
     const elementId = generateRandomId();
     const inputLength = value.length;
-  
+    if(inputValue===''){
+      return;
+    }
     if (event.key === 'Enter' || event.key === 'Tab' || event.key === ',') {
-      if (inputLength >= 6) {
-        setShowRepourposeError(true);
-        return;
-      } else {
-        setShowRepourposeError(false);
-      }
-  
       if (!inputValue) return;
-      const newInputValue = inputValue;
-      const allInputsClone = { ...allInputs };
-      var newBlogLinks =[];
-      console.log(newInputValue);
-      const previousValues = [...value];
-      const previousUrl = previousValues.filter((item) => item.type === 'url');
-      const previousKeyword = previousValues.filter((item) => item.type === 'keyword');
-      if(previousUrl.length + previousKeyword.length >=3){
-        toast.error('You can only add three links (including 1 keyword)');
+      const validateType = validateIfURL(inputValue) ? 'url' : 'keyword';
+      console.log(validateType);
+      const creatableOption = createOption(inputValue, elementId, inputLength, validateType);
+      const {data: newBlogLinks, errors} = addObjectToSearchStore(creatableOption, value);
+      console.log(newBlogLinks, errors);
+      if(errors.length > 0){
+        errors.forEach((error: any) => {
+          toast.error(error);
+        });
         return;
-      }
-      if (validateIfURL(newInputValue)) {
-        const previousValues = [...value];
-        // check for objc with url
-        const previousUrl = previousValues.filter((item) => item.type === 'url');
-        if (previousUrl.length >=3) {
-          toast.error('You can only add three links');
-          return;
-        }
-        newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1, 'url')];      
-      } else {
-        const previousValues = [...value];
-        // check for objc with keyword
-        const previousKeyword = previousValues.filter((item) => item.type === 'keyword');
-        if (previousKeyword.length >=1) {
-          toast.error('You can only add one keyword');
-          return;
-        }
-        newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1, 'keyword')];
       }
       setValue(newBlogLinks);
       setInputValue('');
@@ -90,13 +75,13 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
   useEffect(() => {
     console.log(value);
   }, [value]);
-  const MultiValueRemove = (props) => {
+  const MultiValueRemove = (props: MultiValueRemoveProps<any>) => {
     function handleClick(){
-      const typeOfData = props.data.type;
+      const typeOfData = props.data.type
       if(typeOfData ==='file'){
         removeFile(props.data.id);
       }
-      const newValues = value.filter((item) => item.id !== props.data.id);
+      const newValues = value.filter((item :any) => item.id !== props.data.id);
       setValue(newValues);
     }
     return (
@@ -105,7 +90,7 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
         </components.MultiValueRemove>
     );
   };  
-  function MultiValueLabel(props) {
+  function MultiValueLabel(props: any) {
     // check for .type
     return (
       <components.MultiValueLabel {...props}>
@@ -132,10 +117,10 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
   const DropdownIndicator = () => {
     return null; // Return null to hide the default separator
   };
-  const ClearIndicator = (props) => {
+  const ClearIndicator = (props : any) => {
     return null; // Return null to hide the default separator
   };
-  const ValueContainer = ({ children, ...props }) => {
+  const ValueContainer = ({ children, ...props }:any) => {
     return (
       <components.ValueContainer {...props} className='custom-scrollbar'>
         {children}
@@ -202,36 +187,20 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
       onBlur={(event) => {
         const elementId = generateRandomId();
         const inputLength = value.length;
-        if (inputLength >=3) {
-          setShowRepourposeError(true);
+        if(inputValue===''){
           return;
-        } else {
-          setShowRepourposeError(false);
         }
         if (!inputValue) return;
-        const newInputValue = inputValue;
-        // const newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1)];
-        var newBlogLinks =[];
-        console.log(newInputValue);
-        if (validateIfURL(newInputValue)) {
-          const previousValues = [...value];
-          // check for objc with url
-          const previousUrl = previousValues.filter((item) => item.type === 'url');
-          if (previousUrl.length >= 3) {
-            toast.error('You can only add three links');
-            return;
-          }
-
-          newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1, 'url')];      
-        } else {
-          const previousValues = [...value];
-          // check for objc with keyword
-          const previousKeyword = previousValues.filter((item) => item.type === 'keyword');
-          if (previousKeyword.length >=1) {
-            toast.error('You can only add one keyword');
-            return;
-          }
-          newBlogLinks = [...value, createOption(inputValue, elementId, inputLength + 1, 'keyword')];
+        const validateType = validateIfURL(inputValue) ? 'url' : 'keyword';
+        console.log(validateType);
+        const creatableOption = createOption(inputValue, elementId, inputLength, validateType);
+        const {data: newBlogLinks, errors} = addObjectToSearchStore(creatableOption, value);
+        console.log(newBlogLinks, errors);
+        if(errors.length > 0){
+          errors.forEach((error: any) => {
+            toast.error(error);
+          });
+          return;
         }
         setValue(newBlogLinks);
         setInputValue('');

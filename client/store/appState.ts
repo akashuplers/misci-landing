@@ -18,6 +18,7 @@ interface FileStoreState {
   selectedFiles: IRePurposeFileState[];
   setSelectedFiles: (files: IRePurposeFileState[]) => void;
   addSelectedFile: (file: IRePurposeFileState) => void;
+  addMultipleSelectedFiles: (files: IRePurposeFileState[]) => void;
   removeSelectedFile: (id: string) => void;
 }
 
@@ -26,6 +27,7 @@ export const useRepurposeFileStore = create<FileStoreState>((set) => ({
   selectedFiles: [],
   setSelectedFiles: (files) => set({ selectedFiles: files }),
   addSelectedFile: (file) => set((state) => ({ selectedFiles: [...state.selectedFiles, file] })),
+  addMultipleSelectedFiles: (files) => set((state) => ({ selectedFiles: [...state.selectedFiles, ...files] })),
   removeSelectedFile: (id) => set((state) => ({ selectedFiles: state.selectedFiles.filter((file) => file.id !== id) })),
 }));
 
