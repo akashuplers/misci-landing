@@ -48,7 +48,6 @@ export default function Sidebar() {
   const [url, setUrl] = useState("");
   const router = useRouter();
   const path = router.pathname;
-  console.log(path);
   useEffect(() => {
     setUrl(path);
   }, [path]);
@@ -679,10 +678,7 @@ export default function Sidebar() {
 }
 
 
-export function UserSaveTime(data, dataLoading) {
-  // const [selectedOption, setSelectedOption] = useState(data[);
-  // firstdata
-  console.log(data.data);
+export function UserSaveTime(data, dataLoading) { 
   data = data.data;
   const [selectedOption, setSelectedOption] = useState('Month');
 

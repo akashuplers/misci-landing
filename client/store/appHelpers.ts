@@ -1,4 +1,4 @@
-import { format, fromUnixTime } from "date-fns";
+import { format, fromUnixTime, max } from "date-fns";
 import { APP_REGEXP } from "./appContants";
 
 export function getRelativeTimeString(
@@ -29,7 +29,9 @@ export function getRelativeTimeString(
   return rtf.format(Math.floor(deltaSeconds / divisor), units[unitIndex]);
 }
 export function validateIfURL(url: string): boolean {
-  return APP_REGEXP.URL_VALIDATION.test(url);
+  const test= url.includes('.') || url.includes('/') || url.includes(':') || url.includes('?') || url.includes('&');
+  console.log(test);
+  return test;
 }
 
 export function randomNumberBetween20And50() {
@@ -119,4 +121,126 @@ export function calculateUsedCredits(userData: {
 
 export function validateIfGoogleDriveURL(url: string): boolean {
   return APP_REGEXP.GOOGLE_DRIVE_URL_VALIDATION.test(url);
+}
+
+export type ObjType = 'file' | 'url' | 'keyword';
+
+interface Obj {
+  id: string,
+  index: number;
+  label: string;
+  selected: boolean;
+  type: ObjType;
+  value: string;
+}
+
+interface Result {
+  data: Obj[];
+  errors: string[];
+}
+export function addObjectToSearchStore(obj: Obj, array: Obj[]): Result {
+  const maxCapacity = 6;
+  const keywordLimit = 1;
+
+  let remainingCapacity = maxCapacity - array.length;
+  let keywordCount = 0;
+
+  // Check if the obj type is valid
+  if (!['file', 'url', 'keyword'].includes(obj.type)) {
+    return { data: array, errors: ['Invalid obj type'] };
+  }
+  
+  // check for total number of items of files, urls, keywords
+  const objCount = array.length;
+  if (objCount >= maxCapacity) {
+    return { data: array, errors: ['Maximum 6 items are allowed'] };
+  }
+
+  // Check if the keyword count exceeds the limit
+  if (obj.type === 'keyword') {
+    keywordCount = array.filter((item) => item.type === 'keyword').length;
+    if (keywordCount >= keywordLimit) {
+      return { data: array, errors: ['Only one keyword is allowed'] };
+    }
+  }
+  // If all conditions pass, add the obj to the array and return the updated array
+  const newArray = [...array, obj];
+  return { data: newArray, errors: [] };
+}
+interface ResultForAddFilesToArray {
+  data: Obj[];
+  files?: File[];
+  errors: string[];
+}
+
+interface ResultForAddFilesToArray {
+  data: Obj[];
+  files?: File[];
+  errors: string[];
+}
+
+export function addFilesToTheSearch(
+  obj: Obj[],
+  array: Obj[],
+  files: File[],
+  maxFileSize: number,
+  maxSpaceLength: number
+): ResultForAddFilesToArray {
+  const maxCapacity = 6;
+  const keywordLimit = 1;
+
+  let remainingCapacity = maxCapacity - array.length;
+  let keywordCount = 0;
+  let totalFileSize = 0;
+ 
+  // Check if the keyword count exceeds the limit
+  keywordCount = array.filter((item) => item.type === 'keyword').length;
+  if (files.length === 0) {
+    return { data: array, errors: ['No file selected'] };
+  }
+  if (keywordCount === 0) {
+    if (files.length > maxCapacity) {
+      return { data: array, errors: [`Maximum ${maxCapacity} items are allowed`] };
+    }
+    if (files.length + array.length > maxCapacity) {
+      return { data: array, errors: [`Maximum ${maxCapacity} items are allowed`] };
+    }
+  } else {
+    if (files.length > maxCapacity - keywordCount) {
+      return { data: array, errors: [`Maximum ${maxCapacity - keywordCount} items are allowed`] };
+    }
+  }
+  // file format check
+  const allowedFormats = ['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt'];
+  const fileFormats = files.map((file) => file.name.split('.').pop());
+  const invalidFormats = fileFormats.filter((format) => format && !allowedFormats.includes(format));
+  if (invalidFormats.length > 0) {
+    return {
+      data: array,
+      errors: [`Only ${allowedFormats.join(', ')} files are allowed`],
+    };
+  }
+  // file size check
+  const invalidFiles = files.filter((file) => file.size > maxFileSize);
+  if (invalidFiles.length > 0) {
+    return {
+      data: array,
+      errors: [`Maximum file size is ${maxFileSize / 1024 / 1024} MB`],
+    };
+  }
+  // does it already exist?
+  const dataOfTypeOfFiles = array.filter((item) => item.type === 'file');
+  const fileNames = dataOfTypeOfFiles.map((item) => item.value);
+  const duplicateFiles = files.filter((file) => fileNames.includes(file.name));
+  // name the file as duplicate in the error
+  if (duplicateFiles.length > 0) {
+    return {
+      data: array,
+      errors: duplicateFiles.map((file) => `${file.name} already exists`),
+    };
+  }
+
+  // If all conditions pass, add the obj to the array and return the updated array
+  const newArray = [...array, ...obj];
+  return { data: newArray, files, errors: [] };
 }

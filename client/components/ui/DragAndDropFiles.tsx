@@ -7,6 +7,7 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-toastify';
 import Tooltip from './Tooltip';
+import { addFilesToTheSearch } from '@/store/appHelpers';
 
 export const REPURPOSE_MAX_SIZE_MB = 7;
 export const REPURPOSE_MAX_SIZE = maxFileSize( REPURPOSE_MAX_SIZE_MB );
@@ -14,6 +15,7 @@ export const REPURPOSE_MAX_SIZE = maxFileSize( REPURPOSE_MAX_SIZE_MB );
 const DragAndDropFiles = () => {
   // const [selectedFiles, setSelectedFiles] = useState([]);
   const selectedFiles = useRepurposeFileStore((state) => state.selectedFiles);
+  const addMultipleSelectedFiles = useRepurposeFileStore((state) => state.addMultipleSelectedFiles);
   const addSelectedFile = useRepurposeFileStore((state) => state.addSelectedFile);
   // useBlogLinkStore
   const blogLinks = useBlogLinkStore((state) => state.blogLinks);
@@ -84,37 +86,24 @@ const DragAndDropFiles = () => {
     return files;
   }
   const onDrop = (acceptedFiles : File[]) => {
-    console.log('prev blogs links');
-    console.log(blogLinks);
-    console.log("IFLES LENGHT", acceptedFiles.length, acceptedFiles);
-    if(acceptedFiles.length > 6){
-      toast.warn('You can upload max 6 files');
+    const prevFiles = [...selectedFiles];
+    const newFilesNames = acceptedFiles.map((file) => file.name);
+    const fileObj = newFilesNames.map((file, index) => (createBlogLink(file,'file', prevFiles.length + index + 1)));
+    const dataOfLinks = [...blogLinks];
+    const {data, errors, files} = addFilesToTheSearch(fileObj,dataOfLinks, acceptedFiles,REPURPOSE_MAX_SIZE, 6);
+    if(errors.length > 0){
+      errors.forEach((error) => {
+        toast.error(error);
+      });
       return;
     }
-     // Check if files are selected
-    const selectedFiles = filesInputValidation(acceptedFiles);
-    if (!selectedFiles) {
-      return;
-    }
-     
-    if (blogLinks.length > 6) {
-      toast.error('You can upload max 6 items, URLs or Files or a combination of URLs and Files');
-      return;
-    }
-    const newLinks = Array.from(acceptedFiles).map((file, index) =>
-      createBlogLink(file.name,'file', blogLinks.length + index + 1)
-    );
-    // addBlogLink(newLinks);
-    newLinks.forEach((link) => {
-      addBlogLink(link);
-    });
-    selectedFiles.forEach((file) => {
-      const fileObj = {
-        id: file.name,
+    files?.forEach((file) => {
+      addSelectedFile({
         file: file,
-      }
-      addSelectedFile(fileObj);
+        id: file.name,
+      });
     });
+    setBlogLinks(data);
     toast.success('File added successfully',{
       autoClose: 2000,
     });
