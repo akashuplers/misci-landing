@@ -34,8 +34,8 @@ export class ChatGPT {
             return res?.data?.choices?.length && res?.data?.choices?.[0].text
         }catch(err){
             console.log(err)
-            console.log(err.response.data)
-            console.log(err?.response?.data?.error?.type)
+            // console.log(err.response.data)
+            // console.log(err?.response?.data?.error?.type)
             if(err?.response?.data?.error?.type && err?.response?.data?.error?.type === "insufficient_quota") {
                 await this.db.db('lilleAdmin').collection('chatGPT').updateOne({}, {
                 $set: {

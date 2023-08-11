@@ -14,7 +14,7 @@ export const authMiddleware = async (req: any, res: any, next: any) => {
         return res.status(403).send({ error: true, message: "FORBIDDEN" });
     }
     } else {
-        if (path !== "/auth/linkedin/me" && !accessToken) {
+        if ((path !== "/auth/linkedin/me" && path !== "/auth/generate") && !accessToken) {
           return res
             .status(401)
             .send({ error: true, message: "Please Register or Login" });
