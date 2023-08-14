@@ -16,7 +16,7 @@ import { ChatGPT } from "../services/chatGPT";
 import { Python } from "../services/python";
 const multer = require("multer");
 const inMemoryStorage = multer.memoryStorage();
-const uploadStrategy = multer({ storage: inMemoryStorage }).single('file');
+const mulitUploadStrategy = multer({ storage: inMemoryStorage });
 const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcrypt');
@@ -1526,12 +1526,12 @@ router.post('/request-trial', async (req: any, res: any) => {
   })
 })
 
-router.post('/generate', [authMiddleware, uploadStrategy], async (req: any, res: any) => {
+router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], async (req: any, res: any) => {
   let startRequest = new Date()
   const db = req.app.get('db')
   console.log(req.body)
-  let {keyword, article_ids: articleIds, keywords, url, tones, user_id: userId} = req.body
-  let file = req.file
+  let {keyword, article_ids: articleIds, keywords, urls, tones, user_id: userId} = req.body
+  let files = req.files
   let combinedArticleIds: string[] = []
   // let keyword = args.options.keyword
   // let articleIds: any[] = args.options.article_ids
@@ -1543,7 +1543,7 @@ router.post('/generate', [authMiddleware, uploadStrategy], async (req: any, res:
       throw "No keyword passed!"
   }
   const user = req.user
-  console.log(tones, file)
+  console.log(tones, files)
   let userDetails = null
   if(user && Object.keys(user).length) {
     userDetails = await fetchUser({id: user.id, db})
@@ -1620,31 +1620,42 @@ router.post('/generate', [authMiddleware, uploadStrategy], async (req: any, res:
   let unprocessedUrlsFiles: string[] = []
 
 
-  let urlsArticleIds: string|null = null
-  let fileArticleIds: string|null = null
-  if(url) {
-    try {
-      urlsArticleIds = await new Python({userId}).uploadUrl({url})
-    }catch(e: any){
-      unprocessedUrlsFiles.push(url)
-    }
+  let urlsArticleIds: string[] = []
+  let fileArticleIds: string[] = []
+  if(urls && urls.length) {
+    urlsArticleIds = await (
+      Promise.all (
+        urls.map(async (url: string) => {
+          try {
+            return await new Python({userId}).uploadUrl({url})
+            // return urlsArticleIds.push(res)
+          }catch(e: any){
+            unprocessedUrlsFiles.push(url)
+          }
+        })
+      )
+    )
     if(urlsArticleIds) {
-      combinedArticleIds = [...combinedArticleIds, urlsArticleIds]
+      combinedArticleIds = [...combinedArticleIds, ...urlsArticleIds]
     }
-  } else if(file) {
-    console.log(file, "file akash")
-    try {
-      fileArticleIds = await new Python({userId}).uploadFile({file})
-      console.log(fileArticleIds, "file ids akash")
-    }catch(e: any){
-      unprocessedUrlsFiles.push(file.originalname)
-    }
+  } else if(files) {
+    console.log(files, "file akash")
+    fileArticleIds = await (
+      Promise.all (
+        files.map(async (file: any) => {
+          try {
+            return await new Python({userId}).uploadFile({file})
+          }catch(e: any){
+            unprocessedUrlsFiles.push(file.originalname)
+          }
+        })
+      )
+    )
+    console.log(fileArticleIds, "file ids akash")
     if(fileArticleIds) {
-      combinedArticleIds = [...combinedArticleIds, fileArticleIds]
+      combinedArticleIds = [...combinedArticleIds, ...fileArticleIds]
     }
   }
-  console.log(combinedArticleIds, urlsArticleIds, "tada")
-  console.log(keyword, "keyword")
   // articleIds = [
   //     '97a32ca9-1710-11ee-8959-0242c0a8e002',
   //     '96345a34-1710-11ee-8959-0242c0a8e002',
@@ -1664,6 +1675,7 @@ router.post('/generate', [authMiddleware, uploadStrategy], async (req: any, res:
   let tags: String[] = []
   let ideasText = ""
   let articlesData: any[] = []
+  combinedArticleIds = combinedArticleIds.filter((id: string) => id)
   if(combinedArticleIds) {
       articlesData = await (
           Promise.all(
