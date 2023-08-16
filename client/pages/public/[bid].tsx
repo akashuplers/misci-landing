@@ -122,7 +122,7 @@ export default function Post() {
     fakeDivContainer.innerHTML = html;
     var h2Element = fakeDivContainer.querySelector('h2');
     console.log(h2Element, h2Element?.innerText);
-    var h2text = convertToURLFriendly((aa?.children[4]?.children[0])? (aa?.children[4]?.children[0]): "");
+    var h2text = convertToURLFriendly((aa?.children[4]?.children[0])? (aa?.children[4]?.children[0]): "blog");
     if (userDetails?.googleUserName) {
         authorProfilePath = "/google/" + userDetails?.googleUserName.replace(/\s/g, '') + "/" +blogTitle +'/' + h2text + "/" + bid;
     }
