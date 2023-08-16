@@ -120,9 +120,10 @@ export default function Post() {
     var authorProfilePath = "";
     const fakeDivContainer = document.createElement('div');
     fakeDivContainer.innerHTML = html;
-    var h2Element = fakeDivContainer.querySelector('h2');
-    console.log(h2Element, h2Element?.innerText);
-    var h2text = convertToURLFriendly((aa?.children[4]?.children[0])? (aa?.children[4]?.children[0]): "blog");
+    // @ts-ignore
+    var h2Element = fakeDivContainer.querySelector('h2')?.innerText;
+    console.log(html);
+    var h2text = convertToURLFriendly(h2Element ?? "blog");
     if (userDetails?.googleUserName) {
         authorProfilePath = "/google/" + userDetails?.googleUserName.replace(/\s/g, '') + "/" +blogTitle +'/' + h2text + "/" + bid;
     }
@@ -138,7 +139,7 @@ export default function Post() {
     console.log("username"+authorProfilePath);
     console.log('new path', authorProfilePath)
     setAuthorPath(authorProfilePath);
-    setData(html);
+    setData(html); 
   }, [router, gqlData]);
   useEffect(() => { 
     if(authorPath!=""){
