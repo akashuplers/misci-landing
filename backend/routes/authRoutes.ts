@@ -1540,7 +1540,10 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
   // let urls = args.options.urls
   // let tones = args.options.tones
   if(!keyword?.length && !keywords?.length) {
-      throw "No keyword passed!"
+    return res.status(400).send({
+      type: "ERROR",
+      message: "No keyword passed!"
+    })
   }
   const user = req.user
   console.log(tones, files)
@@ -1548,11 +1551,23 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
   if(user && Object.keys(user).length) {
     userDetails = await fetchUser({id: user.id, db})
     if(!userDetails) {
-        throw "@No user found"
+      return res.status(400).send({
+        type: "ERROR",
+        message: "@No user found"
+      })
     }
     if(userDetails.credits <= 0) {
-        throw "@Credit exhausted"
+      return res.status(400).send({
+        type: "ERROR",
+        message: "@Credit exhausted"
+      })
     }
+  }
+  if((urls.length > 1 || files.length > 1) && (!user || !Object.keys(user).length)) {
+    return res.status(400).send({
+      type: "ERROR",
+      message: "User not authorized!"
+    })
   }
   let refUrls: {
       url: string
@@ -1623,38 +1638,18 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
   let urlsArticleIds: string[] = []
   let fileArticleIds: string[] = []
   if(urls && urls.length) {
-    urlsArticleIds = await (
-      Promise.all (
-        urls.map(async (url: string) => {
-          try {
-            return await new Python({userId}).uploadUrl({url})
-            // return urlsArticleIds.push(res)
-          }catch(e: any){
-            unprocessedUrlsFiles.push(url)
-          }
-        })
-      )
-    )
-    if(urlsArticleIds) {
-      combinedArticleIds = [...combinedArticleIds, ...urlsArticleIds]
+    for (let index = 0; index < urls.length; index++) {
+      const url = urls[index];
+      const urlUploadRes = await new Python({userId}).uploadUrl({url})
+      urlsArticleIds.push(urlUploadRes)
     }
   } else if(files) {
-    console.log(files, "file akash")
-    fileArticleIds = await (
-      Promise.all (
-        files.map(async (file: any) => {
-          try {
-            return await new Python({userId}).uploadFile({file})
-          }catch(e: any){
-            unprocessedUrlsFiles.push(file.originalname)
-          }
-        })
-      )
-    )
-    console.log(fileArticleIds, "file ids akash")
-    if(fileArticleIds) {
-      combinedArticleIds = [...combinedArticleIds, ...fileArticleIds]
+    for (let index = 0; index < files.length; index++) {
+      const file = files[index];
+      const fileUploadRes = await new Python({userId}).uploadFile({file})
+      fileArticleIds.push(fileUploadRes)
     }
+    console.log(fileArticleIds, "file ids")
   }
   // articleIds = [
   //     '97a32ca9-1710-11ee-8959-0242c0a8e002',
@@ -1662,6 +1657,12 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
   //     '9495c95a-1710-11ee-8959-0242c0a8e002',
   //     '991cd785-1710-11ee-8959-0242c0a8e002'
   // ]
+  if(urlsArticleIds) {
+    combinedArticleIds = [...combinedArticleIds, ...urlsArticleIds]
+  }
+  if(fileArticleIds) {
+    combinedArticleIds = [...combinedArticleIds, ...fileArticleIds]
+  }
   let pythonEnd = new Date()
   let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
   let texts = ""
