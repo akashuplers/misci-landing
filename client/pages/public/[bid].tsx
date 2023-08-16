@@ -19,7 +19,7 @@ import { useStore } from "zustand";
 import { APP_REGEXP, DEFAULT_USER_PROFILE_IMAGE } from '../../store/appContants';
 import { useUserDataStore } from '../../store/appState';
 import { UserDataResponse } from "@/types/type";
-import { getRelativeTimeString, unixToLocalYear,  } from "@/store/appHelpers";
+import { convertToURLFriendly, getRelativeTimeString, unixToLocalYear,  } from "@/store/appHelpers";
 import { RelativeTimeString } from "@/components/ui/RelativeTimeString";
 import Head from "next/head";
 export default function Post() {
@@ -111,24 +111,32 @@ export default function Post() {
     console.log("ADD");
     console.log(gqlData?.fetchBlog);
     console.log(aa?.children[0].children[0].children[0]);
+    var blogTitle = aa?.children[0].children[0].children[0] ;
+    blogTitle = convertToURLFriendly(blogTitle ? blogTitle : '');
     setBlogTitle(aa?.children[0].children[0].children[0]);
     console.log(gqlData);
     const userDetails = gqlData?.fetchBlog?.userDetail;
     console.log(userDetails);
     var authorProfilePath = "";
+    const fakeDivContainer = document.createElement('div');
+    fakeDivContainer.innerHTML = html;
+    var h2Element = fakeDivContainer.querySelector('h2');
+    console.log(h2Element, h2Element?.innerText);
+    var h2text = convertToURLFriendly((aa?.children[4]?.children[0])? (aa?.children[4]?.children[0]): "");
     if (userDetails?.googleUserName) {
-        authorProfilePath = "/google/" + userDetails?.googleUserName.replace(/\s/g, '') + "/" + bid;
+        authorProfilePath = "/google/" + userDetails?.googleUserName.replace(/\s/g, '') + "/" +blogTitle +'/' + h2text + "/" + bid;
     }
     else if (userDetails?.twitterUserName) {
-        authorProfilePath = "/twitter/" + userDetails.twitterUserName.replace(/\s/g, '') + "/" + bid;
+        authorProfilePath = "/twitter/" + userDetails.twitterUserName.replace(/\s/g, '') + "/" +blogTitle +'/' + h2text + "/" + bid;
     }
     else if (userDetails?.linkedInUserName) {
-        authorProfilePath = "/linkedin/" + userDetails?.linkedInUserName.replace(/\s/g, '') + "/" + bid;
+        authorProfilePath = "/linkedin/" + userDetails?.linkedInUserName.replace(/\s/g, '') + "/" +blogTitle +'/' + h2text + "/" + bid;
     }
     else if (userDetails?.userName) {
-      authorProfilePath = "/user/" + userDetails?.userName.replace(/\s/g, '') + "/" + bid;
+      authorProfilePath = "/user/" + userDetails?.userName.replace(/\s/g, '') + "/" +blogTitle +'/' + h2text + "/" + bid;
     }
     console.log("username"+authorProfilePath);
+    console.log('new path', authorProfilePath)
     setAuthorPath(authorProfilePath);
     setData(html);
   }, [router, gqlData]);

@@ -244,3 +244,29 @@ export function addFilesToTheSearch(
   const newArray = [...array, ...obj];
   return { data: newArray, files, errors: [] };
 }
+
+
+export function convertToURLFriendly(str:string) {
+  // Replace spaces with hyphens
+  const urlFriendlyStr = str.replace(/\s+/g, '-');
+  
+  // Convert to lowercase
+  const lowercaseStr = urlFriendlyStr.toLowerCase();
+  
+  // Remove special characters except hyphens
+  const cleanedStr = lowercaseStr.replace(/[^a-z0-9-]/g, '');
+
+  return cleanedStr;
+}
+
+function getFirstH2(htmlString:string) {
+  // Create a temporary container element
+  const container = document.createElement('div');
+  container.innerHTML = htmlString;
+
+  // Find the first h2 element within the container
+  const firstH2 = container.querySelector('h2');
+
+  // Return the innerHTML of the first h2, or an empty string if not found
+  return firstH2 ? firstH2.innerHTML : '';
+}
