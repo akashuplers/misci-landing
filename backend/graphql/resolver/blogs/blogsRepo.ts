@@ -5,6 +5,7 @@ import { URL } from "url";
 import { Python } from "../../../services/python";
 import { title } from "process";
 import { GenerateTMBlogOptions } from "interfaces";
+import { publish } from "../../../utils/subscription";
 const natural = require('natural');
 
 export const fetchBlog = async ({id, db}: {
@@ -270,11 +271,11 @@ export const TMBlogGeneration = async ({db, text}: {
     }
 }
 
-export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null, userId = null, keywords = [], tones = []}: {
+export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null, userId = null, keywords = [], tones = [], pubsub = null}: {
     db: any;
     text: String;
     regenerate: Boolean;
-    title?: String | null;
+    title?: string | null;
     imageUrl?: String | null
     imageSrc?: String | null
     ideasText?: String | null
@@ -287,6 +288,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
     tones?: string[];
     userDetails?: any;
     userId?: string | null;
+    pubsub?: any | null;
 }) => {
     const mapObj: any = {
         "H1:":" ",
@@ -414,6 +416,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
             throw e
         }
     }
+    publish({userId, keyword: title || "", step: "CHAT_GPT_COMPLETED"})
     if(newsLetter['title'] && (!title || !title?.length)) {
         title = newsLetter['title']
         title = title?.replace(/"|\n|H1:|H2:|Title:/gi, function(matched: any){
@@ -490,6 +493,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                         }
                                     })
                                 }
+                                publish({userId, keyword: title || "", step: "BACKLINK_COMPLETED"})
                                 const htmlTagRegex = /<[^>]*>([^<]*)<\/[^>]*>/g; // Regular expression to match HTML tags
                                 // const sentences = updatedContent?.split('.').map((sentence: any) => {
                                 //     // Check if the sentence is not wrapped in HTML tags

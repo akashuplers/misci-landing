@@ -5,8 +5,10 @@ type Query {
 #  test(url: String!): String!    
 # }
 
-type Subscription {
- newLink: String!
+type SubscriptionPayload {
+ step: String
+ keyword: String
+ userId: String
 }
 
 
@@ -14,4 +16,7 @@ type Mutation {
   test(url: String!): String!
 }
 
-
+type Subscription {
+  # articlesChangeSubscription(userId: String!): SubscriptionPayload
+  stepCompletes(userId: String!): SubscriptionPayload
+}

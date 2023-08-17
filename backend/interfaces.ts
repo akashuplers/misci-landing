@@ -1,5 +1,5 @@
 export interface GenerateBlogMutationArg {
-    keyword: String;
+    keyword: string;
     user_id: string;
     article_ids: string[]
     keywords: string[];
