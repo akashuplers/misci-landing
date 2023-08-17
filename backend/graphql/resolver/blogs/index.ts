@@ -7,7 +7,7 @@ import { Python } from '../../../services/python';
 import { diff_minutes, getTimeStamp } from '../../../utils/date';
 import { sendEmails } from '../../../utils/mailJetConfig';
 
-const SOMETHING_CHANGED_TOPIC = 'new_link';
+const SOMETHING_CHANGED_TOPIC = 'steps_completion';
 
 let currentNumber = 0
 export const blogResolvers = {
@@ -1163,15 +1163,26 @@ export const blogResolvers = {
         },
     },
     Subscription: {
-        newLink: {
+        stepCompletes: {
             subscribe: withFilter(
               (_, args, {db}) => {
                 console.log("pubsub")
                 return pubsub.asyncIterator([SOMETHING_CHANGED_TOPIC])
               },
               async (payload, variables): Promise<any> => {
-                console.log("payload", payload)
-                return true
+                // console.log("payload", payload, variables)
+                // return true
+                try {
+                    if (
+                      payload?.stepCompletes?.userId === variables.userId
+                    ) {
+                      return true;
+                    }
+                    return false;
+                  } catch (error) {
+                    console.log("subscription error :>> ", error);
+                    return false;
+                  }
               }
             ),
         },

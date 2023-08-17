@@ -14,6 +14,7 @@ import { sendContributionEmail, sendEmails, sendForgotPasswordEmail } from "../u
 import { assignTweetQuota, blogGeneration, fetchArticleById, fetchArticleUrls, fetchUser, publishBlog, updateUserCredit } from "../graphql/resolver/blogs/blogsRepo";
 import { ChatGPT } from "../services/chatGPT";
 import { Python } from "../services/python";
+import { publish } from "../utils/subscription";
 const multer = require("multer");
 const inMemoryStorage = multer.memoryStorage();
 const mulitUploadStrategy = multer({ storage: inMemoryStorage });
@@ -1632,6 +1633,7 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
           console.log(e, "error from python")
       }
   }
+  publish({userId, keyword, step: "KEYWORD_COMPLETED"})
   let unprocessedUrlsFiles: string[] = []
 
 
@@ -1643,12 +1645,14 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
       const urlUploadRes = await new Python({userId}).uploadUrl({url})
       urlsArticleIds.push(urlUploadRes)
     }
+    publish({userId, keyword, step: "URL_UPLOAD_COMPLETED"})
   } else if(files) {
     for (let index = 0; index < files.length; index++) {
       const file = files[index];
       const fileUploadRes = await new Python({userId}).uploadFile({file})
       fileArticleIds.push(fileUploadRes)
     }
+    publish({userId, keyword, step: "FILE_UPLOAD_COMPLETED"})
     console.log(fileArticleIds, "file ids")
   }
   // articleIds = [
@@ -1691,7 +1695,7 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
                           imageSrc = null
                       }
                   }
-                  keyword = article.keyword
+                  // keyword = article.keyword
                   // const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
                   // const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
                   // const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
@@ -1701,7 +1705,7 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
                       used_summaries: article._source.summary.slice(0, 10),
                       name: name && name === "file" ? article._source.title : name,
                       unused_summaries: article._source.summary.slice(10),
-                      keyword: article.keyword,
+                      keyword,
                       id
                   }
               })
@@ -1738,7 +1742,7 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
           userDetails,
           userId: (userDetails && userDetails._id) || userId,
           keywords,
-          tones,
+          tones
       })
       if(blogGeneratedData) {
           const {usedIdeasArr, updatedBlogs, description,title} = blogGeneratedData
