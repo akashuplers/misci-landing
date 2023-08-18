@@ -1564,7 +1564,7 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
       })
     }
   }
-  if((urls.length > 1 || files.length > 1) && (!user || !Object.keys(user).length)) {
+  if((urls?.length > 1 || files?.length > 1) && (!user || !Object.keys(user).length)) {
     return res.status(400).send({
       type: "ERROR",
       message: "User not authorized!"
