@@ -1142,8 +1142,8 @@ export const blogResolvers = {
             if(!blog) {
                 throw "@No blog found"
             }
-            await publishBlog({id: blog_id, db, platform: "wordpress"})
-            return true
+            const savedTimeData = await getSavedTime(db, blog_id)
+            return {savedTime: savedTimeData ? savedTimeData.time : null}
         },
         delete: async (
             parent: unknown, args: {options: {blog_id: string}}, {db, pubsub, user}: any
