@@ -1170,7 +1170,7 @@ export const blogResolvers = {
                 return pubsub.asyncIterator([SOMETHING_CHANGED_TOPIC])
               },
               async (payload, variables): Promise<any> => {
-                // console.log("payload", payload, variables)
+                console.log("payload", payload, variables)
                 // return true
                 try {
                     if (
