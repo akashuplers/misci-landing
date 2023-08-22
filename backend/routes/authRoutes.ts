@@ -1954,7 +1954,7 @@ router.get('/saved-time', authMiddleware, async (req: any, res: any) => {
         message: "User not found!"
       })
     }
-    const totalSavedData = await db.db('lilleBlogs').collection('blogsTime').find({userId: new ObjectID(user.id)}, {
+    const totalSavedData = await db.db('lilleBlogs').collection('blogsTime').find({userId: new ObjectID(user.id), status: "SAVE"}, {
       projection: {
         time: 1,
         date: 1,
@@ -2020,7 +2020,9 @@ router.get('/saved-time', authMiddleware, async (req: any, res: any) => {
 router.get('/total-saved-time', async (req: any, res: any) => {
   const db = req.app.get('db')
   try {
-    const totalSavedData = await db.db('lilleBlogs').collection('blogsTime').find({}, {
+    const totalSavedData = await db.db('lilleBlogs').collection('blogsTime').find({
+      status: "SAVE"
+    }, {
       projection: {
         time: 1,
         date: 1,
@@ -2069,7 +2071,7 @@ router.get('/total-saved-time', async (req: any, res: any) => {
 
 router.post('/add-time-saved', async (req: any, res: any) => {
   const db = req.app.get('db')
-  const {userId, blogId, time, type} = req.body
+  const {userId, blogId, time, type, status} = req.body
   try {
     if(!userId) {
       return res.status(400).send({
@@ -2093,6 +2095,7 @@ router.post('/add-time-saved', async (req: any, res: any) => {
       blogId: new ObjectID(blogId),
       time: `00:${splittedTime[0] || 1}`,
       type,
+      status: status || "SAVE",
       date: getTimeStamp()
     }}, 
     {upsert: true})
