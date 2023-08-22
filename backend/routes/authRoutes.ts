@@ -1646,7 +1646,7 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
       urlsArticleIds.push(urlUploadRes)
     }
     publish({userId, keyword, step: "URL_UPLOAD_COMPLETED"})
-  } else if(files) {
+  } else if(files && files.length) {
     for (let index = 0; index < files.length; index++) {
       const file = files[index];
       const fileUploadRes = await new Python({userId}).uploadFile({file})
