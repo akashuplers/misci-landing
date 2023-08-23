@@ -131,6 +131,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
   var getTempId;
   var getToken;
   var userAbleUserID;
+  console.log(getToken, getUserId, getTempId, userAbleUserID);
   const {
     data: subsData,
     loading: subsLoading,
@@ -142,16 +143,14 @@ export default function Home({ payment, randomLiveUsersCount }) {
 
   useEffect(() => {
     if(typeof window !== "undefined"){
-      loadTokensAndIDs();
+      getToken = localStorage.getItem("token");
+      getUserId = localStorage.getItem("userId");
+      getTempId = localStorage.getItem("tempId");
+      userAbleUserID = getToken ? getUserId : getTempId;
+      console.log(getToken, getUserId, getTempId, userAbleUserID, 'FROM USE EFFECT');
     }
-  }, [])
-  function loadTokensAndIDs(){
-    const token = localStorage.getItem("token");
-    const getUserId = localStorage.getItem("userId");
-    const getTempId = localStorage.getItem("tempId");
-    userAbleUserID = token ? getUserId : getTempId;
-  }
-  
+  }, [subsData])
+   
 
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const updateAuthentication = useStore((state) => state.updateAuthentication);
@@ -496,23 +495,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
     const userId = token ? getUserId : getTempId;
     const files = selectedFiles.map((fileObject) => fileObject.file);
     setShowingGenerateLoading(true);
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-    newGenerateApi(token, tones, keywordForPayload, userId, files).then(
+   newGenerateApi(token, tones, keywordForPayload, userId, files).then(
       (response) => {
         if(response.type == 'ERROR'){
           toast.error(response.message);
