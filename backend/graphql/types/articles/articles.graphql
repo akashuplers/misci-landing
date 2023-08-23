@@ -185,6 +185,6 @@ type Mutation {
     regenerateBlog(options: RegenerateBlogOptions!): Blog!
     irNotify(options: [IRNotifiyOptions]!): Boolean
     savePreferences(options: PreferencesOptions): Boolean
-    publish(options: PublisOptions): PublishRes!
+    publish(options: PublisOptions): PublishRes
     delete(options: PublisOptions): Boolean
 }
