@@ -39,7 +39,7 @@ interface FileChipProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const FileChipIcon = ({  rest , fileName, fileSize, onCrossClick}: FileChipProps) => {
-    return <div className="min-w-fit w-full h-9 px-3.5 py-2 rounded-full border border-gray-300 justify-start items-center gap-3 inline-flex" {...rest}>
+    return <div className="min-w-fit h-9 px-3.5 py-2 rounded-full border border-gray-300 justify-start items-center gap-3 inline-flex" {...rest}>
         <div className="justify-start items-center gap-1.5 flex">
             <div className="w-5 h-5 flex-col justify-center items-center inline-flex text-indigo-500" >
                 <DocumentIcon />
@@ -66,9 +66,10 @@ interface FileUploadCardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const FileUploadCard = ({ fileName, fileSize, progress , rest} : FileUploadCardProps) => {
     const progressBarWidth = `${progress}%`;
-  
+    const trimedFileName = fileName.length > 10 ? fileName.slice(0, 10) + '...' : fileName;
     return (
-      <div className="w-96 h-12 p-2 bg-white rounded-lg flex items-center gap-3" {...rest}>
+      <div className="min-w-[45%] min-h-12  p-2 bg-white border rounded-lg flex items-center gap-3" {...rest} style={{
+      }}>
         <div className="p-1.5 bg-violet-100 rounded-full flex">
           <div className="w-6 h-6 text-indigo-600 rounded-full" >
             <DocumentIcon />
@@ -77,7 +78,7 @@ export const FileUploadCard = ({ fileName, fileSize, progress , rest} : FileUplo
         <div className="flex-grow flex-shrink-0 flex-basis-0 flex-col items-start justify-center">
           <div className="flex items-center gap-0.5 justify-between w-full">
             <div className="opacity-70 text-gray-800 text-sm font-bold leading-tight">
-              {fileName}
+              {trimedFileName}
             </div>
             <div className="opacity-50 text-gray-800 text-xs font-medium leading-none">
               {fileSize}
@@ -85,9 +86,9 @@ export const FileUploadCard = ({ fileName, fileSize, progress , rest} : FileUplo
           </div>
           <div className="w-4 h-4 rounded-full bg-gray-200" />
           <div className="flex items-center gap-2">
-            <div className="flex-grow flex-shrink-0 flex-basis-0 h-2 bg-gray-200 rounded-full">
+            <div className="flex-grow flex-shrink-0 relative flex-basis-0 h-2 bg-gray-300 rounded-full">
               <div
-                className="h-full bg-gradient-to-r from-blue-600 to-indigo-600"
+                className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full"
                 style={{ width: progressBarWidth }}
               />
             </div>

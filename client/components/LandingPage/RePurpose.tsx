@@ -13,6 +13,7 @@ import Select, {
 import Tooltip from '../ui/Tooltip';
 import { DocumentIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { ObjType, addObjectToSearchStore, validateIfURL } from '@/store/appHelpers';
+import useStore from '@/store/store';
 
 function generateRandomId() {
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -48,6 +49,7 @@ export const createOption = (label: string, id: string, index: number, type:
  }
  
 export default function RePurpose({setAllInput ,allInputs, value, setValue, setShowRepourposeError, removeFile ,placeholder} : RePurPoseProps) {
+  const isAuthenticated = useStore((state) => state.isAuthenticated);
   const [inputValue, setInputValue] = React.useState<string>('');
   const handleKeyDown = (event: any) => {
     console.log(inputValue);
@@ -61,10 +63,20 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
       const validateType = 'url';
       console.log(validateType);
       const creatableOption = createOption(inputValue, elementId, inputLength, validateType);
-      const {data: newBlogLinks, errors} = addObjectToSearchStore(creatableOption, value);
+      const {data: newBlogLinks, errors} = addObjectToSearchStore(creatableOption, value, isAuthenticated);
       console.log(newBlogLinks, errors);
-      if(errors.length > 0){
-        errors.forEach((error: any) => {
+      // if(errors.length > 0){
+      //   errors.forEach((error: any) => {
+      //     toast.error(error);
+      //   });
+      //   return;
+      // }
+      const setOfErrors = new Set(errors);
+      // make of set
+      const setOfErrorsArray = Array.from(setOfErrors);
+      console.log(setOfErrorsArray);
+      if(setOfErrorsArray.length > 0){
+        setOfErrorsArray.forEach((error: any) => {
           toast.error(error);
         });
         return;

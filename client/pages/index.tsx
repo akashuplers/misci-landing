@@ -127,30 +127,35 @@ interface KeysForStateOfGenerate {
 }
 
 export default function Home({ payment, randomLiveUsersCount }) {
-  var getUserId;
-  var getTempId;
-  var getToken;
-  var userAbleUserID;
-  console.log(getToken, getUserId, getTempId, userAbleUserID);
+  const [getUserIdForSubs, setGetUserIdForSubs] = useState('');
+  const [getTempIdForSubs, setGetTempIdForSubs] = useState('');
+  const [getTokenForSubs, setGetTokenForSubs] = useState('');
+  const [userAbleUserIDForSubs, setUserAbleUserIDForSubs] = useState('');
+  const [getToken, setGetToken] = useState('');
   const {
     data: subsData,
     loading: subsLoading,
     error: subsError,
   } = useSubscription<StepCompleteData>(STEP_COMPLETES_SUBSCRIPTION, {
-    variables: { userId: userAbleUserID },
+    variables: { userId: userAbleUserIDForSubs },
+    onComplete(data) {
+      console.log(data);
+    },
   });
-
-
   useEffect(() => {
-    if(typeof window !== "undefined"){
-      getToken = localStorage.getItem("token");
-      getUserId = localStorage.getItem("userId");
-      getTempId = localStorage.getItem("tempId");
-      userAbleUserID = getToken ? getUserId : getTempId;
-      console.log(getToken, getUserId, getTempId, userAbleUserID, 'FROM USE EFFECT');
+    if (typeof window !== "undefined") {
+      const tokenFromLocalStorage = localStorage.getItem("token");
+      const userIdFromLocalStorage = localStorage.getItem("userId");
+      const tempIdFromLocalStorage = localStorage.getItem("tempId");
+      setGetTokenForSubs(tokenFromLocalStorage);
+      setGetToken(tokenFromLocalStorage);
+      setGetUserIdForSubs(userIdFromLocalStorage);
+      setGetTempIdForSubs(tempIdFromLocalStorage);
+      const userAbleUserID = tokenFromLocalStorage ? userIdFromLocalStorage : tempIdFromLocalStorage;
+      setUserAbleUserIDForSubs(userAbleUserID);
+      console.log(getUserIdForSubs, getTempIdForSubs, getTokenForSubs, userAbleUserIDForSubs, 'FROM USER');
     }
-  }, [subsData])
-   
+  }, []);
 
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const updateAuthentication = useStore((state) => state.updateAuthentication);
@@ -161,7 +166,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
   const [articleIds, setArticleIds] = useState([]);
   const setBlogLinks = useBlogLinkStore((state) => state.setBlogLinks);
   const [currentTabIndex, setCurrentTabIndex] = useState(0);
-  const {removeBlogLink} = useBlogLinkStore();
+  const { removeBlogLink } = useBlogLinkStore();
   const [repurposeTones, setRepurposeTones] = useState(newTones);
   const [showFileUploadUI, setShowFileUploadUI] = useState(false);
   const addToFunctionStack = useFunctionStore((state) => state.addToStack);
@@ -170,7 +175,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
     file: null,
     keyword: null,
   });
-  const { updateTime} = useGenerateState();
+  const { updateTime } = useGenerateState();
   const [inputData, setInputData] = useState<InputData>({});
   const [showLoadingInfo, setShowLoadingInfo] = useState(false);
   const selectedFiles = useRepurposeFileStore((state) => state.selectedFiles);
@@ -228,7 +233,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
   function removeSelectedFileFromBothStores(id) {
     removeSelectedFile(id);
     removeBlogLink(id);
-    }
+  }
   const handleChipClick = (index) => {
     const idOfKeyword = getIdFromUniqueName(keywordsOFBlogs[index].id);
 
@@ -393,7 +398,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
       if (keywordsMap[item.text] > 1) {
         item.source = item.realSource
           ? item.realSource.toLowerCase().charAt(0).toUpperCase() +
-            item.realSource.toLowerCase().slice(1)
+          item.realSource.toLowerCase().slice(1)
           : "";
       }
     });
@@ -402,7 +407,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
 
 
 
-  function validateGenerateButtonStatus(){
+  function validateGenerateButtonStatus() {
     const countByType: KeysForStateOfGenerate = blogLinks.reduce(
       (acc, link) => {
         if (link.type === "file") {
@@ -416,9 +421,9 @@ export default function Home({ payment, randomLiveUsersCount }) {
       },
       { file: 0, url: 0 }
     );
-    if(countByType.file ==0 && countByType.url==0&& keyword ==""){
+    if (countByType.file == 0 && countByType.url == 0 && keyword == "") {
       setDisableGenerateButton(true);
-    }else{
+    } else {
       setDisableGenerateButton(false);
     }
   }
@@ -439,7 +444,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
       },
       { file: 0, url: 0 }
     );
-    if(countByType.file ==0 && countByType.url==0&& keyword ==""){
+    if (countByType.file == 0 && countByType.url == 0 && keyword == "") {
       return;
     }
     var typeKeys = Object.keys(countByType);
@@ -492,12 +497,15 @@ export default function Home({ payment, randomLiveUsersCount }) {
       repurposeTones.filter((tone) => tone.selected).map((tone) => tone.text) ||
       [];
     const keywordForPayload = keyword;
-    const userId = token ? getUserId : getTempId;
+    const userId = userAbleUserIDForSubs;
     const files = selectedFiles.map((fileObject) => fileObject.file);
+    console.log(blogLinks, 'bloglinks');
+    const urls = blogLinks.filter((link) => link.type === "url").map((link) => link.value);
+    console.log(urls);
     setShowingGenerateLoading(true);
-   newGenerateApi(token, tones, keywordForPayload, userId, files).then(
+    newGenerateApi(token, tones, keywordForPayload, userId, files, urls).then(
       (response) => {
-        if(response.type == 'ERROR'){
+        if (response.type == 'ERROR') {
           toast.error(response.message);
           setShowingGenerateLoading(false);
           return;
@@ -507,11 +515,11 @@ export default function Home({ payment, randomLiveUsersCount }) {
         const responseTime = data.respTime;
         const pyTime = data.pythonRespTime;
         updateTime(responseTime, pyTime, responseTime);
-        setTimeout(()=>{
+        setTimeout(() => {
           router.push({
             pathname: `/dashboard/${_id}`,
             query: { type: TYPES_OF_GENERATE.REPURPOSE },
-          }).then(()=>{
+          }).then(() => {
             setShowingGenerateLoading(false);
           });
         }, 2000)
@@ -618,8 +626,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
           result?.unprocessedUrls && result.unprocessedUrls.length > 0;
         if (doesUnprocessedUrlsExist) {
           toast.warn(
-            `Success but we could not resolve ${
-              result.unprocessedUrls.length > 1 ? "these URLs" : "this URL"
+            `Success but we could not resolve ${result.unprocessedUrls.length > 1 ? "these URLs" : "this URL"
             } : ` + result.unprocessedUrls.join(", ")
           );
         }
@@ -658,7 +665,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
       });
   }
 
- 
+
 
   const [keyword, setkeyword] = useState("");
   const [disableGenerateButton, setDisableGenerateButton] = useState(false);
@@ -685,8 +692,8 @@ export default function Home({ payment, randomLiveUsersCount }) {
         };
         s;
         fetch(SAVE_USER_SUPPORT_URL, requestOptions)
-          .then((response) => {})
-          .catch((error) => {});
+          .then((response) => { })
+          .catch((error) => { });
       }
       setIsPayment(true);
       toast.success("Payment Successful!", {
@@ -723,7 +730,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
     return () => clearTimeout(intervalId);
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     validateGenerateButtonStatus();
   }, [blogLinks, keyword])
   const {
@@ -753,7 +760,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
         console.log(`[Network error]: ${networkError}`);
         if (
           `${networkError}` ===
-            "ServerError: Response not successful: Received status code 401" &&
+          "ServerError: Response not successful: Received status code 401" &&
           isauth
         ) {
           localStorage.clear();
@@ -829,7 +836,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
         <>
           <div className="w-[80%] h-7 px-2.5 py-1.5 my-2 bg-orange-100 rounded backdrop-blur-2xl justify-center items-center gap-2.5 inline-flex">
             <div className="text-yellow-600 text-xs font-medium leading-none">
-              We take a little longer to generate draft for Documents. Please be
+              We take a little longer to generate draft for URLs. Please be
               patient.
             </div>
           </div>
@@ -871,12 +878,12 @@ export default function Home({ payment, randomLiveUsersCount }) {
       ),
       content: (
         <>
-          <div className="flex items-center mt-2 overflow-x-scroll gap-2">
+          <div className="flex items-center mt-2  scrollbar-thumb-indigo-600 scrollbar-corner-inherit rounded-full scroll-m-1 py-2 scrollbar-thin scrollbar-track-gray-100 overflow-x-scroll gap-2">
             {/* <FileChipIcon fileName="index.tsx" fileSize="5mb" /> */}
             {filesNames.map((fileName, index) => {
               return (
-                <FileChipIcon key={index} fileName={fileName.name} fileSize="5mb"onCrossClick={
-                  () => { removeSelectedFileFromBothStores(fileName.id)}
+                <FileChipIcon key={index} fileName={fileName.name} fileSize="5mb" onCrossClick={
+                  () => { removeSelectedFileFromBothStores(fileName.id) }
                 } />
               );
             })}
@@ -885,24 +892,25 @@ export default function Home({ payment, randomLiveUsersCount }) {
           <div className="text-right flex justify-end gap-2 ">
             <h1>Max file size: 7MB. If you have more than 7MB </h1>{" "}
             <button onClick={() => setShowGDriveModal(true)}>
-            <strong className="text-indigo-500">Click here</strong>
+              <strong className="text-indigo-500">Click here</strong>
             </button>
           </div>
-          {showFileStatus && (
-            <div className="flex items-center justify-center gap-2">
-              {uploadedFilesData.map((file, index) => {
-                console.log(file);
-                return (
-                  <FileUploadCard
-                    key={index}
-                    fileName={file.name}
-                    fileSize={file.size}
-                    progress={file.percentage}
-                  />
-                );
-              })}
-            </div>
-          )}
+          {
+            showFileStatus && (
+              <div className="flex items-center justify-center  my-2 gap-2 max-w-full min-w-full flex-wrap">
+                {uploadedFilesData.map((file, index) => {
+                  console.log(file);
+                  return (
+                    <FileUploadCard
+                      key={index}
+                      fileName={file.name}
+                      fileSize={file.size}
+                      progress={file.percentage}
+                    />
+                  );
+                })}
+              </div>
+            )}
         </>
       ),
     },
@@ -980,7 +988,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
       };
 
       fetch(SEND_OTP_URL, requestOptions)
-        .then((response) => {})
+        .then((response) => { })
         .catch((error) => {
           console("ERROR FROM SEND OTP");
         });
@@ -1041,23 +1049,23 @@ export default function Home({ payment, randomLiveUsersCount }) {
         {/* <TotalTImeSaved   /> */}
 
         {!meeData?.me?.isSubscribed && meeData?.me?.credits === 0 && (
-          <TrialEndedModal setTrailModal={() => {}} topic={null} />
+          <TrialEndedModal setTrailModal={() => { }} topic={null} />
         )}
         <GoogleDriveModal
           showModal={showGDriveModal}
           setShowModal={setShowGDriveModal}
           meeData={meeData}
         />
-        <GenerateLoadingModal
-          showGenerateLoadingModal={showingGenerateLoading}
-          setShowGenerateLoadingModal={setShowingGenerateLoading}
-          stepStatus={subsData?.stepCompletes.step}
-        />
-
+        {showingGenerateLoading && (
+          <GenerateLoadingModal
+            showGenerateLoadingModal={showingGenerateLoading}
+            setShowGenerateLoadingModal={setShowingGenerateLoading}
+            stepStatus={subsData?.stepCompletes.step}
+          />
+        )}
         <div
-          className={`maincontainer relative md:px-6 pt-5 lg:px-8 ${
-            !isAuthenticated && "md:min-h-screen"
-          }`}
+          className={`maincontainer relative md:px-6 pt-5 lg:px-8 ${!isAuthenticated && "md:min-h-screen"
+            }`}
         >
           <FloatingBalls className="hidden absolute top-[4%] rotate-45 md:block" />
           <FloatingBalls className="hidden absolute top-[2%] w-10 right-[2%] md:block" />
@@ -1196,24 +1204,22 @@ export default function Home({ payment, randomLiveUsersCount }) {
           )}
           <div className=" relative mx-auto max-w-screen-xl flex flex-col">
             <div
-              className={`mx-auto max-w-5xl text-center h-screen  ${
-                isAuthenticated ? "" : "lg:min-h-screen"
-              } flex items-center justify-center `}
+              className={`mx-auto max-w-5xl text-center h-screen  ${isAuthenticated ? "" : "lg:min-h-screen"
+                } flex items-center justify-center `}
               style={{
                 height: "100%",
               }}
             >
               <div
-                className={`mt-[10%] ${
-                  isAuthenticated
-                    ? keywordsOFBlogs.length == 0 && "lg:mt-[10%]"
-                    : keywordsOFBlogs.length == 0 && "lg:mt-[-10%]"
-                }`}
+                className={`mt-[10%] ${isAuthenticated
+                  ? keywordsOFBlogs.length == 0 && "lg:mt-[10%]"
+                  : keywordsOFBlogs.length == 0 && "lg:mt-[-10%]"
+                  }`}
               >
                 <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing lg:min-w-[900px]">
                   Lille is your Content <TextTransitionEffect text={TEXTS2} />
                   Co-Pilot
-                    <div className="absolute right-0 md:right-[-10%]">
+                  <div className="absolute right-0 md:right-[-10%]">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="240"
@@ -1266,21 +1272,14 @@ export default function Home({ payment, randomLiveUsersCount }) {
                     </svg>
                   </div>
                 </div>
-                <div className="flex flex-col items-center justify-center gap-2.5">
-                  {/* <span className="relative flex text-xl items-center  justify-center font-medium tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap">Two ways to get started with &nbsp;<span className="font-bold text-indigo-600">Lille.ai</span></span>
-                  <span className="text-center text-slate-800 text-xl font-bold leading-relaxed">
-                    Ask questions or upload multiple documents / URL’S.
-                  </span> */}
-                </div>
-
                 <div
-                  className="w-full lg:min-w-[700px] lg:max-w-[700px] h-full opacity-90  shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
+                  className="w-full lg:min-w-[700px] lg:max-w-[700px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
                   style={{
                     background: "rgba(255, 255, 255, 0.5)",
                   }}
                 >
                   <h1
-                  className="text-center text-slate-800 text-xl font-bold leading-relaxed">Select a source</h1>
+                    className="text-center text-slate-800 text-xl font-bold leading-relaxed">Select a source</h1>
                   <div className="w-full relative">
                     <Tab.Group
                       defaultIndex={activeTab}
@@ -1291,10 +1290,10 @@ export default function Home({ payment, randomLiveUsersCount }) {
                       <Tab.List className="justify-start items-center gap-3 inline-flex">
                         {tabs.map((tab) => (
 
-                          <Tab 
-                          key={tab.id}
-                          className={`w-24 h-8 px-2.5 py-1 border-b border-indigo-600 justify-center items-center gap-2.5 inline-flex text-base font-medium text-gray-800 ${ activeTab === tab.id ? "border-b-2 border-indigo-600 text-gray-800" : "text-gray-600 border-none"}`}>
-                          {tab.label}
+                          <Tab
+                            key={tab.id}
+                            className={`w-24 h-8 px-2.5 py-1 border-b border-indigo-600 justify-center items-center gap-2.5 inline-flex text-base font-medium text-gray-800 ${activeTab === tab.id ? "border-b-2 border-indigo-600 text-gray-800" : "text-gray-600 border-none"}`}>
+                            {tab.label}
                           </Tab>
                         ))}
                       </Tab.List>
@@ -1309,28 +1308,21 @@ export default function Home({ payment, randomLiveUsersCount }) {
                             <div className="w-full h-full justify-center items-center gap-2.5 inline-flex">
                               <div className={`relative w-full min-h-[60px] bg-white rounded-[10px]  border py-2.5 ${keyword.length > 100 ? 'border-red-600' : 'border-indigo-600'} `}>
                                 <div className={`flex items-center flex-col md:flex-row px-2  gap-2.5 relative outline-none active:outline-none rounded-lg`}>
-                                  <input
-                                    type="text"
+                                  <KeywordInput
+                                    keyword={keyword}
+                                    setKeyword={setkeyword}
+                                    placeholder="Give me a writing Topic"
                                     maxLength={100}
-                                    placeholder="Give me writing Topic"
-                                    className="w-full h-full outline-transparent bg-transparent border-transparent focus:border-transparent focus:ring-0"
-                                    value={keyword}
-                                    onChange={(e) => {
-                                      const text = e.target.value;
-                                      console.log(text.length);
-                                      setkeyword(text);
-                                    }}
                                   />
                                 </div>
-                                
                               </div>
                               {
-                                  keyword.length > 100 && (
-                                    <div className="absolute bottom-0 left-4 text-red-600 text-xs font-medium leading-none">
-                                      {keyword.length}/100
-                                    </div>
-                                  )
-                                }
+                                keyword.length > 100 && (
+                                  <div className="absolute bottom-0 left-4 text-red-600 text-xs font-medium leading-none">
+                                    {keyword.length}/100
+                                  </div>
+                                )
+                              }
                             </div>
                             {tab.content}
                           </Tab.Panel>
@@ -1339,159 +1331,17 @@ export default function Home({ payment, randomLiveUsersCount }) {
                     </Tab.Group>
                   </div>
 
-                  {/* {
-                    (stateOfGenerate.url != null && stateOfGenerate.file != null) || (stateOfGenerate.url != null && stateOfGenerate.keyword != null) || (stateOfGenerate.file != null && stateOfGenerate.keyword != null) ?
-                      <div className="w-full h-6 justify-center items-center gap-2.5 inline-flex">
-                        {(stateOfGenerate.url != null) && (
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-slate-800">Keywords from URL:</span>
-                            {stateOfGenerate.url === STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} color={"#2563EB"} height={20} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />}
-                          </div>
-                        )}
-                        {(stateOfGenerate.keyword != null) && (
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-slate-800">Keywords from Topic:</span>
-                            {stateOfGenerate.keyword === STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} height={20} color={"#2563EB"} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />}
-                          </div>
-                        )}
-                        {(stateOfGenerate.file != null) && (
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-slate-800">Keywords from File:</span>
-                            {stateOfGenerate.file === STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} height={20} color={"#2563EB"} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />}
-                          </div>
-                        )}
-                      </div>
-                      : null
-                  } */}
-
-                  <div className="flex items-center flex-col mt-2">
-                    {keywordsOFBlogs.length > 0 && (
-                      <div className="flex items-center gap-1.5">
-                        <h4>Select some keywords to generate draft </h4>{" "}
-                        <Tooltip
-                          content="Select keywords to focus on. Sources/URLs/Files with the chosen keywords will be used to create a high-ranking SEO article."
-                          direction="top"
-                          className="max-w-[100px]"
-                        >
-                          <InformationCircleIcon className="h-[18px] w-[18px] text-gray-600" />
-                        </Tooltip>
-                      </div>
-                    )}
-                    <div className="flex flex-wrap justify-center gap-2 mt-5 overflow-x-scroll max-w-full h-12">
-                      {keywordsOFBlogs.length > 0 &&
-                        keywordsOFBlogs.map((chip, index) => (
-                          <Chip
-                            key={index}
-                            text={chip.text}
-                            handleClick={handleChipClick}
-                            index={index}
-                            selected={chip.selected}
-                            wholeData={chip}
-                          />
-                        ))}
-                    </div>
-                  </div>
-                  {keywordsOFBlogs.length > 0 && isAuthenticated && (
-                    <div
-                      className="flex items-center flex-col mt-5 relative"
-                      onMouseEnter={() => {
-                        setShowHoveUpgradeNow(true);
-                      }}
-                      onMouseLeave={() => {
-                        setShowHoveUpgradeNow(false);
-                      }}
-                    >
-                      <div className="flex items-center">
-                        <h4>Choose Tone/Focus Topics </h4>
-                        <Tooltip
-                          content="Improve results by adding tones to your prompt"
-                          direction="top"
-                          className="max-w-[100px]"
-                        >
-                          <InformationCircleIcon className="h-[18px] w-[18px] text-gray-600" />
-                        </Tooltip>
-                      </div>
-                      <div className="flex flex-wrap justify-center gap-2 mt-5">
-                        {newTones.length > 0 &&
-                          newTones.map((tone, index) => (
-                            <div key={index} className="relative">
-                              <Chip
-                                text={tone.text}
-                                handleClick={handleToneClick}
-                                index={index}
-                                selected={tone.selected}
-                                wholeData={null}
-                              />
-                            </div>
-                          ))}
-                      </div>
-                      {meeData?.me?.isSubscribed === false &&
-                        showHoveUpgradeNow === true && (
-                          <div className="absolute top-0 left-0 w-full h-full bg-gray-700 opacity-70 flex flex-col items-center justify-center">
-                            <p>
-                              You are enjoying free trial. Upgrade your plan to
-                              get extra benefits
-                            </p>
-                            <button
-                              className="mt-2.5 text-white bg-indigo-600 rounded-[10px] shadow justify-center items-center gap-2.5 inline-flex
-                        active:bg-indigo-600 hover:bg-indigo-700 focus:shadow-outline-indigo px-4 py-2"
-                              onClick={() => {
-                                typeof window !== "undefined" &&
-                                  router.push({
-                                    pathname: "/upgrade",
-                                  });
-                              }}
-                            >
-                              Upgrade now
-                            </button>
-                          </div>
-                        )}
-                    </div>
-                  )}
                   <button
-                  disabled={disableGenerateButton}
+                    disabled={disableGenerateButton}
                     className="h-14 px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-lg shadow justify-center items-center gap-2.5 inline-flex hover:from-indigo-700 hover:to-violet-700 focus:shadow-outline-indigo disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handleGenerateClick}
                   >
-                  <>
-                    <div className="text-white text-base font-medium leading-7">
-                      Generate draft{" "}
-                    </div>
-                  </>
+                    <>
+                      <div className="text-white text-base font-medium leading-7">
+                        Generate draft{" "}
+                      </div>
+                    </>
                   </button>
-
-                  {/* <button className="cta-invert rounded-[10px] mt-2 lg:mt-0 w-full  items-center  flex flex-row bg-indigo-600" 
-                  >
-                    
-                        <>
-                          <div>
-                            <span className="w-full">Generate 1<sup>st</sup> Drafts for Articles <span className='flex flex-row w-full items-center justify-center'> 
-                     
-                            </span></span>
-                          </div>
-                        </>
-                    }
-
-                  </button> */}
-                  {keywordsOFBlogs.length > 0 && (
-                    <button
-                      className="h-5 px-4 py-6 absolute top-[27%] right-[-12%] flex items-center justify-center bg-indigo-600 rounded-lg text-white text-sm font-medium focus:outline-none"
-                      onClick={() => {
-                        setkeywordsOfBlogs([]);
-                        setBlogLinks([]);
-                        setSelectedFiles([]);
-                        setStateOfGenerate((prev) => {
-                          return {
-                            url: null,
-                            file: null,
-                            keyword: null,
-                          };
-                        });
-                      }}
-                    >
-                      Reset
-                    </button>
-                  )}
                 </div>
 
                 <div
@@ -1635,9 +1485,8 @@ const AIInputComponent = () => {
       </div>
       <button
         ref={buttonHeightRef}
-        className={`cta-invert rounded-[10px] mt-2 lg:mt-0 w-full lg:w-[35%]  items-center  flex flex-row bg-indigo-600 ${
-          isDisabled ? "disabled:opacity-50" : ""
-        }`}
+        className={`cta-invert rounded-[10px] mt-2 lg:mt-0 w-full lg:w-[35%]  items-center  flex flex-row bg-indigo-600 ${isDisabled ? "disabled:opacity-50" : ""
+          }`}
         onClick={handleButtonClick}
         disabled={isDisabled}
         style={{}}
@@ -1727,5 +1576,30 @@ export const FloatingBalls = ({ className }: { className?: string }) => {
         </linearGradient>
       </defs>
     </svg>
+  );
+};
+
+
+type KeywordInputProps = {
+  maxLength: number;
+  placeholder: string;
+  keyword: string;
+  setKeyword: React.Dispatch<React.SetStateAction<string>>;
+};
+
+const KeywordInput = ({ maxLength, placeholder, keyword, setKeyword }: KeywordInputProps) => {
+  return (
+    <input
+      type="text"
+      maxLength={maxLength}
+      placeholder={placeholder}
+      className="w-full h-full outline-transparent bg-transparent border-transparent focus:border-transparent focus:ring-0"
+      value={keyword}
+      onChange={(e) => {
+        const text = e.target.value;
+        console.log(text.length);
+        setKeyword(text);
+      }}
+    />
   );
 };

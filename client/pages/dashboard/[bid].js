@@ -13,8 +13,9 @@ import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
 import { meeAPI } from "../../graphql/querys/mee";
 import { getDateMonthYear, isMonthAfterJune, jsonToHtml } from "../../helpers/helper";
 import PreferencesModal from "../../modals/PreferencesModal";
-import { useBlogDataStore, useTabOptionStore, useThreadsUIStore } from "../../store/store";
+import useStore, { useBlogDataStore, useTabOptionStore, useThreadsUIStore,  } from "../../store/store";
 import { useGenerateState } from '../../store/appState'
+import {useSendSavedTimeOfUser} from '../../hooks/useSendSavedTimeOfUser'
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
     event.stopImmediatePropagation();
@@ -24,12 +25,14 @@ if (typeof window !== "undefined") {
 export default function Post() {
   const [pfmodal, setPFModal] = useState(false);
   const router = useRouter();
+  const isAuthenticated = useStore((state) => state.isAuthenticated);
   console.log('ROUTER QUERY', router);
   const { bid, isPublished } = router.query;
   const [reference, setReference] = useState([]);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
   const { option, setOption } = useTabOptionStore();
-  const { userTimeSave } = useGenerateState();
+  const { userTimeSave ,makeNullThoseTime} = useGenerateState();
+ const {response, error: errorLoadingForTime, loading:LoadingForTimeSave, sendSavedTime}= useSendSavedTimeOfUser();
   const { data, loading, error,
     refetch: refetchBlog
   } = useQuery(getBlogbyId, {
@@ -37,13 +40,15 @@ export default function Post() {
       fetchBlogId: bid,
     },
     onCompleted: (data) => {
-      if (userTimeSave !== null && userTimeSave !== undefined && userTimeSave !== 0) {
+      if (isAuthenticated && (userTimeSave !== null && userTimeSave !== undefined && userTimeSave !== 0)) {
+        console.log('completed'); 
         const userSaveTimeDataWithBlogId = {};
         userSaveTimeDataWithBlogId[bid] = {
           time: userTimeSave,
           blogId: bid,
           save: false,
         }
+        sendSavedTime(bid, userTimeSave, 'agree', false);
         const localSaveVersionForThis = localStorage.getItem('userSaveTimeDataWithBlogId');
         var localSaveVersionForThisObj = {};
         if (localSaveVersionForThis !== null) {
@@ -51,12 +56,12 @@ export default function Post() {
         }
         const finalObj = { ...localSaveVersionForThisObj, ...userSaveTimeDataWithBlogId };
         localStorage.setItem('userSaveTimeDataWithBlogId', JSON.stringify(finalObj));
+        makeNullThoseTime();
       }
     },
   });
   const [ideas, setIdeas] = useState([]);
   const [freshIdeas, setFreshIdeas] = useState([]);
-
   const [freshIdeaTags, setFreshIdeaTags] = useState([]);
 
   const [editorText, setEditorText] = useState([]);
@@ -66,6 +71,7 @@ export default function Post() {
 
   const [pyResTime, setPyResTime] = useState(null);
   const [ndResTime, setNdResTime] = useState(null);
+  const [timeSaveForThisBlog, setTimeSaveForThisBlog] = useState(30);
   const [isPayment, setIsPayment] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
   const [windowHeight, setWindowHeight] = useState(0);
@@ -74,6 +80,8 @@ export default function Post() {
   useEffect(() => {
     setWindowWidth(window.innerWidth);
   }, []);
+
+
 
   useEffect(() => {
     if (data == null) return;
@@ -84,9 +92,6 @@ export default function Post() {
     setFreshIdeasReferences(data.fetchBlog.freshIdeasReferences);
     setReference(data.fetchBlog.references);
     setFreshIdeas(data.fetchBlog.ideas.freshIdeas);
-    // setIsPublished(data?.fetchBlog?.publish_data[2]?.published);
-
-    // const aa = data.generate.publish_data[2].tiny_mce_data;
     const newArray = data.fetchBlog.publish_data.filter(
       (obj) => obj.platform === "wordpress"
     );
@@ -104,6 +109,7 @@ export default function Post() {
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
+   
   }
 
   const { data: meeData } = useQuery(meeAPI, {
@@ -190,7 +196,7 @@ export default function Post() {
     }
 
 
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -341,6 +347,7 @@ export default function Post() {
               editorText={editorText}
               blogData={blogData}
               blog_id={bid}
+              timeSaveForThisBlog={12}
               isPublished={isPublished}
               loading={loading}
               option={option}
