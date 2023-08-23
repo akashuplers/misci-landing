@@ -377,7 +377,6 @@ export default function dashboard({ query }) {
 
           setPyResTime(data.generate.pythonRespTime);
           setNdResTime(data.generate.respTime);
-
           // const aa = data.generate.publish_data[2].tiny_mce_data;
           const newArray = data.generate.publish_data.filter(
             (obj) => obj.platform === "wordpress"
