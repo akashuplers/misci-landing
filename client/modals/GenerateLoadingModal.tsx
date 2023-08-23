@@ -1,5 +1,8 @@
+import { getMax } from "@/store/appHelpers";
 import { StepType } from "@/store/types";
+import { useEffect, useState } from "react";
 import Modal from "react-modal";
+import Typewriter from "typewriter-effect";
 
 interface GenerateLoadingModalProps {
   showGenerateLoadingModal: boolean;
@@ -7,25 +10,28 @@ interface GenerateLoadingModalProps {
   stepStatus: StepType;
 }
 
-function getPercentageByStep(step: StepType): { percent: number, message: string } {
+function getPercentageByStep(step: StepType): { percent: number, message: string, maxPercent: number } {
   switch (step) {
     case "KEYWORD_COMPLETED":
       return {
         percent: 19, message: `Creating draft from URLs requires our AI's advanced generation,
-      which could take more than a minute.`};
+      which could take more than a minute.`, maxPercent: 45
+      };
     case "URL_UPLOAD_COMPLETED":
-      return { percent: 53, message: `File are scanned successfully.` }
-
+      return { percent: 53, message: `File are scanned successfully.`, maxPercent: 70 }
     case "FILE_UPLOAD_COMPLETED":
-      return { percent: 53, message: `File are scanned successfully.` }
+      return { percent: 53, message: `File are scanned successfully.`, maxPercent: 70 }
     case "CHAT_GPT_COMPLETED":
-      return { percent: 80, message: `Chat GPT is running.` }
+      return { percent: 80, message: `Chat GPT is running.`, maxPercent: 90 }
     case "BACKLINK_COMPLETED":
-      return { percent: 100, message: `Backlink is running.` }
+      return { percent: 100, message: `Backlink is running.`, maxPercent: 100 }
     default:
-      return { percent: 0, message: `Creating draft from URLs requires our AI's advanced generation, which could take more than a minute.` }
+      return { percent: 0, message: `Creating draft from URLs requires our AI's advanced generation, which could take more than a minute.`, maxPercent: 15 }
   }
 }
+const updatePercentage = (currentPercentage: number, maxPercentage: number) => {
+  return Math.min(currentPercentage + 1, maxPercentage);
+};
 
 const GenerateLoadingModal = ({
   showGenerateLoadingModal,
@@ -37,7 +43,23 @@ const GenerateLoadingModal = ({
     stepStatus,
     setShowGenerateLoadingModal
   );
-  const percentage = getPercentageByStep(stepStatus);
+  // const percentage = getPercentageByStep(stepStatus);
+  const [percentage, setPercentage] = useState<{ percent: number, message: string }>(getPercentageByStep(stepStatus));
+  const nativePercentage = getPercentageByStep(stepStatus);
+  console.log(nativePercentage, 'PERCENTAGE');
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log('running interval', percentage.percent, nativePercentage.maxPercent)
+      if (percentage.percent < nativePercentage.maxPercent) {
+        setPercentage((prev) => ({
+          ...prev,
+          percent: updatePercentage(getMax(prev.percent, nativePercentage.percent), nativePercentage.maxPercent)
+        }));
+      }
+    }, 1500);
+    return () => clearInterval(interval);
+  }, [stepStatus]);
   return (
     <Modal
       isOpen={showGenerateLoadingModal}
@@ -79,16 +101,36 @@ const GenerateLoadingModal = ({
 
           </div>
           <div className="transition-all duration-500 ease-in-out w-full rounded-full blur-none z-10 opacity-70 text-center text-gray-800 text-xs font-medium leading-none">
-            <p>
-              {percentage.message}
-            </p>
+            <Typewriter
+              onInit={(typewriter) => {
+                typewriter
+                  .pauseFor(300)
+                  .typeString("Searching the sources on the Internet.")
+                  .pauseFor(300)
+                  .deleteAll()
+                  .typeString("Extracting Ideas from the sources.")
+                  .pauseFor(300)
+                  .deleteAll()
+                  .typeString("Creating backlinks for your contents.")
+                  .pauseFor(300)
+                  .deleteAll()
+                  .typeString("Generating H1 & H2 headings")
+                  .pauseFor(300)
+                  .deleteAll()
+                  .typeString("Creating the blog for you!!")
+                  .pauseFor(300)
+                  .deleteAll()
+                  .typeString(percentage.message)
+                  .start();
+              }}
+            />
           </div>
           <div className="self-stretch h-36 flex-col justify-start items-center gap-10 flex">
             <div className="h-14 flex-col w-full justify-start items-start gap-2 flex">
               <div className="self-stretch my-2 relative">
                 <div className="w-96 h-1.5 left-[3.19px] top-[12px] absolute rounded-full blur-none z-10"
                   style={{
-                    background: `linear-gradient(90deg, #10B981 ${percentage.percent}%, #E5E7EB ${percentage.percent}%)`,
+                    background: `lightgray`,
                     height: '3px'
                   }}
                 />
@@ -109,9 +151,10 @@ const GenerateLoadingModal = ({
                 the web option.
               </div>
               <div className="justify-center items-center gap-2 inline-flex">
-                <div className="text-center text-gray-800 text-xs font-medium leading-none">
+                <button onClick={() => setShowGenerateLoadingModal(false)}
+                  className="text-center text-gray-800 text-xs font-medium leading-none">
                   Go Back
-                </div>
+                </button>
               </div>
             </div>
           </div>

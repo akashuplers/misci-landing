@@ -6,22 +6,39 @@ import { toast } from "react-toastify";
 import { formatMinutesToTimeString } from "@/helpers/helper";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import { useUserTimeSaveStore } from "@/store/appState";
+import { log } from "console";
 export function TotalTImeSaved({
   timeSaved,
   blogId,
-  refreshDataForUserTime
+  refreshDataForUserTime,
+  modalIsOpen,
+  setIsOpen,
 }:any)
 
 {
- const [modalIsOpen, setIsOpen] = useState(true);
  const [editedHours, setEditedMinutes] :any = useState({
-  minutes: formatMinutesToTimeString(timeSaved).minutes || 0,
-  seconds: formatMinutesToTimeString(timeSaved).seconds || 0,
+  minutes: 0,
+  seconds: 0,
  } as any);
  const [showPannel, setShowPannel] = useState('MAIN');
 //  AGREEE, DISAGREE
  const {response, error, loading, sendSavedTime}:any = useSendSavedTimeOfUser();
- const {userTimeSave, refetchData: userTimeSaveUpdateData, loading:  userTimeSaveLoading, }=   useUserTimeSaveStore()
+ const {userTimeSave, refetchData: userTimeSaveUpdateData, loading:  userTimeSaveLoading, }=   useUserTimeSaveStore();
+
+ useEffect(() => {
+  console.log(localStorage);
+  // "{"64e60126ea418c6e9b91d921":{"time":30,"blogId":"64e60126ea418c6e9b91d921","save":false},"64e60d8d106856835137055a":{"time":30,"blogId":"64e60d8d106856835137055a","save":false}}"
+  const userSaveTimeDataWithBlogIdLS = localStorage.getItem('userSaveTimeDataWithBlogId');
+  const userSaveTimeDataWithBlogId = JSON.parse(userSaveTimeDataWithBlogIdLS || '{}');
+  console.log(userSaveTimeDataWithBlogId);
+  const blogIdData = userSaveTimeDataWithBlogId[blogId] 
+  if(blogIdData){
+    setEditedMinutes({
+      minutes: formatMinutesToTimeString(blogIdData.time).minutes,
+      seconds: formatMinutesToTimeString(blogIdData.time).seconds,
+    })
+  }
+ },[])
  useEffect(() => {
   if(response!=null){
     if(response?.type === "SUCCESS"){
@@ -153,7 +170,7 @@ export function TotalTImeSaved({
             <button  className="cta-invert  hover:cta max-w-lg mt-2 hover:shadow-lg"
             onClick={() => {
               setIsOpen(false);
-              sendSavedTime(blogId, `${editedHours.minutes}:${editedHours.seconds}`, 'disagree');
+              sendSavedTime(blogId, `${editedHours.minutes}:${editedHours.seconds}`, 'disagree', true);
             }}
             >
               Done 
@@ -174,7 +191,7 @@ export function TotalTImeSaved({
             <button
               onClick={() => {
                 setIsOpen(false);
-                sendSavedTime(blogId, `${editedHours.minutes}:${editedHours.seconds}`, 'agree');
+                sendSavedTime(blogId, `${editedHours.minutes}:${editedHours.seconds}`, 'agree', true);
               }}
               className="cta-invert  hover:cta">
               Agree 👍
