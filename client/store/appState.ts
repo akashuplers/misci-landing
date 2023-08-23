@@ -223,3 +223,42 @@ export const useTotalSavedTimeStore = create<TotalSavedTimeState>((set) => ({
     }
   },
 }));
+
+interface FileUploadState {
+  showFileStatus: boolean;
+  setShowFileStatus: (show: boolean) => void;  
+  setFileConfig: (newFileData: FileType[]) => void;
+  uploadedFilesData : FileType[]; 
+}
+export interface FileType {
+  name: string;
+  size: string;
+  id:string;
+  percentage: number;
+}
+
+export const useFileUploadStore = create<FileUploadState>((set) => ({
+  showFileStatus: false,
+  setShowFileStatus: (show) => set({ showFileStatus: show }),
+  uploadedFilesData : [],
+  setFileConfig: (newFileData) => set({ uploadedFilesData: newFileData }),
+}));
+
+interface  GenerateState {
+  nodeResponseTime: number;
+  pythonResponseTime: number;
+  userTimeSave: number;
+  updateTime : (nodeTime: number, pythonTime: number, time:number) => void;
+}
+
+const DEFAULT_TIME_MULTIPLE = 30;
+export const useGenerateState = create<GenerateState>((set) => ({ 
+  nodeResponseTime: 0,
+  pythonResponseTime: 0,
+  userTimeSave: 0,
+  updateTime: (nodeTime, pythonTime, time) => set({
+    nodeResponseTime: nodeTime,
+    pythonResponseTime: pythonTime,
+    userTimeSave: time ===0? time*DEFAULT_TIME_MULTIPLE : DEFAULT_TIME_MULTIPLE
+   }),
+}));

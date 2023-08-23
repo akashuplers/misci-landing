@@ -43,12 +43,14 @@ export const createOption = (label: string, id: string, index: number, type:
   value: any;
   setValue: any;
   setShowRepourposeError: any;
+  placeholder?: string;
   removeFile: (id: string) => void;
  }
  
-export default function RePurpose({setAllInput ,allInputs, value, setValue, setShowRepourposeError, removeFile} : RePurPoseProps) {
+export default function RePurpose({setAllInput ,allInputs, value, setValue, setShowRepourposeError, removeFile ,placeholder} : RePurPoseProps) {
   const [inputValue, setInputValue] = React.useState<string>('');
   const handleKeyDown = (event: any) => {
+    console.log(inputValue);
     const elementId = generateRandomId();
     const inputLength = value.length;
     if(inputValue===''){
@@ -56,7 +58,7 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
     }
     if (event.key === 'Enter' || event.key === 'Tab' || event.key === ',') {
       if (!inputValue) return;
-      const validateType = validateIfURL(inputValue) ? 'url' : 'keyword';
+      const validateType = 'url';
       console.log(validateType);
       const creatableOption = createOption(inputValue, elementId, inputLength, validateType);
       const {data: newBlogLinks, errors} = addObjectToSearchStore(creatableOption, value);
@@ -104,7 +106,7 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
     )
   }
   const Separator = () => {
-    return <div className='text-sm mr-1 ml-1'>OR</div>;
+    return <></>;
   };
   const indicatorSeparatorStyle = {
     alignSelf: 'stretch',
@@ -191,7 +193,7 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
           return;
         }
         if (!inputValue) return;
-        const validateType = validateIfURL(inputValue) ? 'url' : 'keyword';
+        const validateType = 'url';
         console.log(validateType);
         const creatableOption = createOption(inputValue, elementId, inputLength, validateType);
         const {data: newBlogLinks, errors} = addObjectToSearchStore(creatableOption, value);
@@ -211,8 +213,10 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
       onChange={(newValue) => setValue(newValue)}
       onInputChange={(newValue) => setInputValue(newValue)}
       onKeyDown={handleKeyDown}
-      placeholder={'Give me a Prompt, URLs'}
-      value={value}
+      placeholder={placeholder ?? 'Give me a Prompt, URLs'}
+      value={
+        value.filter((item: any) => item.type === 'url')
+      }
     />
     </div>
   );

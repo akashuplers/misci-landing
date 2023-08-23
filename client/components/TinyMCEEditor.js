@@ -50,6 +50,7 @@ import Threads from "./ThreadsUI";
 import TrialEndedModal from "./TrialEndedModal";
 import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
 import { BASE_PRICE } from "@/store/appContants";
+import useSendSavedTimeOfUser from "@/hooks/useSendSavedTimeOfUser";
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 );
@@ -311,34 +312,34 @@ export default function TinyMCEEditor({
           switch (err.extensions.code) {
             case "UNAUTHENTICATED":
               localStorage.clear();
-              window.location.href = "/";
+              // window.location.href = "/";
           }
         }
       }
       if (networkError) {
         //console.log(`[Network error]: ${networkError}`);
 
-        if (
-          `${networkError}` ===
-          "ServerError: Response not successful: Received status code 401" &&
-          isauth
-        ) {
-          localStorage.clear();
+        // if (
+        //   `${networkError}` ===
+        //   "ServerError: Response not successful: Received status code 401" &&
+        //   isauth
+        // ) {
+        //   localStorage.clear();
 
-          toast.error("Session Expired! Please Login Again..", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
-        }
+        //   toast.error("Session Expired! Please Login Again..", {
+        //     position: "top-center",
+        //     autoClose: 5000,
+        //     hideProgressBar: false,
+        //     closeOnClick: true,
+        //     pauseOnHover: true,
+        //     draggable: true,
+        //     progress: undefined,
+        //     theme: "light",
+        //   });
+        //   setTimeout(() => {
+        //     window.location.reload();
+        //   }, 2000);
+        // }
       }
     },
   });
@@ -506,6 +507,7 @@ export default function TinyMCEEditor({
 
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
+//  const {response, error, loading, sendSavedTime}: = useSendSavedTimeOfUser();
   const router = useRouter();
   let token,
     linkedInAccessToken,
@@ -658,7 +660,7 @@ export default function TinyMCEEditor({
       }
     }
   };
-
+  
   const handleSaveTwitter = async (redirectUser = true) => {
     var getToken, ispaid, credits;
 
