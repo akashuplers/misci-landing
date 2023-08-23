@@ -250,8 +250,8 @@ export async function fetchBlogData(blogId: string): Promise<FetchBlogResponse> 
     },
     body: JSON.stringify({ query: graphqlQuery, variables: graphqlVariables }),
   };
-
-  const response = await fetch('https://maverick.lille.ai/graphql', requestOptions);
+  const URL =  API_BASE_PATH + API_ROUTES.GQL_PATH
+  const response = await fetch(URL, requestOptions);
   const result = await response.json();
   console.log("RESULT FROM DATA");
   console.log(result);

@@ -25,7 +25,9 @@ export const API_ROUTES = {
   BLOG_COMMENT: '/blog/comment',
   BLOG_LIKE: '/blog/like',
   TOTAL_TIME: '/auth/total-saved-time',
-  UPLOAD_GOOGLE_DRIVE_URL: '/upload/drive-link'
+  UPLOAD_GOOGLE_DRIVE_URL: '/upload/drive-link',
+  NEW_GENERATE_API: '/auth/generate',
+  AUTH_USER_SUPPORT: '/auth/save-user-support'
 };
 
 export const LI_API_ENDPOINTS = {
