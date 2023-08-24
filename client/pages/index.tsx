@@ -141,6 +141,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
     onComplete(data) {
       console.log(data);
     },
+
   });
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -155,7 +156,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
       setUserAbleUserIDForSubs(userAbleUserID);
       console.log(getUserIdForSubs, getTempIdForSubs, getTokenForSubs, userAbleUserIDForSubs, 'FROM USER');
     }
-  }, []);
+  }, [subsError]);
 
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const updateAuthentication = useStore((state) => state.updateAuthentication);
@@ -1074,7 +1075,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
         />
         {showingGenerateLoading && (
           <GenerateLoadingModal
-          resetForm={handleGenerateReset}
+            resetForm={handleGenerateReset}
             showGenerateLoadingModal={showingGenerateLoading}
             setShowGenerateLoadingModal={setShowingGenerateLoading}
             stepStatus={subsData?.stepCompletes.step}
