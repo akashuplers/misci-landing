@@ -423,7 +423,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
       },
       { file: 0, url: 0 }
     );
-    if (countByType.file == 0 && countByType.url == 0 && keyword == "") {
+    if (keyword == "") {
       setDisableGenerateButton(true);
     } else {
       setDisableGenerateButton(false);
@@ -1417,7 +1417,7 @@ const AIInputComponent = () => {
     if (buttonHeightRef.current) {
       setButtonHeight(buttonHeightRef.current.clientHeight);
     }
-  }, [buttonHeightRef.current]);
+  }, []);
 
   return (
     <div
@@ -1629,3 +1629,5 @@ const RotatingText = React.memo(()=> {
     </div>
   )
 }) 
+
+RotatingText.displayName = 'RotatingText';
