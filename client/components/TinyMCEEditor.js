@@ -1909,7 +1909,7 @@ export default function TinyMCEEditor({
         >
           {isAuthenticated ? (
             <div
-              className="sticky top-0"
+              className="sticky top-0 flex items-center justify-center"
               style={{
                 display: "flex",
                 gap: "0.25em",
