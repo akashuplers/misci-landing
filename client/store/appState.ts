@@ -253,6 +253,7 @@ interface  GenerateState {
 }
 
 const DEFAULT_TIME_MULTIPLE = 30;
+const MAX_TIME_MULTIPLE = 120;
 export const useGenerateState = create<GenerateState>((set) => ({ 
   nodeResponseTime: 0,
   pythonResponseTime: 0,
@@ -260,7 +261,7 @@ export const useGenerateState = create<GenerateState>((set) => ({
   updateTime: (nodeTime, pythonTime, time) => set({
     nodeResponseTime: nodeTime,
     pythonResponseTime: pythonTime,
-    userTimeSave: time ===0? time*DEFAULT_TIME_MULTIPLE : DEFAULT_TIME_MULTIPLE
+    userTimeSave: time ===0 ? time*DEFAULT_TIME_MULTIPLE > MAX_TIME_MULTIPLE ? MAX_TIME_MULTIPLE : time*DEFAULT_TIME_MULTIPLE : DEFAULT_TIME_MULTIPLE
    }),
   makeNullThoseTime: () => set({
     nodeResponseTime: 0,
