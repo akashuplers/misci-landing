@@ -13,12 +13,15 @@ import useStore from '@/store/store';
 export const REPURPOSE_MAX_SIZE_MB = 7;
 export const REPURPOSE_MAX_SIZE = maxFileSize( REPURPOSE_MAX_SIZE_MB );
 
-const DragAndDropFiles = () => {
+const DragAndDropFiles = ({onClickHereButtonClick}:{
+  onClickHereButtonClick:()=>void
+} ) => {
   // const [selectedFiles, setSelectedFiles] = useState([]);
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const selectedFiles = useRepurposeFileStore((state) => state.selectedFiles);
   const addMultipleSelectedFiles = useRepurposeFileStore((state) => state.addMultipleSelectedFiles);
   const addSelectedFile = useRepurposeFileStore((state) => state.addSelectedFile);
+  const [errors, setErrors] = useState<string[]>([]);
   // useBlogLinkStore
   const blogLinks = useBlogLinkStore((state) => state.blogLinks);
   const setBlogLinks = useBlogLinkStore((state) => state.setBlogLinks);
@@ -38,7 +41,7 @@ const DragAndDropFiles = () => {
       id: '',
     }));
     setFileConfig(initialFiles);
-  
+
     // Pause for user visibility
     await wait(1000); // Adjust the pause time as needed
   
@@ -48,15 +51,15 @@ const DragAndDropFiles = () => {
     const dataOfLinks = [...blogLinks];
     const { data, errors, files } = addFilesToTheSearch(fileObj, dataOfLinks, acceptedFiles, REPURPOSE_MAX_SIZE, 6,isAuthenticated);
     const uniquieSetOfErrors = Array.from(new Set([...errors]));
-  
+    setErrors(uniquieSetOfErrors);
     if (uniquieSetOfErrors.length > 0) {
       uniquieSetOfErrors.forEach((error) => {
-        toast.error(error);
+        // toast.error(error);
       });
       setShowFileStatus(false);
       return;
     }
-  
+
     // Step 3: Update files with 50% progress
     const halfProcessedFiles = files?.map((file, index) => ({
       name: file.name,
@@ -109,7 +112,7 @@ const DragAndDropFiles = () => {
   });
 
   return (
-    <div {...getRootProps()} className="p-4 border-none rounded-md ">
+    <div {...getRootProps()} className="p-4 border-none rounded-md relative ">
           <div   className={`w-full h-28 cursor-pointer flex items-center justify-center scale-105 transition-transform transform-cpu ease-in-out ${isDragActive ? 'bg-blue-100' : 'bg-gray-100'} rounded-[10px] border border-dotted border-gray-300`}>
               <div className={`self-stretch justify-start items-center gap-3 inline-flex `}>
                   <img className="w-[33.14px] h-[33.14px]" src={'icons/foldericon.png'} />
@@ -127,6 +130,21 @@ const DragAndDropFiles = () => {
                   </div>
               </div>
           </div>
+          {/*errors  */}
+          <div className='flex items-center mt-2 justify-between'>
+          <div className="flex flex-col ">
+              {errors.map((error, index) => (
+                  <div key={index} className="text-red-500 text-left text-sm font-normal">{error}</div>
+              ))}
+            </div>
+          <div className="text-right text-sm font-normal flex justify-end gap-2 flex-wrap">
+            <h1>Max file size: 7MB. If you have more than 7MB</h1>
+            <button onClick={onClickHereButtonClick} >
+              <strong className="text-indigo-500">Click here</strong>
+            </button>
+          </div>
+          </div>
+          
     </div>
   );
 };

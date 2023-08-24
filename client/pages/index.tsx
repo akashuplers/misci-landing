@@ -189,6 +189,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
   const executeLastFunction = useFunctionStore(
     (state) => state.executeLastFunction
   );
+
   const [showGDriveModal, setShowGDriveModal] = useState(false);
   const { addFunction } = useSideBarChangeFunctions();
   const [showingGenerateLoading, setShowingGenerateLoading] = useState(false);
@@ -196,6 +197,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
     setkeywordsOfBlogs([]);
     setBlogLinks([]);
     setSelectedFiles([]);
+    setkeyword("");
     setStateOfGenerate((prev) => {
       return {
         url: null,
@@ -205,9 +207,9 @@ export default function Home({ payment, randomLiveUsersCount }) {
     });
     setShowingGenerateLoading(false);
   };
-  useEffect(() => {
-    addFunction(handleGenerateReset);
-  }, [blogLinks]);
+  // useEffect(() => {
+  //   addFunction(handleGenerateReset);
+  // }, [blogLinks]);
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
@@ -427,7 +429,19 @@ export default function Home({ payment, randomLiveUsersCount }) {
       setDisableGenerateButton(false);
     }
   }
-
+  const countByType = blogLinks.reduce(
+    (acc, link) => {
+      if (link.type === "file") {
+        acc.lengthOFiles++;
+      } else if (link.type === "url") {
+        acc.lengthOfUrls++;
+      } else if (link.type === "keyword") {
+        acc.keyword++;
+      }
+      return acc;
+    },
+    { lengthOFiles: 0, lengthOfUrls: 0 }
+  );
 
   function handleGenerateClick() {
     console.log(blogLinks);
@@ -813,6 +827,11 @@ export default function Home({ payment, randomLiveUsersCount }) {
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const { showFileStatus, uploadedFilesData } = useFileUploadStore();
+  const [showTabsInfo, setShowTabsInfo] = useState({
+    web: false,
+    urls: true,
+    documents: true
+  });
   console.log(blogLinks);
   const filesNames = blogLinks
     .filter((link) => link.type === "file")
@@ -834,12 +853,15 @@ export default function Home({ payment, randomLiveUsersCount }) {
       label: "URLs",
       upperContent: (
         <>
-          <div className="w-[80%] h-7 px-2.5 py-1.5 my-2 bg-orange-100 rounded backdrop-blur-2xl justify-center items-center gap-2.5 inline-flex">
+          {
+            showTabsInfo.urls && (<div className="w-fit h-7 px-2.5 py-1.5 my-2 bg-orange-100 rounded backdrop-blur-2xl justify-center items-center gap-2.5 inline-flex">
             <div className="text-yellow-600 text-xs font-medium leading-none">
-              We take a little longer to generate draft for URLs. Please be
-              patient.
+              We take a little longer to generate draft for URLs. Please be patient.
             </div>
+            <XCircleIcon className="w-4 h-4 text-gray-600 cursor-pointer" onClick={() => setShowTabsInfo(prev => ({ ...prev, urls: false }))} />
           </div>
+            )
+          }
         </>
       ),
       content: (
@@ -847,8 +869,6 @@ export default function Home({ payment, randomLiveUsersCount }) {
           <div className=" w-full text-left mt-2 flex flex-col items-start justify-center">
             <h1 className="text-left">Paste URL</h1>
           </div>
-          <div className="relative w-full min-h-[60px] bg-white rounded-[10px]  border border-indigo-600 py-2.5">
-            <div className="flex items-center flex-col md:flex-row px-2  gap-2.5 relative ">
               <RePurpose
                 placeholder="Paste URLS (comma between)"
                 allInputs={inputData}
@@ -858,8 +878,6 @@ export default function Home({ payment, randomLiveUsersCount }) {
                 setValue={setBlogLinks}
                 setShowRepourposeError={setShowRepourposeError}
               />
-            </div>
-          </div>
         </>
       ),
     },
@@ -868,12 +886,15 @@ export default function Home({ payment, randomLiveUsersCount }) {
       label: "Documents",
       upperContent: (
         <>
-          <div className="w-[80%] h-7 px-2.5 py-1.5 my-2 bg-orange-100 rounded backdrop-blur-2xl justify-center items-center gap-2.5 inline-flex">
+          {
+            showTabsInfo.documents && (<div className="w-fit h-7 px-2.5 py-1.5 my-2 bg-orange-100 rounded backdrop-blur-2xl justify-center items-center gap-2.5 inline-flex">
             <div className="text-yellow-600 text-xs font-medium leading-none">
-              We take a little longer to generate draft for Documents. Please be
-              patient.
+              We take a little longer to generate draft for Documents. Please be patient.
             </div>
+            <XCircleIcon className="w-4 h-4 text-gray-600 cursor-pointer" onClick={() => setShowTabsInfo(prev => ({ ...prev, documents: false }))} />
           </div>
+            )
+          }
         </>
       ),
       content: (
@@ -888,13 +909,8 @@ export default function Home({ payment, randomLiveUsersCount }) {
               );
             })}
           </div>
-          <DragAndDropFiles blogLinks={blogLinks} setBlogLinks={setBlogLinks} />
-          <div className="text-right flex justify-end gap-2 ">
-            <h1>Max file size: 7MB. If you have more than 7MB </h1>{" "}
-            <button onClick={() => setShowGDriveModal(true)}>
-              <strong className="text-indigo-500">Click here</strong>
-            </button>
-          </div>
+          <DragAndDropFiles blogLinks={blogLinks} setBlogLinks={setBlogLinks} onClickHereButtonClick={() => setShowGDriveModal(true)}/>
+          
           {
             showFileStatus && (
               <div className="flex items-center justify-center  my-2 gap-2 max-w-full min-w-full flex-wrap">
@@ -1058,9 +1074,11 @@ export default function Home({ payment, randomLiveUsersCount }) {
         />
         {showingGenerateLoading && (
           <GenerateLoadingModal
+          resetForm={handleGenerateReset}
             showGenerateLoadingModal={showingGenerateLoading}
             setShowGenerateLoadingModal={setShowingGenerateLoading}
             stepStatus={subsData?.stepCompletes.step}
+            showBackButton={countByType.lengthOFiles > 0 || countByType.lengthOfUrls > 0}
           />
         )}
         <div
@@ -1216,64 +1234,9 @@ export default function Home({ payment, randomLiveUsersCount }) {
                   : keywordsOFBlogs.length == 0 && "lg:mt-[-10%]"
                   }`}
               >
-                <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing lg:min-w-[900px]">
-                  Lille is your Content <TextTransitionEffect text={TEXTS2} />
-                  Co-Pilot
-                  <div className="absolute right-0 md:right-[-10%]">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="240"
-                      height="261"
-                      viewBox="0 0 240 261"
-                      fill="none"
-                    >
-                      <path
-                        d="M144.552 98.8563C164.626 112.575 180.188 128.559 189.173 143.197C193.667 150.52 196.44 157.382 197.391 163.365C198.339 169.327 197.46 174.237 194.896 177.989C192.332 181.741 188.076 184.343 182.178 185.626C176.258 186.914 168.857 186.824 160.402 185.297C143.501 182.244 122.954 173.553 102.88 159.834C82.8064 146.116 67.2442 130.131 58.26 115.493C53.7659 108.171 50.993 101.309 50.0418 95.3256C49.0941 89.3642 49.9729 84.4535 52.5368 80.7018C55.1007 76.9501 59.3566 74.3473 65.255 73.0645C71.1747 71.777 78.5758 71.8673 87.0304 73.3941C103.932 76.4464 124.478 85.1379 144.552 98.8563Z"
-                        stroke="url(#paint0_linear_2158_42358)"
-                        stroke-width="6"
-                      />
-                      <path
-                        d="M147.927 99.2697C166.631 117.075 179.874 136.963 186.206 154.666C192.571 172.461 191.82 187.578 183.39 196.434C174.96 205.29 159.898 206.783 141.811 201.301C123.818 195.847 103.303 183.598 84.5991 165.793C65.8957 147.988 52.6529 128.1 46.3203 110.396C39.9549 92.6012 40.7059 77.4839 49.1363 68.6282C57.5668 59.7724 72.6288 58.2789 90.7152 63.7615C108.709 69.2158 129.224 81.4645 147.927 99.2697Z"
-                        stroke="url(#paint1_linear_2158_42358)"
-                        stroke-width="3"
-                      />
-                      <defs>
-                        <linearGradient
-                          id="paint0_linear_2158_42358"
-                          x1="146.054"
-                          y1="82.7086"
-                          x2="81.9961"
-                          y2="165.72"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stop-color="#F7938B" />
-                          <stop
-                            offset="1"
-                            stop-color="white"
-                            stop-opacity="0"
-                          />
-                        </linearGradient>
-                        <linearGradient
-                          id="paint1_linear_2158_42358"
-                          x1="47.5691"
-                          y1="48.2032"
-                          x2="82.6596"
-                          y2="126.602"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stop-color="#F9948C" />
-                          <stop
-                            offset="1"
-                            stop-color="white"
-                            stop-opacity="0"
-                          />
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                  </div>
-                </div>
+                <RotatingText/> 
                 <div
-                  className="w-full lg:min-w-[700px] lg:max-w-[700px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
+                  className="w-full lg:min-w-[850px] lg:max-w-[850px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
                   style={{
                     background: "rgba(255, 255, 255, 0.5)",
                     outline: 'none !important' 
@@ -1604,3 +1567,65 @@ const KeywordInput = ({ maxLength, placeholder, keyword, setKeyword }: KeywordIn
     />
   );
 };
+
+
+const RotatingText = React.memo(()=> {
+  return (
+    <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing lg:min-w-[900px]">
+      Lille is your Content <TextTransitionEffect text={TEXTS2} />
+      Co-Pilot
+      <div className="absolute right-0 md:right-[-10%]">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="240"
+          height="261"
+          viewBox="0 0 240 261"
+          fill="none"
+        >
+          <path
+            d="M144.552 98.8563C164.626 112.575 180.188 128.559 189.173 143.197C193.667 150.52 196.44 157.382 197.391 163.365C198.339 169.327 197.46 174.237 194.896 177.989C192.332 181.741 188.076 184.343 182.178 185.626C176.258 186.914 168.857 186.824 160.402 185.297C143.501 182.244 122.954 173.553 102.88 159.834C82.8064 146.116 67.2442 130.131 58.26 115.493C53.7659 108.171 50.993 101.309 50.0418 95.3256C49.0941 89.3642 49.9729 84.4535 52.5368 80.7018C55.1007 76.9501 59.3566 74.3473 65.255 73.0645C71.1747 71.777 78.5758 71.8673 87.0304 73.3941C103.932 76.4464 124.478 85.1379 144.552 98.8563Z"
+            stroke="url(#paint0_linear_2158_42358)"
+            stroke-width="6"
+          />
+          <path
+            d="M147.927 99.2697C166.631 117.075 179.874 136.963 186.206 154.666C192.571 172.461 191.82 187.578 183.39 196.434C174.96 205.29 159.898 206.783 141.811 201.301C123.818 195.847 103.303 183.598 84.5991 165.793C65.8957 147.988 52.6529 128.1 46.3203 110.396C39.9549 92.6012 40.7059 77.4839 49.1363 68.6282C57.5668 59.7724 72.6288 58.2789 90.7152 63.7615C108.709 69.2158 129.224 81.4645 147.927 99.2697Z"
+            stroke="url(#paint1_linear_2158_42358)"
+            stroke-width="3"
+          />
+          <defs>
+            <linearGradient
+              id="paint0_linear_2158_42358"
+              x1="146.054"
+              y1="82.7086"
+              x2="81.9961"
+              y2="165.72"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#F7938B" />
+              <stop
+                offset="1"
+                stop-color="white"
+                stop-opacity="0"
+              />
+            </linearGradient>
+            <linearGradient
+              id="paint1_linear_2158_42358"
+              x1="47.5691"
+              y1="48.2032"
+              x2="82.6596"
+              y2="126.602"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#F9948C" />
+              <stop
+                offset="1"
+                stop-color="white"
+                stop-opacity="0"
+              />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+    </div>
+  )
+}) 
