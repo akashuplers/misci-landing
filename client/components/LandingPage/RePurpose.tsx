@@ -51,6 +51,7 @@ export const createOption = (label: string, id: string, index: number, type:
 export default function RePurpose({setAllInput ,allInputs, value, setValue, setShowRepourposeError, removeFile ,placeholder} : RePurPoseProps) {
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const [inputValue, setInputValue] = React.useState<string>('');
+  const [errors, setErrors] = React.useState<string[]>([]);
   const handleKeyDown = (event: any) => {
     console.log(inputValue);
     const elementId = generateRandomId();
@@ -73,11 +74,13 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
       // }
       const setOfErrors = new Set(errors);
       // make of set
+
       const setOfErrorsArray = Array.from(setOfErrors);
+      setErrors(setOfErrorsArray);
       console.log(setOfErrorsArray);
       if(setOfErrorsArray.length > 0){
         setOfErrorsArray.forEach((error: any) => {
-          toast.error(error);
+          // toast.error(error);
         });
         return;
       }
@@ -143,6 +146,8 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
   }
 
   return (
+    <div className="relative w-full ">
+    <div className="flex items-center min-h-[60px] bg-white rounded-[10px]  border border-indigo-600 py-2.5 flex-col md:flex-row px-2  gap-2.5 relative ">
     <div style={{
       width: '100%',
       overflowX: 'auto' ,
@@ -212,7 +217,7 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
         console.log(newBlogLinks, errors);
         if(errors.length > 0){
           errors.forEach((error: any) => {
-            toast.error(error);
+            // toast.error(error);
           });
           return;
         }
@@ -230,6 +235,15 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
         value.filter((item: any) => item.type === 'url')
       }
     />
+   
+    </div>
+    </div>
+     {/* errors */}
+     <div className="flex flex-wrap gap-2 mt-2"> 
+        {errors.map((error, index) => (
+          <div key={index} className="text-red-500 text-left text-sm font-normal">{error}</div>
+        ))}
+    </div>
     </div>
   );
 };

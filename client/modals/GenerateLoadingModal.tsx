@@ -8,6 +8,8 @@ interface GenerateLoadingModalProps {
   showGenerateLoadingModal: boolean;
   setShowGenerateLoadingModal: (showGenerateLoadingModal: boolean) => void;
   stepStatus: StepType;
+  resetForm: () => void;
+  showBackButton: boolean;
 }
 
 function getPercentageByStep(step: StepType): { percent: number, message: string, maxPercent: number } {
@@ -37,6 +39,8 @@ const GenerateLoadingModal = ({
   showGenerateLoadingModal,
   stepStatus,
   setShowGenerateLoadingModal,
+  resetForm,
+  showBackButton
 }: GenerateLoadingModalProps) => {
   console.log(
     showGenerateLoadingModal,
@@ -145,18 +149,27 @@ const GenerateLoadingModal = ({
                 {percentage.percent}%
               </div>
             </div>
-            <div className="self-stretch h-11 flex-col justify-start items-center gap-2 flex">
+            
+            {
+              showBackButton && (
+<div className="self-stretch h-11 flex-col justify-start items-center gap-2 flex">
               <div className="w-96 opacity-50 text-center text-gray-800 text-xs font-medium leading-none">
                 If you want to generate your draft quickly, go back and select
                 the web option.
               </div>
               <div className="justify-center items-center gap-2 inline-flex">
-                <button onClick={() => setShowGenerateLoadingModal(false)}
+                <button onClick={() => {
+                  // resetForm()
+                  setShowGenerateLoadingModal(false)
+                }
+                }
                   className="text-center text-gray-800 text-xs font-medium leading-none">
                   Go Back
                 </button>
               </div>
             </div>
+              )
+            }
           </div>
         </div>
       </div>
