@@ -858,6 +858,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
             <div className="text-yellow-600 text-xs font-medium leading-none">
               We take a little longer to generate draft for URLs. Please be patient.
             </div>
+            <XCircleIcon className="w-4 h-4 text-gray-600 cursor-pointer" onClick={() => setShowTabsInfo(prev => ({ ...prev, urls: false }))} />
           </div>
             )
           }
@@ -890,6 +891,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
             <div className="text-yellow-600 text-xs font-medium leading-none">
               We take a little longer to generate draft for Documents. Please be patient.
             </div>
+            <XCircleIcon className="w-4 h-4 text-gray-600 cursor-pointer" onClick={() => setShowTabsInfo(prev => ({ ...prev, documents: false }))} />
           </div>
             )
           }
@@ -1234,7 +1236,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
               >
                 <RotatingText/> 
                 <div
-                  className="w-full lg:min-w-[950px] lg:max-w-[950px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
+                  className="w-full lg:min-w-[850px] lg:max-w-[850px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
                   style={{
                     background: "rgba(255, 255, 255, 0.5)",
                     outline: 'none !important' 
