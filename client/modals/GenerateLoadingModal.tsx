@@ -154,7 +154,7 @@ const GenerateLoadingModal = ({
               </div>
               <div className="justify-center items-center gap-2 inline-flex">
                 <button onClick={() => {
-                  resetForm()
+                  // resetForm()
                   setShowGenerateLoadingModal(false)
                 }
                 }
