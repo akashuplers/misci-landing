@@ -7,6 +7,7 @@ import { formatMinutesToTimeString } from "@/helpers/helper";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import { useUserTimeSaveStore } from "@/store/appState";
 import { log } from "console";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 export function TotalTImeSaved({
   timeSaved,
   blogId,
@@ -64,6 +65,8 @@ export function TotalTImeSaved({
     <ReactModal
       isOpen={modalIsOpen}
       onRequestClose={() => setIsOpen(false)}
+      shouldCloseOnEsc={true}
+      shouldCloseOnOverlayClick={true}
       ariaHideApp={false}
       className="fixed inset-0 top-0 flex items-start justify-center w-full h-full p-4 overflow-auto bg-black bg-opacity-50 z-50"
       overlayClassName="fixed inset-0 z-50"
@@ -74,7 +77,18 @@ export function TotalTImeSaved({
         },
       }}
     >
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-[250px]">
+      <div className="bg-white p-6 rounded-lg shadow-lg max-w-[250px] relative">
+        <div className="relative flex items-center justify-end">
+        <button
+          onClick={() => {
+            setIsOpen(false);
+          }}
+          className="absolute top-2 left-2"
+        >
+          <XMarkIcon className="w-5 h-5 text-indigo-600" />
+        </button>
+
+        </div>
         <TimeSavedIcon className={"w-20 h-20 mx-auto mb-4"} />
         <h2 className="text-xl font-semibold mb-2 text-center">Great! 👏</h2>
        {
