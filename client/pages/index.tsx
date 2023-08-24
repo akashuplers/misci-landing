@@ -196,6 +196,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
     setkeywordsOfBlogs([]);
     setBlogLinks([]);
     setSelectedFiles([]);
+    setkeyword("");
     setStateOfGenerate((prev) => {
       return {
         url: null,
@@ -205,9 +206,9 @@ export default function Home({ payment, randomLiveUsersCount }) {
     });
     setShowingGenerateLoading(false);
   };
-  useEffect(() => {
-    addFunction(handleGenerateReset);
-  }, [blogLinks]);
+  // useEffect(() => {
+  //   addFunction(handleGenerateReset);
+  // }, [blogLinks]);
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
@@ -1058,6 +1059,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
         />
         {showingGenerateLoading && (
           <GenerateLoadingModal
+          resetForm={handleGenerateReset}
             showGenerateLoadingModal={showingGenerateLoading}
             setShowGenerateLoadingModal={setShowingGenerateLoading}
             stepStatus={subsData?.stepCompletes.step}

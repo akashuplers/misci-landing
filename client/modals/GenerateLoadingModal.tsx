@@ -8,6 +8,7 @@ interface GenerateLoadingModalProps {
   showGenerateLoadingModal: boolean;
   setShowGenerateLoadingModal: (showGenerateLoadingModal: boolean) => void;
   stepStatus: StepType;
+  resetForm: () => void;
 }
 
 function getPercentageByStep(step: StepType): { percent: number, message: string, maxPercent: number } {
@@ -37,6 +38,7 @@ const GenerateLoadingModal = ({
   showGenerateLoadingModal,
   stepStatus,
   setShowGenerateLoadingModal,
+  resetForm,
 }: GenerateLoadingModalProps) => {
   console.log(
     showGenerateLoadingModal,
@@ -151,7 +153,11 @@ const GenerateLoadingModal = ({
                 the web option.
               </div>
               <div className="justify-center items-center gap-2 inline-flex">
-                <button onClick={() => setShowGenerateLoadingModal(false)}
+                <button onClick={() => {
+                  resetForm()
+                  setShowGenerateLoadingModal(false)
+                }
+                }
                   className="text-center text-gray-800 text-xs font-medium leading-none">
                   Go Back
                 </button>
