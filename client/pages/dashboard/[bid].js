@@ -343,7 +343,7 @@ export default function Post() {
 
           <div className="relative tiny_mce_width " >
             <TinyMCEEditor
-              isAuthenticated={true}
+              isAuthenticated={isAuthenticated}
               editorText={editorText}
               blogData={blogData}
               blog_id={bid}
