@@ -1417,7 +1417,7 @@ const AIInputComponent = () => {
     if (buttonHeightRef.current) {
       setButtonHeight(buttonHeightRef.current.clientHeight);
     }
-  }, [buttonHeightRef.current]);
+  }, []);
 
   return (
     <div
@@ -1629,3 +1629,5 @@ const RotatingText = React.memo(()=> {
     </div>
   )
 }) 
+
+RotatingText.displayName = 'RotatingText';
