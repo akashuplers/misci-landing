@@ -7,7 +7,7 @@ export const useSendSavedTimeOfUser = () => {
         loading: false,
         error: null,
     });
-    const sendSavedTime = (blogId, time, type) => {
+    const sendSavedTime = (blogId, time, type, status=false) => {
         const getToken = localStorage.getItem("token");
         var getUserId;
         if (typeof window !== "undefined") {
@@ -26,6 +26,7 @@ export const useSendSavedTimeOfUser = () => {
             blogId,
             time,
             type,
+            status : status == true  ? 'SAVE' : 'UNSAVE'
         });
 
         const requestOptions = {

@@ -1,5 +1,6 @@
 import { format, fromUnixTime, max } from "date-fns";
 import { APP_REGEXP } from "./appContants";
+import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 
 export function getRelativeTimeString(
   date: Date | number,
@@ -138,7 +139,7 @@ interface Result {
   data: Obj[];
   errors: string[];
 }
-export function addObjectToSearchStore(obj: Obj, array: Obj[]): Result {
+export function addObjectToSearchStore(obj: Obj, array: Obj[], isAuth: boolean = false): Result {
   const maxCapacity = 6;
   const keywordLimit = 1;
 
@@ -151,18 +152,39 @@ export function addObjectToSearchStore(obj: Obj, array: Obj[]): Result {
   }
   
   // check for total number of items of files, urls, keywords
-  const objCount = array.length;
+  const objCount = array.filter((item) => item.type === obj.type).length;
+  // only allow 1 url and not more than that if not auth
+  if (obj.type === 'url') {
+    if (objCount >= 1 && !isAuth) {
+      return { data: array, errors: ['Only one URL is allowed'] };
+    }
+  }
+
   if (objCount >= maxCapacity) {
     return { data: array, errors: ['Maximum 6 items are allowed'] };
   }
 
-  // Check if the keyword count exceeds the limit
-  if (obj.type === 'keyword') {
-    keywordCount = array.filter((item) => item.type === 'keyword').length;
-    if (keywordCount >= keywordLimit) {
-      return { data: array, errors: ['Only one keyword is allowed'] };
+  // check if it already exists lowercase the value
+  
+  // check for url for valid type
+  if (obj.type === 'url') {
+    if (!validateIfURL(obj.value)) {
+      return { data: array, errors: ['Invalid URL'] };
     }
   }
+  const dataOfType = array.filter((item) => item.type === obj.type);
+  const values = dataOfType.map((item) => item.value.toLowerCase());
+  if (values.includes(obj.value.toLowerCase())) {
+    return { data: array, errors: [`"${obj.value}" already exists`] };
+  }
+  
+  // Check if the keyword count exceeds the limit
+  // if (obj.type === 'keyword') {
+  //   keywordCount = array.filter((item) => item.type === 'keyword').length;
+  //   if (keywordCount >= keywordLimit) {
+  //     return { data: array, errors: ['Only one keyword is allowed'] };
+  //   }
+  // }
   // If all conditions pass, add the obj to the array and return the updated array
   const newArray = [...array, obj];
   return { data: newArray, errors: [] };
@@ -184,7 +206,8 @@ export function addFilesToTheSearch(
   array: Obj[],
   files: File[],
   maxFileSize: number,
-  maxSpaceLength: number
+  maxSpaceLength: number,
+  isAuth: boolean = false,
 ): ResultForAddFilesToArray {
   const maxCapacity = 6;
   const keywordLimit = 1;
@@ -195,21 +218,29 @@ export function addFilesToTheSearch(
  
   // Check if the keyword count exceeds the limit
   keywordCount = array.filter((item) => item.type === 'keyword').length;
+  const objType = array.filter((item) => item.type === 'file');
   if (files.length === 0) {
     return { data: array, errors: ['No file selected'] };
   }
-  if (keywordCount === 0) {
-    if (files.length > maxCapacity) {
-      return { data: array, errors: [`Maximum ${maxCapacity} items are allowed`] };
-    }
-    if (files.length + array.length > maxCapacity) {
-      return { data: array, errors: [`Maximum ${maxCapacity} items are allowed`] };
-    }
-  } else {
-    if (files.length > maxCapacity - keywordCount) {
-      return { data: array, errors: [`Maximum ${maxCapacity - keywordCount} items are allowed`] };
+  // if (keywordCount === 0) {
+  //   if (files.length > maxCapacity) {
+  //     return { data: array, errors: [`Maximum ${maxCapacity} items are allowed`] };
+  //   }
+  //   if (files.length + array.length > maxCapacity) {
+  //     return { data: array, errors: [`Maximum ${maxCapacity} items are allowed`] };
+  //   }
+  // } else {
+  
+  // is auth not, and file should not be more than 1
+  if (!isAuth) {
+    if (files.length > 1) {
+      return { data: array, errors: [`Only one file is allowed`] };
     }
   }
+  if (files.length > maxCapacity) {
+    return { data: array, errors: [`Maximum ${maxCapacity} items are allowed`] };
+  }
+  // }
   // file format check
   const allowedFormats = ['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt'];
   const fileFormats = files.map((file) => file.name.split('.').pop());
@@ -247,26 +278,71 @@ export function addFilesToTheSearch(
 
 
 export function convertToURLFriendly(str:string) {
-  // Replace spaces with hyphens
   const urlFriendlyStr = str.replace(/\s+/g, '-');
-  
-  // Convert to lowercase
   const lowercaseStr = urlFriendlyStr.toLowerCase();
-  
-  // Remove special characters except hyphens
   const cleanedStr = lowercaseStr.replace(/[^a-z0-9-]/g, '');
-
   return cleanedStr;
 }
 
 function getFirstH2(htmlString:string) {
-  // Create a temporary container element
   const container = document.createElement('div');
   container.innerHTML = htmlString;
-
-  // Find the first h2 element within the container
   const firstH2 = container.querySelector('h2');
-
-  // Return the innerHTML of the first h2, or an empty string if not found
   return firstH2 ? firstH2.innerHTML : '';
+}
+
+
+export async function newGenerateApi(
+  token: string,
+  tones: string[],
+  keyword: string,
+  userId: string,
+  files: File[],
+  urls: string[],
+): Promise<void> {
+  const myHeaders = new Headers();
+  console.log(files, urls, tones, keyword, userId);
+  if(token !== null) { 
+  myHeaders.append("Authorization", `Bearer ${token}`);
+  }
+
+  const formdata = new FormData();
+  for (const tone of tones) {
+    formdata.append("tones[]", tone);
+  }
+  formdata.append("keyword", keyword);
+  formdata.append("user_id", userId);
+  for (const file of files) {
+    formdata.append("files", file, file.name);
+  }
+  for (const url of urls) {
+    formdata.append("urls[]", url);
+  }
+  console.log(formdata);
+  const requestOptions: RequestInit = {
+    method: 'POST',
+    headers: myHeaders,
+    body: formdata,
+    redirect: 'follow',
+  };
+
+  try {
+    const url = API_BASE_PATH + API_ROUTES.NEW_GENERATE_API;
+    const response = await fetch(url, requestOptions);
+    const result = await response.json();
+    console.log(result);
+    return result;
+  } catch (error) {
+    console.log('error', error);
+    //@ts-ignore
+    return error;
+  }
+}
+
+
+export const wait = (ms:number) => new Promise(resolve => setTimeout(resolve, ms));
+
+export function getMax(first: number, second: number):number{
+  // return max number
+  return Math.max(first, second);
 }

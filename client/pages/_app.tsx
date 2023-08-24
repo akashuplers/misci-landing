@@ -20,6 +20,9 @@ import { createClient } from "graphql-ws";
 import { useRouter } from "next/router";
 import { ToastContainer } from "react-toastify";
 import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
+import { WebSocketLink } from "@apollo/client/link/ws";
+import { SubscriptionClient } from "subscriptions-transport-ws";
+import { useClientUserStore } from "@/store/store";
 
 axios.interceptors.request.use(
   (config) => {
@@ -65,15 +68,17 @@ axios.interceptors.response.use(
 
 export default function App({ Component, pageProps }: AppProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
+   const {token:userToken, userID : userLocalId, loadingConfigs, addValues} = useClientUserStore()
   const router = useRouter();
   const pathName = router.pathname;
+  console.log("pathName", pathName );
   const notAllowedRoutes = [""];
   const allowedRoutes = [
     "/",
     "/login",
     "/signUp",
     "/dashboard",
+    "/dashboard/[bid]",
     "/pricing",
     "/subscription",
     "/public/[bid]",
@@ -117,6 +122,9 @@ export default function App({ Component, pageProps }: AppProps) {
   if (typeof window !== "undefined") {
     // Perform localStorage action
     var getToken = localStorage.getItem("token");
+    const userID = localStorage.getItem("userId");
+    const tempID = localStorage.getItem("tempId");
+    const userLocalId =userID ?? tempID;
   }
   const httpLink = new HttpLink({
     // You should use an absolute URL here
