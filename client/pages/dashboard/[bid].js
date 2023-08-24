@@ -8,13 +8,14 @@ import DashboardInsights from "../../components/DashboardInsights";
 import Layout from "../../components/Layout";
 import TinyMCEEditor from "../../components/TinyMCEEditor";
 import MoveToRegenPanel from "../../components/localicons/MoveToRegenPanel";
-import { API_BASE_PATH } from "../../constants/apiEndpoints";
+import { API_BASE_PATH, API_ROUTES } from "../../constants/apiEndpoints";
 import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
 import { meeAPI } from "../../graphql/querys/mee";
 import { getDateMonthYear, isMonthAfterJune, jsonToHtml } from "../../helpers/helper";
 import PreferencesModal from "../../modals/PreferencesModal";
-import { useBlogDataStore, useTabOptionStore, useThreadsUIStore } from "../../store/store";
-
+import useStore, { useBlogDataStore, useTabOptionStore, useThreadsUIStore,  } from "../../store/store";
+import { useGenerateState } from '../../store/appState'
+import {useSendSavedTimeOfUser} from '../../hooks/useSendSavedTimeOfUser'
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
     event.stopImmediatePropagation();
@@ -24,20 +25,43 @@ if (typeof window !== "undefined") {
 export default function Post() {
   const [pfmodal, setPFModal] = useState(false);
   const router = useRouter();
+  const isAuthenticated = useStore((state) => state.isAuthenticated);
+  console.log('ROUTER QUERY', router);
   const { bid, isPublished } = router.query;
   const [reference, setReference] = useState([]);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
   const { option, setOption } = useTabOptionStore();
+  const { userTimeSave ,makeNullThoseTime} = useGenerateState();
+ const {response, error: errorLoadingForTime, loading:LoadingForTimeSave, sendSavedTime}= useSendSavedTimeOfUser();
   const { data, loading, error,
     refetch: refetchBlog
   } = useQuery(getBlogbyId, {
     variables: {
       fetchBlogId: bid,
     },
+    onCompleted: (data) => {
+      if (isAuthenticated && (userTimeSave !== null && userTimeSave !== undefined && userTimeSave !== 0)) {
+        console.log('completed'); 
+        const userSaveTimeDataWithBlogId = {};
+        userSaveTimeDataWithBlogId[bid] = {
+          time: userTimeSave,
+          blogId: bid,
+          save: false,
+        }
+        sendSavedTime(bid, userTimeSave, 'agree', false);
+        const localSaveVersionForThis = localStorage.getItem('userSaveTimeDataWithBlogId');
+        var localSaveVersionForThisObj = {};
+        if (localSaveVersionForThis !== null) {
+          localSaveVersionForThisObj = JSON.parse(localSaveVersionForThis);
+        }
+        const finalObj = { ...localSaveVersionForThisObj, ...userSaveTimeDataWithBlogId };
+        localStorage.setItem('userSaveTimeDataWithBlogId', JSON.stringify(finalObj));
+        makeNullThoseTime();
+      }
+    },
   });
   const [ideas, setIdeas] = useState([]);
   const [freshIdeas, setFreshIdeas] = useState([]);
-
   const [freshIdeaTags, setFreshIdeaTags] = useState([]);
 
   const [editorText, setEditorText] = useState([]);
@@ -47,16 +71,14 @@ export default function Post() {
 
   const [pyResTime, setPyResTime] = useState(null);
   const [ndResTime, setNdResTime] = useState(null);
+  const [timeSaveForThisBlog, setTimeSaveForThisBlog] = useState(30);
   const [isPayment, setIsPayment] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
   const [windowHeight, setWindowHeight] = useState(0);
   const [showOTPModal, setShowOTPModal] = useState(false);
   const { setShowTwitterThreadUI } = useThreadsUIStore();
-
   useEffect(() => {
-
     setWindowWidth(window.innerWidth);
-
   }, []);
 
 
@@ -70,9 +92,6 @@ export default function Post() {
     setFreshIdeasReferences(data.fetchBlog.freshIdeasReferences);
     setReference(data.fetchBlog.references);
     setFreshIdeas(data.fetchBlog.ideas.freshIdeas);
-    // setIsPublished(data?.fetchBlog?.publish_data[2]?.published);
-
-    // const aa = data.generate.publish_data[2].tiny_mce_data;
     const newArray = data.fetchBlog.publish_data.filter(
       (obj) => obj.platform === "wordpress"
     );
@@ -90,6 +109,7 @@ export default function Post() {
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
+   
   }
 
   const { data: meeData } = useQuery(meeAPI, {
@@ -101,13 +121,13 @@ export default function Post() {
     },
     onError: ({ graphQLErrors, networkError }) => {
       if (graphQLErrors) {
-        for (let err of graphQLErrors) {
-          switch (err.extensions.code) {
-            case "UNAUTHENTICATED":
-              localStorage.clear();
-              window.location.href = "/";
-          }
-        }
+        // for (let err of graphQLErrors) {
+        //   switch (err.extensions.code) {
+        //     case "UNAUTHENTICATED":
+        //       localStorage.clear();
+        //       window.location.href = "/";
+        //   }
+        // }
       }
       if (networkError) {
         console.log(`[Network error]: ${networkError}`);
@@ -116,19 +136,19 @@ export default function Post() {
           "ServerError: Response not successful: Received status code 401"
         ) {
           localStorage.clear();
-          toast.error("Session Expired! Please Login Again..", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
-          setTimeout(() => {
-            window.location.href = "/";
-          }, 3000);
+          // toast.error("Session Expired! Please Login Again..", {
+          //   position: "top-center",
+          //   autoClose: 5000,
+          //   hideProgressBar: false,
+          //   closeOnClick: true,
+          //   pauseOnHover: true,
+          //   draggable: true,
+          //   progress: undefined,
+          //   theme: "light",
+          // });
+          // setTimeout(() => {
+          //   window.location.href = "/";
+          // }, 3000);
         }
       }
     },
@@ -139,8 +159,7 @@ export default function Post() {
     if (payment === 'true') {
       if (localStorage.getItem('userContribution') !== null) {
         var userContribution = JSON.parse(localStorage.getItem('userContribution') || '{}');
-        const SAVE_USER_SUPPORT_URL = 'https://maverick.lille.ai/auth/save-user-support';
-
+        const SAVE_USER_SUPPORT_URL = API_BASE_PATH + API_ROUTES.AUTH_USER_SUPPORT;
         const requestOptions = {
           method: 'POST',
           headers: {
@@ -177,7 +196,7 @@ export default function Post() {
     }
 
 
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -228,7 +247,7 @@ export default function Post() {
             } else {
               setShowOTPModal(false);
             }
-            
+
           } else {
             setShowOTPModal(true);
           }
@@ -251,7 +270,7 @@ export default function Post() {
           Authorization: "Bearer " + getToken,
         },
       };
-      
+
       fetch(SEND_OTP_URL, requestOptions)
         .then((response) => {
           console.log("RESPONSE FROM SEND OTP");
@@ -328,6 +347,7 @@ export default function Post() {
               editorText={editorText}
               blogData={blogData}
               blog_id={bid}
+              timeSaveForThisBlog={12}
               isPublished={isPublished}
               loading={loading}
               option={option}
