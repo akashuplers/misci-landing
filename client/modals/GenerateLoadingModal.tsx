@@ -97,7 +97,7 @@ const GenerateLoadingModal = ({
     >
       <div className="flex flex-col items-center justify-center h-full w-full">
         <div className="w-96 h-96 flex-col justify-start items-center gap-4 inline-flex">
-          <img className="w-40 h-40" src="/scanner.gif" />
+          <img className="w-60 h-60" src="/scanner.gif" />
           <div className="text-center text-green-600 text-base font-medium leading-tight">
             Hey! This looks great...
           </div>
@@ -130,44 +130,37 @@ const GenerateLoadingModal = ({
             />
           </div>
           <div className="self-stretch h-36 flex-col justify-start items-center gap-10 flex">
-            <div className="h-14 flex-col w-full justify-start items-start gap-2 flex">
-              <div className="self-stretch my-2 relative">
-                <div className="w-96 h-1.5 left-[3.19px] top-[12px] absolute rounded-full blur-none z-10"
-                  style={{
-                    background: `lightgray`,
-                    height: '3px'
-                  }}
-                />
-                <div className={`h-3 left-[3.19px] top-[-5px] absolute rounded-full z-20 ${stepStatus === 'BACKLINK_COMPLETED' ? 'bg-green-600' : 'bg-indigo-600'}`}
-                  style={{
-                    width: `${percentage.percent}%`,
-                    top: '-5px',
-                  }}
-                />
+            <div className="h-14 flex-col w-[150px] justify-center items-center gap-2 flex">
+              <div style={{ width: 579, height: 30, position: 'relative' }}>
+                <div style={{ width: 579, height: 30, left: 0, top: 0, position: 'absolute', justifyContent: 'center', alignItems: 'center', display: 'inline-flex' }}>
+                  <div style={{ width: 579, height: 30, boxShadow: '0px 0px 0px ', filter: 'blur(0px)' }} />
+                </div>
+                <div style={{ width: 572.62, height: 6, left: 3.19, top: 12, position: 'absolute', background: '#E6E6F8' }} className="rounded-full" />
+                <div style={{ width:  `${percentage.percent}%`, height: 12, left: 3.19, top: 9, position: 'absolute', background:  nativePercentage.percent < 99? '#4A3AFE' : '#19A70D'
+              }}  className="rounded-full"/>
               </div>
               <div className="w-8 text-center text-zinc-400 text-xs font-medium leading-none">
                 {percentage.percent}%
               </div>
             </div>
-            
             {
               showBackButton && (
-<div className="self-stretch h-11 flex-col justify-start items-center gap-2 flex">
-              <div className="w-96 opacity-50 text-center text-gray-800 text-xs font-medium leading-none">
-                If you want to generate your draft quickly, go back and select
-                the web option.
-              </div>
-              <div className="justify-center items-center gap-2 inline-flex">
-                <button onClick={() => {
-                  // resetForm()
-                  setShowGenerateLoadingModal(false)
-                }
-                }
-                  className="text-center text-gray-800 text-xs font-medium leading-none">
-                  Go Back
-                </button>
-              </div>
-            </div>
+                <div className="self-stretch h-11 flex-col justify-start items-center gap-2 flex">
+                  <div className="w-96 opacity-50 text-center text-gray-800 text-xs font-medium leading-none">
+                    If you want to generate your draft quickly, go back and select
+                    the web option.
+                  </div>
+                  <div className="justify-center items-center gap-2 inline-flex">
+                    <button onClick={() => {
+                      // resetForm()
+                      setShowGenerateLoadingModal(false)
+                    }
+                    }
+                      className="text-center text-gray-800 text-xs font-medium leading-none">
+                      Go Back
+                    </button>
+                  </div>
+                </div>
               )
             }
           </div>
