@@ -1265,9 +1265,9 @@ export default function TinyMCEEditor({
                 theme: "light",
               });
               setPrevTwitterThreads(twitterThreadData);
-              if (window.location.pathname !== "/dashboard/" + blog_id) {
-                window.location.href = "/dashboard/" + blog_id;
-              }
+              // if (window.location.pathname !== "/dashboard/" + blog_id) {
+              //   window.location.href = "/dashboard/" + blog_id;
+              // }
             })
             .catch((error) => {
               if (error.response) {

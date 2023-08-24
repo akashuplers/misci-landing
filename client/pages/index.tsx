@@ -110,6 +110,8 @@ const STATESOFKEYWORDS = {
   LOADED: "loaded",
 };
 export const getServerSideProps = async (context) => {
+  console.log(context);
+  console.log("server");
   const { payment } = context.query;
   const randomLiveUsersCount = randomNumberBetween20And50();
   return {

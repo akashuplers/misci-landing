@@ -9,16 +9,16 @@ const BlogListItem = ({ blog, index, setblog_id, setOpenModal, type }) => {
       setQueryParams({ blogId: blog._id, isPublished: true });
     }
   }, [blog, type]);
+  const pathName = type == 'saved' ? `/dashboard/${blog._id}` : `/dashboard/${blog._id}?isPublished=true`;
   return (
-    <li key={blog._id} className="relative">
-      <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
+    <li href={{ pathname: '/dashboard/' + blog._id, query: queryParams }} key={blog._id} className="relative">
+      <Link href={pathName}><div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
         <img
           src={blog.image}
           alt={blog.title}
           className="pointer-events-none object-cover h-[150px] w-full lg:w-[280px]"
           style={{ scale: '1.25' }}
         />
-        {/* delete button */}
         {
           type == 'publish' && (
             <Link
@@ -107,6 +107,7 @@ const BlogListItem = ({ blog, index, setblog_id, setOpenModal, type }) => {
           </span>
         </Link>
       </div>
+      </Link>
       <button className={`${styles.dateTag} mt-2`}>
         {new Date(blog?.date * 1000).toLocaleString('en-US', {
           timeZone: 'Asia/Kolkata',
@@ -125,7 +126,7 @@ const BlogListItem = ({ blog, index, setblog_id, setOpenModal, type }) => {
           ? blog?.description?.substring(0, 115) + '...'
           : blog.description}
       </p>
-    </li >
+    </li>
   );
 };
 
