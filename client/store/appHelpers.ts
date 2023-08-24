@@ -156,7 +156,7 @@ export function addObjectToSearchStore(obj: Obj, array: Obj[], isAuth: boolean =
   // only allow 1 url and not more than that if not auth
   if (obj.type === 'url') {
     if (objCount >= 1 && !isAuth) {
-      return { data: array, errors: ['Only one URL is allowed'] };
+      return { data: array, errors: ['You can enter multiple URLs by signing up, as you are a guest limited to single file'] };
     }
   }
 
@@ -234,7 +234,7 @@ export function addFilesToTheSearch(
   // is auth not, and file should not be more than 1
   if (!isAuth) {
     if (files.length > 1) {
-      return { data: array, errors: [`Only one file is allowed`] };
+      return { data: array, errors: [`You can enter multiple File by signing up, as you are a guest limited to single file`] };
     }
   }
   if (files.length > maxCapacity) {

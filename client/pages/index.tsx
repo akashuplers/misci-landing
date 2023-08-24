@@ -189,6 +189,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
   const executeLastFunction = useFunctionStore(
     (state) => state.executeLastFunction
   );
+
   const [showGDriveModal, setShowGDriveModal] = useState(false);
   const { addFunction } = useSideBarChangeFunctions();
   const [showingGenerateLoading, setShowingGenerateLoading] = useState(false);
@@ -428,7 +429,19 @@ export default function Home({ payment, randomLiveUsersCount }) {
       setDisableGenerateButton(false);
     }
   }
-
+  const countByType = blogLinks.reduce(
+    (acc, link) => {
+      if (link.type === "file") {
+        acc.lengthOFiles++;
+      } else if (link.type === "url") {
+        acc.lengthOfUrls++;
+      } else if (link.type === "keyword") {
+        acc.keyword++;
+      }
+      return acc;
+    },
+    { lengthOFiles: 0, lengthOfUrls: 0 }
+  );
 
   function handleGenerateClick() {
     console.log(blogLinks);
@@ -814,6 +827,11 @@ export default function Home({ payment, randomLiveUsersCount }) {
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const { showFileStatus, uploadedFilesData } = useFileUploadStore();
+  const [showTabsInfo, setShowTabsInfo] = useState({
+    web: false,
+    urls: true,
+    documents: true
+  });
   console.log(blogLinks);
   const filesNames = blogLinks
     .filter((link) => link.type === "file")
@@ -835,12 +853,14 @@ export default function Home({ payment, randomLiveUsersCount }) {
       label: "URLs",
       upperContent: (
         <>
-          <div className="w-[80%] h-7 px-2.5 py-1.5 my-2 bg-orange-100 rounded backdrop-blur-2xl justify-center items-center gap-2.5 inline-flex">
+          {
+            showTabsInfo.urls && (<div className="w-fit h-7 px-2.5 py-1.5 my-2 bg-orange-100 rounded backdrop-blur-2xl justify-center items-center gap-2.5 inline-flex">
             <div className="text-yellow-600 text-xs font-medium leading-none">
-              We take a little longer to generate draft for URLs. Please be
-              patient.
+              We take a little longer to generate draft for URLs. Please be patient.
             </div>
           </div>
+            )
+          }
         </>
       ),
       content: (
@@ -848,8 +868,6 @@ export default function Home({ payment, randomLiveUsersCount }) {
           <div className=" w-full text-left mt-2 flex flex-col items-start justify-center">
             <h1 className="text-left">Paste URL</h1>
           </div>
-          <div className="relative w-full min-h-[60px] bg-white rounded-[10px]  border border-indigo-600 py-2.5">
-            <div className="flex items-center flex-col md:flex-row px-2  gap-2.5 relative ">
               <RePurpose
                 placeholder="Paste URLS (comma between)"
                 allInputs={inputData}
@@ -859,8 +877,6 @@ export default function Home({ payment, randomLiveUsersCount }) {
                 setValue={setBlogLinks}
                 setShowRepourposeError={setShowRepourposeError}
               />
-            </div>
-          </div>
         </>
       ),
     },
@@ -869,12 +885,14 @@ export default function Home({ payment, randomLiveUsersCount }) {
       label: "Documents",
       upperContent: (
         <>
-          <div className="w-[80%] h-7 px-2.5 py-1.5 my-2 bg-orange-100 rounded backdrop-blur-2xl justify-center items-center gap-2.5 inline-flex">
+          {
+            showTabsInfo.documents && (<div className="w-fit h-7 px-2.5 py-1.5 my-2 bg-orange-100 rounded backdrop-blur-2xl justify-center items-center gap-2.5 inline-flex">
             <div className="text-yellow-600 text-xs font-medium leading-none">
-              We take a little longer to generate draft for Documents. Please be
-              patient.
+              We take a little longer to generate draft for Documents. Please be patient.
             </div>
           </div>
+            )
+          }
         </>
       ),
       content: (
@@ -889,13 +907,8 @@ export default function Home({ payment, randomLiveUsersCount }) {
               );
             })}
           </div>
-          <DragAndDropFiles blogLinks={blogLinks} setBlogLinks={setBlogLinks} />
-          <div className="text-right flex justify-end gap-2 ">
-            <h1>Max file size: 7MB. If you have more than 7MB </h1>{" "}
-            <button onClick={() => setShowGDriveModal(true)}>
-              <strong className="text-indigo-500">Click here</strong>
-            </button>
-          </div>
+          <DragAndDropFiles blogLinks={blogLinks} setBlogLinks={setBlogLinks} onClickHereButtonClick={() => setShowGDriveModal(true)}/>
+          
           {
             showFileStatus && (
               <div className="flex items-center justify-center  my-2 gap-2 max-w-full min-w-full flex-wrap">
@@ -1063,6 +1076,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
             showGenerateLoadingModal={showingGenerateLoading}
             setShowGenerateLoadingModal={setShowingGenerateLoading}
             stepStatus={subsData?.stepCompletes.step}
+            showBackButton={countByType.lengthOFiles > 0 || countByType.lengthOfUrls > 0}
           />
         )}
         <div
@@ -1220,7 +1234,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
               >
                 <RotatingText/> 
                 <div
-                  className="w-full lg:min-w-[700px] lg:max-w-[700px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
+                  className="w-full lg:min-w-[950px] lg:max-w-[950px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
                   style={{
                     background: "rgba(255, 255, 255, 0.5)",
                     outline: 'none !important' 
