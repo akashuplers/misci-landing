@@ -1546,6 +1546,12 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
       message: "No keyword passed!"
     })
   }
+  if(!userId) {
+    return res.status(400).send({
+      type: "ERROR",
+      message: "User Id missing!"
+    })
+  }
   const user = req.user
   console.log(tones, files)
   let userDetails = null
