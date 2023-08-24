@@ -1634,7 +1634,8 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
       }
   }
   publish({userId, keyword, step: "KEYWORD_COMPLETED"})
-  let unprocessedUrlsFiles: string[] = []
+  let unprocessedFiles: string[] = []
+  let unprocessedUrls: string[] = []
 
 
   let urlsArticleIds: string[] = []
@@ -1642,15 +1643,23 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
   if(urls && urls.length) {
     for (let index = 0; index < urls.length; index++) {
       const url = urls[index];
-      const urlUploadRes = await new Python({userId}).uploadUrl({url})
-      urlsArticleIds.push(urlUploadRes)
+      try {
+        const urlUploadRes = await new Python({userId}).uploadUrl({url})
+        urlsArticleIds.push(urlUploadRes)
+      }catch(e: any){
+        unprocessedUrls.push(url)
+      }
     }
     publish({userId, keyword, step: "URL_UPLOAD_COMPLETED"})
   } else if(files && files.length) {
     for (let index = 0; index < files.length; index++) {
       const file = files[index];
-      const fileUploadRes = await new Python({userId}).uploadFile({file})
-      fileArticleIds.push(fileUploadRes)
+      try {
+        const fileUploadRes = await new Python({userId}).uploadFile({file})
+        fileArticleIds.push(fileUploadRes)
+      }catch(e: any){
+        unprocessedFiles.push(file.originalname)
+      }
     }
     publish({userId, keyword, step: "FILE_UPLOAD_COMPLETED"})
     console.log(fileArticleIds, "file ids")
@@ -1843,7 +1852,7 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
           }
           return res.status(200).send({
             type: "SUCCESS",
-            data:{...blogDetails, ideas: blogIdeasDetails, references: refUrls, pythonRespTime, respTime}
+            data:{...blogDetails, ideas: blogIdeasDetails, references: refUrls, pythonRespTime, respTime, unprocessedFiles, unprocessedUrls}
           })
       }else{
           console.log(blogGeneratedData, "blogGeneratedData")
