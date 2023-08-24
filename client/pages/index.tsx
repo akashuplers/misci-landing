@@ -1276,6 +1276,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
                   className="w-full lg:min-w-[700px] lg:max-w-[700px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
                   style={{
                     background: "rgba(255, 255, 255, 0.5)",
+                    outline: 'none !important' 
                   }}
                 >
                   <h1
@@ -1292,7 +1293,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
 
                           <Tab
                             key={tab.id}
-                            className={`w-24 h-8 px-2.5 py-1 border-b border-indigo-600 justify-center items-center gap-2.5 inline-flex text-base font-medium text-gray-800 ${activeTab === tab.id ? "border-b-2 border-indigo-600 text-gray-800" : "text-gray-600 border-none"}`}>
+                            className={`w-24 h-8 px-2.5 py-1 border-b border-indigo-600 ring-0  focus:ring-0  justify-center items-center gap-2.5 inline-flex text-base font-medium text-gray-800 ${activeTab === tab.id ? "border-b-2 border-indigo-600 text-gray-800" : "text-gray-600 border-none"}`}>
                             {tab.label}
                           </Tab>
                         ))}
