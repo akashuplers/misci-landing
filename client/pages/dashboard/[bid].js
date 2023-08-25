@@ -33,6 +33,7 @@ export default function Post({typeIsRepurpose}) {
   const { bid, isPublished } = router.query;
   const [reference, setReference] = useState([]);
   const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
+  const [alreadyShownDisclaimer, setAlreadyShownDisclaimer] = useState(false);
   const [disclaimerCheck, setDisclaimerCheck] = useState(false);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
   const { option, setOption } = useTabOptionStore();
@@ -67,7 +68,7 @@ export default function Post({typeIsRepurpose}) {
         
       }
       console.log(typeIsRepurpose, 'typeIsRepurpose');
-      if(typeIsRepurpose===true){
+      if(typeIsRepurpose===true && alreadyShownDisclaimer==false){
         const isDisclaimerShown = localStorage.getItem("isDisclaimerShown");
         const disclaimerResponse = localStorage.getItem("disclaimerResponse");
         if (isDisclaimerShown === "true") {
@@ -75,6 +76,7 @@ export default function Post({typeIsRepurpose}) {
             setShowDisclaimerModal(false);
           } else {
             setShowDisclaimerModal(true);
+            setAlreadyShownDisclaimer(true);
           }
         } else {
           setShowDisclaimerModal(true);
