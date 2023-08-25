@@ -200,6 +200,7 @@ export default function Sidebar() {
   const { setShowTwitterThreadUI } = useThreadsUIStore();
   const { option, setOption } = useTabOptionStore();
   const { setTwitterThreadData } = useTwitterThreadStore();
+  
   function handleEditorReset() {
     setOption("blog");
     setBlogData([]);
