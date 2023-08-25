@@ -198,7 +198,8 @@ export default function AuthenticationModal({
         })
         .catch((error) => console.error(error))
         .finally(() => {
-          if (window.location.pathname === "/dashboard") {
+          // if (window.location.pathname === "/dashboard") {
+            if(window.location.pathname.includes('/dashboard')){
             window.location.pathname = '/dashboard/' + bid;
             handleSave();
           } else {
