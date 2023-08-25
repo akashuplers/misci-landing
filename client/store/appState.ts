@@ -269,3 +269,15 @@ export const useGenerateState = create<GenerateState>((set) => ({
     userTimeSave: 0,
    }),
 }));
+
+interface GenerateErrorState{
+  messages:string[],
+  addMessages: (message: string[]) => void;
+  clearAllMessages: () => void;
+}
+
+export const useGenerateErrorState = create<GenerateErrorState>((set) => ({ 
+messages : [],
+addMessages: (message) => set({messages: [...message]}),
+clearAllMessages: () => set({messages: []}),
+}));
