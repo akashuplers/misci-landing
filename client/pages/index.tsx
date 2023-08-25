@@ -57,6 +57,7 @@ import { maxFileSize } from "@/helpers/utils";
 import {
   useBlogLinkStore,
   useFileUploadStore,
+  useGenerateErrorState,
   useGenerateState,
   useRepurposeFileStore,
   useSideBarChangeFunctions,
@@ -78,6 +79,7 @@ import { TYPES_OF_GENERATE } from "@/store/appContants";
 import GoogleDriveModal from "@/modals/GoogleDriveModal";
 import { StepCompleteData } from "@/store/types";
 import GenerateLoadingModal from "@/modals/GenerateLoadingModal";
+import GenerateErrorModal from "@/modals/GenerateErrorModal";
 
 const PAYMENT_PATH = "/?payment=true";
 const TONES = [
@@ -133,6 +135,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
   const [getTempIdForSubs, setGetTempIdForSubs] = useState('');
   const [getTokenForSubs, setGetTokenForSubs] = useState('');
   const [userAbleUserIDForSubs, setUserAbleUserIDForSubs] = useState('');
+  const {addMessages}= useGenerateErrorState();
   const [getToken, setGetToken] = useState('');
   const {
     data: subsData,
@@ -173,6 +176,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
   const [repurposeTones, setRepurposeTones] = useState(newTones);
   const [showFileUploadUI, setShowFileUploadUI] = useState(false);
   const addToFunctionStack = useFunctionStore((state) => state.addToStack);
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const [stateOfGenerate, setStateOfGenerate] = useState({
     url: null,
     file: null,
@@ -524,6 +528,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
       (response) => {
         if (response.type == 'ERROR') {
           toast.error(response.message);
+          setShowErrorModal(true);
           setShowingGenerateLoading(false);
           return;
         }
@@ -532,6 +537,33 @@ export default function Home({ payment, randomLiveUsersCount }) {
         const responseTime = data.respTime;
         const pyTime = data.pythonRespTime;
         updateTime(responseTime, pyTime, responseTime);
+        console.log(response);
+        // addMessages()'
+        const unprocessedUrlsFR = data?.unprocessedUrls;
+        for (let index = 0; index < unprocessedUrlsFR.length; index++) {
+          unprocessedUrlsFR[index] = unprocessedUrlsFR[index] + ' URL unable to process';
+        }
+        const unprocessedFiles = data?.unprocessedFiles;  
+        for (let index = 0; index < unprocessedFiles.length; index++) {
+          unprocessedFiles[index] = unprocessedFiles[index] + ' File unable to process';
+        }
+        const allErrors = [];
+
+        if (unprocessedUrlsFR?.length > 0) {
+          allErrors.push(...unprocessedUrlsFR);
+        }
+
+        if (unprocessedFiles?.length > 0) {
+          allErrors.push(...unprocessedFiles);
+        }
+
+        console.log(allErrors, 'unprocessed', unprocessedUrlsFR, unprocessedFiles, data?.unprocessedUrls, data?.unprocessedFiles);
+
+        if (allErrors.length > 0) {
+          addMessages(allErrors);
+        }
+
+        console.log(response);
         setTimeout(() => {
           router.push({
             pathname: `/dashboard/${_id}`,
@@ -539,9 +571,10 @@ export default function Home({ payment, randomLiveUsersCount }) {
           }).then(() => {
             setShowingGenerateLoading(false);
           });
-        }, 2000)
+        }, 2000);
+         
       }
-    );
+    ) 
   }
 
   function uploadExtractKeywordsFromKeywords() {
@@ -1065,6 +1098,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
           <></>
         )}
 
+
         {/* <TotalTImeSaved   /> */}
 
         {!meeData?.me?.isSubscribed && meeData?.me?.credits === 0 && (
@@ -1075,6 +1109,12 @@ export default function Home({ payment, randomLiveUsersCount }) {
           setShowModal={setShowGDriveModal}
           meeData={meeData}
         />
+        {
+          showErrorModal && <GenerateErrorModal 
+          modalOpen={showErrorModal}
+          setModalOpen={setShowErrorModal}
+          />
+        }
         {showingGenerateLoading && (
           <GenerateLoadingModal
             resetForm={handleGenerateReset}
