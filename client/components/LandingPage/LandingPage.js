@@ -258,7 +258,7 @@ const LandingPage = () => {
     };
 
     return (
-        <>
+        <div className="hidden md:block">
            
             {/* <div className="w-full h-[195px]    flex-col justify-start items-center gap-4 inline-flex">
                 <div className="h-[81px] flex-col justify-start items-center gap-2 flex">
@@ -939,7 +939,7 @@ const LandingPage = () => {
                 </div>
             </div >
             {/* footer */}
-        </>
+        </div>
     );
 };
 

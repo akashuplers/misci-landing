@@ -1125,7 +1125,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
           />
         )}
         <div
-          className={`maincontainer relative md:px-6 pt-5 lg:px-8 ${!isAuthenticated && "md:min-h-screen"
+          className={`maincontainer relative md:px-6 pt-5 lg:px-8 ${!isAuthenticated && "min-h-screen"
             }`}
         >
           <FloatingBalls className="hidden absolute top-[4%] rotate-45 md:block" />
@@ -1265,7 +1265,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
           )}
           <div className=" relative mx-auto max-w-screen-xl flex flex-col">
             <div
-              className={`mx-auto max-w-5xl text-center h-screen  ${isAuthenticated ? "" : "lg:min-h-screen"
+              className={`mx-auto max-w-5xl text-center h-screen  ${isAuthenticated ? "" : "min-h-screen"
                 } flex items-center justify-center `}
               style={{
                 height: "100%",
