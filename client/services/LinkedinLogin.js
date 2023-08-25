@@ -177,7 +177,8 @@ const linkedinUserDetails = async (token, loaderFunction, handleSave) => {
               if (window.location.pathname === "/") {
                 window.location.href = "/";
               } else {
-                if (window.location.pathname === "dashboard") {
+                // if (window.location.pathname === "dashboard") {
+                  if(window.location.pathname.includes("/dashboard")){
                   handleSave();
                 } else {
                   window.location.href = "/dashboard";
