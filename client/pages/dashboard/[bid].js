@@ -15,20 +15,25 @@ import { getDateMonthYear, isMonthAfterJune, jsonToHtml } from "../../helpers/he
 import PreferencesModal from "../../modals/PreferencesModal";
 import useStore, { useBlogDataStore, useTabOptionStore, useThreadsUIStore,  } from "../../store/store";
 import { useGenerateState } from '../../store/appState'
-import {useSendSavedTimeOfUser} from '../../hooks/useSendSavedTimeOfUser'
+import {useSendSavedTimeOfUser} from '../../hooks/useSendSavedTimeOfUser';
+import Modal from "react-modal";
+import { CloseButtonIcon } from "../../components/localicons/localicons";
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", function (event) {
     event.stopImmediatePropagation();
   });
 }
 
-export default function Post() {
+export default function Post({typeIsRepurpose}) {
   const [pfmodal, setPFModal] = useState(false);
   const router = useRouter();
+  console.log(router);
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   console.log('ROUTER QUERY', router);
   const { bid, isPublished } = router.query;
   const [reference, setReference] = useState([]);
+  const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
+  const [disclaimerCheck, setDisclaimerCheck] = useState(false);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
   const { option, setOption } = useTabOptionStore();
   const { userTimeSave ,makeNullThoseTime} = useGenerateState();
@@ -57,7 +62,22 @@ export default function Post() {
         const finalObj = { ...localSaveVersionForThisObj, ...userSaveTimeDataWithBlogId };
         localStorage.setItem('userSaveTimeDataWithBlogId', JSON.stringify(finalObj));
         makeNullThoseTime();
+        
       }
+      console.log(typeIsRepurpose, 'typeIsRepurpose');
+        if(typeIsRepurpose===true){
+          const isDisclaimerShown = localStorage.getItem("isDisclaimerShown");
+          const disclaimerResponse = localStorage.getItem("disclaimerResponse");
+          if (isDisclaimerShown === "true") {
+            if (disclaimerResponse === "yes") {
+              setShowDisclaimerModal(false);
+            } else {
+              setShowDisclaimerModal(true);
+            }
+          } else {
+            setShowDisclaimerModal(true);
+          }
+        }
     },
   });
   const [ideas, setIdeas] = useState([]);
@@ -105,6 +125,13 @@ export default function Post() {
     const htmlDoc = jsonToHtml(aa);
     setEditorText(htmlDoc);
   }, [data]);
+
+  const handleDisclaimerClick = () => {
+    localStorage.setItem("isDisclaimerShown", "true");
+    localStorage.setItem("disclaimerResponse", disclaimerCheck ? "yes" : "no");
+    setShowDisclaimerModal(false);
+  };
+  const handleDisclaimerPopup = () => setDisclaimerCheck((prev) => !prev);
 
   var getToken;
   if (typeof window !== "undefined") {
@@ -299,6 +326,70 @@ export default function Post() {
           <></>
         )}
         <ToastContainer />
+        <Modal
+          isOpen={showDisclaimerModal}
+          onRequestClose={() => setShowDisclaimerModal(false)}
+          ariaHideApp={false}
+          className="w-[100%] sm:w-[38%] max-h-[95%]"
+          style={{
+            overlay: {
+              backgroundColor: "rgba(0,0,0,0.5)",
+              zIndex: "9999",
+            },
+            content: {
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              right: "auto",
+              border: "none",
+              background: "white",
+              // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+              borderRadius: "8px",
+              // width: "100%",
+              bottom: "",
+              zIndex: "999",
+              marginRight: "-50%",
+              transform: "translate(-50%, -50%)",
+              padding: "30px",
+              paddingBottom: "0px",
+            },
+          }}
+        >
+          <button className="absolute right-[35px]" onClick={() => {
+            setShowDisclaimerModal(false);
+            localStorage.setItem("isDisclaimerShown", "true");
+            localStorage.setItem("disclaimerResponse", "no");
+          }}>
+            <CloseButtonIcon />
+          </button>
+          <div className="">
+            <h2 className="text-2xl mb-4">Improvement Tip 💡</h2>
+            <p className="text-gray-700 mb-4">
+              {`To further improve the AI-generated Lille Article, to update it as per your likings you 
+can edit the content, remove some of the used ideas that you don't want and/or generate and add fresh ideas, 
+or use a combination of used and freah ideas to update the article content.
+You can add your own image, click on the image and use image options icon.`}
+            </p>
+            <div className='flex flex-col lg:flex-row justify-between'>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  className="form-checkbox"
+                  checked={disclaimerCheck}
+                  onChange={handleDisclaimerPopup}
+                />
+                <span className="text-gray-700">
+                  {"Don't show me this popup again"}
+                </span>
+              </label>
+              <div className="my-4 self-end lg:self-auto">
+                <button className="cta-invert" onClick={handleDisclaimerClick}>
+                  Ok Got it
+                </button>
+              </div>
+            </div>
+          </div>
+        </Modal>
         {
           isPayment && <ReactConfetti
             width={windowWidth}
@@ -385,3 +476,17 @@ export default function Post() {
     </>
   );
 }
+
+
+export const getServerSideProps = async (context) => {
+  console.log(context);
+  console.log("server");
+  const { type } = context.query;
+  console.log(type);
+  const randomLiveUsersCount = 40;
+  return {
+    props: {
+      typeIsRepurpose : type === 'repurpose' ? true : false,
+    },
+  };
+};
