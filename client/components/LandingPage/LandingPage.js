@@ -349,7 +349,7 @@ const LandingPage = () => {
                 <div className="h-[136px] flex-col justify-center items-center gap-6 inline-flex lg:px-0 px-2">
                     <div className="self-stretch h-14 text-center text-white text-[28px] lg:text-[48px] font-bold leading-10 tracking-wide">
                         <span className="hidden lg:block"> Remarkable Features </span>
-                        <span className="lg:hidden text-[28px]"> Why Choose Us</span>
+                        {/* <span className="lg:hidden text-[28px]"> Why Choose Us</span> */}
                     </div>
                     <div className="lg:w-[803.89px] opacity-80 text-center text-white text-[16px] font-normal leading-7 tracking-wide">
                         Lille is a unique platform dedicated to enriching your online
