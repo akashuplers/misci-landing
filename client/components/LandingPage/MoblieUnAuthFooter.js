@@ -43,9 +43,9 @@ const MoblieUnAuthFooter = () => {
           <div className="w-full flex flex-col items-start">
             <h6 className="mb-4 flex justify-start font-semibold  ">Company</h6>
             <p className="mb-4">
-              <Link href="/#whyChooseUs" className="text-white-600 hover:opacity-90">
+              {/* <Link href="/#whyChooseUs" className="text-white-600 hover:opacity-90">
                 Why Choose us
-              </Link>
+              </Link> */}
             </p>
             {/* <p className="mb-4">
               <Link href="/#testimonial" className="text-white-600 hover:opacity-90 ">

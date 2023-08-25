@@ -14,7 +14,7 @@ import { meeAPI } from "../../graphql/querys/mee";
 import { getDateMonthYear, isMonthAfterJune, jsonToHtml } from "../../helpers/helper";
 import PreferencesModal from "../../modals/PreferencesModal";
 import useStore, { useBlogDataStore, useTabOptionStore, useThreadsUIStore,  } from "../../store/store";
-import { useGenerateState } from '../../store/appState'
+import { useGenerateErrorState, useGenerateState } from '../../store/appState'
 import {useSendSavedTimeOfUser} from '../../hooks/useSendSavedTimeOfUser';
 import Modal from "react-modal";
 import { CloseButtonIcon } from "../../components/localicons/localicons";
@@ -37,6 +37,7 @@ export default function Post({typeIsRepurpose}) {
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
   const { option, setOption } = useTabOptionStore();
   const { userTimeSave ,makeNullThoseTime} = useGenerateState();
+  const {messages:ErrorMessages, clearAllMessages:ClearErrorMessages} =useGenerateErrorState();
  const {response, error: errorLoadingForTime, loading:LoadingForTimeSave, sendSavedTime}= useSendSavedTimeOfUser();
   const { data, loading, error,
     refetch: refetchBlog
@@ -53,7 +54,8 @@ export default function Post({typeIsRepurpose}) {
           blogId: bid,
           save: false,
         }
-        sendSavedTime(bid, userTimeSave, 'agree', false);
+        const timeSaves = `${userTimeSave}:00`;
+        sendSavedTime(bid, timeSaves, 'agree', false);
         const localSaveVersionForThis = localStorage.getItem('userSaveTimeDataWithBlogId');
         var localSaveVersionForThisObj = {};
         if (localSaveVersionForThis !== null) {
@@ -65,19 +67,25 @@ export default function Post({typeIsRepurpose}) {
         
       }
       console.log(typeIsRepurpose, 'typeIsRepurpose');
-        if(typeIsRepurpose===true){
-          const isDisclaimerShown = localStorage.getItem("isDisclaimerShown");
-          const disclaimerResponse = localStorage.getItem("disclaimerResponse");
-          if (isDisclaimerShown === "true") {
-            if (disclaimerResponse === "yes") {
-              setShowDisclaimerModal(false);
-            } else {
-              setShowDisclaimerModal(true);
-            }
+      if(typeIsRepurpose===true){
+        const isDisclaimerShown = localStorage.getItem("isDisclaimerShown");
+        const disclaimerResponse = localStorage.getItem("disclaimerResponse");
+        if (isDisclaimerShown === "true") {
+          if (disclaimerResponse === "yes") {
+            setShowDisclaimerModal(false);
           } else {
             setShowDisclaimerModal(true);
           }
+        } else {
+          setShowDisclaimerModal(true);
         }
+      }
+      if(ErrorMessages && ErrorMessages.length>0) {
+        ErrorMessages.forEach(er => {
+          toast.error(er);
+        })
+        ClearErrorMessages(); 
+      }
     },
   });
   const [ideas, setIdeas] = useState([]);
