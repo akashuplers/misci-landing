@@ -214,9 +214,9 @@ export default function Home({ payment, randomLiveUsersCount }) {
     });
     setShowingGenerateLoading(false);
   };
-  // useEffect(() => {
-  //   addFunction(handleGenerateReset);
-  // }, [blogLinks]);
+  useEffect(() => {
+    addFunction(handleGenerateReset);
+  }, [blogLinks]);
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
