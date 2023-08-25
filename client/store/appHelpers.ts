@@ -153,6 +153,7 @@ export function addObjectToSearchStore(obj: Obj, array: Obj[], isAuth: boolean =
   
   // check for total number of items of files, urls, keywords
   const objCount = array.filter((item) => item.type === obj.type).length;
+  
   // only allow 1 url and not more than that if not auth
   if (obj.type === 'url') {
     if (objCount >= 1 && !isAuth) {
@@ -160,6 +161,12 @@ export function addObjectToSearchStore(obj: Obj, array: Obj[], isAuth: boolean =
     }
   }
 
+  // user should not be able to add more than 3 urls
+  if (obj.type === 'url') {
+    if (objCount >= 3) {
+      return { data: array, errors: ['Maximum 3 URLs are allowed'] };
+    }
+  }
   if (objCount >= maxCapacity) {
     return { data: array, errors: ['Maximum 6 items are allowed'] };
   }
@@ -209,7 +216,7 @@ export function addFilesToTheSearch(
   maxSpaceLength: number,
   isAuth: boolean = false,
 ): ResultForAddFilesToArray {
-  const maxCapacity = 6;
+  const maxCapacity = 3;
   const keywordLimit = 1;
 
   let remainingCapacity = maxCapacity - array.length;
@@ -218,7 +225,7 @@ export function addFilesToTheSearch(
  
   // Check if the keyword count exceeds the limit
   keywordCount = array.filter((item) => item.type === 'keyword').length;
-  const objType = array.filter((item) => item.type === 'file');
+  const objType = array.filter((item) => item.type === 'file').length;
   if (files.length === 0) {
     return { data: array, errors: ['No file selected'] };
   }
@@ -237,7 +244,12 @@ export function addFilesToTheSearch(
       return { data: array, errors: [`You can enter multiple File by signing up, as you are a guest limited to single file`] };
     }
   }
+
+  
   if (files.length > maxCapacity) {
+    return { data: array, errors: [`Maximum ${maxCapacity} items are allowed`] };
+  }
+  if(objType + files.length > maxCapacity) {
     return { data: array, errors: [`Maximum ${maxCapacity} items are allowed`] };
   }
   // }
@@ -325,18 +337,11 @@ export async function newGenerateApi(
     body: formdata,
     redirect: 'follow',
   };
-
-  try {
     const url = API_BASE_PATH + API_ROUTES.NEW_GENERATE_API;
     const response = await fetch(url, requestOptions);
     const result = await response.json();
     console.log(result);
     return result;
-  } catch (error) {
-    console.log('error', error);
-    //@ts-ignore
-    return error;
-  }
 }
 
 
