@@ -214,9 +214,9 @@ export default function Home({ payment, randomLiveUsersCount }) {
     });
     setShowingGenerateLoading(false);
   };
-  // useEffect(() => {
-  //   addFunction(handleGenerateReset);
-  // }, [blogLinks]);
+  useEffect(() => {
+    addFunction(handleGenerateReset);
+  }, [blogLinks]);
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
@@ -1617,7 +1617,7 @@ const RotatingText = React.memo(()=> {
     <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing lg:min-w-[900px]">
       Lille is your Content <TextTransitionEffect text={TEXTS2} />
       Co-Pilot
-      <div className="absolute right-0 md:right-[-10%]">
+      <div className="hidden lg:block absolute right-0 md:right-[-10%]">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="240"
