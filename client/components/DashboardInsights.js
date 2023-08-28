@@ -860,8 +860,8 @@ export default function DashboardInsights({
           Insights
         </h1>
         <div className="flex jusify-between gap-[1.25em]">
-          <p className="font-normal w-[100%] lg:w-[70%]">
-            Regenerate your content on the basis of selected used & fresh ideas.
+          <p className="font-normal text-base w-[100%] lg:w-[70%]">
+          Create your next draft on the basis of your edits and uploads.
           </p>
           <button
             className="cta flex items-center gap-2 self-start !py-2 !font-semibold"
@@ -982,7 +982,7 @@ export default function DashboardInsights({
               height={20}
               style={{ pointerEvents: "none" }}
             />
-            New Idea(s){" "}
+            Unused Idea(s){" "}
             {freshIdeas?.length > 0 && (
               <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
                 {freshIdeas?.length}
@@ -991,7 +991,7 @@ export default function DashboardInsights({
           </button>
           {(
             <>
-              <span className="mt-3 text-sm ml-3">Select all </span>
+              {/* <span className="mt-3 text-sm ml-3">Select all </span>
               <div
                 className={`md:w-10 md:h-5 w-7 h-2 flex items-center  rounded-full p-1 cursor-pointer mt-3 ${toggle == false ? 'bg-indigo-500' : 'bg-gray-300'} transform duration-300 ease-in-out`}
                 onClick={() => {
@@ -1005,7 +1005,7 @@ export default function DashboardInsights({
                     (toggle ? null : toggleClass)
                   }
                 ></div>
-              </div>
+              </div> */}
             </>
           )}
         </div>
