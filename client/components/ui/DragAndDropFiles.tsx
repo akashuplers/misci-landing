@@ -13,6 +13,10 @@ import useStore from '@/store/store';
 export const REPURPOSE_MAX_SIZE_MB = 7;
 export const REPURPOSE_MAX_SIZE = maxFileSize( REPURPOSE_MAX_SIZE_MB );
 
+const isUserAuthenticated = () => {
+  return localStorage.getItem('token') !== null;
+};
+
 const DragAndDropFiles = ({onClickHereButtonClick}:{
   onClickHereButtonClick:()=>void
 } ) => {
@@ -30,10 +34,18 @@ const DragAndDropFiles = ({onClickHereButtonClick}:{
   const { setShowFileStatus, setFileConfig}= useFileUploadStore()
 
   const onDrop = async (acceptedFiles: File[]) => {
+
+     if (!isUserAuthenticated()) {
+    if (acceptedFiles.length > 1) {
+      setErrors(["Guest user can add only 1 File, to add multiple files please sign up"]);
+      return;
+    }
+    // If the code reaches here, only one file was uploaded and you can proceed with that one.
+    acceptedFiles = acceptedFiles.slice(0, 1); // Keep only the first file
+  }
+
     const prevFiles = [...selectedFiles];
     setShowFileStatus(true);
-  
-    // Step 1: Initialize files with 0% progress
     const initialFiles = acceptedFiles.map((file) => ({
       name: file.name,
       size: String(file.size),
@@ -41,11 +53,7 @@ const DragAndDropFiles = ({onClickHereButtonClick}:{
       id: '',
     }));
     setFileConfig(initialFiles);
-
-    // Pause for user visibility
-    await wait(1000); // Adjust the pause time as needed
-  
-    // Step 2: Create file links and perform additional processing
+    await wait(1000);
     const newFilesNames = acceptedFiles.map((file) => file.name);
     const fileObj = newFilesNames.map((file, index) => createBlogLink(file, 'file', prevFiles.length + index + 1));
     const dataOfLinks = [...blogLinks];
@@ -59,8 +67,6 @@ const DragAndDropFiles = ({onClickHereButtonClick}:{
       setShowFileStatus(false);
       return;
     }
-
-    // Step 3: Update files with 50% progress
     const halfProcessedFiles = files?.map((file, index) => ({
       name: file.name,
       size: String(file.size),
@@ -75,11 +81,7 @@ const DragAndDropFiles = ({onClickHereButtonClick}:{
         id: file.name,
       });
     });
-  
-    // Pause for user visibility
-    await wait(2000); // Adjust the pause time as needed
-  
-    // Step 4: Update files with 100% progress
+    await wait(2000); 
     setBlogLinks(data);
     const fullyProcessedFiles = files?.map((file) => ({
       name: file.name,
@@ -96,19 +98,17 @@ const DragAndDropFiles = ({onClickHereButtonClick}:{
   };
   
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
+ const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    // accept: 'application/pdf,..docx, .txt, text/plain, text/rtf',
     accept: {
       'application/pdf': [],
       '.docx': [],
       '.txt': [],
       'text/plain': [],
       'text/rtf': [],
-    }
-    ,
-    maxFiles: REPURPOSE_MAX_SIZE,
-    multiple: true,
+    },
+    maxFiles: isUserAuthenticated() ? REPURPOSE_MAX_SIZE : 1,
+    multiple: isUserAuthenticated(),
   });
 
   return (
@@ -130,7 +130,6 @@ const DragAndDropFiles = ({onClickHereButtonClick}:{
                   </div>
               </div>
           </div>
-          {/*errors  */}
           <div className='flex items-center mt-2 justify-between'>
           <div className="flex flex-col ">
               {errors.map((error, index) => (
