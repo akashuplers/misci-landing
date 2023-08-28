@@ -21,7 +21,7 @@ let message = "Creating draft from URLs requires our AI's advanced generation, w
   if (type === "FILE") {
     message = "Creating draft from Your files requires Lille's advanced generation, which could take more than a minute.";
   } else if (type === "WEB") {
-    message = ""; // Don't show anything for WEB
+    message = "Backlinks are running.";
   }
   switch (step) {
     case "KEYWORD_COMPLETED":
@@ -34,9 +34,9 @@ let message = "Creating draft from URLs requires our AI's advanced generation, w
     case "FILE_UPLOAD_COMPLETED":
       return { percent: 53, message: `File are scanned successfully.`, maxPercent: 70 }
     case "CHAT_GPT_COMPLETED":
-      return { percent: 80, message: `Chat GPT is running.`, maxPercent: 90 }
+      return { percent: 80, message: `Lille is trying to find best drafts`, maxPercent: 90 }
     case "BACKLINK_COMPLETED":
-      return { percent: 100, message: `Backlink is running.`, maxPercent: 100 }
+      return { percent: 100, message: `Backlinks are running.`, maxPercent: 100 }
     default:
       return { percent: 0, message, maxPercent: 15 }
   }
@@ -132,7 +132,7 @@ const GenerateLoadingModal = ({
                   .typeString("Generating H1 & H2 headings")
                   .pauseFor(300)
                   .deleteAll()
-                  .typeString("Creating the article for you!!")
+                  .typeString("Creating the draft for you!")
                   .pauseFor(300)
                   .deleteAll()
                   .typeString(percentage.message)
