@@ -122,7 +122,7 @@ const DragAndDropFiles = ({onClickHereButtonClick}:{
                      <button className="px-2.5 py-[9px] rounded-lg border border-indigo-600 flex-col justify-start items-start gap-2.5 inline-flex">
                           <div className="justify-center items-center gap-2 inline-flex">
                           <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
-                              <div className="text-indigo-600 text-sm font-normal">Upload files</div>
+                              <div className="text-indigo-600 text-sm font-normal">Upload file</div>
                               <input {...getInputProps()} multiple accept={"application/pdf, .docx, .txt, text/plain, text/rtf"} />    
                           </div>
                       </button>
