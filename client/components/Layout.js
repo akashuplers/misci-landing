@@ -7,7 +7,7 @@ import useStore, { MeeDataStore, useUserData } from "../store/store";
 import Navbar from "./Navbar";
 import Sidebar from "./SidebarNav";
 
-export default function Layout({ children }) {
+export default function Layout({ blogId,  children }) {
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const updateAuthentication = useStore((state) => state.updateAuthentication);
   const { meeData, getUserData, updateUserData } = useUserData();
@@ -24,7 +24,7 @@ export default function Layout({ children }) {
 
   return (
     <Fragment>
-      {isAuthenticated ? <Sidebar /> : <Navbar isOpen={false} />}
+      {isAuthenticated ? <Sidebar /> : <Navbar isOpen={false} blogId={blogId} />}
       <div className={isAuthenticated ? `authenticatedLayout` : ''}>{children}</div>
     </Fragment>
   );
