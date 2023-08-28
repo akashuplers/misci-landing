@@ -458,7 +458,7 @@ const LandingPage = () => {
                                     <p className="text-center lg:text-left w-full opacity-70 text-slate-600 text-[16px] font-normal leading-7">
                                         Simply type in any keyword or topic of interest into the
                                         search input field and our website will present you with a
-                                        comprehensive list of articles, guides, and case studies
+                                        comprehensive list of draft, guides, and case studies
                                         that match your search query.
                                     </p>
                                 </div>
