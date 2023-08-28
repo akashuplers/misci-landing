@@ -875,7 +875,7 @@ export default function DashboardInsights({
             }
           >
             <RegenerateIcon />
-            Regenerate
+            Next Draft
           </button>
         </div>
 
@@ -982,7 +982,7 @@ export default function DashboardInsights({
               height={20}
               style={{ pointerEvents: "none" }}
             />
-            Fresh Idea(s){" "}
+            New Idea(s){" "}
             {freshIdeas?.length > 0 && (
               <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
                 {freshIdeas?.length}

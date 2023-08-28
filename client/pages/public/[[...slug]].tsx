@@ -550,7 +550,7 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
                 }
               }
             >
-              <span className="text-slate-600 text-base font-normal leading-7">Reset</span>
+              <span className="text-slate-600 text-base font-normal leading-7">Cancel</span>
             </button>
             <button className="px-[18px] py-1.5 bg-indigo-600 rounded-lg justify-start items-start gap-2 flex" onClick={handleCommentSend}>
               <span className="text-white text-base font-bold leading-7">
