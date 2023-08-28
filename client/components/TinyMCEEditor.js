@@ -81,6 +81,7 @@ export default function TinyMCEEditor({
   topic,
   isAuthenticated,
   editorText,
+  typeIsRepurpose,
   loading,
   blog_id,
   blogData: dataIncoming,
@@ -1453,8 +1454,10 @@ export default function TinyMCEEditor({
       {trailModal && (
         <TrialEndedModal setTrailModal={setTrailModal} topic={null} />
       )}
-      <TotalTImeSaved timeSaved={timeSaveForThisBlog} blogId={blog_id} 
-      modalIsOpen={showTimeSaveModal} setIsOpen={setShowTimeSaveModal}/>
+      {
+        typeIsRepurpose  && <TotalTImeSaved timeSaved={timeSaveForThisBlog} blogId={blog_id} 
+        modalIsOpen={showTimeSaveModal} setIsOpen={setShowTimeSaveModal}/>
+      }
       {/* <Modal
         isOpen={editingMode}
         onRequestClose={() => {

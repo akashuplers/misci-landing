@@ -71,6 +71,9 @@ const MainIdeaItem = ({ index, idea, ideas, setIdeas, handleUsedIdeas, handleCit
                 <input
                     type="checkbox"
                     className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                    style={{
+                        borderRadius: '2px'
+                    }}
                     checked={idea?.used}
                     onClick={handleCheckboxClick}
                 />

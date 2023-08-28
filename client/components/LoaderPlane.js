@@ -20,13 +20,13 @@ export default function LoaderPlane() {
             .typeString("Extracting Ideas from the sources.")
             .pauseFor(300)
             .deleteAll()
-            .typeString("Creating backlinks for your contents.")
+            .typeString("Creating backlinks for your content.")
             .pauseFor(300)
             .deleteAll()
             .typeString("Generating H1 & H2 headings")
             .pauseFor(300)
             .deleteAll()
-            .typeString("Creating the blog for you!!")
+            .typeString("Creating the article for you!!")
             .pauseFor(300)
             .start();
         }}

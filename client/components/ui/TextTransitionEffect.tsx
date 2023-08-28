@@ -14,8 +14,8 @@ export const TextTransitionEffect = ({ text } : Props) => {
       return () => clearTimeout(intervalId);
     }, []);
   
-    return <span  style={{ color: "white"  , backgroundColor: "var(--primary-orange)" , padding: "0.5rem" , borderRadius: "0.5rem"
-    }} className="">
+    return <span  style={{ color: "white" , minWidth: '265px'  , backgroundColor: "var(--primary-orange)" , padding: "0.5rem" , borderRadius: "0.5rem"
+    }} className="flex items-center justify-center">
     <TextTransition springConfig={presets.gentle}>
       <span className="">
         {text[index % text.length] =='Writing' ?
