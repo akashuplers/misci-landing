@@ -123,7 +123,7 @@ const DragAndDropFiles = ({onClickHereButtonClick}:{
                           <div className="justify-center items-center gap-2 inline-flex">
                           <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
                               <div className="text-indigo-600 text-sm font-normal">Upload files</div>
-                              <input {...getInputProps()} accept={"application/pdf, .docx, .txt, text/plain, text/rtf"} />    
+                              <input {...getInputProps()} multiple accept={"application/pdf, .docx, .txt, text/plain, text/rtf"} />    
                           </div>
                       </button>
                       </Tooltip>
