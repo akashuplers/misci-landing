@@ -21,7 +21,7 @@ let message = "Creating draft from URLs requires Lille's advanced generation, wh
   if (type === "FILE") {
     message = "Creating draft from Your files requires Lille's advanced generation, which could take more than a minute.";
   } else if (type === "WEB") {
-    message = "Backlinks are running.";
+    message = "Creating your draft.";
   }
   switch (step) {
     case "KEYWORD_COMPLETED":
