@@ -66,15 +66,7 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
       const creatableOption = createOption(inputValue, elementId, inputLength, validateType);
       const {data: newBlogLinks, errors} = addObjectToSearchStore(creatableOption, value, isAuthenticated);
       console.log(newBlogLinks, errors);
-      // if(errors.length > 0){
-      //   errors.forEach((error: any) => {
-      //     toast.error(error);
-      //   });
-      //   return;
-      // }
       const setOfErrors = new Set(errors);
-      // make of set
-
       const setOfErrorsArray = Array.from(setOfErrors);
       setErrors(setOfErrorsArray);
       console.log(setOfErrorsArray);

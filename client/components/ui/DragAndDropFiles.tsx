@@ -14,7 +14,7 @@ export const REPURPOSE_MAX_SIZE_MB = 7;
 export const REPURPOSE_MAX_SIZE = maxFileSize( REPURPOSE_MAX_SIZE_MB );
 
 const isUserAuthenticated = () => {
-  return localStorage.getItem('token') !== null;
+  return localStorage.getItem('token') !== null && localStorage.getItem('token') !== undefined;
 };
 
 const DragAndDropFiles = ({onClickHereButtonClick}:{
@@ -32,6 +32,7 @@ const DragAndDropFiles = ({onClickHereButtonClick}:{
   const addBlogLink = useBlogLinkStore((state) => state.addBlogLink);
   const removeBlogLink = useBlogLinkStore((state) => state.removeBlogLink);
   const { setShowFileStatus, setFileConfig}= useFileUploadStore()
+console.log(isUserAuthenticated() , "token loged")
 
   const onDrop = async (acceptedFiles: File[]) => {
 
@@ -84,6 +85,9 @@ const DragAndDropFiles = ({onClickHereButtonClick}:{
       });
     });
     await wait(2000); 
+    // if(isUserAuthenticated()){
+    //   file
+    // }
     setBlogLinks(data);
     const fullyProcessedFiles = files?.map((file) => ({
       name: file.name,
@@ -124,7 +128,7 @@ const DragAndDropFiles = ({onClickHereButtonClick}:{
                      <button className="px-2.5 py-[9px] rounded-lg border border-indigo-600 flex-col justify-start items-start gap-2.5 inline-flex">
                           <div className="justify-center items-center gap-2 inline-flex">
                           <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
-                              <div className="text-indigo-600 text-sm font-normal">Upload file</div>
+                              <div className="text-indigo-600 text-sm font-normal" onClick={()=> !isUserAuthenticated() && }>Upload file</div>
                               <input {...getInputProps()} multiple={isUserAuthenticated() ? true : false} accept={"application/pdf, .docx, .txt, text/plain, text/rtf"} />    
                           </div>
                       </button>
@@ -134,6 +138,9 @@ const DragAndDropFiles = ({onClickHereButtonClick}:{
           </div>
           <div className='flex items-center mt-2 justify-between'>
           <div className="flex flex-col ">
+              {selectedFiles.length > 1 && !isUserAuthenticated() && (
+                 <div className="text-red-500 text-left text-sm font-normal">{errors[0]}</div>)
+              }
               {errors.map((error, index) => (
                   <div key={index} className="text-red-500 text-left text-sm font-normal">{error}</div>
               ))}
