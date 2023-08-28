@@ -912,6 +912,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
                 setValue={setBlogLinks}
                 setShowRepourposeError={setShowRepourposeError}
               />
+           <div>{!isAuthenticated && blogLinks.length > 1 && <div className="text-xs text-red-500 mt-2">You can only upload 1 URL as a guest user</div>}</div>
         </>
       ),
     },
@@ -935,16 +936,16 @@ export default function Home({ payment, randomLiveUsersCount }) {
         <>
           <div className="flex items-center mt-2  scrollbar-thumb-indigo-600 scrollbar-corner-inherit rounded-full scroll-m-1 py-2 scrollbar-thin scrollbar-track-gray-100 overflow-x-scroll gap-2">
             {/* <FileChipIcon fileName="index.tsx" fileSize="5mb" /> */}
-            {filesNames.map((fileName, index) => {
+      {!isAuthenticated && filesNames.length > 1? (<FileChipIcon fileName={filesNames[0].name} fileSize="5mb" /> ) :  (<> {filesNames.map((fileName, index) => {
               return (
                 <FileChipIcon key={index} fileName={fileName.name} fileSize="5mb" onCrossClick={
                   () => { removeSelectedFileFromBothStores(fileName.id) }
                 } />
               );
-            })}
+            })}</>)}
           </div>
           <DragAndDropFiles blogLinks={blogLinks} setBlogLinks={setBlogLinks} onClickHereButtonClick={() => setShowGDriveModal(true)}/>
-          
+           <div>{!isAuthenticated && filesNames.length > 1 && <div className="text-sm text-red-500 mt-2 relative -top-[6.5vh] text-left">You can only upload 1 file as a guest user</div>}</div>
           {
             showFileStatus && (
               <div className="flex items-center justify-center  my-2 gap-2 max-w-full min-w-full flex-wrap">

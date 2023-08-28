@@ -438,10 +438,10 @@ const LandingPage = () => {
                             works
                         </span>
                     </div>
-                    <div className="opacity-70 text-center text-slate-600 text-[16px] font-normal leading-7">
+                    {/* <div className="opacity-70 text-center text-slate-600 text-[16px] font-normal leading-7">
                         Boost your engagement, increase your followers, and drive more
                         traffic to your website with optimized social media posts.
-                    </div>
+                    </div> */}
                 </div>
                 <div className="flex-col justify-start items-start gap-10 flex">
                     <div className="justify-start items-center gap-[117px] inline-flex">
