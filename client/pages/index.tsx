@@ -1119,6 +1119,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
             showGenerateLoadingModal={showingGenerateLoading}
             setShowGenerateLoadingModal={setShowingGenerateLoading}
             stepStatus={subsData?.stepCompletes.step}
+            type={countByType.lengthOFiles > 0 || countByType.lengthOfUrls > 0 ? countByType.lengthOfUrls > 0 ? 'URL' : "FILE" : "WEB"}
             showBackButton={countByType.lengthOFiles > 0 || countByType.lengthOfUrls > 0}
           />
         )}
