@@ -545,7 +545,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
         const errorMessages = [];
 
         if (unprocessedUrlsFR?.length > 0) {
-          const msgForUrl = 'Host has denied the extraction from these URLs. Please try again or use different URLs: ' + unprocessedUrlsFR.join(', ');
+          const msgForUrl = 'Host has denied the extraction from these URLs. You can try again or use different URLs: ' + unprocessedUrlsFR.join(', ');
           errorMessages.push(msgForUrl);
         }
 
