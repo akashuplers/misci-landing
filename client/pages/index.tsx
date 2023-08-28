@@ -873,6 +873,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
       return {
         id: link.id,
         name: link.value,
+        size: link.size,
       };
     });
   console.log(filesNames);
@@ -935,11 +936,12 @@ export default function Home({ payment, randomLiveUsersCount }) {
         <>
           <div className="flex items-center mt-2  scrollbar-thumb-indigo-600 scrollbar-corner-inherit rounded-full scroll-m-1 py-2 scrollbar-thin scrollbar-track-gray-100 overflow-x-scroll gap-2">
             {/* <FileChipIcon fileName="index.tsx" fileSize="5mb" /> */}
-      {!isAuthenticated && filesNames.length > 1? (<FileChipIcon fileName={filesNames[0].name} fileSize="5mb" onCrossClick={
+    {console.log(filesNames)}
+      {!isAuthenticated && filesNames.length > 1? (<FileChipIcon fileName={filesNames[0].name} fileSize="" onCrossClick={
                   () => { removeSelectedFileFromBothStores(filesNames[0].id) }
                 } /> ) :  (<> {filesNames.map((fileName, index) => {
               return (
-                <FileChipIcon key={index} fileName={fileName.name} fileSize="5mb" onCrossClick={
+                <FileChipIcon key={index} fileName={fileName.name} fileSize="" onCrossClick={
                   () => { removeSelectedFileFromBothStores(fileName.id) }
                 } />
               );

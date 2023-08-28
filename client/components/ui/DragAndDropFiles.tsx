@@ -76,6 +76,7 @@ console.log(isUserAuthenticated() , "token loged")
       percentage: 50,
       id: data.filter((link) => link.label === file.name)[0].id,
     }));
+
     halfProcessedFiles && setFileConfig(halfProcessedFiles);
   
     files?.forEach((file) => {
@@ -85,9 +86,8 @@ console.log(isUserAuthenticated() , "token loged")
       });
     });
     await wait(2000); 
-    // if(isUserAuthenticated()){
-    //   file
-    // }
+
+    console.log(data)
     setBlogLinks(data);
     const fullyProcessedFiles = files?.map((file) => ({
       name: file.name,
