@@ -540,27 +540,24 @@ export default function Home({ payment, randomLiveUsersCount }) {
         console.log(response);
         // addMessages()'
         const unprocessedUrlsFR = data?.unprocessedUrls;
-        for (let index = 0; index < unprocessedUrlsFR.length; index++) {
-          unprocessedUrlsFR[index] = unprocessedUrlsFR[index] + ' URL unable to process';
-        }
-        const unprocessedFiles = data?.unprocessedFiles;  
-        for (let index = 0; index < unprocessedFiles.length; index++) {
-          unprocessedFiles[index] = unprocessedFiles[index] + ' File unable to process';
-        }
-        const allErrors = [];
+        const unprocessedFiles = data?.unprocessedFiles;
+
+        const errorMessages = [];
 
         if (unprocessedUrlsFR?.length > 0) {
-          allErrors.push(...unprocessedUrlsFR);
+          const msgForUrl = 'Host has denied the extraction from these URLs. Please try again or use different URLs: ' + unprocessedUrlsFR.join(', ');
+          errorMessages.push(msgForUrl);
         }
 
         if (unprocessedFiles?.length > 0) {
-          allErrors.push(...unprocessedFiles);
+          const fileErrors = unprocessedFiles.map(file => file + ' - File unable to process');
+          errorMessages.push(...fileErrors);
         }
 
-        console.log(allErrors, 'unprocessed', unprocessedUrlsFR, unprocessedFiles, data?.unprocessedUrls, data?.unprocessedFiles);
+        console.log(errorMessages);
 
-        if (allErrors.length > 0) {
-          addMessages(allErrors);
+        if (errorMessages.length > 0) {
+          addMessages(errorMessages);
         }
 
         console.log(response);
@@ -570,6 +567,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
             query: { type: TYPES_OF_GENERATE.REPURPOSE },
           }).then(() => {
             setShowingGenerateLoading(false);
+            handleGenerateReset()
           });
         }, 2000);
          
