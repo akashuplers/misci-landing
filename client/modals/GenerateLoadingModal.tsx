@@ -21,7 +21,7 @@ let message = "Creating draft from URLs requires our AI's advanced generation, w
   if (type === "FILE") {
     message = "Creating draft from Your files requires Lille's advanced generation, which could take more than a minute.";
   } else if (type === "WEB") {
-    message = ""; // Don't show anything for WEB
+    message = "Backlinks are running.";
   }
   switch (step) {
     case "KEYWORD_COMPLETED":
