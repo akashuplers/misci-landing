@@ -224,7 +224,7 @@ export default function Post() {
       <Head>
         <title>{blogTitle}</title>
       </Head>
-      <Navbar isOpen={false} />
+      <Navbar isOpen={false} blogId={null}/>
       <div className="flex items-center justify-center w-full lg:max-w-[1056px] mx-auto flex-col ">
         <div className={styles.publishContainer} id="publishContainer"></div>
         <ShareLinkModal openModal={showShareModal} setOpenModal={setShareModal} blog_id={gqlData?.fetchBlog?._id} text={text} />
