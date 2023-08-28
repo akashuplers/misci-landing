@@ -1546,7 +1546,7 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
       message: "No keyword passed!"
     })
   }
-  if(!userId) {
+  if(!userId || userId == "null") {
     return res.status(400).send({
       type: "ERROR",
       message: "User Id missing!"
