@@ -66,7 +66,7 @@ import {
 // import { FacebookIcon, LinkedinIcon, TwitterIcon } from "react-share";
 import { FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 import { TextTransitionEffect } from "@/components/ui/TextTransitionEffect";
-import { Chip, FileChipIcon, FileUploadCard } from "@/components/ui/Chip";
+import { Chip, FileChipIcon, FileUploadCard, FloatingBalls } from "@/components/ui/Chip";
 import { InputData } from "@/types/type";
 import {
   newGenerateApi,
@@ -1361,7 +1361,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
                 ></div>
               </div>
             </div>
-            {!isAuthenticated && <LandingPage />}
+            {/* {!isAuthenticated && <LandingPage />} */}
           </div>
           <div className="absolute inset-x-0 top-[calc(100%-12rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
             <svg
@@ -1515,76 +1515,7 @@ const AIInputComponent = () => {
   );
 };
 
-export const FloatingBalls = ({ className }: { className?: string }) => {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="51"
-      height="51"
-      viewBox="0 0 51 51"
-      fill="none"
-      className={className}
-    >
-      <g filter="url(#filter0_d_2158_42436)">
-        <circle
-          cx="25.8967"
-          cy="21.3916"
-          r="15.07"
-          transform="rotate(-63.5145 25.8967 21.3916)"
-          fill="url(#paint0_linear_2158_42436)"
-        />
-      </g>
-      <defs>
-        <filter
-          id="filter0_d_2158_42436"
-          x="0.824219"
-          y="0.318359"
-          width="50.1445"
-          height="50.1465"
-          filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
-        >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
-          <feColorMatrix
-            in="SourceAlpha"
-            type="matrix"
-            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-            result="hardAlpha"
-          />
-          <feOffset dy="4" />
-          <feGaussianBlur stdDeviation="5" />
-          <feComposite in2="hardAlpha" operator="out" />
-          <feColorMatrix
-            type="matrix"
-            values="0 0 0 0 0.925 0 0 0 0 0.635938 0 0 0 0 0.669549 0 0 0 0.38 0"
-          />
-          <feBlend
-            mode="normal"
-            in2="BackgroundImageFix"
-            result="effect1_dropShadow_2158_42436"
-          />
-          <feBlend
-            mode="normal"
-            in="SourceGraphic"
-            in2="effect1_dropShadow_2158_42436"
-            result="shape"
-          />
-        </filter>
-        <linearGradient
-          id="paint0_linear_2158_42436"
-          x1="40.0358"
-          y1="4.03629"
-          x2="21.6639"
-          y2="35.8573"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stop-color="#4163FF" />
-          <stop offset="1" stop-color="#F9948C" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-};
+
 
 
 type KeywordInputProps = {

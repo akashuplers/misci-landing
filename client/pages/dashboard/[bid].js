@@ -337,7 +337,7 @@ export default function Post({typeIsRepurpose}) {
         )}
         <ToastContainer />
         <Modal
-          isOpen={showDisclaimerModal}
+          isOpen={false}
           onRequestClose={() => setShowDisclaimerModal(false)}
           ariaHideApp={false}
           className="w-[100%] sm:w-[38%] max-h-[95%]"
