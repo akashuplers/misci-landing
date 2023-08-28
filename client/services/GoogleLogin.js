@@ -120,7 +120,8 @@ export const signUpWithGoogle = (handleSave, blogId) => {
               if (window.location.pathname === "/") {
                 window.location.href = "/";
               } else {
-                if (window.location.pathname === "/dashboard") {
+                // if (window.location.pathname === "/dashboard") {
+                  if(window.location.pathname.includes("/dashboard")){
                   handleSave();
                   window.location.href = "/dashboard/" + blogId;
                 } else {

@@ -12,7 +12,7 @@ import Navbar from '../../components/Navbar';
 import Head from 'next/head';
 import LoaderPlane from '../../components/LoaderPlane';
 import { toast } from 'react-toastify';
-import { sendAComment, sendLikeToBlog } from '../../helpers/apiMethodsHelpers';
+import { fetchBlogData, sendAComment, sendLikeToBlog } from '../../helpers/apiMethodsHelpers';
 import { useEffect, useState } from 'react';
 import { jsonToHtml } from '../../helpers/helper';
 import styles from "../../styles/publish.module.css"
@@ -26,13 +26,20 @@ interface PageProps {
 authorSocialMedia: string
 authorUserName: string
 authorBlogId: string
+blogSlug: string
+blogData: {
+  image: string,
+  title: string,
+  description: string,
+  url: string
+}
 }
 
-function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
+function Page({ authorBlogId, authorUserName, authorSocialMedia, blogSlug, blogData }: PageProps) {
     // console.log(query);
-    const router = useRouter();
-    console.log(authorBlogId, authorUserName, authorSocialMedia)
-    const [data, setData] = useState("");
+  const router = useRouter();
+  console.log(authorBlogId, authorUserName, authorSocialMedia)
+  const [data, setData] = useState("");
   const [showShareModal, setShareModal] = useState(false);
   const [text, setText] = useState("");
   const [callBack, setCallBack] = useState();
@@ -40,6 +47,7 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
   const [showModalComment, setShowModalComment] = useState(false);
   const [blogTitle, setBlogTitle] = useState('');
   const [publishDate, setPublishDate] = useState<any>(null);
+  const [imageURL, setImageURL] = useState("");
   const {
     data: gqlData,
     loading,
@@ -104,6 +112,11 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
     ).tiny_mce_data;
     setBlogTitle(aa?.children[0].children[0].children[0])
     const html = jsonToHtml(aa);
+    const container  = document.createElement('div');
+    container.innerHTML = html;
+    const imgElement = container.querySelector('img');
+    console.log(imgElement?.src ? imgElement?.src : "no image url found");
+    setImageURL(imgElement?.src ?? "");
     setData(html);
   }, [gqlData]);
 
@@ -120,6 +133,7 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
         nullElement.parentNode.replaceChild(divElement, nullElement);
       }
       // get the first h3 tag
+      
       const h3Element = tempElement.querySelector('h3');
       var authorProfilePath = "";
       if (userData?.data.me.googleUserName) {
@@ -196,9 +210,21 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia }: PageProps) {
   return (
     <div className="bg-[#00000014] min-h-screen">
       <Head>
-      <title>{blogTitle}</title>
+        <meta name="title" content= {blogData.title + "- Lille"} />
+        <meta name="description" content={blogData.description} />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content={blogData.image} />
+        <meta property="og:url" content={blogData.url} />
+        <meta property="og:title" content={blogTitle + "- Lille"} />
+
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:title" content={blogTitle + "- Lille"} />
+        <meta property="twitter:image" content={blogData.image} />
+        <meta property="twitter:description" content={blogData.description} />
+      <title>{blogTitle} - Lille</title>
    </Head>
-      <Navbar isOpen={false} />
+      <Navbar blogId={null} isOpen={false} />
       <div className="flex items-center justify-center w-full lg:max-w-[1056px] mx-auto flex-col ">
         <div className={styles.publishContainer} id="publishContainer"></div>
         <ShareLinkModal openModal={showShareModal} setOpenModal={setShareModal} blog_id={gqlData.fetchBlog._id} text={text} />
@@ -500,7 +526,6 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
                 </div>
                 </>
           }
-          <h4 className="text-black text-base font-normal">{'Write a comment'}</h4>
             <TextareaAutosize
             maxRows={5}
             value={commmentValue}
@@ -524,7 +549,7 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
                 }
               }
             >
-              <span className="text-slate-600 text-base font-normal leading-7">Reset</span>
+              <span className="text-slate-600 text-base font-normal leading-7">Cancel</span>
             </button>
             <button className="px-[18px] py-1.5 bg-indigo-600 rounded-lg justify-start items-start gap-2 flex" onClick={handleCommentSend}>
               <span className="text-white text-base font-bold leading-7">
@@ -627,13 +652,36 @@ const InputBox = ({
     </div>
   </div>
 }
-Page.getInitialProps = (content: NextPageContext): PageProps => {
-    // Access query parameter on the server and pass it as a prop
-    console.log(content.query)
-    const authorSocialMedia = content.query.slug?.[0] ?? '';
-    const authorUserName = content.query.slug?.[1] ?? '';
-    const authorBlogId  = content.query.slug?.[2] ?? '';
-    return { authorBlogId, authorUserName, authorSocialMedia} 
+Page.getInitialProps = async (content: NextPageContext): Promise<PageProps> => {
+  console.log(content.query);
+
+  const req = content.req;
+  // Construct the server URL based on the incoming request
+  const serverProtocol = req?.headers['x-forwarded-proto'] || 'http';
+  const serverHost = req?.headers['x-forwarded-host'] || req?.headers.host;
+  const serverUrl = `${serverProtocol}://${serverHost}`;
+  console.log(serverUrl);
+  const authorSocialMedia = content.query.slug?.[0] ?? '';
+  const authorUserName = content.query.slug?.[1] ?? '';
+  const blogSlug  = content.query.slug?.[2] ?? '';
+  const blogSlugH2 = content.query.slug?.[3] ?? '';
+  const authorBlogId = content.query.slug?.[4] ?? '';
+  const dataFromGetBlogByIdAPI = await fetchBlogData(authorBlogId);
+  const wordpressData = dataFromGetBlogByIdAPI?.fetchBlog?.publish_data.find((pd) => pd.platform === "wordpress"
+  ).tiny_mce_data;
+  console.log(dataFromGetBlogByIdAPI);
+
+  const title = wordpressData?.children[0].children[0].children[0];
+  const image = wordpressData?.children[1].children[0].children[0].attributes.src;
+  const description = wordpressData?.children[4].children[0];
+
+  const url = `${serverUrl}/public/${authorSocialMedia}/${authorUserName}/${blogSlug}/${blogSlugH2}/${authorBlogId}`;
+  const blogData = {
+    title, image, description, url
+  }
+  console.log(blogData);
+  return { authorBlogId, authorUserName, blogSlug, authorSocialMedia, blogData } 
 };
+ 
 
 export default Page

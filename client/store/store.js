@@ -4,6 +4,7 @@ import { meeGetState } from "@/graphql/querys/mee";
 import axios from "axios";
 import {create} from "zustand";
 
+
 const useStore = create((set) => ({
   creditLeft: "",
   keyword: "",
@@ -73,6 +74,23 @@ export default useStore;
 export const useByMeCoffeModal = create((set) => ({
   isOpen: false,
   toggleModal: () => set((state) => ({ isOpen: !state.isOpen })),
+}));
+
+export const useClientUserStore = create((set) => ({
+  token: "",
+  userID : "",
+  isUserAuthenticated: false,
+  loadingConfigs: () =>  {
+    const token = localStorage.getItem("token");
+    const userID = localStorage.getItem("userId");
+    const tempID = localStorage.getItem("tempId");
+    set({ isUserAuthenticated: token && token !== "undefined" && token !== "null" });
+    set({ token: token  && token !== "undefined" && token !== "null" ? token : '' });
+    set({ userID: userID  && userID !== "undefined" && userID !== "null" ? userID : tempID});
+  },
+  addValues: (token, userID) => {
+    set({ token: token , userID: userID });
+  }
 }));
 
 export const useTwitterThreadALertModal = create((set) => ({

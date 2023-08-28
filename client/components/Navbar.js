@@ -10,7 +10,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Navbar({ isOpen }) {
+export default function Navbar({ blogId=null, isOpen }) {
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   var Gbid;
@@ -28,7 +28,7 @@ export default function Navbar({ isOpen }) {
           modalIsOpen={authenticationModalOpen}
           setModalIsOpen={setAuthenticationModalOpen}
           handleSave={() => (window.location = "/")}
-          bid={Gbid}
+          bid={blogId ? blogId : Gbid}
         />
         <div className="lg:hidden sticky top-0 z-50 bg-white backdrop-filter backdrop-blur-lg bg-opacity-30">
           <MobileNavigation

@@ -18,6 +18,7 @@ interface FileStoreState {
   selectedFiles: IRePurposeFileState[];
   setSelectedFiles: (files: IRePurposeFileState[]) => void;
   addSelectedFile: (file: IRePurposeFileState) => void;
+  addMultipleSelectedFiles: (files: IRePurposeFileState[]) => void;
   removeSelectedFile: (id: string) => void;
 }
 
@@ -26,6 +27,7 @@ export const useRepurposeFileStore = create<FileStoreState>((set) => ({
   selectedFiles: [],
   setSelectedFiles: (files) => set({ selectedFiles: files }),
   addSelectedFile: (file) => set((state) => ({ selectedFiles: [...state.selectedFiles, file] })),
+  addMultipleSelectedFiles: (files) => set((state) => ({ selectedFiles: [...state.selectedFiles, ...files] })),
   removeSelectedFile: (id) => set((state) => ({ selectedFiles: state.selectedFiles.filter((file) => file.id !== id) })),
 }));
 
@@ -220,4 +222,75 @@ export const useTotalSavedTimeStore = create<TotalSavedTimeState>((set) => ({
       set({ error: error.message, isLoading: false });
     }
   },
+}));
+
+interface FileUploadState {
+  showFileStatus: boolean;
+  setShowFileStatus: (show: boolean) => void;  
+  setFileConfig: (newFileData: FileType[]) => void;
+  uploadedFilesData : FileType[]; 
+}
+export interface FileType {
+  name: string;
+  size: string;
+  id:string;
+  percentage: number;
+}
+
+export const useFileUploadStore = create<FileUploadState>((set) => ({
+  showFileStatus: false,
+  setShowFileStatus: (show) => set({ showFileStatus: show }),
+  uploadedFilesData : [],
+  setFileConfig: (newFileData) => set({ uploadedFilesData: newFileData }),
+}));
+
+interface  GenerateState {
+  nodeResponseTime: number;
+  pythonResponseTime: number;
+  userTimeSave: number;
+  updateTime : (nodeTime: number, pythonTime: number, time:number) => void;
+  makeNullThoseTime: () => void;
+}
+
+const DEFAULT_TIME_MULTIPLE = 30;
+const MAX_TIME_MULTIPLE = 120;
+export const useGenerateState = create<GenerateState>((set) => ({ 
+  nodeResponseTime: 0,
+  pythonResponseTime: 0,
+  userTimeSave: 0,
+  updateTime: (nodeTime, pythonTime, time) => set({
+    nodeResponseTime: nodeTime,
+    pythonResponseTime: pythonTime,
+    userTimeSave: time ===0 ? time*DEFAULT_TIME_MULTIPLE > MAX_TIME_MULTIPLE ? MAX_TIME_MULTIPLE : time*DEFAULT_TIME_MULTIPLE : DEFAULT_TIME_MULTIPLE
+   }),
+  makeNullThoseTime: () => set({
+    nodeResponseTime: 0,
+    pythonResponseTime: 0,
+    userTimeSave: 0,
+   }),
+}));
+
+interface GenerateErrorState{
+  messages:string[],
+  addMessages: (message: string[]) => void;
+  clearAllMessages: () => void;
+}
+
+export const useGenerateErrorState = create<GenerateErrorState>((set) => ({ 
+messages : [],
+addMessages: (message) => set({messages: [...message]}),
+clearAllMessages: () => set({messages: []}),
+}));
+
+
+interface GlobalBlogID {
+  blogID: string;
+  setBlogID: (id: string) => void;
+  makeBlogIDNull: () => void;
+}
+
+export const useGlobalBlogID = create<GlobalBlogID>((set) => ({ 
+  blogID : '',
+  setBlogID: (id) => set({blogID: id}),
+  makeBlogIDNull: () => set({blogID: ''}),
 }));

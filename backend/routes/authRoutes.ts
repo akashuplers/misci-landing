@@ -8,11 +8,16 @@ import { createAccessToken, createRefreshToken } from "../utils/accessToken";
 import { validateRegisterInput, validateLoginInput, validateUpdateInput, validateSupportInput } from "../validations/Validations";
 import { encodeURIfix } from "../utils/encode";
 import { authMiddleware } from "../middleWare/authToken";
-import { daysBetween, diff_hours, getDateString, getTimeStamp, monthDiff, timeFromMins, timeToMins } from "../utils/date";
+import { daysBetween, diff_hours, diff_minutes, getDateString, getTimeStamp, monthDiff, timeFromMins, timeToMins } from "../utils/date";
 import { verify } from "jsonwebtoken";
 import { sendContributionEmail, sendEmails, sendForgotPasswordEmail } from "../utils/mailJetConfig";
-import { assignTweetQuota, fetchUser, publishBlog, updateUserCredit } from "../graphql/resolver/blogs/blogsRepo";
+import { assignTweetQuota, blogGeneration, fetchArticleById, fetchArticleUrls, fetchUser, publishBlog, updateUserCredit } from "../graphql/resolver/blogs/blogsRepo";
 import { ChatGPT } from "../services/chatGPT";
+import { Python } from "../services/python";
+import { publish } from "../utils/subscription";
+const multer = require("multer");
+const inMemoryStorage = multer.memoryStorage();
+const mulitUploadStrategy = multer({ storage: inMemoryStorage });
 const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcrypt');
@@ -1522,6 +1527,355 @@ router.post('/request-trial', async (req: any, res: any) => {
   })
 })
 
+router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], async (req: any, res: any) => {
+  let startRequest = new Date()
+  const db = req.app.get('db')
+  console.log(req.body)
+  let {keyword, article_ids: articleIds, keywords, urls, tones, user_id: userId} = req.body
+  let files = req.files
+  let combinedArticleIds: string[] = []
+  // let keyword = args.options.keyword
+  // let articleIds: any[] = args.options.article_ids
+  // let keywords = args.options.keywords
+  // let uploads = args.options.uploads
+  // let urls = args.options.urls
+  // let tones = args.options.tones
+  if(!keyword?.length && !keywords?.length) {
+    return res.status(400).send({
+      type: "ERROR",
+      message: "No keyword passed!"
+    })
+  }
+  if(!userId || userId == "null") {
+    return res.status(400).send({
+      type: "ERROR",
+      message: "User Id missing!"
+    })
+  }
+  const user = req.user
+  console.log(tones, files)
+  let userDetails = null
+  if(user && Object.keys(user).length) {
+    userDetails = await fetchUser({id: user.id, db})
+    if(!userDetails) {
+      return res.status(400).send({
+        type: "ERROR",
+        message: "@No user found"
+      })
+    }
+    if(userDetails.credits <= 0) {
+      return res.status(400).send({
+        type: "ERROR",
+        message: "@Credit exhausted"
+      })
+    }
+  }
+  if((urls?.length > 1 || files?.length > 1) && (!user || !Object.keys(user).length)) {
+    return res.status(400).send({
+      type: "ERROR",
+      message: "User not authorized!"
+    })
+  }
+  let refUrls: {
+      url: string
+      source: string
+  }[] = []
+  let pythonStart = new Date()
+  const cachedBlogData = await db.db('lilleBlogs').collection('cachedBlogs').find({keyword}).sort({date: -1}).toArray()
+  console.log(cachedBlogData, "cachedBlogData")
+  if(cachedBlogData.length) {
+      const cachedBlogIdeaData = await db.db('lilleBlogs').collection('cachedBlogIdeas').findOne({blog_id: new ObjectID(cachedBlogData[0]._id)})
+      delete cachedBlogData[0]._id
+      delete cachedBlogIdeaData._id
+      delete cachedBlogIdeaData.blog_id
+      const updatedBlogs = {
+          ...cachedBlogData[0],
+          userId: new ObjectID(userId),
+          date: getTimeStamp(),
+          updatedAt: getTimeStamp(),
+      }
+      const updatedBlogIdeas = cachedBlogIdeaData
+      const insertBlog = await db.db('lilleBlogs').collection('blogs').insertOne(updatedBlogs)
+      const insertBlogIdeas = await db.db('lilleBlogs').collection('blogIdeas').insertOne({
+          blog_id: new ObjectID(insertBlog.insertedId),
+          ...updatedBlogIdeas
+      })
+      if(cachedBlogData[0].article_id && cachedBlogData[0].article_id.length) refUrls = await fetchArticleUrls({db, articleId: cachedBlogData[0].article_id})
+      const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+      await delay(10000)
+      if(user && Object.keys(user).length) {
+          const updateduser = await fetchUser({id: user.id, db})
+          const updatedCredits = ((updateduser.credits || 25) - 1)
+          await updateUserCredit({id: updateduser._id, credit: updatedCredits, db})
+          if(updatedCredits <= 0) {
+              await sendEmails({
+                  to: [
+                  { Email: `akash.sharma@nowigence.com`, Name: `Akash Sharma` },
+                  { Email: `arvind.ajimal@nowigence.com`, Name: `Arvind Ajimal` },
+                  { Email: `subham.mahanta@nowigence.com`, Name: `Subham Mahanta` },
+                  { Email: `vashisth@adesignguy.co`, Name: `Vashisth Bhushan` }
+                  ],
+                  subject: "Credit Exhausted",
+                  textMsg: "",
+                  htmlMsg: `
+                      <p>Hello All,</p>
+                      <p>Credit has been exhausted for below user</p>
+                      <p>User Name: ${updateduser.name} ${userDetails.lastName}</p>
+                      <p>User Email: ${updateduser.email}</p>
+                  `,
+              });
+          }
+      }
+      return {...cachedBlogData[0], _id: insertBlog.insertedId,  ideas: {
+          blog_id: new ObjectID(insertBlog.insertedId),
+          ...updatedBlogIdeas,
+          _id: insertBlogIdeas.insertedId
+      }, references: refUrls}
+  }
+  if(!combinedArticleIds?.length) {
+      try {
+        combinedArticleIds = await new Python({userId: userId}).uploadKeyword({keyword, timeout:60000})
+      }catch(e){
+          console.log(e, "error from python")
+      }
+  }
+  publish({userId, keyword, step: "KEYWORD_COMPLETED"})
+  let unprocessedFiles: string[] = []
+  let unprocessedUrls: string[] = []
+
+
+  let urlsArticleIds: string[] = []
+  let fileArticleIds: string[] = []
+  if(urls && urls.length) {
+    for (let index = 0; index < urls.length; index++) {
+      const url = urls[index];
+      try {
+        const urlUploadRes = await new Python({userId}).uploadUrl({url})
+        urlsArticleIds.push(urlUploadRes)
+      }catch(e: any){
+        unprocessedUrls.push(url)
+      }
+    }
+    publish({userId, keyword, step: "URL_UPLOAD_COMPLETED"})
+  } else if(files && files.length) {
+    for (let index = 0; index < files.length; index++) {
+      const file = files[index];
+      try {
+        const fileUploadRes = await new Python({userId}).uploadFile({file})
+        fileArticleIds.push(fileUploadRes)
+      }catch(e: any){
+        unprocessedFiles.push(file.originalname)
+      }
+    }
+    publish({userId, keyword, step: "FILE_UPLOAD_COMPLETED"})
+    console.log(fileArticleIds, "file ids")
+  }
+  // articleIds = [
+  //     '97a32ca9-1710-11ee-8959-0242c0a8e002',
+  //     '96345a34-1710-11ee-8959-0242c0a8e002',
+  //     '9495c95a-1710-11ee-8959-0242c0a8e002',
+  //     '991cd785-1710-11ee-8959-0242c0a8e002'
+  // ]
+  if(urlsArticleIds) {
+    combinedArticleIds = [...combinedArticleIds, ...urlsArticleIds]
+  }
+  if(fileArticleIds) {
+    combinedArticleIds = [...combinedArticleIds, ...fileArticleIds]
+  }
+  let pythonEnd = new Date()
+  let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
+  let texts = ""
+  let imageUrl: string | null = null
+  let imageSrc: string | null = null
+  let article_ids: String[] = []
+  let ideasArr: {
+      idea: string;
+      article_id: string;
+  }[] = []
+  let tags: String[] = []
+  let ideasText = ""
+  let articlesData: any[] = []
+  combinedArticleIds = combinedArticleIds.filter((id: string) => id)
+  if(combinedArticleIds) {
+      articlesData = await (
+          Promise.all(
+            combinedArticleIds?.map(async (id: string, index: number) => {
+                  const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
+                  if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
+                      imageUrl = article.proImageLink
+                      imageSrc = article._source?.orig_url
+                  } else {
+                      if(index === (combinedArticleIds.length - 1) && !imageUrl) {
+                          imageUrl = (process.env.PLACEHOLDER_IMAGE || article.proImageLink)
+                          imageSrc = null
+                      }
+                  }
+                  // keyword = article.keyword
+                  // const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                  // const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                  // const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                  tags.push(...article._source.driver)
+                  const name = article._source?.source?.name
+                  return {
+                      used_summaries: article._source.summary.slice(0, 10),
+                      name: name && name === "file" ? article._source.title : name,
+                      unused_summaries: article._source.summary.slice(10),
+                      keyword,
+                      id
+                  }
+              })
+          )
+      )
+      articlesData.forEach((data) => {
+          data.used_summaries.forEach((summary: string, index: number) => {
+              texts += `'${summary}'\n`
+              ideasText += `${summary} `
+              ideasArr.push({idea: summary, article_id: data.id})
+          })
+          article_ids.push(data.id)
+      })
+  }
+  console.log(ideasArr, keywords, article_ids)
+  try {
+      let uniqueTags: String[] = [];
+      tags.forEach((c) => {
+          if (!uniqueTags.includes(c)) {
+              uniqueTags.push(c);
+          }
+      });
+      if(combinedArticleIds && combinedArticleIds.length) refUrls = await fetchArticleUrls({db, articleId: combinedArticleIds})
+      const blogGeneratedData: any = await blogGeneration({
+          db,
+          text: !articlesData.length ? keyword : texts,
+          regenerate: !articlesData.length ? false: true,
+          imageUrl: imageUrl || process.env.PLACEHOLDER_IMAGE,
+          title: keyword,
+          imageSrc,
+          ideasText,
+          ideasArr,
+          refUrls,
+          userDetails,
+          userId: (userDetails && userDetails._id) || userId,
+          keywords,
+          tones
+      })
+      if(blogGeneratedData) {
+          const {usedIdeasArr, updatedBlogs, description,title} = blogGeneratedData
+          const finalBlogObj = {
+              article_id: combinedArticleIds,
+              publish_data: updatedBlogs,
+              userId: new ObjectID(userId),
+              email: userDetails && userDetails.email,
+              keyword: keyword || title,
+              status: "draft",
+              description,
+              tags: uniqueTags,
+              imageUrl: imageUrl ? imageUrl : process.env.PLACEHOLDER_IMAGE,
+              imageSrc,
+              date: getTimeStamp(),
+              updatedAt: getTimeStamp(),
+          }
+          let updatedIdeas: any = []
+          articlesData.forEach((data) => {
+              data.used_summaries.forEach((summary: string) => updatedIdeas.push({
+                  idea: summary,
+                  article_id: data.id,
+                  reference: null,
+                  name: data.name,
+                  used: 1,
+              }))
+          })
+          if(!articlesData.length) {
+              usedIdeasArr.forEach((idea: string) => updatedIdeas.push({
+                  idea,
+                  article_id: null,
+                  reference: null,
+                  used: 1,
+              }))
+          }
+          if(updatedIdeas && updatedIdeas.length) {
+              updatedIdeas = await (
+                  Promise.all(
+                      updatedIdeas.map(async (ideasData: any) => {
+                          if(ideasData.article_id) {
+                              const article = await fetchArticleById({id: ideasData.article_id, db, userId})
+                              return {
+                                  ...ideasData,
+                                  reference: {
+                                      type: "article",
+                                      link: article._source.orig_url,
+                                      id: ideasData.article_id
+                                  }
+                              }
+                          } else {
+                              return {
+                                  ...ideasData
+                              }
+                          }
+                      })       
+                  )
+              )
+          }
+          const insertBlog = await db.db('lilleBlogs').collection('blogs').insertOne(finalBlogObj)
+          const insertBlogIdeas = await db.db('lilleBlogs').collection('blogIdeas').insertOne({
+              blog_id: insertBlog.insertedId,
+              ideas: updatedIdeas
+          })
+          let blogDetails = null
+          let blogIdeasDetails = null
+          if(insertBlog.insertedId){
+              const id: any = insertBlog.insertedId
+              blogDetails = await db.db('lilleBlogs').collection('blogs').findOne({_id: new ObjectID(id)})
+          }
+          if(insertBlogIdeas.insertedId){
+              const id: any = insertBlogIdeas.insertedId
+              blogIdeasDetails = await db.db('lilleBlogs').collection('blogIdeas').findOne({_id: new ObjectID(id)})
+          }
+          let endRequest = new Date()
+          let respTime = diff_minutes(endRequest, startRequest)
+          if(user && Object.keys(user).length) {
+              const updateduser = await fetchUser({id: user.id, db})
+              const updatedCredits = ((updateduser.credits || 25) - 1)
+              await updateUserCredit({id: updateduser._id, credit: updatedCredits, db})
+              if(updatedCredits <= 0) {
+                  await sendEmails({
+                      to: [
+                      { Email: `akash.sharma@nowigence.com`, Name: `Akash Sharma` },
+                      { Email: `arvind.ajimal@nowigence.com`, Name: `Arvind Ajimal` },
+                      { Email: `subham.mahanta@nowigence.com`, Name: `Subham Mahanta` },
+                      { Email: `vashisth@adesignguy.co`, Name: `Vashisth Bhushan` }
+                      ],
+                      subject: "Credit Exhausted",
+                      textMsg: "",
+                      htmlMsg: `
+                          <p>Hello All,</p>
+                          <p>Credit has been exhausted for below user</p>
+                          <p>User Name: ${updateduser.name} ${userDetails.lastName}</p>
+                          <p>User Email: ${updateduser.email}</p>
+                      `,
+                  });
+              }
+          }
+          return res.status(200).send({
+            type: "SUCCESS",
+            data:{...blogDetails, ideas: blogIdeasDetails, references: refUrls, pythonRespTime, respTime, unprocessedFiles, unprocessedUrls}
+          })
+      }else{
+          console.log(blogGeneratedData, "blogGeneratedData")
+          return res.status(400).send({
+            type: "ERROR",
+            message: "Something went wrong"
+          })
+      }
+  } catch(e: any) {
+      console.log(e)
+      return res.status(400).send({
+        type: "ERROR",
+        message: e.message
+      })
+  }
+})
+
 router.post('/save/user-name', authMiddleware, async (req: any, res: any) => {
   const db = req.app.get('db')
   const {userName} = req.body
@@ -1615,7 +1969,7 @@ router.get('/saved-time', authMiddleware, async (req: any, res: any) => {
         message: "User not found!"
       })
     }
-    const totalSavedData = await db.db('lilleBlogs').collection('blogsTime').find({userId: new ObjectID(user.id)}, {
+    const totalSavedData = await db.db('lilleBlogs').collection('blogsTime').find({userId: new ObjectID(user.id), status: "SAVE"}, {
       projection: {
         time: 1,
         date: 1,
@@ -1681,7 +2035,9 @@ router.get('/saved-time', authMiddleware, async (req: any, res: any) => {
 router.get('/total-saved-time', async (req: any, res: any) => {
   const db = req.app.get('db')
   try {
-    const totalSavedData = await db.db('lilleBlogs').collection('blogsTime').find({}, {
+    const totalSavedData = await db.db('lilleBlogs').collection('blogsTime').find({
+      status: "SAVE"
+    }, {
       projection: {
         time: 1,
         date: 1,
@@ -1730,7 +2086,7 @@ router.get('/total-saved-time', async (req: any, res: any) => {
 
 router.post('/add-time-saved', async (req: any, res: any) => {
   const db = req.app.get('db')
-  const {userId, blogId, time, type} = req.body
+  const {userId, blogId, time, type, status} = req.body
   try {
     if(!userId) {
       return res.status(400).send({
@@ -1754,6 +2110,7 @@ router.post('/add-time-saved', async (req: any, res: any) => {
       blogId: new ObjectID(blogId),
       time: `00:${splittedTime[0] || 1}`,
       type,
+      status: status || "SAVE",
       date: getTimeStamp()
     }}, 
     {upsert: true})

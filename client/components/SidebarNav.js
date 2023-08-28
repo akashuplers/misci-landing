@@ -29,7 +29,10 @@ import { meeAPI } from "../graphql/querys/mee";
 import { logout } from "../helpers/helper";
 import { LocalCreditCardIcon } from "./localicons/localicons";
 import useUserTimeSave from "@/hooks/useUserTimeSave";
-import { useSideBarChangeFunctions, useUserTimeSaveStore } from "@/store/appState";
+import {
+  useSideBarChangeFunctions,
+  useUserTimeSaveStore,
+} from "@/store/appState";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -44,11 +47,10 @@ export default function Sidebar() {
     linkedInUserData = localStorage.getItem("linkedInAccessToken");
   }
   const creditLeft = useStore((state) => state.creditLeft);
-  const {runFunctions } = useSideBarChangeFunctions();
+  const { runFunctions } = useSideBarChangeFunctions();
   const [url, setUrl] = useState("");
   const router = useRouter();
   const path = router.pathname;
-  console.log(path);
   useEffect(() => {
     setUrl(path);
   }, [path]);
@@ -169,7 +171,13 @@ export default function Sidebar() {
     } else if (window.location.pathname === "/published") {
       setTitle("Published Content(s)");
     } else if (regex.test(window.location.pathname)) {
-      setTitle("Saved Content");
+      // check for query params
+      //?type=generate
+      if (window.location.search === "?type=repurpose") {
+        setTitle("Generated Content");
+      } else {
+        setTitle("Saved Content");
+      }
     }
   }, []);
 
@@ -192,6 +200,7 @@ export default function Sidebar() {
   const { setShowTwitterThreadUI } = useThreadsUIStore();
   const { option, setOption } = useTabOptionStore();
   const { setTwitterThreadData } = useTwitterThreadStore();
+  
   function handleEditorReset() {
     setOption("blog");
     setBlogData([]);
@@ -199,12 +208,26 @@ export default function Sidebar() {
     setTwitterThreadData([]);
     runFunctions();
   }
-  useEffect(() => { console.log('mee data'); console.log(meeData) }, [meeData]);
+  useEffect(() => {
+    console.log("mee data");
+    console.log(meeData);
+  }, [meeData]);
   // const { userTimeSave, loading: userTimeSaveLoading, error} = useUserTimeSave();
-  const {userTimeSave, refetchData: userTimeSaveUpdateData, loading:  userTimeSaveLoading, error}=   useUserTimeSaveStore()
-  useEffect(()=> {
+  const {
+    userTimeSave,
+    refetchData: userTimeSaveUpdateData,
+    loading: userTimeSaveLoading,
+    error,
+  } = useUserTimeSaveStore();
+  useEffect(() => {
     userTimeSaveUpdateData();
-  }, [])
+  }, []);
+
+  const routerToHome  = () => {
+    const domain  = window.location.hostname;
+                  const protocol = window.location.protocol;
+                  window.location.href = `${protocol}//${domain}`
+  }
 
   return (
     <>
@@ -264,13 +287,15 @@ export default function Sidebar() {
                   </Transition.Child>
                   <div className="h-0 flex-1 overflow-y-auto pt-5 pb-4">
                     <div className="flex flex-shrink-0 items-center px-4">
-                      <Link href={"/"}>
+                      <div onClick={()=>{
+                            routerToHome()
+                      }}>
                         <img
                           className="h-8 w-auto"
                           src="/lille_logo_new.png"
                           alt="Your Company"
                         />
-                      </Link>
+                      </div>
                     </div>
                     <nav className="mt-5 space-y-1 px-2">
                       {navigation.map((item) => (
@@ -368,15 +393,19 @@ export default function Sidebar() {
           {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200">
             <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
-              <Link href="/">
-                <div className="flex flex-shrink-0 items-center justify-center px-4">
+                <div className="flex flex-shrink-0 items-center justify-center px-4"
+                onClick={
+                  () => { 
+                    routerToHome(); 
+                  }
+                } 
+                >
                   <img
                     className="h-12 w-auto"
                     src="/lille_logo_new.png"
                     alt="Your Company"
                   />
                 </div>
-              </Link>
               <nav className="mt-5 flex-1 space-y-1 bg-white px-2">
                 {navigation.map((item) => (
                   <Link
@@ -521,9 +550,12 @@ export default function Sidebar() {
                     gap: "2em",
                   }}
                 >
-                  {
-                    meeData?.me?.totalCredits  && <UserSaveTime data={userTimeSave} dataLoading={userTimeSaveLoading} />
-                  }
+                  {meeData?.me?.totalCredits && (
+                    <UserSaveTime
+                      data={userTimeSave}
+                      dataLoading={userTimeSaveLoading}
+                    />
+                  )}
                   {!meeLoading && (
                     <div
                       className="flex text-center font-bold text-sm w-auto rounded border border-gray"
@@ -575,13 +607,18 @@ export default function Sidebar() {
         >
           <div className="flex-row flex">
             <div className="lg:hidden flex flex-row justify-center items-center py-2 pb-4">
-              <Link href={"/"}>
-                <img
+                <div onClick={()=> {
+                  const domain  = window.location.hostname;
+                  const protocol = window.location.protocol;
+                  window.location.href = `${protocol}//${domain}`
+                }}
+                >
+                  <img
                   className="h-8 w-auto"
                   src="/lille_logo_new.png"
                   alt="Your Company"
                 />
-              </Link>
+                </div>
             </div>
             <main className="flex-1 flex-col">
               <div className="py-2 pb-4">
@@ -678,13 +715,9 @@ export default function Sidebar() {
   );
 }
 
-
 export function UserSaveTime(data, dataLoading) {
-  // const [selectedOption, setSelectedOption] = useState(data[);
-  // firstdata
-  console.log(data.data);
   data = data.data;
-  const [selectedOption, setSelectedOption] = useState('Month');
+  const [selectedOption, setSelectedOption] = useState("Month");
 
   return (
     <Menu as="div" className="relative inline-block text-left">
@@ -692,18 +725,31 @@ export function UserSaveTime(data, dataLoading) {
         <Menu.Button className="relative inline-flex w-full justify-center items-center gap-x-1.5 rounded-md bg-indigo-100 px-3 py-2 text-sm font-semibold text-gray-900 hover:opacity-75 border-indigo-600 border-l-8  outline-white">
           {/* small width verticial line */}
           <ClockIcon className="h-5 w-5" aria-hidden="true" />
-          <span className="font-light">Time Saved {selectedOption =='Day'? "for a Day": selectedOption=='Week'? "in last 7 days": selectedOption=='Month'? "in last 30 days":selectedOption}</span> {dataLoading == true ? <ReactLoading
-            width={25}
-            height={25}
-            round={true}
-          /> :
-            data ? ` ${data[selectedOption]?.hours} h : ${data[selectedOption]?.minutes} m` : '0 h: 0 m'}
-          <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
+          <span className="font-light">
+            Time Saved{" "}
+            {selectedOption == "Day"
+              ? "for a Day"
+              : selectedOption == "Week"
+              ? "in last 7 days"
+              : selectedOption == "Month"
+              ? "in last 30 days"
+              : selectedOption}
+          </span>{" "}
+          {dataLoading == true ? (
+            <ReactLoading width={25} height={25} round={true} />
+          ) : data ? (
+            ` ${data[selectedOption]?.hours} h : ${data[selectedOption]?.minutes} m`
+          ) : (
+            "0 h: 0 m"
+          )}
+          <ChevronDownIcon
+            className="-mr-1 h-5 w-5 text-gray-400"
+            aria-hidden="true"
+          />
         </Menu.Button>
       </div>
 
-      {
-        (dataLoading == false ||  data !== null) &&
+      {(dataLoading == false || data !== null) && (
         <Transition
           as={Fragment}
           enter="transition ease-out duration-100"
@@ -713,40 +759,47 @@ export function UserSaveTime(data, dataLoading) {
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-    <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-      <div className="py-1">
-        { 
-          Object.keys(data).map((key, index) => {
-            return (
-              <Menu.Item key={index}>
-                {({ active }) => (
-                  <a
-                    href="#"
-                    className={classNames(
-                      active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                      'block px-4 py-2 text-sm'
+          <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <div className="py-1">
+              {Object.keys(data).map((key, index) => {
+                return (
+                  <Menu.Item key={index}>
+                    {({ active }) => (
+                      <a
+                        href="#"
+                        className={classNames(
+                          active
+                            ? "bg-gray-100 text-gray-900"
+                            : "text-gray-700",
+                          "block px-4 py-2 text-sm"
+                        )}
+                        onClick={() => {
+                          setSelectedOption(key);
+                          console.log(key);
+                          console.log(data[key]);
+                        }}
+                      >
+                        <div className="flex text-indigo-600 justify-between items-center">
+                          <div>
+                            {key == "Day"
+                              ? "Today"
+                              : key == "Week"
+                              ? "Last 7 days"
+                              : key == "Month"
+                              ? "Last 30 days"
+                              : key}
+                          </div>
+                          <div>{data[key]?.seconds}</div>
+                        </div>
+                      </a>
                     )}
-                    onClick={() => {
-                      setSelectedOption(key);
-                      console.log(key);
-                      console.log(data[key]);
-                    }}
-                  >
-                    <div className="flex text-indigo-600 justify-between items-center">
-                      <div>{key=='Day'? "Today": key=='Week'? "Last 7 days": key=='Month'? "Last 30 days":key}</div>
-                      <div>{data[key]?.seconds}</div>
-                    </div>
-                  </a>
-                )}
-              </Menu.Item>
-            )
-          })
-        }
-
-      </div>
-    </Menu.Items>
-  </Transition>
-}
+                  </Menu.Item>
+                );
+              })}
+            </div>
+          </Menu.Items>
+        </Transition>
+      )}
     </Menu>
-  )
+  );
 }

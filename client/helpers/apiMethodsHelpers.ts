@@ -1,4 +1,5 @@
 import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
+import { getBlogbyIdState } from "@/graphql/queries/getBlogbyId";
 
 interface IApiMethodsHelpers {
   text: string;
@@ -161,4 +162,98 @@ export async function uploadGoogleDriveURL({ url, email }: { url: string, email:
     console.log('error', error);
     return error as ApiResponse;
   }
+}
+
+
+
+
+interface Comment {
+  _id: string;
+  userId: string;
+  blogId: string;
+  text: string;
+  name: string;
+  date: string;
+}
+
+interface UserDetail {
+  profileImage: string;
+  linkedInUserName: string;
+  twitterUserName: string;
+  userName: string;
+  googleUserName: string;
+  name: string;
+  lastName: string;
+}
+
+interface PublishData {
+  tiny_mce_data: {
+    children: any[]
+    tag: string;
+  };
+  threads: string;
+  published_date: string;
+  published: string;
+  platform: string;
+  creation_date: string;
+}
+
+interface Blog {
+  _id: string;
+  article_id: string;
+  references: { url: string; source: string }[];
+  likes: number;
+  comments: Comment[];
+  userDetail: UserDetail;
+  savedTime: string;
+  freshIdeasReferences: { url: string; source: string }[];
+  tags: string[];
+  freshIdeasTags: string[];
+  ideas: {
+    blog_id: string;
+    ideas: {
+      used: string;
+      idea: string;
+      article_id: string;
+      name: string;
+      reference: { type: string; link: string; id: string };
+    }[];
+    freshIdeas: {
+      used: string;
+      idea: string;
+      article_id: string;
+      name: string;
+      reference: { type: string; link: string; id: string };
+    }[];
+  }[];
+  publish_data: any[];
+}
+
+interface FetchBlogResponse {
+  fetchBlog: Blog;
+  trendingTopics: string[];
+  increment: number;
+}
+
+
+export async function fetchBlogData(blogId: string): Promise<FetchBlogResponse> {
+  const graphqlQuery = getBlogbyIdState
+
+  const graphqlVariables = {
+    fetchBlogId: blogId,
+  };  
+  const requestOptions: RequestInit = {
+    method: 'POST',
+    headers : {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify({ query: graphqlQuery, variables: graphqlVariables }),
+  };
+  const URL =  API_BASE_PATH + API_ROUTES.GQL_PATH
+  const response = await fetch(URL, requestOptions);
+  const result = await response.json();
+  console.log("RESULT FROM DATA");
+  console.log(result);
+  return result.data;
 }

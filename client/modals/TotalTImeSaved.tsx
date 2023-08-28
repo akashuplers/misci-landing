@@ -6,22 +6,40 @@ import { toast } from "react-toastify";
 import { formatMinutesToTimeString } from "@/helpers/helper";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import { useUserTimeSaveStore } from "@/store/appState";
+import { log } from "console";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 export function TotalTImeSaved({
   timeSaved,
   blogId,
-  refreshDataForUserTime
+  refreshDataForUserTime,
+  modalIsOpen,
+  setIsOpen,
 }:any)
 
 {
- const [modalIsOpen, setIsOpen] = useState(true);
  const [editedHours, setEditedMinutes] :any = useState({
-  minutes: formatMinutesToTimeString(timeSaved).minutes || 0,
-  seconds: formatMinutesToTimeString(timeSaved).seconds || 0,
+  minutes: 0,
+  seconds: 0,
  } as any);
  const [showPannel, setShowPannel] = useState('MAIN');
 //  AGREEE, DISAGREE
  const {response, error, loading, sendSavedTime}:any = useSendSavedTimeOfUser();
- const {userTimeSave, refetchData: userTimeSaveUpdateData, loading:  userTimeSaveLoading, }=   useUserTimeSaveStore()
+ const {userTimeSave, refetchData: userTimeSaveUpdateData, loading:  userTimeSaveLoading, }=   useUserTimeSaveStore();
+
+ useEffect(() => {
+  console.log(localStorage);
+  // "{"64e60126ea418c6e9b91d921":{"time":30,"blogId":"64e60126ea418c6e9b91d921","save":false},"64e60d8d106856835137055a":{"time":30,"blogId":"64e60d8d106856835137055a","save":false}}"
+  const userSaveTimeDataWithBlogIdLS = localStorage.getItem('userSaveTimeDataWithBlogId');
+  const userSaveTimeDataWithBlogId = JSON.parse(userSaveTimeDataWithBlogIdLS || '{}');
+  console.log(userSaveTimeDataWithBlogId);
+  const blogIdData = userSaveTimeDataWithBlogId[blogId] 
+  if(blogIdData){
+    setEditedMinutes({
+      minutes: formatMinutesToTimeString(blogIdData.time).minutes,
+      seconds: formatMinutesToTimeString(blogIdData.time).seconds,
+    })
+  }
+ },[])
  useEffect(() => {
   if(response!=null){
     if(response?.type === "SUCCESS"){
@@ -47,6 +65,8 @@ export function TotalTImeSaved({
     <ReactModal
       isOpen={modalIsOpen}
       onRequestClose={() => setIsOpen(false)}
+      shouldCloseOnEsc={true}
+      shouldCloseOnOverlayClick={true}
       ariaHideApp={false}
       className="fixed inset-0 top-0 flex items-start justify-center w-full h-full p-4 overflow-auto bg-black bg-opacity-50 z-50"
       overlayClassName="fixed inset-0 z-50"
@@ -57,7 +77,18 @@ export function TotalTImeSaved({
         },
       }}
     >
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-[250px]">
+      <div className="bg-white p-6 rounded-lg shadow-lg max-w-[250px] relative">
+        <div className="relative flex items-center justify-end">
+        <button
+          onClick={() => {
+            setIsOpen(false);
+          }}
+          className="absolute top-2 left-2"
+        >
+          <XMarkIcon className="w-5 h-5 text-indigo-600" />
+        </button>
+
+        </div>
         <TimeSavedIcon className={"w-20 h-20 mx-auto mb-4"} />
         <h2 className="text-xl font-semibold mb-2 text-center">Great! 👏</h2>
        {
@@ -153,7 +184,7 @@ export function TotalTImeSaved({
             <button  className="cta-invert  hover:cta max-w-lg mt-2 hover:shadow-lg"
             onClick={() => {
               setIsOpen(false);
-              sendSavedTime(blogId, `${editedHours.minutes}:${editedHours.seconds}`, 'disagree');
+              sendSavedTime(blogId, `${editedHours.minutes}:${editedHours.seconds}`, 'disagree', true);
             }}
             >
               Done 
@@ -174,7 +205,7 @@ export function TotalTImeSaved({
             <button
               onClick={() => {
                 setIsOpen(false);
-                sendSavedTime(blogId, `${editedHours.minutes}:${editedHours.seconds}`, 'agree');
+                sendSavedTime(blogId, `${editedHours.minutes}:${editedHours.seconds}`, 'agree', true);
               }}
               className="cta-invert  hover:cta">
               Agree 👍

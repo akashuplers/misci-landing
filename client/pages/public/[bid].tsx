@@ -19,7 +19,7 @@ import { useStore } from "zustand";
 import { APP_REGEXP, DEFAULT_USER_PROFILE_IMAGE } from '../../store/appContants';
 import { useUserDataStore } from '../../store/appState';
 import { UserDataResponse } from "@/types/type";
-import { getRelativeTimeString, unixToLocalYear,  } from "@/store/appHelpers";
+import { convertToURLFriendly, getRelativeTimeString, unixToLocalYear, } from "@/store/appHelpers";
 import { RelativeTimeString } from "@/components/ui/RelativeTimeString";
 import Head from "next/head";
 export default function Post() {
@@ -40,7 +40,7 @@ export default function Post() {
       setIsAuthenticated(localStorage.getItem("token") ? true : false);
     }
   }, []);
-  const[authorPath, setAuthorPath] = useState('');
+  const [authorPath, setAuthorPath] = useState('');
   const {
     data: gqlData,
     loading,
@@ -49,17 +49,17 @@ export default function Post() {
   } = useQuery(getBlogbyId, {
     variables: {
       fetchBlogId: bid,
-    },  
+    },
     onCompleted(data) {
       setBlogComments(data?.fetchBlog.comments);
       const dataForDate = data?.fetchBlog?.publish_data?.filter(
-        (obj:any) => obj?.platform === "wordpress"
+        (obj: any) => obj?.platform === "wordpress"
       );
       // console.log(dataForDate[0].creation_date);
       const date = unixToLocalYear(Number(dataForDate[0].creation_date));
       setPublishDate(date);
       const tinyData = data?.fetchBlog?.publish_data?.filter(
-        (obj:any) => obj?.platform === "wordpress"
+        (obj: any) => obj?.platform === "wordpress"
       );
     },
   });
@@ -69,7 +69,7 @@ export default function Post() {
       event.stopImmediatePropagation();
     });
   }
-  const { fetchUserData, loading :userLoading, userData } = useUserDataStore();
+  const { fetchUserData, loading: userLoading, userData } = useUserDataStore();
   var getToken: string | null = null;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -111,33 +111,42 @@ export default function Post() {
     console.log("ADD");
     console.log(gqlData?.fetchBlog);
     console.log(aa?.children[0].children[0].children[0]);
+    var blogTitle = aa?.children[0].children[0].children[0];
+    blogTitle = convertToURLFriendly(blogTitle ? blogTitle : '');
     setBlogTitle(aa?.children[0].children[0].children[0]);
     console.log(gqlData);
     const userDetails = gqlData?.fetchBlog?.userDetail;
     console.log(userDetails);
     var authorProfilePath = "";
+    const fakeDivContainer = document.createElement('div');
+    fakeDivContainer.innerHTML = html;
+    // @ts-ignore
+    var h2Element = fakeDivContainer.querySelector('h2')?.innerText;
+    console.log(html);
+    var h2text = convertToURLFriendly(h2Element ?? "blog");
     if (userDetails?.googleUserName) {
-        authorProfilePath = "/google/" + userDetails?.googleUserName.replace(/\s/g, '') + "/" + bid;
+      authorProfilePath = "/google/" + userDetails?.googleUserName.replace(/\s/g, '') + "/" + blogTitle + '/' + h2text + "/" + bid;
     }
     else if (userDetails?.twitterUserName) {
-        authorProfilePath = "/twitter/" + userDetails.twitterUserName.replace(/\s/g, '') + "/" + bid;
+      authorProfilePath = "/twitter/" + userDetails.twitterUserName.replace(/\s/g, '') + "/" + blogTitle + '/' + h2text + "/" + bid;
     }
     else if (userDetails?.linkedInUserName) {
-        authorProfilePath = "/linkedin/" + userDetails?.linkedInUserName.replace(/\s/g, '') + "/" + bid;
+      authorProfilePath = "/linkedin/" + userDetails?.linkedInUserName.replace(/\s/g, '') + "/" + blogTitle + '/' + h2text + "/" + bid;
     }
     else if (userDetails?.userName) {
-      authorProfilePath = "/user/" + userDetails?.userName.replace(/\s/g, '') + "/" + bid;
+      authorProfilePath = "/user/" + userDetails?.userName.replace(/\s/g, '') + "/" + blogTitle + '/' + h2text + "/" + bid;
     }
-    console.log("username"+authorProfilePath);
+    console.log("username" + authorProfilePath);
+    console.log('new path', authorProfilePath)
     setAuthorPath(authorProfilePath);
     setData(html);
   }, [router, gqlData]);
-  useEffect(() => { 
-    if(authorPath!=""){
-      router.push("/public"+authorPath);
+  useEffect(() => {
+    if (authorPath != "") {
+      router.push("/public" + authorPath);
     }
   }
-  , [authorPath])
+    , [authorPath])
 
 
   useEffect(() => {
@@ -155,8 +164,8 @@ export default function Post() {
       // get the first h3 tag
       const h3Element = tempElement.querySelector('h3');
       var authorProfilePath = "";
-     
-      
+
+
       // remvove blacnk spaces  
 
       console.log("PUSHING TO ROUTER")
@@ -172,7 +181,7 @@ export default function Post() {
           <div class="flex items-center space-x-2">
           <div style="width: 100%; height: 44px; justify-content: flex-start; align-items: center; gap: 12px; display: inline-flex; margin-top: 24px; margin-bottom: 24px">
           <img style="width: 44px; height: 44px; position: relative; background: linear-gradient(0deg, black 0%, black 100%); border-radius: 200px" src=${gqlData?.fetchBlog?.userDetail?.profileImage ?? "https://github.com/identicons/jasonlong.png"
-              } />
+          } />
           <div style="flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 4px; display: inline-flex">
             <div style="color: #272C47; font-size: 16px;font-weight: 400; word-wrap: break-word; font-style: italic">
           <strong>
@@ -213,9 +222,9 @@ export default function Post() {
   return (
     <div className="bg-[#00000014] min-h-screen">
       <Head>
-    <title>{blogTitle}</title>
-   </Head>
-      <Navbar isOpen={false} />
+        <title>{blogTitle}</title>
+      </Head>
+      <Navbar isOpen={false} blogId={null}/>
       <div className="flex items-center justify-center w-full lg:max-w-[1056px] mx-auto flex-col ">
         <div className={styles.publishContainer} id="publishContainer"></div>
         <ShareLinkModal openModal={showShareModal} setOpenModal={setShareModal} blog_id={gqlData?.fetchBlog?._id} text={text} />
@@ -245,8 +254,8 @@ export default function Post() {
               transform: "translate(-50%, -50%)",
             },
           }}>
-            {/* //@ts-ignore */}
-            <CommentSection userData={userData}
+          {/* //@ts-ignore */}
+          <CommentSection userData={userData}
             // @ts-ignore
             comments={blogComments} text={text} data={gqlData} setShowModalComment={setShowModalComment} blogRefetch={blogRefetch} setShareModal={setShareModal} />
         </ReactModal>
@@ -328,11 +337,12 @@ const CommentButton = ({
 }
 const typesOfTabForComments = { newest: "Newest", oldest: "Oldest" }
 const CommentSection = ({ data, comments, setShowModalComment, setShareModal, blogRefetch, text, userData }
-  : { data: any, comments: [], setShowModalComment: any, setShareModal: any, blogRefetch: any, text: string , 
-   userData: UserDataResponse | null
+  : {
+    data: any, comments: [], setShowModalComment: any, setShareModal: any, blogRefetch: any, text: string,
+    userData: UserDataResponse | null
   }) => {
 
-console.log(comments.length);
+  console.log(comments.length);
   var getToken: string | null = null;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -353,15 +363,15 @@ console.log(comments.length);
   }, []);
   useEffect(() => {
     // setDataForComment(comments.slice().reverse());
-    if(tabToShow == typesOfTabForComments.newest){
+    if (tabToShow == typesOfTabForComments.newest) {
       setDataForComment(comments.slice().reverse());
     }
-    else if(tabToShow == typesOfTabForComments.oldest){
+    else if (tabToShow == typesOfTabForComments.oldest) {
       setDataForComment(comments.slice());
     }
   }, [comments]);
 
-  
+
 
   // useEffect(() => {
   //   // setDataForComment(comments.slice().reverse());
@@ -415,7 +425,7 @@ console.log(comments.length);
         toast.warn("Please enter your email");
         return;
       }
-      if(!validateEmail(email)){
+      if (!validateEmail(email)) {
         setErrors({
           ...errors,
           email: {
@@ -441,7 +451,7 @@ console.log(comments.length);
           if (res.type == "SUCCESS") {
             toast.success(res.message);
             blogRefetch();
-            setTabToShow(prev=>prev);
+            setTabToShow(prev => prev);
           } else {
             toast.error(res.message);
           }
@@ -485,7 +495,7 @@ console.log(comments.length);
       <div className="h-full">
 
         <div className="w-full bg-white rounded-lg flex-col justify-start items-start gap-[15px] inline-flex">
-         
+
           {
             !isAuthenticated ? <>
               <InputBox error={errors.name.status} label={'Full Name'} name={'name'} value={name} onChange={(e: React.ChangeEvent<HTMLInputElement>
@@ -512,14 +522,13 @@ console.log(comments.length);
                 setEmail(e.target.value);
               }}
                 className="" onBlur={() => { }} placeholder={'e.g john@doe'} touched={false} type={'email'} />
-                </> : <>
-                <div className="justify-start items-center gap-2 inline-flex">
-                  <img className="w-10 h-10 rounded-full" src={userData?.data.me.profileImage ?? DEFAULT_USER_PROFILE_IMAGE} />
-                  <div className="text-black text-lg font-bold">{userData?.data.me.name + " " + userData?.data.me.lastName}</div>
-                </div>
-                </>
+            </> : <>
+              <div className="justify-start items-center gap-2 inline-flex">
+                <img className="w-10 h-10 rounded-full" src={userData?.data.me.profileImage ?? DEFAULT_USER_PROFILE_IMAGE} />
+                <div className="text-black text-lg font-bold">{userData?.data.me.name + " " + userData?.data.me.lastName}</div>
+              </div>
+            </>
           }
-          <h4 className="text-black text-base font-normal">{'Write a comment'}</h4>
           <TextareaAutosize
             maxRows={5}
             value={commmentValue}
@@ -543,7 +552,7 @@ console.log(comments.length);
                 }
               }
             >
-              <span className="text-slate-600 text-base font-normal leading-7">Reset</span>
+              <span className="text-slate-600 text-base font-normal leading-7">Cancel</span>
             </button>
             <button className="px-[18px] py-1.5 bg-indigo-600 rounded-lg justify-start items-start gap-2 flex" onClick={handleCommentSend}>
               <span className="text-white text-base font-bold leading-7">
@@ -565,22 +574,22 @@ console.log(comments.length);
           Other Comments ({data?.fetchBlog.comments.length})
         </h2>
         <div className="bg-white w-full  sticky top-0">
-        <div className=" top-0 w-[132px] h-9 p-1.5 bg-white rounded-lg border border-gray-300 justify-start items-center gap-1 inline-flex">
-          <button onClick={
-            () => handleTabChange(typesOfTabForComments.newest)
-          } className={`px-2.5 py-[3px]  rounded justify-center items-center gap-2.5 transition-colors  flex ${tabToShow == typesOfTabForComments.newest ? "bg-indigo-600 bg-opacity-10 text-indigo-600" : "text-gray-900"
-            }`}>
-            <span className="text-xs font-medium leading-[18px]">Newest</span>
-          </button>
-          <button onClick={
-            () => handleTabChange(typesOfTabForComments.oldest)
-          } className={`px-2.5 py-[3px] rounded justify-center transition-colors items-center gap-2.5 flex 
+          <div className=" top-0 w-[132px] h-9 p-1.5 bg-white rounded-lg border border-gray-300 justify-start items-center gap-1 inline-flex">
+            <button onClick={
+              () => handleTabChange(typesOfTabForComments.newest)
+            } className={`px-2.5 py-[3px]  rounded justify-center items-center gap-2.5 transition-colors  flex ${tabToShow == typesOfTabForComments.newest ? "bg-indigo-600 bg-opacity-10 text-indigo-600" : "text-gray-900"
+              }`}>
+              <span className="text-xs font-medium leading-[18px]">Newest</span>
+            </button>
+            <button onClick={
+              () => handleTabChange(typesOfTabForComments.oldest)
+            } className={`px-2.5 py-[3px] rounded justify-center transition-colors items-center gap-2.5 flex 
           ${tabToShow == typesOfTabForComments.oldest ? "bg-indigo-600 bg-opacity-10 text-indigo-600" : "text-gray-900"
-            }
+              }
           `}>
-            <span className=" text-xs font-normal leading-[18px]">Oldest</span>
-          </button>
-        </div>
+              <span className=" text-xs font-normal leading-[18px]">Oldest</span>
+            </button>
+          </div>
         </div>
         {
           dataForComment && dataForComment.map((comment: any, index) => {

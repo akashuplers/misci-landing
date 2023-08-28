@@ -7,7 +7,7 @@ const Footer = () => {
       <div className="flex flex-col sm:flex-row items-center justify-between align-middle">
         <div className="mb-4 sm:mb-0">
           <Image
-            src="/lille_logo_light.png"
+            src="/lille_logo_new.png"
             style={{ filter: "drop-shadow(2px 4px 6px black" }}
             width={100}
             height={100}

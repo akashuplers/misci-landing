@@ -2,12 +2,17 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 // @ts-nocheck
 import { getStaticProps } from "next";
-import MoblieUnAuthFooter, { socialLinks } from "@/components/LandingPage/MoblieUnAuthFooter";
+import MoblieUnAuthFooter, {
+  socialLinks,
+} from "@/components/LandingPage/MoblieUnAuthFooter";
 import RePurpose from "@/components/LandingPage/RePurpose";
 import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useSubscription } from "@apollo/client";
 import Tooltip from "@/components/ui/Tooltip";
-import { ArrowRightCircleIcon, InformationCircleIcon } from "@heroicons/react/20/solid";
+import {
+  ArrowRightCircleIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/20/solid";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -20,43 +25,77 @@ import Layout from "../components/Layout";
 import LoaderPlane from "../components/LoaderPlane";
 import TrialEndedModal from "../components/TrialEndedModal";
 import { meeAPI } from "../graphql/querys/mee";
-import { extractKeywordsAndIds, getDateMonthYear, getIdFromUniqueName, isMonthAfterJune, keywordsUniqueName, uploadAndExtractKeywords } from "../helpers/helper";
+import { STEP_COMPLETES_SUBSCRIPTION } from "../graphql/subscription/generate";
+import {
+  extractKeywordsAndIds,
+  getDateMonthYear,
+  getIdFromUniqueName,
+  isMonthAfterJune,
+  keywordsUniqueName,
+  uploadAndExtractKeywords,
+} from "../helpers/helper";
 import OTPModal from "../modals/OTPModal";
 import PreferencesModal from "../modals/PreferencesModal";
-import useStore, { useFunctionStore } from "../store/store";
+import useStore, { useClientUserStore, useFunctionStore } from "../store/store";
 import { Tab } from "@headlessui/react";
 import ReactLoading from "react-loading";
 import TextTransition, { presets } from "react-text-transition";
-import { ArrowLongRightIcon, ArrowLongUpIcon, CheckCircleIcon, CloudArrowUpIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowLongRightIcon,
+  ArrowLongUpIcon,
+  CheckCircleIcon,
+  CloudArrowUpIcon,
+  DocumentIcon,
+  XCircleIcon,
+} from "@heroicons/react/24/outline";
 import { checkFileFormatAndSize } from "@/components/DashboardInsights";
 import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
-import DragAndDropFiles, { REPURPOSE_MAX_SIZE_MB } from "@/components/ui/DragAndDropFiles";
+import DragAndDropFiles, {
+  REPURPOSE_MAX_SIZE_MB,
+} from "@/components/ui/DragAndDropFiles";
 import { maxFileSize } from "@/helpers/utils";
-import { useBlogLinkStore, useRepurposeFileStore, useSideBarChangeFunctions, useTotalSavedTimeStore } from "@/store/appState";
+import {
+  useBlogLinkStore,
+  useFileUploadStore,
+  useGenerateErrorState,
+  useGenerateState,
+  useRepurposeFileStore,
+  useSideBarChangeFunctions,
+  useTotalSavedTimeStore,
+} from "@/store/appState";
 // import { FacebookIcon, LinkedinIcon, TwitterIcon } from "react-share";
-import { FaFacebook, FaTwitter, FaLinkedin } from 'react-icons/fa';
+import { FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 import { TextTransitionEffect } from "@/components/ui/TextTransitionEffect";
-import { Chip } from "@/components/ui/Chip";
+import { Chip, FileChipIcon, FileUploadCard, FloatingBalls } from "@/components/ui/Chip";
 import { InputData } from "@/types/type";
-import { processKeywords, randomNumberBetween20And50, uppercaseFirstChar } from "@/store/appHelpers";
+import {
+  newGenerateApi,
+  processKeywords,
+  randomNumberBetween20And50,
+  uppercaseFirstChar,
+} from "@/store/appHelpers";
 import { extractKeywordsFromKeywords } from "@/helpers/apiMethodsHelpers";
 import { TYPES_OF_GENERATE } from "@/store/appContants";
 import GoogleDriveModal from "@/modals/GoogleDriveModal";
-
+import { StepCompleteData } from "@/store/types";
+import GenerateLoadingModal from "@/modals/GenerateLoadingModal";
+import GenerateErrorModal from "@/modals/GenerateErrorModal";
 
 const PAYMENT_PATH = "/?payment=true";
 const TONES = [
-  'Authoritative',
-  'Political', 'Non political',
-  'Ethnic', 'Rational', 'Modern thinking',
-  'Non Robotic'
-]
+  "Authoritative",
+  "Political",
+  "Non political",
+  "Ethnic",
+  "Rational",
+  "Modern thinking",
+  "Non Robotic",
+];
 
 var newTones = [];
 TONES.forEach((tone) => {
   newTones.push({ text: tone, selected: false });
-}
-);
+});
 const TEXTS = [
   "Twitter  Post",
   "Linkedin Post",
@@ -66,17 +105,15 @@ const TEXTS = [
   "Newsletters",
 ];
 
-const TEXTS2 = [
-  "Writing",
-  "Research",
-  "Knowledge",
-];
-
+const TEXTS2 = ["Writing", "Research", "Knowledge"];
+const tabsPlaceholders = ['Give me a topic', 'Give me a topic and paste your URL below', 'Give me a topic and upload file']
 const STATESOFKEYWORDS = {
-  LOADING: 'loading',
-  LOADED: 'loaded',
-}
+  LOADING: "loading",
+  LOADED: "loaded",
+};
 export const getServerSideProps = async (context) => {
+  console.log(context);
+  console.log("server");
   const { payment } = context.query;
   const randomLiveUsersCount = randomNumberBetween20And50();
   return {
@@ -85,22 +122,47 @@ export const getServerSideProps = async (context) => {
       randomLiveUsersCount,
     },
   };
-}
+};
 
 interface KeysForStateOfGenerate {
-  file: number|null,
-  url: number|null,
-  keyword: number|null,
+  file: number | null;
+  url: number | null;
+  keyword: number | null;
 }
 
-export default function Home(
-  {
-    payment,
-    randomLiveUsersCount,
-  }
-) {
-  var getUserId;
-  var getTempId;
+export default function Home({ payment, randomLiveUsersCount }) {
+  const [getUserIdForSubs, setGetUserIdForSubs] = useState('');
+  const [getTempIdForSubs, setGetTempIdForSubs] = useState('');
+  const [getTokenForSubs, setGetTokenForSubs] = useState('');
+  const [userAbleUserIDForSubs, setUserAbleUserIDForSubs] = useState('');
+  const {addMessages}= useGenerateErrorState();
+  const [getToken, setGetToken] = useState('');
+  const {
+    data: subsData,
+    loading: subsLoading,
+    error: subsError,
+  } = useSubscription<StepCompleteData>(STEP_COMPLETES_SUBSCRIPTION, {
+    variables: { userId: userAbleUserIDForSubs },
+    onComplete(data) {
+      console.log(data);
+    },
+
+  });
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const tokenFromLocalStorage = localStorage.getItem("token");
+      const userIdFromLocalStorage = localStorage.getItem("userId");
+      const tempIdFromLocalStorage = localStorage.getItem("tempId");
+      setGetTokenForSubs(tokenFromLocalStorage);
+      setGetToken(tokenFromLocalStorage);
+      setGetUserIdForSubs(userIdFromLocalStorage);
+      setGetTempIdForSubs(tempIdFromLocalStorage);
+      const userAbleUserID = tokenFromLocalStorage ? userIdFromLocalStorage : tempIdFromLocalStorage;
+      setUserAbleUserIDForSubs(userAbleUserID);
+      console.log(getUserIdForSubs, getTempIdForSubs, getTokenForSubs, userAbleUserIDForSubs, 'FROM USER');
+    }
+  }, [subsError]);
+
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const updateAuthentication = useStore((state) => state.updateAuthentication);
   // check if url container ?payment=true
@@ -110,55 +172,77 @@ export default function Home(
   const [articleIds, setArticleIds] = useState([]);
   const setBlogLinks = useBlogLinkStore((state) => state.setBlogLinks);
   const [currentTabIndex, setCurrentTabIndex] = useState(0);
+  const { removeBlogLink } = useBlogLinkStore();
   const [repurposeTones, setRepurposeTones] = useState(newTones);
   const [showFileUploadUI, setShowFileUploadUI] = useState(false);
   const addToFunctionStack = useFunctionStore((state) => state.addToStack);
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const [stateOfGenerate, setStateOfGenerate] = useState({
     url: null,
     file: null,
     keyword: null,
   });
-  const [inputData, setInputData] = useState<InputData>({})
+  const { updateTime } = useGenerateState();
+  const [inputData, setInputData] = useState<InputData>({});
   const [showLoadingInfo, setShowLoadingInfo] = useState(false);
   const selectedFiles = useRepurposeFileStore((state) => state.selectedFiles);
-  const removeSelectedFile = useRepurposeFileStore((state) => state.removeSelectedFile);
-  const setSelectedFiles = useRepurposeFileStore((state) => state.setSelectedFiles);
+  const removeSelectedFile = useRepurposeFileStore(
+    (state) => state.removeSelectedFile
+  );
+  const setSelectedFiles = useRepurposeFileStore(
+    (state) => state.setSelectedFiles
+  );
   const [inputMouseIn, setInputMouseIn] = useState(false);
-  const executeLastFunction = useFunctionStore((state) => state.executeLastFunction);
+  const executeLastFunction = useFunctionStore(
+    (state) => state.executeLastFunction
+  );
+
   const [showGDriveModal, setShowGDriveModal] = useState(false);
-  const { addFunction } = useSideBarChangeFunctions()
+  const { addFunction } = useSideBarChangeFunctions();
+  const [showingGenerateLoading, setShowingGenerateLoading] = useState(false);
   const handleGenerateReset = () => {
     setkeywordsOfBlogs([]);
     setBlogLinks([]);
     setSelectedFiles([]);
+    setkeyword("");
     setStateOfGenerate((prev) => {
       return {
         url: null,
         file: null,
         keyword: null,
-      }
-    }
-    )
-  }
+      };
+    });
+    setShowingGenerateLoading(false);
+  };
   useEffect(() => {
     addFunction(handleGenerateReset);
   }, [blogLinks]);
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         executeLastFunction();
       }
     };
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [executeLastFunction]);
-  const {data:usersTotalTimeSavedData, fetchTotalSavedTime, error, isLoading} = useTotalSavedTimeStore();
+  const {
+    data: usersTotalTimeSavedData,
+    fetchTotalSavedTime,
+    error,
+    isLoading,
+  } = useTotalSavedTimeStore();
   // INITAIL DATA FETCH USEEFFECT:
   useEffect(() => {
-      fetchTotalSavedTime();
+    fetchTotalSavedTime();
   }, []);
+
+  function removeSelectedFileFromBothStores(id) {
+    removeSelectedFile(id);
+    removeBlogLink(id);
+  }
   const handleChipClick = (index) => {
     const idOfKeyword = getIdFromUniqueName(keywordsOFBlogs[index].id);
 
@@ -191,7 +275,7 @@ export default function Home(
       updatedTones[index].selected = !updatedTones[index].selected;
       return updatedTones;
     });
-  }
+  };
   useEffect(() => {
     updateAuthentication();
   }, []);
@@ -207,7 +291,7 @@ export default function Home(
   const [showHoveUpgradeNow, setShowHoveUpgradeNow] = useState(false);
   const [loadingForFilesKeywords, setLoadingForFilesKeywords] = useState(false);
   const handleGenerate = (options = {}) => {
-    console.log('options');
+    console.log("options");
     console.log(options);
     localStorage.setItem("optionsForRepurpose", JSON.stringify(options));
     const pathname = "/dashboard";
@@ -220,28 +304,30 @@ export default function Home(
         return {
           url: null,
           file: null,
-          keyword: null
-        }
-      }
-      )
-    })
+          keyword: null,
+        };
+      });
+    });
   };
 
   function handleRepourpose() {
     setLoadingForKeywords(true);
     // key all keywords which are selected
-    ;
-    const keywords = keywordsOFBlogs.filter((keyword) => keyword.selected).map((keyword) => keyword.text);
+    const keywords = keywordsOFBlogs
+      .filter((keyword) => keyword.selected)
+      .map((keyword) => keyword.text);
     if (keywords.length === 0) {
       toast.error("Please select atleast some keywords");
-      ;
       return;
     }
     setShowRepourposeError(false);
     const options = {
-      tones: repurposeTones.filter((tone) => tone.selected).map((tone) => tone.text) || [],
+      tones:
+        repurposeTones
+          .filter((tone) => tone.selected)
+          .map((tone) => tone.text) || [],
       keywords: keywords || [],
-      article_ids: [...new Set(articleIds)]
+      article_ids: [...new Set(articleIds)],
     };
     handleGenerate(options);
     setLoadingForKeywords(false);
@@ -253,13 +339,18 @@ export default function Home(
     setShowUserLoadingModal({ show: true });
     console.log(selectedFiles);
     if (selectedFiles.length > 0) {
-      const selectedFilesForPayload = selectedFiles.map((fileObject) => fileObject.file);
-      console.log('selectedFilesForPayload', selectedFilesForPayload);
+      const selectedFilesForPayload = selectedFiles.map(
+        (fileObject) => fileObject.file
+      );
+      console.log("selectedFilesForPayload", selectedFilesForPayload);
       uploadAndExtractKeywords(selectedFilesForPayload)
         .then((response) => {
-          console.log('Response:', response);
+          console.log("Response:", response);
           // Handle the response here
-          if (response?.response?.data && response?.response?.data?.type === 'ERROR') {
+          if (
+            response?.response?.data &&
+            response?.response?.data?.type === "ERROR"
+          ) {
             toast.error(response.response.data.message);
             setLoadingForKeywords(false); // Set loading state back to false on error
             return;
@@ -277,66 +368,117 @@ export default function Home(
             return {
               ...prev,
               file: STATESOFKEYWORDS.LOADED,
-            }
+            };
           });
           setShowUserLoadingModal({ show: false });
           setLoadingForKeywords(false); // Set loading state back to false on successful response
         })
         .catch((error) => {
-          console.log('ERROR');
+          console.log("ERROR");
           console.log(error);
           // Handle errors here
           setStateOfGenerate((prev) => {
             return {
               ...prev,
               file: STATESOFKEYWORDS.LOADED,
-            }
+            };
           });
           setShowUserLoadingModal({ show: false });
           setLoadingForKeywords(false); // Set loading state back to false on error
-        }).finally(() => { setStateOfGenerate((prev) => { return { ...prev, file: STATESOFKEYWORDS.LOADED, } }) });
+        })
+        .finally(() => {
+          setStateOfGenerate((prev) => {
+            return { ...prev, file: STATESOFKEYWORDS.LOADED };
+          });
+        });
     } else {
-      toast.error('Please select a file');
+      toast.error("Please select a file");
       setLoadingForKeywords(false); // Set loading state back to false if no file is selected
     }
   }
   function processDataForKeywords(data) {
     const keywordsMap = {};
     data.forEach((item) => {
-      keywordsMap[item.text] = keywordsMap[item.text] ? keywordsMap[item.text] + 1 : 1;
+      keywordsMap[item.text] = keywordsMap[item.text]
+        ? keywordsMap[item.text] + 1
+        : 1;
     });
     data.forEach((item) => {
       if (keywordsMap[item.text] > 1) {
-        item.source = item.realSource ? item.realSource.toLowerCase().charAt(0).toUpperCase() + item.realSource.toLowerCase().slice(1) : '';
+        item.source = item.realSource
+          ? item.realSource.toLowerCase().charAt(0).toUpperCase() +
+          item.realSource.toLowerCase().slice(1)
+          : "";
       }
     });
     return data;
   }
-  function handleGenerateClick() {
-    console.log(blogLinks);
-    const countByType : KeysForStateOfGenerate = blogLinks.reduce((acc, link) => {
-      if (link.type === 'file') {
-        acc.file++;
-      } else if (link.type === 'url') {
-        acc.url++;
-      } else if (link.type === 'keyword') {
+
+
+
+  function validateGenerateButtonStatus() {
+    const countByType: KeysForStateOfGenerate = blogLinks.reduce(
+      (acc, link) => {
+        if (link.type === "file") {
+          acc.file++;
+        } else if (link.type === "url") {
+          acc.url++;
+        } else if (link.type === "keyword") {
+          acc.keyword++;
+        }
+        return acc;
+      },
+      { file: 0, url: 0 }
+    );
+    if (keyword == "") {
+      setDisableGenerateButton(true);
+    } else {
+      setDisableGenerateButton(false);
+    }
+  }
+  const countByType = blogLinks.reduce(
+    (acc, link) => {
+      if (link.type === "file") {
+        acc.lengthOFiles++;
+      } else if (link.type === "url") {
+        acc.lengthOfUrls++;
+      } else if (link.type === "keyword") {
         acc.keyword++;
       }
       return acc;
-    }, { file: 0, url: 0, keyword: 0 });
-    // Replace `keywords` with your actual keywords array/state
-    // Replace `fileInput` with your actual file input state or variable
-  
+    },
+    { lengthOFiles: 0, lengthOfUrls: 0 }
+  );
+
+  function handleGenerateClick() {
+    console.log(blogLinks);
+    const countByType: KeysForStateOfGenerate = blogLinks.reduce(
+      (acc, link) => {
+        if (link.type === "file") {
+          acc.file++;
+        } else if (link.type === "url") {
+          acc.url++;
+        } else if (link.type === "keyword") {
+          acc.keyword++;
+        }
+        return acc;
+      },
+      { file: 0, url: 0 }
+    );
+    if (countByType.file == 0 && countByType.url == 0 && keyword == "") {
+      return;
+    }
     var typeKeys = Object.keys(countByType);
 
     const prevStateOfGenerate = { ...stateOfGenerate };
     typeKeys.forEach((type) => {
-      prevStateOfGenerate[type] = countByType[type] === 0 ? null : STATESOFKEYWORDS.LOADING;
+      prevStateOfGenerate[type] =
+        countByType[type] === 0 ? null : STATESOFKEYWORDS.LOADING;
     });
-    console.log('prevStateOfGenerate');
+    console.log("prevStateOfGenerate");
     console.log(prevStateOfGenerate);
-    setStateOfGenerate(prevStateOfGenerate); 
-    console.log('countByType');
+    setStateOfGenerate(prevStateOfGenerate);
+    console.log("countByType");
     console.log(countByType);
     // if (countByType.files > 0 && countByType.urls > 0) {
 
@@ -354,66 +496,138 @@ export default function Home(
     //   uploadExtractKeywords();
     // }
     // // extractKeywordsFromKeywords();
-    
-    if(countByType.url > 0){
-      uploadExtractKeywords();
+
+    // if (countByType.url > 0) {
+    //   uploadExtractKeywords();
+    // }
+    // if (countByType.keyword > 0) {
+    //   uploadExtractKeywordsFromKeywords();
+    // }
+    // if (countByType.file > 0) {
+    //   uploadFilesForKeywords();
+    // }
+    var token;
+    var getUserId;
+    var getTempId;
+    if (typeof window !== "undefined") {
+      token = localStorage.getItem("token");
+      getUserId = localStorage.getItem("userId");
+      getTempId = localStorage.getItem("tempId");
     }
-    if(countByType.keyword > 0){
-      uploadExtractKeywordsFromKeywords();
-    }
-    if(countByType.file > 0){
-      uploadFilesForKeywords();
-    }
+    const tones =
+      repurposeTones.filter((tone) => tone.selected).map((tone) => tone.text) ||
+      [];
+    const keywordForPayload = keyword;
+    const userId = userAbleUserIDForSubs;
+    const files = selectedFiles.map((fileObject) => fileObject.file);
+    console.log(blogLinks, 'bloglinks');
+    const urls = blogLinks.filter((link) => link.type === "url").map((link) => link.value);
+    console.log(urls);
+    setShowingGenerateLoading(true);
+    newGenerateApi(token, tones, keywordForPayload, userId, files, urls).then(
+      (response) => {
+        if (response.type == 'ERROR') {
+          toast.error(response.message);
+          setShowErrorModal(true);
+          setShowingGenerateLoading(false);
+          return;
+        }
+        const { data } = response;
+        const _id = data._id;
+        const responseTime = data.respTime;
+        const pyTime = data.pythonRespTime;
+        updateTime(responseTime, pyTime, responseTime);
+        console.log(response);
+        // addMessages()'
+        const unprocessedUrlsFR = data?.unprocessedUrls;
+        const unprocessedFiles = data?.unprocessedFiles;
+
+        const errorMessages = [];
+
+        if (unprocessedUrlsFR?.length > 0) {
+          const msgForUrl = 'Host has denied the extraction from these URLs. You can try again or use different URLs: ' + unprocessedUrlsFR.join(', ');
+          errorMessages.push(msgForUrl);
+        }
+
+        if (unprocessedFiles?.length > 0) {
+          const fileErrors = unprocessedFiles.map(file => file + ' - File unable to process');
+          errorMessages.push(...fileErrors);
+        }
+
+        console.log(errorMessages);
+
+        if (errorMessages.length > 0) {
+          addMessages(errorMessages);
+        }
+
+        console.log(response);
+        setTimeout(() => {
+          router.push({
+            pathname: `/dashboard/${_id}`,
+            query: { type: TYPES_OF_GENERATE.REPURPOSE },
+          }).then(() => {
+            setShowingGenerateLoading(false);
+            handleGenerateReset()
+          });
+        }, 2000);
+         
+      }
+    ) 
   }
 
- function uploadExtractKeywordsFromKeywords(){
+  function uploadExtractKeywordsFromKeywords() {
     setShowUserLoadingModal({ show: true });
-    const keywords = blogLinks.filter((link) => link.type === 'keyword').map((link) => link.value);
+    const keywords = blogLinks
+      .filter((link) => link.type === "keyword")
+      .map((link) => link.value);
     console.log(keywords);
     // const data =await extractKeywordsFromKeywords(keywords[keywords.length - 1]);
     // console.log(data);
-  extractKeywordsFromKeywords(keywords[keywords.length - 1]).then((data) => {
-    if(data.type ==='ERROR'){
-      toast.error(data.message);
-      setShowUserLoadingModal({ show: false });
-      return;
-    }
-    const keywordsData = data.data;
-    const keywordsForBlog = processKeywords(keywordsData);
-    setkeywordsOfBlogs((prev) => {
-      const prevKeywords = [...prev];
-      const updatedKeywords = [...prevKeywords, ...keywordsForBlog];
-      const processedKeywords = processDataForKeywords(updatedKeywords);
-      return processedKeywords;
-    });
-    setStateOfGenerate((prev) => {
-      return {
-        ...prev,
-        keyword: STATESOFKEYWORDS.LOADED,
-      }
-    });
-    setShowUserLoadingModal({ show: false });
-    setLoadingForKeywords(false); 
-  }).catch((err) => {
-    console.log(err);
-    
-    toast.error(err.message)
-    setShowUserLoadingModal({ show: false });
-    setLoadingForKeywords(false); 
-    setStateOfGenerate((prev) => {
-      return {
-        ...prev,
-        keyword: STATESOFKEYWORDS.LOADED,
-      }
-    });
-  }).finally(() => {
-    setStateOfGenerate((prev) => {
-      return {
-        ...prev,
-        keyword: STATESOFKEYWORDS.LOADED,
-      }
-    });
-  })
+    extractKeywordsFromKeywords(keywords[keywords.length - 1])
+      .then((data) => {
+        if (data.type === "ERROR") {
+          toast.error(data.message);
+          setShowUserLoadingModal({ show: false });
+          return;
+        }
+        const keywordsData = data.data;
+        const keywordsForBlog = processKeywords(keywordsData);
+        setkeywordsOfBlogs((prev) => {
+          const prevKeywords = [...prev];
+          const updatedKeywords = [...prevKeywords, ...keywordsForBlog];
+          const processedKeywords = processDataForKeywords(updatedKeywords);
+          return processedKeywords;
+        });
+        setStateOfGenerate((prev) => {
+          return {
+            ...prev,
+            keyword: STATESOFKEYWORDS.LOADED,
+          };
+        });
+        setShowUserLoadingModal({ show: false });
+        setLoadingForKeywords(false);
+      })
+      .catch((err) => {
+        console.log(err);
+
+        toast.error(err.message);
+        setShowUserLoadingModal({ show: false });
+        setLoadingForKeywords(false);
+        setStateOfGenerate((prev) => {
+          return {
+            ...prev,
+            keyword: STATESOFKEYWORDS.LOADED,
+          };
+        });
+      })
+      .finally(() => {
+        setStateOfGenerate((prev) => {
+          return {
+            ...prev,
+            keyword: STATESOFKEYWORDS.LOADED,
+          };
+        });
+      });
   }
 
   function uploadExtractKeywords() {
@@ -428,39 +642,44 @@ export default function Home(
       getTempId = localStorage.getItem("tempId");
     }
     var raw = JSON.stringify({
-      "urls": blogLinks
-        .filter((url) => url.type === 'url')
+      urls: blogLinks
+        .filter((url) => url.type === "url")
         .map((url) => url.value),
-      "userId": getToken ? getUserId : getTempId
+      userId: getToken ? getUserId : getTempId,
     });
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
     var requestOptions = {
-      method: 'POST',
+      method: "POST",
       headers: myHeaders,
       body: raw,
     };
-    const URL = API_BASE_PATH + API_ROUTES.EXTRACT_KEYWORDS
+    const URL = API_BASE_PATH + API_ROUTES.EXTRACT_KEYWORDS;
     fetch(URL, requestOptions)
-      .then(response => response.json())
-      .then(result => {
-        if (result.type === 'ERROR') {
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.type === "ERROR") {
           // const errorMessage = result.message + result?.unprocessedUrls && result.unprocessedUrls.length > 0 && (' Unresovled URLs ' + result.unprocessedUrls.join(', '));
           let _errorMessage = result.message;
           if (result?.unprocessedUrls && result.unprocessedUrls.length > 0) {
-            _errorMessage += ' Unresovled URLs are ' + result.unprocessedUrls.join(', ');
+            _errorMessage +=
+              " Unresovled URLs are " + result.unprocessedUrls.join(", ");
           }
           const errorMessage = _errorMessage;
           toast.error(errorMessage);
           return;
         }
-        const doesUnprocessedUrlsExist = result?.unprocessedUrls && result.unprocessedUrls.length > 0;
+        const doesUnprocessedUrlsExist =
+          result?.unprocessedUrls && result.unprocessedUrls.length > 0;
         if (doesUnprocessedUrlsExist) {
-          toast.warn(`Success but we could not resolve ${result.unprocessedUrls.length > 1 ? "these URLs" : "this URL"} : ` + result.unprocessedUrls.join(', '));
+          toast.warn(
+            `Success but we could not resolve ${result.unprocessedUrls.length > 1 ? "these URLs" : "this URL"
+            } : ` + result.unprocessedUrls.join(", ")
+          );
         }
-        const { keywords, keywordIdMap,
-          articleIds, } = extractKeywordsAndIds(result);
+        const { keywords, keywordIdMap, articleIds } =
+          extractKeywordsAndIds(result);
         // setkeywordsOfBlogs(prev => [...prev, ...keywords]);
         const prevKeywords = [...keywordsOFBlogs];
         const updatedKeywords = [...prevKeywords, ...keywords];
@@ -471,16 +690,16 @@ export default function Home(
           return {
             ...prev,
             url: STATESOFKEYWORDS.LOADED,
-          }
+          };
         });
       })
-      .catch(error => {
-        console.log('error', error)
+      .catch((error) => {
+        console.log("error", error);
         setStateOfGenerate((prev) => {
           return {
             ...prev,
             url: STATESOFKEYWORDS.LOADED,
-          }
+          };
         });
       })
       .finally(() => {
@@ -488,21 +707,16 @@ export default function Home(
           return {
             ...prev,
             url: STATESOFKEYWORDS.LOADED,
-          }
+          };
         });
         setShowUserLoadingModal({ show: false });
       });
   }
 
-  var getToken;
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      getToken = localStorage.getItem("token");
-      if (getToken) setIsauth(true);
-    }
-  }, []);
+
 
   const [keyword, setkeyword] = useState("");
+  const [disableGenerateButton, setDisableGenerateButton] = useState(false);
   const router = useRouter();
   const setKeywordInStore = useStore((state) => state.setKeyword);
   const [index, setIndex] = React.useState(0);
@@ -523,12 +737,11 @@ export default function Home(
             Authorization: "Bearer " + localStorage.getItem("token"),
           },
           body: JSON.stringify(userContribution),
-        }; s
+        };
+        s;
         fetch(SAVE_USER_SUPPORT_URL, requestOptions)
-          .then((response) => {
-          })
-          .catch((error) => {
-          });
+          .then((response) => { })
+          .catch((error) => { });
       }
       setIsPayment(true);
       toast.success("Payment Successful!", {
@@ -565,6 +778,9 @@ export default function Home(
     return () => clearTimeout(intervalId);
   }, []);
 
+  useEffect(() => {
+    validateGenerateButtonStatus();
+  }, [blogLinks, keyword])
   const {
     data: meeData,
     loading: meeLoading,
@@ -578,7 +794,7 @@ export default function Home(
       },
     },
     onError: ({ graphQLErrors, networkError }) => {
-      console.log(graphQLErrors, networkError)
+      console.log(graphQLErrors, networkError);
       if (graphQLErrors) {
         for (let err of graphQLErrors) {
           switch (err.extensions.code) {
@@ -643,7 +859,117 @@ export default function Home(
   const [pfmodal, setPFModal] = useState(false);
   const [isOTPVerified, setIsOTPVerified] = useState(true);
   const [showOTPModal, setShowOTPModal] = useState(false);
-
+  const [activeTab, setActiveTab] = useState(0);
+  const { showFileStatus, uploadedFilesData } = useFileUploadStore();
+  const [showTabsInfo, setShowTabsInfo] = useState({
+    web: false,
+    urls: true,
+    documents: true
+  });
+  console.log(blogLinks);
+  const filesNames = blogLinks
+    .filter((link) => link.type === "file")
+    .map((link) => {
+      return {
+        id: link.id,
+        name: link.value,
+        size: link.size,
+      };
+    });
+  console.log(filesNames);
+  const tabs = [
+    {
+      id: 0,
+      label: "Web",
+      content: <></>,
+    },
+    {
+      id: 1,
+      label: "My URLs",
+      upperContent: (
+        <>
+          {
+            showTabsInfo.urls && (<div className="w-fit h-7 px-2.5 py-1.5 my-2 bg-orange-100 rounded backdrop-blur-2xl justify-center items-center gap-2.5 inline-flex">
+            <div className="text-yellow-600 text-xs font-medium leading-none">
+              We take a little longer to generate draft for URLs. Please be patient.
+            </div>
+            <XCircleIcon className="w-4 h-4 text-gray-600 cursor-pointer" onClick={() => setShowTabsInfo(prev => ({ ...prev, urls: false }))} />
+          </div>
+            )
+          }
+        </>
+      ),
+      content: (
+        <>
+          <div className=" w-full text-left mt-2 flex flex-col items-start justify-center">
+            <h1 className="text-left">Paste URL</h1>
+          </div>
+              <RePurpose
+                placeholder="Paste URLs (comma between)"
+                allInputs={inputData}
+                setAllInput={setInputData}
+                removeFile={removeSelectedFile}
+                value={blogLinks}
+                setValue={setBlogLinks}
+                setShowRepourposeError={setShowRepourposeError}
+              />
+        </>
+      ),
+    },
+    {
+      id: 2,
+      label: "My Documents",
+      upperContent: (
+        <>
+          {
+            showTabsInfo.documents && (<div className="w-fit h-7 px-2.5 py-1.5 my-2 bg-orange-100 rounded backdrop-blur-2xl justify-center items-center gap-2.5 inline-flex">
+            <div className="text-yellow-600 text-xs font-medium leading-none">
+              We take a little longer to generate draft for Documents. Please be patient.
+            </div>
+            <XCircleIcon className="w-4 h-4 text-gray-600 cursor-pointer" onClick={() => setShowTabsInfo(prev => ({ ...prev, documents: false }))} />
+          </div>
+            )
+          }
+        </>
+      ),
+      content: (
+        <>
+          <div className="flex items-center mt-2  scrollbar-thumb-indigo-600 scrollbar-corner-inherit rounded-full scroll-m-1 py-2 scrollbar-thin scrollbar-track-gray-100 overflow-x-scroll gap-2">
+            {/* <FileChipIcon fileName="index.tsx" fileSize="5mb" /> */}
+    {console.log(filesNames)}
+      {!isAuthenticated && filesNames.length > 1? (<FileChipIcon fileName={filesNames[0].name} fileSize="" onCrossClick={
+                  () => { removeSelectedFileFromBothStores(filesNames[0].id) }
+                } /> ) :  (<> {filesNames.map((fileName, index) => {
+              return (
+                <FileChipIcon key={index} fileName={fileName.name} fileSize="" onCrossClick={
+                  () => { removeSelectedFileFromBothStores(fileName.id) }
+                } />
+              );
+            })}</>)}
+          </div>
+           <div>{!isAuthenticated && filesNames.length > 1 && <div className="text-sm text-red-500 mt-2 relative text-left">You can only upload 1 file as a guest user</div>}</div>
+          <DragAndDropFiles blogLinks={blogLinks} setBlogLinks={setBlogLinks} onClickHereButtonClick={() => setShowGDriveModal(true)}/>
+           {/* <div>{!isAuthenticated && filesNames.length > 1 && <div className="text-sm text-red-500 mt-2 relative -top-[45px] text-left">You can only upload 1 file as a guest user</div>}</div> */}
+          {
+            showFileStatus && (
+              <div className="flex items-center justify-center  my-2 gap-2 max-w-full min-w-full flex-wrap">
+                {uploadedFilesData.map((file, index) => {
+                  console.log(file);
+                  return (
+                    <FileUploadCard
+                      key={index}
+                      fileName={file.name}
+                      fileSize={file.size}
+                      progress={file.percentage}
+                    />
+                  );
+                })}
+              </div>
+            )}
+        </>
+      ),
+    },
+  ];
   useEffect(() => {
     if (typeof window !== "undefined") {
       const isOTPVerified = localStorage.getItem("isOTPVerified");
@@ -717,8 +1043,7 @@ export default function Home(
       };
 
       fetch(SEND_OTP_URL, requestOptions)
-        .then((response) => {
-        })
+        .then((response) => { })
         .catch((error) => {
           console("ERROR FROM SEND OTP");
         });
@@ -776,15 +1101,35 @@ export default function Home(
           <></>
         )}
 
+
         {/* <TotalTImeSaved   /> */}
 
         {!meeData?.me?.isSubscribed && meeData?.me?.credits === 0 && (
           <TrialEndedModal setTrailModal={() => { }} topic={null} />
         )}
-        <GoogleDriveModal showModal={showGDriveModal} setShowModal={setShowGDriveModal} meeData={meeData} />
-
+        <GoogleDriveModal
+          showModal={showGDriveModal}
+          setShowModal={setShowGDriveModal}
+          meeData={meeData}
+        />
+        {
+          showErrorModal && <GenerateErrorModal 
+          modalOpen={showErrorModal}
+          setModalOpen={setShowErrorModal}
+          />
+        }
+        {showingGenerateLoading && (
+          <GenerateLoadingModal
+            resetForm={handleGenerateReset}
+            showGenerateLoadingModal={showingGenerateLoading}
+            setShowGenerateLoadingModal={setShowingGenerateLoading}
+            stepStatus={subsData?.stepCompletes.step}
+            type={countByType.lengthOFiles > 0 || countByType.lengthOfUrls > 0 ? countByType.lengthOfUrls > 0 ? 'URL' : "FILE" : "WEB"}
+            showBackButton={countByType.lengthOFiles > 0 || countByType.lengthOfUrls > 0}
+          />
+        )}
         <div
-          className={`maincontainer relative md:px-6 pt-5 lg:px-8 ${!isAuthenticated && "md:min-h-screen"
+          className={`maincontainer relative md:px-6 pt-5 lg:px-8 ${!isAuthenticated && "min-h-screen"
             }`}
         >
           <FloatingBalls className="hidden absolute top-[4%] rotate-45 md:block" />
@@ -792,12 +1137,34 @@ export default function Home(
           <FloatingBalls className="hidden absolute top-[9%] right-0 md:block" />
           <FloatingBalls className="hidden absolute top-[10%] w-8 rotate-90 left-[3%] md:block" />
 
-          <div className="w-full lg:w-[51%] h-full " style={{ display: isAuthenticated ? 'none' : 'block,', transform: 'rotate(0deg)', transformOrigin: '0 0', background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)', top: '-10px', right: '0px', position: 'absolute', zIndex: -1 }}></div>
-          <div className="w-full lg:w-[51%] h-full " style={{
-            transform: 'rotate(180deg)', display: isAuthenticated ? 'none' : 'block,',  //      transform: scaleX(-1); 
-            transform: 'scaleX(-1)',
-            background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)', top: '-10px', left: '0px', position: 'absolute', zIndex: -1
-          }}></div>
+          <div
+            className="w-full lg:w-[51%] h-full "
+            style={{
+              display: isAuthenticated ? "none" : "block,",
+              transform: "rotate(0deg)",
+              transformOrigin: "0 0",
+              background:
+                "linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)",
+              top: "-10px",
+              right: "0px",
+              position: "absolute",
+              zIndex: -1,
+            }}
+          ></div>
+          <div
+            className="w-full lg:w-[51%] h-full "
+            style={{
+              transform: "rotate(180deg)",
+              display: isAuthenticated ? "none" : "block,", //      transform: scaleX(-1);
+              transform: "scaleX(-1)",
+              background:
+                "linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)",
+              top: "-10px",
+              left: "0px",
+              position: "absolute",
+              zIndex: -1,
+            }}
+          ></div>
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
             <svg
               className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
@@ -823,7 +1190,7 @@ export default function Home(
               </defs>
             </svg>
           </div>
-            
+
           {!isAuthenticated && (
             <div className="hidden lg:flex">
               {/* <div
@@ -901,311 +1268,93 @@ export default function Home(
             </div>
           )}
           <div className=" relative mx-auto max-w-screen-xl flex flex-col">
-            <div className={`mx-auto max-w-5xl text-center h-screen  ${isAuthenticated ? "" : 'lg:min-h-screen'} flex items-center justify-center `}
+            <div
+              className={`mx-auto max-w-5xl text-center h-screen  ${isAuthenticated ? "" : "min-h-screen"
+                } flex items-center justify-center `}
               style={{
-                height: '100%'
+                height: "100%",
               }}
             >
-              <div className={`mt-[10%] ${isAuthenticated ?  ( keywordsOFBlogs.length==0 && 'lg:mt-[10%]' ): (keywordsOFBlogs.length==0 && 'lg:mt-[-10%]')}`}>
-                <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing lg:min-w-[900px]">
-                  Lille is your Content <TextTransitionEffect text={TEXTS2} />
-                  Co-Pilot
-                  <div className="absolute right-0 md:right-[-10%]">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="240" height="261" viewBox="0 0 240 261" fill="none">
-                    <path d="M144.552 98.8563C164.626 112.575 180.188 128.559 189.173 143.197C193.667 150.52 196.44 157.382 197.391 163.365C198.339 169.327 197.46 174.237 194.896 177.989C192.332 181.741 188.076 184.343 182.178 185.626C176.258 186.914 168.857 186.824 160.402 185.297C143.501 182.244 122.954 173.553 102.88 159.834C82.8064 146.116 67.2442 130.131 58.26 115.493C53.7659 108.171 50.993 101.309 50.0418 95.3256C49.0941 89.3642 49.9729 84.4535 52.5368 80.7018C55.1007 76.9501 59.3566 74.3473 65.255 73.0645C71.1747 71.777 78.5758 71.8673 87.0304 73.3941C103.932 76.4464 124.478 85.1379 144.552 98.8563Z" stroke="url(#paint0_linear_2158_42358)" stroke-width="6" />
-                    <path d="M147.927 99.2697C166.631 117.075 179.874 136.963 186.206 154.666C192.571 172.461 191.82 187.578 183.39 196.434C174.96 205.29 159.898 206.783 141.811 201.301C123.818 195.847 103.303 183.598 84.5991 165.793C65.8957 147.988 52.6529 128.1 46.3203 110.396C39.9549 92.6012 40.7059 77.4839 49.1363 68.6282C57.5668 59.7724 72.6288 58.2789 90.7152 63.7615C108.709 69.2158 129.224 81.4645 147.927 99.2697Z" stroke="url(#paint1_linear_2158_42358)" stroke-width="3" />
-                    <defs>
-                      <linearGradient id="paint0_linear_2158_42358" x1="146.054" y1="82.7086" x2="81.9961" y2="165.72" gradientUnits="userSpaceOnUse">
-                        <stop stop-color="#F7938B" />
-                        <stop offset="1" stop-color="white" stop-opacity="0" />
-                      </linearGradient>
-                      <linearGradient id="paint1_linear_2158_42358" x1="47.5691" y1="48.2032" x2="82.6596" y2="126.602" gradientUnits="userSpaceOnUse">
-                        <stop stop-color="#F9948C" />
-                        <stop offset="1" stop-color="white" stop-opacity="0" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center justify-center gap-2.5">
-                  {/* <span className="relative flex text-xl items-center  justify-center font-medium tracking-tight text-gray-900 sm:text-xl pt-4 flex-wrap">Two ways to get started with &nbsp;<span className="font-bold text-indigo-600">Lille.ai</span></span>
-                  <span className="text-center text-slate-800 text-xl font-bold leading-relaxed">
-                    Ask questions or upload multiple documents / URL’S.
-                  </span> */}
-
-                </div>
-
-                <div className="w-full lg:min-w-[700px] lg:max-w-[700px] h-full opacity-90  shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.5)',
-                }}
+              <div
+                className={`mt-[10%] ${isAuthenticated
+                  ? keywordsOFBlogs.length == 0 && "lg:mt-[10%]"
+                  : keywordsOFBlogs.length == 0 && "lg:mt-[-10%]"
+                  }`}
+              >
+                <RotatingText/> 
+                <div
+                  className="w-full lg:min-w-[850px] lg:max-w-[850px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
+                  style={{
+                    background: "rgba(255, 255, 255, 0.5)",
+                    outline: 'none !important' 
+                  }}
                 >
-                  <div className="w-full lg:h-8 justify-center items-start gap-4 inline-flex">
-                    <div className="px-3 py-1.5 bg-green-100 rounded-3xl justify-start items-center flex">
-                      <div className="w-3 h-3 bg-green-600 rounded-full border border-white animate-pulse" />
-                      <div className="w-3.5 h-3.5 relative">
-                      </div>
-                      <div><span className="text-green-600 text-sm font-extrabold"
-                      >{randomLiveUsersCount} users</span><span className="text-green-600 text-sm font-medium"> are online now</span></div>
-                    </div>
-                    <div className="px-3 py-1.5 bg-violet-100 rounded-3xl justify-start items-center gap-1.5 flex">
-                      <div><span className="text-blue-500 text-sm font-extrabold">{usersTotalTimeSavedData?.data.totalSavedTime} Hrs</span><span className="text-blue-500 text-sm font-medium"> saved collectively of our users</span></div>
-                    </div>
-                  </div>
-                  <div className="w-full h-full justify-center items-center gap-2.5 inline-flex">
-                    <div className="relative w-full min-h-[60px] bg-white rounded-[10px]  border border-indigo-600 py-2.5">
+                  <h1
+                    className="text-center text-slate-800 text-xl font-bold leading-relaxed">Select a source</h1>
+                  <div className="w-full relative">
+                    <Tab.Group
+                      defaultIndex={activeTab}
+                      onChange={(index) => {
+                        setActiveTab(index);
+                      }}
+                    >
+                      <Tab.List className="justify-start items-center gap-3 inline-flex">
+                        {tabs.map((tab) => (
 
-                      {showFileUploadUI == true &&
-
-                        <div className="flex items-center justify-between px-5">
-                          <h1 className="grow shrink basis-0 text-slate-800 text-lg font-normal text-left">Upload</h1>
-                          <button onClick={
-                            () => { setShowFileUploadUI(false) }}
+                          <Tab
+                            key={tab.id}
+                            className={`${tab.label === "Web"  ? "w-24" : "w-32"} h-8 px-2.5 py-1 border-b border-indigo-600 ring-0  focus:ring-0  justify-center items-center gap-2.5 inline-flex text-base font-medium text-gray-800 ${activeTab === tab.id ? "border-b-2 border-indigo-600 text-gray-800" : "text-gray-600 border-none"}`}>
+                            {tab.label}
+                          </Tab>
+                        ))}
+                      </Tab.List>
+                      <Tab.Panels>
+                        {tabs.map((tab) => (
+                          <Tab.Panel
+                            key={tab.id}
+                            className={`
+                            ${activeTab === tab.id ? "block" : "hidden"} p-4`}
                           >
-                            <XCircleIcon className='h-6 w-6 text-indigo-600' />
-                          </button>
-                        </div>
-                      }
-                      <div className="flex items-center flex-col md:flex-row px-2  gap-2.5 relative "
-                       
-                      >
-                        
-                        
-                        {/* <RePurpose removeFile={removeFile} value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} /> */}
-                        {
-                          showFileUploadUI == true && blogLinks.length == 0 ?
-                            <></>
-                            :
-                            <RePurpose allInputs={inputData} setAllInput={setInputData} removeFile={removeSelectedFile} value={blogLinks} setValue={setBlogLinks} setShowRepourposeError={setShowRepourposeError} />
-
-                        }
-
-                        {showFileUploadUI != true &&
-
-                          <Tooltip content={`Select file formats like PDF, DOCX, TXT (size <${REPURPOSE_MAX_SIZE_MB}MB)`} direction='top' className='max-w-[100px] mt-4'>
-
-                            <button onClick={
-                              () => {
-                                setShowFileUploadUI(true);
-                                addToFunctionStack(() => { setShowFileUploadUI(false) })
-                              }
-                            }  className="w-20 h-10 px-4 py-4 rounded-lg border border-indigo-300 justify-center items-center gap-2 inline-flex">
-                                <div className="text-indigo-600 text-sm font-medium flex items-center justify-center">File <ArrowLongUpIcon className="h-4 w-4" /></div>
-                                {/* <div className="justify-center items-center gap-1 flex">
-                                  <img className="w-5 h-5" src="./icons/pdficon.svg" />
-                                  <img className="w-5 h-5" src="./icons/texticon.png" />
-                                  <img className="w-5 h-5" src="./icons/wordicon.png" />
-                                </div> */}
-                              </button>
-                          </Tooltip>
-                        }
-                      </div>
-
-                      {showFileUploadUI == true &&
-                        <div className="px-5">
-
-                          <h3>
-                            {/* <Tooltip content="Select file formats like PDF, DOCX, TXT (size <7mb)" direction='top' className='max-w-[100px] mt-4'>
-                                    <button 
-                                    onClick={
-                                      () => {
-                                        inputFilesRef.current.click();
-                                      }
-                                    }
-                                    className="w-[100.81px] h-10 flex justify-around cursor-pointer px-2 rounded-lg border border-indigo-600 items-center gap-2.5" htmlFor="refileupload">
-                                      <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
-                                      <button className="justify-center items-center gap-2 inline-flex ">
-                                        <span className="text-indigo-600 text-sm font-normal">Upload</span>
-                                      </button>
-                                    </button>
-                                  </Tooltip> */}
-
-                            <DragAndDropFiles blogLinks={blogLinks} setBlogLinks={setBlogLinks} />
-                          </h3>
-                        </div>
-                      }
-                    </div>
-                    
-                  </div>
-                  <div className="w-full h-5 lg:flex-row flex-col justify-start items-start gap-3 inline-flex">
-                    <div className="grow shrink basis-0 opacity-70 text-gray-600 text-sm font-normal text-left"></div>
-                    <div className="opacity-70 w-[50%] text-right"><span className="text-zinc-500 text-sm font-normal text-right">Max 7MB size. If you have more than 7MB</span><span className="text-gray-500 text-sm font-normal"> </span><button
-                    onClick={()=>setShowGDriveModal(true)}
-                    ><span className="text-blue-500 text-sm font-normal">Click here</span></button></div>
-                  </div>
-                  {
-                    (stateOfGenerate.url != null && stateOfGenerate.file != null) || (stateOfGenerate.url != null && stateOfGenerate.keyword != null) || (stateOfGenerate.file != null && stateOfGenerate.keyword != null) ?
-                      <div className="w-full h-6 justify-center items-center gap-2.5 inline-flex">
-                        {(stateOfGenerate.url != null) && (
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-slate-800">Keywords from URL:</span>
-                            {stateOfGenerate.url === STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} color={"#2563EB"} height={20} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />}
-                          </div>
-                        )}
-                        {(stateOfGenerate.keyword != null) && (
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-slate-800">Keywords from Topic:</span>
-                            {stateOfGenerate.keyword === STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} height={20} color={"#2563EB"} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />}
-                          </div>
-                        )}
-                        {(stateOfGenerate.file != null) && (
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-slate-800">Keywords from File:</span>
-                            {stateOfGenerate.file === STATESOFKEYWORDS.LOADING ? <ReactLoading round={true} height={20} color={"#2563EB"} width={20} /> : <CheckCircleIcon className="h-5 w-5 text-green-500" />}
-                          </div>
-                        )}
-                      </div>
-                      : null
-                  }
-
-                  <div className='flex items-center flex-col mt-2'>
-                    {keywordsOFBlogs.length > 0 && <div className="flex items-center gap-1.5" >
-                      <h4>Select some keywords to generate draft </h4> <Tooltip content="Select keywords to focus on. Sources/URLs/Files with the chosen keywords will be used to create a high-ranking SEO article." direction='top' className='max-w-[100px]'>
-                        <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
-                      </Tooltip></div>}
-                    <div className='flex flex-wrap justify-center gap-2 mt-5'>
-                      {keywordsOFBlogs.length > 0 && keywordsOFBlogs.map((chip, index) => (
-                        <Chip key={index} text={chip.text} handleClick={handleChipClick} index={index} selected={chip.selected} wholeData={chip} />
-                      ))}
-                    </div>
-                  </div>
-                  {
-                    keywordsOFBlogs.length > 0 && isAuthenticated &&
-                    (
-                      <div className='flex items-center flex-col mt-5 relative' onMouseEnter={
-                        () => {
-                          setShowHoveUpgradeNow(true)
-                        }
-                      }
-                        onMouseLeave={
-                          () => {
-                            setShowHoveUpgradeNow(false)
-                          }
-                        }
-
-                      >
-                        <div className="flex items-center">
-                          <h4>Choose Tone/Focus Topics </h4>
-                          <Tooltip content="Improve results by adding tones to your prompt" direction='top' className='max-w-[100px]'>
-                            <InformationCircleIcon className='h-[18px] w-[18px] text-gray-600' />
-                          </Tooltip>
-                        </div>
-                        <div className='flex flex-wrap justify-center gap-2 mt-5'>
-                          {newTones.length > 0 && newTones.map((tone, index) => (
-                            <div key={index} className="relative">
-                              <Chip text={tone.text} handleClick={handleToneClick} index={index} selected={tone.selected} wholeData={null} />
-                            </div>
-                          ))}
-                        </div>
-                        {
-                          meeData?.me?.isSubscribed === false && showHoveUpgradeNow === true && (
-                            <div className="absolute top-0 left-0 w-full h-full bg-gray-700 opacity-70 flex flex-col items-center justify-center">
-                              <p>
-                                You are enjoying free trial. Upgrade your plan to get extra benefits
-                              </p>
-                              <button className="mt-2.5 text-white bg-indigo-600 rounded-[10px] shadow justify-center items-center gap-2.5 inline-flex
-                        active:bg-indigo-600 hover:bg-indigo-700 focus:shadow-outline-indigo px-4 py-2"
-                                onClick={
-                                  () => {
-                                    typeof window !== 'undefined' && router.push(
-                                      {
-                                        pathname: '/upgrade',
-                                      }
-                                    )
-                                  }
-                                }
-                              >Upgrade now</button>
-                            </div>
-                          )}
-                      </div>
-                    )
-                  }
-                  <button className="h-14 px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-lg shadow justify-center items-center gap-2.5 inline-flex hover:from-indigo-700 hover:to-violet-700 focus:shadow-outline-indigo"
-                    onClick={
-                      keywordsOFBlogs.length > 0 ?
-                        handleRepourpose :
-                        handleGenerateClick
-                    }
-                  >
-
-                    {
-                      showUserLoadingModal.show == true ?
-                        <ReactLoading
-                          type="spin"
-                          color="#fff"
-                          height={20}
-                          width={20}
-                        />
-                        :
-                        <>
-                          {keywordsOFBlogs.length > 0 ? (
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-white">Generate Draft</span>
-                            </div>
-                          ) : (
-                            <>
-                              <div className="text-white text-base font-medium leading-7">
-                                Generate draft{" "}
+                            {tab.upperContent ? tab.upperContent : null}
+                            <div className="w-full h-full justify-center items-center gap-2.5 inline-flex">
+                              <div className={`relative w-full min-h-[60px] bg-white rounded-[10px]  border py-2.5 ${keyword.length > 100 ? 'border-red-600' : 'border-indigo-600'} `}>
+                                <div className={`flex items-center flex-col md:flex-row px-2  gap-2.5 relative outline-none active:outline-none rounded-lg`}>
+                                  <KeywordInput
+                                    keyword={keyword}
+                                    setKeyword={setkeyword}
+                                    placeholder={tabsPlaceholders[tab.id]}
+                                    maxLength={100}
+                                  />
+                                </div>
                               </div>
-                              {/* <div className="justify-center items-center gap-2 flex">
-                                <div className="text-white">
-                                  <FaFacebook className="h-5 w-5 mr-1 lg:mr-3" />
-                                </div>
-                                <div className="text-white">
-                                  <FaLinkedin className="h-5 w-5 mr-1 lg:mr-3" />
-                                </div>
-                                <div className="text-white">
-                                  <FaTwitter className="h-5 w-5 mr-1 lg:mr-3" />
-                                </div>
-                                <div className="text-white">
-                                  <ArrowLongRightIcon className="h-5 w-5" />
-                                </div>
-                              </div> */}
-                            </>
-                          )
-                          }
-
-                        </>
-                    }
-                  </button>
-
-                  {/* <button className="cta-invert rounded-[10px] mt-2 lg:mt-0 w-full  items-center  flex flex-row bg-indigo-600" 
-                  >
-                    
-                        <>
-                          <div>
-                            <span className="w-full">Generate 1<sup>st</sup> Drafts for Articles <span className='flex flex-row w-full items-center justify-center'> 
-                     
-                            </span></span>
-                          </div>
-                        </>
-                    }
-
-                  </button> */}
-                  {
-                      keywordsOFBlogs.length > 0 &&
-                      <button className="h-5 px-4 py-6 absolute top-[27%] right-[-12%] flex items-center justify-center bg-indigo-600 rounded-lg text-white text-sm font-medium focus:outline-none"
-                        onClick={
-                          () => {
-                            setkeywordsOfBlogs([]);
-                            setBlogLinks([]);
-                            setSelectedFiles([]);
-                            setStateOfGenerate((prev) => {
-                              return {
-                                url: null,
-                                file: null,
-                                keyword: null
+                              {
+                                keyword.length > 100 && (
+                                  <div className="absolute bottom-0 left-4 text-red-600 text-xs font-medium leading-none">
+                                    {keyword.length}/100
+                                  </div>
+                                )
                               }
-                            }
-                            )
-                          }
-                        }
-                      >
-                        Reset
-                      </button>
-                    }
+                            </div>
+                            {tab.content}
+                          </Tab.Panel>
+                        ))}
+                      </Tab.Panels>
+                    </Tab.Group>
+                  </div>
+
+                  <button
+                    disabled={disableGenerateButton}
+                    className="h-14 px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-lg shadow justify-center items-center gap-2.5 inline-flex hover:from-indigo-700 hover:to-violet-700 focus:shadow-outline-indigo disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={handleGenerateClick}
+                  >
+                    <>
+                      <div className="text-white text-base font-medium leading-7">
+                        Generate draft{" "}
+                      </div>
+                    </>
+                  </button>
                 </div>
-                
+
                 <div
                   className="w-[80%] absolute top-[500px] lg:top-[350px] h-[200px] inset-x-0 -z-10"
                   style={{
@@ -1216,7 +1365,7 @@ export default function Home(
                 ></div>
               </div>
             </div>
-            {!isAuthenticated && <LandingPage />}
+            {/* {!isAuthenticated && <LandingPage />} */}
           </div>
           <div className="absolute inset-x-0 top-[calc(100%-12rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
             <svg
@@ -1315,16 +1464,23 @@ const AIInputComponent = () => {
     if (buttonHeightRef.current) {
       setButtonHeight(buttonHeightRef.current.clientHeight);
     }
-  }
-    , [buttonHeightRef.current])
+  }, []);
 
   return (
-    <div className="mt-10 flex flex-col lg:flex-row  items-center h-full justify-center gap-x-6 w-[100%] rounded-lg  min-h-[60px] py-2.5" style={{
-      height: '100%'
-    }}>
-      <div className={`flex-grow w-full lg:w-[65%]  flex-shrink-0 flex flex-row items-center justify-center gap-2.5 transition-all duration-500 ease-in-out rounded-[10px]`} style={{
-        height: buttonHeightRef.current ? buttonHeightRef.current.clientHeight + 'px' : `100%`,
-      }}>
+    <div
+      className="mt-10 flex flex-col lg:flex-row  items-center h-full justify-center gap-x-6 w-[100%] rounded-lg  min-h-[60px] py-2.5"
+      style={{
+        height: "100%",
+      }}
+    >
+      <div
+        className={`flex-grow w-full lg:w-[65%]  flex-shrink-0 flex flex-row items-center justify-center gap-2.5 transition-all duration-500 ease-in-out rounded-[10px]`}
+        style={{
+          height: buttonHeightRef.current
+            ? buttonHeightRef.current.clientHeight + "px"
+            : `100%`,
+        }}
+      >
         <input
           id="search"
           name="search"
@@ -1340,46 +1496,116 @@ const AIInputComponent = () => {
       </div>
       <button
         ref={buttonHeightRef}
-        className={`cta-invert rounded-[10px] mt-2 lg:mt-0 w-full lg:w-[35%]  items-center  flex flex-row bg-indigo-600 ${isDisabled ? "disabled:opacity-50" : ""}`}
+        className={`cta-invert rounded-[10px] mt-2 lg:mt-0 w-full lg:w-[35%]  items-center  flex flex-row bg-indigo-600 ${isDisabled ? "disabled:opacity-50" : ""
+          }`}
         onClick={handleButtonClick}
         disabled={isDisabled}
-        style={{
-        }}
+        style={{}}
       >
         {/* <span> <span className='flex flex-row w-full items-center justify-center gap-1'>Generate 1st Drafts for Articles <FaFacebook className="h-5 w-5 " /> <FaTwitter className="h-5 w-5" /> <FaLinkedin className="h-5 w-5" /> 
         <ArrowLongRightIcon className="h-5 w-5" />
         </span></span> */}
-        <span className="w-full">Generate 1<sup>st</sup> Drafts for Articles <span className='flex flex-row w-full items-center justify-center'><FaFacebook className="h-5 w-5 mr-1 lg:mr-3" /> <FaTwitter className="h-5 w-5 mr-1 lg:mr-3" /> <FaLinkedin className="h-5 w-5 mr-1 lg:mr-3" />
-          <ArrowLongRightIcon className="h-5 w-5" />
-        </span></span>
+        <span className="w-full">
+          Generate 1<sup>st</sup> Drafts for Articles{" "}
+          <span className="flex flex-row w-full items-center justify-center">
+            <FaFacebook className="h-5 w-5 mr-1 lg:mr-3" />{" "}
+            <FaTwitter className="h-5 w-5 mr-1 lg:mr-3" />{" "}
+            <FaLinkedin className="h-5 w-5 mr-1 lg:mr-3" />
+            <ArrowLongRightIcon className="h-5 w-5" />
+          </span>
+        </span>
       </button>
     </div>
-
   );
 };
 
-export const FloatingBalls = ( { className }: { className?: string }) => {
+
+
+
+type KeywordInputProps = {
+  maxLength: number;
+  placeholder: string;
+  keyword: string;
+  setKeyword: React.Dispatch<React.SetStateAction<string>>;
+};
+
+const KeywordInput = ({ maxLength, placeholder, keyword, setKeyword }: KeywordInputProps) => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="51" height="51" viewBox="0 0 51 51" fill="none" className={className}>
-    <g filter="url(#filter0_d_2158_42436)">
-      <circle cx="25.8967" cy="21.3916" r="15.07" transform="rotate(-63.5145 25.8967 21.3916)" fill="url(#paint0_linear_2158_42436)"/>
-    </g>
-    <defs>
-      <filter id="filter0_d_2158_42436" x="0.824219" y="0.318359" width="50.1445" height="50.1465" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-        <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-        <feOffset dy="4"/>
-        <feGaussianBlur stdDeviation="5"/>
-        <feComposite in2="hardAlpha" operator="out"/>
-        <feColorMatrix type="matrix" values="0 0 0 0 0.925 0 0 0 0 0.635938 0 0 0 0 0.669549 0 0 0 0.38 0"/>
-        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2158_42436"/>
-        <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2158_42436" result="shape"/>
-      </filter>
-      <linearGradient id="paint0_linear_2158_42436" x1="40.0358" y1="4.03629" x2="21.6639" y2="35.8573" gradientUnits="userSpaceOnUse">
-        <stop stop-color="#4163FF"/>
-        <stop offset="1" stop-color="#F9948C"/>
-      </linearGradient>
-    </defs>
-  </svg>
+    <input
+      type="text"
+      maxLength={maxLength}
+      placeholder={placeholder}
+      className="w-full h-full outline-transparent bg-transparent border-transparent focus:border-transparent focus:ring-0"
+      value={keyword}
+      onChange={(e) => {
+        const text = e.target.value;
+        console.log(text.length);
+        setKeyword(text);
+      }}
+    />
+  );
+};
+
+
+const RotatingText = React.memo(()=> {
+  return (
+    <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing lg:min-w-[900px]">
+      Lille is your <TextTransitionEffect text={TEXTS2} />
+      Co-Pilot
+      <div className="hidden lg:block absolute right-0 md:right-[-10%]">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="240"
+          height="261"
+          viewBox="0 0 240 261"
+          fill="none"
+        >
+          <path
+            d="M144.552 98.8563C164.626 112.575 180.188 128.559 189.173 143.197C193.667 150.52 196.44 157.382 197.391 163.365C198.339 169.327 197.46 174.237 194.896 177.989C192.332 181.741 188.076 184.343 182.178 185.626C176.258 186.914 168.857 186.824 160.402 185.297C143.501 182.244 122.954 173.553 102.88 159.834C82.8064 146.116 67.2442 130.131 58.26 115.493C53.7659 108.171 50.993 101.309 50.0418 95.3256C49.0941 89.3642 49.9729 84.4535 52.5368 80.7018C55.1007 76.9501 59.3566 74.3473 65.255 73.0645C71.1747 71.777 78.5758 71.8673 87.0304 73.3941C103.932 76.4464 124.478 85.1379 144.552 98.8563Z"
+            stroke="url(#paint0_linear_2158_42358)"
+            stroke-width="6"
+          />
+          <path
+            d="M147.927 99.2697C166.631 117.075 179.874 136.963 186.206 154.666C192.571 172.461 191.82 187.578 183.39 196.434C174.96 205.29 159.898 206.783 141.811 201.301C123.818 195.847 103.303 183.598 84.5991 165.793C65.8957 147.988 52.6529 128.1 46.3203 110.396C39.9549 92.6012 40.7059 77.4839 49.1363 68.6282C57.5668 59.7724 72.6288 58.2789 90.7152 63.7615C108.709 69.2158 129.224 81.4645 147.927 99.2697Z"
+            stroke="url(#paint1_linear_2158_42358)"
+            stroke-width="3"
+          />
+          <defs>
+            <linearGradient
+              id="paint0_linear_2158_42358"
+              x1="146.054"
+              y1="82.7086"
+              x2="81.9961"
+              y2="165.72"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#F7938B" />
+              <stop
+                offset="1"
+                stop-color="white"
+                stop-opacity="0"
+              />
+            </linearGradient>
+            <linearGradient
+              id="paint1_linear_2158_42358"
+              x1="47.5691"
+              y1="48.2032"
+              x2="82.6596"
+              y2="126.602"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#F9948C" />
+              <stop
+                offset="1"
+                stop-color="white"
+                stop-opacity="0"
+              />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+    </div>
   )
-}
+}) 
+
+RotatingText.displayName = 'RotatingText';

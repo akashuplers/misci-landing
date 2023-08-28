@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FacebookIcon, LinkedinIcon, TwitterIcon } from "react-share";
+import { FloatingBalls } from "../ui/Chip";
 export const socialLinks = [
   {
     name: "Facebook",
@@ -22,30 +23,31 @@ export const socialLinks = [
 const MoblieUnAuthFooter = () => {
   return (
     <footer
-      className="text-center text-white lg:text-left mt-16"
-      style={{
-        backgroundColor: "darkblue",
-        backgroundImage:
-          "url('/footerbg.png')",
-      }}
+      className="text-center text-black lg:text-left relative bg-transparent mt-[-20px]"
     >
-      <div className="mx-6 py-10 text-center md:text-left">
-        <div className="flex flex-col justify-start items-start lg:flex-row ">
-          <div className="w-full">
-            <h6 className="mb-4 flex items-center lg:items-start  justify-start lg:justify-start font-semibold sss">
-              <img src="/lille_logo_light.png" className="h-6" alt="" />
+      <div className="px-6 py-10 relative text-center md:text-left" style={{
+        background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%,  #FFEBE9 100%)'
+      }}>
+        <div className="flex flex-col justify-center items-start lg:flex-row px-[5%]">
+          <div className="w-full"
+          style={{
+            minWidth: "40%"
+          }}
+          >
+            <h6 className="mb-4 flex items-center lg:items-start  justify-start lg:justify-start font-semibold">
+              <img src="/lille_logo_new.png" className="h-12" alt="" />
             </h6>
-            <p className="text-left lg:text max-w-xs">
+            {/* <p className="text-left lg:text max-w-xs">
               Boost your engagement, increase your followers, and drive more
               traffic to your website with optimized social media posts.
-            </p>
+            </p> */}
           </div>
           <div className="w-full flex flex-col items-start">
             <h6 className="mb-4 flex justify-start font-semibold  ">Company</h6>
             <p className="mb-4">
-              <Link href="/#whyChooseUs" className="text-white-600 hover:opacity-90">
+              {/* <Link href="/#whyChooseUs" className="text-white-600 hover:opacity-90">
                 Why Choose us
-              </Link>
+              </Link> */}
             </p>
             {/* <p className="mb-4">
               <Link href="/#testimonial" className="text-white-600 hover:opacity-90 ">
@@ -126,17 +128,21 @@ const MoblieUnAuthFooter = () => {
             </div>
           </div>
         </div>
+
+      <FloatingBalls className="hidden absolute bottom-[4%] rotate-45 md:block" />
+      <FloatingBalls className="hidden absolute top-[4%] left-[4%] rotate-45 md:block h-6" />
       </div>
 
-      <div className="bg-blue-200 p-6 text-center dark:bg-blue-700">
+      <div className="bg-indigo-600 text-blue-950 text-sm bg-opacity-10 p-6 text-center">
         <span>© Nowigence, Inc:</span>
         <a
-          className="font-normal text-white dark:text-white"
+          className="font-normal "
           href="https://lille.ai/"
         >
           - All Rights Reserved 2023
         </a>
       </div>
+
     </footer>
   );
 };

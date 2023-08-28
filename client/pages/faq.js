@@ -27,7 +27,7 @@ const faqs =  [
     answer: `Lille.ai is great for people who write a lot or need to find information quickly. It quickly assists you by providing the structure and the various views that can help you write or research large volumes of content efficiently. If you write for websites (content creators) or help websites get found (SEO specialists), or post a lot on social media (influencers), Lille is then your co-pilot. It's also super helpful for teams who use writing to connect with their customers, and for anyone who has a lot of information to sort through, like researchers, teachers, and students.`
   },
   {
-    "question": "What are the different ways of creating a article in Lille.ai?",
+    "question": "What are the different ways of creating a draft in Lille.ai?",
     "answer": "You can choose from the given trending topics on the home page or type in your own topic, e.g., 'Benefits of Ginger', and click the 'Generate' button to create a article. Once a article is created, we show the ideas that have been used to create the article in the right-side panel. You can also provide a topic, URL, or a file (size < 3MB) to generate fresh ideas and then select some or all of the fresh ideas in combination with some or all or none of the used ideas, and click 'Regenerate' to regenerate the already created article."
   },
   {
