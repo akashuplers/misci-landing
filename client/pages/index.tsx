@@ -906,7 +906,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
             <h1 className="text-left">Paste URL</h1>
           </div>
               <RePurpose
-                placeholder="Paste URLS (comma between)"
+                placeholder="Paste URLs (comma between)"
                 allInputs={inputData}
                 setAllInput={setInputData}
                 removeFile={removeSelectedFile}

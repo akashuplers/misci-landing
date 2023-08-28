@@ -34,8 +34,8 @@ const MoblieUnAuthFooter = () => {
             minWidth: "40%"
           }}
           >
-            <h6 className="mb-4 flex items-center lg:items-start  justify-start lg:justify-start font-semibold sss">
-              <img src="/lille_logo_light.png" className="h-6" alt="" />
+            <h6 className="mb-4 flex items-center lg:items-start  justify-start lg:justify-start font-semibold">
+              <img src="/lille_logo_new.png" className="h-12" alt="" />
             </h6>
             <p className="text-left lg:text max-w-xs">
               Boost your engagement, increase your followers, and drive more
@@ -130,6 +130,7 @@ const MoblieUnAuthFooter = () => {
         </div>
 
       <FloatingBalls className="hidden absolute bottom-[4%] rotate-45 md:block" />
+      <FloatingBalls className="hidden absolute top-[4%] left-[4%] rotate-45 md:block h-6" />
       </div>
 
       <div className="bg-indigo-600 text-blue-950 text-sm bg-opacity-10 p-6 text-center">
