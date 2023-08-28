@@ -288,7 +288,7 @@ export default function Sidebar() {
                   <div className="h-0 flex-1 overflow-y-auto pt-5 pb-4">
                     <div className="flex flex-shrink-0 items-center px-4">
                       <div onClick={()=>{
-routerToHome()
+                            routerToHome()
                       }}>
                         <img
                           className="h-8 w-auto"
