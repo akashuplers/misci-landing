@@ -224,7 +224,7 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia, blogSlug, blogD
         <meta property="twitter:description" content={blogData.description} />
       <title>{blogTitle} - Lille</title>
    </Head>
-      <Navbar isOpen={false} />
+      <Navbar blogId={null} isOpen={false} />
       <div className="flex items-center justify-center w-full lg:max-w-[1056px] mx-auto flex-col ">
         <div className={styles.publishContainer} id="publishContainer"></div>
         <ShareLinkModal openModal={showShareModal} setOpenModal={setShareModal} blog_id={gqlData.fetchBlog._id} text={text} />

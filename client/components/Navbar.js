@@ -10,7 +10,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Navbar({ blogId, isOpen }) {
+export default function Navbar({ blogId=null, isOpen }) {
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const [authenticationModalType, setAuthneticationModalType] = useState("");
   var Gbid;
