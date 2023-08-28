@@ -172,7 +172,7 @@ export default function Post({typeIsRepurpose}) {
           `${networkError}` ===
           "ServerError: Response not successful: Received status code 401"
         ) {
-          localStorage.clear();
+          // localStorage.clear();
           // toast.error("Session Expired! Please Login Again..", {
           //   position: "top-center",
           //   autoClose: 5000,
@@ -446,6 +446,7 @@ You can add your own image, click on the image and use image options icon.`}
             <TinyMCEEditor
               isAuthenticated={isAuthenticated}
               editorText={editorText}
+              typeIsRepurpose={typeIsRepurpose}
               blogData={blogData}
               blog_id={bid}
               timeSaveForThisBlog={12}

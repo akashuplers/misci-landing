@@ -223,6 +223,12 @@ export default function Sidebar() {
     userTimeSaveUpdateData();
   }, []);
 
+  const routerToHome  = () => {
+    const domain  = window.location.hostname;
+                  const protocol = window.location.protocol;
+                  window.location.href = `${protocol}//${domain}`
+  }
+
   return (
     <>
       <ToastContainer />
@@ -282,10 +288,7 @@ export default function Sidebar() {
                   <div className="h-0 flex-1 overflow-y-auto pt-5 pb-4">
                     <div className="flex flex-shrink-0 items-center px-4">
                       <div onClick={()=>{
-
-const domain  = window.location.hostname;
-const protocol = window.location.protocol;
-window.location.href = `${protocol}//${domain}`
+routerToHome()
                       }}>
                         <img
                           className="h-8 w-auto"
@@ -393,8 +396,8 @@ window.location.href = `${protocol}//${domain}`
                 <div className="flex flex-shrink-0 items-center justify-center px-4"
                 onClick={
                   () => { 
-                    window.location.href = "/"
-                   }
+                    routerToHome(); 
+                  }
                 } 
                 >
                   <img
