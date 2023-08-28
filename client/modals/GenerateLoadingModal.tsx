@@ -16,7 +16,7 @@ interface GenerateLoadingModalProps {
 
 function getPercentageByStep(step: StepType, type: string): { percent: number, message: string, maxPercent: number } {
 
-let message = "Creating draft from URLs requires our AI's advanced generation, which could take more than a minute.";
+let message = "Creating draft from URLs requires Lille's advanced generation, which could take more than a minute.";
 
   if (type === "FILE") {
     message = "Creating draft from Your files requires Lille's advanced generation, which could take more than a minute.";
