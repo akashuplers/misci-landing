@@ -325,7 +325,9 @@ export default function Post({typeIsRepurpose}) {
   return (
     <>
       {/* <Head><title>{blogData}</title><meta about="body">{blogData}</meta></Head> */}
-      <Layout>
+      <Layout blogId={
+        bid
+      }>
         {meeData?.me && showOTPModal === true ? (
           <OTPModal
             showOTPModal={showOTPModal}

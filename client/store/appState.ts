@@ -281,3 +281,16 @@ messages : [],
 addMessages: (message) => set({messages: [...message]}),
 clearAllMessages: () => set({messages: []}),
 }));
+
+
+interface GlobalBlogID {
+  blogID: string;
+  setBlogID: (id: string) => void;
+  makeBlogIDNull: () => void;
+}
+
+export const useGlobalBlogID = create<GlobalBlogID>((set) => ({ 
+  blogID : '',
+  setBlogID: (id) => set({blogID: id}),
+  makeBlogIDNull: () => set({blogID: ''}),
+}));
