@@ -41,8 +41,10 @@ const DragAndDropFiles = ({onClickHereButtonClick}:{
       return;
     }
     // If the code reaches here, only one file was uploaded and you can proceed with that one.
-    acceptedFiles = acceptedFiles.slice(0, 1); // Keep only the first file
+    acceptedFiles = acceptedFiles.slice(0, 1); // Keep only the first fil
   }
+
+  console.log(isUserAuthenticated())
 
     const prevFiles = [...selectedFiles];
     setShowFileStatus(true);
@@ -108,7 +110,7 @@ const DragAndDropFiles = ({onClickHereButtonClick}:{
       'text/rtf': [],
     },
     maxFiles: isUserAuthenticated() ? REPURPOSE_MAX_SIZE : 1,
-    multiple: isUserAuthenticated(),
+    multiple: isUserAuthenticated() ? true : false,
   });
 
   return (
@@ -123,7 +125,7 @@ const DragAndDropFiles = ({onClickHereButtonClick}:{
                           <div className="justify-center items-center gap-2 inline-flex">
                           <CloudArrowUpIcon className='h-6 w-6 text-indigo-600' />
                               <div className="text-indigo-600 text-sm font-normal">Upload file</div>
-                              <input {...getInputProps()} multiple accept={"application/pdf, .docx, .txt, text/plain, text/rtf"} />    
+                              <input {...getInputProps()} multiple={isUserAuthenticated() ? true : false} accept={"application/pdf, .docx, .txt, text/plain, text/rtf"} />    
                           </div>
                       </button>
                       </Tooltip>
