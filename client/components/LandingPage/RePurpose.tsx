@@ -66,15 +66,7 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
       const creatableOption = createOption(inputValue, elementId, inputLength, validateType);
       const {data: newBlogLinks, errors} = addObjectToSearchStore(creatableOption, value, isAuthenticated);
       console.log(newBlogLinks, errors);
-      // if(errors.length > 0){
-      //   errors.forEach((error: any) => {
-      //     toast.error(error);
-      //   });
-      //   return;
-      // }
       const setOfErrors = new Set(errors);
-      // make of set
-
       const setOfErrorsArray = Array.from(setOfErrors);
       setErrors(setOfErrorsArray);
       console.log(setOfErrorsArray);
@@ -85,7 +77,6 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
         return;
       }
       setValue(newBlogLinks);
-      setInputValue('');
       event.preventDefault();
     }
   };
@@ -137,13 +128,29 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
   const ClearIndicator = (props : any) => {
     return null; // Return null to hide the default separator
   };
-  const ValueContainer = ({ children, ...props }:any) => {
-    return (
-      <components.ValueContainer {...props} className='custom-scrollbar'>
-        {children}
-      </components.ValueContainer>
-    );
+
+const addNewURL = () => {
+  if (inputValue === '') return;
+
+  const elementId = generateRandomId();
+  const inputLength = value.length;
+  const validateType = 'url';
+  const creatableOption = createOption(inputValue, elementId, inputLength, validateType);
+  const { data: newBlogLinks, errors } = addObjectToSearchStore(creatableOption, value, isAuthenticated);
+  
+  if (errors.length > 0) {
+    // Do not remove the inputValue if errors exist
+    errors.forEach((error: any) => {
+      // toast.error(error);
+    });
+    return;
   }
+  
+  // Reset inputValue after successfully adding the URL.
+  setInputValue(''); 
+  setValue(newBlogLinks);
+};
+
 
   return (
     <div className="relative w-full ">
@@ -201,29 +208,10 @@ export default function RePurpose({setAllInput ,allInputs, value, setValue, setS
           textAlign: 'left'
         }),
       }}
-      isClearable
+      // isClearable
       isMulti
-      onBlur={(event) => {
-        const elementId = generateRandomId();
-        const inputLength = value.length;
-        if(inputValue===''){
-          return;
-        }
-        if (!inputValue) return;
-        const validateType = 'url';
-        console.log(validateType);
-        const creatableOption = createOption(inputValue, elementId, inputLength, validateType);
-        const {data: newBlogLinks, errors} = addObjectToSearchStore(creatableOption, value);
-        console.log(newBlogLinks, errors);
-        if(errors.length > 0){
-          errors.forEach((error: any) => {
-            // toast.error(error);
-          });
-          return;
-        }
-        setValue(newBlogLinks);
-        setInputValue('');
-        event.preventDefault();
+      onBlur={() => {
+       addNewURL();
       }}
       isOptionDisabled={() => value.length >=6}
       menuIsOpen={false}

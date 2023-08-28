@@ -857,7 +857,7 @@ export default function DashboardInsights({
           Insights
         </h1>
         <div className="flex jusify-between gap-[1.25em]">
-          <p className="font-normal text-base w-[100%] lg:w-[70%]">
+          <p className="font-normal w-[100%] lg:w-[70%] text-sm">
           Create your next draft on the basis of your edits and uploads.
           </p>
           <button
