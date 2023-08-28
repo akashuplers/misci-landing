@@ -59,7 +59,6 @@ import {
   useFileUploadStore,
   useGenerateErrorState,
   useGenerateState,
-  useGlobalBlogID,
   useRepurposeFileStore,
   useSideBarChangeFunctions,
   useTotalSavedTimeStore,
@@ -525,7 +524,6 @@ export default function Home({ payment, randomLiveUsersCount }) {
     const urls = blogLinks.filter((link) => link.type === "url").map((link) => link.value);
     console.log(urls);
     setShowingGenerateLoading(true);
-    const {blogID, makeBlogIDNull, setBlogID} = useGlobalBlogID()
     newGenerateApi(token, tones, keywordForPayload, userId, files, urls).then(
       (response) => {
         if (response.type == 'ERROR') {
@@ -536,7 +534,6 @@ export default function Home({ payment, randomLiveUsersCount }) {
         }
         const { data } = response;
         const _id = data._id;
-        setBlogID(_id);
         const responseTime = data.respTime;
         const pyTime = data.pythonRespTime;
         updateTime(responseTime, pyTime, responseTime);
