@@ -117,7 +117,7 @@ const DragAndDropFiles = ({onClickHereButtonClick}:{
               <div className={`self-stretch justify-start items-center gap-3 inline-flex `}>
                   <img className="w-[33.14px] h-[33.14px]" src={'icons/foldericon.png'} />
                   <div className="justify-start items-center gap-3 flex">
-                      <span className={`text-center text-slate-600 text-base font-normal`}>Drag or Drop files or </span>
+                      <span className={`text-center text-slate-600 text-base font-normal`}>Drag and Drop files or </span>
                      <Tooltip content={`Select file formats like PDF, DOCX, TXT (size <${REPURPOSE_MAX_SIZE_MB}MB)`} direction="top">
                      <button className="px-2.5 py-[9px] rounded-lg border border-indigo-600 flex-col justify-start items-start gap-2.5 inline-flex">
                           <div className="justify-center items-center gap-2 inline-flex">
