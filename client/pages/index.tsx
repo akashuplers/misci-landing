@@ -106,7 +106,7 @@ const TEXTS = [
 ];
 
 const TEXTS2 = ["Writing", "Research", "Knowledge"];
-
+const tabsPlaceholders = ['Give me a topic', 'Give me a topic and paste your URL below', 'Give me a topic & upload file']
 const STATESOFKEYWORDS = {
   LOADING: "loading",
   LOADED: "loaded",
@@ -1316,7 +1316,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
                                   <KeywordInput
                                     keyword={keyword}
                                     setKeyword={setkeyword}
-                                    placeholder="Give me a writing Topic"
+                                    placeholder={tabsPlaceholders[tab.id]}
                                     maxLength={100}
                                   />
                                 </div>
