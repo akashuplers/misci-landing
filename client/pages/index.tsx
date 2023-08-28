@@ -106,7 +106,7 @@ const TEXTS = [
 ];
 
 const TEXTS2 = ["Writing", "Research", "Knowledge"];
-const tabsPlaceholders = ['Give me a topic', 'Give me a topic and paste your URL below', 'Give me a topic & upload file']
+const tabsPlaceholders = ['Give me a topic', 'Give me a topic and paste your URL below', 'Give me a topic and upload file']
 const STATESOFKEYWORDS = {
   LOADING: "loading",
   LOADED: "loaded",
@@ -884,7 +884,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
     },
     {
       id: 1,
-      label: "URLs",
+      label: "My URLs",
       upperContent: (
         <>
           {
@@ -917,7 +917,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
     },
     {
       id: 2,
-      label: "Documents",
+      label: "My Documents",
       upperContent: (
         <>
           {
@@ -1119,6 +1119,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
             showGenerateLoadingModal={showingGenerateLoading}
             setShowGenerateLoadingModal={setShowingGenerateLoading}
             stepStatus={subsData?.stepCompletes.step}
+            type={countByType.lengthOFiles > 0 || countByType.lengthOfUrls > 0 ? countByType.lengthOfUrls > 0 ? 'URL' : "FILE" : "WEB"}
             showBackButton={countByType.lengthOFiles > 0 || countByType.lengthOfUrls > 0}
           />
         )}
@@ -1297,7 +1298,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
 
                           <Tab
                             key={tab.id}
-                            className={`w-24 h-8 px-2.5 py-1 border-b border-indigo-600 ring-0  focus:ring-0  justify-center items-center gap-2.5 inline-flex text-base font-medium text-gray-800 ${activeTab === tab.id ? "border-b-2 border-indigo-600 text-gray-800" : "text-gray-600 border-none"}`}>
+                            className={`${tab.label === "Web"  ? "w-24" : "w-32"} h-8 px-2.5 py-1 border-b border-indigo-600 ring-0  focus:ring-0  justify-center items-center gap-2.5 inline-flex text-base font-medium text-gray-800 ${activeTab === tab.id ? "border-b-2 border-indigo-600 text-gray-800" : "text-gray-600 border-none"}`}>
                             {tab.label}
                           </Tab>
                         ))}
@@ -1544,7 +1545,7 @@ const KeywordInput = ({ maxLength, placeholder, keyword, setKeyword }: KeywordIn
 const RotatingText = React.memo(()=> {
   return (
     <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing lg:min-w-[900px]">
-      Lille is your Content <TextTransitionEffect text={TEXTS2} />
+      Lille is your <TextTransitionEffect text={TEXTS2} />
       Co-Pilot
       <div className="hidden lg:block absolute right-0 md:right-[-10%]">
         <svg

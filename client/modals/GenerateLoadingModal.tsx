@@ -10,10 +10,19 @@ interface GenerateLoadingModalProps {
   setShowGenerateLoadingModal: (showGenerateLoadingModal: boolean) => void;
   stepStatus: StepType;
   resetForm: () => void;
+  type: string;
   showBackButton: boolean;
 }
 
-function getPercentageByStep(step: StepType): { percent: number, message: string, maxPercent: number } {
+function getPercentageByStep(step: StepType, type: string): { percent: number, message: string, maxPercent: number } {
+
+let message = "Creating draft from URLs requires our AI's advanced generation, which could take more than a minute.";
+
+  if (type === "FILE") {
+    message = "Creating draft from Your files requires Lille's advanced generation, which could take more than a minute.";
+  } else if (type === "WEB") {
+    message = ""; // Don't show anything for WEB
+  }
   switch (step) {
     case "KEYWORD_COMPLETED":
       return {
@@ -29,7 +38,7 @@ function getPercentageByStep(step: StepType): { percent: number, message: string
     case "BACKLINK_COMPLETED":
       return { percent: 100, message: `Backlink is running.`, maxPercent: 100 }
     default:
-      return { percent: 0, message: `Creating draft from URLs requires our AI's advanced generation, which could take more than a minute.`, maxPercent: 15 }
+      return { percent: 0, message, maxPercent: 15 }
   }
 }
 const updatePercentage = (currentPercentage: number, maxPercentage: number) => {
@@ -41,17 +50,18 @@ const GenerateLoadingModal = ({
   stepStatus,
   setShowGenerateLoadingModal,
   resetForm,
+  type,
   showBackButton
 }: GenerateLoadingModalProps) => {
   console.log(
     showGenerateLoadingModal,
     stepStatus,
+    type,
     setShowGenerateLoadingModal
   );
-  // const percentage = getPercentageByStep(stepStatus);
-  const [percentage, setPercentage] = useState<{ percent: number, message: string }>(getPercentageByStep(stepStatus));
-  const nativePercentage = getPercentageByStep(stepStatus);
-  console.log(nativePercentage, 'PERCENTAGE');
+  const [percentage, setPercentage] = useState<{ percent: number, message: string }>(getPercentageByStep(stepStatus, type));
+  const nativePercentage = getPercentageByStep(stepStatus, type);
+  console.log(type, 'PERCENTAGE');
 
   useEffect(() => {
     const interval = setInterval(() => {
