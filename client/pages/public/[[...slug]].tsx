@@ -526,7 +526,6 @@ const CommentSection = ({ data, comments, setShowModalComment, setShareModal, bl
                 </div>
                 </>
           }
-          <h4 className="text-black text-base font-normal">{'Write a comment'}</h4>
             <TextareaAutosize
             maxRows={5}
             value={commmentValue}
