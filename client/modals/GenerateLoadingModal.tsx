@@ -1,5 +1,6 @@
 import { getMax } from "@/store/appHelpers";
 import { StepType } from "@/store/types";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import Typewriter from "typewriter-effect";
@@ -156,7 +157,8 @@ const GenerateLoadingModal = ({
                       setShowGenerateLoadingModal(false)
                     }
                     }
-                      className="text-center text-gray-800 text-xs font-medium leading-none">
+                    className="text-center text-gray-800 flex items-center justify-center text-sm mt-2 font-medium leading-none">
+                    <ChevronLeftIcon className="w-4 h-4 text-black" />
                       Go Back
                     </button>
                   </div>
