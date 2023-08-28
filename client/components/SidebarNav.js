@@ -281,13 +281,18 @@ export default function Sidebar() {
                   </Transition.Child>
                   <div className="h-0 flex-1 overflow-y-auto pt-5 pb-4">
                     <div className="flex flex-shrink-0 items-center px-4">
-                      <Link href={"/"}>
+                      <div onClick={()=>{
+
+const domain  = window.location.hostname;
+const protocol = window.location.protocol;
+window.location.href = `${protocol}//${domain}`
+                      }}>
                         <img
                           className="h-8 w-auto"
                           src="/lille_logo_new.png"
                           alt="Your Company"
                         />
-                      </Link>
+                      </div>
                     </div>
                     <nav className="mt-5 space-y-1 px-2">
                       {navigation.map((item) => (
@@ -385,15 +390,19 @@ export default function Sidebar() {
           {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200">
             <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
-              <Link href="/">
-                <div className="flex flex-shrink-0 items-center justify-center px-4">
+                <div className="flex flex-shrink-0 items-center justify-center px-4"
+                onClick={
+                  () => { 
+                    window.location.href = "/"
+                   }
+                } 
+                >
                   <img
                     className="h-12 w-auto"
                     src="/lille_logo_new.png"
                     alt="Your Company"
                   />
                 </div>
-              </Link>
               <nav className="mt-5 flex-1 space-y-1 bg-white px-2">
                 {navigation.map((item) => (
                   <Link
@@ -595,13 +604,18 @@ export default function Sidebar() {
         >
           <div className="flex-row flex">
             <div className="lg:hidden flex flex-row justify-center items-center py-2 pb-4">
-              <Link href={"/"}>
-                <img
+                <div onClick={()=> {
+                  const domain  = window.location.hostname;
+                  const protocol = window.location.protocol;
+                  window.location.href = `${protocol}//${domain}`
+                }}
+                >
+                  <img
                   className="h-8 w-auto"
                   src="/lille_logo_new.png"
                   alt="Your Company"
                 />
-              </Link>
+                </div>
             </div>
             <main className="flex-1 flex-col">
               <div className="py-2 pb-4">
