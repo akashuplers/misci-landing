@@ -1403,6 +1403,13 @@ export default function TinyMCEEditor({
   }
   useEffect(() => {
     setIRanNumberOfTimes(1);
+    if (option == "blog") {
+      setThisIsToBePublished(TYPESOFTABS.BLOG);
+    } else if (option == "twitter") {
+      setThisIsToBePublished(TYPESOFTABS.TWITTER);
+    } else if (option == "linkedin") {
+      setThisIsToBePublished(TYPESOFTABS.LINKEDIN);
+    }
   }, [option]);
 
   useEffect(() => {
