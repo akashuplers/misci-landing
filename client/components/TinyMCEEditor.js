@@ -52,6 +52,7 @@ import TrialEndedModal from "./TrialEndedModal";
 import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
 import { BASE_PRICE } from "@/store/appContants";
 import useSendSavedTimeOfUser from "@/hooks/useSendSavedTimeOfUser";
+import { calculateUsedCredits } from "@/store/appHelpers";
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 );
