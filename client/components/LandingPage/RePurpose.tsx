@@ -210,8 +210,44 @@ const addNewURL = () => {
       }}
       // isClearable
       isMulti
+<<<<<<< Updated upstream
       onBlur={() => {
        addNewURL();
+=======
+      onBlur={(event) => {
+        const elementId = generateRandomId();
+        const inputLength = value.length;
+        if(inputValue===''){
+          return;
+        }
+        if (!inputValue) return;
+        const validateType = 'url';
+        console.log(validateType);
+        const creatableOption = createOption(inputValue, elementId, inputLength, validateType);
+        const {data: newBlogLinks, errors} = addObjectToSearchStore(creatableOption, value, isAuthenticated);
+        console.log(newBlogLinks, errors);
+        // if(errors.length > 0){
+        //   errors.forEach((error: any) => {
+        //     toast.error(error);
+        //   });
+        //   return;
+        // }
+        const setOfErrors = new Set(errors);
+        // make of set
+  
+        const setOfErrorsArray = Array.from(setOfErrors);
+        setErrors(setOfErrorsArray);
+        console.log(setOfErrorsArray);
+        if(setOfErrorsArray.length > 0){
+          setOfErrorsArray.forEach((error: any) => {
+            // toast.error(error);
+          });
+          return;
+        }
+        setValue(newBlogLinks);
+        setInputValue('');
+        event.preventDefault();
+>>>>>>> Stashed changes
       }}
       isOptionDisabled={() => value.length >=6}
       menuIsOpen={false}
