@@ -124,7 +124,10 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia, blogSlug, blogD
     const publishContainer = document.getElementById("publishContainer");
     if (publishContainer != null) {
       const tempElement = document.createElement('div');
+      tempElement.classList.add('main-container');
       tempElement.innerHTML = data;
+      // add container for firstchildren
+      const firstChild = tempElement.firstChild;
       const nullElement = tempElement.querySelector('null[undefined]');
       if (nullElement) {
         const divElement = document.createElement('div');
@@ -208,7 +211,7 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia, blogSlug, blogD
 
   if (loading) return <LoaderPlane />;
   return (
-    <div className="bg-[#00000014] min-h-screen">
+    <div className="bg-white min-h-screen">
       <Head>
         <meta name="title" content= {blogData.title + "- Lille"} />
         <meta name="description" content={blogData.description} />
@@ -260,8 +263,8 @@ function Page({ authorBlogId, authorUserName, authorSocialMedia, blogSlug, blogD
             comments={blogComments} text={text} data={gqlData} setShowModalComment={setShowModalComment} blogRefetch={blogRefetch} setShareModal={setShareModal} />
         </ReactModal>
       </div>
-      <div className="fixed bottom-0 pb-1 flex items-center bg-[#EBEBEB] left-0 w-full">
-        <div className="border-y border-neutral-300 max-w-[1056px] mx-auto w-full  h-[80.18px] bg-[#EBEBEB] justify-center items-center gap-6 inline-flex">
+      <div className="fixed bottom-0 pb-1 flex items-center bg-white left-0 w-full">
+        <div className="border-y border-neutral-300 max-w-[1056px] mx-auto w-full  h-[80.18px] bg-white justify-center items-center gap-6 inline-flex">
           <div className="h-full justify-start items-center flex md:w-[75%]">
             <CommentButton icon={CommentButtonMap.like.icon} text={gqlData.fetchBlog.likes + " " + CommentButtonMap.like.text} onClick={handleLikeBlog} />
             <CommentButton icon={CommentButtonMap.comment.icon} text={CommentButtonMap.comment.text}
