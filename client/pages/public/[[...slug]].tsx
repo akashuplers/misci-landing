@@ -29,7 +29,11 @@ import {
 import { useEffect, useState } from "react";
 import { jsonToHtml } from "../../helpers/helper";
 import styles from "../../styles/publish.module.css";
-import { unixToLocalYear } from "../../store/appHelpers";
+import {
+  convertToURLFriendly,
+  getBlogTitle,
+  unixToLocalYear,
+} from "../../store/appHelpers";
 import { useUserDataStore } from "../../store/appState";
 import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
 import { useQuery } from "@apollo/client";
@@ -133,7 +137,10 @@ function Page({
     const aa = gqlData?.fetchBlog?.publish_data.find(
       (pd: any) => pd.platform === "wordpress"
     ).tiny_mce_data;
-    setBlogTitle(aa?.children[0].children[0].children[0]);
+    var blogTitle = getBlogTitle(aa?.children[0].children[0].children[0]);
+    // blogTitle = convertToURLFriendly(blogTitle ? blogTitle : "");
+    setBlogTitle(blogTitle);
+    // setBlogTitle(aa?.children[0].children[0].children[0]);
     const html = jsonToHtml(aa);
     const container = document.createElement("div");
     container.innerHTML = html;
@@ -272,71 +279,9 @@ function Page({
         <meta property="twitter:image" content={blogData.image} />
         <meta property="twitter:description" content={blogData.description} />
         <title>{blogTitle} - Lille</title>
-        {/* <!-- Primary Meta Tags --> */}
-        <title>Abhay is Emerging | Lille.ai</title>
-        <meta
-          name="title"
-          content="Abhay is Emerging | Lille.ai
-"
-        />
-        <meta
-          name="description"
-          content="Balancing Core and Emerging IT Skills in Your Portfolio
-
-Introduction
-In the ever-evolving world of technology, it is essential for IT professionals to stay up to date with the latest trends and skills [1]. With the rapid advancement of technology, the demand for IT professionals with the right skills is increasing [1]. As a result, IT professionals must be able to balance their core skills with emerging IT skills in order to stay competitive in the job market [1]. In this article, we will discuss how to balance core and emerging IT skills in your portfolio, the top IT skills that are in demand in 2022, and how to fix the IT skills gap [1]."
-        />
-
-        {/* <!-- Open Graph / Facebook --> */}
-        <meta property="og:type" content="website" />
-        <meta
-          property="og:url"
-          content="https://pluaris-prod.vercel.app/public/user/1KfX0ZBL0fISs5P1KfX0ZBL0fISs5P641/abhay-is-emerging-/blog/6489cdca55893ebe928ae236"
-        />
-        <meta
-          property="og:title"
-          content="Abhay is Emerging | Lille.ai
-"
-        />
-        <meta
-          property="og:description"
-          content="Balancing Core and Emerging IT Skills in Your Portfolio
-
-Introduction
-In the ever-evolving world of technology, it is essential for IT professionals to stay up to date with the latest trends and skills [1]. With the rapid advancement of technology, the demand for IT professionals with the right skills is increasing [1]. As a result, IT professionals must be able to balance their core skills with emerging IT skills in order to stay competitive in the job market [1]. In this article, we will discuss how to balance core and emerging IT skills in your portfolio, the top IT skills that are in demand in 2022, and how to fix the IT skills gap [1]."
-        />
-        <meta
-          property="og:image"
-          content="https://metatags.io/images/meta-tags.png"
-        />
-
-        {/* <!-- Twitter --> */}
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta
-          property="twitter:url"
-          content="https://pluaris-prod.vercel.app/public/user/1KfX0ZBL0fISs5P1KfX0ZBL0fISs5P641/abhay-is-emerging-/blog/6489cdca55893ebe928ae236"
-        />
-        <meta
-          property="twitter:title"
-          content="Abhay is Emerging | Lille.ai
-"
-        />
-        <meta
-          property="twitter:description"
-          content="Balancing Core and Emerging IT Skills in Your Portfolio
-
-Introduction
-In the ever-evolving world of technology, it is essential for IT professionals to stay up to date with the latest trends and skills [1]. With the rapid advancement of technology, the demand for IT professionals with the right skills is increasing [1]. As a result, IT professionals must be able to balance their core skills with emerging IT skills in order to stay competitive in the job market [1]. In this article, we will discuss how to balance core and emerging IT skills in your portfolio, the top IT skills that are in demand in 2022, and how to fix the IT skills gap [1]."
-        />
-        <meta
-          property="twitter:image"
-          content="https://metatags.io/images/meta-tags.png"
-        />
-
-        {/* <!-- Meta Tags Generated with https://metatags.io --> */}
       </Head>
       <Navbar blogId={null} isOpen={false} />
-      <div className="flex items-center justify-center w-full lg:max-w-[1056px] mx-auto flex-col ">
+      <div className="flex items-center px-6 lg:px-0 justify-center w-full lg:max-w-[1056px] mx-auto flex-col ">
         <div
           className={styles.publishContainer + " px-3"}
           id="publishContainer"

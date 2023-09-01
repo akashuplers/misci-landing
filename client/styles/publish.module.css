@@ -16,6 +16,7 @@
 }
 #publishContainer * {
   word-break: break-all;
+  font-family: "Ubuntu", sans-serif;
 }
 /* first child of #publicshContainer */
 .publishContainer > *:first-child {
