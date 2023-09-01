@@ -11,6 +11,9 @@
 /* 
   */
 /*  */
+#publishContainer {
+  padding-bottom: "80px";
+}
 #publishContainer * {
   word-break: break-all;
 }

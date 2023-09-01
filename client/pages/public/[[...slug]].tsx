@@ -275,11 +275,17 @@ function Page({
       </Head>
       <Navbar blogId={null} isOpen={false} />
       <div className="flex items-center justify-center w-full lg:max-w-[1056px] mx-auto flex-col ">
-        <div className={styles.publishContainer} id="publishContainer"></div>
+        <div
+          className={styles.publishContainer}
+          id="publishContainer"
+          style={{
+            paddingBottom: "80px",
+          }}
+        ></div>
         <ShareLinkModal
           openModal={showShareModal}
           setOpenModal={setShareModal}
-          blog_id={gqlData.fetchBlog._id}
+          blog_id={gqlData?.fetchBlog?._id}
           text={text}
         />
         <ReactModal
@@ -322,12 +328,14 @@ function Page({
           />
         </ReactModal>
       </div>
+      {/* sharemodals floating action btn */}
+
       <div className="fixed bottom-0 pb-1 flex items-center bg-white left-0 w-full">
         <div
-          className="border-y border-neutral-300 max-w-[1056px] mx-auto w-full  h-[80.18px] bg-white justify-around  items-center inline-flex"
+          className="border-y border-neutral-300 max-w-[1056px] mx-auto w-full  h-[80.18px] bg-white justify-around items-center inline-flex"
           id="blogController"
         >
-          <div className="h-full w-full justify-around items-center flex md:w-[75%]">
+          <div className="h-full justify-around items-center flex w-full relative">
             <CommentButton
               icon={CommentButtonMap.like.icon}
               text={blogLikes + " " + CommentButtonMap.like.text}
@@ -338,10 +346,8 @@ function Page({
               text={CommentButtonMap.comment.text}
               onClick={() => setShowModalComment(true)}
             />
-          </div>
-          <div className="justify-around w-full items-center flex md:w-[25%]">
             <CopyToClipboard
-              text={text + gqlData.fetchBlog._id}
+              text={text + gqlData?.fetchBlog?._id}
               onCopy={() => {
                 setCopyStart(true);
                 setTimeout(() => {
@@ -359,13 +365,14 @@ function Page({
                 onClick={() => {}}
               />
             </CopyToClipboard>
-            <CommentButton
-              icon={CommentButtonMap.share.icon}
-              text={CommentButtonMap.share.text}
-              onClick={() => {
-                setShareModal(true);
-              }}
-            />
+            <div
+              className="absolute bottom-[80px] left-0 px-2 lg:px-16 my-2"
+              onClick={() => setShareModal((prev) => true)}
+            >
+              <button className="bg-indigo-600 rounded-full w-12 h-12 flex justify-center items-center">
+                <ShareIcon className="w-6 h-6 text-white" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -417,7 +424,7 @@ const CommentButton = ({
   return (
     <button
       onClick={onClick ? onClick : () => {}}
-      className="rounded-2xl justify-end items-center gap-1 inline-flex hover:bg-gray-100"
+      className="rounded-2xl justify-end items-center gap-1 inline-flex hover:bg-gray-100 active:animate-ping focus:outline-none"
     >
       {icon}
       <div className="text-black text-base font-normal">{text}</div>
