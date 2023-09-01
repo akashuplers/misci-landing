@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.post('/generate', async (req: any, res: any) => {
     const {question, userId} = req.body
-    const db = req.app.get('db')
+    const db = req.app.get('dbLive')
     const userEmail = await db.db('lilleAdmin').collection('misciEmail').findOne()
     console.log(userEmail)
     try {
