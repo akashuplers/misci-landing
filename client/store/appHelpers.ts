@@ -404,7 +404,7 @@ export function getMax(first: number, second: number): number {
   return Math.max(first, second);
 }
 
-export function getBlogTitle(obj: any) {
+export function getBlogTitle(obj: any): string {
   // Check if the object has a "children" array
   console.log(obj);
   if (typeof obj === "string") {
