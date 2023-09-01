@@ -9,6 +9,7 @@ type SubscriptionPayload {
  step: String
  keyword: String
  userId: String
+ data: JSON
 }
 
 

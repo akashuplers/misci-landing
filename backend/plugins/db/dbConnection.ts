@@ -1,10 +1,12 @@
 import fastifyPlugin from "fastify-plugin"
 import {MongoClient} from 'mongodb'
 
-const db = async () => {
+const db = async ({type}: {
+    type?: string | null
+}) => {
     try {
         console.log("tada")
-        const database = await MongoClient.connect(`${process.env.MONGO_STRING}`, {
+        const database = await MongoClient.connect(type ? `${process.env.MONGO_STRING_LIVE}` : `${process.env.MONGO_STRING}`, {
             // @ts-ignore
             useNewUrlParser: true,
             useUnifiedTopology: true,
