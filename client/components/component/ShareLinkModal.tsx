@@ -14,6 +14,7 @@ import {
 } from "react-share";
 // @ts-ignore
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { useState } from "react";
 
 const ShareLinkModal = ({
   openModal,
@@ -27,6 +28,7 @@ const ShareLinkModal = ({
   text: string;
   blog_id: string;
 }) => {
+  const [copyText, setCopyText] = useState("Copy");
   return (
     <Modal
       isOpen={openModal}
@@ -110,12 +112,19 @@ const ShareLinkModal = ({
           value={text + blog_id}
           className="w-full lg:w-[70%] h-[40px] mr-5"
         />
-        <CopyToClipboard text={text + blog_id}>
+        <CopyToClipboard
+          text={text + blog_id}
+          onCopy={() => {
+            setCopyText("Copied");
+            setTimeout(() => {
+              setCopyText("Copy");
+            }, 2500);
+          }}
+        >
           <div className="copy-area">
             <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-              Copy
+              {copyText}
             </button>
-            <span className={`copy-feedback }`}>Copied!</span>
           </div>
         </CopyToClipboard>
       </div>
