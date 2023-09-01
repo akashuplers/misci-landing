@@ -68,7 +68,7 @@ export function TotalTImeSaved({
       shouldCloseOnEsc={true}
       shouldCloseOnOverlayClick={true}
       ariaHideApp={false}
-      className="fixed inset-0 top-0 flex items-start justify-center w-full h-full p-4 overflow-auto bg-black bg-opacity-50 z-50"
+      className="fixed inset-0 top-0 flex items-start justify-center w-full h-full p-4 overflow-auto z-50"
       overlayClassName="fixed inset-0 z-50"
       style={{
         overlay: {
