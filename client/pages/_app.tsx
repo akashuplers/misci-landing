@@ -202,11 +202,12 @@ export default function App({ Component, pageProps }: AppProps) {
             buttonText="I Understand"
             cookieName="myAwesomeCookieName2"
             style={{ background: "#2B373B" }}
-            buttonStyle={{ color: "#4e503b", fontSize: "13px" }}
+            buttonStyle={{ color: "#4e503b", fontSize: "10px" }}
             expires={150}
           >
-            This website uses cookies to enhance the user experience.{" "}
-            <span style={{ fontSize: "10px" }}>
+           {" "}
+            <span style={{ fontSize: "12px" }}>
+ This website uses cookies to enhance the user experience.
               We only use this for better feature development and any support
               requirements that come up.
             </span>
@@ -228,11 +229,12 @@ export default function App({ Component, pageProps }: AppProps) {
             buttonText="I Understand"
             cookieName="myAwesomeCookieName2"
             style={{ background: "#2B373B" }}
-            buttonStyle={{ color: "#4e503b", fontSize: "13px" }}
+            buttonStyle={{ color: "#4e503b", fontSize: "10px" }}
             expires={150}
           >
-            This website uses cookies to enhance the user experience.{" "}
-            <span style={{ fontSize: "10px" }}>
+            {" "}
+            <span style={{ fontSize: "12px" }}>
+This website uses cookies to enhance the user experience.
               We only use this for better feature development and any support
               requirements that come up.
             </span>
