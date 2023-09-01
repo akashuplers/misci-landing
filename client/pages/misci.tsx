@@ -81,7 +81,7 @@ const MiSci = () => {
         <div className="w-full h-full">
           <div className="w-full h-full justify-center items-center gap-2.5 inline-flex flex-col ">
             <div
-              className={`relative w-full min-h-[60px] bg-white bg-opacity-25 rounded-lg shadow border border-indigo-600 backdrop-blur-lg justify-start items-center gap-3 inline-flex py-2.5 `}
+              className={`relative w-full min-h-[60px] bg-white roundedbg-opacity-25 rounded-lg shadow border border-indigo-600 backdrop-blur-lg justify-start items-center gap-3 inline-flex border py-2.5 `}
             >
               <div
                 className={`flex items-center flex-col md:flex-row px-2  gap-2.5 relative outline-none active:outline-none rounded-lg`}
