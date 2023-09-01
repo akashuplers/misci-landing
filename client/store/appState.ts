@@ -294,3 +294,5 @@ export const useGlobalBlogID = create<GlobalBlogID>((set) => ({
   setBlogID: (id) => set({blogID: id}),
   makeBlogIDNull: () => set({blogID: ''}),
 }));
+
+export const  MODAL_OVERLAY_BG_COLOR:string = 'rgba(0,0,0,0.5)'

@@ -52,6 +52,7 @@ import TrialEndedModal from "./TrialEndedModal";
 import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
 import { BASE_PRICE } from "@/store/appContants";
 import useSendSavedTimeOfUser from "@/hooks/useSendSavedTimeOfUser";
+import { calculateUsedCredits } from "@/store/appHelpers";
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 );
@@ -1001,32 +1002,47 @@ export default function TinyMCEEditor({
             }
 
             var ll = Number(localStorage.getItem("meDataMePublishCount"));
-
-            //console.log('PUBLISH COUNT');
-            //console.log(Number(localStorage.getItem('meDataMePublishCount')));
-            setTimeout(() => {
-              //   //console.log('MEE DATA');
-              //   //console.log('HERE FOR SHOW CONTRIBUTION MODAL');
-              // const credits = meeData?.me?.credits;
-              //   //console.log('CREDITS : ' + credits);
-              var userCredits = meeData?.me?.totalCredits - creditLeft - 1;
-              //console.log('USER CREDITS: ' + userCredits);
-              userCredits = userCredits + 2;
-              var userPublishCount = Number(meeData?.me?.publishCount);
-              //console.log('pubb', userPublishCount)
-              //console.log('USER PUBLISH COUNT: ' + userPublishCount);
-              
-              const SHOW_CONTRIBUTION_MODAL =
-                (localStorage.getItem("payment") === undefined ||
-                  localStorage.getItem("payment") === null) &&
-                (localStorage.getItem("ispaid") === null ||
-                  localStorage.getItem("ispaid") === undefined ||
-                  localStorage.getItem("ispaid") === "false") &&
-                (userCredits === 20 ||
-                  userCredits === 10 ||
-                  userPublishCount === 0) &&
-                !meeData?.me?.isSubscribed;
-              //console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
+            setTimeout(() => { 
+              console.clear();
+              const usersUsedCredits= calculateUsedCredits({
+                totalCredits: meeData?.me?.totalCredits,
+                creditsLeft: meeData?.me?.credits,
+              })
+              var SHOW_CONTRIBUTION_MODAL  = false;
+              const isUserMadePayment = localStorage.getItem("payment") === undefined || localStorage.getItem("payment") === null;
+              const isUserPaid = localStorage.getItem("ispaid") === null || localStorage.getItem("ispaid") === undefined || localStorage.getItem("ispaid") === "false";
+              const isUserCredits10 = usersUsedCredits === 10;
+              const isUserCredits20 = usersUsedCredits === 20;
+              const isUserPublishCount0 = Number(meeData?.me?.publishCount) === 0;
+              if(isUserMadePayment || isUserPaid){
+                console.log("user id not paid")
+                if(isUserCredits10 || isUserCredits20 || isUserPublishCount0){
+                  console.log("user id not paid and credits 10 or 20 or publish count 0")
+                  if(!meeData?.me?.isSubscribed){
+                    console.log('is subcites false showing modal')
+                    SHOW_CONTRIBUTION_MODAL = true;
+                  }else{
+                    console.log('is subcites true')
+                    console.log(meeData?.me?.isSubscribed)
+                  }
+                } else{
+                  console.log('credits not satisfied', {
+                    calculated: {
+                      isUserCredits10, isUserCredits20,isUserPublishCount0
+                    }
+                  }, 
+                    {
+                      fromAPI:{
+                        total: meeData?.me?.totalCredits,
+                        remaing: meeData?.me?.credits, 
+                        meeData: meeData
+                      }
+                    }
+                  )
+                }
+              }else{
+                console.log("user id paid")
+              }
               if (SHOW_CONTRIBUTION_MODAL) {
                 setShowContributionModal(true);
               }
@@ -1403,6 +1419,13 @@ export default function TinyMCEEditor({
   }
   useEffect(() => {
     setIRanNumberOfTimes(1);
+    if (option == "blog") {
+      setThisIsToBePublished(TYPESOFTABS.BLOG);
+    } else if (option == "twitter") {
+      setThisIsToBePublished(TYPESOFTABS.TWITTER);
+    } else if (option == "linkedin") {
+      setThisIsToBePublished(TYPESOFTABS.LINKEDIN);
+    }
   }, [option]);
 
   useEffect(() => {
