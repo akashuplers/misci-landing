@@ -135,7 +135,7 @@ const MiSci = () => {
               className={`relative w-full min-h-[60px] bg-white roundedbg-opacity-25 rounded-lg shadow border border-indigo-600 backdrop-blur-lg justify-start items-center gap-3 inline-flex border py-2.5 `}
             >
               <div
-                className={`flex items-center flex-col md:flex-row px-2  gap-2.5 relative outline-none active:outline-none rounded-lg`}
+                className={`flex items-center w-full flex-col md:flex-row px-2  gap-2.5 relative outline-none active:outline-none rounded-lg`}
               >
                 <KeywordInput
                   keyword={keyword}
