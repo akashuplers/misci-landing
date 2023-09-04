@@ -119,72 +119,73 @@ export default function Post() {
   useEffect(() => {
     // const html = jsonToHtml(gqlData?.fetchBlog?.publish_data[2].tiny_mce_data);
     // @ts-ignore
-    const aa = gqlData?.fetchBlog?.publish_data.find(
-      (pd: any) => pd.platform === "wordpress"
-    ).tiny_mce_data;
-    const html = jsonToHtml(aa);
-    console.log("ADD");
-    console.log(gqlData?.fetchBlog);
-    console.log(aa?.children[0].children[0].children[0]);
-    var blogTitle = "";
-    var superBlogTitle = getBlogTitle(aa?.children[0].children[0].children[0]);
-    blogTitle = convertToURLFriendly(superBlogTitle ? superBlogTitle : "");
-    setBlogTitle(superBlogTitle);
-    console.log(gqlData);
-    const userDetails = gqlData?.fetchBlog?.userDetail;
-    console.log(userDetails);
-    var authorProfilePath = "";
-    const fakeDivContainer = document.createElement("div");
-    fakeDivContainer.innerHTML = html;
-    // @ts-ignore
-    var h2Element = fakeDivContainer.querySelector("h2")?.innerText;
-    console.log(html);
-    var h2text = convertToURLFriendly(h2Element ?? "blog");
-    if (userDetails?.googleUserName) {
-      authorProfilePath =
-        "/google/" +
-        userDetails?.googleUserName.replace(/\s/g, "") +
-        "/" +
-        blogTitle +
-        "/" +
-        h2text +
-        "/" +
-        bid;
-    } else if (userDetails?.twitterUserName) {
-      authorProfilePath =
-        "/twitter/" +
-        userDetails.twitterUserName.replace(/\s/g, "") +
-        "/" +
-        blogTitle +
-        "/" +
-        h2text +
-        "/" +
-        bid;
-    } else if (userDetails?.linkedInUserName) {
-      authorProfilePath =
-        "/linkedin/" +
-        userDetails?.linkedInUserName.replace(/\s/g, "") +
-        "/" +
-        blogTitle +
-        "/" +
-        h2text +
-        "/" +
-        bid;
-    } else if (userDetails?.userName) {
-      authorProfilePath =
-        "/user/" +
-        userDetails?.userName.replace(/\s/g, "") +
-        "/" +
-        blogTitle +
-        "/" +
-        h2text +
-        "/" +
-        bid;
+    if (gqlData) {
+      const aa = gqlData?.fetchBlog?.publish_data.find(
+        (pd: any) => pd.platform === "wordpress"
+      ).tiny_mce_data;
+      const html = jsonToHtml(aa);
+      console.log("ADD");
+      console.log(gqlData?.fetchBlog);
+      console.log(aa?.children[0].children[0].children[0]);
+      var blogTitle = getBlogTitle(aa?.children[0].children[0].children[0]);
+      blogTitle = convertToURLFriendly(blogTitle ? blogTitle : "");
+      setBlogTitle(getBlogTitle(aa?.children[0].children[0].children[0]));
+      console.log(gqlData);
+      const userDetails = gqlData?.fetchBlog?.userDetail;
+      console.log(userDetails);
+      var authorProfilePath = "";
+      const fakeDivContainer = document.createElement("div");
+      fakeDivContainer.innerHTML = html;
+      // @ts-ignore
+      var h2Element = fakeDivContainer.querySelector("h2")?.innerText;
+      console.log(html);
+      var h2text = convertToURLFriendly(h2Element ?? "blog");
+      if (userDetails?.googleUserName) {
+        authorProfilePath =
+          "/google/" +
+          userDetails?.googleUserName.replace(/\s/g, "") +
+          "/" +
+          blogTitle +
+          "/" +
+          h2text +
+          "/" +
+          bid;
+      } else if (userDetails?.twitterUserName) {
+        authorProfilePath =
+          "/twitter/" +
+          userDetails.twitterUserName.replace(/\s/g, "") +
+          "/" +
+          blogTitle +
+          "/" +
+          h2text +
+          "/" +
+          bid;
+      } else if (userDetails?.linkedInUserName) {
+        authorProfilePath =
+          "/linkedin/" +
+          userDetails?.linkedInUserName.replace(/\s/g, "") +
+          "/" +
+          blogTitle +
+          "/" +
+          h2text +
+          "/" +
+          bid;
+      } else if (userDetails?.userName) {
+        authorProfilePath =
+          "/user/" +
+          userDetails?.userName.replace(/\s/g, "") +
+          "/" +
+          blogTitle +
+          "/" +
+          h2text +
+          "/" +
+          bid;
+      }
+      console.log("username" + authorProfilePath);
+      console.log("new path", authorProfilePath);
+      setAuthorPath(authorProfilePath);
+      setData(html);
     }
-    console.log("username" + authorProfilePath);
-    console.log("new path", authorProfilePath);
-    setAuthorPath(authorProfilePath);
-    setData(html);
   }, [router, gqlData]);
   useEffect(() => {
     if (authorPath != "") {
