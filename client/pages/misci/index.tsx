@@ -1,11 +1,53 @@
 import { FloatingBalls } from "@/components/ui/Chip";
 import Lottie from "lottie-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import infinityLoop from "../../lottie/infinity-loop.json";
 import { useRouter } from "next/router";
+import { useGenerateErrorState } from "@/store/appState";
+import { useSubscription } from "@apollo/client";
+import { StepCompleteData } from "@/store/types";
+import { STEP_COMPLETES_SUBSCRIPTION } from "@/graphql/subscription/generate";
 
 const MiSci = () => {
   const [keyword, setkeyword] = React.useState("");
+  const [getUserIdForSubs, setGetUserIdForSubs] = useState<string | null>("");
+  const [getTempIdForSubs, setGetTempIdForSubs] = useState<string | null>("");
+  const [getTokenForSubs, setGetTokenForSubs] = useState<string | null>("");
+  const [userAbleUserIDForSubs, setUserAbleUserIDForSubs] = useState<
+    string | null
+  >("");
+  const { addMessages } = useGenerateErrorState();
+  const [getToken, setGetToken] = useState<string | null>("");
+  const {
+    data: subsData,
+    loading: subsLoading,
+    error: subsError,
+  } = useSubscription<StepCompleteData>(STEP_COMPLETES_SUBSCRIPTION, {
+    variables: { userId: userAbleUserIDForSubs },
+  });
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const tokenFromLocalStorage = localStorage.getItem("token");
+      const userIdFromLocalStorage = localStorage.getItem("userId");
+      const tempIdFromLocalStorage = localStorage.getItem("tempId");
+      setGetTokenForSubs(tokenFromLocalStorage);
+      setGetToken(tokenFromLocalStorage);
+      setGetUserIdForSubs(userIdFromLocalStorage);
+      setGetTempIdForSubs(tempIdFromLocalStorage);
+      const userAbleUserID = tokenFromLocalStorage
+        ? userIdFromLocalStorage
+        : tempIdFromLocalStorage;
+      setUserAbleUserIDForSubs(tempIdFromLocalStorage);
+      console.log(
+        getUserIdForSubs,
+        getTempIdForSubs,
+        getTokenForSubs,
+        userAbleUserIDForSubs,
+        "FROM USER"
+      );
+    }
+  }, [subsError]);
+
   const router = useRouter();
   function handleMISCIGenerate() {
     // router.push("/misci/generate?question="keyword);

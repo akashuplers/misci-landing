@@ -1,10 +1,17 @@
 import { RegenerateIcon } from "@/components/localicons/localicons";
 import { API_BASE_PATH } from "@/constants/apiEndpoints";
+import {
+  MISCI_STEP_COMPLETES_SUBSCRIPTION,
+  STEP_COMPLETES_SUBSCRIPTION,
+} from "@/graphql/subscription/generate";
 import { generateMisci } from "@/helpers/apiMethodsHelpers";
 import { jsonToHtml } from "@/helpers/helper";
 import MiSciGenerateLoadingModal from "@/modals/MiSciLoadingModal";
 import { defaultMySciAnswers } from "@/store/appContants";
 import { classNames, getUserToken } from "@/store/appHelpers";
+import { useGenerateErrorState } from "@/store/appState";
+import { StepCompleteData } from "@/store/types";
+import { useSubscription } from "@apollo/client";
 import { Tab } from "@headlessui/react";
 import {
   ArrowLeftIcon,
@@ -12,7 +19,7 @@ import {
   PaperAirplaneIcon,
 } from "@heroicons/react/24/outline";
 import { Editor } from "@tinymce/tinymce-react";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 export const getServerSideProps = async (context: any) => {
   console.log(context);
@@ -34,27 +41,73 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   const [currentTabIndex, setCurrentTabIndex] = React.useState(0);
   const [editorAnswersData, setEditorAnswersData] = React.useState<any>(null);
   const [currentEditTabIndex, setCurrentEditTabIndex] = React.useState(0);
+  const [getUserIdForSubs, setGetUserIdForSubs] = useState<string | null>("");
+  const [getTempIdForSubs, setGetTempIdForSubs] = useState<string | null>("");
+  const [getTokenForSubs, setGetTokenForSubs] = useState<string | null>("");
+  const [userAbleUserIDForSubs, setUserAbleUserIDForSubs] = useState<
+    string | null
+  >("");
+  const { addMessages } = useGenerateErrorState();
+  const [getToken, setGetToken] = useState<string | null>("");
+  const {
+    data: subsData,
+    loading: subsLoading,
+    error: subsError,
+  } = useSubscription<StepCompleteData>(MISCI_STEP_COMPLETES_SUBSCRIPTION, {
+    variables: { userId: userAbleUserIDForSubs },
+    onSubscriptionComplete() {},
+    onComplete() {
+      console.log("completed");
+    },
+    onData() {
+      console.log("data");
+      console.log(subsData);
+      console.log("sub completed");
+      const data = subsData?.stepCompletes.data;
+      setMisciblog(data);
+      console.log(data);
+      const aa = data?.publish_data?.find((d: any) => d.platform === "answers");
+      console.log(aa);
+      const htmlToDoc = jsonToHtml(aa?.tiny_mce_data);
+      console.log(htmlToDoc);
+      setEditorAnswersData(htmlToDoc);
+    },
+    onSubscriptionData(options) {
+      console.log("sub data");
+      console.log(options);
+    },
+  });
+  console.log("SUBDATA");
+  console.log(subsData);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const tokenFromLocalStorage = localStorage.getItem("token");
+      const userIdFromLocalStorage = localStorage.getItem("userId");
+      const tempIdFromLocalStorage = localStorage.getItem("tempId");
+      setGetTokenForSubs(tokenFromLocalStorage);
+      setGetToken(tokenFromLocalStorage);
+      setGetUserIdForSubs(userIdFromLocalStorage);
+      setGetTempIdForSubs(tempIdFromLocalStorage);
+      const userAbleUserID = tokenFromLocalStorage
+        ? userIdFromLocalStorage
+        : tempIdFromLocalStorage;
+      setUserAbleUserIDForSubs(tempIdFromLocalStorage);
+      console.log(
+        getUserIdForSubs,
+        getTempIdForSubs,
+        getTokenForSubs,
+        userAbleUserIDForSubs,
+        "FROM USER"
+      );
+    }
+  }, [subsError]);
+
   useEffect(() => {
     console.log(localStorage);
     const userId = getUserToken();
-    generateMisci({ question, userId })
-      .then((res) => {
-        console.log(res);
-        var data: typeof defaultMySciAnswers; // = res.data;
-        if (res.data == null) {
-          data = defaultMySciAnswers;
-        } else {
-          data = res.data;
-        }
-        setMisciblog(data);
-        const aa = data.data.stepCompletes.data.publish_data.find(
-          (d) => d.platform === "answers"
-        );
-        console.log(aa);
-        const htmlToDoc = jsonToHtml(aa?.tiny_mce_data);
-        console.log(htmlToDoc);
-        setEditorAnswersData(htmlToDoc);
-      })
+    const tempiId = localStorage.getItem("tempId");
+    generateMisci({ question, userId: tempiId })
+      .then((res) => {})
       .finally(() => {
         setLoadingMisciblog(false);
       });
