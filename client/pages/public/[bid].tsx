@@ -121,7 +121,7 @@ export default function Post() {
     // @ts-ignore
     if (gqlData) {
       const aa = gqlData?.fetchBlog?.publish_data.find(
-        (pd) => pd.platform === "wordpress"
+        (pd: any) => pd.platform === "wordpress"
       ).tiny_mce_data;
       const html = jsonToHtml(aa);
       console.log("ADD");
