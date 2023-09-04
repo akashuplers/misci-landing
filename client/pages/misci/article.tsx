@@ -230,7 +230,10 @@ const MiSciArticle = ({ question }: MiSciProps) => {
           >
             <Tab.List className="flex relative items-center gap-2 w-full">
               {editTabs.map((tab, index) => (
-                <Tab className="flex outline-none flex-col realtive min-w-[7rem] items-start justify-center gap-2 w-fit">
+                <Tab
+                  className="flex outline-none flex-col realtive min-w-[7rem] items-start justify-center gap-2 w-fit"
+                  key={tab.name}
+                >
                   <div className="flex flex-col relative">
                     <div className="text-blue-950 text-base font-medium leading-none">
                       {tab.name}
