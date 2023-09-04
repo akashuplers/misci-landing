@@ -86,6 +86,10 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       // @ts-ignore
       if (step == "ANSWER_FETCHING_FAILED") {
         toast.error("Something went wrong");
+        setLoadingMisciblog(false);
+        setTimeout(() => {
+          router.back();
+        }, 2000);
       }
     },
     onSubscriptionData(options) {
@@ -124,6 +128,10 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     const tempiId = localStorage.getItem("tempId");
     generateMisci({ question, userId: tempiId ?? "" })
       .then((res) => {})
+      .catch((err) => {
+        console.log(err);
+        toast.error("Something went wrong");
+      })
       .finally(() => {});
   }, []);
 
@@ -304,6 +312,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   }
   return (
     <div className="w-screen px-12 py-2">
+      <style>{`.sidebar-position-left #button.sidebar{display: none;`}</style>
       <header className="w-full h-10 justify-between items-center flex">
         <button onClick={() => router.back()}>
           <span>
