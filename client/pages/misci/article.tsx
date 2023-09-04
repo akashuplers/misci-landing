@@ -65,15 +65,19 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       console.log(subsData);
       console.log("sub completed");
       const data = subsData?.stepCompletes.data;
-      setMisciblog(data);
-      console.log(data);
-      const aa = data?.publish_data?.find((d: any) => d.platform === "answers");
-      console.log(aa);
-      const htmlToDoc = jsonToHtml(aa?.tiny_mce_data);
-      console.log(htmlToDoc);
-      setEditorAnswersData(htmlToDoc);
-      setLoadingMisciblog(false);
-      setLoadingMisciblog(false);
+      if (data != null) {
+        setMisciblog(data);
+        console.log(data);
+        const aa = data?.publish_data?.find(
+          (d: any) => d.platform === "answers"
+        );
+        console.log(aa);
+        const htmlToDoc = jsonToHtml(aa?.tiny_mce_data);
+        console.log(htmlToDoc);
+        setEditorAnswersData(htmlToDoc);
+        setLoadingMisciblog(false);
+        setLoadingMisciblog(false);
+      }
     },
     onSubscriptionData(options) {
       console.log("sub data");
