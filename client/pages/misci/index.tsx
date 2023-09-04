@@ -1,10 +1,19 @@
 import { FloatingBalls } from "@/components/ui/Chip";
 import Lottie from "lottie-react";
 import React from "react";
-import infinityLoop from "../lottie/infinity-loop.json";
+import infinityLoop from "../../lottie/infinity-loop.json";
+import { useRouter } from "next/router";
 
 const MiSci = () => {
   const [keyword, setkeyword] = React.useState("");
+  const router = useRouter();
+  function handleMISCIGenerate() {
+    // router.push("/misci/generate?question="keyword);
+    router.push({
+      pathname: "/misci/article",
+      query: { question: keyword },
+    });
+  }
   return (
     <div
       className="relative overflow-x-hidden flex items-center justify-center flex-col w-full h-screen"
@@ -97,7 +106,9 @@ const MiSci = () => {
             <button
               disabled={keyword.length < 1}
               className="h-14 px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-lg shadow justify-center items-center gap-2.5 inline-flex hover:from-indigo-700 hover:to-violet-700 focus:shadow-outline-indigo disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={() => {}}
+              onClick={() => {
+                handleMISCIGenerate();
+              }}
             >
               <>
                 <span className="text-white text-base font-medium leading-7">
