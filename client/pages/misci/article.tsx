@@ -19,6 +19,7 @@ import {
   PaperAirplaneIcon,
 } from "@heroicons/react/24/outline";
 import { Editor } from "@tinymce/tinymce-react";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
 export const getServerSideProps = async (context: any) => {
@@ -47,6 +48,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   const [userAbleUserIDForSubs, setUserAbleUserIDForSubs] = useState<
     string | null
   >("");
+  const router = useRouter();
   const [EditorSetUpCompleted, setEditorSetUpCompleted] = useState(false);
   const { addMessages } = useGenerateErrorState();
   const [getToken, setGetToken] = useState<string | null>("");
@@ -291,11 +293,11 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   return (
     <div className="w-screen px-12 py-2">
       <header className="w-full h-10 justify-between items-center flex">
-        <div>
+        <button onClick={() => router.back()}>
           <span>
             <ArrowLeftIcon className="h-5 w-5 text-gray-800" />
           </span>
-        </div>
+        </button>
         <div className="justify-start items-center gap-4 flex">
           <button className="p-2 bg-indigo-600 rounded-lg shadow justify-center items-center gap-2.5 flex">
             <span className="-rotate-45">
