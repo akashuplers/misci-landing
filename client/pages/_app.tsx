@@ -39,9 +39,8 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   (response) => {
+    if (!localStorage.getItem("token")) return response;
 
-    if(!localStorage.getItem('token')) return response;
-    
     // Handle successful responses
     console.log("response : ", response);
     if (response.status === 401) {
@@ -52,8 +51,7 @@ axios.interceptors.response.use(
     return response;
   },
   (error) => {
-
-    if(!localStorage.getItem('token')) return error;
+    if (!localStorage.getItem("token")) return error;
 
     // Handle any response errors
     console.error("error response : ", error);
@@ -68,10 +66,15 @@ axios.interceptors.response.use(
 
 export default function App({ Component, pageProps }: AppProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-   const {token:userToken, userID : userLocalId, loadingConfigs, addValues} = useClientUserStore()
+  const {
+    token: userToken,
+    userID: userLocalId,
+    loadingConfigs,
+    addValues,
+  } = useClientUserStore();
   const router = useRouter();
   const pathName = router.pathname;
-  console.log("pathName", pathName );
+  console.log("pathName", pathName);
   const notAllowedRoutes = [""];
   const allowedRoutes = [
     "/",
@@ -124,7 +127,7 @@ export default function App({ Component, pageProps }: AppProps) {
     var getToken = localStorage.getItem("token");
     const userID = localStorage.getItem("userId");
     const tempID = localStorage.getItem("tempId");
-    const userLocalId =userID ?? tempID;
+    const userLocalId = userID ?? tempID;
   }
   const httpLink = new HttpLink({
     // You should use an absolute URL here
@@ -200,11 +203,12 @@ export default function App({ Component, pageProps }: AppProps) {
             buttonText="I Understand"
             cookieName="myAwesomeCookieName2"
             style={{ background: "#2B373B" }}
-            buttonStyle={{ color: "#4e503b", fontSize: "13px" }}
+            buttonStyle={{ color: "#4e503b", fontSize: "10px" }}
             expires={150}
           >
-            This website uses cookies to enhance the user experience.{" "}
-            <span style={{ fontSize: "10px" }}>
+           {" "}
+            <span style={{ fontSize: "12px" }}>
+ This website uses cookies to enhance the user experience.
               We only use this for better feature development and any support
               requirements that come up.
             </span>
@@ -212,7 +216,10 @@ export default function App({ Component, pageProps }: AppProps) {
         </ApolloProvider>
       </>
     );
-  } else if (!isAuthenticated && (allowedRoutes.includes(pathName) || pathName.includes('public'))) {
+  } else if (
+    !isAuthenticated &&
+    (allowedRoutes.includes(pathName) || pathName.includes("public"))
+  ) {
     return (
       <>
         <ApolloProvider client={client}>
@@ -223,11 +230,12 @@ export default function App({ Component, pageProps }: AppProps) {
             buttonText="I Understand"
             cookieName="myAwesomeCookieName2"
             style={{ background: "#2B373B" }}
-            buttonStyle={{ color: "#4e503b", fontSize: "13px" }}
+            buttonStyle={{ color: "#4e503b", fontSize: "10px" }}
             expires={150}
           >
-            This website uses cookies to enhance the user experience.{" "}
-            <span style={{ fontSize: "10px" }}>
+            {" "}
+            <span style={{ fontSize: "12px" }}>
+This website uses cookies to enhance the user experience.
               We only use this for better feature development and any support
               requirements that come up.
             </span>
@@ -235,7 +243,10 @@ export default function App({ Component, pageProps }: AppProps) {
         </ApolloProvider>
       </>
     );
-  } else if (!isAuthenticated && ( notAllowedRoutes.includes(pathName) || pathName.includes('public'))) {
+  } else if (
+    !isAuthenticated &&
+    (notAllowedRoutes.includes(pathName) || pathName.includes("public"))
+  ) {
     return <>{/* <LoginComponent {...pageProps} /> */}</>;
   }
 }
