@@ -16,7 +16,7 @@ const MiSci = () => {
   }
   return (
     <div
-      className="relative overflow-x-hidden flex items-center justify-center flex-col w-full h-screen"
+      className="relative overflow-x-hidden flex items-center justify-center flex-col w-full h-screen overflow-y-hidden overscroll-y-none"
       id="misci"
     >
       <FloatingBalls className="absolute top-[40%] left-[2%]" />
