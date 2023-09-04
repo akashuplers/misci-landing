@@ -21,6 +21,7 @@ import {
 import { Editor } from "@tinymce/tinymce-react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export const getServerSideProps = async (context: any) => {
   console.log(context);
@@ -66,8 +67,10 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       console.log("data");
       console.log(subsData);
       console.log("sub completed");
-      const data = subsData?.stepCompletes.data;
-      if (data != null) {
+      const step = subsData?.stepCompletes.step;
+      // @ts-ignore
+      if (step == "ANSWER_FETCHING_COMPLETED") {
+        const data = subsData?.stepCompletes.data;
         setMisciblog(data);
         console.log(data);
         const aa = data?.publish_data?.find(
@@ -79,6 +82,10 @@ const MiSciArticle = ({ question }: MiSciProps) => {
         setEditorAnswersData(htmlToDoc);
         setLoadingMisciblog(false);
         setLoadingMisciblog(false);
+      }
+      // @ts-ignore
+      if (step == "ANSWER_FETCHING_FAILED") {
+        toast.error("Something went wrong");
       }
     },
     onSubscriptionData(options) {
@@ -143,7 +150,12 @@ const MiSciArticle = ({ question }: MiSciProps) => {
           <span className="text-gray-800 text-xl font-medium leading-none">
             We have created a personalized article for you.
           </span>
-          <button className="p-2 opacity-50 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600  text-white">
+          <button
+            onClick={() => {
+              setCurrentTabIndex(1);
+            }}
+            className="p-2 opacity-50 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600  text-white"
+          >
             <span>
               <PaperAirplaneIcon className="h-5 w-5" />
             </span>
