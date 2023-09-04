@@ -271,7 +271,7 @@ export const TMBlogGeneration = async ({db, text}: {
     }
 }
 
-export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null, userId = null, keywords = [], tones = [], pubsub = null}: {
+export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null, userId = null, keywords = [], tones = [], type = null}: {
     db: any;
     text: String;
     regenerate: Boolean;
@@ -289,6 +289,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
     userDetails?: any;
     userId?: string | null;
     pubsub?: any | null;
+    type?: any | null;
 }) => {
     const mapObj: any = {
         "H1:":" ",
@@ -323,33 +324,12 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         linkedin: null,
         twitter: null,
     }
-    // await (
-    //     Promise.all(
-    //         Object.keys(newsLetter).map(async (key): Promise<any> => {
-                
-    //         })
-    //     )
-    // )
      
     const keys = Object.keys(newsLetter)
     for (let index = 0; index < keys.length; index++) {
         const key = keys[index];
         try {
-            if(key === "wordpress") {
-                // const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? `Please act as an expert writer and using the below pasted ideas write a atleast 1200 word blog post ${title && title.length ? `for "${title}"` : ""} with inputs as follows:
-                // ${tones?.length ? tones.join('","') : `Tone is "Authoritative, informative, Persuasive"`}
-                //     Limit is "1500 words"
-                //     ${keywords.length ? `Use these keywords: "${keywords.join('","')}"`: ``}
-                //     Donot repeat sentence
-                //     Strictly Highlight the H1 & H2 using html tags
-                //     Provide the conclusion at the end
-                //     Strictly use all these Ideas for writing blog: ${text}` : `Please act as an expert writer and using the below pasted ideas write a atleast 1200 word blog post ${title && title.length ? `for "${title}"` : ""} strictly with inputs as follows:
-                //     ${tones?.length ? tones.join('","') : `Tone is "Authoritative, informative, Persuasive"`}
-                //     Limit is "1500 words"
-                //     ${keywords.length ? `Use these keywords: "${keywords.join('","')}"`: ``}
-                //     Donot repeat sentence
-                //     Strictly Highlight the H1 & H2 using html tags
-                //     Provide the conclusion at the end`}`, db}).textCompletion(chatgptApis.timeout)
+            if((type && type === "wordpress" && key === "wordpress") || (!type && key === "wordpress")) {
                 const gptPrompt = `Please forget old prompt and act as an new expert writer and using the below pasted ideas write a blog with inputs as follows:\n${title && title.length ? `Topic is "${title}"\n${tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"`}`: tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"` }\n${keywords.length ? `Use these keywords: "${keywords.join('","')}" \nMinimum limit is "1000 words"`: `Minimum limit is "1000 words"`}\nHighlight the H1 & H2 html tags\nProvide the conclusion at the end with Conclusion as heading\nStrictly use all these points: ${text}`
                 const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? gptPrompt : 
                     `Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
@@ -362,13 +342,13 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                 newsLetter = {...newsLetter, [key]: chatGPTText}
             } else {
                 let text = ""
-                if(key === 'title') {
+                if((type && type === "title" && key === "title") || (!type && key === 'title')) {
                     const blogPostToSend = newsLetter["wordpress"]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
                         return mapObj[matched];
                     });
                     text = `Create a SEO based title using this blog: ${blogPostToSend}`
                 }
-                if(key === 'linkedin') {
+                if((type && type === "linkedin" && key === "linkedin") || (!type && key === 'linkedin')) {
                     const blogPostToSendForLinkedin = newsLetter["wordpress"]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
                         return mapObj[matched];
                     });
@@ -379,7 +359,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                     Insert hashtags at the end of the post
                     Trim unwanted new lines and spaces`
                 }
-                if(key === 'twitter') {
+                if((type && type === "twitter" && key === "twitter") || (!type && key === 'twitter')) {
                     let tweetQuota;
                     if(userDetails) {
                         tweetQuota = await db.db('lilleAdmin').collection('tweetsQuota').findOne({
@@ -408,8 +388,10 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                     "Do not show the Tweet Number count inside the Tweets".`
                     console.log(text, "text")
                 }
-                const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text, db}).textCompletion(chatgptApis.timeout)
-                newsLetter = {...newsLetter, [key]: chatGPTText}
+                if(text && text.length > 1) {
+                    const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text, db}).textCompletion(chatgptApis.timeout)
+                    newsLetter = {...newsLetter, [key]: chatGPTText}
+                }
             }
         } catch(e: any) {
             console.log(e, "error from chat gpt")
@@ -712,107 +694,115 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     }  
                                 }   
                             case "linkedin":
-                                console.log(newsLetter[key], "linkedin")
-                                newsLetter[key] = newsLetter[key].trim()
-                                let linkedinTitle = ""
-                                if(newsLetter[key]?.indexOf("Title: ") >= 0) {
-                                    linkedinTitle = (newsLetter[key].substr(newsLetter[key].indexOf("Title: "), newsLetter[key].indexOf("\n"))).replace("Title: ", "")
-                                }
-                                if(linkedinTitle && linkedinTitle.length > 1) {
-                                    newsLetter[key] = newsLetter[key].replace(newsLetter[key].substr(newsLetter[key].indexOf("Title: "), newsLetter[key].indexOf("\n")), "")
-                                }
-                                let linkedinContent = newsLetter[key]?.replace(/\n/g, "<p/>")
-                                const matchObj: any = {
-                                    "<p/><p/>":"<p/>",
-                                };
-                                linkedinContent = linkedinContent?.replace(/<p\s*\/?><p\s*\/?>/gi, function(matched: any){
-                                    return matchObj[matched];
-                                }); 
-                                return {
-                                    published: false,
+                                if(type && type === "linkedin" || (!type && key === "linkedin")){
+                                    console.log(newsLetter[key], "linkedin")
+                                    newsLetter[key] = newsLetter[key].trim()
+                                    let linkedinTitle = ""
+                                    if(newsLetter[key]?.indexOf("Title: ") >= 0) {
+                                        linkedinTitle = (newsLetter[key].substr(newsLetter[key].indexOf("Title: "), newsLetter[key].indexOf("\n"))).replace("Title: ", "")
+                                    }
+                                    if(linkedinTitle && linkedinTitle.length > 1) {
+                                        newsLetter[key] = newsLetter[key].replace(newsLetter[key].substr(newsLetter[key].indexOf("Title: "), newsLetter[key].indexOf("\n")), "")
+                                    }
+                                    let linkedinContent = newsLetter[key]?.replace(/\n/g, "<p/>")
+                                    const matchObj: any = {
+                                        "<p/><p/>":"<p/>",
+                                    };
+                                    linkedinContent = linkedinContent?.replace(/<p\s*\/?><p\s*\/?>/gi, function(matched: any){
+                                        return matchObj[matched];
+                                    }); 
+                                    return {
+                                        published: false,
+                                            published_date: false,
+                                            platform: "linkedin",
+                                            creation_date: Math.round(new Date().getTime() / 1000) ,
+                                            tiny_mce_data: {
+                                                "tag": "BODY",
+                                                children: [
+                                                    {
+                                                        "tag": "H3",
+                                                        "attributes": {
+                                                            "style": "text-align: center;"
+                                                        },
+                                                        "children": [
+                                                            {
+                                                                "tag": "STRONG",
+                                                                "attributes": {},
+                                                                "children": [
+                                                                    (linkedinTitle && linkedinTitle.length > 1 && linkedinTitle) || title
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "tag": "P",
+                                                        "attributes": {},
+                                                        "children": [
+                                                            linkedinContent
+                                                        ]
+                                                    },
+                                                    {
+                                                        "tag": "P",
+                                                        "attributes": {},
+                                                        "children": []
+                                                    },
+                                                    {
+                                                        "tag": "P",
+                                                        "attributes": {},
+                                                        "children": [
+                                                            {
+                                                                "tag": "IMG",
+                                                                "attributes": {
+                                                                    "style": "display: block; margin-left: auto; margin-right: auto;",
+                                                                    "src": imageUrl,
+                                                                    "width": "441",
+                                                                    "height": "305"
+                                                                },
+                                                                "children": []
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                    }
+                                }else{
+                                    return null
+                                }   
+                            case "twitter":
+                                if(type && type === "linkedin" || (!type && key === "twitter")){
+                                    console.log(newsLetter[key])
+                                    let updatedThread = null;
+                                    if(newsLetter[key]) {
+                                        let thread = newsLetter[key]?.replace(/\n/g, "<p/>")
+                                        console.log(thread)
+                                        // let thread = `<p/><p/>1. Looking to build a strong chest? Here are the top 10 exercises to help you get there! #chestexercises #fitness #mensfitness <p/>2. Bench Press: A classic exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/>3. Incline Bench Press: This exercise targets the upper chest muscles. Make sure to keep your back flat and your elbows tucked in. <p/>4. Push-Ups: A great bodyweight exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/>5. Decline Bench Press: This exercise targets the lower chest muscles. Make sure to keep your back flat and your elbows tucked in. <p/>6. Chest Flys: A great exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/>7. Chest Dips: A great bodyweight exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/>8. Cable Crossovers: A great exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/>9. Chest Press Machine: A great machine exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/>10. Chest Pullovers: A great exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/><p/>There you have it! These are the top 10 exercises for building a strong chest. #chestexercises #fitness #mensfitness <p/>This tweet was generated by @Lille_AI twitter`
+                                        const matchTwitterObj: any = {
+                                            "<p/><p/>":"<p/>",
+                                            "Thread: ":"",
+                                        };
+                                        thread = thread.replace(/<p\s*\/?><p\s*\/?>/gi, function(matched: any){
+                                            return matchTwitterObj[matched];
+                                        });
+                                        updatedThread = thread.split("<p/>")
+                                        updatedThread = updatedThread.map((str: string) => {
+                                            return str.replace(/^\d+\s*[-\\.\\\/)]?\s+/g, "")
+                                        })
+                                        updatedThread = updatedThread?.filter((text: string) => text.length > 0)
+                                        if(updatedThread && updatedThread.length) updatedThread.push('This tweet was generated by @Lille_AI')
+                                        console.log(updatedThread, "updatedThread") 
+                                    }
+                                    return {
+                                        published: false,
                                         published_date: false,
-                                        platform: "linkedin",
+                                        platform: "twitter",
                                         creation_date: Math.round(new Date().getTime() / 1000) ,
                                         tiny_mce_data: {
-                                            "tag": "BODY",
-                                            children: [
-                                                {
-                                                    "tag": "H3",
-                                                    "attributes": {
-                                                        "style": "text-align: center;"
-                                                    },
-                                                    "children": [
-                                                        {
-                                                            "tag": "STRONG",
-                                                            "attributes": {},
-                                                            "children": [
-                                                                (linkedinTitle && linkedinTitle.length > 1 && linkedinTitle) || title
-                                                            ]
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "tag": "P",
-                                                    "attributes": {},
-                                                    "children": [
-                                                        linkedinContent
-                                                    ]
-                                                },
-                                                {
-                                                    "tag": "P",
-                                                    "attributes": {},
-                                                    "children": []
-                                                },
-                                                {
-                                                    "tag": "P",
-                                                    "attributes": {},
-                                                    "children": [
-                                                        {
-                                                            "tag": "IMG",
-                                                            "attributes": {
-                                                                "style": "display: block; margin-left: auto; margin-right: auto;",
-                                                                "src": imageUrl,
-                                                                "width": "441",
-                                                                "height": "305"
-                                                            },
-                                                            "children": []
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        }
+                                        },
+                                        threads: updatedThread || [] 
+                                    }      
+                                }else{
+                                    return null
                                 }
-                            case "twitter":
-                                console.log(newsLetter[key])
-                                let updatedThread = null;
-                                if(newsLetter[key]) {
-                                    let thread = newsLetter[key]?.replace(/\n/g, "<p/>")
-                                    console.log(thread)
-                                    // let thread = `<p/><p/>1. Looking to build a strong chest? Here are the top 10 exercises to help you get there! #chestexercises #fitness #mensfitness <p/>2. Bench Press: A classic exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/>3. Incline Bench Press: This exercise targets the upper chest muscles. Make sure to keep your back flat and your elbows tucked in. <p/>4. Push-Ups: A great bodyweight exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/>5. Decline Bench Press: This exercise targets the lower chest muscles. Make sure to keep your back flat and your elbows tucked in. <p/>6. Chest Flys: A great exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/>7. Chest Dips: A great bodyweight exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/>8. Cable Crossovers: A great exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/>9. Chest Press Machine: A great machine exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/>10. Chest Pullovers: A great exercise for building chest strength. Make sure to keep your back flat and your elbows tucked in. <p/><p/>There you have it! These are the top 10 exercises for building a strong chest. #chestexercises #fitness #mensfitness <p/>This tweet was generated by @Lille_AI twitter`
-                                    const matchTwitterObj: any = {
-                                        "<p/><p/>":"<p/>",
-                                        "Thread: ":"",
-                                    };
-                                    thread = thread.replace(/<p\s*\/?><p\s*\/?>/gi, function(matched: any){
-                                        return matchTwitterObj[matched];
-                                    });
-                                    updatedThread = thread.split("<p/>")
-                                    updatedThread = updatedThread.map((str: string) => {
-                                        return str.replace(/^\d+\s*[-\\.\\\/)]?\s+/g, "")
-                                    })
-                                    updatedThread = updatedThread?.filter((text: string) => text.length > 0)
-                                    if(updatedThread && updatedThread.length) updatedThread.push('This tweet was generated by @Lille_AI')
-                                    console.log(updatedThread, "updatedThread") 
-                                }
-                                return {
-                                    published: false,
-                                    published_date: false,
-                                    platform: "twitter",
-                                    creation_date: Math.round(new Date().getTime() / 1000) ,
-                                    tiny_mce_data: {
-                                    },
-                                    threads: updatedThread || [] 
-                                }      
                             default:
                                 return newsLetter[key]    
                         }
@@ -928,13 +918,17 @@ export const fetchUsedBlogIdeasByIdea = async ({
 export const fetchArticleById = async ({
     id,
     db,
-    userId
+    userId,
+    collectionName= null,
+    dbName= null
 }: {
     id: string
     db: any
     userId: string
+    collectionName?: string | null
+    dbName?: string | null
 }) => {
-    return await db.db('lilleArticles').collection('articles').findOne({
+    return await db.db(dbName? dbName : "lilleArticles").collection(collectionName ? collectionName : 'articles').findOne({
         _id: id
     })
 }
@@ -942,11 +936,15 @@ export const fetchArticleById = async ({
 export const fetchArticleUrls = async ({
     blog,
     db,
-    articleId
+    articleId,
+    collectionName= null,
+    dbName= null
 }: {
     blog?: any
     db: any
     articleId?: string[]
+    collectionName?: string | null
+    dbName?: string | null
 }) => {
     let urls : {
         url: string
@@ -959,7 +957,7 @@ export const fetchArticleUrls = async ({
         } else {
             filter = {$in: blog?.article_id}
         }
-        const urlsData = await db.db("lilleArticles").collection('articles').find({
+        const urlsData = await db.db(dbName? dbName : "lilleArticles").collection(collectionName ? collectionName : 'articles').find({
             _id: filter
         }, {
             projection: {
