@@ -47,6 +47,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   const [userAbleUserIDForSubs, setUserAbleUserIDForSubs] = useState<
     string | null
   >("");
+  const [EditorSetUpCompleted, setEditorSetUpCompleted] = useState(false);
   const { addMessages } = useGenerateErrorState();
   const [getToken, setGetToken] = useState<string | null>("");
   const {
@@ -112,17 +113,47 @@ const MiSciArticle = ({ question }: MiSciProps) => {
         setLoadingMisciblog(false);
       });
   }, []);
+
+  const editTabs = [
+    {
+      name: "Used Ideas",
+      icon: <Bars3BottomRightIcon />,
+      content: <></>,
+      notificationCount: 12,
+    },
+    {
+      name: "Unused Ideas",
+      icon: <Bars3BottomRightIcon />,
+      content: <></>,
+      notificationCount: 0,
+    },
+  ];
   const TabsList = [
     {
       name: "Answer",
       icon: <Bars3BottomRightIcon />,
+      leftContent: (
+        <div className="h-full bg-gray-300 bg-opacity-70 flex items-center justify-center rounded-lg flex-col gap-2">
+          <span className="text-gray-800 text-xl font-medium leading-none">
+            We have created a personalized article for you.
+          </span>
+          <button className="p-2 opacity-50 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600  text-white">
+            <span>
+              <PaperAirplaneIcon className="h-5 w-5" />
+            </span>
+            Go to Article
+          </button>
+        </div>
+      ),
       content: (
         <>
           <Editor
             value={editorAnswersData}
             apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
             init={{
-              setup: (editor) => {},
+              setup: (editor) => {
+                setEditorSetUpCompleted(true);
+              },
               init_instance_callback: function (editor) {},
               skin: "naked",
               icons: "small",
@@ -161,88 +192,8 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       name: "Article",
       icon: <Bars3BottomRightIcon />,
       content: <></>,
-    },
-  ];
-
-  const editTabs = [
-    {
-      name: "Used Ideas",
-      icon: <Bars3BottomRightIcon />,
-      content: <></>,
-      notificationCount: 12,
-    },
-    {
-      name: "Unused Ideas",
-      icon: <Bars3BottomRightIcon />,
-      content: <></>,
-      notificationCount: 0,
-    },
-  ];
-  if (loadingMisciblog) {
-    return (
-      <MiSciGenerateLoadingModal
-        setShowGenerateLoadingModal={() => {}}
-        showGenerateLoadingModal={true}
-        showBackButton={false}
-      />
-    );
-  }
-  return (
-    <div className="w-screen px-12 py-2">
-      <header className="w-full h-10 justify-between items-center flex">
-        <div>
-          <span>
-            <ArrowLeftIcon className="h-5 w-5 text-gray-800" />
-          </span>
-        </div>
-        <div className="justify-start items-center gap-4 flex">
-          <button className="p-2 bg-indigo-600 rounded-lg shadow justify-center items-center gap-2.5 flex">
-            <span className="-rotate-45">
-              <PaperAirplaneIcon className="h-5 w-5 text-white" />
-            </span>
-            <span className="text-white text-base font-medium">Publish</span>
-          </button>
-        </div>
-      </header>
-      <main className="flex h-full">
-        <section className="w-[60%]">
-          <Tab.Group
-            onChange={setCurrentTabIndex}
-            defaultIndex={0}
-            selectedIndex={currentTabIndex}
-          >
-            <Tab.List className="flex items-center gap-2 w-full">
-              {TabsList.map((tab, index) => (
-                <Tab
-                  key={tab.name}
-                  className={({ selected }) =>
-                    classNames(
-                      "rounded-lg p-2.5 text-sm font-medium leading-5 outline-none text-gray-700",
-                      selected
-                        ? "underline border-gray-200 text-black"
-                        : "text-gray-100 hover:bg-white/[0.12]"
-                    )
-                  }
-                >
-                  <div className="flex">
-                    <div className="w-5 h-5 mr-2">{tab.icon}</div>
-                    <div className="text-base font-medium leading-none">
-                      {tab.name}
-                    </div>
-                  </div>
-                </Tab>
-              ))}
-            </Tab.List>
-            <Tab.Panels>
-              {TabsList.map((tab, index) => (
-                <Tab.Panel key={index} className={`w-full border `}>
-                  {tab.content}
-                </Tab.Panel>
-              ))}
-            </Tab.Panels>
-          </Tab.Group>
-        </section>
-        <section className="w-[40%] p-2 flex-col flex relative h-full border-l border-gray-600 gap-6">
+      leftContent: (
+        <>
           <div className="h-10 justify-between items-center flex">
             <div className="text-slate-800  leading-none">
               Create your next draft on the basis of your edits.
@@ -317,6 +268,82 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                 />
               </Tab.Panel>
               <Tab.Panel className={`w-full border `}>Content 2</Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+        </>
+      ),
+    },
+  ];
+
+  if (loadingMisciblog) {
+    return (
+      <MiSciGenerateLoadingModal
+        setShowGenerateLoadingModal={() => {}}
+        showGenerateLoadingModal={true}
+        showBackButton={false}
+      />
+    );
+  }
+  return (
+    <div className="w-screen px-12 py-2">
+      <header className="w-full h-10 justify-between items-center flex">
+        <div>
+          <span>
+            <ArrowLeftIcon className="h-5 w-5 text-gray-800" />
+          </span>
+        </div>
+        <div className="justify-start items-center gap-4 flex">
+          <button className="p-2 bg-indigo-600 rounded-lg shadow justify-center items-center gap-2.5 flex">
+            <span className="-rotate-45">
+              <PaperAirplaneIcon className="h-5 w-5 text-white" />
+            </span>
+            <span className="text-white text-base font-medium">Publish</span>
+          </button>
+        </div>
+      </header>
+      <main className="flex h-full">
+        <section className="w-full">
+          <Tab.Group
+            onChange={setCurrentTabIndex}
+            defaultIndex={0}
+            selectedIndex={currentTabIndex}
+          >
+            <Tab.List className="flex items-center gap-2 w-full">
+              {TabsList.map((tab, index) => (
+                <Tab
+                  key={tab.name}
+                  className={({ selected }) =>
+                    classNames(
+                      "rounded-lg p-2.5 text-sm font-medium leading-5 outline-none text-gray-700",
+                      selected
+                        ? "underline border-gray-200 text-black"
+                        : "text-gray-100 hover:bg-white/[0.12]"
+                    )
+                  }
+                >
+                  <div className="flex">
+                    <div className="w-5 h-5 mr-2">{tab.icon}</div>
+                    <div className="text-base font-medium leading-none">
+                      {tab.name}
+                    </div>
+                  </div>
+                </Tab>
+              ))}
+            </Tab.List>
+            <Tab.Panels>
+              {TabsList.map((tab, index) => (
+                <Tab.Panel key={index} className={`w-full border flex `}>
+                  {/* {tab.content} */}
+
+                  <div className="w-[60%] h-full">{tab.content}</div>
+                  <div
+                    className="w-[40%] p-2 flex-col flex relative border-l border-gray-600 gap-6"
+                    id="leftContent"
+                  >
+                    {tab.leftContent}
+                  </div>
+                </Tab.Panel>
+              ))}
             </Tab.Panels>
           </Tab.Group>
         </section>
