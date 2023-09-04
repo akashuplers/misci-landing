@@ -4,6 +4,7 @@ import axios from "axios";
 import type { AppProps } from "next/app";
 import { useEffect, useState } from "react";
 import CookieConsent from "react-cookie-consent";
+import localFont from "next/font/local";
 
 import { GRAPHQL_URL, WEBSOCKET_URL } from "@/constants";
 import {
@@ -63,6 +64,30 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+const ubuntu = localFont({
+  src: [
+    {
+      path: "../public/fonts/Ubuntu-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Ubuntu-Italic.ttf",
+      weight: "400",
+      style: "italic",
+    },
+    {
+      path: "../public/fonts/Ubuntu-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Ubuntu-BoldItalic.ttf",
+      weight: "700",
+      style: "italic",
+    },
+  ],
+});
 
 export default function App({ Component, pageProps }: AppProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -91,6 +116,8 @@ export default function App({ Component, pageProps }: AppProps) {
     "/faq",
     "/aboutus",
     "/public/[[...slug]]",
+    "/misci",
+    "/misci/article",
   ];
 
   useEffect(() => {
@@ -205,10 +232,10 @@ export default function App({ Component, pageProps }: AppProps) {
             buttonStyle={{ color: "#4e503b", fontSize: "10px" }}
             expires={150}
           >
-           {" "}
+            {" "}
             <span style={{ fontSize: "12px" }}>
- This website uses cookies to enhance the user experience.
-              We only use this for better feature development and any support
+              This website uses cookies to enhance the user experience. We only
+              use this for better feature development and any support
               requirements that come up.
             </span>
           </CookieConsent>
@@ -234,8 +261,8 @@ export default function App({ Component, pageProps }: AppProps) {
           >
             {" "}
             <span style={{ fontSize: "12px" }}>
-This website uses cookies to enhance the user experience.
-              We only use this for better feature development and any support
+              This website uses cookies to enhance the user experience. We only
+              use this for better feature development and any support
               requirements that come up.
             </span>
           </CookieConsent>
