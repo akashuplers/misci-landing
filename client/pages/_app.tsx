@@ -117,6 +117,7 @@ export default function App({ Component, pageProps }: AppProps) {
     "/aboutus",
     "/public/[[...slug]]",
     "/misci",
+    "/misci/article",
   ];
 
   useEffect(() => {

@@ -730,3 +730,15 @@ input[type=number] {
   text-align: left;
   
 }
+
+/* custome tailwind css class  */
+
+/* active tab */
+
+
+@layer components {
+  .activeTab {
+    @apply font-bold text-black underline;
+  }
+  /* ... */
+}
