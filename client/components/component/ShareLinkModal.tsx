@@ -1,5 +1,6 @@
 //@ts-nocheck
 import Modal from "react-modal";
+import React, { useState } from "react";
 import {
   EmailIcon,
   EmailShareButton,
@@ -27,6 +28,7 @@ const ShareLinkModal = ({
   text: string;
   blog_id: string;
 }) => {
+  const [copyText, setCopyText] = useState("Copy");
   return (
     <Modal
       isOpen={openModal}
@@ -110,12 +112,19 @@ const ShareLinkModal = ({
           value={text + blog_id}
           className="w-full lg:w-[70%] h-[40px] mr-5"
         />
-        <CopyToClipboard text={text + blog_id}>
+        <CopyToClipboard
+          text={text + blog_id}
+          onCopy={() => {
+            setCopyText("Copied");
+            setTimeout(() => {
+              setCopyText("Copy");
+            }, 2500);
+          }}
+        >
           <div className="copy-area">
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-              Copy
+            <button className={`${copyText ==='Copy' ? 'bg-blue-500 hover:bg-blue-700' : 'bg-green-500 hover:bg-green-700'}   text-white font-bold py-2 px-4 rounded-full`}>
+              {copyText}
             </button>
-            <span className={`copy-feedback }`}>Copied!</span>
           </div>
         </CopyToClipboard>
       </div>
