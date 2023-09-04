@@ -106,7 +106,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     console.log(localStorage);
     const userId = getUserToken();
     const tempiId = localStorage.getItem("tempId");
-    generateMisci({ question, userId: tempiId })
+    generateMisci({ question, userId: tempiId ?? "" })
       .then((res) => {})
       .finally(() => {
         setLoadingMisciblog(false);
