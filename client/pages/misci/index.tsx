@@ -9,7 +9,7 @@ import { StepCompleteData } from "@/store/types";
 import { STEP_COMPLETES_SUBSCRIPTION } from "@/graphql/subscription/generate";
 
 const MiSci = () => {
-  const [keyword, setkeyword] = React.useState("");
+  const [keyword, setkeyword] = useState("");
   const [getUserIdForSubs, setGetUserIdForSubs] = useState<string | null>("");
   const [getTempIdForSubs, setGetTempIdForSubs] = useState<string | null>("");
   const [getTokenForSubs, setGetTokenForSubs] = useState<string | null>("");
@@ -97,11 +97,13 @@ const MiSci = () => {
       />
       <div className="w-[50%] p-8 min-h-[500px] relative rounded-lg shadow-xl border border-white backdrop-blur-lg flex-col justify-start items-center gap-6 inline-flex">
         <div className=" max-w-[80%] flex items-center justify-around">
-          <img
-            className="w-48 h-48 object-none"
-            src="/misci_logo.png"
-            alt="MisciLog"
-          />
+          <span className="w-48 h-48 relative flex items-center justify-center">
+            <img
+              className="object-fit w-36 h-36"
+              src="/miscinew.png"
+              alt="MisciLog"
+            />
+          </span>
           <Lottie animationData={infinityLoop} className="h-24" />
           <img className="w-48 h-48" src="/misci_main.png" alt="misci_main" />
         </div>
