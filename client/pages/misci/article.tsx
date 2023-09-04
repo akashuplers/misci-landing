@@ -72,6 +72,8 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       const htmlToDoc = jsonToHtml(aa?.tiny_mce_data);
       console.log(htmlToDoc);
       setEditorAnswersData(htmlToDoc);
+      setLoadingMisciblog(false);
+      setLoadingMisciblog(false);
     },
     onSubscriptionData(options) {
       console.log("sub data");
@@ -109,9 +111,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     const tempiId = localStorage.getItem("tempId");
     generateMisci({ question, userId: tempiId ?? "" })
       .then((res) => {})
-      .finally(() => {
-        setLoadingMisciblog(false);
-      });
+      .finally(() => {});
   }, []);
 
   const editTabs = [
