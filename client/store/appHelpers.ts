@@ -419,3 +419,17 @@ export function getBlogTitle(obj: any): string {
     return obj;
   }
 }
+
+export function classNames(...classes: any[]) {
+  return classes.filter(Boolean).join(" ");
+}
+
+export function getUserToken(): string {
+  const token = localStorage.getItem("token");
+  const tempId = localStorage.getItem("tempId") ?? "";
+  const userId = localStorage.getItem("userId") ?? "";
+  if (token) {
+    return userId;
+  }
+  return tempId;
+}
