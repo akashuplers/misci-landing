@@ -29,7 +29,11 @@ import {
 import { useEffect, useState } from "react";
 import { jsonToHtml } from "../../helpers/helper";
 import styles from "../../styles/publish.module.css";
-import { unixToLocalYear } from "../../store/appHelpers";
+import {
+  convertToURLFriendly,
+  getBlogTitle,
+  unixToLocalYear,
+} from "../../store/appHelpers";
 import { useUserDataStore } from "../../store/appState";
 import { getBlogbyId } from "../../graphql/queries/getBlogbyId";
 import { useQuery } from "@apollo/client";
@@ -133,7 +137,10 @@ function Page({
     const aa = gqlData?.fetchBlog?.publish_data.find(
       (pd: any) => pd.platform === "wordpress"
     ).tiny_mce_data;
-    setBlogTitle(aa?.children[0].children[0].children[0]);
+    var blogTitle = getBlogTitle(aa?.children[0].children[0].children[0]);
+    blogTitle = convertToURLFriendly(blogTitle ? blogTitle : "");
+    setBlogTitle(blogTitle);
+    // setBlogTitle(aa?.children[0].children[0].children[0]);
     const html = jsonToHtml(aa);
     const container = document.createElement("div");
     container.innerHTML = html;
@@ -274,7 +281,7 @@ function Page({
         <title>{blogTitle} - Lille</title>
       </Head>
       <Navbar blogId={null} isOpen={false} />
-      <div className="flex items-center justify-center w-full lg:max-w-[1056px] mx-auto flex-col ">
+      <div className="flex items-center px-6 lg:px-0 justify-center w-full lg:max-w-[1056px] mx-auto flex-col ">
         <div
           className={styles.publishContainer + " px-3"}
           id="publishContainer"

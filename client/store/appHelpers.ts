@@ -13,13 +13,31 @@ export function getRelativeTimeString(
   const deltaSeconds = Math.round((timeMs - Date.now()) / 1000);
 
   // Array reprsenting one minute, hour, day, week, month, etc in seconds
-  const cutoffs = [60, 3600, 86400, 86400 * 7, 86400 * 30, 86400 * 365, Infinity];
+  const cutoffs = [
+    60,
+    3600,
+    86400,
+    86400 * 7,
+    86400 * 30,
+    86400 * 365,
+    Infinity,
+  ];
 
   // Array equivalent to the above but in the string representation of the units
-  const units: Intl.RelativeTimeFormatUnit[] = ["second", "minute", "hour", "day", "week", "month", "year"];
+  const units: Intl.RelativeTimeFormatUnit[] = [
+    "second",
+    "minute",
+    "hour",
+    "day",
+    "week",
+    "month",
+    "year",
+  ];
 
   // Grab the ideal cutoff unit
-  const unitIndex = cutoffs.findIndex(cutoff => cutoff > Math.abs(deltaSeconds));
+  const unitIndex = cutoffs.findIndex(
+    (cutoff) => cutoff > Math.abs(deltaSeconds)
+  );
 
   // Get the divisor to divide from the seconds. E.g. if our unit is "day" our divisor
   // is one day in seconds, so we can divide our seconds by this to get the # of days
@@ -30,7 +48,12 @@ export function getRelativeTimeString(
   return rtf.format(Math.floor(deltaSeconds / divisor), units[unitIndex]);
 }
 export function validateIfURL(url: string): boolean {
-  const test= url.includes('.') || url.includes('/') || url.includes(':') || url.includes('?') || url.includes('&');
+  const test =
+    url.includes(".") ||
+    url.includes("/") ||
+    url.includes(":") ||
+    url.includes("?") ||
+    url.includes("&");
   console.log(test);
   return test;
 }
@@ -77,20 +100,30 @@ export function processKeywords(data: Item[]): KeywordObj[] {
         id: item.id,
         text: uppercaseFirstChar(keyword),
         selected: false,
-        source: keywordsForBlog.some((keywordObj) => keywordObj.text === keyword)
-          ? (item.source ? uppercaseFirstChar(item.source) : '')
+        source: keywordsForBlog.some(
+          (keywordObj) => keywordObj.text === keyword
+        )
+          ? item.source
+            ? uppercaseFirstChar(item.source)
+            : ""
           : null,
         realSource: item.source,
         url: item.url,
         articleId: item.id,
       };
 
-      if (keywordObj.source !== null && item.source !== undefined && item.source !== '') {
-        const keywordObjFromKeywords = keywordsForBlog.find((keywordObj) => keywordObj.text === keyword);
+      if (
+        keywordObj.source !== null &&
+        item.source !== undefined &&
+        item.source !== ""
+      ) {
+        const keywordObjFromKeywords = keywordsForBlog.find(
+          (keywordObj) => keywordObj.text === keyword
+        );
         if (keywordObjFromKeywords !== undefined) {
           keywordObjFromKeywords.source = keywordObj.realSource
             ? uppercaseFirstChar(keywordObj.realSource)
-            : '';
+            : "";
         }
       }
       keywordsForBlog.push(keywordObj);
@@ -99,15 +132,14 @@ export function processKeywords(data: Item[]): KeywordObj[] {
 
   return keywordsForBlog;
 }
-export const unixToLocalYear = (unixTime:number) => {
+export const unixToLocalYear = (unixTime: number) => {
   const unixTimestamp = unixTime;
   const date = fromUnixTime(unixTimestamp);
   const formattedDate = format(date, "EEE' 'do', 'yyyy");
-  console.log(formattedDate)
+  console.log(formattedDate);
 
-  return formattedDate
+  return formattedDate;
 };
-
 
 export function calculateUsedCredits(userData: {
   totalCredits: number;
@@ -124,10 +156,10 @@ export function validateIfGoogleDriveURL(url: string): boolean {
   return APP_REGEXP.GOOGLE_DRIVE_URL_VALIDATION.test(url);
 }
 
-export type ObjType = 'file' | 'url' | 'keyword';
+export type ObjType = "file" | "url" | "keyword";
 
 interface Obj {
-  id: string,
+  id: string;
   index: number;
   label: string;
   selected: boolean;
@@ -139,7 +171,11 @@ interface Result {
   data: Obj[];
   errors: string[];
 }
-export function addObjectToSearchStore(obj: Obj, array: Obj[], isAuth: boolean = false): Result {
+export function addObjectToSearchStore(
+  obj: Obj,
+  array: Obj[],
+  isAuth: boolean = false
+): Result {
   const maxCapacity = 6;
   const keywordLimit = 1;
 
@@ -147,36 +183,41 @@ export function addObjectToSearchStore(obj: Obj, array: Obj[], isAuth: boolean =
   let keywordCount = 0;
 
   // Check if the obj type is valid
-  if (!['file', 'url', 'keyword'].includes(obj.type)) {
-    return { data: array, errors: ['Invalid obj type'] };
+  if (!["file", "url", "keyword"].includes(obj.type)) {
+    return { data: array, errors: ["Invalid obj type"] };
   }
-  
+
   // check for total number of items of files, urls, keywords
   const objCount = array.filter((item) => item.type === obj.type).length;
-  
+
   // only allow 1 url and not more than that if not auth
-  if (obj.type === 'url') {
+  if (obj.type === "url") {
     if (objCount >= 1 && !isAuth) {
-      return { data: array, errors: ['You can enter multiple URLs by signing up, as you are a guest limited to single file'] };
+      return {
+        data: array,
+        errors: [
+          "You can enter multiple URLs by signing up, as you are a guest limited to single file",
+        ],
+      };
     }
   }
 
   // user should not be able to add more than 3 urls
-  if (obj.type === 'url') {
+  if (obj.type === "url") {
     if (objCount >= 3) {
-      return { data: array, errors: ['Maximum 3 URLs are allowed'] };
+      return { data: array, errors: ["Maximum 3 URLs are allowed"] };
     }
   }
   if (objCount >= maxCapacity) {
-    return { data: array, errors: ['Maximum 6 items are allowed'] };
+    return { data: array, errors: ["Maximum 6 items are allowed"] };
   }
 
   // check if it already exists lowercase the value
-  
+
   // check for url for valid type
-  if (obj.type === 'url') {
+  if (obj.type === "url") {
     if (!validateIfURL(obj.value)) {
-      return { data: array, errors: ['Invalid URL'] };
+      return { data: array, errors: ["Invalid URL"] };
     }
   }
   const dataOfType = array.filter((item) => item.type === obj.type);
@@ -184,7 +225,7 @@ export function addObjectToSearchStore(obj: Obj, array: Obj[], isAuth: boolean =
   if (values.includes(obj.value.toLowerCase())) {
     return { data: array, errors: [`"${obj.value}" already exists`] };
   }
-  
+
   // Check if the keyword count exceeds the limit
   // if (obj.type === 'keyword') {
   //   keywordCount = array.filter((item) => item.type === 'keyword').length;
@@ -214,7 +255,7 @@ export function addFilesToTheSearch(
   files: File[],
   maxFileSize: number,
   maxSpaceLength: number,
-  isAuth: boolean = false,
+  isAuth: boolean = false
 ): ResultForAddFilesToArray {
   const maxCapacity = 3;
   const keywordLimit = 1;
@@ -222,12 +263,12 @@ export function addFilesToTheSearch(
   let remainingCapacity = maxCapacity - array.length;
   let keywordCount = 0;
   let totalFileSize = 0;
- 
+
   // Check if the keyword count exceeds the limit
-  keywordCount = array.filter((item) => item.type === 'keyword').length;
-  const objType = array.filter((item) => item.type === 'file').length;
+  keywordCount = array.filter((item) => item.type === "keyword").length;
+  const objType = array.filter((item) => item.type === "file").length;
   if (files.length === 0) {
-    return { data: array, errors: ['No file selected'] };
+    return { data: array, errors: ["No file selected"] };
   }
   // if (keywordCount === 0) {
   //   if (files.length > maxCapacity) {
@@ -237,30 +278,42 @@ export function addFilesToTheSearch(
   //     return { data: array, errors: [`Maximum ${maxCapacity} items are allowed`] };
   //   }
   // } else {
-  
+
   // is auth not, and file should not be more than 1
   if (!isAuth) {
     if (files.length > 1) {
-      return { data: array, errors: [`You can enter multiple File by signing up, as you are a guest limited to single file`] };
+      return {
+        data: array,
+        errors: [
+          `You can enter multiple File by signing up, as you are a guest limited to single file`,
+        ],
+      };
     }
   }
 
-  
   if (files.length > maxCapacity) {
-    return { data: array, errors: [`Maximum ${maxCapacity} items are allowed`] };
+    return {
+      data: array,
+      errors: [`Maximum ${maxCapacity} items are allowed`],
+    };
   }
-  if(objType + files.length > maxCapacity) {
-    return { data: array, errors: [`Maximum ${maxCapacity} items are allowed`] };
+  if (objType + files.length > maxCapacity) {
+    return {
+      data: array,
+      errors: [`Maximum ${maxCapacity} items are allowed`],
+    };
   }
   // }
   // file format check
-  const allowedFormats = ['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt'];
-  const fileFormats = files.map((file) => file.name.split('.').pop());
-  const invalidFormats = fileFormats.filter((format) => format && !allowedFormats.includes(format));
+  const allowedFormats = ["pdf", "doc", "docx", "txt", "rtf", "odt"];
+  const fileFormats = files.map((file) => file.name.split(".").pop());
+  const invalidFormats = fileFormats.filter(
+    (format) => format && !allowedFormats.includes(format)
+  );
   if (invalidFormats.length > 0) {
     return {
       data: array,
-      errors: [`Only ${allowedFormats.join(', ')} files are allowed`],
+      errors: [`Only ${allowedFormats.join(", ")} files are allowed`],
     };
   }
   // file size check
@@ -272,7 +325,7 @@ export function addFilesToTheSearch(
     };
   }
   // does it already exist?
-  const dataOfTypeOfFiles = array.filter((item) => item.type === 'file');
+  const dataOfTypeOfFiles = array.filter((item) => item.type === "file");
   const fileNames = dataOfTypeOfFiles.map((item) => item.value);
   const duplicateFiles = files.filter((file) => fileNames.includes(file.name));
   // name the file as duplicate in the error
@@ -288,21 +341,20 @@ export function addFilesToTheSearch(
   return { data: newArray, files, errors: [] };
 }
 
-
-export function convertToURLFriendly(str:string) {
-  const urlFriendlyStr = str.replace(/\s+/g, '-');
+export function convertToURLFriendly(str: string) {
+  console.log(str);
+  const urlFriendlyStr = str.replace(/\s+/g, "-");
   const lowercaseStr = urlFriendlyStr.toLowerCase();
-  const cleanedStr = lowercaseStr.replace(/[^a-z0-9-]/g, '');
+  const cleanedStr = lowercaseStr.replace(/[^a-z0-9-]/g, "");
   return cleanedStr;
 }
 
-function getFirstH2(htmlString:string) {
-  const container = document.createElement('div');
+function getFirstH2(htmlString: string) {
+  const container = document.createElement("div");
   container.innerHTML = htmlString;
-  const firstH2 = container.querySelector('h2');
-  return firstH2 ? firstH2.innerHTML : '';
+  const firstH2 = container.querySelector("h2");
+  return firstH2 ? firstH2.innerHTML : "";
 }
-
 
 export async function newGenerateApi(
   token: string,
@@ -310,12 +362,12 @@ export async function newGenerateApi(
   keyword: string,
   userId: string,
   files: File[],
-  urls: string[],
+  urls: string[]
 ): Promise<void> {
   const myHeaders = new Headers();
   console.log(files, urls, tones, keyword, userId);
-  if(token !== null) { 
-  myHeaders.append("Authorization", `Bearer ${token}`);
+  if (token !== null) {
+    myHeaders.append("Authorization", `Bearer ${token}`);
   }
 
   const formdata = new FormData();
@@ -332,22 +384,38 @@ export async function newGenerateApi(
   }
   console.log(formdata);
   const requestOptions: RequestInit = {
-    method: 'POST',
+    method: "POST",
     headers: myHeaders,
     body: formdata,
-    redirect: 'follow',
+    redirect: "follow",
   };
-    const url = API_BASE_PATH + API_ROUTES.NEW_GENERATE_API;
-    const response = await fetch(url, requestOptions);
-    const result = await response.json();
-    console.log(result);
-    return result;
+  const url = API_BASE_PATH + API_ROUTES.NEW_GENERATE_API;
+  const response = await fetch(url, requestOptions);
+  const result = await response.json();
+  console.log(result);
+  return result;
 }
 
+export const wait = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
-export const wait = (ms:number) => new Promise(resolve => setTimeout(resolve, ms));
-
-export function getMax(first: number, second: number):number{
+export function getMax(first: number, second: number): number {
   // return max number
   return Math.max(first, second);
+}
+
+export function getBlogTitle(obj: any): string {
+  // Check if the object has a "children" array
+  console.log(obj);
+  if (typeof obj === "string") {
+    return obj;
+  }
+  if (obj && obj.children.length > 0) {
+    // Recursively call getLastChild on the first child
+
+    return getBlogTitle(obj.children[0]);
+  } else {
+    // If there are no more children arrays, return the current object
+    return obj;
+  }
 }
