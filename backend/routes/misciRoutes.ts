@@ -229,19 +229,19 @@ router.post('/generate', async (req: any, res: any) => {
                     )
                 )
             }
-            const insertBlog = await db.db('lilleBlogs').collection('blogs').updateOne({
+            await db.db('lilleBlogs').collection('blogs').updateOne({
                 _id: new Object(data._id)
             }, {
                 $set: finalBlogObj
             })
             const insertBlogIdeas = await db.db('lilleBlogs').collection('blogIdeas').insertOne({
-                blog_id: insertBlog.insertedId,
+                blog_id: data._id,
                 ideas: updatedIdeas
             })
             let blogDetails = null
             let blogIdeasDetails = null
-            if(insertBlog.insertedId){
-                const id: any = insertBlog.insertedId
+            if(data._id){
+                const id: any = data._id
                 blogDetails = await db.db('lilleBlogs').collection('blogs').findOne({_id: new ObjectID(id)})
             }
             if(insertBlogIdeas.insertedId){
