@@ -169,7 +169,7 @@ const MiSci = () => {
             </span>
 
             <button
-              disabled={keyword.length < 1}
+              disabled={keyword.trim().length < 1}
               className="h-14 px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-lg shadow justify-center items-center gap-2.5 inline-flex hover:from-indigo-700 hover:to-violet-700 focus:shadow-outline-indigo disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={() => {
                 handleMISCIGenerate();
@@ -222,7 +222,13 @@ const KeywordInput = ({
         const isTextNotValid =
           validateIfTextIncludesSpecialCharsExcludingQuestionMark(text);
         console.log(text.length);
-        if (isTextNotValid == true) {
+        // if incldus spaces show error
+        if (text.includes(" ")) {
+          setInputError({
+            error: true,
+            message: "Please remove spaces",
+          });
+        } else if (isTextNotValid == true) {
           setInputError({
             error: true,
             message: "Please remove special characters",
