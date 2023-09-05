@@ -440,3 +440,8 @@ export function validateIfTextIncludesSpecialCharsExcludingQuestionMark(
   const regex = /[^a-zA-Z0-9\-_., !?]/;
   return regex.test(str);
 }
+
+export function countInitialWhiteSpace(str: string): number {
+  const match = str.match(/^\s+/);
+  return match ? match[0].length : 0;
+}

@@ -9,7 +9,10 @@ import { StepCompleteData } from "@/store/types";
 import { STEP_COMPLETES_SUBSCRIPTION } from "@/graphql/subscription/generate";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { validateIfTextIncludesSpecialCharsExcludingQuestionMark } from "@/store/appHelpers";
+import {
+  countInitialWhiteSpace,
+  validateIfTextIncludesSpecialCharsExcludingQuestionMark,
+} from "@/store/appHelpers";
 
 const MiSci = () => {
   const [keyword, setkeyword] = useState("");
@@ -66,6 +69,8 @@ const MiSci = () => {
       query: { question: keyword },
     });
   }
+  console.log(countInitialWhiteSpace(keyword));
+
   return (
     <div
       className="relative overflow-x-hidden flex items-center justify-center flex-col w-full h-screen overflow-y-hidden overscroll-y-none"
@@ -169,7 +174,11 @@ const MiSci = () => {
             </span>
 
             <button
-              disabled={keyword.trim().length < 1}
+              disabled={
+                countInitialWhiteSpace(keyword) > 0 ||
+                inputError.error ||
+                keyword.trim().length < 1
+              }
               className="h-14 px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-lg shadow justify-center items-center gap-2.5 inline-flex hover:from-indigo-700 hover:to-violet-700 focus:shadow-outline-indigo disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={() => {
                 handleMISCIGenerate();
@@ -223,12 +232,8 @@ const KeywordInput = ({
           validateIfTextIncludesSpecialCharsExcludingQuestionMark(text);
         console.log(text.length);
         // if incldus spaces show error
-        if (text.includes(" ")) {
-          setInputError({
-            error: true,
-            message: "Please remove spaces",
-          });
-        } else if (isTextNotValid == true) {
+        var spce = /^s*$/;
+        if (isTextNotValid == true) {
           setInputError({
             error: true,
             message: "Please remove special characters",
