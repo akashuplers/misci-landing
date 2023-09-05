@@ -239,10 +239,11 @@ const KeywordInput = ({
             error: true,
             message: "Question cannot be only special characters",
           });
-        } else if (countInitialWhiteSpace(text) > 1) {
+        }
+        if (countInitialWhiteSpace(text) > 1) {
           setInputError({
             error: true,
-            message: "Please remove initail extra spaces",
+            message: "Please remove initial extra spaces",
           });
         } else if (isTextNotValid == true) {
           // setInputError({
