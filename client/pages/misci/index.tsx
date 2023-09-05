@@ -7,6 +7,8 @@ import { useGenerateErrorState } from "@/store/appState";
 import { useSubscription } from "@apollo/client";
 import { StepCompleteData } from "@/store/types";
 import { STEP_COMPLETES_SUBSCRIPTION } from "@/graphql/subscription/generate";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const MiSci = () => {
   const [keyword, setkeyword] = useState("");
@@ -61,6 +63,7 @@ const MiSci = () => {
       className="relative overflow-x-hidden flex items-center justify-center flex-col w-full h-screen overflow-y-hidden overscroll-y-none"
       id="misci"
     >
+      <ToastContainer />
       <FloatingBalls className="absolute top-[40%] left-[2%]" />
       <FloatingBalls className="absolute top-[70%] left-[10%]" />
       <FloatingBalls className="absolute top-[10%] right-[2%]" />
