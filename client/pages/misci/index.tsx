@@ -100,6 +100,9 @@ const MiSci = () => {
           <span className="w-48 h-48 relative flex items-center justify-center">
             <img
               className="object-fit w-36 h-36"
+              style={{
+                mixBlendMode: "color-burn",
+              }}
               src="/miscinew.png"
               alt="MisciLog"
             />
