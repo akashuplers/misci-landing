@@ -333,6 +333,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                         id={index.toString()}
                         text={idea.idea}
                         idea="Idea 1"
+                        key={index}
                         selected={idea.used == 1 ? false : true}
                         total={12}
                         onClick={() => {}}
