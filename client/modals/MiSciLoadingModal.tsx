@@ -27,7 +27,7 @@ export const MiSciGenerateLoadingModal = ({
       style={{
         overlay: {
           backgroundColor: "rgba(0,0,0,0.5)",
-          zIndex: "9999",
+          zIndex: "100",
         },
         content: {
           position: "absolute",
