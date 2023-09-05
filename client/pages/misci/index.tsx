@@ -175,7 +175,7 @@ const MiSci = () => {
 
             <button
               disabled={
-                countInitialWhiteSpace(keyword) > 0 ||
+                countInitialWhiteSpace(keyword) > 1 ||
                 inputError.error ||
                 keyword.trim().length < 1
               }
