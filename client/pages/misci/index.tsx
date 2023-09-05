@@ -234,6 +234,7 @@ const KeywordInput = ({
         console.log(text.length);
         // if incldus spaces show error
         var spce = /^s*$/;
+
         if (isOnlySpecialChars(text) == true) {
           setInputError({
             error: true,
@@ -250,6 +251,18 @@ const KeywordInput = ({
           //   error: true,
           //   message: "Please remove special characters",
           // });
+        } else {
+          setInputError({
+            error: false,
+            message: "",
+          });
+        }
+
+        if (text.length > 199) {
+          setInputError({
+            error: true,
+            message: "Question cannot be more than 200 characters",
+          });
         } else {
           setInputError({
             error: false,

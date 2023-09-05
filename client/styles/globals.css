@@ -742,3 +742,12 @@ input[type=number] {
   }
   /* ... */
 }
+
+#answersEditor  > *{
+  width: 100% !important;
+}
+
+#answersEditor * {
+  word-break: break-all;
+  font-family: "Ubuntu", sans-serif;
+}
