@@ -21,7 +21,8 @@ import {
 import { Editor } from "@tinymce/tinymce-react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const getServerSideProps = async (context: any) => {
   console.log(context);
@@ -130,7 +131,10 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       .then((res) => {})
       .catch((err) => {
         console.log(err);
-        toast.error("Something went wrong");
+        toast.error(err.response.data.message);
+        setTimeout(() => {
+          router.back();
+        }, 2000);
       })
       .finally(() => {});
   }, []);
@@ -303,11 +307,14 @@ const MiSciArticle = ({ question }: MiSciProps) => {
 
   if (loadingMisciblog) {
     return (
-      <MiSciGenerateLoadingModal
-        setShowGenerateLoadingModal={() => {}}
-        showGenerateLoadingModal={true}
-        showBackButton={false}
-      />
+      <>
+        <MiSciGenerateLoadingModal
+          setShowGenerateLoadingModal={() => {}}
+          showGenerateLoadingModal={true}
+          showBackButton={false}
+        />
+        <ToastContainer />
+      </>
     );
   }
   return (
@@ -375,6 +382,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
           </Tab.Group>
         </section>
       </main>
+      <ToastContainer />
     </div>
   );
 };
