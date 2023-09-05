@@ -9,6 +9,7 @@ import { StepCompleteData } from "@/store/types";
 import { STEP_COMPLETES_SUBSCRIPTION } from "@/graphql/subscription/generate";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { validateIfTextIncludesSpecialCharsExcludingQuestionMark } from "@/store/appHelpers";
 
 const MiSci = () => {
   const [keyword, setkeyword] = useState("");
@@ -20,6 +21,13 @@ const MiSci = () => {
   >("");
   const { addMessages } = useGenerateErrorState();
   const [getToken, setGetToken] = useState<string | null>("");
+  const [inputError, setInputError] = useState<{
+    error: boolean;
+    message: string;
+  }>({
+    error: false,
+    message: "",
+  });
   const {
     data: subsData,
     loading: subsLoading,
@@ -98,20 +106,20 @@ const MiSci = () => {
           zIndex: -1,
         }}
       />
-      <div className="w-[50%] p-6 min-h-[400px] justify-center align-middle relative rounded-lg shadow-xl border border-white backdrop-blur-lg flex-col items-center gap-6 inline-flex">
-        <div className=" max-w-[800px] h-10 flex items-center justify-around scale-125">
-          <span className="w-[180px]  h-42 relative flex items-center justify-center">
+      <div className="w-[50%] p-8 min-h-[500px] relative rounded-lg shadow-xl border border-white backdrop-blur-lg flex-col justify-start items-center gap-6 inline-flex">
+        <div className=" max-w-[80%] flex items-center justify-around">
+          <span className="w-48 h-48 relative flex items-center justify-center">
             <img
-              className="object-fit w-[120px] h-26 flex-1"
+              className="object-fit w-36 h-36"
               style={{
                 mixBlendMode: "color-burn",
               }}
-              src="/logo-misci.png"
+              src="/miscinew.png"
               alt="MisciLog"
             />
           </span>
-          <Lottie animationData={infinityLoop} className="h-16 mx-8" />
-          <img className="w-32 h-32" src="/misci_main.png" alt="misci_main" />
+          <Lottie animationData={infinityLoop} className="h-24" />
+          <img className="w-48 h-48" src="/misci_main.png" alt="misci_main" />
         </div>
         <div
           style={{
@@ -135,12 +143,12 @@ const MiSci = () => {
             fill: "linear-gradient(180deg, #40AFFF 0%, #FA19A4 138.46%)",
             filter: "blur(65px) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))",
           }}
-          className="rounded-full shadow-lg right-0"
+          className="rounded-full shadow-lg right-0 top-[20%]"
         />
-
-          <div className="w-full h-[200px] justify-center items-center gap-2.5 inline-flex flex-col ">
+        <div className="w-full relative h-full">
+          <div className="w-full h-full justify-start items-center gap-2.5 inline-flex flex-col ">
             <div
-              className={`relative w-full min-h-[60px] bg-white roundedbg-opacity-25 rounded-lg shadow border border-indigo-600 backdrop-blur-lg justify-start items-center gap-3 inline-flex border py-2.5 `}
+              className={`relative w-full min-h-[60px] bg-white bg-opacity-25 rounded-lg shadow border border-indigo-600 backdrop-blur-lg justify-start items-center gap-3 inline-flex border py-2.5 `}
             >
               <div
                 className={`flex items-center w-full flex-col md:flex-row px-2  gap-2.5 relative outline-none active:outline-none rounded-lg`}
@@ -149,10 +157,17 @@ const MiSci = () => {
                   keyword={keyword}
                   setKeyword={setkeyword}
                   placeholder={"Ask me a question"}
-                  maxLength={100}
+                  maxLength={200}
+                  setInputError={setInputError}
                 />
               </div>
+
+              {/* show errors */}
             </div>
+            <span className="text-red-500 text-base font-light leading-7 place-self-start text-left">
+              {inputError.message}
+            </span>
+
             <button
               disabled={keyword.length < 1}
               className="h-14 px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-lg shadow justify-center items-center gap-2.5 inline-flex hover:from-indigo-700 hover:to-violet-700 focus:shadow-outline-indigo disabled:opacity-50 disabled:cursor-not-allowed"
@@ -167,6 +182,7 @@ const MiSci = () => {
               </>
             </button>
           </div>
+        </div>
       </div>
     </div>
   );
@@ -179,6 +195,12 @@ type KeywordInputProps = {
   placeholder: string;
   keyword: string;
   setKeyword: React.Dispatch<React.SetStateAction<string>>;
+  setInputError: React.Dispatch<
+    React.SetStateAction<{
+      error: boolean;
+      message: string;
+    }>
+  >;
 };
 
 const KeywordInput = ({
@@ -186,17 +208,32 @@ const KeywordInput = ({
   placeholder,
   keyword,
   setKeyword,
+  setInputError,
 }: KeywordInputProps) => {
   return (
     <input
       type="text"
       maxLength={maxLength}
       placeholder={placeholder}
-      className="w-full h-full outline-transparent bg-transparent border-transparent focus:border-transparent focus:ring-0"
+      className="w-full h-full outline-transparent bg-transparent border-transparent focus:border-transparent focus:ring-0 border border-red-500"
       value={keyword}
       onChange={(e) => {
         const text = e.target.value;
+        const isTextNotValid =
+          validateIfTextIncludesSpecialCharsExcludingQuestionMark(text);
         console.log(text.length);
+        if (isTextNotValid == true) {
+          setInputError({
+            error: true,
+            message: "Please remove special characters",
+          });
+        } else {
+          setInputError({
+            error: false,
+            message: "",
+          });
+        }
+
         setKeyword(text);
       }}
     />

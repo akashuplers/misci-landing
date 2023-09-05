@@ -433,3 +433,10 @@ export function getUserToken(): string {
   }
   return tempId;
 }
+
+export function validateIfTextIncludesSpecialCharsExcludingQuestionMark(
+  str: string
+): boolean {
+  const regex = /[^a-zA-Z0-9\-_., !?]/;
+  return regex.test(str);
+}
