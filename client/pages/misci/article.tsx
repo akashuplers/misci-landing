@@ -7,7 +7,6 @@ import {
 import { generateMisci } from "@/helpers/apiMethodsHelpers";
 import { jsonToHtml } from "@/helpers/helper";
 import MiSciGenerateLoadingModal from "@/modals/MiSciLoadingModal";
-import { defaultMySciAnswers } from "@/store/appContants";
 import { classNames, getUserToken } from "@/store/appHelpers";
 import { useGenerateErrorState } from "@/store/appState";
 import { StepCompleteData } from "@/store/types";
@@ -51,12 +50,14 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   const [userAbleUserIDForSubs, setUserAbleUserIDForSubs] = useState<
     string | null
   >("");
+  const [userquestion, setQuestion] = useState<string>("");
   const [listOfIdeas, setListOfIdeas] = useState<any>([]);
   const router = useRouter();
   const [EditorSetUpCompleted, setEditorSetUpCompleted] = useState(false);
   const { addMessages } = useGenerateErrorState();
   const [getToken, setGetToken] = useState<string | null>("");
   const [isArticleTabReady, setIsArticleTabReady] = useState(false);
+  const [editorArticleData, setEditorArticleData] = useState<any>(null);
   const {
     data: subsData,
     loading: subsLoading,
@@ -83,6 +84,8 @@ const MiSciArticle = ({ question }: MiSciProps) => {
         console.log(aa);
         const htmlToDoc = jsonToHtml(aa?.tiny_mce_data);
         console.log(htmlToDoc);
+        const question = data?.question;
+        setQuestion(question);
         setEditorAnswersData(htmlToDoc);
         setLoadingMisciblog(false);
         setLoadingMisciblog(false);
@@ -93,6 +96,14 @@ const MiSciArticle = ({ question }: MiSciProps) => {
         const data = subsData?.stepCompletes.data.ideas.ideas;
         console.log(data);
         setListOfIdeas(data);
+        const aa = data?.publish_data?.find(
+          (d: any) => d.platform === "wordpress"
+        );
+        const htmlDoc = jsonToHtml(aa?.tiny_mce_data);
+        console.log(htmlDoc);
+        setEditorArticleData(htmlDoc);
+        // setEditorArticleData
+        setIsArticleTabReady(true);
       }
       // @ts-ignore
       if (step == "ANSWER_FETCHING_FAILED") {
@@ -103,7 +114,6 @@ const MiSciArticle = ({ question }: MiSciProps) => {
         }, 2000);
       }
       if (step == "BLOG_GENERATED_COMPLETED") {
-        setIsArticleTabReady(true);
       }
     },
     onSubscriptionData(options) {
@@ -169,7 +179,11 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   const TabsList = [
     {
       name: "Answer",
-      icon: <Bars3BottomRightIcon />,
+      icon: (
+        <div>
+          <img src="/icons/answers_icon.svg" alt="" />
+        </div>
+      ),
       leftContent: (
         <div className="h-full bg-gray-300 bg-opacity-70 flex items-center justify-center rounded-lg flex-col gap-2">
           {isArticleTabReady ? (
@@ -207,8 +221,35 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       ),
       content: (
         <>
+          <div className="p-2 flex-col justify-start items-start gap-7 inline-flex">
+            <div className="flex-col justify-start items-start gap-5 flex">
+              <div className=" text-slate-800 text-lg font-bold leading-relaxed tracking-tight">
+                {userquestion}
+              </div>
+              <div className=" text-slate-600 text-base font-normal leading-normal">
+                <div
+                  id="answersEditor"
+                  dangerouslySetInnerHTML={{ __html: editorAnswersData }}
+                ></div>
+                <br />
+              </div>
+            </div>
+          </div>
+          <br />
+        </>
+      ),
+    },
+    {
+      name: "Article",
+      icon: (
+        <div>
+          <img src="/icons/questions_icon.svg" alt="" />
+        </div>
+      ),
+      content: (
+        <>
           <Editor
-            value={editorAnswersData}
+            value={editorArticleData}
             apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
             init={{
               setup: (editor) => {
@@ -247,106 +288,93 @@ const MiSciArticle = ({ question }: MiSciProps) => {
           />
         </>
       ),
-    },
-    {
-      name: "Article",
-      icon: <Bars3BottomRightIcon />,
-      content: <></>,
       leftContent: (
         <>
-          <div className="h-10 justify-between items-center flex">
-            <div className="text-slate-800  leading-none">
-              Create your next draft on the basis of your edits.
+          <div className="h-[20%] flex flex-col justify-start gap-4 ">
+            <div className="justify-between items-center flex">
+              <div className="text-slate-800  leading-none">
+                Create your next draft on the basis of your edits.
+              </div>
+              <button className="p-2 opacity-50 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex">
+                <RegenerateIcon />
+                <span className="text-indigo-600 text-base font-normal">
+                  Next Draft
+                </span>
+              </button>
             </div>
-            <button className="p-2 opacity-50 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex">
-              <RegenerateIcon />
-              <span className="text-indigo-600 text-base font-normal">
-                Next Draft
-              </span>
-            </button>
-          </div>
-          <div className="h-14 w-full justify-start items-center gap-2.5 flex">
-            <div className="flex-col justify-center items-start gap-1 flex">
-              <div className="">Your Question</div>
-              <div className=" opacity-70 text-blue-950 text-base font-normal leading-none">
-                How Technology is Hijacking Your Mind — from a Magician and
-                Google Design Ethicist
+            <div className="w-full justify-start items-center gap-2.5 flex">
+              <div className="flex-col justify-center items-start gap-1 flex">
+                <div className="">Your Question</div>
+                <div className=" opacity-70 text-blue-950 text-base font-normal leading-none">
+                  How Technology is Hijacking Your Mind — from a Magician and
+                  Google Design Ethicist
+                </div>
               </div>
             </div>
-          </div>
-          <div className="h-5 w-full justify-start items-center gap-2 flex">
-            <div className="h-5 px-2.5 bg-slate-100 rounded-full justify-start items-start gap-2.5 flex">
-              <div className="text-slate-800 text-base font-normal leading-3">
-                Technology.pdf
+            <div className="w-full justify-start items-center gap-2 flex">
+              <div className="p-2.5 bg-slate-100 rounded-full justify-start items-start gap-2.5 flex">
+                <div className="text-slate-800 text-base font-normal leading-3">
+                  Technology.pdf
+                </div>
               </div>
-            </div>
-            <div className="h-5 px-2.5 py-1 bg-slate-100 rounded-full justify-start items-start gap-px flex">
-              <div className="text-slate-800 text-base font-normal leading-3">
-                Hijacking.pdf
+              <div className="p-2.5 py-1 bg-slate-100 rounded-full justify-start items-start gap-px flex">
+                <div className="text-slate-800 text-base font-normal leading-3">
+                  Hijacking.pdf
+                </div>
               </div>
             </div>
           </div>
           {/* tabs for used ideas and unused ideas */}
-          <Tab.Group
-            onChange={setCurrentEditTabIndex}
-            defaultIndex={0}
-            selectedIndex={currentEditTabIndex}
-          >
-            <Tab.List className="flex relative items-center gap-2 w-full ">
-              {editTabs.map((tab, index) => (
-                <Tab
-                  className="flex outline-none flex-col realtive min-w-[7rem] items-start justify-center gap-2 w-fit"
-                  key={tab.name}
-                >
-                  <div className="flex flex-col relative">
-                    <div className="text-blue-950 text-base font-medium leading-none">
-                      {tab.name}
-                    </div>
-                    {tab.notificationCount > 0 && (
-                      <div className="w-4 h-4 -right-4 -top-3 absolute bg-sky-100 rounded-full">
-                        <div className="text-indigo-600 text-base font-medium leading-3">
-                          {tab.notificationCount}
-                        </div>
+          <div className="max-h-[50%] h-full my-2">
+            <Tab.Group
+              onChange={setCurrentEditTabIndex}
+              defaultIndex={0}
+              selectedIndex={currentEditTabIndex}
+            >
+              <Tab.List className="flex relative items-center gap-2 w-full ">
+                {editTabs.map((tab, index) => (
+                  <Tab
+                    className="flex outline-none flex-col realtive min-w-[7rem] items-start justify-center gap-2 w-fit"
+                    key={tab.name}
+                  >
+                    <div className="flex flex-col relative">
+                      <div className="text-blue-950 text-base font-medium leading-none">
+                        {tab.name}
                       </div>
-                    )}
-                    {currentEditTabIndex === index && ( // under line
-                      <div className="w-full h-0.5 bg-indigo-600 rounded-lg"></div>
-                    )}
-                  </div>
-                </Tab>
-              ))}
-            </Tab.List>
-            <Tab.Panels>
-              <Tab.Panel className={`w-full h-full flex flex-col gap-4 `}>
-                <IdeaItem
-                  id="12"
-                  text="I’m an expert on how technology hijacks our psychological vulnerabilities. That’s why I spent the last three years as a Design Ethicist at Google caring about how to design things in a way that defends a billion people’s minds from getting hijacked."
-                  idea="Idea 1"
-                  selected={false}
-                  total={12}
-                  onClick={() => {}}
-                />
-                {listOfIdeas ? (
-                  listOfIdeas.map((idea: any, index: number) => {
-                    return (
-                      <IdeaItem
-                        id={index.toString()}
-                        text={idea.idea}
-                        idea="Idea 1"
-                        key={index}
-                        selected={idea.used == 1 ? false : true}
-                        total={12}
-                        onClick={() => {}}
-                      />
-                    );
-                  })
-                ) : (
-                  <>loading.. ideas</>
-                )}
-              </Tab.Panel>
-              <Tab.Panel className={`w-full border `}>Content 2</Tab.Panel>
-            </Tab.Panels>
-          </Tab.Group>
+
+                      {currentEditTabIndex === index && ( // under line
+                        <div className="w-full h-0.5 bg-indigo-600 rounded-lg"></div>
+                      )}
+                    </div>
+                  </Tab>
+                ))}
+              </Tab.List>
+              <Tab.Panels>
+                <Tab.Panel
+                  className={`w-full max-h-full flex flex-col gap-4 overflow-y-scroll  scroll-m-1`}
+                >
+                  {listOfIdeas ? (
+                    listOfIdeas.map((idea: any, index: number) => {
+                      return (
+                        <IdeaItem
+                          id={index.toString()}
+                          text={idea.idea}
+                          idea="Idea 1"
+                          key={index}
+                          selected={idea.used == 1 ? false : true}
+                          total={12}
+                          onClick={() => {}}
+                        />
+                      );
+                    })
+                  ) : (
+                    <>loading.. ideas</>
+                  )}
+                </Tab.Panel>
+                <Tab.Panel className={`w-full border `}>Content 2</Tab.Panel>
+              </Tab.Panels>
+            </Tab.Group>
+          </div>
         </>
       ),
     },
@@ -365,9 +393,9 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     );
   }
   return (
-    <div className="w-screen px-12 py-2">
+    <div className="w-screen h-screen px-12 py-2">
       <style>{`.sidebar-position-left #button.sidebar{display: none;`}</style>
-      <header className="w-full h-10 justify-between items-center flex">
+      <header className="w-full h-[8%] justify-between items-center flex">
         <button onClick={() => router.back()}>
           <span>
             <ArrowLeftIcon className="h-5 w-5 text-gray-800" />
@@ -382,14 +410,19 @@ const MiSciArticle = ({ question }: MiSciProps) => {
           </button>
         </div>
       </header>
-      <main className="flex h-full">
-        <section className="w-full">
+      <div
+        className="flex"
+        style={{
+          height: "92%",
+        }}
+      >
+        <div className="w-full">
           <Tab.Group
             onChange={setCurrentTabIndex}
             defaultIndex={0}
             selectedIndex={currentTabIndex}
           >
-            <Tab.List className="flex items-center gap-2 w-full">
+            <Tab.List className="flex items-center gap-2 w-full h-[5%]">
               {TabsList.map((tab, index) => (
                 <Tab
                   key={tab.name}
@@ -411,9 +444,9 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                 </Tab>
               ))}
             </Tab.List>
-            <Tab.Panels>
+            <Tab.Panels className={"h-[95%]"}>
               {TabsList.map((tab, index) => (
-                <Tab.Panel key={index} className={`w-full border flex `}>
+                <Tab.Panel key={index} className={`w-full h-full flex `}>
                   <div className="w-[60%] flex  h-full">{tab.content}</div>
                   <div
                     className="w-[40%] p-2 flex-col flex relative border-l border-gray-600 gap-6"
@@ -425,8 +458,8 @@ const MiSciArticle = ({ question }: MiSciProps) => {
               ))}
             </Tab.Panels>
           </Tab.Group>
-        </section>
-      </main>
+        </div>
+      </div>
       <ToastContainer />
     </div>
   );
