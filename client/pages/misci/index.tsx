@@ -243,7 +243,7 @@ const KeywordInput = ({
         if (countInitialWhiteSpace(text) > 1) {
           setInputError({
             error: true,
-            message: "Please remove initail extra spaces",
+            message: "Please remove initial extra spaces",
           });
         } else if (isTextNotValid == true) {
           // setInputError({
