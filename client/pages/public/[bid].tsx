@@ -126,10 +126,10 @@ export default function Post() {
       const html = jsonToHtml(aa);
       console.log("ADD");
       console.log(gqlData?.fetchBlog);
-      console.log(aa?.children[0].children[0].children[0]);
-      var blogTitle = getBlogTitle(aa?.children[0].children[0].children[0]);
+      // console.log(aa?.children[0].children[0].children[0]);
+      var blogTitle = getBlogTitle(aa?.children[0]);
       blogTitle = convertToURLFriendly(blogTitle ? blogTitle : "");
-      setBlogTitle(getBlogTitle(aa?.children[0].children[0].children[0]));
+      setBlogTitle(getBlogTitle(aa?.children[0]));
       console.log(gqlData);
       const userDetails = gqlData?.fetchBlog?.userDetail;
       console.log(userDetails);
