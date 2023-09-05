@@ -137,7 +137,7 @@ function Page({
     const aa = gqlData?.fetchBlog?.publish_data.find(
       (pd: any) => pd.platform === "wordpress"
     ).tiny_mce_data;
-    var blogTitle = getBlogTitle(aa?.children[0].children[0].children[0]);
+    var blogTitle = getBlogTitle(aa?.children[0]);
     blogTitle = convertToURLFriendly(blogTitle ? blogTitle : "");
     setBlogTitle(blogTitle);
     // setBlogTitle(aa?.children[0].children[0].children[0]);
