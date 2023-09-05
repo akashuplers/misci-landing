@@ -23,7 +23,8 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import opener_loading from "../../lottie/opener-loading.json";
+import LottiePlayer from "lottie-react";
 export const getServerSideProps = async (context: any) => {
   console.log(context);
   console.log("server");
@@ -50,10 +51,12 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   const [userAbleUserIDForSubs, setUserAbleUserIDForSubs] = useState<
     string | null
   >("");
+  const [listOfIdeas, setListOfIdeas] = useState<any>([]);
   const router = useRouter();
   const [EditorSetUpCompleted, setEditorSetUpCompleted] = useState(false);
   const { addMessages } = useGenerateErrorState();
   const [getToken, setGetToken] = useState<string | null>("");
+  const [isArticleTabReady, setIsArticleTabReady] = useState(false);
   const {
     data: subsData,
     loading: subsLoading,
@@ -84,6 +87,13 @@ const MiSciArticle = ({ question }: MiSciProps) => {
         setLoadingMisciblog(false);
         setLoadingMisciblog(false);
       }
+      if (step == "BLOG_GENERATION_COMPLETED") {
+        console.log("IDEAS LOADED");
+        console.log(subsData);
+        const data = subsData?.stepCompletes.data.ideas.ideas;
+        console.log(data);
+        setListOfIdeas(data);
+      }
       // @ts-ignore
       if (step == "ANSWER_FETCHING_FAILED") {
         toast.error("Something went wrong");
@@ -91,6 +101,9 @@ const MiSciArticle = ({ question }: MiSciProps) => {
         setTimeout(() => {
           router.back();
         }, 2000);
+      }
+      if (step == "BLOG_GENERATED_COMPLETED") {
+        setIsArticleTabReady(true);
       }
     },
     onSubscriptionData(options) {
@@ -159,20 +172,37 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       icon: <Bars3BottomRightIcon />,
       leftContent: (
         <div className="h-full bg-gray-300 bg-opacity-70 flex items-center justify-center rounded-lg flex-col gap-2">
-          <span className="text-gray-800 text-xl font-medium leading-none">
-            We have created a personalized article for you.
-          </span>
-          <button
-            onClick={() => {
-              setCurrentTabIndex(1);
-            }}
-            className="p-2 opacity-50 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600  text-white"
-          >
-            <span>
-              <PaperAirplaneIcon className="h-5 w-5" />
-            </span>
-            Go to Article
-          </button>
+          {isArticleTabReady ? (
+            <>
+              <span className="text-gray-800 text-xl font-medium leading-none">
+                We have created a personalized article for you.
+              </span>
+              <button
+                onClick={() => {
+                  setCurrentTabIndex(1);
+                }}
+                className="p-2 opacity-50 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600  text-white"
+              >
+                <span>
+                  <PaperAirplaneIcon className="h-5 w-5" />
+                </span>
+                Go to Article
+              </button>
+            </>
+          ) : (
+            <>
+              <LottiePlayer
+                loop
+                autoplay
+                animationData={opener_loading}
+                className="h-24"
+              />
+
+              <span className="text-gray-800 text-2xl font-bold leading-none">
+                We are almost there
+              </span>
+            </>
+          )}
         </div>
       ),
       content: (
@@ -262,7 +292,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
             defaultIndex={0}
             selectedIndex={currentEditTabIndex}
           >
-            <Tab.List className="flex relative items-center gap-2 w-full">
+            <Tab.List className="flex relative items-center gap-2 w-full ">
               {editTabs.map((tab, index) => (
                 <Tab
                   className="flex outline-none flex-col realtive min-w-[7rem] items-start justify-center gap-2 w-fit"
@@ -287,7 +317,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
               ))}
             </Tab.List>
             <Tab.Panels>
-              <Tab.Panel className={`w-full border `}>
+              <Tab.Panel className={`w-full h-full flex flex-col gap-4 `}>
                 <IdeaItem
                   id="12"
                   text="I’m an expert on how technology hijacks our psychological vulnerabilities. That’s why I spent the last three years as a Design Ethicist at Google caring about how to design things in a way that defends a billion people’s minds from getting hijacked."
@@ -296,6 +326,22 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                   total={12}
                   onClick={() => {}}
                 />
+                {listOfIdeas ? (
+                  listOfIdeas.map((idea: any, index: number) => {
+                    return (
+                      <IdeaItem
+                        id={index.toString()}
+                        text={idea.idea}
+                        idea="Idea 1"
+                        selected={idea.used == 1 ? false : true}
+                        total={12}
+                        onClick={() => {}}
+                      />
+                    );
+                  })
+                ) : (
+                  <>loading.. ideas</>
+                )}
               </Tab.Panel>
               <Tab.Panel className={`w-full border `}>Content 2</Tab.Panel>
             </Tab.Panels>
@@ -367,9 +413,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
             <Tab.Panels>
               {TabsList.map((tab, index) => (
                 <Tab.Panel key={index} className={`w-full border flex `}>
-                  {/* {tab.content} */}
-
-                  <div className="w-[60%] h-full">{tab.content}</div>
+                  <div className="w-[60%] flex  h-full">{tab.content}</div>
                   <div
                     className="w-[40%] p-2 flex-col flex relative border-l border-gray-600 gap-6"
                     id="leftContent"
