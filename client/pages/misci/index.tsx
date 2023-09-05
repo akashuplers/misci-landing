@@ -11,6 +11,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   countInitialWhiteSpace,
+  isOnlySpecialChars,
   validateIfTextIncludesSpecialCharsExcludingQuestionMark,
 } from "@/store/appHelpers";
 
@@ -233,16 +234,21 @@ const KeywordInput = ({
         console.log(text.length);
         // if incldus spaces show error
         var spce = /^s*$/;
-        if (countInitialWhiteSpace(text) > 1) {
+        if (isOnlySpecialChars(text) == true) {
+          setInputError({
+            error: true,
+            message: "Question cannot be only special characters",
+          });
+        } else if (countInitialWhiteSpace(text) > 1) {
           setInputError({
             error: true,
             message: "Please remove initail extra spaces",
           });
         } else if (isTextNotValid == true) {
-          setInputError({
-            error: true,
-            message: "Please remove special characters",
-          });
+          // setInputError({
+          //   error: true,
+          //   message: "Please remove special characters",
+          // });
         } else {
           setInputError({
             error: false,
