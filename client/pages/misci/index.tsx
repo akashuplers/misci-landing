@@ -95,20 +95,20 @@ const MiSci = () => {
           zIndex: -1,
         }}
       />
-      <div className="w-[50%] p-8 min-h-[500px] relative rounded-lg shadow-xl border border-white backdrop-blur-lg flex-col justify-start items-center gap-6 inline-flex">
-        <div className=" max-w-[80%] flex items-center justify-around">
-          <span className="w-48 h-48 relative flex items-center justify-center">
+      <div className="w-[50%] p-6 min-h-[400px] justify-center align-middle relative rounded-lg shadow-xl border border-white backdrop-blur-lg flex-col items-center gap-6 inline-flex">
+        <div className=" max-w-[800px] h-10 flex items-center justify-around scale-125">
+          <span className="w-[180px]  h-42 relative flex items-center justify-center">
             <img
-              className="object-fit w-36 h-36"
+              className="object-fit w-[120px] h-26 flex-1"
               style={{
                 mixBlendMode: "color-burn",
               }}
-              src="/miscinew.png"
+              src="/logo-misci.png"
               alt="MisciLog"
             />
           </span>
-          <Lottie animationData={infinityLoop} className="h-24" />
-          <img className="w-48 h-48" src="/misci_main.png" alt="misci_main" />
+          <Lottie animationData={infinityLoop} className="h-16 mx-8" />
+          <img className="w-32 h-32" src="/misci_main.png" alt="misci_main" />
         </div>
         <div
           style={{
@@ -132,10 +132,10 @@ const MiSci = () => {
             fill: "linear-gradient(180deg, #40AFFF 0%, #FA19A4 138.46%)",
             filter: "blur(65px) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))",
           }}
-          className="rounded-full shadow-lg right-0 top-[20%]"
+          className="rounded-full shadow-lg right-0"
         />
-        <div className="w-full h-full">
-          <div className="w-full h-full justify-center items-center gap-2.5 inline-flex flex-col ">
+
+          <div className="w-full h-[200px] justify-center items-center gap-2.5 inline-flex flex-col ">
             <div
               className={`relative w-full min-h-[60px] bg-white roundedbg-opacity-25 rounded-lg shadow border border-indigo-600 backdrop-blur-lg justify-start items-center gap-3 inline-flex border py-2.5 `}
             >
@@ -164,7 +164,6 @@ const MiSci = () => {
               </>
             </button>
           </div>
-        </div>
       </div>
     </div>
   );
