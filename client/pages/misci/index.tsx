@@ -233,7 +233,12 @@ const KeywordInput = ({
         console.log(text.length);
         // if incldus spaces show error
         var spce = /^s*$/;
-        if (isTextNotValid == true) {
+        if (countInitialWhiteSpace(text) > 1) {
+          setInputError({
+            error: true,
+            message: "Please remove initail extra spaces",
+          });
+        } else if (isTextNotValid == true) {
           setInputError({
             error: true,
             message: "Please remove special characters",
