@@ -448,7 +448,7 @@ export function countInitialWhiteSpace(str: string): number {
 
 export function isOnlySpecialChars(str: string): boolean {
   // Regex to check if a string contains only special characters
-  var regex = /^[^a-zA-Z0-9]+$/;
+  var regex = /^[^a-zA-Z0-9\s]+$/;
 
   // If the string is empty then return false
   if (str.length < 1) {
