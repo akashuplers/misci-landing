@@ -19,7 +19,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Editor } from "@tinymce/tinymce-react";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import opener_loading from "../../lottie/opener-loading.json";
@@ -67,67 +67,17 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     error: subsError,
   } = useSubscription<StepCompleteData>(MISCI_STEP_COMPLETES_SUBSCRIPTION, {
     variables: { userId: userAbleUserIDForSubs },
-    onSubscriptionComplete() {},
     onComplete() {
       console.log("completed");
-    },
-
-    onData() {
-      console.log("data");
-      console.log(subsData);
-      console.log("sub completed");
-      const step = subsData?.stepCompletes.step;
-      // @ts-ignore
-      if (step == "ANSWER_FETCHING_COMPLETED") {
-        console.log("answers loaded");
-        const data = subsData?.stepCompletes.data;
-        setMisciblog(data);
-        console.log(data);
-        const aa = data?.publish_data?.find(
-          (d: any) => d.platform === "answers"
-        );
-        console.log(aa);
-        const htmlToDoc = jsonToHtml(aa?.tiny_mce_data);
-        console.log(htmlToDoc);
-        const question = data?.question;
-        setQuestion(question);
-        setEditorAnswersData(htmlToDoc);
-        setLoadingMisciblog(false);
-      }
-      if (step == "BLOG_GENERATION_COMPLETED") {
-        console.log("IDEAS LOADED");
-        console.log(subsData);
-        const data = subsData?.stepCompletes.data.ideas.ideas;
-        console.log(data);
-        setListOfIdeas(data);
-        const aa = subsData?.stepCompletes?.data?.publish_data?.find(
-          (d: any) => d.platform === "wordpress"
-        );
-        const htmlDoc = jsonToHtml(aa?.tiny_mce_data);
-        console.log(htmlDoc);
-        console.log(htmlDoc);
-        setEditorArticleData(htmlDoc);
-        // setEditorArticleData
-        setIsArticleTabReady(true);
-      }
-      // @ts-ignore
-      if (step == "ANSWER_FETCHING_FAILED") {
-        toast.error("Something went wrong");
-        setLoadingMisciblog(false);
-        setTimeout(() => {
-          router.back();
-        }, 2000);
-      }
-      if (step == "BLOG_GENERATED_COMPLETED") {
-      }
     },
     onSubscriptionData(options) {
       console.log("sub data");
       console.log(options);
+      const step = options?.subscriptionData?.data?.stepCompletes.step;
+      console.log(step, ' from on sub data');
     },
   });
-  console.log("SUBDATA");
-  console.log(subsData);
+ 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const tokenFromLocalStorage = localStorage.getItem("token");
@@ -151,6 +101,56 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     }
   }, [subsError]);
 
+  useEffect(()=>{
+    const step = subsData?.stepCompletes.step;
+    // @ts-ignore
+    if (step == "ANSWER_FETCHING_COMPLETED") {
+      console.log("answers loaded");
+      const data = subsData?.stepCompletes.data;
+      setMisciblog(data);
+      console.log(data);
+      const aa = data?.publish_data?.find(
+        (d: any) => d.platform === "answers"
+      );
+      console.log(aa);
+      const htmlToDoc = jsonToHtml(aa?.tiny_mce_data);
+      console.log(htmlToDoc);
+      const question = data?.question;
+      setQuestion(question);
+      setEditorAnswersData((prev:string) => {
+        if(prev!==null || prev!=="") return prev;
+        return htmlToDoc;
+      });
+      setLoadingMisciblog(false);
+    }
+    if (step == "BLOG_GENERATION_COMPLETED") {
+      console.log("IDEAS LOADED");
+      console.log(subsData);
+      const data = subsData?.stepCompletes.data.ideas.ideas;
+      console.log(data);
+      setListOfIdeas(data);
+      const aa = subsData?.stepCompletes?.data?.publish_data?.find(
+        (d: any) => d.platform === "wordpress"
+      );
+      const htmlDoc = jsonToHtml(aa?.tiny_mce_data);
+      console.log(htmlDoc);
+      console.log(htmlDoc);
+      setEditorArticleData(htmlDoc);
+      // setEditorArticleData
+      setIsArticleTabReady(true);
+      console.log(isArticleTabReady);
+
+    }
+    // @ts-ignore
+    if (step == "ANSWER_FETCHING_FAILED") {
+      toast.error("Something went wrong");
+      setLoadingMisciblog(false);
+      setTimeout(() => {
+        router.back();
+      }, 2000);
+    }
+  },[subsData?.stepCompletes?.step])
+
   useEffect(() => {
     console.log(localStorage);
     const userId = getUserToken();
@@ -169,8 +169,11 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       });
   }, []);
 
-  const DynamicAnswersData = () => {
-    const mySafeHTML = DOMPurify.sanitize(editorAnswersData);
+  const DynamicAnswersData = ({html }: {html:string}) => {
+    // const mySafeHTML = DOMPurify.sanitize(editorAnswersData);
+    var mySafeHTML = structuredClone(html);
+    mySafeHTML = DOMPurify.sanitize(mySafeHTML);
+    console.log(mySafeHTML , "<< my safe html", editorAnswersData, "<< editor data");
     return (
       <div className=" text-slate-600 text-base font-normal leading-normal">
         <div
@@ -247,7 +250,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                 <div className=" text-slate-800 text-lg font-bold leading-relaxed tracking-tight">
                   {userquestion}
                 </div>
-                <DynamicAnswersData />
+                <DynamicAnswersData  html={editorAnswersData} />
               </div>
             </div>
             <br />
