@@ -148,4 +148,34 @@ export class Python {
             throw e
         }
     }
+    async getAskMeAnswers (question: string){
+        try {
+            const config: any = {
+                method: 'post',
+                url: `${process.env.PLUARIS_PYTHON_REST_BASE_ENDPOINT}/ask-me`,
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
+                data: {
+                    'user_id': this.userId, 
+                    'company_id': 'nowigence', 
+                    'question': question
+                }
+            }
+            console.log(config, "config")
+            const pythonRes = await axios(config)
+            console.log(pythonRes.data)
+            console.log(pythonRes?.data?.internal_results?.main_document?.answer, "answer")
+            console.log(!pythonRes?.data?.internal_results?.main_document?.id?.length, "answer")
+            if(pythonRes?.data && !pythonRes?.data?.internal_results?.main_document?.id?.length) {
+                return null
+            }
+            return pythonRes.data
+        }catch(e){
+            console.log(e.message, "error")
+            console.log(e, "error from python for ask me")
+            console.log(e?.response?.data, "error from python for ask me")
+            throw e
+        }
+    }
 }

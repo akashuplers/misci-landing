@@ -22,6 +22,9 @@
                 handle /blog/* {
                     reverse_proxy /blog/* localhost:5000
                 }
+                handle /misci/* {
+                    reverse_proxy /misci/* localhost:5000
+                }
                 # Resolve the root directory for the app
                 reverse_proxy localhost:{args.1}
                 log {

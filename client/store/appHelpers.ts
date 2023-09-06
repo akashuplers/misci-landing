@@ -419,3 +419,42 @@ export function getBlogTitle(obj: any): string {
     return obj;
   }
 }
+
+export function classNames(...classes: any[]) {
+  return classes.filter(Boolean).join(" ");
+}
+
+export function getUserToken(): string {
+  const token = localStorage.getItem("token");
+  const tempId = localStorage.getItem("tempId") ?? "";
+  const userId = localStorage.getItem("userId") ?? "";
+  if (token) {
+    return userId;
+  }
+  return tempId;
+}
+
+export function validateIfTextIncludesSpecialCharsExcludingQuestionMark(
+  str: string
+): boolean {
+  const regex = /[^a-zA-Z0-9\-_., !?]/;
+  return regex.test(str);
+}
+
+export function countInitialWhiteSpace(str: string): number {
+  const match = str.match(/^\s+/);
+  return match ? match[0].length : 0;
+}
+
+export function isOnlySpecialChars(str: string): boolean {
+  // Regex to check if a string contains only special characters
+  var regex = /^[^a-zA-Z0-9\s]+$/;
+
+  // If the string is empty then return false
+  if (str.length < 1) {
+    return false;
+  }
+
+  // Check if the string matches the regular expression
+  return regex.test(str);
+}

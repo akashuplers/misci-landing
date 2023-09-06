@@ -28,6 +28,7 @@ const upload = require('./routes/uploadRoutes')
 const stripe = require('./routes/stripeRoutes')
 const quickupload = require('./routes/quickuploadRoutes')
 const commentBlogRoutes = require('./routes/commentBlogRoutes')
+const misciRoutes = require('./routes/misciRoutes')
 
 const PORT = process.env.PORT || 5000
 
@@ -55,9 +56,12 @@ const startServer = async () => {
   app.use('/stripe', stripe)
   app.use('/quickupload', quickupload)
   app.use('/blog', commentBlogRoutes)
+  app.use('/misci', misciRoutes)
   const httpServer = createServer(app);
-  const database = await db()
+  const database = await db({type: null})
+  const databaseLive = await db({type: "LIVE"})
   app.set('db', database)
+  app.set('dbLive', databaseLive)
   // Creating the WebSocket server
   const wsServer = new Server({
     // This is the `httpServer` we created in a previous step.
