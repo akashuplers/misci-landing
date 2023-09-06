@@ -410,7 +410,6 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                             idea="Idea 1"
                             key={index}
                             selected={idea.used == 1 ? false : true}
-                            total={12}
                             onClick={() => {}}
                           />
                         );
@@ -531,7 +530,7 @@ interface IdeaItem {
   selected: boolean;
   id: string;
   text: string;
-  total: number;
+  total?: number;
   onClick: () => void;
 }
 export const IdeaItem = ({
@@ -539,7 +538,7 @@ export const IdeaItem = ({
   selected,
   id,
   text,
-  total,
+  total ,
   onClick,
 }: IdeaItem) => {
   return (
