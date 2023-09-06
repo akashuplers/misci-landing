@@ -169,37 +169,37 @@ function Page({
 
       const h3Element = tempElement.querySelector("h3");
       var authorProfilePath = "";
-      if (userData?.data.me.googleUserName) {
+      if (userData?.data?.me?.googleUserName) {
         {
           authorProfilePath =
             "/google/" +
-            userData?.data.me.googleUserName.replace(/\s/g, "") +
+            userData?.data?.me?.googleUserName.replace(/\s/g, "") +
             "/" +
             authorBlogId;
         }
-        if (userData?.data.me.twitterUserName) {
+        if (userData?.data?.me?.twitterUserName) {
           {
             authorProfilePath =
               "/twitter/" +
-              userData?.data.me.twitterUserName.replace(/\s/g, "") +
+              userData?.data?.me?.twitterUserName.replace(/\s/g, "") +
               "/" +
               authorBlogId;
           }
         }
       }
-      if (userData?.data.me.linkedInUserName) {
+      if (userData?.data?.me?.linkedInUserName) {
         {
           authorProfilePath =
             "/linkedin/" +
-            userData?.data.me.linkedInUserName.replace(/\s/g, "") +
+            userData?.data?.me?.linkedInUserName.replace(/\s/g, "") +
             "/" +
             authorBlogId;
         }
       }
-      if (userData?.data.me.userName) {
+      if (userData?.data?.me?.userName) {
         authorProfilePath =
           "/user/" +
-          userData?.data.me.userName.replace(/\s/g, "") +
+          userData?.data?.me?.userName.replace(/\s/g, "") +
           "/" +
           authorBlogId;
       }
@@ -563,8 +563,8 @@ const CommentSection = ({
     sendAComment({
       text: commmentValue,
       blogId: data.fetchBlog._id,
-      email: email || userData?.data.me.email || "Anonymous",
-      name: name || userData?.data.me.name || "Anonymous",
+      email: email || userData?.data?.me?.email || "Anonymous",
+      name: name || userData?.data?.me?.name || "Anonymous",
     }).then((res) => {
       if (res.type) {
         if (res.type == "SUCCESS") {
@@ -667,12 +667,12 @@ const CommentSection = ({
                   <img
                     className="w-10 h-10 rounded-full"
                     src={
-                      userData?.data.me.profileImage ??
+                      userData?.data?.me?.profileImage ??
                       DEFAULT_USER_PROFILE_IMAGE
                     }
                   />
                   <div className="text-black text-lg font-bold">
-                    {userData?.data.me.name + " " + userData?.data.me.lastName}
+                    {userData?.data?.me?.name + " " + userData?.data?.me?.lastName}
                   </div>
                 </div>
               </>
@@ -875,7 +875,8 @@ Page.getInitialProps = async (content: NextPageContext): Promise<PageProps> => {
   ).tiny_mce_data;
   console.log(dataFromGetBlogByIdAPI);
 
-  const title = wordpressData?.children[0].children[0].children[0];
+  // const title = wordpressData?.children[0].children[0].children[0];
+  const title = getBlogTitle(wordpressData?.children[0]);
   const image =
     wordpressData?.children[1].children[0].children[0].attributes.src;
   const description = wordpressData?.children[4].children[0];
