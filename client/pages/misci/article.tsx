@@ -64,6 +64,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   const [references, setReferences] = useState<{
     id: string, source: string, url: string
   }[]>([]);
+  const [usedTabIndex, setUsedTabIndex] = useState(0);
   const {
     data: subsData,
     loading: subsLoading,
@@ -81,6 +82,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     },
   });
  
+  
   useEffect(() => {
     if (typeof window !== "undefined") {
       const tokenFromLocalStorage = localStorage.getItem("token");
@@ -373,55 +375,9 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                
             </div>
             {/* tabs for used ideas and unused ideas */}
-            <div className="h-[70%] ">
-              <Tab.Group
-                onChange={setCurrentEditTabIndex}
-                defaultIndex={0}
-                selectedIndex={currentEditTabIndex}
-              >
-                <Tab.List className="flex relative items-center gap-2 w-full ">
-                  {editTabs.map((tab, index) => (
-                    <Tab
-                      className="flex outline-none flex-col realtive min-w-[7rem] items-start justify-center gap-2 w-fit"
-                      key={tab.name}
-                    >
-                      <div className="flex flex-col relative">
-                        <div className="text-blue-950 text-base font-medium leading-none">
-                          {tab.name}
-                        </div>
+                    <UnsedIteamTabs ideas={listOfIdeas} 
+                    editTabs={editTabs} />
 
-                        {currentEditTabIndex === index && ( // under line
-                          <div className="w-full h-0.5 bg-indigo-600 rounded-lg"></div>
-                        )}
-                      </div>
-                    </Tab>
-                  ))}
-                </Tab.List>
-                <Tab.Panels>
-                  <Tab.Panel
-                    className={`w-full max-h-full flex flex-col gap-4 overflow-y-scroll  scroll-m-1 py-2`}
-                  >
-                    {listOfIdeas ? (
-                      listOfIdeas.map((idea: any, index: number) => {
-                        return (
-                          <IdeaItem
-                            id={index.toString()}
-                            text={idea.idea}
-                            idea="Idea 1"
-                            key={index}
-                            selected={idea.used == 1 ? false : true}
-                            onClick={() => {}}
-                          />
-                        );
-                      })
-                    ) : (
-                      <>loading.. ideas</>
-                    )}
-                  </Tab.Panel>
-                  <Tab.Panel className={`w-full border `}>Content 2</Tab.Panel>
-                </Tab.Panels>
-              </Tab.Group>
-            </div>
           </>
         ),
       },
@@ -560,3 +516,71 @@ export const IdeaItem = ({
     </div>
   );
 };
+
+
+interface UnsedIteamTabsProps {
+  ideas: any;
+  editTabs: any;
+}
+
+const UnsedIteamTabs = ({ ideas, editTabs }: UnsedIteamTabsProps) => {
+  const [currentEditTabIndex, setCurrentEditTabIndex] = React.useState(0);
+  const [usedIdeas, setUsedIdeas] = React.useState<any>([]);
+  const [unusedIdeas, setUnusedIdeas] = React.useState<any>([]);
+ 
+  return    <div className="h-[70%] ">
+  <Tab.Group
+    onChange={
+      (index) => {
+        setCurrentEditTabIndex(index);
+      }
+    }
+    selectedIndex={currentEditTabIndex}
+  >
+    <Tab.List className="flex relative items-center gap-2 w-full ">
+      {editTabs.map((tab:any, index:number) => (
+        <Tab
+          className="flex outline-none flex-col realtive min-w-[7rem] items-start justify-center gap-2 w-fit"
+          key={tab.name}
+        >
+          <div className="flex flex-col relative">
+            <div className="text-blue-950 text-base font-medium leading-none">
+              {tab.name}
+            </div>
+
+            {currentEditTabIndex === index && ( // under line
+              <div className="w-full h-0.5 bg-indigo-600 rounded-lg"></div>
+            )}
+          </div>
+        </Tab>
+      ))}
+    </Tab.List>
+    <Tab.Panels>
+      <Tab.Panel
+        className={`w-full max-h-full flex flex-col gap-4 overflow-y-scroll  scroll-m-1 py-2`}
+      >
+        {ideas ? (
+          ideas.map((idea: any, index: number) => {
+            return (
+              <IdeaItem
+                id={index.toString()}
+                text={idea.idea}
+                idea="Idea 1"
+                key={index}
+                selected={idea.used == 1 ? false : true}
+                onClick={() => {}}
+              />
+            );
+          })
+        ) : (
+          <>loading.. ideas</>
+        )}
+      </Tab.Panel>
+      <Tab.Panel className={`w-full  `}>
+        no data
+      </Tab.Panel>
+    </Tab.Panels>
+  </Tab.Group>
+</div>
+
+}
