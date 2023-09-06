@@ -271,7 +271,7 @@ export const TMBlogGeneration = async ({db, text}: {
     }
 }
 
-export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null, userId = null, keywords = [], tones = [], type = null}: {
+export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null, userId = null, keywords = [], tones = [], type = []}: {
     db: any;
     text: String;
     regenerate: Boolean;
@@ -329,7 +329,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
     for (let index = 0; index < keys.length; index++) {
         const key = keys[index];
         try {
-            if((type && type === "wordpress" && key === "wordpress") || (!type && key === "wordpress")) {
+            if((type.length && type.includes(key) && key === "wordpress") || (!type.length && key === "wordpress")) {
                 const gptPrompt = `Please forget old prompt and act as an new expert writer and using the below pasted ideas write a blog with inputs as follows:\n${title && title.length ? `Topic is "${title}"\n${tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"`}`: tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"` }\n${keywords.length ? `Use these keywords: "${keywords.join('","')}" \nMinimum limit is "1000 words"`: `Minimum limit is "1000 words"`}\nHighlight the H1 & H2 html tags\nProvide the conclusion at the end with Conclusion as heading\nStrictly use all these points: ${text}`
                 const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? gptPrompt : 
                     `Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
@@ -342,13 +342,13 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                 newsLetter = {...newsLetter, [key]: chatGPTText}
             } else {
                 let text = ""
-                if((type && type === "title" && key === "title") || (!type && key === 'title')) {
+                if((type.length && type.includes(key) && key === "title") || (!type.length && key === 'title')) {
                     const blogPostToSend = newsLetter["wordpress"]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
                         return mapObj[matched];
                     });
-                    text = `Create a SEO based title using this blog: ${blogPostToSend}`
+                    text = `Create a title using this blog: ${blogPostToSend}`
                 }
-                if((type && type === "linkedin" && key === "linkedin") || (!type && key === 'linkedin')) {
+                if((type.length && type.includes(key) && key === "linkedin") || (!type && key === 'linkedin')) {
                     const blogPostToSendForLinkedin = newsLetter["wordpress"]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
                         return mapObj[matched];
                     });
@@ -359,7 +359,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                     Insert hashtags at the end of the post
                     Trim unwanted new lines and spaces`
                 }
-                if((type && type === "twitter" && key === "twitter") || (!type && key === 'twitter')) {
+                if((type.length && type.includes(key) && key === "twitter") || (!type && key === 'twitter')) {
                     let tweetQuota;
                     if(userDetails) {
                         tweetQuota = await db.db('lilleAdmin').collection('tweetsQuota').findOne({
@@ -694,7 +694,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     }  
                                 }   
                             case "linkedin":
-                                if(type && type === "linkedin" || (!type && key === "linkedin")){
+                                if(type.length && type.includes(key) || (!type.length && key === "linkedin")){
                                     console.log(newsLetter[key], "linkedin")
                                     newsLetter[key] = newsLetter[key].trim()
                                     let linkedinTitle = ""
@@ -769,7 +769,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     return null
                                 }   
                             case "twitter":
-                                if(type && type === "linkedin" || (!type && key === "twitter")){
+                                if(type.length && type.includes(key) || (!type && key === "twitter")){
                                     console.log(newsLetter[key])
                                     let updatedThread = null;
                                     if(newsLetter[key]) {
