@@ -16,7 +16,6 @@ export const MiSciGenerateLoadingModal = ({
   setShowGenerateLoadingModal,
   showBackButton,
 }: MiSciGenerateLoadingModalProps) => {
-  console.log(showGenerateLoadingModal, setShowGenerateLoadingModal);
 
   return (
     <Modal
