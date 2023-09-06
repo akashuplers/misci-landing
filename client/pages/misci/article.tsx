@@ -26,6 +26,7 @@ import opener_loading from "../../lottie/opener-loading.json";
 import LottiePlayer from "lottie-react";
 import DOMPurify from "dompurify";
 import LoaderScan from "@/components/LoaderScan";
+import { Chip } from "@/components/ui/Chip";
 export const getServerSideProps = async (context: any) => {
   console.log(context);
   console.log("server");
@@ -60,7 +61,9 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   const [getToken, setGetToken] = useState<string | null>("");
   const [isArticleTabReady, setIsArticleTabReady] = useState(false);
   const [editorArticleData, setEditorArticleData] = useState<any>(null);
-
+  const [references, setReferences] = useState<{
+    id: string, source: string, url: string
+  }[]>([]);
   const {
     data: subsData,
     loading: subsLoading,
@@ -118,7 +121,6 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       const question = data?.question;
       setQuestion(question);
       setEditorAnswersData((prev:string) => {
-        if(prev!==null || prev!=="") return prev;
         return htmlToDoc;
       });
       setLoadingMisciblog(false);
@@ -132,24 +134,34 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       const aa = subsData?.stepCompletes?.data?.publish_data?.find(
         (d: any) => d.platform === "wordpress"
       );
-      const htmlDoc = jsonToHtml(aa?.tiny_mce_data);
-      console.log(htmlDoc);
+      const answers = subsData?.stepCompletes?.data?.publish_data?.find((d: any) => d.platform === "answers");
+      console.log(aa);
+      console.log(answers);
+      const htmlDoc = jsonToHtml(aa?.tiny_mce_data);  
       console.log(htmlDoc);
       setEditorArticleData(htmlDoc);
-      // setEditorArticleData
       setIsArticleTabReady(true);
+      const referencesOfArticle = subsData?.stepCompletes?.data?.references;
+      setReferences(referencesOfArticle);
       console.log(isArticleTabReady);
-
+      const answerHtml = jsonToHtml(answers?.tiny_mce_data);
+      console.log(answerHtml);
+      setEditorAnswersData(answerHtml);
     }
     // @ts-ignore
     if (step == "ANSWER_FETCHING_FAILED") {
       toast.error("Something went wrong");
       setLoadingMisciblog(false);
       setTimeout(() => {
-        router.back();
+        // take to /misci
+        router.push("/misci");
       }, 2000);
     }
   },[subsData?.stepCompletes?.step])
+
+  const aaa = subsData?.stepCompletes?.data?.publish_data?.find( (d: any) => d.platform === "answers");
+  console.log(aaa); 
+  const answersForAnwersTab = jsonToHtml(aaa?.tiny_mce_data);
 
   useEffect(() => {
     console.log(localStorage);
@@ -170,7 +182,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   }, []);
 
   const DynamicAnswersData = ({html }: {html:string}) => {
-    // const mySafeHTML = DOMPurify.sanitize(editorAnswersData);
+    
     var mySafeHTML = structuredClone(html);
     mySafeHTML = DOMPurify.sanitize(mySafeHTML);
     console.log(mySafeHTML , "<< my safe html", editorAnswersData, "<< editor data");
@@ -250,7 +262,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                 <div className=" text-slate-800 text-lg font-bold leading-relaxed tracking-tight">
                   {userquestion}
                 </div>
-                <DynamicAnswersData  html={editorAnswersData} />
+                <DynamicAnswersData  html={answersForAnwersTab ?? ""} />
               </div>
             </div>
             <br />
@@ -285,11 +297,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
               </div>
             ) : (
               <div className="relative">
-                {EditorSetUpCompleted && (
-                  <div className="absolute top-[50%] right-[50%] mx-auto my-auto p-2 opacity-50 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600  text-white">
-                    setup editor
-                  </div>
-                )}
+                
                 <Editor
                   value={editorArticleData}
                   apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
@@ -325,7 +333,8 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                     },
                   }}
                   onEditorChange={(content, editor) => {
-                    setEditorAnswersData(content);
+                    // setEditorAnswersData(content);
+                    setEditorArticleData(content);
                   }}
                 />
               </div>
@@ -334,7 +343,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
         ),
         leftContent: (
           <>
-            <div className="h-[20%] flex flex-col justify-start gap-4 ">
+            <div className="h-[30%] flex flex-col justify-start gap-4 ">
               <div className="justify-between items-center flex">
                 <div className="text-slate-800  leading-none">
                   Create your next draft on the basis of your edits.
@@ -350,26 +359,21 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                 <div className="flex-col justify-center items-start gap-1 flex">
                   <div className="">Your Question</div>
                   <div className=" opacity-70 text-blue-950 text-base font-normal leading-none">
-                    How Technology is Hijacking Your Mind — from a Magician and
-                    Google Design Ethicist
+                    {userquestion}
+                  </div>
+                  <div className="flex justify-start items-center gap-2.5 flex-wrap my-2">
+                    {
+                      references.map((ref) => {
+                        return <Chip text={ref.source} />;
+                      })
+                    }
                   </div>
                 </div>
               </div>
-              <div className="w-full justify-start items-center gap-2 flex">
-                <div className="p-2.5 bg-slate-100 rounded-full justify-start items-start gap-2.5 flex">
-                  <div className="text-slate-800 text-base font-normal leading-3">
-                    Technology.pdf
-                  </div>
-                </div>
-                <div className="p-2.5 py-1 bg-slate-100 rounded-full justify-start items-start gap-px flex">
-                  <div className="text-slate-800 text-base font-normal leading-3">
-                    Hijacking.pdf
-                  </div>
-                </div>
-              </div>
+               
             </div>
             {/* tabs for used ideas and unused ideas */}
-            <div className="max-h-[50%] h-full my-2">
+            <div className="h-[70%] ">
               <Tab.Group
                 onChange={setCurrentEditTabIndex}
                 defaultIndex={0}
@@ -395,7 +399,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                 </Tab.List>
                 <Tab.Panels>
                   <Tab.Panel
-                    className={`w-full max-h-full flex flex-col gap-4 overflow-y-scroll  scroll-m-1`}
+                    className={`w-full max-h-full flex flex-col gap-4 overflow-y-scroll  scroll-m-1 py-2`}
                   >
                     {listOfIdeas ? (
                       listOfIdeas.map((idea: any, index: number) => {
