@@ -364,7 +364,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                   <div className="flex justify-start items-center gap-2.5 flex-wrap my-2">
                     {
                       references.map((ref) => {
-                        return <Chip text={ref.source} />;
+                        return <Chip key={ref.id} text={ref.source} />;
                       })
                     }
                   </div>
