@@ -19,13 +19,14 @@ import {
 } from "@heroicons/react/24/outline";
 import { Editor } from "@tinymce/tinymce-react";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import opener_loading from "../../lottie/opener-loading.json";
 import LottiePlayer from "lottie-react";
 import DOMPurify from "dompurify";
 import LoaderScan from "@/components/LoaderScan";
+import { Chip } from "@/components/ui/Chip";
 export const getServerSideProps = async (context: any) => {
   console.log(context);
   console.log("server");
@@ -60,74 +61,28 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   const [getToken, setGetToken] = useState<string | null>("");
   const [isArticleTabReady, setIsArticleTabReady] = useState(false);
   const [editorArticleData, setEditorArticleData] = useState<any>(null);
-
+  const [references, setReferences] = useState<{
+    id: string, source: string, url: string
+  }[]>([]);
+  const [usedTabIndex, setUsedTabIndex] = useState(0);
   const {
     data: subsData,
     loading: subsLoading,
     error: subsError,
   } = useSubscription<StepCompleteData>(MISCI_STEP_COMPLETES_SUBSCRIPTION, {
     variables: { userId: userAbleUserIDForSubs },
-    onSubscriptionComplete() {},
     onComplete() {
       console.log("completed");
-    },
-
-    onData() {
-      console.log("data");
-      console.log(subsData);
-      console.log("sub completed");
-      const step = subsData?.stepCompletes.step;
-      // @ts-ignore
-      if (step == "ANSWER_FETCHING_COMPLETED") {
-        console.log("answers loaded");
-        const data = subsData?.stepCompletes.data;
-        setMisciblog(data);
-        console.log(data);
-        const aa = data?.publish_data?.find(
-          (d: any) => d.platform === "answers"
-        );
-        console.log(aa);
-        const htmlToDoc = jsonToHtml(aa?.tiny_mce_data);
-        console.log(htmlToDoc);
-        const question = data?.question;
-        setQuestion(question);
-        setEditorAnswersData(htmlToDoc);
-        setLoadingMisciblog(false);
-      }
-      if (step == "BLOG_GENERATION_COMPLETED") {
-        console.log("IDEAS LOADED");
-        console.log(subsData);
-        const data = subsData?.stepCompletes.data.ideas.ideas;
-        console.log(data);
-        setListOfIdeas(data);
-        const aa = subsData?.stepCompletes?.data?.publish_data?.find(
-          (d: any) => d.platform === "wordpress"
-        );
-        const htmlDoc = jsonToHtml(aa?.tiny_mce_data);
-        console.log(htmlDoc);
-        console.log(htmlDoc);
-        setEditorArticleData(htmlDoc);
-        // setEditorArticleData
-        setIsArticleTabReady(true);
-      }
-      // @ts-ignore
-      if (step == "ANSWER_FETCHING_FAILED") {
-        toast.error("Something went wrong");
-        setLoadingMisciblog(false);
-        setTimeout(() => {
-          router.back();
-        }, 2000);
-      }
-      if (step == "BLOG_GENERATED_COMPLETED") {
-      }
     },
     onSubscriptionData(options) {
       console.log("sub data");
       console.log(options);
+      const step = options?.subscriptionData?.data?.stepCompletes.step;
+      console.log(step, ' from on sub data');
     },
   });
-  console.log("SUBDATA");
-  console.log(subsData);
+ 
+  
   useEffect(() => {
     if (typeof window !== "undefined") {
       const tokenFromLocalStorage = localStorage.getItem("token");
@@ -151,6 +106,65 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     }
   }, [subsError]);
 
+  useEffect(()=>{
+    const step = subsData?.stepCompletes.step;
+    // @ts-ignore
+    if (step == "ANSWER_FETCHING_COMPLETED") {
+      console.log("answers loaded");
+      const data = subsData?.stepCompletes.data;
+      setMisciblog(data);
+      console.log(data);
+      const aa = data?.publish_data?.find(
+        (d: any) => d.platform === "answers"
+      );
+      console.log(aa);
+      const htmlToDoc = jsonToHtml(aa?.tiny_mce_data);
+      console.log(htmlToDoc);
+      const question = data?.question;
+      setQuestion(question);
+      setEditorAnswersData((prev:string) => {
+        return htmlToDoc;
+      });
+      setLoadingMisciblog(false);
+    }
+    if (step == "BLOG_GENERATION_COMPLETED") {
+      console.log("IDEAS LOADED");
+      console.log(subsData);
+      const data = subsData?.stepCompletes.data.ideas.ideas;
+      console.log(data);
+      setListOfIdeas(data);
+      const aa = subsData?.stepCompletes?.data?.publish_data?.find(
+        (d: any) => d.platform === "wordpress"
+      );
+      const answers = subsData?.stepCompletes?.data?.publish_data?.find((d: any) => d.platform === "answers");
+      console.log(aa);
+      console.log(answers);
+      const htmlDoc = jsonToHtml(aa?.tiny_mce_data);  
+      console.log(htmlDoc);
+      setEditorArticleData(htmlDoc);
+      setIsArticleTabReady(true);
+      const referencesOfArticle = subsData?.stepCompletes?.data?.references;
+      setReferences(referencesOfArticle);
+      console.log(isArticleTabReady);
+      const answerHtml = jsonToHtml(answers?.tiny_mce_data);
+      console.log(answerHtml);
+      setEditorAnswersData(answerHtml);
+    }
+    // @ts-ignore
+    if (step == "ANSWER_FETCHING_FAILED") {
+      toast.error("Something went wrong");
+      setLoadingMisciblog(false);
+      setTimeout(() => {
+        // take to /misci
+        router.push("/misci");
+      }, 2000);
+    }
+  },[subsData?.stepCompletes?.step])
+
+  const aaa = subsData?.stepCompletes?.data?.publish_data?.find( (d: any) => d.platform === "answers");
+  console.log(aaa); 
+  const answersForAnwersTab = jsonToHtml(aaa?.tiny_mce_data);
+
   useEffect(() => {
     console.log(localStorage);
     const userId = getUserToken();
@@ -169,8 +183,11 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       });
   }, []);
 
-  const DynamicAnswersData = () => {
-    const mySafeHTML = DOMPurify.sanitize(editorAnswersData);
+  const DynamicAnswersData = ({html }: {html:string}) => {
+    
+    var mySafeHTML = structuredClone(html);
+    mySafeHTML = DOMPurify.sanitize(mySafeHTML);
+    console.log(mySafeHTML , "<< my safe html", editorAnswersData, "<< editor data");
     return (
       <div className=" text-slate-600 text-base font-normal leading-normal">
         <div
@@ -247,7 +264,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                 <div className=" text-slate-800 text-lg font-bold leading-relaxed tracking-tight">
                   {userquestion}
                 </div>
-                <DynamicAnswersData />
+                <DynamicAnswersData  html={answersForAnwersTab ?? ""} />
               </div>
             </div>
             <br />
@@ -282,11 +299,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
               </div>
             ) : (
               <div className="relative">
-                {EditorSetUpCompleted && (
-                  <div className="absolute top-[50%] right-[50%] mx-auto my-auto p-2 opacity-50 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600  text-white">
-                    setup editor
-                  </div>
-                )}
+                
                 <Editor
                   value={editorArticleData}
                   apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
@@ -322,7 +335,8 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                     },
                   }}
                   onEditorChange={(content, editor) => {
-                    setEditorAnswersData(content);
+                    // setEditorAnswersData(content);
+                    setEditorArticleData(content);
                   }}
                 />
               </div>
@@ -331,7 +345,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
         ),
         leftContent: (
           <>
-            <div className="h-[20%] flex flex-col justify-start gap-4 ">
+            <div className="h-[30%] flex flex-col justify-start gap-4 ">
               <div className="justify-between items-center flex">
                 <div className="text-slate-800  leading-none">
                   Create your next draft on the basis of your edits.
@@ -347,75 +361,23 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                 <div className="flex-col justify-center items-start gap-1 flex">
                   <div className="">Your Question</div>
                   <div className=" opacity-70 text-blue-950 text-base font-normal leading-none">
-                    How Technology is Hijacking Your Mind — from a Magician and
-                    Google Design Ethicist
+                    {userquestion}
+                  </div>
+                  <div className="flex justify-start items-center gap-2.5 flex-wrap my-2">
+                    {
+                      references.map((ref) => {
+                        return <Chip key={ref.id} text={ref.source} />;
+                      })
+                    }
                   </div>
                 </div>
               </div>
-              <div className="w-full justify-start items-center gap-2 flex">
-                <div className="p-2.5 bg-slate-100 rounded-full justify-start items-start gap-2.5 flex">
-                  <div className="text-slate-800 text-base font-normal leading-3">
-                    Technology.pdf
-                  </div>
-                </div>
-                <div className="p-2.5 py-1 bg-slate-100 rounded-full justify-start items-start gap-px flex">
-                  <div className="text-slate-800 text-base font-normal leading-3">
-                    Hijacking.pdf
-                  </div>
-                </div>
-              </div>
+               
             </div>
             {/* tabs for used ideas and unused ideas */}
-            <div className="max-h-[50%] h-full my-2">
-              <Tab.Group
-                onChange={setCurrentEditTabIndex}
-                defaultIndex={0}
-                selectedIndex={currentEditTabIndex}
-              >
-                <Tab.List className="flex relative items-center gap-2 w-full ">
-                  {editTabs.map((tab, index) => (
-                    <Tab
-                      className="flex outline-none flex-col realtive min-w-[7rem] items-start justify-center gap-2 w-fit"
-                      key={tab.name}
-                    >
-                      <div className="flex flex-col relative">
-                        <div className="text-blue-950 text-base font-medium leading-none">
-                          {tab.name}
-                        </div>
+                    <UnsedIteamTabs ideas={listOfIdeas} 
+                    editTabs={editTabs} />
 
-                        {currentEditTabIndex === index && ( // under line
-                          <div className="w-full h-0.5 bg-indigo-600 rounded-lg"></div>
-                        )}
-                      </div>
-                    </Tab>
-                  ))}
-                </Tab.List>
-                <Tab.Panels>
-                  <Tab.Panel
-                    className={`w-full max-h-full flex flex-col gap-4 overflow-y-scroll  scroll-m-1`}
-                  >
-                    {listOfIdeas ? (
-                      listOfIdeas.map((idea: any, index: number) => {
-                        return (
-                          <IdeaItem
-                            id={index.toString()}
-                            text={idea.idea}
-                            idea="Idea 1"
-                            key={index}
-                            selected={idea.used == 1 ? false : true}
-                            total={12}
-                            onClick={() => {}}
-                          />
-                        );
-                      })
-                    ) : (
-                      <>loading.. ideas</>
-                    )}
-                  </Tab.Panel>
-                  <Tab.Panel className={`w-full border `}>Content 2</Tab.Panel>
-                </Tab.Panels>
-              </Tab.Group>
-            </div>
           </>
         ),
       },
@@ -524,7 +486,7 @@ interface IdeaItem {
   selected: boolean;
   id: string;
   text: string;
-  total: number;
+  total?: number;
   onClick: () => void;
 }
 export const IdeaItem = ({
@@ -532,7 +494,7 @@ export const IdeaItem = ({
   selected,
   id,
   text,
-  total,
+  total ,
   onClick,
 }: IdeaItem) => {
   return (
@@ -554,3 +516,71 @@ export const IdeaItem = ({
     </div>
   );
 };
+
+
+interface UnsedIteamTabsProps {
+  ideas: any;
+  editTabs: any;
+}
+
+const UnsedIteamTabs = ({ ideas, editTabs }: UnsedIteamTabsProps) => {
+  const [currentEditTabIndex, setCurrentEditTabIndex] = React.useState(0);
+  const [usedIdeas, setUsedIdeas] = React.useState<any>([]);
+  const [unusedIdeas, setUnusedIdeas] = React.useState<any>([]);
+ 
+  return    <div className="h-[70%] ">
+  <Tab.Group
+    onChange={
+      (index) => {
+        setCurrentEditTabIndex(index);
+      }
+    }
+    selectedIndex={currentEditTabIndex}
+  >
+    <Tab.List className="flex relative items-center gap-2 w-full ">
+      {editTabs.map((tab:any, index:number) => (
+        <Tab
+          className="flex outline-none flex-col realtive min-w-[7rem] items-start justify-center gap-2 w-fit"
+          key={tab.name}
+        >
+          <div className="flex flex-col relative">
+            <div className="text-blue-950 text-base font-medium leading-none">
+              {tab.name}
+            </div>
+
+            {currentEditTabIndex === index && ( // under line
+              <div className="w-full h-0.5 bg-indigo-600 rounded-lg"></div>
+            )}
+          </div>
+        </Tab>
+      ))}
+    </Tab.List>
+    <Tab.Panels>
+      <Tab.Panel
+        className={`w-full max-h-full flex flex-col gap-4 overflow-y-scroll  scroll-m-1 py-2`}
+      >
+        {ideas ? (
+          ideas.map((idea: any, index: number) => {
+            return (
+              <IdeaItem
+                id={index.toString()}
+                text={idea.idea}
+                idea="Idea 1"
+                key={index}
+                selected={idea.used == 1 ? false : true}
+                onClick={() => {}}
+              />
+            );
+          })
+        ) : (
+          <>loading.. ideas</>
+        )}
+      </Tab.Panel>
+      <Tab.Panel className={`w-full  `}>
+        no data
+      </Tab.Panel>
+    </Tab.Panels>
+  </Tab.Group>
+</div>
+
+}

@@ -3,27 +3,27 @@ import Tooltip from "./Tooltip";
 
 
 interface Props extends React.HTMLAttributes<HTMLButtonElement> {
-    selected: boolean;
+    selected?: boolean;
     text: string;
-    handleClick: (index: number) => void;
-    index: number;
+    handleClick?: (index: number) => void;
+    index?: number;
     wholeData?: any;
     rest?: any;
 }
 
-export const Chip = ({ selected, text, handleClick, index, wholeData , rest}: Props) => {
+export const Chip = ({ selected = false, text, handleClick, index, wholeData , rest}: Props) => {
     return <>
         {
             wholeData != null ? (
                 <Tooltip content={wholeData.realSource} direction="top" className="text-xs">
-                    <button {...rest} className={`h-8 px-[18px] py-1.5  rounded-full justify-center items-center inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick(index)}>
+                    <button {...rest} className={`h-8 px-[18px] py-1.5  rounded-full justify-center items-center inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick && handleClick(index??0)}>
                         <span className=" text-sm font-normal leading-tight">{text}</span>
                     </button>
                 </Tooltip>
             ) : (
                 <button  
                 {...rest}
-                className={`h-8 px-[18px] py-1.5  rounded-full justify-center items-center gap-2.5 inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick(index)}>
+                className={`h-8 px-[18px] py-1.5  rounded-full justify-center items-center gap-2.5 inline-flex ${selected ? "bg-indigo-700 text-white" : 'bg-gray-200 text-slate-700 '}`} onClick={() => handleClick&&  handleClick(index??0)}>
                     <span className=" text-sm font-normal leading-tight">{text}</span>
                 </button>
             )
