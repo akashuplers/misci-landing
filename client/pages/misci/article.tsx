@@ -1,10 +1,11 @@
 import { RegenerateIcon } from "@/components/localicons/localicons";
 import { API_BASE_PATH } from "@/constants/apiEndpoints";
+import ReactLoading from "react-loading";
 import {
   MISCI_STEP_COMPLETES_SUBSCRIPTION,
   STEP_COMPLETES_SUBSCRIPTION,
 } from "@/graphql/subscription/generate";
-import { generateMisci } from "@/helpers/apiMethodsHelpers";
+import { generateMisci, regenerateNextDraft } from "@/helpers/apiMethodsHelpers";
 import { jsonToHtml } from "@/helpers/helper";
 import MiSciGenerateLoadingModal from "@/modals/MiSciLoadingModal";
 import { classNames, getUserToken } from "@/store/appHelpers";
@@ -30,6 +31,7 @@ import LoaderScan from "@/components/LoaderScan";
 import { Chip, TabItem } from "@/components/ui/Chip";
 import NativeEditor from "@/components/component/NativeEditor";
 import {ScrollArea} from "@radix-ui/react-scroll-area";
+import Head from "next/head";
 export const getServerSideProps = async (context: any) => {
   console.log(context);
   console.log("server");
@@ -57,13 +59,16 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     string | null
   >("");
   const [userquestion, setQuestion] = useState<string>("");
-  const [listOfIdeas, setListOfIdeas] = useState<any>([]);
+  const [listOfIdeas, setListOfIdeas] = useState<any[]>([]);
+  const [listOfUnusedIdeas, setListOfUnusedIdeas] = useState<any>([]);
   const router = useRouter();
   const [EditorSetUpCompleted, setEditorSetUpCompleted] = useState(false);
   const { addMessages } = useGenerateErrorState();
   const [getToken, setGetToken] = useState<string | null>("");
   const [isArticleTabReady, setIsArticleTabReady] = useState(false);
   const [editorArticleData, setEditorArticleData] = useState<any>(null);
+  const [blogId, setBlogId] = useState("");
+  const [nextDraftLoader, setNextDraftLoader] = useState(false);
   const [references, setReferences] = useState<
     {
       id: string;
@@ -136,6 +141,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       console.log(subsData);
       const data = subsData?.stepCompletes.data.ideas.ideas;
       console.log(data);
+      setBlogId(subsData?.stepCompletes.data?._id);
       setListOfIdeas(data);
       const aa = subsData?.stepCompletes?.data?.publish_data?.find(
         (d: any) => d.platform === "wordpress"
@@ -175,7 +181,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       .then((res) => {})
       .catch((err) => {
         console.log(err);
-        toast.error(err.response.data.message);
+        toast.error(err.response?.data?.message);
         setTimeout(() => {
           router.back();
         }, 2000);
@@ -184,6 +190,43 @@ const MiSciArticle = ({ question }: MiSciProps) => {
         console.log("finally");
       });
   }, []);
+
+  function handleNextDraft(){
+    setNextDraftLoader(true);
+    var payload = [];
+    const payloadList = [...listOfIdeas];
+    for (let index = 0; index < payloadList.length; index++) {
+      const element = payloadList[index];
+      if(element.used==1){
+        payload.push({...element, text: element.idea});
+      }
+    }
+
+    regenerateNextDraft({ideas:payload, blog_id: blogId}).then((res)=>{
+      console.log(res);
+      const ideas = res?.data?.ideas?.ideas;
+      const pubData = res?.data?.publish_data;
+      var articleData = "";
+      var answersData = "";
+      for (let index = 0; index < pubData.length; index++) {
+        const element = pubData[index];
+        if(element.platform=='answers'){
+          answersData = element.tiny_mce_data
+        }else if(element.platform=='wordpress'){
+          articleData = element.tiny_mce_data
+        }
+      }
+      setEditorAnswersData(jsonToHtml(answersData));
+      setEditorArticleData(jsonToHtml(articleData));
+      setListOfIdeas(ideas);
+      setQuestion(res?.data?.question)
+      setBlogId(res?.data?._id);
+      setReferences(res?.data?.references);
+      setNextDraftLoader(false);
+    }).finally(()=>{
+    })
+  }
+  
 
   const DynamicAnswersData = ({ html }: { html: string }) => {
     var mySafeHTML = structuredClone(html);
@@ -233,7 +276,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                   onClick={() => {
                     setCurrentTabIndex(1);
                   }}
-                  className="p-2 opacity-50 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-500   text-white"
+                  className="p-2 opacity-90 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600   text-white"
                 >
                   <span>
                     <PaperAirplaneIcon className="h-5 w-5" />
@@ -319,11 +362,22 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                 <div className="text-slate-800  leading-none">
                   Create your next draft on the basis of your edits.
                 </div>
-                <button className="p-2 opacity-50 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex">
-                  <RegenerateIcon />
+                <button
+                onClick={handleNextDraft}
+                className="p-2 opacity-50 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex">
+                  {
+                    !nextDraftLoader && <RegenerateIcon /> 
+                  }
+                  {nextDraftLoader ? 
+                  <ReactLoading
+                    width={25}
+                    height={25}
+                    color={"#2563EB"}
+                  /> : 
                   <span className="text-indigo-600 text-base font-normal">
-                    Next Draft
+                    {nextDraftLoader ? "Generating...." : 'Next Draft'}
                   </span>
+      }
                 </button>
               </div>
               <div className="w-full justify-start items-center gap-2.5 flex">
@@ -341,7 +395,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
               </div>
             </div>
             {/* tabs for used ideas and unused ideas */}
-            <UnsedIteamTabs ideas={listOfIdeas} editTabs={editTabs} />
+            <UnsedIteamTabs ideas={listOfIdeas} editTabs={editTabs} listOfUnusedIdeas={listOfUnusedIdeas} setListOfIdeas={setListOfIdeas} setListOfUnusedIdeas={setListOfUnusedIdeas} />
           </>
         ),
       },
@@ -372,9 +426,19 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   }
   return (
     <div className="w-screen h-screen px-12 py-2">
+      <Head>
+        <title>{question}</title>
+      </Head>
       <style>{`.sidebar-position-left #button.sidebar{display: none;`}</style>
       <header className="w-full h-[8%] justify-between items-center flex">
-        <button onClick={() => router.back()}>
+        <button onClick={() => {
+          console.log(document.referrer, window.location.host)
+          if(document.referrer!=window.location.host){
+            router.push("/misci")
+          }else{
+            router.back();
+          }
+        }}>
           <span>
             <ArrowLeftIcon className="h-5 w-5 text-gray-800" />
           </span>
@@ -472,11 +536,14 @@ export const IdeaItem = ({
 };
 
 interface UnsedIteamTabsProps {
-  ideas: any;
+  ideas: any[];
   editTabs: any;
+  listOfUnusedIdeas?: any[];
+  setListOfUnusedIdeas?: any;
+  setListOfIdeas?: any;
 }
 
-const UnsedIteamTabs = ({ ideas, editTabs }: UnsedIteamTabsProps) => {
+const UnsedIteamTabs = ({ ideas, editTabs, listOfUnusedIdeas,setListOfIdeas, setListOfUnusedIdeas }: UnsedIteamTabsProps) => {
   const [currentEditTabIndex, setCurrentEditTabIndex] = React.useState(0);
   const [usedIdeas, setUsedIdeas] = React.useState<any>([]);
   const [unusedIdeas, setUnusedIdeas] = React.useState<any>([]);
@@ -512,25 +579,14 @@ const UnsedIteamTabs = ({ ideas, editTabs }: UnsedIteamTabsProps) => {
                     text={idea.idea}
                     idea="Idea 1"
                     key={index}
-                    selected={idea.used == 1 ? false : true}
+                    selected={idea.used == 1 ? true : false}
                     onClick={() => {
+                      console.log("clicked");
                       console.log(idea);
-                      console.log(usedIdeas);
-                      if (idea.used == 1) {
-                        setUsedIdeas((prev: any) => {
-                          return prev.filter((item: any) => item.article_id != idea.article_id);
-                        });
-                        setUnusedIdeas((prev: any) => {
-                          return [...prev, idea];
-                        });
-                      } else {
-                        setUnusedIdeas((prev: any) => {
-                          return prev.filter((item: any) => item.article_id != idea.article_id);
-                        });
-                        setUsedIdeas((prev: any) => {
-                          return [...prev, idea];
-                        });
-                      }
+                      const newIdeas = [...ideas];
+                      newIdeas[index].used  = newIdeas[index].used == 1 ? 0 : 1;
+                      setListOfIdeas(newIdeas);
+                      // setListOfUnusedIdeas([...listOfUnusedIdeas, idea]);
                     }}
                   />
                 );
@@ -540,7 +596,33 @@ const UnsedIteamTabs = ({ ideas, editTabs }: UnsedIteamTabsProps) => {
             )}
             </ScrollArea>
           </Tab.Panel>
-          <Tab.Panel className={`w-full  `}>no data</Tab.Panel>
+          <Tab.Panel className={`w-full  `}>
+            <div className="w-full max-h-full flex flex-col gap-4 overflow-y-scroll  scroll-m-1 py-2">
+              {listOfUnusedIdeas ? (
+                listOfUnusedIdeas.map((idea: any, index: number) => {
+                  return (
+                    <IdeaItem
+                      id={index.toString()}
+                      text={idea.idea}
+                      idea="Idea 1"
+                      key={index}
+                      selected={idea.used == 1 ? false : true}
+                      onClick={() => {
+                        console.log("clicked");
+                        console.log(idea);
+                        const newIdeas = [...listOfUnusedIdeas];
+                        newIdeas[index].used = 1;
+                        setListOfUnusedIdeas(newIdeas);
+                        setListOfIdeas([...ideas, idea]);
+                      }}
+                    />
+                  );
+                })
+              ) : (
+                <>loading.. ideas</>
+              )}
+            </div>
+          </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
     </div>
