@@ -14,6 +14,7 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import Head from "next/head";
 import MisciWorkSpace from "@/components/component/workspace/Misci";
+import ErrorBase from "@/store/errors";
 export const getServerSideProps = async (context: any) => {
   console.log(context);
   console.log("server");
@@ -84,7 +85,10 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       .then((res) => {})
       .catch((err) => {
         console.log(err);
-        toast.error(err.response?.data?.message);
+        // toast.error(err.response?.data?.message);
+        toast.warn(ErrorBase.retrievalError, {
+          toastId: "retrievalErrorFromGenerate",
+        });
         setTimeout(() => {
           router.back();
         }, 2000);

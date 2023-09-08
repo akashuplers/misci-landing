@@ -22,6 +22,7 @@ import MiSciGenerateLoadingModal from "@/modals/MiSciLoadingModal";
 import Head from "next/head";
 import { Tab } from "@headlessui/react";
 import { Badge } from "@radix-ui/themes";
+import ErrorBase from "@/store/errors";
 interface MisciWorkSpaceProps {
   subscriptionData: StepCompleteData | undefined;
 }
@@ -97,12 +98,15 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
     }
     // @ts-ignore
     if (step == "ANSWER_FETCHING_FAILED") {
-      toast.error("Something went wrong");
+      toast.error(ErrorBase.retrievalError, {
+        toastId: 'retrievalErrorWebhook',
+        delay: 10000
+      });
       setLoadingMisciblog(false);
       setTimeout(() => {
         // take to /misci
         router.push("/misci");
-      }, 2000);
+      }, 8000);
     }
   }, [subscriptionData?.stepCompletes?.step]);
 
@@ -130,7 +134,9 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
     })
       .then((res) => {
         if(res?.data?.error === true){
-          toast.error(res?.data?.message);
+          toast.warn(ErrorBase.retrievalError, {
+            toastId: 'retrievalErrorFromRegen'
+          });
           return;
         }
         console.log(res);
@@ -373,11 +379,7 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
         <button
           onClick={() => {
             console.log(document.referrer, window.location.host);
-            if (document.referrer != window.location.host) {
-              router.push("/misci");
-            } else {
-              router.back();
-            }
+             router.back();
           }}
         >
           <span>
