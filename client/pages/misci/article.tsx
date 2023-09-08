@@ -502,6 +502,7 @@ const UnsedIteamTabs = ({ ideas, editTabs }: UnsedIteamTabsProps) => {
           <Tab.Panel
             className={`w-full max-h-full flex flex-col gap-4 overflow-y-scroll  scroll-m-1 py-2`}
           >
+          {/*//@ts-ignore*/ }
             <ScrollArea type="always" scrollbars="vertical" style={{ height: '100%' }}  className="flex flex-col gap-4">
             {ideas ? (
               ideas.map((idea: any, index: number) => {
