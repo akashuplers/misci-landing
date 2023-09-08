@@ -6,6 +6,7 @@ import { StepCompleteData } from "@/store/types";
 import {
   ArrowLeftIcon,
   Bars3BottomRightIcon,
+  DocumentTextIcon,
   PaperAirplaneIcon,
 } from "@heroicons/react/24/outline";
 import LottiePlayer from "lottie-react";
@@ -168,13 +169,13 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
   const editTabs = [
     {
       name: "Used Ideas",
-      icon: <Bars3BottomRightIcon />,
+      icon: <></>,
       content: <></>,
       notificationCount: 12,
     },
     {
       name: "Unused Ideas",
-      icon: <Bars3BottomRightIcon />,
+      icon: <></>,
       content: <></>,
       notificationCount: 0,
     },
@@ -190,10 +191,10 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
           </div>
         ),
         leftContent: (
-          <div className="h-full bg-gray-200 bg-opacity-70 flex items-center justify-center rounded-lg flex-col gap-2">
+          <div className="h-full bg-gray-200 bg-opacity-70 flex items-center px-4 justify-center rounded-lg flex-col gap-2">
             {isArticleTabReady ? (
               <>
-                <span className="text-gray-800 text-xl font-bold leading-none">
+                <span className="text-gray-800 text-xl text-center font-semibold leading-none">
                   We have created a personalized article for you.
                 </span>
                 <button
@@ -203,7 +204,7 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
                   className="p-2 opacity-90 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600   text-white"
                 >
                   <span>
-                    <PaperAirplaneIcon className="h-5 w-5" />
+                    <DocumentTextIcon className="h-5 w-5" />
                   </span>
                   Go to Article
                 </button>
@@ -288,7 +289,7 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
                 </div>
                 <button
                   onClick={() => handleNextDraft()}
-                  className="p-2 opacity-90 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex"
+                  className="cta p-2 opacity-90 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex"
                 >
                   {!nextDraftLoader && <RegenerateIcon />}
                   {nextDraftLoader && (
