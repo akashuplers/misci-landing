@@ -53,7 +53,6 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       console.log(step, " from on sub data");
     },
   });
-
   useEffect(() => {
     if (typeof window !== "undefined") {
       const tokenFromLocalStorage = localStorage.getItem("token");
