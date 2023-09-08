@@ -14,6 +14,7 @@ import {
   isOnlySpecialChars,
   validateIfTextIncludesSpecialCharsExcludingQuestionMark,
 } from "@/store/appHelpers";
+import ErrorBase from "@/store/errors";
 
 const MiSci = () => {
   const [keyword, setkeyword] = useState("");
@@ -171,7 +172,7 @@ const MiSci = () => {
               {/* show errors */}
             </div>
             <span className="text-red-500 text-base font-light leading-7 place-self-start text-left">
-              {inputError.message}
+              {inputError.message }
             </span>
 
             <button
@@ -235,22 +236,14 @@ const KeywordInput = ({
         // if incldus spaces show error
         var spce = /^s*$/;
 
+        var errors = []
         if (isOnlySpecialChars(text) == true) {
-          setInputError({
-            error: true,
-            message: "Question cannot be only special characters",
-          });
+          errors.push({ error: true, message: ErrorBase.specialCharactersOnly })
         }
         if (countInitialWhiteSpace(text) > 1) {
-          setInputError({
-            error: true,
-            message: "Please remove initial extra spaces",
-          });
-        } else if (isTextNotValid == true) {
-          // setInputError({
-          //   error: true,
-          //   message: "Please remove special characters",
-          // });
+          errors.push({ error: true, message: ErrorBase.whiteSpaces});
+        } 
+        if (isTextNotValid == true) {
         } else {
           setInputError({
             error: false,
@@ -259,15 +252,12 @@ const KeywordInput = ({
         }
 
         if (text.length > 199) {
-          setInputError({
-            error: true,
-            message: "Question cannot be more than 200 characters",
-          });
+          errors.push({ error: true, message: "Please remove extra characters" });
         } else {
-          setInputError({
-            error: false,
-            message: "",
-          });
+          errors.push({ error: false, message: "" });
+        }
+        if(errors.length>0){
+          setInputError(errors[0]);  
         }
 
         setKeyword(text);

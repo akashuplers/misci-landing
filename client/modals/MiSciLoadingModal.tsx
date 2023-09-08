@@ -16,7 +16,6 @@ export const MiSciGenerateLoadingModal = ({
   setShowGenerateLoadingModal,
   showBackButton,
 }: MiSciGenerateLoadingModalProps) => {
-  console.log(showGenerateLoadingModal, setShowGenerateLoadingModal);
 
   return (
     <Modal
@@ -52,28 +51,26 @@ export const MiSciGenerateLoadingModal = ({
       <div className="flex flex-col items-center justify-center h-full w-full">
         <div className="w-96 h-96 flex-col justify-start items-center gap-4 inline-flex">
           <img className="w-60 h-60" src="/scanner.gif" />
-          <div className="text-center text-green-600 text-base font-medium leading-tight">
+          <div className="text-center text-green-600 text-[20px] font-medium leading-tight">
             Hey! This looks great...
           </div>
           <div className="w-96 opacity-70 text-center text-gray-800 text-xs font-medium leading-none"></div>
-          <div className="transition-all duration-500 ease-in-out w-full rounded-full blur-none z-10 opacity-70 text-center text-gray-800 text-xs font-medium leading-none">
+          <div className="transition-all duration-500 text-[16px] ease-in-out w-full rounded-full blur-none z-10 opacity-70 text-center text-gray-800 font-medium leading-none">
             <Typewriter
+
               onInit={(typewriter) => {
                 typewriter
                   .pauseFor(300)
-                  .typeString("Searching the sources on the Internet.")
+                  .typeString("Exploring museums vast archives...")
                   .pauseFor(300)
                   .deleteAll()
-                  .typeString("Extracting Ideas from the sources.")
+                  .typeString("Sourcing additional information from the web...")
                   .pauseFor(300)
                   .deleteAll()
-                  .typeString("Creating backlinks for your content.")
+                  .typeString("Crafting an informative article for you...")
                   .pauseFor(300)
                   .deleteAll()
-                  .typeString("Generating H1 & H2 headings")
-                  .pauseFor(300)
-                  .deleteAll()
-                  .typeString("Creating the draft for you!")
+                  .typeString("Enhancing your knowledge with trusted references...")
                   .pauseFor(300)
                   .deleteAll()
                   .start();
