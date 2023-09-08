@@ -28,6 +28,7 @@ export const API_ROUTES = {
   UPLOAD_GOOGLE_DRIVE_URL: "/upload/drive-link",
   NEW_GENERATE_API: "/auth/generate",
   MISCI_GENERATE: "/misci/generate",
+  MISCI_REGENERATE: "/misci/re-generate",
 };
 
 export const LI_API_ENDPOINTS = {
