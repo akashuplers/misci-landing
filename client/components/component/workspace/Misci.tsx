@@ -196,23 +196,26 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
           </div>
         ),
         leftContent: (
-          <div className="h-full bg-gray-200 bg-opacity-70 flex items-center px-4 justify-center rounded-lg flex-col gap-2">
+          <div style={{backgroundImage: 'url(../bg-gray-misci.jpeg)'}} className="h-full  bg-contain bg-opacity-70 flex items-center px-4 justify-center rounded-lg flex-col gap-2">
             {isArticleTabReady ? (
               <>
-                <span className="text-gray-800 text-xl text-center font-semibold leading-none">
+                <span className="text-gray-800 text-xl text-center font-semibold leading-none pb-4">
                   We have created a personalized article for you.
                 </span>
-                <button
-                  onClick={() => {
-                    setCurrentTabIndex(1);
-                  }}
-                  className="p-2 opacity-90 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600   text-white"
-                >
-                  <span>
-                    <DocumentTextIcon className="h-5 w-5" />
-                  </span>
-                  Go to Article
-                </button>
+ <button
+  onClick={() => {
+    setCurrentTabIndex(1);
+  }}
+  className="p-2 opacity-90 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600 text-white 
+             transition duration-300 ease-in-out 
+             hover:bg-indigo-700 hover:border-indigo-700 hover:shadow-lg hover:scale-105"
+>
+  <span>
+    <DocumentTextIcon className="h-5 w-5 transition duration-300 ease-in-out hover:rotate-180" />
+  </span>
+  Go to Article
+</button>
+
               </>
             ) : (
               <>
@@ -223,7 +226,7 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
                   className="h-24"
                 />
 
-                <span className="text-gray-800 text-2xl font-bold leading-none">
+                <span className="text-gray-800 text-2xl font-bold leading-none text-center">
                   We are almost there
                 </span>
               </>
