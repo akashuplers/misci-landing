@@ -103,7 +103,7 @@ router.post('/generate', async (req: any, res: any) => {
                             imageSrc = articleData._source?.orig_url
                         } else {
                             if(index === (articleIds.length - 1) && !imageUrl) {
-                                imageUrl = (process.env.PLACEHOLDER_IMAGE || articleData.proImageLink)
+                                imageUrl = (process.env.PLACEHOLDER_IMAGE_MISCI || articleData.proImageLink)
                                 imageSrc = null
                             }
                         }
@@ -152,7 +152,7 @@ router.post('/generate', async (req: any, res: any) => {
             db,
             text: !articlesData.length ? keyword : texts,
             regenerate: !articlesData.length ? false: true,
-            imageUrl: imageUrl || process.env.PLACEHOLDER_IMAGE,
+            imageUrl: imageUrl || process.env.PLACEHOLDER_IMAGE_MISCI,
             title: question,
             imageSrc,
             ideasText,
@@ -174,7 +174,7 @@ router.post('/generate', async (req: any, res: any) => {
                 publish_data: [...filteredPublishedData, ...oldPublishData],
                 description,
                 tags: uniqueTags,
-                imageUrl: imageUrl ? imageUrl : process.env.PLACEHOLDER_IMAGE,
+                imageUrl: imageUrl ? imageUrl : process.env.PLACEHOLDER_IMAGE_MISCI,
                 imageSrc,
                 keyword: question,
                 updatedAt: getTimeStamp(),
@@ -321,7 +321,7 @@ router.post('/re-generate', async (req: any, res: any) => {
                         imageSrc = article._source?.orig_url
                     } else {
                         if(index === (articleIds.length - 1) && !imageUrl) {
-                            imageUrl = (process.env.PLACEHOLDER_IMAGE || article.proImageLink)
+                            imageUrl = (process.env.PLACEHOLDER_IMAGE_MISCI || article.proImageLink)
                             imageSrc = null
                         }
                     }
