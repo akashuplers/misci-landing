@@ -168,7 +168,7 @@ router.post('/generate', async (req: any, res: any) => {
             text: !articlesData.length ? keyword : texts,
             regenerate: !articlesData.length ? false: true,
             imageUrl: imageUrl || process.env.PLACEHOLDER_IMAGE,
-            title: null,
+            title: question,
             imageSrc,
             ideasText,
             ideasArr,
@@ -191,7 +191,7 @@ router.post('/generate', async (req: any, res: any) => {
                 tags: uniqueTags,
                 imageUrl: imageUrl ? imageUrl : process.env.PLACEHOLDER_IMAGE,
                 imageSrc,
-                keyword: title,
+                keyword: question,
                 updatedAt: getTimeStamp(),
                 dbLocation
             }
