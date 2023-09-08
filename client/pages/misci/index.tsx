@@ -14,6 +14,7 @@ import {
   isOnlySpecialChars,
   validateIfTextIncludesSpecialCharsExcludingQuestionMark,
 } from "@/store/appHelpers";
+import ErrorBase from "@/store/errors";
 
 const MiSci = () => {
   const [keyword, setkeyword] = useState("");
@@ -237,10 +238,10 @@ const KeywordInput = ({
 
         var errors = []
         if (isOnlySpecialChars(text) == true) {
-          errors.push({ error: true, message: "Please remove special characters" })
+          errors.push({ error: true, message: ErrorBase.specialCharactersOnly })
         }
         if (countInitialWhiteSpace(text) > 1) {
-          errors.push({ error: true, message: "Please remove extra spaces" });
+          errors.push({ error: true, message: ErrorBase.whiteSpaces});
         } 
         if (isTextNotValid == true) {
         } else {
