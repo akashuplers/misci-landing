@@ -320,7 +320,7 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
                     })} */}
                     {
                       references.map(ref => {
-                        return <Chip text={ref.source} />
+                        return <Chip key={ref.id} text={ref.source} />
                       })
                     }
                   </div>
