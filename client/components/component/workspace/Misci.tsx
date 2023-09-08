@@ -305,6 +305,7 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
                   <div className=" opacity-70 text-blue-950 text-base font-normal leading-none">
                     {userquestion}
                   </div>
+                  <div className="">Sources</div>
                   <div className="flex justify-start items-center gap-2.5 flex-wrap my-2">
                     {references.map((ref) => {
                       return <Chip key={ref.id} text={ref.source} />;
