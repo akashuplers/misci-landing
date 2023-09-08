@@ -6,6 +6,7 @@ import { StepCompleteData } from "@/store/types";
 import {
   ArrowLeftIcon,
   Bars3BottomRightIcon,
+  DocumentTextIcon,
   PaperAirplaneIcon,
 } from "@heroicons/react/24/outline";
 import LottiePlayer from "lottie-react";
@@ -20,6 +21,7 @@ import { Chip, TabItem } from "@/components/ui/Chip";
 import MiSciGenerateLoadingModal from "@/modals/MiSciLoadingModal";
 import Head from "next/head";
 import { Tab } from "@headlessui/react";
+import { Badge } from "@radix-ui/themes";
 interface MisciWorkSpaceProps {
   subscriptionData: StepCompleteData | undefined;
 }
@@ -127,6 +129,10 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
       },
     })
       .then((res) => {
+        if(res?.data?.error === true){
+          toast.error(res?.data?.message);
+          return;
+        }
         console.log(res);
         console.log("started");
         const ideas = res?.data?.ideas?.ideas;
@@ -168,13 +174,13 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
   const editTabs = [
     {
       name: "Used Ideas",
-      icon: <Bars3BottomRightIcon />,
+      icon: <></>,
       content: <></>,
       notificationCount: 12,
     },
     {
       name: "Unused Ideas",
-      icon: <Bars3BottomRightIcon />,
+      icon: <></>,
       content: <></>,
       notificationCount: 0,
     },
@@ -190,10 +196,10 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
           </div>
         ),
         leftContent: (
-          <div className="h-full bg-gray-200 bg-opacity-70 flex items-center justify-center rounded-lg flex-col gap-2">
+          <div className="h-full bg-gray-200 bg-opacity-70 flex items-center px-4 justify-center rounded-lg flex-col gap-2">
             {isArticleTabReady ? (
               <>
-                <span className="text-gray-800 text-xl font-bold leading-none">
+                <span className="text-gray-800 text-xl text-center font-semibold leading-none">
                   We have created a personalized article for you.
                 </span>
                 <button
@@ -203,7 +209,7 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
                   className="p-2 opacity-90 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600   text-white"
                 >
                   <span>
-                    <PaperAirplaneIcon className="h-5 w-5" />
+                    <DocumentTextIcon className="h-5 w-5" />
                   </span>
                   Go to Article
                 </button>
@@ -265,11 +271,11 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
                 </div>
               </div>
             ) : (
-              <div className="relative">
+              <div className="relative w-full">
                 <NativeEditor
                   value={editorArticleData}
                   onEditorChange={(content: any, editor: any) => {
-                    setEditorArticleData(editorArticleData);
+                    setEditorArticleData(content);
                   }}
                   onSetup={(editor: any) => {
                     setEditorSetUpCompleted(true);
@@ -281,14 +287,14 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
         ),
         leftContent: (
           <>
-            <div className="h-[30%] flex flex-col justify-start gap-4 ">
+            <div className="flex flex-col justify-start gap-4 ">
               <div className="justify-between items-center flex">
-                <div className="text-slate-800  leading-none">
+                <div className="text-slate-800 w-[70%] leading-none">
                   Create your next draft on the basis of your edits.
                 </div>
                 <button
                   onClick={() => handleNextDraft()}
-                  className="p-2 opacity-90 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex"
+                  className="cta p-2 opacity-90 rounded-lg w-[30%] shadow border border-indigo-600 justify-center items-center gap-1 flex"
                 >
                   {!nextDraftLoader && <RegenerateIcon />}
                   {nextDraftLoader && (
@@ -300,16 +306,23 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
                 </button>
               </div>
               <div className="w-full justify-start items-center gap-2.5 flex">
-                <div className="flex-col justify-center items-start gap-1 flex">
-                  <div className="">Your Question</div>
+                <div className="flex-col justify-center items-start gap-2 flex">
+                  <div className="text-blue-950 text-base font-medium leading-tight">Your Question</div>
                   <div className=" opacity-70 text-blue-950 text-base font-normal leading-none">
                     {userquestion}
                   </div>
+
+                  
                   <div className="">Sources</div>
                   <div className="flex justify-start items-center gap-2.5 flex-wrap my-2">
-                    {references.map((ref) => {
+                    {/* {references.map((ref) => {
                       return <Chip key={ref.id} text={ref.source} />;
-                    })}
+                    })} */}
+                    {
+                      references.map(ref => {
+                        return <Chip text={ref.source} />
+                      })
+                    }
                   </div>
                 </div>
               </div>
@@ -351,7 +364,7 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
     );
   }
   return (
-    <div className="w-screen h-screen px-12 py-2">
+    <div className="w-screen h-screen overscroll-none overflow-hidden px-12 py-2">
       <style>{`.sidebar-position-left #button.sidebar{display: none;`}</style>
       <header className="w-full h-[8%] justify-between items-center flex">
         <button
@@ -406,7 +419,7 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
                 <Tab.Panel key={index} className={`w-full h-full flex `}>
                   <div className="w-[70%] flex  h-full ">{tab.content}</div>
                   <div
-                    className="w-[30%] p-2 flex-col flex relative border-l border-gray-200 gap-6"
+                    className="w-[30%] max-h-full p-2 flex-col flex relative border-l border-gray-200 gap-6"
                     id="leftContent"
                   >
                     {tab.leftContent}
@@ -478,7 +491,7 @@ const UnsedIteamTabs = ({
   const [unusedIdeas, setUnusedIdeas] = React.useState<any>([]);
 
   return (
-    <div className="h-[70%] ">
+    <div className="">
       <Tab.Group
         onChange={(index) => {
           setCurrentEditTabIndex(index);
