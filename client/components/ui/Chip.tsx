@@ -231,7 +231,7 @@ interface TabItem {
   selected?: boolean;
   showIcon?: boolean;
 }
-export function TabItem({ title, content, icon, disabled, selected , showIcon}: TabItem) {
+export function TabItem({ title, content, icon, disabled, selected , showIcon=true}: TabItem) {
   return (
     <div
       className={classNames(
