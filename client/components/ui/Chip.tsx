@@ -229,8 +229,9 @@ interface TabItem {
   icon?: any;
   disabled?: boolean;
   selected?: boolean;
+  showIcon?: boolean;
 }
-export function TabItem({ title, content, icon, disabled, selected }: TabItem) {
+export function TabItem({ title, content, icon, disabled, selected , showIcon}: TabItem) {
   return (
     <div
       className={classNames(
@@ -241,7 +242,9 @@ export function TabItem({ title, content, icon, disabled, selected }: TabItem) {
       )}
     >
       <div className="flex">
-        <div className="w-5 h-5 mr-2">{icon}</div>
+        {
+          showIcon && <div className="w-5 h-5 mr-2">{icon}</div>
+        }
         <div className="text-base font-medium leading-none">{title}</div>
       </div>
       {selected ? ( // under line
