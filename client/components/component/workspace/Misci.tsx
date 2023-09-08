@@ -21,6 +21,7 @@ import { Chip, TabItem } from "@/components/ui/Chip";
 import MiSciGenerateLoadingModal from "@/modals/MiSciLoadingModal";
 import Head from "next/head";
 import { Tab } from "@headlessui/react";
+import { Badge } from "@radix-ui/themes";
 interface MisciWorkSpaceProps {
   subscriptionData: StepCompleteData | undefined;
 }
@@ -266,7 +267,7 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
                 </div>
               </div>
             ) : (
-              <div className="relative">
+              <div className="relative w-full">
                 <NativeEditor
                   value={editorArticleData}
                   onEditorChange={(content: any, editor: any) => {
@@ -282,14 +283,14 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
         ),
         leftContent: (
           <>
-            <div className="h-[30%] flex flex-col justify-start gap-4 ">
+            <div className="flex flex-col justify-start gap-4 ">
               <div className="justify-between items-center flex">
-                <div className="text-slate-800  leading-none">
+                <div className="text-slate-800 w-[70%] leading-none">
                   Create your next draft on the basis of your edits.
                 </div>
                 <button
                   onClick={() => handleNextDraft()}
-                  className="cta p-2 opacity-90 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex"
+                  className="cta p-2 opacity-90 rounded-lg w-[30%] shadow border border-indigo-600 justify-center items-center gap-1 flex"
                 >
                   {!nextDraftLoader && <RegenerateIcon />}
                   {nextDraftLoader && (
@@ -301,16 +302,23 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
                 </button>
               </div>
               <div className="w-full justify-start items-center gap-2.5 flex">
-                <div className="flex-col justify-center items-start gap-1 flex">
-                  <div className="">Your Question</div>
+                <div className="flex-col justify-center items-start gap-2 flex">
+                  <div className="text-blue-950 text-base font-medium leading-tight">Your Question</div>
                   <div className=" opacity-70 text-blue-950 text-base font-normal leading-none">
                     {userquestion}
                   </div>
+
+                  
                   <div className="">Sources</div>
                   <div className="flex justify-start items-center gap-2.5 flex-wrap my-2">
-                    {references.map((ref) => {
+                    {/* {references.map((ref) => {
                       return <Chip key={ref.id} text={ref.source} />;
-                    })}
+                    })} */}
+                    {
+                      references.map(ref => {
+                        return <Chip text={ref.source} />
+                      })
+                    }
                   </div>
                 </div>
               </div>
@@ -352,7 +360,7 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
     );
   }
   return (
-    <div className="w-screen h-screen px-12 py-2">
+    <div className="w-screen h-screen overscroll-none overflow-hidden px-12 py-2">
       <style>{`.sidebar-position-left #button.sidebar{display: none;`}</style>
       <header className="w-full h-[8%] justify-between items-center flex">
         <button
@@ -407,7 +415,7 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
                 <Tab.Panel key={index} className={`w-full h-full flex `}>
                   <div className="w-[70%] flex  h-full ">{tab.content}</div>
                   <div
-                    className="w-[30%] p-2 flex-col flex relative border-l border-gray-200 gap-6"
+                    className="w-[30%] max-h-full p-2 flex-col flex relative border-l border-gray-200 gap-6"
                     id="leftContent"
                   >
                     {tab.leftContent}
@@ -479,7 +487,7 @@ const UnsedIteamTabs = ({
   const [unusedIdeas, setUnusedIdeas] = React.useState<any>([]);
 
   return (
-    <div className="h-[70%] ">
+    <div className="">
       <Tab.Group
         onChange={(index) => {
           setCurrentEditTabIndex(index);
