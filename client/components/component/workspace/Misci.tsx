@@ -129,6 +129,10 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
       },
     })
       .then((res) => {
+        if(res?.data?.error === true){
+          toast.error(res?.data?.message);
+          return;
+        }
         console.log(res);
         console.log("started");
         const ideas = res?.data?.ideas?.ideas;
@@ -271,7 +275,7 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
                 <NativeEditor
                   value={editorArticleData}
                   onEditorChange={(content: any, editor: any) => {
-                    setEditorArticleData(editorArticleData);
+                    setEditorArticleData(content);
                   }}
                   onSetup={(editor: any) => {
                     setEditorSetUpCompleted(true);
