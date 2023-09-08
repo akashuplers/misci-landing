@@ -38,21 +38,6 @@ router.post('/generate', async (req: any, res: any) => {
                     "tag": "BODY",
                     children: [
                         {
-                            "tag": "H3",
-                            "attributes": {
-                                "style": "text-align: center;"
-                            },
-                            "children": [
-                                {
-                                    "tag": "STRONG",
-                                    "attributes": {},
-                                    "children": [
-                                        question
-                                    ]
-                                }
-                            ]
-                        },
-                        {
                             "tag": "P",
                             "attributes": {},
                             "children": [
