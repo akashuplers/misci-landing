@@ -289,3 +289,18 @@ export const generateMisci = async (postData: PostData) => {
     throw error; // You can choose to handle the error or rethrow it
   }
 };
+
+
+
+export const regenerateNextDraft = async ({ideas , blog_id , onStart, onCompleted}:{
+  ideas: any[] , blog_id: string; onStart: () => void; onCompleted: () => void;
+}) =>{
+  try {
+    onStart();
+    const response  =await http.post(API_ROUTES.MISCI_REGENERATE, {ideas, blog_id});
+    onCompleted();
+    return response.data;
+  }catch (error){
+    console.log(error);
+  }
+}

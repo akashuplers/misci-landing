@@ -55,24 +55,22 @@ export const MiSciGenerateLoadingModal = ({
             Hey! This looks great...
           </div>
           <div className="w-96 opacity-70 text-center text-gray-800 text-xs font-medium leading-none"></div>
-          <div className="transition-all duration-500 ease-in-out w-full rounded-full blur-none z-10 opacity-70 text-center text-gray-800 text-xs font-medium leading-none">
+          <div className="transition-all duration-500 text-2xl ease-in-out w-full rounded-full blur-none z-10 opacity-70 text-center text-gray-800 font-medium leading-none">
             <Typewriter
+
               onInit={(typewriter) => {
                 typewriter
                   .pauseFor(300)
-                  .typeString("Searching the sources on the Internet.")
+                  .typeString("Exploring museums vast archives...")
                   .pauseFor(300)
                   .deleteAll()
-                  .typeString("Extracting Ideas from the sources.")
+                  .typeString("Sourcing additional information from the web...")
                   .pauseFor(300)
                   .deleteAll()
-                  .typeString("Creating backlinks for your content.")
+                  .typeString("Crafting an informative article for you...")
                   .pauseFor(300)
                   .deleteAll()
-                  .typeString("Generating H1 & H2 headings")
-                  .pauseFor(300)
-                  .deleteAll()
-                  .typeString("Creating the draft for you!")
+                  .typeString("Enhancing your knowledge with trusted references...")
                   .pauseFor(300)
                   .deleteAll()
                   .start();
