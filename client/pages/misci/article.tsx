@@ -17,6 +17,7 @@ import {
   Bars3BottomRightIcon,
   PaperAirplaneIcon,
 } from "@heroicons/react/24/outline";
+import '@radix-ui/themes/styles.css';
 import { Editor } from "@tinymce/tinymce-react";
 import { useRouter } from "next/router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
@@ -26,7 +27,9 @@ import opener_loading from "../../lottie/opener-loading.json";
 import LottiePlayer from "lottie-react";
 import DOMPurify from "dompurify";
 import LoaderScan from "@/components/LoaderScan";
-import { Chip } from "@/components/ui/Chip";
+import { Chip, TabItem } from "@/components/ui/Chip";
+import NativeEditor from "@/components/component/NativeEditor";
+import {ScrollArea} from "@radix-ui/react-scroll-area";
 export const getServerSideProps = async (context: any) => {
   console.log(context);
   console.log("server");
@@ -61,9 +64,13 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   const [getToken, setGetToken] = useState<string | null>("");
   const [isArticleTabReady, setIsArticleTabReady] = useState(false);
   const [editorArticleData, setEditorArticleData] = useState<any>(null);
-  const [references, setReferences] = useState<{
-    id: string, source: string, url: string
-  }[]>([]);
+  const [references, setReferences] = useState<
+    {
+      id: string;
+      source: string;
+      url: string;
+    }[]
+  >([]);
   const [usedTabIndex, setUsedTabIndex] = useState(0);
   const {
     data: subsData,
@@ -78,11 +85,10 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       console.log("sub data");
       console.log(options);
       const step = options?.subscriptionData?.data?.stepCompletes.step;
-      console.log(step, ' from on sub data');
+      console.log(step, " from on sub data");
     },
   });
- 
-  
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const tokenFromLocalStorage = localStorage.getItem("token");
@@ -106,7 +112,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     }
   }, [subsError]);
 
-  useEffect(()=>{
+  useEffect(() => {
     const step = subsData?.stepCompletes.step;
     // @ts-ignore
     if (step == "ANSWER_FETCHING_COMPLETED") {
@@ -114,15 +120,13 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       const data = subsData?.stepCompletes.data;
       setMisciblog(data);
       console.log(data);
-      const aa = data?.publish_data?.find(
-        (d: any) => d.platform === "answers"
-      );
+      const aa = data?.publish_data?.find((d: any) => d.platform === "answers");
       console.log(aa);
       const htmlToDoc = jsonToHtml(aa?.tiny_mce_data);
       console.log(htmlToDoc);
       const question = data?.question;
       setQuestion(question);
-      setEditorAnswersData((prev:string) => {
+      setEditorAnswersData((prev: string) => {
         return htmlToDoc;
       });
       setLoadingMisciblog(false);
@@ -136,10 +140,12 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       const aa = subsData?.stepCompletes?.data?.publish_data?.find(
         (d: any) => d.platform === "wordpress"
       );
-      const answers = subsData?.stepCompletes?.data?.publish_data?.find((d: any) => d.platform === "answers");
+      const answers = subsData?.stepCompletes?.data?.publish_data?.find(
+        (d: any) => d.platform === "answers"
+      );
       console.log(aa);
       console.log(answers);
-      const htmlDoc = jsonToHtml(aa?.tiny_mce_data);  
+      const htmlDoc = jsonToHtml(aa?.tiny_mce_data);
       console.log(htmlDoc);
       setEditorArticleData(htmlDoc);
       setIsArticleTabReady(true);
@@ -159,11 +165,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
         router.push("/misci");
       }, 2000);
     }
-  },[subsData?.stepCompletes?.step])
-
-  const aaa = subsData?.stepCompletes?.data?.publish_data?.find( (d: any) => d.platform === "answers");
-  console.log(aaa); 
-  const answersForAnwersTab = jsonToHtml(aaa?.tiny_mce_data);
+  }, [subsData?.stepCompletes?.step]);
 
   useEffect(() => {
     console.log(localStorage);
@@ -183,11 +185,9 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       });
   }, []);
 
-  const DynamicAnswersData = ({html }: {html:string}) => {
-    
+  const DynamicAnswersData = ({ html }: { html: string }) => {
     var mySafeHTML = structuredClone(html);
     mySafeHTML = DOMPurify.sanitize(mySafeHTML);
-    console.log(mySafeHTML , "<< my safe html", editorAnswersData, "<< editor data");
     return (
       <div className=" text-slate-600 text-base font-normal leading-normal">
         <div
@@ -226,14 +226,14 @@ const MiSciArticle = ({ question }: MiSciProps) => {
           <div className="h-full bg-gray-200 bg-opacity-70 flex items-center justify-center rounded-lg flex-col gap-2">
             {isArticleTabReady ? (
               <>
-                <span className="text-gray-800 text-xl font-medium leading-none">
+                <span className="text-gray-800 text-xl font-bold leading-none">
                   We have created a personalized article for you.
                 </span>
                 <button
                   onClick={() => {
                     setCurrentTabIndex(1);
                   }}
-                  className="p-2 opacity-50 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600  text-white"
+                  className="p-2 opacity-50 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-500   text-white"
                 >
                   <span>
                     <PaperAirplaneIcon className="h-5 w-5" />
@@ -264,7 +264,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                 <div className=" text-slate-800 text-lg font-bold leading-relaxed tracking-tight">
                   {userquestion}
                 </div>
-                <DynamicAnswersData  html={answersForAnwersTab ?? ""} />
+                <DynamicAnswersData html={editorAnswersData ?? ""} />
               </div>
             </div>
             <br />
@@ -299,44 +299,13 @@ const MiSciArticle = ({ question }: MiSciProps) => {
               </div>
             ) : (
               <div className="relative">
-                
-                <Editor
+                <NativeEditor
                   value={editorArticleData}
-                  apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
-                  init={{
-                    setup: (editor) => {
-                      setEditorSetUpCompleted(true);
-                    },
-                    init_instance_callback: function (editor) {},
-                    skin: "naked",
-                    icons: "small",
-                    toolbar_location: "bottom",
-                    menubar: false,
-                    statusbar: false,
-                    height: "82vh",
-                    images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
-                    images_upload_credentials: true,
-                    plugins:
-                      "preview lists code table codesample link casechange importcss tinydrive searchreplace save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount  editimage help formatpainter permanentpen pageembed charmap emoticons advtable export mergetags",
-                    menu: {
-                      tc: {
-                        title: "Comments",
-                        items: "addcomment showcomments deleteallconversations",
-                      },
-                    },
-                    toolbar:
-                      "undo redo image| bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment | footnotes | mergetags",
-                    image_title: true,
-                    automatic_uploads: true,
-                    file_picker_types: "image",
-
-                    save_onsavecallback: function () {
-                      console.log("Saved");
-                    },
-                  }}
                   onEditorChange={(content, editor) => {
-                    // setEditorAnswersData(content);
-                    setEditorArticleData(content);
+                    setEditorArticleData(editorArticleData);
+                  }}
+                  onSetup={(editor) => {
+                    setEditorSetUpCompleted(true);
                   }}
                 />
               </div>
@@ -364,20 +333,15 @@ const MiSciArticle = ({ question }: MiSciProps) => {
                     {userquestion}
                   </div>
                   <div className="flex justify-start items-center gap-2.5 flex-wrap my-2">
-                    {
-                      references.map((ref) => {
-                        return <Chip key={ref.id} text={ref.source} />;
-                      })
-                    }
+                    {references.map((ref) => {
+                      return <Chip key={ref.id} text={ref.source} />;
+                    })}
                   </div>
                 </div>
               </div>
-               
             </div>
             {/* tabs for used ideas and unused ideas */}
-                    <UnsedIteamTabs ideas={listOfIdeas} 
-                    editTabs={editTabs} />
-
+            <UnsedIteamTabs ideas={listOfIdeas} editTabs={editTabs} />
           </>
         ),
       },
@@ -438,32 +402,22 @@ const MiSciArticle = ({ question }: MiSciProps) => {
           >
             <Tab.List className="flex items-center gap-2 w-full h-[5%]">
               {memoizedTab.map((tab, index) => (
-                <Tab
-                  key={tab.name}
-                  className={({ selected }) =>
-                    classNames(
-                      "rounded-lg p-2.5 text-sm font-medium leading-5 outline-none text-gray-700",
-                      selected
-                        ? "underline border-gray-200 text-black"
-                        : "text-gray-100 hover:bg-white/[0.12]"
-                    )
-                  }
-                >
-                  <div className="flex">
-                    <div className="w-5 h-5 mr-2">{tab.icon}</div>
-                    <div className="text-base font-medium leading-none">
-                      {tab.name}
-                    </div>
-                  </div>
+                <Tab key={tab.name} className={`outline-none`}>
+                  <TabItem
+                    icon={tab.icon}
+                    key={index}
+                    title={tab.name}
+                    selected={currentTabIndex === index}
+                  />
                 </Tab>
               ))}
             </Tab.List>
             <Tab.Panels className={"h-[95%]"}>
               {memoizedTab.map((tab, index) => (
                 <Tab.Panel key={index} className={`w-full h-full flex `}>
-                  <div className="w-[60%] flex  h-full">{tab.content}</div>
+                  <div className="w-[70%] flex  h-full">{tab.content}</div>
                   <div
-                    className="w-[40%] p-2 flex-col flex relative border-l border-gray-600 gap-6"
+                    className="w-[30%] p-2 flex-col flex relative border-l border-gray-200 gap-6"
                     id="leftContent"
                   >
                     {tab.leftContent}
@@ -494,7 +448,7 @@ export const IdeaItem = ({
   selected,
   id,
   text,
-  total ,
+  total,
   onClick,
 }: IdeaItem) => {
   return (
@@ -517,7 +471,6 @@ export const IdeaItem = ({
   );
 };
 
-
 interface UnsedIteamTabsProps {
   ideas: any;
   editTabs: any;
@@ -527,60 +480,74 @@ const UnsedIteamTabs = ({ ideas, editTabs }: UnsedIteamTabsProps) => {
   const [currentEditTabIndex, setCurrentEditTabIndex] = React.useState(0);
   const [usedIdeas, setUsedIdeas] = React.useState<any>([]);
   const [unusedIdeas, setUnusedIdeas] = React.useState<any>([]);
- 
-  return    <div className="h-[70%] ">
-  <Tab.Group
-    onChange={
-      (index) => {
-        setCurrentEditTabIndex(index);
-      }
-    }
-    selectedIndex={currentEditTabIndex}
-  >
-    <Tab.List className="flex relative items-center gap-2 w-full ">
-      {editTabs.map((tab:any, index:number) => (
-        <Tab
-          className="flex outline-none flex-col realtive min-w-[7rem] items-start justify-center gap-2 w-fit"
-          key={tab.name}
-        >
-          <div className="flex flex-col relative">
-            <div className="text-blue-950 text-base font-medium leading-none">
-              {tab.name}
-            </div>
 
-            {currentEditTabIndex === index && ( // under line
-              <div className="w-full h-0.5 bg-indigo-600 rounded-lg"></div>
-            )}
-          </div>
-        </Tab>
-      ))}
-    </Tab.List>
-    <Tab.Panels>
-      <Tab.Panel
-        className={`w-full max-h-full flex flex-col gap-4 overflow-y-scroll  scroll-m-1 py-2`}
+  return (
+    <div className="h-[70%] ">
+      <Tab.Group
+        onChange={(index) => {
+          setCurrentEditTabIndex(index);
+        }}
+        selectedIndex={currentEditTabIndex}
       >
-        {ideas ? (
-          ideas.map((idea: any, index: number) => {
-            return (
-              <IdeaItem
-                id={index.toString()}
-                text={idea.idea}
-                idea="Idea 1"
-                key={index}
-                selected={idea.used == 1 ? false : true}
-                onClick={() => {}}
-              />
-            );
-          })
-        ) : (
-          <>loading.. ideas</>
-        )}
-      </Tab.Panel>
-      <Tab.Panel className={`w-full  `}>
-        no data
-      </Tab.Panel>
-    </Tab.Panels>
-  </Tab.Group>
-</div>
+        <Tab.List className="flex relative items-center gap-2 w-full ">
+          {editTabs.map((tab: any, index: number) => (
+            <Tab
+              key={tab.name}
+            >
+            <TabItem icon={tab.icon} key={index} title={tab.name} selected={currentEditTabIndex === index} />
+            </Tab>
+          ))}
+        </Tab.List>
+        <Tab.Panels>
+          <Tab.Panel
+            className={`w-full max-h-full flex flex-col gap-4 overflow-y-scroll  scroll-m-1 py-2`}
+          >
+            <ScrollArea type="always" scrollbars="vertical" style={{ height: '100%' }}  className="flex flex-col gap-4">
+            {ideas ? (
+              ideas.map((idea: any, index: number) => {
+                return (
+                  <IdeaItem
+                    id={index.toString()}
+                    text={idea.idea}
+                    idea="Idea 1"
+                    key={index}
+                    selected={idea.used == 1 ? false : true}
+                    onClick={() => {
+                      console.log(idea);
+                      console.log(usedIdeas);
+                      if (idea.used == 1) {
+                        setUsedIdeas((prev: any) => {
+                          return prev.filter((item: any) => item.article_id != idea.article_id);
+                        });
+                        setUnusedIdeas((prev: any) => {
+                          return [...prev, idea];
+                        });
+                      } else {
+                        setUnusedIdeas((prev: any) => {
+                          return prev.filter((item: any) => item.article_id != idea.article_id);
+                        });
+                        setUsedIdeas((prev: any) => {
+                          return [...prev, idea];
+                        });
+                      }
+                    }}
+                  />
+                );
+              })
+            ) : (
+              <>loading.. ideas</>
+            )}
+            </ScrollArea>
+          </Tab.Panel>
+          <Tab.Panel className={`w-full  `}>no data</Tab.Panel>
+        </Tab.Panels>
+      </Tab.Group>
+    </div>
+  );
+};
 
+interface NativeEditorProps {
+  value: string;
+  onEditorChange: (content: string, editor: any) => void;
+  onSetup: (editor: any) => void;
 }
