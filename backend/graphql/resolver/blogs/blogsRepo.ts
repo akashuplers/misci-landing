@@ -271,7 +271,7 @@ export const TMBlogGeneration = async ({db, text}: {
     }
 }
 
-export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null, userId = null, keywords = [], tones = [], type = []}: {
+export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null, userId = null, keywords = [], tones = [], type = [], misci = false}: {
     db: any;
     text: String;
     regenerate: Boolean;
@@ -290,6 +290,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
     userId?: string | null;
     pubsub?: any | null;
     type?: any | null;
+    misci?: boolean
 }) => {
     const mapObj: any = {
         "H1:":" ",
@@ -645,7 +646,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                                     "style": "font-size: 8pt;"
                                                                 },
                                                                 "children": [
-                                                                    imageSrc ? "Image Source" : "A placeholder image has been added, you can upload your own image."
+                                                                    !misci ? (imageSrc ? "Image Source" : "A placeholder image has been added, you can upload your own image.") : ""
                                                                 ]
                                                             }
                                                         ]

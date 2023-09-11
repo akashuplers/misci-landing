@@ -1,4 +1,4 @@
-import { ObjectID } from "mongodb";
+import { ObjectID, ObjectId } from "mongodb";
 import { Python } from "../services/python";
 import { diff_minutes, getTimeStamp } from "../utils/date";
 import { publish } from "../utils/subscription";
@@ -8,6 +8,39 @@ const express = require("express");
 const router = express.Router();
 
 
+router.post('/publish', async (req: any, res: any) => {
+    const db = req.app.get('dbLive')
+    const {blogId} = req.body
+    try {
+        const blog = await fetchBlog({db, id: blogId})
+        if(blog){
+            const publishData = await db.db('lilleBlogs').collection('misciPublishedBlogs').updateOne({
+                blogId: new ObjectID(blogId)
+            }, {
+                $set: {
+                    blogId: new ObjectID(blogId),
+                    question: blog.question,
+                    answers: blog.answers,
+                    date: getTimeStamp(),
+                    updatedAt: getTimeStamp(),
+                }
+            }, {
+                upsert: true
+            })
+            return res
+            .status(200)
+            .send({ error: false, message: "Published!" });    
+        }else{
+            return res
+            .status(400)
+            .send({ error: true, message: "Blog not found!" });    
+        }
+    }catch(e){
+        return res
+            .status(400)
+            .send({ error: true, message: e.message });    
+    }
+})
 router.post('/generate', async (req: any, res: any) => {
     const {question, userId} = req.body
     const db = req.app.get('dbLive')
@@ -66,7 +99,8 @@ router.post('/generate', async (req: any, res: any) => {
             // imageSrc,
             date: getTimeStamp(),
             updatedAt: getTimeStamp(),
-            type: "misci"
+            type: "misci",
+            answers
         }
         const insertedData = await db.db('lilleBlogs').collection('blogs').insertOne(finalBlogObj)
         const data = await db.db('lilleBlogs').collection('blogs').findOne({_id: new ObjectID(insertedData.insertedId)})
@@ -162,7 +196,8 @@ router.post('/generate', async (req: any, res: any) => {
             userId: userId,
             keywords: [],
             tones: [],
-            type: ["wordpress", "title"]
+            type: ["wordpress", "title"],
+            misci: true
         })
         let oldPublishData = data.publish_data
         // console.log(blogGeneratedData, "blogGeneratedData")
