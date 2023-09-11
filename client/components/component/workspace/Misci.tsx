@@ -358,11 +358,9 @@ const MisciWorkSpace = ({ subscriptionData, question }: MisciWorkSpaceProps) => 
       editorAnswersData,
       editorArticleData,
       EditorSetUpCompleted,
+      nextDraftLoader,
     ]
   );
-  console.log(memoizedTab);
-  // const TabsList = memoizedTab;
-
   if (loadingMisciblog) {
     return (
       <>
