@@ -271,7 +271,7 @@ export const TMBlogGeneration = async ({db, text}: {
     }
 }
 
-export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null, userId = null, keywords = [], tones = [], type = []}: {
+export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null, userId = null, keywords = [], tones = [], type = [], misci = false}: {
     db: any;
     text: String;
     regenerate: Boolean;
@@ -290,6 +290,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
     userId?: string | null;
     pubsub?: any | null;
     type?: any | null;
+    misci?: boolean
 }) => {
     const mapObj: any = {
         "H1:":" ",
@@ -324,7 +325,6 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         linkedin: null,
         twitter: null,
     }
-     
     const keys = Object.keys(newsLetter)
     for (let index = 0; index < keys.length; index++) {
         const key = keys[index];
@@ -348,7 +348,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                     });
                     text = `Create a title using this blog: ${blogPostToSend}`
                 }
-                if((type.length && type.includes(key) && key === "linkedin") || (!type && key === 'linkedin')) {
+                if((type.length && type.includes(key) && key === "linkedin") || (!type.length && key === 'linkedin')) {
                     const blogPostToSendForLinkedin = newsLetter["wordpress"]?.replace(/<h1>|<\s*\/?h1>|<\s*\/?h2>|<h2>|\n/gi, function(matched: any){
                         return mapObj[matched];
                     });
@@ -359,7 +359,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                     Insert hashtags at the end of the post
                     Trim unwanted new lines and spaces`
                 }
-                if((type.length && type.includes(key) && key === "twitter") || (!type && key === 'twitter')) {
+                if((type.length && type.includes(key) && key === "twitter") || (!type.length && key === 'twitter')) {
                     let tweetQuota;
                     if(userDetails) {
                         tweetQuota = await db.db('lilleAdmin').collection('tweetsQuota').findOne({
@@ -645,7 +645,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                                     "style": "font-size: 8pt;"
                                                                 },
                                                                 "children": [
-                                                                    imageSrc ? "Image Source" : "A placeholder image has been added, you can upload your own image."
+                                                                    !misci ? (imageSrc ? "Image Source" : "A placeholder image has been added, you can upload your own image.") : ""
                                                                 ]
                                                             }
                                                         ]
@@ -769,7 +769,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     return null
                                 }   
                             case "twitter":
-                                if(type.length && type.includes(key) || (!type && key === "twitter")){
+                                if(type.length && type.includes(key) || (!type.length && key === "twitter")){
                                     console.log(newsLetter[key])
                                     let updatedThread = null;
                                     if(newsLetter[key]) {
