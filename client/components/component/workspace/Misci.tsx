@@ -311,15 +311,13 @@ const MisciWorkSpace = ({
                   Create your next draft on the basis of your edits.
                 </div>
                 <button
+                disabled={nextDraftLoader}
                   onClick={() => handleNextDraft()}
-                  className="cta p-2 opacity-90 rounded-lg w-[30%] shadow border border-indigo-600 justify-center items-center gap-1 flex"
+                  className="cta p-2 opacity-90 rounded-lg w-[30%] shadow border border-indigo-600 justify-center items-center gap-1 flex disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {!nextDraftLoader && <RegenerateIcon />}
-                  {nextDraftLoader && (
-                    <ReactLoading width={25} height={25} color={"#2563EB"} />
-                  )}
+                   <RegenerateIcon />
                   <span className="text-indigo-600 text-base font-normal">
-                    {nextDraftLoader ? "Generating...." : "Next Draft"}
+                    {"Next Draft"}
                   </span>
                 </button>
               </div>
