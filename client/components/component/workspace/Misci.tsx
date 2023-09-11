@@ -23,11 +23,15 @@ import Head from "next/head";
 import { Tab } from "@headlessui/react";
 import { Badge } from "@radix-ui/themes";
 import ErrorBase from "@/store/errors";
+import NextDraftIssueModal from "@/modals/NextDraftIssueModal";
 interface MisciWorkSpaceProps {
   subscriptionData: StepCompleteData | undefined;
   question: string;
 }
-const MisciWorkSpace = ({ subscriptionData, question }: MisciWorkSpaceProps) => {
+const MisciWorkSpace = ({
+  subscriptionData,
+  question,
+}: MisciWorkSpaceProps) => {
   const [loadingMisciblog, setLoadingMisciblog] = React.useState(true);
   const [misciblog, setMisciblog] = React.useState<any>(null);
   const [currentTabIndex, setCurrentTabIndex] = React.useState(0);
@@ -50,6 +54,7 @@ const MisciWorkSpace = ({ subscriptionData, question }: MisciWorkSpaceProps) => 
     }[]
   >([]);
   const [usedTabIndex, setUsedTabIndex] = useState(0);
+  const [shwoNextDraftIssueModal, setShowNextDraftIssueModal] = useState(false);
 
   useEffect(() => {
     const step = subscriptionData?.stepCompletes.step;
@@ -109,7 +114,6 @@ const MisciWorkSpace = ({ subscriptionData, question }: MisciWorkSpaceProps) => 
       //   // take to /misci
       //   router.push("/misci");
       // }, 8000);
-      
     }
   }, [subscriptionData?.stepCompletes?.step]);
 
@@ -136,33 +140,33 @@ const MisciWorkSpace = ({ subscriptionData, question }: MisciWorkSpaceProps) => 
       },
     })
       .then((res) => {
-        if(res?.data?.error === true){
+        if (res?.data?.error === true) {
           // This question goes beyond the library that we built for the Ground to Gourmet exhibit! You might be able to find the answer by using Lille.ai with web access, which you can try for yourself at https://www.lille.ai.
           setEditorAnswersData(ErrorBase.errorAnswerWithQuestion(question));
           setLoadingMisciblog(false);
-        }else{
-        console.log(res);
-        console.log("started");
-        const ideas = res?.data?.ideas?.ideas;
-        const pubData = res?.data?.publish_data;
-        var articleData = "";
-        var answersData = "";
-        for (let index = 0; index < pubData?.length; index++) {
-          const element = pubData[index];
-          if (element.platform == "answers") {
-            answersData = element.tiny_mce_data;
-          } else if (element.platform == "wordpress") {
-            articleData = element.tiny_mce_data;
+        } else {
+          console.log(res);
+          console.log("started");
+          const ideas = res?.data?.ideas?.ideas;
+          const pubData = res?.data?.publish_data;
+          var articleData = "";
+          var answersData = "";
+          for (let index = 0; index < pubData?.length; index++) {
+            const element = pubData[index];
+            if (element.platform == "answers") {
+              answersData = element.tiny_mce_data;
+            } else if (element.platform == "wordpress") {
+              articleData = element.tiny_mce_data;
+            }
           }
+          setEditorAnswersData(jsonToHtml(answersData));
+          setEditorArticleData(jsonToHtml(articleData));
+          setListOfUnusedIdeas(ideas);
+          setQuestion(res?.data?.question);
+          setBlogId(res?.data?._id);
+          setReferences(res?.data?.references);
+          console.log("regen completedc");
         }
-        setEditorAnswersData(jsonToHtml(answersData));
-        setEditorArticleData(jsonToHtml(articleData));
-        setListOfUnusedIdeas(ideas);
-        setQuestion(res?.data?.question);
-        setBlogId(res?.data?._id);
-        setReferences(res?.data?.references);
-        console.log("regen completedc");
-      }
       })
       .finally(() => {});
   }
@@ -205,26 +209,28 @@ const MisciWorkSpace = ({ subscriptionData, question }: MisciWorkSpaceProps) => 
           </div>
         ),
         leftContent: (
-          <div style={{backgroundImage: 'url(../bg-gray-misci.jpeg)'}} className="h-full  bg-contain bg-opacity-70 flex items-center px-4 justify-center rounded-lg flex-col gap-2">
+          <div
+            style={{ backgroundImage: "url(../bg-gray-misci.jpeg)" }}
+            className="h-full  bg-contain bg-opacity-70 flex items-center px-4 justify-center rounded-lg flex-col gap-2"
+          >
             {isArticleTabReady ? (
               <>
                 <span className="text-gray-800 text-xl text-center font-semibold leading-none pb-4">
                   We have created a personalized article for you.
                 </span>
- <button
-  onClick={() => {
-    setCurrentTabIndex(1);
-  }}
-  className="p-2 opacity-90 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600 text-white 
+                <button
+                  onClick={() => {
+                    setCurrentTabIndex(1);
+                  }}
+                  className="p-2 opacity-90 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600 text-white 
              transition duration-300 ease-in-out 
              hover:bg-indigo-700 hover:border-indigo-700 hover:shadow-lg hover:scale-105"
->
-  <span>
-    <DocumentTextIcon className="h-5 w-5 transition duration-300 ease-in-out hover:rotate-180" />
-  </span>
-  Go to Article
-</button>
-
+                >
+                  <span>
+                    <DocumentTextIcon className="h-5 w-5 transition duration-300 ease-in-out hover:rotate-180" />
+                  </span>
+                  Go to Article
+                </button>
               </>
             ) : (
               <>
@@ -319,34 +325,54 @@ const MisciWorkSpace = ({ subscriptionData, question }: MisciWorkSpaceProps) => 
               </div>
               <div className="w-full justify-start items-center gap-2.5 flex">
                 <div className="flex-col justify-center items-start gap-2 flex">
-                  <div className="text-blue-950 text-base font-medium leading-tight">Your Question</div>
+                  <div className="text-blue-950 text-base font-medium leading-tight">
+                    Your Question
+                  </div>
                   <div className=" opacity-70 text-blue-950 text-base font-normal leading-none">
                     {userquestion}
                   </div>
 
-                  
                   <div className="">Sources</div>
                   <div className="flex justify-start items-center gap-2.5 flex-wrap my-2">
                     {/* {references.map((ref) => {
                       return <Chip key={ref.id} text={ref.source} />;
                     })} */}
-                    {
-                      references.map(ref => {
-                        return <Chip key={ref.id} text={ref.source} />
-                      })
-                    }
+                    {references?.map((ref) => {
+                      return <Chip key={ref.id} text={ref.source} />;
+                    })}
                   </div>
                 </div>
               </div>
             </div>
             {/* tabs for used ideas and unused ideas */}
-            <UnsedIteamTabs
+            {
+              nextDraftLoader ? <>
+              <div className="flex items-start justify-center w-full h-full">
+                <div className="text-center flex center flex-col relative">
+                  <img className="mx-auto" src="/loader.gif"></img>
+                  <div
+                    className="-mt-12 animate-pulse text-sm"
+                    style={{
+                      position: "absolute",
+                      bottom: "20%",
+                      left: "0",
+                      right: "0",
+                    }}
+                  >
+                    Generating Next Draft ...
+                  </div>
+                </div>
+              </div>
+              </> : <>
+                <UnsedIteamTabs
               ideas={listOfIdeas}
               editTabs={editTabs}
               listOfUnusedIdeas={listOfUnusedIdeas}
               setListOfIdeas={setListOfIdeas}
               setListOfUnusedIdeas={setListOfUnusedIdeas}
             />
+              </>
+            }
           </>
         ),
       },
@@ -379,7 +405,7 @@ const MisciWorkSpace = ({ subscriptionData, question }: MisciWorkSpaceProps) => 
       <header className="w-full h-[8%] justify-between items-center flex">
         <button
           onClick={() => {
-             router.back();
+            router.back();
           }}
         >
           <span>
@@ -395,6 +421,8 @@ const MisciWorkSpace = ({ subscriptionData, question }: MisciWorkSpaceProps) => 
           </button>
         </div>
       </header>
+      {/* modals */}
+      <NextDraftIssueModal showModal={shwoNextDraftIssueModal} setShowModal={setShowNextDraftIssueModal}/>
       <div
         className="flex"
         style={{
