@@ -538,6 +538,7 @@ const UnsedIteamTabs = ({
                 icon={tab.icon}
                 key={index}
                 title={tab.name}
+                showIcon={false}
                 selected={currentEditTabIndex === index}
               />
             </Tab>
