@@ -25,8 +25,9 @@ import { Badge } from "@radix-ui/themes";
 import ErrorBase from "@/store/errors";
 interface MisciWorkSpaceProps {
   subscriptionData: StepCompleteData | undefined;
+  question: string;
 }
-const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
+const MisciWorkSpace = ({ subscriptionData, question }: MisciWorkSpaceProps) => {
   const [loadingMisciblog, setLoadingMisciblog] = React.useState(true);
   const [misciblog, setMisciblog] = React.useState<any>(null);
   const [currentTabIndex, setCurrentTabIndex] = React.useState(0);
@@ -98,15 +99,17 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
     }
     // @ts-ignore
     if (step == "ANSWER_FETCHING_FAILED") {
-      toast.error(ErrorBase.retrievalError, {
-        toastId: 'retrievalErrorWebhook',
-        delay: 10000
-      });
+      // toast.error(ErrorBase.retrievalError, {
+      //   toastId: 'retrievalErrorWebhook',
+      //   delay: 10000
+      // });
+      setEditorAnswersData(ErrorBase.errorAnswerWithQuestion(question));
       setLoadingMisciblog(false);
-      setTimeout(() => {
-        // take to /misci
-        router.push("/misci");
-      }, 8000);
+      // setTimeout(() => {
+      //   // take to /misci
+      //   router.push("/misci");
+      // }, 8000);
+      
     }
   }, [subscriptionData?.stepCompletes?.step]);
 
@@ -134,11 +137,10 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
     })
       .then((res) => {
         if(res?.data?.error === true){
-          toast.warn(ErrorBase.retrievalError, {
-            toastId: 'retrievalErrorFromRegen'
-          });
-          return;
-        }
+          // This question goes beyond the library that we built for the Ground to Gourmet exhibit! You might be able to find the answer by using Lille.ai with web access, which you can try for yourself at https://www.lille.ai.
+          setEditorAnswersData(ErrorBase.errorAnswerWithQuestion(question));
+          setLoadingMisciblog(false);
+        }else{
         console.log(res);
         console.log("started");
         const ideas = res?.data?.ideas?.ideas;
@@ -160,6 +162,7 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
         setBlogId(res?.data?._id);
         setReferences(res?.data?.references);
         console.log("regen completedc");
+      }
       })
       .finally(() => {});
   }
@@ -241,8 +244,8 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
         ),
         content: (
           <>
-            <div className="p-2 flex-col  w-full justify-start items-start gap-7 inline-flex ">
-              <div className="flex-col bg-gray-200 rounded-md p-2  bg-opacity-70 w-full h-full justify-start items-start gap-5 flex">
+            <div className="p-2 flex-col  w-full justify-start items-start gap-7 inline-flex">
+              <div className="flex-col bg-[#F3F3F3] rounded-md p-2  bg-opacity-70 w-full h-full justify-start items-start gap-5 flex">
                 <div className=" text-slate-800 text-xl font-bold leading-relaxed tracking-tight">
                   {userquestion}
                 </div>
@@ -378,7 +381,6 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
       <header className="w-full h-[8%] justify-between items-center flex">
         <button
           onClick={() => {
-            console.log(document.referrer, window.location.host);
              router.back();
           }}
         >

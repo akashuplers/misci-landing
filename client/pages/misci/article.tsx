@@ -85,13 +85,6 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       .then((res) => {})
       .catch((err) => {
         console.log(err);
-        // toast.error(err.response?.data?.message);
-        toast.warn(ErrorBase.retrievalError, {
-          toastId: "retrievalErrorFromGenerate",
-        });
-        setTimeout(() => {
-          router.back();
-        }, 2000);
       })
       .finally(() => {
         console.log("finally");
@@ -103,7 +96,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       <Head>
         <title>{question}</title>
       </Head>
-        <MisciWorkSpace subscriptionData={subsData} />
+        <MisciWorkSpace subscriptionData={subsData} question={question} />
     </>
   );
 };
