@@ -605,14 +605,13 @@ const UnsedIteamTabs = ({
                       text={idea.idea}
                       idea="Idea 1"
                       key={index}
-                      selected={idea.used == 1 ? false : true}
+                      selected={idea.used == 1 ? true : false}
                       onClick={() => {
                         console.log("clicked");
                         console.log(idea);
                         const newIdeas = [...listOfUnusedIdeas];
-                        newIdeas[index].used = 1;
+                        newIdeas[index].used =  newIdeas[index].used == 1 ? 0 : 1;
                         setListOfUnusedIdeas(newIdeas);
-                        setListOfIdeas([...ideas, idea]);
                       }}
                     />
                   );
