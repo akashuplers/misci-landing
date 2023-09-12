@@ -271,7 +271,7 @@ export const TMBlogGeneration = async ({db, text}: {
     }
 }
 
-export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null, userId = null, keywords = [], tones = [], type = [], misci = false}: {
+export const blogGeneration = async ({db, text, regenerate = false, title, imageUrl = null, imageSrc = null, ideasText = null, ideasArr=[], refUrls = [], userDetails = null, userId = null, keywords = [], tones = [], type = [], misci = false, notesRefUrls = []}: {
     db: any;
     text: String;
     regenerate: Boolean;
@@ -290,7 +290,8 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
     userId?: string | null;
     pubsub?: any | null;
     type?: any | null;
-    misci?: boolean
+    misci?: boolean;
+    notesRefUrls?: string[]
 }) => {
     const mapObj: any = {
         "H1:":" ",
@@ -491,7 +492,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 //             no: false
                                 //         }
                                 //     }
-                                //     // return !matches || matches.length === 0;
+                                //     // return !matches || matches.length === 0; 
                                 // });
                                 // console.log(sentences, "updatedContentBefore")
                                 // updatedContent = sentences?.map((data: any) => {
@@ -563,32 +564,62 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 // updatedContent = updatedContent?.map((content: string) => content.replace("..", "."))
                                 // updatedContent = updatedContent?.join("")?.replace(". .", ".")
                                 let references: any[] = []
-                                refUrls && refUrls.length && refUrls.forEach((data) => {
-                                    references.push({
-                                        "tag": "LI",
-                                        "attributes": {"style": "font-size: 10pt;"},
-                                        "children": [
-                                            {
-                                                "tag": "SPAN",
-                                                "attributes": {
-                                                    "style": "font-size: 10pt;"
-                                                },
-                                                "children": [
-                                                    {
-                                                        "tag": "A",
-                                                        "attributes": {
-                                                            "href": data.url !== "No url for this file" ? data.url : "#",
-                                                            "target": "_blank"
-                                                        },
-                                                        "children": [
-                                                            data.url !== "No url for this file" ? data.url : data.source
-                                                        ]
-                                                    }
-                                                ]
-                                            }
-                                        ]
+                                if(misci && notesRefUrls.length) {
+                                    notesRefUrls.length && notesRefUrls.forEach((data) => {
+                                        references.push({
+                                            "tag": "LI",
+                                            "attributes": {"style": "font-size: 10pt;"},
+                                            "children": [
+                                                {
+                                                    "tag": "SPAN",
+                                                    "attributes": {
+                                                        "style": "font-size: 10pt;"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "tag": "A",
+                                                            "attributes": {
+                                                                "href": data,
+                                                                "target": "_blank"
+                                                            },
+                                                            "children": [
+                                                                data
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        })
                                     })
-                                })
+                                }
+                                if(refUrls && refUrls.length) {
+                                    refUrls && refUrls.length && refUrls.forEach((data) => {
+                                        references.push({
+                                            "tag": "LI",
+                                            "attributes": {"style": "font-size: 10pt;"},
+                                            "children": [
+                                                {
+                                                    "tag": "SPAN",
+                                                    "attributes": {
+                                                        "style": "font-size: 10pt;"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "tag": "A",
+                                                            "attributes": {
+                                                                "href": data.url !== "No url for this file" ? data.url : "#",
+                                                                "target": "_blank"
+                                                            },
+                                                            "children": [
+                                                                data.url !== "No url for this file" ? data.url : data.source
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        })
+                                    })
+                                }
                                 usedIdeasArr = usedIdeasArr?.filter((text: string) => text.length > 5)
                                 console.log(updatedContent)
                                 return {
@@ -981,7 +1012,7 @@ export const fetchArticleUrls = async ({
                         source: new URL(data?._source?.orig_url).host,
                         id: data._id
                     }
-                } else if(data._source.source.name && data._source.source.name === "file") {
+                } else if(data._source.source.name && (data._source.source.name === "file" || data._source.source.name === "note")) {
                     urlObj = {
                         url : data?._source?.orig_url,
                         source: data?._source?.title,
