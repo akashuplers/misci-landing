@@ -20,7 +20,7 @@ const PublishMisciModal = ({
 }) => {
   const onSubmit = (values: any) => {
     misciBlogPublish({
-      blog_id: blogId,
+      blog_id: blogId, email: values.email, name: values.name
     })
       .then((res) => {
         if (res.error === false) {
