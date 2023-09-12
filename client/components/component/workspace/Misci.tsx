@@ -365,9 +365,9 @@ const MisciWorkSpace = ({
                     {/* {references.map((ref) => {
                       return <Chip key={ref.id} text={ref.source} />;
                     })} */}
-                    {references?.map((ref) => {
+                    {references?.map((ref, index) => {
                       return (
-                        <IdeaTag tag={ref.source} handleTagClick={() => {}} />
+                        <IdeaTag key={index} tag={ref.source} handleTagClick={() => {}} />
                       );
                     })}
                   </div>
@@ -795,9 +795,9 @@ const UnsedIteamTabs = ({
         </Tab.List>
         <Tab.Panels>
           <Tab.Panel
-            className={`w-full max-h-full flex flex-col gap-4 overflow-y-scroll  scroll-m-1 py-2`}
+            className={`w-full max-h-full flex flex-col gap-4 overflow-y-scroll p-2 border-none outline-none`}
           >
-            <div className="h-full flex flex-col gap-1">
+            <div className="h-full flex flex-col gap-1 border-none">
               {ideas ? (
                 ideas.map((idea: any, index: number) => {
                   return (
@@ -814,7 +814,6 @@ const UnsedIteamTabs = ({
                         newIdeas[index].used =
                           newIdeas[index].used == 1 ? 0 : 1;
                         setListOfIdeas(newIdeas);
-                        // setListOfUnusedIdeas([...listOfUnusedIdeas, idea]);
                       }}
                     />
                   );
@@ -825,7 +824,7 @@ const UnsedIteamTabs = ({
             </div>
           </Tab.Panel>
           <Tab.Panel className={`w-full  `}>
-            <div className="w-full max-h-full flex flex-col gap-4 overflow-y-scroll  scroll-m-1 py-2">
+            <div className="w-full max-h-full flex flex-col gap-4 overflow-y-scroll   py-2">
               {listOfUnusedIdeas ? (
                 listOfUnusedIdeas.map((idea: any, index: number) => {
                   return (
