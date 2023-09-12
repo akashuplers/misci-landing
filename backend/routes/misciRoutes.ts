@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post('/publish', async (req: any, res: any) => {
     const db = req.app.get('dbLive')
-    const {blogId} = req.body
+    const {blogId, email, name} = req.body
     try {
         const blog = await fetchBlog({db, id: blogId})
         if(blog){
@@ -21,6 +21,8 @@ router.post('/publish', async (req: any, res: any) => {
                     blogId: new ObjectID(blogId),
                     question: blog.question,
                     answers: blog.answers,
+                    email,
+                    name,
                     date: getTimeStamp(),
                     updatedAt: getTimeStamp(),
                 }
