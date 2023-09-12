@@ -221,6 +221,7 @@ const KeywordInput = ({
   setKeyword,
   setInputError,
 }: KeywordInputProps) => {
+  const router = useRouter();
   return (
     <input
       type="text"
@@ -261,6 +262,15 @@ const KeywordInput = ({
         }
 
         setKeyword(text);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          router.push({
+            pathname: "/misci/article",
+            query: { question: keyword },
+          });
+        }
       }}
     />
   );
