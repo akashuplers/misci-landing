@@ -6,6 +6,9 @@ import { blogGeneration, fetchArticleById, fetchArticleUrls, fetchBlog, fetchBlo
 
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
+const inMemoryStorage = multer.memoryStorage();
+const uploadStrategy = multer({ storage: inMemoryStorage }).single('file');
 
 
 router.post('/publish', async (req: any, res: any) => {
@@ -104,6 +107,14 @@ router.post('/generate', async (req: any, res: any) => {
             type: "misci",
             answers
         }
+        const noteReferences = await db.db('lilleBlogs').collection('notesReferences').findOne({
+            article_id: article.id
+        })
+        let notesRefUrls = []
+        if(noteReferences && noteReferences.length) {
+            notesRefUrls = noteReferences.urls
+        }
+        console.log(noteReferences, "noteReferences")
         const insertedData = await db.db('lilleBlogs').collection('blogs').insertOne(finalBlogObj)
         const data = await db.db('lilleBlogs').collection('blogs').findOne({_id: new ObjectID(insertedData.insertedId)})
         console.log(data, "data")
@@ -151,7 +162,7 @@ router.post('/generate', async (req: any, res: any) => {
                         const name = articleData._source?.source?.name
                         return {
                             used_summaries: articleData._source.summary.slice(0, 10),
-                            name: name && name === "file" ? articleData._source.title : name,
+                            name: name && (name === "file" || name === "note") ? articleData._source.title : name,
                             unused_summaries: articleData._source.summary.slice(10),
                             keyword: articleData.keyword,
                             id
@@ -199,7 +210,8 @@ router.post('/generate', async (req: any, res: any) => {
             keywords: [],
             tones: [],
             type: ["wordpress", "title"],
-            misci: true
+            misci: true,
+            notesRefUrls
         })
         let oldPublishData = data.publish_data
         // console.log(blogGeneratedData, "blogGeneratedData")
@@ -342,8 +354,11 @@ router.post('/re-generate', async (req: any, res: any) => {
         $in: articleIds
     }}, {projection: {
         "_source.source.name": 1,
+        "_source.title": 1
     }}).toArray()
-    articleNames = articleNames.map((data: any) => ({_id: data._id, name: data?._source?.source.name}))
+    articleNames = articleNames.map((data: any) => ({_id: data._id, 
+        name: data?._source?.source.name && (data?._source?.source.name === "file" || data?._source?.source.name === "note") ? data?._source.title : data?._source?.source.name
+    }))
     let tags: string[] = []
     let imageUrl: string | null = null
     let imageSrc: string | null = null
@@ -375,7 +390,7 @@ router.post('/re-generate', async (req: any, res: any) => {
                         used_summaries: article._source.summary.slice(0, 10),
                         unused_summaries: article._source.summary.slice(10),
                         keyword: article.keyword,
-                        name: name && name === "file" ? "note" : name,
+                        name: name && (name === "file" || name === "note") ? article._source.title : name,
                         id
                     }
                 } else {
@@ -607,6 +622,97 @@ router.post('/re-generate', async (req: any, res: any) => {
             })
         }
     } catch(e: any) {
+        console.log(e)
+        return res.status(500).send({
+            error: true,
+            message: e.message
+        })
+    }
+})
+
+router.post('/test-upload',uploadStrategy, async (req: any, res: any) => {
+    try {
+        const xlsx = require('xlsx')
+        const db = req.app.get('dbLive')
+        console.log(req.file, "akash")
+        const file = xlsx.read(req.file.buffer)
+        console.log(file,req.file, "akash")
+        // Reading our test file
+        const userEmail = await db.db('lilleAdmin').collection('misciEmail').findOne()
+        console.log(userEmail)
+        const userData = await db.db('admin').collection('users').findOne({
+            email: userEmail.email
+        })
+        let data: any = []
+        
+        const sheets = file.SheetNames
+        
+        for(let i = 0; i < sheets.length; i++)
+        {
+            const temp = xlsx.utils.sheet_to_json(file.Sheets[file.SheetNames[i]])
+            temp.forEach((res: any) => {
+                data.push(res)
+            })
+        }
+        // Printing data
+        console.log(data)
+        let array: any = []
+        data.forEach(async (d: any, index: number) => {
+            const keys = Object.keys(d)
+            const noteTitle = d[keys[0]]
+            const noteUrl = d[keys[1]]
+            const filterData = array.findIndex((arrD: any, i: any) => arrD.key === noteTitle)
+            if(filterData > -1) {
+                array[filterData]['urls'] = [
+                    ...array[filterData].urls,
+                    noteUrl
+                ]
+            }else{
+                array.push({
+                    key: noteTitle,
+                    urls: [noteUrl]
+                })
+            }
+            console.log(d[keys[0]], "object")
+        })
+        await (
+            Promise.all(
+                array.map(async (data: any) => {
+                    console.log(data.key, "title")
+                    console.log(data.urls, "title")
+                    if(data.key) {
+                        const article = await db.db('productionFiles').collection('nowigence').findOne({
+                            $and: [
+                                {"_source.title": data.key},
+                                {"userMetaData.userId": new ObjectID(userData._id)}
+                            ]
+                        })
+                        if(article) {
+                            if(data.key === "All About Tomatoes") {
+                                console.log(article)
+                                console.log(article.userMetaData)
+                                console.log(article._source.title)
+                            }
+                            const updated = await db.db('lilleBlogs').collection('notesReferences').updateOne({
+                                article_id: article._id
+                            }, {
+                                $set: {
+                                    article_id: article._id,
+                                    urls: data.urls
+                                }
+                            }, {upsert: true}) 
+                            console.log(updated, data.key, "updated")
+                        }
+                    }
+                    return data
+                })
+            )
+        )
+        return res.status(200).send({
+            error: false,
+            message: "Data Uploaded!"
+        })
+    }catch(e){
         console.log(e)
         return res.status(500).send({
             error: true,
