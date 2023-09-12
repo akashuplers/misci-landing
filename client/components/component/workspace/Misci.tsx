@@ -23,16 +23,25 @@ import Head from "next/head";
 import { Tab } from "@headlessui/react";
 import { Badge } from "@radix-ui/themes";
 import ErrorBase from "@/store/errors";
+import NextDraftIssueModal from "@/modals/NextDraftIssueModal";
+import { useIdeaState } from "@/store/appState";
+import PublishMisciModal from "@/modals/PublishMisciModal";
+import IdeaTag from "@/components/IdeaTag";
 interface MisciWorkSpaceProps {
   subscriptionData: StepCompleteData | undefined;
+  question: string;
 }
-const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
+const MisciWorkSpace = ({
+  subscriptionData,
+  question,
+}: MisciWorkSpaceProps) => {
   const [loadingMisciblog, setLoadingMisciblog] = React.useState(true);
   const [misciblog, setMisciblog] = React.useState<any>(null);
   const [currentTabIndex, setCurrentTabIndex] = React.useState(0);
   const [editorAnswersData, setEditorAnswersData] = React.useState<any>(null);
   const [userquestion, setQuestion] = useState<string>("");
   const [listOfIdeas, setListOfIdeas] = useState<any[]>([]);
+  // const [initailListOfIdeas, setInitialListOfIdeas] = useState<any[]>([]);
   const [listOfUnusedIdeas, setListOfUnusedIdeas] = useState<any>([]);
   const router = useRouter();
   const [EditorSetUpCompleted, setEditorSetUpCompleted] = useState(false);
@@ -48,10 +57,14 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
       url: string;
     }[]
   >([]);
-  const [usedTabIndex, setUsedTabIndex] = useState(0);
+  const [shwoNextDraftIssueModal, setShowNextDraftIssueModal] = useState(false);
+  const [showPublishModal, setShowPublishModal] = useState(false);
+  // const [initailListOfIdeas, setInitialListOfIdeas] = useState<any[]>([]);
+  const { getInitialListOfIdeas, setInitialListOfIdeas } = useIdeaState();
 
   useEffect(() => {
     const step = subscriptionData?.stepCompletes.step;
+    console.log("sub ran", step);
     // @ts-ignore
     if (step == "ANSWER_FETCHING_COMPLETED") {
       console.log("answers loaded");
@@ -74,8 +87,14 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
       console.log(subscriptionData);
       const data = subscriptionData?.stepCompletes.data.ideas.ideas;
       console.log(data);
+
       setBlogId(subscriptionData?.stepCompletes.data?._id);
-      setListOfIdeas(data);
+
+      // Create new arrays or objects when setting the state
+      setListOfIdeas([...data]);
+      setInitialListOfIdeas([
+        ...subscriptionData?.stepCompletes.data.ideas.ideas,
+      ]);
       const aa = subscriptionData?.stepCompletes?.data?.publish_data?.find(
         (d: any) => d.platform === "wordpress"
       );
@@ -98,18 +117,23 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
     }
     // @ts-ignore
     if (step == "ANSWER_FETCHING_FAILED") {
-      toast.error(ErrorBase.retrievalError, {
-        toastId: 'retrievalErrorWebhook',
-        delay: 10000
-      });
+      // toast.error(ErrorBase.retrievalError, {
+      //   toastId: 'retrievalErrorWebhook',
+      //   delay: 10000
+      // });
+      setEditorAnswersData(ErrorBase.errorAnswerWithQuestion(question));
       setLoadingMisciblog(false);
-      setTimeout(() => {
-        // take to /misci
-        router.push("/misci");
-      }, 8000);
+      // setTimeout(() => {
+      //   // take to /misci
+      //   router.push("/misci");
+      // }, 8000);
     }
   }, [subscriptionData?.stepCompletes?.step]);
 
+  useEffect(() => {
+    console.log(getInitialListOfIdeas());
+    console.log(listOfIdeas);
+  }, [listOfIdeas]);
   function handleNextDraft() {
     var payload = [];
     const payloadList = [...listOfIdeas];
@@ -118,6 +142,12 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
       if (element.used == 1) {
         payload.push({ ...element, text: element.idea });
       }
+    }
+    console.log(payload, getInitialListOfIdeas());
+
+    if (payload.length == getInitialListOfIdeas().length) {
+      setShowNextDraftIssueModal(true);
+      return;
     }
 
     regenerateNextDraft({
@@ -133,33 +163,40 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
       },
     })
       .then((res) => {
-        if(res?.data?.error === true){
-          toast.warn(ErrorBase.retrievalError, {
-            toastId: 'retrievalErrorFromRegen'
-          });
-          return;
-        }
-        console.log(res);
-        console.log("started");
-        const ideas = res?.data?.ideas?.ideas;
-        const pubData = res?.data?.publish_data;
-        var articleData = "";
-        var answersData = "";
-        for (let index = 0; index < pubData?.length; index++) {
-          const element = pubData[index];
-          if (element.platform == "answers") {
-            answersData = element.tiny_mce_data;
-          } else if (element.platform == "wordpress") {
-            articleData = element.tiny_mce_data;
+        if (res?.data?.error === true) {
+          // This question goes beyond the library that we built for the Ground to Gourmet exhibit! You might be able to find the answer by using Lille.ai with web access, which you can try for yourself at https://www.lille.ai.
+          setEditorAnswersData(ErrorBase.errorAnswerWithQuestion(question));
+          setLoadingMisciblog(false);
+        } else {
+          console.log(res);
+          console.log("started");
+          const ideas = res?.data?.ideas?.ideas;
+          const pubData = res?.data?.publish_data;
+          var articleData = "";
+          var answersData = "";
+          for (let index = 0; index < pubData?.length; index++) {
+            const element = pubData[index];
+            if (element.platform == "answers") {
+              answersData = element.tiny_mce_data;
+            } else if (element.platform == "wordpress") {
+              articleData = element.tiny_mce_data;
+            }
           }
+          setEditorAnswersData(jsonToHtml(answersData));
+          setEditorArticleData(jsonToHtml(articleData));
+          setListOfUnusedIdeas(ideas.filter((idea: any) => idea.used == 0));
+          const getAllIdeasWith1 = [...listOfIdeas].filter(
+            (idea: any) => idea.used == 1
+          );
+          console.log([...getAllIdeasWith1, ...ideas]);
+          setListOfIdeas((prev) => {
+            return [...ideas];
+          });
+          setQuestion(res?.data?.question);
+          setBlogId(res?.data?._id);
+          setReferences(res?.data?.references);
+          console.log("regen completedc");
         }
-        setEditorAnswersData(jsonToHtml(answersData));
-        setEditorArticleData(jsonToHtml(articleData));
-        setListOfUnusedIdeas(ideas);
-        setQuestion(res?.data?.question);
-        setBlogId(res?.data?._id);
-        setReferences(res?.data?.references);
-        console.log("regen completedc");
       })
       .finally(() => {});
   }
@@ -182,184 +219,15 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
       name: "Used Ideas",
       icon: <></>,
       content: <></>,
-      notificationCount: 12,
+      notificationCount: listOfIdeas.length,
     },
     {
       name: "Unused Ideas",
       icon: <></>,
       content: <></>,
-      notificationCount: 0,
+      notificationCount: listOfUnusedIdeas.length,
     },
-  ];
-  // const TabsList =
-  const memoizedTab = React.useMemo(
-    () => [
-      {
-        name: "Answer",
-        icon: (
-          <div>
-            <img src="/icons/answers_icon.svg" alt="" />
-          </div>
-        ),
-        leftContent: (
-          <div style={{backgroundImage: 'url(../bg-gray-misci.jpeg)'}} className="h-full  bg-contain bg-opacity-70 flex items-center px-4 justify-center rounded-lg flex-col gap-2">
-            {isArticleTabReady ? (
-              <>
-                <span className="text-gray-800 text-xl text-center font-semibold leading-none pb-4">
-                  We have created a personalized article for you.
-                </span>
- <button
-  onClick={() => {
-    setCurrentTabIndex(1);
-  }}
-  className="p-2 opacity-90 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600 text-white 
-             transition duration-300 ease-in-out 
-             hover:bg-indigo-700 hover:border-indigo-700 hover:shadow-lg hover:scale-105"
->
-  <span>
-    <DocumentTextIcon className="h-5 w-5 transition duration-300 ease-in-out hover:rotate-180" />
-  </span>
-  Go to Article
-</button>
-
-              </>
-            ) : (
-              <>
-                <LottiePlayer
-                  loop
-                  autoplay
-                  animationData={opener_loading}
-                  className="h-24"
-                />
-
-                <span className="text-gray-800 text-2xl font-bold leading-none text-center">
-                  We are almost there
-                </span>
-              </>
-            )}
-          </div>
-        ),
-        content: (
-          <>
-            <div className="p-2 flex-col  w-full justify-start items-start gap-7 inline-flex ">
-              <div className="flex-col bg-gray-200 rounded-md p-2  bg-opacity-70 w-full h-full justify-start items-start gap-5 flex">
-                <div className=" text-slate-800 text-xl font-bold leading-relaxed tracking-tight">
-                  {userquestion}
-                </div>
-                <DynamicAnswersData html={editorAnswersData ?? ""} />
-              </div>
-            </div>
-            <br />
-          </>
-        ),
-      },
-      {
-        name: "Article",
-        icon: (
-          <div>
-            <img src="/icons/questions_icon.svg" alt="" />
-          </div>
-        ),
-        content: (
-          <>
-            {!isArticleTabReady ? (
-              <div className="flex items-start justify-center w-full h-full">
-                <div className="text-center flex center flex-col relative">
-                  <img className="mx-auto" src="/loader.gif"></img>
-                  <div
-                    className="-mt-12 animate-pulse text-sm"
-                    style={{
-                      position: "absolute",
-                      bottom: "20%",
-                      left: "0",
-                      right: "0",
-                    }}
-                  >
-                    Loading ...
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="relative w-full">
-                <NativeEditor
-                  value={editorArticleData}
-                  onEditorChange={(content: any, editor: any) => {
-                    setEditorArticleData(content);
-                  }}
-                  onSetup={(editor: any) => {
-                    setEditorSetUpCompleted(true);
-                  }}
-                />
-              </div>
-            )}
-          </>
-        ),
-        leftContent: (
-          <>
-            <div className="flex flex-col justify-start gap-4 ">
-              <div className="justify-between items-center flex">
-                <div className="text-slate-800 w-[70%] leading-none">
-                  Create your next draft on the basis of your edits.
-                </div>
-                <button
-                  onClick={() => handleNextDraft()}
-                  className="cta p-2 opacity-90 rounded-lg w-[30%] shadow border border-indigo-600 justify-center items-center gap-1 flex"
-                >
-                  {!nextDraftLoader && <RegenerateIcon />}
-                  {nextDraftLoader && (
-                    <ReactLoading width={25} height={25} color={"#2563EB"} />
-                  )}
-                  <span className="text-indigo-600 text-base font-normal">
-                    {nextDraftLoader ? "Generating...." : "Next Draft"}
-                  </span>
-                </button>
-              </div>
-              <div className="w-full justify-start items-center gap-2.5 flex">
-                <div className="flex-col justify-center items-start gap-2 flex">
-                  <div className="text-blue-950 text-base font-medium leading-tight">Your Question</div>
-                  <div className=" opacity-70 text-blue-950 text-base font-normal leading-none">
-                    {userquestion}
-                  </div>
-
-                  
-                  <div className="">Sources</div>
-                  <div className="flex justify-start items-center gap-2.5 flex-wrap my-2">
-                    {/* {references.map((ref) => {
-                      return <Chip key={ref.id} text={ref.source} />;
-                    })} */}
-                    {
-                      references.map(ref => {
-                        return <Chip key={ref.id} text={ref.source} />
-                      })
-                    }
-                  </div>
-                </div>
-              </div>
-            </div>
-            {/* tabs for used ideas and unused ideas */}
-            <UnsedIteamTabs
-              ideas={listOfIdeas}
-              editTabs={editTabs}
-              listOfUnusedIdeas={listOfUnusedIdeas}
-              setListOfIdeas={setListOfIdeas}
-              setListOfUnusedIdeas={setListOfUnusedIdeas}
-            />
-          </>
-        ),
-      },
-    ],
-    [
-      isArticleTabReady,
-      listOfIdeas,
-      userquestion,
-      editorAnswersData,
-      editorArticleData,
-      EditorSetUpCompleted,
-    ]
-  );
-  console.log(memoizedTab);
-  // const TabsList = memoizedTab;
-
+  ]; 
   if (loadingMisciblog) {
     return (
       <>
@@ -378,8 +246,7 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
       <header className="w-full h-[8%] justify-between items-center flex">
         <button
           onClick={() => {
-            console.log(document.referrer, window.location.host);
-             router.back();
+            router.back();
           }}
         >
           <span>
@@ -387,7 +254,12 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
           </span>
         </button>
         <div className="justify-start items-center gap-4 flex">
-          <button className="p-2 bg-indigo-600 rounded-lg shadow justify-center items-center gap-2.5 flex">
+          <button
+            className="p-2 bg-indigo-600 rounded-lg shadow justify-center items-center gap-2.5 flex"
+            onClick={() => {
+              setShowPublishModal(true);
+            }}
+          >
             <span className="-rotate-45">
               <PaperAirplaneIcon className="h-5 w-5 text-white" />
             </span>
@@ -395,6 +267,16 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
           </button>
         </div>
       </header>
+      {/* modals */}
+      <NextDraftIssueModal
+        showModal={shwoNextDraftIssueModal}
+        setShowModal={setShowNextDraftIssueModal}
+      />
+      <PublishMisciModal
+        blogId={blogId}
+        showModal={showPublishModal}
+        setShowModal={setShowPublishModal}
+      />
       <div
         className="flex"
         style={{
@@ -408,30 +290,207 @@ const MisciWorkSpace = ({ subscriptionData }: MisciWorkSpaceProps) => {
             selectedIndex={currentTabIndex}
           >
             <Tab.List className="flex items-center gap-2 w-full h-[5%]">
-              {memoizedTab.map((tab, index) => (
-                <Tab key={tab.name} className={`outline-none`}>
-                  <TabItem
-                    icon={tab.icon}
-                    key={index}
-                    title={tab.name}
-                    selected={currentTabIndex === index}
-                  />
-                </Tab>
-              ))}
+              <Tab className={`outline-none`}>
+                <TabItem
+                  icon={
+                    <div>
+                      <img src="/icons/answers_icon.svg" alt="" />
+                    </div>
+                  }
+                  title={"Answer"}
+                  selected={currentTabIndex === 0}
+                />
+              </Tab>
+              <Tab className={`outline-none`}>
+                <TabItem
+                  icon={
+                    <div>
+                      <img src="/icons/questions_icon.svg" alt="" />
+                    </div>
+                  }
+                  title={"Article"}
+                  selected={currentTabIndex === 1}
+                />
+              </Tab>
             </Tab.List>
-            <Tab.Panels className={"h-[95%]"}>
-              {memoizedTab.map((tab, index) => (
-                <Tab.Panel key={index} className={`w-full h-full flex `}>
-                  <div className="w-[70%] flex  h-full ">{tab.content}</div>
-                  <div
-                    className="w-[30%] max-h-full p-2 flex-col flex relative border-l border-gray-200 gap-6"
-                    id="leftContent"
-                  >
-                    {tab.leftContent}
+            <Tab.Panel className={`w-full h-full flex `}>
+              <div className="w-[70%] flex  h-full ">
+                <div className="p-2 flex-col  w-full justify-start items-start gap-7 inline-flex">
+                  <div className="flex-col bg-[#F3F3F3] rounded-md p-2  bg-opacity-70 w-full h-full justify-start items-start gap-5 flex">
+                    <div className=" text-slate-800 text-xl font-bold leading-relaxed tracking-tight">
+                      {userquestion}
+                    </div>
+                    <DynamicAnswersData html={editorAnswersData ?? ""} />
                   </div>
-                </Tab.Panel>
-              ))}
-            </Tab.Panels>
+                </div>
+                <br />
+              </div>
+              <div
+                className="w-[30%] max-h-full p-2 flex-col flex relative border-l border-gray-200 gap-6"
+                id="leftContent"
+              >
+                <div
+                  style={{ backgroundImage: "url(../bg-gray-misci.jpeg)" }}
+                  className="h-full  bg-contain bg-opacity-70 flex items-center px-4 justify-center rounded-lg flex-col gap-2"
+                >
+                  {isArticleTabReady ? (
+                    <>
+                      <span className="text-gray-800 text-xl text-center font-semibold leading-none pb-4">
+                        We have created a personalized article for you.
+                      </span>
+                      <button
+                        onClick={() => {
+                          setCurrentTabIndex(1);
+                        }}
+                        className="p-2 opacity-90 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600 text-white 
+               transition duration-300 ease-in-out 
+               hover:bg-indigo-700 hover:border-indigo-700 hover:shadow-lg hover:scale-105"
+                      >
+                        <span>
+                          <DocumentTextIcon className="h-5 w-5 transition duration-300 ease-in-out hover:rotate-180" />
+                        </span>
+                        Go to Article
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <LottiePlayer
+                        loop
+                        autoplay
+                        animationData={opener_loading}
+                        className="h-24"
+                      />
+
+                      <span className="text-gray-800 text-2xl font-bold leading-none text-center">
+                        We are almost there
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </Tab.Panel>{" "}
+            <Tab.Panel className={`w-full h-full flex `}>
+              <div className="w-[70%] flex  h-full ">
+                <>
+                  {!isArticleTabReady ? (
+                    <div className="flex items-start justify-center w-full h-full">
+                      <div className="text-center flex center flex-col relative">
+                        <img className="mx-auto" src="/loader.gif"></img>
+                        <div
+                          className="-mt-12 animate-pulse text-sm"
+                          style={{
+                            position: "absolute",
+                            bottom: "20%",
+                            left: "0",
+                            right: "0",
+                          }}
+                        >
+                          Loading ...
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="relative w-full">
+                      <NativeEditor
+                        value={editorArticleData}
+                        onEditorChange={(content: any, editor: any) => {
+                          setEditorArticleData(content);
+                        }}
+                        onSetup={(editor: any) => {
+                          setEditorSetUpCompleted(true);
+                        }}
+                      />
+                    </div>
+                  )}
+                </>
+              </div>
+              <div
+                className="w-[30%] max-h-full p-2 flex-col flex relative border-l border-gray-200 gap-6"
+                id="leftContent"
+              >
+                <>
+                  <div
+                    className="text-xs px-2 mb-24 lg:mb-0"
+                    style={{ borderLeft: "2px solid #d2d2d2" }}
+                    id="regenblog"
+                  >
+                    {/* h1 Insight only for mobile screens */}
+                    <h1 className="text-2xl  font-semibold text-gray-800 my-4 lg:hidden">
+                      Insights
+                    </h1>
+                    <div className="flex jusify-between items-center gap-[1.25em]">
+                      <p className="font-normal w-[100%] lg:w-[70%] text-base">
+                        Create your next draft on the basis of your edits.
+                      </p>
+                      <button
+                        className="cta flex items-center gap-2 self-start py-2 !font-semibold"
+                        disabled={nextDraftLoader}
+                        onClick={() => handleNextDraft()}
+                      >
+                        <RegenerateIcon />
+                        {"Next Draft"}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex flex-col justify-start gap-4 ">
+                    <div className="w-full justify-start items-center gap-2.5 flex">
+                      <div className="flex-col justify-center items-start gap-2 flex">
+                        <div className="flex justify-between w-full items-center py-2">
+                          <h3 className="pt-[0.65em] font-semibold">
+                            Questions
+                          </h3>
+                        </div>
+                        <div className=" opacity-70 text-blue-950 text-base font-normal leading-none">
+                          {userquestion}
+                        </div>
+                        <div className="flex justify-between w-full items-center py-2">
+                          <h3 className="pt-[0.65em] font-semibold">Sources</h3>
+                        </div>
+                        <div
+                          className="flex gap-[0.5em] flex-wrap h-full lg:max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
+                          style={{ padding: "0.75em 0.25em" }}
+                        >
+                          {references?.map((ref) => {
+                            return <Chip key={ref.id} text={ref.source} />;
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* tabs for used ideas and unused ideas */}
+                  {nextDraftLoader ? (
+                    <>
+                      <div className="flex items-start justify-center w-full h-full">
+                        <div className="text-center flex center flex-col relative">
+                          <img className="mx-auto" src="/loader.gif"></img>
+                          <div
+                            className="-mt-12 animate-pulse text-sm"
+                            style={{
+                              position: "absolute",
+                              bottom: "20%",
+                              left: "0",
+                              right: "0",
+                            }}
+                          >
+                            Generating Next Draft ...
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <UnsedIteamTabs
+                        ideas={listOfIdeas}
+                        editTabs={editTabs}
+                        listOfUnusedIdeas={listOfUnusedIdeas}
+                        setListOfIdeas={setListOfIdeas}
+                        setListOfUnusedIdeas={setListOfUnusedIdeas}
+                      />
+                    </>
+                  )}
+                </>
+              </div>
+            </Tab.Panel>
           </Tab.Group>
         </div>
       </div>
@@ -457,22 +516,46 @@ export const IdeaItem = ({
   onClick,
 }: IdeaItem) => {
   return (
-    <div className="w-full  justify-between items-center gap-9 inline-flex">
-      <div className="opacity-70 text-blue-950 text-base font-normal leading-none">
-        {text}
-      </div>
-      <div className="justify-start items-start gap-4 flex">
-        <div className="opacity-70 text-blue-950 text-base font-normal leading-none">
-          {total}
+    <>
+      <div className="flex pb-3 usedIdeas" key={id}>
+        <div className="flex justify-between gap-5 w-full">
+          <p className="text-[13px]">{text}</p>
+          <a
+            style={{
+              color: "var(--primary-blue)",
+              alignSelf: "flex-start",
+              position: "relative",
+              marginLeft: "auto",
+              cursor: "pointer",
+            }}
+          >
+            <div
+              className={`hidden referenceTooltip${id}`}
+              style={{
+                position: "absolute",
+                top: "100%",
+                right: "0",
+                border: "1px solid",
+                color: "black",
+                backgroundColor: "white",
+                padding: "0.5em",
+                borderRadius: "5px",
+                zIndex: "1",
+              }}
+            ></div>
+          </a>
+          <input
+            type="checkbox"
+            className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-none focus:ring-blue-500"
+            style={{
+              borderRadius: "2px",
+            }}
+            checked={selected}
+            onClick={onClick}
+          />
         </div>
-        <input
-          type="checkbox"
-          checked={selected}
-          onChange={onClick}
-          className="w-4 h-4 relative rounded-sm border border-slate-400"
-        />
       </div>
-    </div>
+    </>
   );
 };
 
@@ -505,21 +588,23 @@ const UnsedIteamTabs = ({
       >
         <Tab.List className="flex relative items-center gap-2 w-full ">
           {editTabs.map((tab: any, index: number) => (
-            <Tab key={tab.name}>
+            <Tab key={tab.name} className={`outline-none`}>
               <TabItem
                 icon={tab.icon}
                 key={index}
                 title={tab.name}
+                showIcon={false}
                 selected={currentEditTabIndex === index}
+                count={tab.notificationCount}
               />
             </Tab>
           ))}
         </Tab.List>
         <Tab.Panels>
           <Tab.Panel
-            className={`w-full max-h-full flex flex-col gap-4 overflow-y-scroll  scroll-m-1 py-2`}
+            className={`w-full max-h-full flex flex-col gap-4 overflow-y-scroll p-2 border-none outline-none`}
           >
-            <div className="h-full flex flex-col gap-4">
+            <div className="h-full flex flex-col gap-1 border-none">
               {ideas ? (
                 ideas.map((idea: any, index: number) => {
                   return (
@@ -530,13 +615,10 @@ const UnsedIteamTabs = ({
                       key={index}
                       selected={idea.used == 1 ? true : false}
                       onClick={() => {
-                        console.log("clicked");
-                        console.log(idea);
                         const newIdeas = [...ideas];
                         newIdeas[index].used =
                           newIdeas[index].used == 1 ? 0 : 1;
                         setListOfIdeas(newIdeas);
-                        // setListOfUnusedIdeas([...listOfUnusedIdeas, idea]);
                       }}
                     />
                   );
@@ -547,7 +629,7 @@ const UnsedIteamTabs = ({
             </div>
           </Tab.Panel>
           <Tab.Panel className={`w-full  `}>
-            <div className="w-full max-h-full flex flex-col gap-4 overflow-y-scroll  scroll-m-1 py-2">
+            <div className="w-full max-h-full flex flex-col gap-4 overflow-y-scroll   py-2">
               {listOfUnusedIdeas ? (
                 listOfUnusedIdeas.map((idea: any, index: number) => {
                   return (
@@ -556,14 +638,14 @@ const UnsedIteamTabs = ({
                       text={idea.idea}
                       idea="Idea 1"
                       key={index}
-                      selected={idea.used == 1 ? false : true}
+                      selected={idea.used == 1 ? true : false}
                       onClick={() => {
                         console.log("clicked");
                         console.log(idea);
                         const newIdeas = [...listOfUnusedIdeas];
-                        newIdeas[index].used = 1;
+                        newIdeas[index].used =
+                          newIdeas[index].used == 1 ? 0 : 1;
                         setListOfUnusedIdeas(newIdeas);
-                        setListOfIdeas([...ideas, idea]);
                       }}
                     />
                   );
