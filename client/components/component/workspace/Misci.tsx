@@ -24,6 +24,7 @@ import { Tab } from "@headlessui/react";
 import { Badge } from "@radix-ui/themes";
 import ErrorBase from "@/store/errors";
 import NextDraftIssueModal from "@/modals/NextDraftIssueModal";
+import { useIdeaState } from "@/store/appState";
 interface MisciWorkSpaceProps {
   subscriptionData: StepCompleteData | undefined;
   question: string;
@@ -53,11 +54,13 @@ const MisciWorkSpace = ({
       url: string;
     }[]
   >([]);
-  const [usedTabIndex, setUsedTabIndex] = useState(0);
   const [shwoNextDraftIssueModal, setShowNextDraftIssueModal] = useState(false);
-
+  // const [initailListOfIdeas, setInitialListOfIdeas] = useState<any[]>([]); 
+  const {getInitialListOfIdeas, setInitialListOfIdeas} = useIdeaState();
+ 
   useEffect(() => {
     const step = subscriptionData?.stepCompletes.step;
+    console.log('sub ran', step)
     // @ts-ignore
     if (step == "ANSWER_FETCHING_COMPLETED") {
       console.log("answers loaded");
@@ -80,8 +83,12 @@ const MisciWorkSpace = ({
       console.log(subscriptionData);
       const data = subscriptionData?.stepCompletes.data.ideas.ideas;
       console.log(data);
+      
       setBlogId(subscriptionData?.stepCompletes.data?._id);
-      setListOfIdeas(data);
+      
+      // Create new arrays or objects when setting the state
+      setListOfIdeas([...data]);
+      setInitialListOfIdeas([...subscriptionData?.stepCompletes.data.ideas.ideas]);
       const aa = subscriptionData?.stepCompletes?.data?.publish_data?.find(
         (d: any) => d.platform === "wordpress"
       );
@@ -125,6 +132,12 @@ const MisciWorkSpace = ({
       if (element.used == 1) {
         payload.push({ ...element, text: element.idea });
       }
+    }
+    console.log(payload, getInitialListOfIdeas());
+
+    if(payload.length == getInitialListOfIdeas().length){
+      setShowNextDraftIssueModal(true);
+      return;
     }
 
     regenerateNextDraft({
@@ -383,6 +396,8 @@ const MisciWorkSpace = ({
       editorArticleData,
       EditorSetUpCompleted,
       nextDraftLoader,
+      references,
+      listOfUnusedIdeas,
     ]
   );
   if (loadingMisciblog) {
