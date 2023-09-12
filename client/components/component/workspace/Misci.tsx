@@ -25,6 +25,7 @@ import { Badge } from "@radix-ui/themes";
 import ErrorBase from "@/store/errors";
 import NextDraftIssueModal from "@/modals/NextDraftIssueModal";
 import { useIdeaState } from "@/store/appState";
+import PublishMisciModal from "@/modals/PublishMisciModal";
 interface MisciWorkSpaceProps {
   subscriptionData: StepCompleteData | undefined;
   question: string;
@@ -55,6 +56,7 @@ const MisciWorkSpace = ({
     }[]
   >([]);
   const [shwoNextDraftIssueModal, setShowNextDraftIssueModal] = useState(false);
+  const [showPublishModal, setShowPublishModal] = useState(false);
   // const [initailListOfIdeas, setInitialListOfIdeas] = useState<any[]>([]); 
   const {getInitialListOfIdeas, setInitialListOfIdeas} = useIdeaState();
  
@@ -426,7 +428,11 @@ const MisciWorkSpace = ({
           </span>
         </button>
         <div className="justify-start items-center gap-4 flex">
-          <button className="p-2 bg-indigo-600 rounded-lg shadow justify-center items-center gap-2.5 flex">
+          <button className="p-2 bg-indigo-600 rounded-lg shadow justify-center items-center gap-2.5 flex"
+          onClick={() => {
+            setShowPublishModal(true);
+          }}
+          >
             <span className="-rotate-45">
               <PaperAirplaneIcon className="h-5 w-5 text-white" />
             </span>
@@ -436,6 +442,7 @@ const MisciWorkSpace = ({
       </header>
       {/* modals */}
       <NextDraftIssueModal showModal={shwoNextDraftIssueModal} setShowModal={setShowNextDraftIssueModal}/>
+      <PublishMisciModal blogId={blogId}  showModal={showPublishModal} setShowModal={setShowPublishModal} />
       <div
         className="flex"
         style={{
