@@ -230,18 +230,23 @@ interface TabItem {
   disabled?: boolean;
   selected?: boolean;
   showIcon?: boolean;
+  count?: number;
 }
-export function TabItem({ title, content, icon, disabled, selected , showIcon=true}: TabItem) {
+export function TabItem({ title, content, icon, disabled, selected , showIcon=true, count}: TabItem) {
   return (
     <div
       className={classNames(
-        "rounded-lg h-full p-2.5 text-sm font-medium leading-5 outline-none text-gray-700",
+        "rounded-lg h-full p-2.5 relative text-sm font-medium leading-5 outline-none text-gray-700 mr-2",
         selected
           ? "border-gray-200 text-black"
           : "text-gray-100 hover:bg-white/[0.12]"
       )}
     >
       <div className="flex">
+        {/* noftication, */}
+        {count &&  <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
+              {count}
+            </span>}
         {
           showIcon && <div className="w-5 h-5 mr-2">{icon}</div>
         }
