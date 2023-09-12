@@ -28,9 +28,7 @@ const NextDraftIssueModal = ({
           right: "auto",
           border: "none",
           background: "white",
-          // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
           borderRadius: "8px",
-          // width: "100%",
           bottom: "",
           zIndex: "999",
           maxWidth: "55%",
@@ -38,7 +36,7 @@ const NextDraftIssueModal = ({
           marginRight: "-50%",
           height: "30%",
           transform: "translate(-50%, -50%)",
-          padding: "30px",
+          padding: "1rem",
           paddingBottom: "0px",
           outline: "none",
         },
@@ -46,7 +44,7 @@ const NextDraftIssueModal = ({
     >
       <div className="w-full h-full relative">
         {/* absulute scorr btn */}
-        <div className="top-2 flex w-full items-center justify-between">
+        <div className="top-2 absolute flex w-full items-center justify-between">
           <button
             className="w-6 h-6"
             onClick={() => {
@@ -65,7 +63,7 @@ const NextDraftIssueModal = ({
           </button>
           
         </div>
-        <div className="w-full h-full flex-col justify-around items-center inline-flex">
+        <div className="w-full h-full flex-col justify-center items-center inline-flex px-10 gap-2">
           <div className="self-stretch flex-col justify-start items-center flex">
             <div className="self-stretch text-center text-black font-bold text-2xl leading-loose">
               Change the ideas selection to
@@ -90,8 +88,7 @@ const NextDraftIssueModal = ({
               </div>
             </div>
           </button>
-          <div className="w-6 h-6 left-[508px] top-[20px] absolute" />
-          <div className="w-6 h-6 left-[14.29px] top-[14px] absolute" />
+         
         </div>
       </div>
     </Modal>
