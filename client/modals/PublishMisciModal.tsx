@@ -20,6 +20,8 @@ const PublishMisciModal = ({
   setShowModal: (showModal: boolean) => void;
 }) => {
   const [showRedirectionModal, setShowRedirectionModal] = React.useState(false);
+  const [youShoulBeRedirected, setYouShoulBeRedirected] = React.useState(true);
+  const [seconds, setSeconds] = React.useState(5);
   const router = useRouter();
   const onSubmit = (values: any) => {
     misciBlogPublish({
@@ -42,9 +44,17 @@ const PublishMisciModal = ({
         // setShowModal(false);
         setShowRedirectionModal(true);
         // 5000s after
+        setInterval(() => {  
+          setSeconds((seconds) => {
+            if (seconds === 0) {
+              return 0;
+            }
+            return seconds - 1;
+          });
+        }, 1000);
         setTimeout(() => {
-          router.push("/misci");
-        }, 5000);
+          youShoulBeRedirected && router.push("/misci");
+        }, 6500);
       });
   };
 
@@ -123,7 +133,7 @@ const PublishMisciModal = ({
               <div className="w-full h-full flex-col justify-around items-center inline-flex px-10 gap-8">
                 <div className="self-stretch flex-col justify-start items-center flex">
                   <div className="self-stretch text-center text-black font-bold text-2xl leading-loose">
-                    You will be navigated back to Homepage in 5 seconds
+                    You will be navigated back to Homepage in {seconds} seconds
                   </div>
                 </div>
                 <div className="w-72 text-center text-zinc-900 text-opacity-70 text-base font-normal leading-snug">
@@ -132,6 +142,7 @@ const PublishMisciModal = ({
                 <button
                   className="p-2 justify-start w-full  items-center gap-2 inline-flex"
                   onClick={() => {
+                    setYouShoulBeRedirected(false);
                     setShowModal(false);
                   }}
                 >
