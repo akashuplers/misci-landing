@@ -68,6 +68,7 @@ const MisciWorkSpace = ({
     // @ts-ignore
     if (step == "ANSWER_FETCHING_COMPLETED") {
       console.log("answers loaded");
+      setBlogId(subscriptionData?.stepCompletes.data?._id);
       const data = subscriptionData?.stepCompletes.data;
       setMisciblog(data);
       console.log(data);
