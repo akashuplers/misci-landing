@@ -703,7 +703,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                 "children": []
                                             },
                                             {
-                                                "tag": "P",
+                                                "tag": "H3",
                                                 "attributes": {},
                                                 "children": [
                                                     refUrls && refUrls.length && 
