@@ -305,10 +305,9 @@ export const regenerateNextDraft = async ({ideas , blog_id , onStart, onComplete
   }
 }
 
-export const misciBlogPublish = async ({blog_id}:{ blog_id: string}) =>{
-  debugger;
+export const misciBlogPublish = async ({blog_id, email, name}:{ blog_id: string, email:string, name:string}) =>{
   try {
-    const response  =await http.post(API_ROUTES.MISCI_PUBLISH, {blogId : blog_id});
+    const response  =await http.post(API_ROUTES.MISCI_PUBLISH, {blogId : blog_id, email, name});
     return response.data;
   }catch (error){
     console.log(error);
