@@ -232,7 +232,15 @@ interface TabItem {
   showIcon?: boolean;
   count?: number;
 }
-export function TabItem({ title, content, icon, disabled, selected , showIcon=true, count}: TabItem) {
+export function TabItem({
+  title,
+  content,
+  icon,
+  disabled,
+  selected,
+  showIcon = true,
+  count,
+}: TabItem) {
   return (
     <div
       className={classNames(
@@ -244,12 +252,12 @@ export function TabItem({ title, content, icon, disabled, selected , showIcon=tr
     >
       <div className="flex">
         {/* noftication, */}
-        {count &&  <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
-              {count}
-            </span>}
-        {
-          showIcon && <div className="w-5 h-5 mr-2">{icon}</div>
-        }
+        {count ? (
+          <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
+            {count}
+          </span>
+        ) : null}
+        {showIcon && <div className="w-5 h-5 mr-2">{icon}</div>}
         <div className="text-base font-medium leading-none">{title}</div>
       </div>
       {selected ? ( // under line

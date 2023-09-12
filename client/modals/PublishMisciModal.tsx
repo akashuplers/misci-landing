@@ -4,6 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { misciBlogPublish } from "@/helpers/apiMethodsHelpers";
 import { toast } from "react-toastify";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/router";
 const initialValues = {
   email: "",
   name: "",
@@ -18,9 +19,15 @@ const PublishMisciModal = ({
   showModal: boolean;
   setShowModal: (showModal: boolean) => void;
 }) => {
+  const [showRedirectionModal, setShowRedirectionModal] = React.useState(false);
+  const [youShoulBeRedirected, setYouShoulBeRedirected] = React.useState(true);
+  const [seconds, setSeconds] = React.useState(5);
+  const router = useRouter();
   const onSubmit = (values: any) => {
     misciBlogPublish({
-      blog_id: blogId, email: values.email, name: values.name
+      blog_id: blogId,
+      email: values.email,
+      name: values.name,
     })
       .then((res) => {
         if (res.error === false) {
@@ -34,7 +41,20 @@ const PublishMisciModal = ({
         }
       })
       .finally(() => {
-        setShowModal(false);
+        // setShowModal(false);
+        setShowRedirectionModal(true);
+        // 5000s after
+        setInterval(() => {  
+          setSeconds((seconds) => {
+            if (seconds === 0) {
+              return 0;
+            }
+            return seconds - 1;
+          });
+        }, 1000);
+        setTimeout(() => {
+          youShoulBeRedirected && router.push("/misci");
+        }, 6500);
       });
   };
 
@@ -85,90 +105,125 @@ const PublishMisciModal = ({
             marginRight: "-50%",
             minHeight: "40%",
             transform: "translate(-50%, -50%)",
-            padding: "30px",
+            padding: "1rem",
             paddingBottom: "0px",
             outline: "none",
           },
         }}
       >
-       <div className="relative w-full h-full">
-       <div className="absolute   flex w-full items-center justify-between"
-       style={{
-        top: "-10%",
-       }}
-       >
-            <button
-                className="w-6 h-6 self-end"
-                onClick={() => {
-                setShowModal(false);
-                }}
-            >
-                <XMarkIcon className="w-6 h-6" />
-            </button>
-            </div>
-
-        <div className="w-full h-full relative  rounded-lg flex-col flex justify-center items-center gap-4">
-          <div className="self-stretch text-center text-black text-2xl font-semibold leading-normal w-full">
-            This looks great! 👏
-          </div>
-          <Formik
-            initialValues={initialValues}
-            onSubmit={onSubmit}
-            validate={validate}
+        <div className="w-full h-full">
+          <div
+            className="absolute flex w-full items-center justify-between"
+            style={{
+              top: "10%",
+            }}
           >
-            <Form className="w-full flex flex-col justify-around">
-              <div className=" relative">
-                <label
-                  htmlFor="email"
-                  className="text-center text-zinc-900 text-opacity-70 text-base font-normal leading-snug"
-                >
-                  Enter your Email
-                </label>
-                <Field
-                  type="email"
-                  id="email"
-                  name="email"
-                  className="w-full h-14 px-3.5 py-5 rounded-lg border border-neutral-200 justify-start items-center gap-2.5 inline-flex"
-                  placeholder="abc@example.com"
-                />
-                <ErrorMessage
-                  name="email"
-                  component="div"
-                  className="text-red-500 text-sm mt-2"
-                />
-              </div>
-              <div className=" relative">
-                <label
-                  htmlFor="name"
-                  className="text-center text-zinc-900 text-opacity-70 text-base font-normal leading-snug"
-                >
-                  Enter your Name
-                </label>
-                <Field
-                  type="text"
-                  id="name"
-                  name="name"
-                  className="w-full h-14 px-3.5 py-5 rounded-lg border border-neutral-200 justify-start items-center gap-2.5 inline-flex"
-                  placeholder="John Doe"
-                />
-                <ErrorMessage
-                  name="name"
-                  component="div"
-                  className="text-red-500 text-sm mt-2"
-                />
-              </div>
-              <div className="w-full px-3 pt-4 pb-6 justify-start items-center gap-2 inline-flex">
+            <button
+              className="w-6 h-6 self-end"
+              onClick={() => {
+                setShowModal(false);
+              }}
+            >
+              <XMarkIcon className="w-6 h-6" />
+            </button>
+          </div>
+
+          {showRedirectionModal ? (
+            <>
+              <div className="w-full h-full flex-col justify-around items-center inline-flex px-10 gap-8">
+                <div className="self-stretch flex-col justify-start items-center flex">
+                  <div className="self-stretch text-center text-black font-bold text-2xl leading-loose">
+                    You will be navigated back to Homepage in {seconds} seconds
+                  </div>
+                </div>
+                <div className="w-72 text-center text-zinc-900 text-opacity-70 text-base font-normal leading-snug">
+                  Or you wish to go back to the Answer
+                </div>
                 <button
-                  type="submit"
-                  className="grow shrink basis-0 h-10 px-4 py-1.5 bg-indigo-600 rounded-lg flex-col justify-center items-center gap-2.5 inline-flex text-white text-sm font-bold leading-normal"
+                  className="p-2 justify-start w-full  items-center gap-2 inline-flex"
+                  onClick={() => {
+                    setYouShoulBeRedirected(false);
+                    setShowModal(false);
+                  }}
                 >
-                  Done
+                  <div className="grow shrink basis-0 h-10 bg-indigo-600 rounded-lg flex-col justify-center items-center gap-2.5 inline-flex">
+                    <div className="justify-center items-center inline-flex">
+                      <div className="px-1 justify-start items-center gap-2.5 flex">
+                        <div className="text-center text-white text-sm font-bold leading-normal">
+                          Go Back
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </button>
+              </div>{" "}
+            </>
+          ) : (
+            <>
+              <div className="w-full h-full relative  rounded-lg flex-col flex justify-center items-center px-10 ">
+                <div className="self-stretch text-center text-black text-2xl font-semibold leading-normal w-full">
+                  This looks great! 👏
+                </div>
+                <Formik
+                  initialValues={initialValues}
+                  onSubmit={onSubmit}
+                  validate={validate}
+                >
+                  <Form className="w-full flex flex-col justify-around gap-4">
+                    <div className=" relative">
+                      <label
+                        htmlFor="email"
+                        className="text-center text-zinc-900 text-opacity-70 text-base font-normal leading-snug"
+                      >
+                        Enter your Email
+                      </label>
+                      <Field
+                        type="email"
+                        id="email"
+                        name="email"
+                        className="w-full h-14 px-3.5 py-5 rounded-lg border border-neutral-200 justify-start items-center gap-2.5 inline-flex"
+                        placeholder="abc@example.com"
+                      />
+                      <ErrorMessage
+                        name="email"
+                        component="div"
+                        className="text-red-500 text-sm mt-2"
+                      />
+                    </div>
+                    <div className=" relative">
+                      <label
+                        htmlFor="name"
+                        className="text-center text-zinc-900 text-opacity-70 text-base font-normal leading-snug"
+                      >
+                        Enter your Name
+                      </label>
+                      <Field
+                        type="text"
+                        id="name"
+                        name="name"
+                        className="w-full h-14 px-3.5 py-5 rounded-lg border border-neutral-200 justify-start items-center gap-2.5 inline-flex"
+                        placeholder="John Doe"
+                      />
+                      <ErrorMessage
+                        name="name"
+                        component="div"
+                        className="text-red-500 text-sm mt-2"
+                      />
+                    </div>
+                    <div className="w-full  justify-start items-center  inline-flex">
+                      <button
+                        type="submit"
+                        className="grow shrink basis-0 h-10 px-4 py-1.5 bg-indigo-600 rounded-lg flex-col justify-center items-center gap-2.5 inline-flex text-white text-sm font-bold leading-normal"
+                      >
+                        Done
+                      </button>
+                    </div>
+                  </Form>
+                </Formik>
               </div>
-            </Form>
-          </Formik>
+            </>
+          )}
         </div>
-       </div>
       </Modal>
     </>
   );
