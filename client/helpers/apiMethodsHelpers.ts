@@ -304,3 +304,13 @@ export const regenerateNextDraft = async ({ideas , blog_id , onStart, onComplete
     console.log(error);
   }
 }
+
+export const misciBlogPublish = async ({blog_id}:{ blog_id: string}) =>{
+  debugger;
+  try {
+    const response  =await http.post(API_ROUTES.MISCI_PUBLISH, {blogId : blog_id});
+    return response.data;
+  }catch (error){
+    console.log(error);
+  }
+};
