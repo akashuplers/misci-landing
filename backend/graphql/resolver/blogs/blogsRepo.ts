@@ -331,13 +331,14 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         const key = keys[index];
         try {
             if((type.length && type.includes(key) && key === "wordpress") || (!type.length && key === "wordpress")) {
-                const gptPrompt = `Please forget old prompt and act as an new expert writer and using the below pasted ideas write a blog with inputs as follows:\n${title && title.length ? `Topic is "${title}"\n${tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"`}`: tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"` }\n${keywords.length ? `Use these keywords: "${keywords.join('","')}" \nMinimum limit is "1000 words"`: `Minimum limit is "1000 words"`}\nHighlight the H1 & H2 html tags\nProvide the conclusion at the end with Conclusion as heading\nStrictly use all these points: ${text}`
+                const gptPrompt = `Please forget old prompt and act as an new expert writer and using the below pasted ideas write a blog with inputs as follows:\n${title && title.length ? `Topic is "${title}"\n${tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"`}`: tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"` }\n${keywords.length ? `Use these keywords: "${keywords.join('","')}" \nMinimum limit is "1000 words"`: `Minimum limit is "1000 words"`}\n"Strictly Add no references in the bottom"\nHighlight the H1 & H2 html tags\nProvide the conclusion at the end with Conclusion as heading\nStrictly use all these points: ${text}`
                 const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? gptPrompt : 
                     `Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
                     ${title && title.length ? `'Topic is "${title}"'`: "" }
                     ${tones?.length ? tones.join('","') : `'Tone is "Authoritative, informative, Persuasive"'`}
                     ${keywords.length ? `'Use these keywords: "${keywords.join('","')}'" \n 'Minimum limit is "1000 words"'`: `Limit is "1000 words"`}
                     "Highlight the H1 & H2 html tags"
+                    "Strictly Add no references in the bottom"
                     "Provide the conclusion at the end with Conclusion as heading"`}`, db}).textCompletion(chatgptApis.timeout)
                 console.log(chatGPTText, "blog")    
                 newsLetter = {...newsLetter, [key]: chatGPTText}
@@ -478,91 +479,6 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 }
                                 publish({userId, keyword: title || "", step: "BACKLINK_COMPLETED"})
                                 const htmlTagRegex = /<[^>]*>([^<]*)<\/[^>]*>/g; // Regular expression to match HTML tags
-                                // const sentences = updatedContent?.split('.').map((sentence: any) => {
-                                //     // Check if the sentence is not wrapped in HTML tags
-                                //     const matches = sentence.match(htmlTagRegex);
-                                //     if(matches) {
-                                //         return {
-                                //             text: sentence,
-                                //             no: true
-                                //         }
-                                //     }else {
-                                //         return {
-                                //             text: sentence,
-                                //             no: false
-                                //         }
-                                //     }
-                                //     // return !matches || matches.length === 0; 
-                                // });
-                                // console.log(sentences, "updatedContentBefore")
-                                // updatedContent = sentences?.map((data: any) => {
-                                //     let newText = data.text
-                                //     let filteredSource = null
-                                //     ideasArr.some((idea) => {
-                                //         if(idea.idea) {
-                                //             let checkHtmlTagSentences = null
-                                //             if(data.no) {
-                                //                 function findTagIndices(sentence: string, tagName: string) {
-                                //                     const openingTagRegex = new RegExp(`<${tagName}\\b[^>]*>`, 'i');
-                                //                     const closingTagRegex = new RegExp(`<\/${tagName}\\b[^>]*>`, 'i');
-                                                  
-                                //                     const openingTagMatch = sentence.match(openingTagRegex);
-                                //                     const closingTagMatch = sentence.match(closingTagRegex);
-                                                  
-                                //                     const startIndex = openingTagMatch ? openingTagMatch.index : -1;
-                                //                     const endIndex = closingTagMatch && closingTagMatch.index? closingTagMatch.index + closingTagMatch[0].length - 1 : -1;
-                                                  
-                                //                     return { startIndex, endIndex };
-                                //                 }
-                                //                 // const string = "<p></p><h2>What Are Your Chest Muscles?</h2><p></p>Before we dive into the 10 best chest exercises for building muscle, let’s take a quick look at the muscles that make up the chest"
-                                //                 const regex = /<[^>]*>([^<]*)<\/[^>]*>/g; 
-                                //                 data.text.split(".").forEach((sentence: any) => {
-                                //                     // Check if the sentence is not wrapped in HTML tags
-                                //                     const matches = sentence.match(regex);
-                                //                     if(matches) {
-                                //                         const h2Indeces = findTagIndices(sentence, 'h2')
-                                //                         const h1Indeces = findTagIndices(sentence, 'h1')
-                                //                         if(h2Indeces.endIndex > -1){
-                                //                             checkHtmlTagSentences = sentence.substr(h2Indeces.endIndex + 1)
-                                //                         } else if(h1Indeces.endIndex > -1) {
-                                //                             checkHtmlTagSentences = sentence.substr(h1Indeces.endIndex + 1)
-                                //                         } else {
-                                //                             checkHtmlTagSentences = null
-                                //                         } 
-                                //                         return checkHtmlTagSentences
-                                //                     }else {
-                                //                         return false
-                                //                     }
-                                //                     // return !matches || matches.length === 0;
-                                //                 });
-                                //             } else {
-                                //                 checkHtmlTagSentences = data.text
-                                //             } 
-                                //             if(checkHtmlTagSentences && checkHtmlTagSentences.length > 0) {
-                                //                 const similarity = natural.JaroWinklerDistance(checkHtmlTagSentences, idea.idea, true);
-                                //                 console.log(checkHtmlTagSentences,similarity, idea.idea, "similarity" )
-                                //                 if(similarity >= 0.7 && idea.article_id) {
-                                //                     filteredSource = refs?.findIndex((ref) => ref.id === idea.article_id)
-                                //                     // console.log(data, idea.idea, idea.article_id, filteredSource, similarity, "similiary")
-                                //                     return true
-                                //                 } else {
-                                //                     return false
-                                //                 }
-                                //             } else {
-                                //                 return false
-                                //             }
-                                //         }else {
-                                //             return false
-                                //         }
-                                //     })
-                                //     if((filteredSource || filteredSource === 0) && refs[filteredSource]) {
-                                //         newText = `${data.text} <a href="${refs[filteredSource]?.url}" target="_blank" title="${filteredSource + 1} - ${refs[filteredSource]?.url}">[${filteredSource + 1}]</a>` 
-                                //     }
-                                //     return newText.trim() + '. '
-                                // })
-                                // console.log(updatedContent, "updatedContentBefore")
-                                // updatedContent = updatedContent?.map((content: string) => content.replace("..", "."))
-                                // updatedContent = updatedContent?.join("")?.replace(". .", ".")
                                 let references: any[] = []
                                 if(misci && notesRefUrls.length) {
                                     notesRefUrls.length && notesRefUrls.forEach((data) => {
@@ -706,7 +622,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                 "tag": "H3",
                                                 "attributes": {},
                                                 "children": [
-                                                    refUrls && refUrls.length && 
+                                                    references && references.length && 
                                                     {
                                                         "tag": "STRONG",
                                                         "attributes": {},

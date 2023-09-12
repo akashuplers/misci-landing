@@ -111,7 +111,7 @@ router.post('/generate', async (req: any, res: any) => {
             article_id: article.id
         })
         let notesRefUrls = []
-        if(noteReferences && noteReferences.length) {
+        if(noteReferences) {
             notesRefUrls = noteReferences.urls
         }
         console.log(noteReferences, "noteReferences")
@@ -195,6 +195,8 @@ router.post('/generate', async (req: any, res: any) => {
         // console.log(ideasArr, "ideasArr")
         // console.log(articleIds, "articleIds")
         // console.log(articleIds.length, "articleIds.length")
+        console.log(noteReferences, "noteReferences")
+        console.log(notesRefUrls, "notesRefUrls")
         const blogGeneratedData: any = await blogGeneration({
             db,
             text: !articlesData.length ? keyword : texts,
