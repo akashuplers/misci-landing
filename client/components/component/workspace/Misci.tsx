@@ -326,7 +326,11 @@ const MisciWorkSpace = ({
                     <div className="w-full text-slate-800 text-xl font-bold leading-relaxed tracking-tight min-h-20 bg-[#FF8980] flex flex-col items-center  rounded-b-[3rem] ">
                       {/* {userquestion} */}
                       <div className="flex w-full items-center  gap-4 p-4 px-8 justify-start">
-                        <div className="h-14 w-14 text-red-500 border-white ">
+                        <div className="h-14 w-14 text-red-500 border-white "
+                        style={{
+                          mixBlendMode: 'luminosity'
+                        }}
+                        >
                           <img src="../icons/qmark.svg" alt="" />
                         </div>
                         <div className="text-center text-white text-2xl  m-auto">
