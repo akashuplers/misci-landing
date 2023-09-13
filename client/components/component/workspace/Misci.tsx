@@ -143,14 +143,20 @@ const MisciWorkSpace = ({
   function handleNextDraft() {
     var payload = [];
     const payloadList = [...listOfIdeas];
+    const payloadListUnused = [...listOfUnusedIdeas];
     for (let index = 0; index < payloadList.length; index++) {
       const element = payloadList[index];
       if (element.used == 1) {
         payload.push({ ...element, text: element.idea });
       }
     }
+    for (let index = 0; index < payloadListUnused.length; index++) {
+      const element = payloadListUnused[index];
+      if (element.used == 1) {
+        payload.push({ ...element, text: element.idea });
+      }
+    }
     console.log(payload, getInitialListOfIdeas());
-
     if (payload.length == getInitialListOfIdeas().length) {
       setShowNextDraftIssueModal(true);
       return;
