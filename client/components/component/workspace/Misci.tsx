@@ -6,8 +6,10 @@ import { StepCompleteData } from "@/store/types";
 import {
   ArrowLeftIcon,
   Bars3BottomRightIcon,
+  CheckBadgeIcon,
   DocumentTextIcon,
   PaperAirplaneIcon,
+  QuestionMarkCircleIcon,
 } from "@heroicons/react/24/outline";
 import LottiePlayer from "lottie-react";
 import { useRouter } from "next/router";
@@ -186,12 +188,13 @@ const MisciWorkSpace = ({
           setEditorAnswersData(jsonToHtml(answersData));
           setEditorArticleData(jsonToHtml(articleData));
           setListOfUnusedIdeas(ideas.filter((idea: any) => idea.used == 0));
-          const getAllIdeasWith1 = [...listOfIdeas].filter(
+          const getAllIdeasWith1 = [...ideas].filter(
             (idea: any) => idea.used == 1
           );
           console.log([...getAllIdeasWith1, ...ideas]);
+          // get only used == 
           setListOfIdeas((prev) => {
-            return [...ideas];
+            return [...getAllIdeasWith1];
           });
           setQuestion(res?.data?.question);
           setBlogId(res?.data?._id);
@@ -206,7 +209,7 @@ const MisciWorkSpace = ({
     var mySafeHTML = structuredClone(html);
     mySafeHTML = DOMPurify.sanitize(mySafeHTML);
     return (
-      <div className=" text-slate-600 text-base font-normal leading-normal">
+      <div className="">
         <div
           id="answersEditor"
           dangerouslySetInnerHTML={{ __html: mySafeHTML }}
@@ -228,7 +231,7 @@ const MisciWorkSpace = ({
       content: <></>,
       notificationCount: listOfUnusedIdeas.length,
     },
-  ]; 
+  ];
   if (loadingMisciblog) {
     return (
       <>
@@ -315,13 +318,42 @@ const MisciWorkSpace = ({
               </Tab>
             </Tab.List>
             <Tab.Panel className={`w-full h-full flex `}>
-              <div className="w-[70%] flex  h-full ">
-                <div className="p-2 flex-col  w-full justify-start items-start gap-7 inline-flex">
-                  <div className="flex-col rounded-md p-2  bg-opacity-70 w-full h-full justify-start items-start gap-5 flex">
-                    <div className=" text-slate-800 text-xl font-bold leading-relaxed tracking-tight">
-                      {userquestion}
+              <div
+                className="w-[70%] bg-neutral-100 rounded-2xl flex relative h-full"
+              >
+                <div className="flex-col  w-full justify-start items-start gap-7 inline-flex">
+                  <div className="bg-opacity-70 w-full h-full justify-start items-center gap-5 flex flex-col">
+                    <div className="w-full text-slate-800 text-xl font-bold leading-relaxed tracking-tight min-h-20 bg-[#FF8980] flex flex-col items-center  rounded-b-[3rem] ">
+                      {/* {userquestion} */}
+                      <div className="flex w-full items-center  gap-4 p-4 px-8 justify-start">
+                        <div className="h-14 w-14 text-red-500 border-white ">
+                          <img src="../icons/qmark.svg" alt="" />
+                        </div>
+                        <div className="text-center text-white text-2xl  m-auto">
+                          <h2>{userquestion}</h2>
+                        </div>
+                      </div>
                     </div>
-                    <DynamicAnswersData html={editorAnswersData ?? ""} />
+                    <div className="z-10 mx-12 flex w-[90%] border border-gray-200 p-2 bg-white shadow-xl rounded-xl min-h-[50%]">
+                      <div className="flex items-start gap-4 px-2 text-black font-medium text-base">
+                        {/* ticket */}
+                        <span className="h-12 w-12 text-green-500">
+                          <img src="../icons/tick.svg" alt="" />
+                        </span>
+                        <div className="mt-4 text-lg">
+                          <DynamicAnswersData html={editorAnswersData ?? ""} />
+                        </div>
+                      </div>
+                    </div>
+                     
+                    <div className="mt-[-10%] z-0"
+                    style={{
+                      filter: 'grayscale(80%)',
+                      opacity: '0.1'
+                    }}
+                    > 
+                    <img style={{width: 673, height: 479, opacity: 0.99, mixBlendMode: 'darken', borderRadius: 53}} src="../ground.png" />
+                    </div>
                   </div>
                 </div>
                 <br />
@@ -410,10 +442,7 @@ const MisciWorkSpace = ({
                 id="leftContent"
               >
                 <>
-                  <div
-                    className="text-xs px-2 mb-24 lg:mb-0"
-                    id="regenblog"
-                  >
+                  <div className="text-xs px-2 mb-24 lg:mb-0" id="regenblog">
                     {/* h1 Insight only for mobile screens */}
                     <h1 className="text-2xl  font-semibold text-gray-800 my-4 lg:hidden">
                       Insights
@@ -428,7 +457,7 @@ const MisciWorkSpace = ({
                         onClick={() => handleNextDraft()}
                       >
                         <RegenerateIcon />
-            <span className="text-base">{"Next Draft"}</span>
+                        <span className="text-base">{"Next Draft"}</span>
                       </button>
                     </div>
                   </div>
@@ -602,7 +631,6 @@ const UnsedIteamTabs = ({
               ) : (
                 <>loading.. ideas</>
               )}
-              
             </div>
           </Tab.Panel>
           <Tab.Panel className={`w-full  `}>
