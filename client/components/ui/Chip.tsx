@@ -244,16 +244,16 @@ export function TabItem({
   return (
     <div
       className={classNames(
-        "rounded-lg h-full p-2.5 relative text-sm font-medium leading-5 outline-none text-gray-700 mr-2",
+        "rounded-lg h-full p-2.5 w-full relative text-sm font-medium leading-5 outline-none text-gray-700",
         selected
           ? "border-gray-200 text-black"
           : "text-gray-100 hover:bg-white/[0.12]"
       )}
     >
-      <div className="flex">
+      <div className="flex items-center justify-around flex-row-reverse gap-2  py-1">
         {/* noftication, */}
         {count ? (
-          <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
+          <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full">
             {count}
           </span>
         ) : null}
