@@ -334,7 +334,7 @@ const MisciWorkSpace = ({
                           <img src="../icons/qmark.svg" alt="" />
                         </div>
                         <div className="text-center text-white text-2xl  m-auto">
-                          <h2>{userquestion}</h2>
+                          <h2>{question}</h2>
                         </div>
                       </div>
                     </div>
@@ -465,9 +465,9 @@ const MisciWorkSpace = ({
                       </button>
                     </div>
                   </div>
-                  <div className="flex flex-col justify-start gap-4 ">
+                  <div className="flex flex-col justify-start gap-4 w-full">
                     <div className="w-full justify-start items-center gap-2.5 flex">
-                      <div className="flex-col justify-center items-start gap-2 flex">
+                      <div className="flex-col justify-center items-start gap-2 flex w-full">
                         <div className="flex justify-between w-full items-center py-2">
                           <h3 className="pt-[0.65em] font-semibold">
                             Questions
@@ -480,7 +480,7 @@ const MisciWorkSpace = ({
                           <h3 className="pt-[0.65em] font-semibold">Sources</h3>
                         </div>
                         <div
-                          className="flex gap-[0.5em] flex-wrap h-full lg:max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
+                          className="flex gap-[0.5em] flex-wrap h-full w-full  overflow-x-hidden overflow-y-scroll !pb-0 px-4"
                           style={{ padding: "0.75em 0.25em" }}
                         >
                           {references?.map((ref) => {
