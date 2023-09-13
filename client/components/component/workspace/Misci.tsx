@@ -52,6 +52,7 @@ const MisciWorkSpace = ({
   const [editorArticleData, setEditorArticleData] = useState<any>(null);
   const [blogId, setBlogId] = useState("");
   const [nextDraftLoader, setNextDraftLoader] = useState(false);
+  const [errorPresent, setErrorPresent] = useState(false);
   const [references, setReferences] = useState<
     {
       id: string;
@@ -126,6 +127,8 @@ const MisciWorkSpace = ({
       // });
       setEditorAnswersData(ErrorBase.errorAnswerWithQuestion(question));
       setLoadingMisciblog(false);
+      setErrorPresent(true);
+      
       // setTimeout(() => {
       //   // take to /misci
       //   router.push("/misci");
@@ -258,7 +261,7 @@ const MisciWorkSpace = ({
           </span>
         </button>
         <div className="justify-start items-center gap-4 flex">
-          <button
+        {!errorPresent &&   <button
             className="p-2 bg-indigo-600 rounded-lg shadow justify-center items-center gap-2.5 flex"
             onClick={() => {
               setShowPublishModal(true);
@@ -268,7 +271,7 @@ const MisciWorkSpace = ({
               <PaperAirplaneIcon className="h-5 w-5 text-white" />
             </span>
             <span className="text-white text-base font-medium">Publish</span>
-          </button>
+          </button>}
         </div>
       </header>
       {/* modals */}
