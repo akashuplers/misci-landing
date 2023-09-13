@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Modal from "react-modal";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { misciBlogPublish } from "@/helpers/apiMethodsHelpers";
@@ -23,7 +23,15 @@ const PublishMisciModal = ({
   const [youShoulBeRedirected, setYouShoulBeRedirected] = React.useState(true);
   const [seconds, setSeconds] = React.useState(5);
   const router = useRouter();
-  var youShoulBeRedirectedClone = youShoulBeRedirected;
+  const [timeoutId, setTimeoutId] = React.useState<any>(null);
+  const [intervalId , setIntervalId] = React.useState<any>(null);
+  function handleClose () {
+    setShowRedirectionModal(false);
+    setSeconds(5);
+    setTimeoutId(null);
+    clearTimeout(timeoutId);
+    setShowModal(false);
+  }
   const onSubmit = (values: any) => {
     misciBlogPublish({
       blog_id: blogId,
@@ -45,20 +53,25 @@ const PublishMisciModal = ({
         // setShowModal(false);
         setShowRedirectionModal(true);
         // 5000s after
-        setInterval(() => {  
+       let intervalTime =  setInterval(() => {  
           setSeconds((seconds) => {
             if (seconds === 0) {
+              clearInterval(intervalTime);
               return 0;
             }
             return seconds - 1;
           });
         }, 1000);
-        setTimeout(() => {
-          youShoulBeRedirectedClone ? router.push("/misci") : alert("no");
+        setIntervalId(intervalTime);
+        let timeoutID =  setTimeout(() => {
+          router.push('/misci')
+          clearInterval(intervalTime);
         }, 6500);
+        setTimeoutId(timeoutID)
       });
   };
 
+ 
   const validate = (values: any) => {
     const errors: any = {};
     if (!values.email) {
@@ -80,7 +93,7 @@ const PublishMisciModal = ({
       <Modal
         isOpen={showModal}
         onRequestClose={() => {
-          setShowModal(false);
+          handleClose();
         }}
         ariaHideApp={false}
         className="modalModalWidth flex items-center justify-center"
@@ -112,6 +125,7 @@ const PublishMisciModal = ({
           },
         }}
       >
+         
         <div className="w-full h-full">
           <div
             className="absolute flex w-full items-center justify-between"
@@ -122,7 +136,7 @@ const PublishMisciModal = ({
             <button
               className="w-6 h-6 self-end"
               onClick={() => {
-                setShowModal(false);
+                handleClose();
               }}
             >
               <XMarkIcon className="w-6 h-6" />
@@ -143,8 +157,11 @@ const PublishMisciModal = ({
                 <button
                   className="p-2 justify-start w-full  items-center gap-2 inline-flex"
                   onClick={() => {
-                    setYouShoulBeRedirected(false);
+                     
+                    clearInterval(intervalId);
+                    clearTimeout(timeoutId);
                     setShowModal(false);
+                    handleClose();
                   }}
                 >
                   <div className="grow shrink basis-0 h-10 bg-indigo-600 rounded-lg flex-col justify-center items-center gap-2.5 inline-flex">
