@@ -23,6 +23,7 @@ const PublishMisciModal = ({
   const [youShoulBeRedirected, setYouShoulBeRedirected] = React.useState(true);
   const [seconds, setSeconds] = React.useState(5);
   const router = useRouter();
+  var youShoulBeRedirectedClone = youShoulBeRedirected;
   const onSubmit = (values: any) => {
     misciBlogPublish({
       blog_id: blogId,
@@ -53,7 +54,7 @@ const PublishMisciModal = ({
           });
         }, 1000);
         setTimeout(() => {
-          youShoulBeRedirected && router.push("/misci");
+          youShoulBeRedirectedClone ? router.push("/misci") : alert("no");
         }, 6500);
       });
   };

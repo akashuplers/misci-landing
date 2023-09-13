@@ -317,7 +317,7 @@ const MisciWorkSpace = ({
             <Tab.Panel className={`w-full h-full flex `}>
               <div className="w-[70%] flex  h-full ">
                 <div className="p-2 flex-col  w-full justify-start items-start gap-7 inline-flex">
-                  <div className="flex-col bg-[#F3F3F3] rounded-md p-2  bg-opacity-70 w-full h-full justify-start items-start gap-5 flex">
+                  <div className="flex-col rounded-md p-2  bg-opacity-70 w-full h-full justify-start items-start gap-5 flex">
                     <div className=" text-slate-800 text-xl font-bold leading-relaxed tracking-tight">
                       {userquestion}
                     </div>
@@ -412,7 +412,6 @@ const MisciWorkSpace = ({
                 <>
                   <div
                     className="text-xs px-2 mb-24 lg:mb-0"
-                    style={{ borderLeft: "2px solid #d2d2d2" }}
                     id="regenblog"
                   >
                     {/* h1 Insight only for mobile screens */}
@@ -424,12 +423,12 @@ const MisciWorkSpace = ({
                         Create your next draft on the basis of your edits.
                       </p>
                       <button
-                        className="cta flex items-center gap-2 self-start py-2 !font-semibold"
+                        className="cta flex items-center  p-2 font-semibold gap-2.5 justify-center"
                         disabled={nextDraftLoader}
                         onClick={() => handleNextDraft()}
                       >
                         <RegenerateIcon />
-                        {"Next Draft"}
+            <span className="text-base">{"Next Draft"}</span>
                       </button>
                     </div>
                   </div>
@@ -520,31 +519,7 @@ export const IdeaItem = ({
     <>
       <div className="flex pb-3 usedIdeas" key={id}>
         <div className="flex justify-between gap-5 w-full">
-          <p className="text-[13px]">{text}</p>
-          <a
-            style={{
-              color: "var(--primary-blue)",
-              alignSelf: "flex-start",
-              position: "relative",
-              marginLeft: "auto",
-              cursor: "pointer",
-            }}
-          >
-            <div
-              className={`hidden referenceTooltip${id}`}
-              style={{
-                position: "absolute",
-                top: "100%",
-                right: "0",
-                border: "1px solid",
-                color: "black",
-                backgroundColor: "white",
-                padding: "0.5em",
-                borderRadius: "5px",
-                zIndex: "1",
-              }}
-            ></div>
-          </a>
+          <p className="text-[13px] max-w-[90%]">{text}</p>
           <input
             type="checkbox"
             className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-none focus:ring-blue-500"
@@ -580,14 +555,14 @@ const UnsedIteamTabs = ({
   const [unusedIdeas, setUnusedIdeas] = React.useState<any>([]);
 
   return (
-    <div className="">
+    <div className="relative overflow-y-scroll pb-4 h-full">
       <Tab.Group
         onChange={(index) => {
           setCurrentEditTabIndex(index);
         }}
         selectedIndex={currentEditTabIndex}
       >
-        <Tab.List className="flex relative items-center gap-2 w-full ">
+        <Tab.List className="flex sticky top-0 items-center gap-3 w-full bg-white ">
           {editTabs.map((tab: any, index: number) => (
             <Tab key={tab.name} className={`outline-none`}>
               <TabItem
@@ -603,7 +578,7 @@ const UnsedIteamTabs = ({
         </Tab.List>
         <Tab.Panels>
           <Tab.Panel
-            className={`w-full max-h-full flex flex-col gap-4 overflow-y-scroll p-2 border-none outline-none`}
+            className={`w-full max-h-full flex flex-col gap-4 p-2 border-none outline-none`}
           >
             <div className="h-full flex flex-col gap-1 border-none">
               {ideas ? (
@@ -627,6 +602,7 @@ const UnsedIteamTabs = ({
               ) : (
                 <>loading.. ideas</>
               )}
+              
             </div>
           </Tab.Panel>
           <Tab.Panel className={`w-full  `}>
