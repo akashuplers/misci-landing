@@ -206,7 +206,7 @@ router.post('/generate', async (req: any, res: any) => {
             imageSrc,
             ideasText,
             ideasArr,
-            refUrls: [],
+            refUrls,
             userDetails: null,
             userId: userId,
             keywords: [],
@@ -401,6 +401,13 @@ router.post('/re-generate', async (req: any, res: any) => {
             })
         )
     )
+    const noteReferences = await db.db('lilleBlogs').collection('notesReferences').find({
+        article_id: articleIds
+    })
+    let notesRefUrls = []
+    if(noteReferences && noteReferences.length) {
+        notesRefUrls = noteReferences.map((data: any) => notesRefUrls.push(data.urls))
+    }
     // console.log(texts)
     try {
         let refUrls: {
@@ -418,10 +425,12 @@ router.post('/re-generate', async (req: any, res: any) => {
             imageUrl: imageUrl ? imageUrl : blog.imageUrl,
             imageSrc,
             ideasArr,
-            refUrls: [],
+            refUrls,
             userDetails,
             userId: userDetails._id,
-            type: ["wordpress", "title"]
+            type: ["wordpress", "title"],
+            misci: true,
+            notesRefUrls
         })
         if(blogGeneratedData) {
             const {usedIdeasArr, updatedBlogs, description} = blogGeneratedData

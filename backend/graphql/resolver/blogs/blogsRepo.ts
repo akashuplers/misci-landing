@@ -444,7 +444,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 }); 
                                 // description = (newsLetter[key]?.replace("\n", ""))?.trimStart()
                                 usedIdeasArr = description?.split('. ')
-                                if(ideasArr && ideasArr.length && refUrls && refUrls?.length) {
+                                if(!misci && ideasArr && ideasArr.length && refUrls && refUrls?.length) {
                                     let articleIds: string[] = []
                                     refUrls?.map((refUrl) => articleIds.push(refUrl.id))
                                     const refBlogs = await new Python({userId}).getReferences({
