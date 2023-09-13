@@ -231,6 +231,7 @@ interface TabItem {
   selected?: boolean;
   showIcon?: boolean;
   count?: number;
+  showOnLeft? : boolean
 }
 export function TabItem({
   title,
@@ -240,6 +241,7 @@ export function TabItem({
   selected,
   showIcon = true,
   count,
+showOnLeft = false
 }: TabItem) {
   return (
     <div
@@ -250,7 +252,8 @@ export function TabItem({
           : "text-gray-100 hover:bg-white/[0.12]"
       )}
     >
-      <div className="flex items-center justify-around flex-row-reverse gap-2  py-1">
+      <div className={`flex items-center justify-around ${
+showOnLeft ? 'flex-row-reverse' :'flex-row'} gap-2 py-1`}>
         {/* noftication, */}
         {count ? (
           <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full">
