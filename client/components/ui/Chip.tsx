@@ -29,20 +29,20 @@ export const Chip = ({
         >
           <button
             {...rest}
-            className={`h-8 px-[18px] py-1.5  rounded-full justify-center items-center inline-flex ${
+            className={`min-h-8 px-[18px]   rounded-full justify-center items-center inline-flex ${
               selected
                 ? "bg-indigo-700 text-white"
                 : "bg-gray-200 text-slate-700 "
             }`}
             onClick={() => handleClick && handleClick(index ?? 0)}
           >
-            <span className=" text-sm font-normal leading-tight">{text}</span>
+            <span className=" text-sm py-3 font-normal leading-tight">{text+ 'aslkjfaskfjalsdfjasldkfjalksdjfalskdjf'}</span>
           </button>
         </Tooltip>
       ) : (
         <button
           {...rest}
-          className={`h-8 px-[18px] py-1.5  rounded-full justify-center items-center gap-2.5 inline-flex ${
+          className={`min-h-[2rem] px-[18px] rounded-full justify-center items-center gap-2.5 inline-flex ${
             selected
               ? "bg-indigo-700 text-white"
               : "bg-gray-200 text-slate-700 "
