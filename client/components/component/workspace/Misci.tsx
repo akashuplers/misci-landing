@@ -364,15 +364,7 @@ const MisciWorkSpace = ({
         isOpen={AnswersReadmore}
         setIsOpen={setAnswersReadMore}
         question={question}
-        children={
-          <>
-            <p
-              dangerouslySetInnerHTML={{
-                __html: detailedAnswer,
-              }}
-            ></p>
-          </>
-        }
+        detailedAnswer={detailedAnswer}
       />
       <div
         className="flex"
