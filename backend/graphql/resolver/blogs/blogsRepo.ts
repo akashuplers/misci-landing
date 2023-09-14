@@ -508,7 +508,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                         })
                                     })
                                 }
-                                if(refUrls && refUrls.length) {
+                                if(!notesRefUrls.length && refUrls && refUrls.length) {
                                     refUrls && refUrls.length && refUrls.forEach((data) => {
                                         references.push({
                                             "tag": "LI",
