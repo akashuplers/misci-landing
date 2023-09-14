@@ -121,7 +121,9 @@ router.post('/generate', async (req: any, res: any) => {
         const insertedData = await db.db('lilleBlogs').collection('blogs').insertOne(finalBlogObj)
         const data = await db.db('lilleBlogs').collection('blogs').findOne({_id: new ObjectID(insertedData.insertedId)})
         console.log(data, "data")
-        publish({userId, keyword: null, step: "ANSWER_FETCHING_COMPLETED", data})
+        setTimeout(() => {
+            publish({userId, keyword: null, step: "ANSWER_FETCHING_COMPLETED", data})
+        }, 3000)
         const articleIds = [article.id]
         let pythonEnd = new Date()
         // let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
