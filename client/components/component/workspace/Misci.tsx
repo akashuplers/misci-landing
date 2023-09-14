@@ -40,7 +40,10 @@ interface MisciWorkSpaceProps {
 const MisciWorkSpace = ({
   subscriptionData,
   question,
-  errorPresent, setErrorPresent, loadingMisciblog, setLoadingMisciblog
+  errorPresent,
+  setErrorPresent,
+  loadingMisciblog,
+  setLoadingMisciblog,
 }: MisciWorkSpaceProps) => {
   const [misciblog, setMisciblog] = React.useState<any>(null);
   const [currentTabIndex, setCurrentTabIndex] = React.useState(0);
@@ -69,7 +72,7 @@ const MisciWorkSpace = ({
   const [showPublishModal, setShowPublishModal] = useState(false);
   // const [initailListOfIdeas, setInitialListOfIdeas] = useState<any[]>([]);
   const { getInitialListOfIdeas, setInitialListOfIdeas } = useIdeaState();
-
+  const [articleLoaderErrorText, setArticleLoaderErrorText] = useState("");
   useEffect(() => {
     const step = subscriptionData?.stepCompletes.step;
     console.log("sub ran", step);
@@ -136,9 +139,11 @@ const MisciWorkSpace = ({
       // });
       setEditorAnswersData(ErrorBase.errorAnswerWithQuestion(question));
       setDetailedAnswer(ErrorBase.errorAnswerWithQuestion(question));
+      setArticleLoaderErrorText(ErrorBase.unableToGenerateArticle);
       setLoadingMisciblog(false);
+      setArticleLoaderErrorText(ErrorBase.unableToGenerateArticle);
       setErrorPresent(true);
-      
+
       // setTimeout(() => {
       //   // take to /misci
       //   router.push("/misci");
@@ -146,10 +151,11 @@ const MisciWorkSpace = ({
     }
   }, [subscriptionData?.stepCompletes?.step]);
   useEffect(() => {
-    if(errorPresent===true){
+    if (errorPresent === true) {
       setDetailedAnswer(ErrorBase.errorAnswerWithQuestion(question));
       setEditorAnswersData(ErrorBase.errorAnswerWithQuestion(question));
       setLoadingMisciblog(false);
+      setArticleLoaderErrorText(ErrorBase.unableToGenerateArticle);
     }
   }, [errorPresent]);
 
@@ -218,7 +224,7 @@ const MisciWorkSpace = ({
             (idea: any) => idea.used == 1
           );
           console.log([...getAllIdeasWith1, ...ideas]);
-          // get only used == 
+          // get only used ==
           setListOfIdeas((prev) => {
             return [...getAllIdeasWith1];
           });
@@ -231,8 +237,15 @@ const MisciWorkSpace = ({
       .finally(() => {});
   }
 
-  const DynamicAnswersData = ({ html, short_answer, detailed_answer }: { html: string , detailed_answer:string, short_answer:string}) => {
-
+  const DynamicAnswersData = ({
+    html,
+    short_answer,
+    detailed_answer,
+  }: {
+    html: string;
+    detailed_answer: string;
+    short_answer: string;
+  }) => {
     return (
       <div className="">
         {/* <div
@@ -240,23 +253,24 @@ const MisciWorkSpace = ({
           dangerouslySetInnerHTML={{ __html: mySafeHTML }}
         ></div> */}
         <div className="flex flex-col gap-4">
-          {
-            short_answer.length > 0 ? <>
-            <div>
-            <p>
-              Short Answer: <span
-              dangerouslySetInnerHTML={{ __html: short_answer }}
-              ></span>
-            </p>
-          </div>
-          <div className="border-b border-gray-200"></div>
-</>: <></>
-          }
+          {short_answer.length > 0 ? (
+            <>
+              <div>
+                <p>
+                  Short Answer:{" "}
+                  <span
+                    dangerouslySetInnerHTML={{ __html: short_answer }}
+                  ></span>
+                </p>
+              </div>
+              <div className="border-b border-gray-200"></div>
+            </>
+          ) : (
+            <></>
+          )}
           {/* under line */}
           <div>
-            <p
-              dangerouslySetInnerHTML={{ __html: detailed_answer }}>
-            </p>
+            <p dangerouslySetInnerHTML={{ __html: detailed_answer }}></p>
           </div>
         </div>
         <br />
@@ -303,17 +317,19 @@ const MisciWorkSpace = ({
           </span>
         </button>
         <div className="justify-start items-center gap-4 flex">
-        {!errorPresent &&   <button
-            className="p-2 bg-indigo-600 rounded-lg shadow justify-center items-center gap-2.5 flex"
-            onClick={() => {
-              setShowPublishModal(true);
-            }}
-          >
-            <span className="-rotate-45">
-              <PaperAirplaneIcon className="h-5 w-5 text-white" />
-            </span>
-            <span className="text-white text-base font-medium">Publish</span>
-          </button>}
+          {!errorPresent && (
+            <button
+              className="p-2 bg-indigo-600 rounded-lg shadow justify-center items-center gap-2.5 flex"
+              onClick={() => {
+                setShowPublishModal(true);
+              }}
+            >
+              <span className="-rotate-45">
+                <PaperAirplaneIcon className="h-5 w-5 text-white" />
+              </span>
+              <span className="text-white text-base font-medium">Publish</span>
+            </button>
+          )}
         </div>
       </header>
       {/* modals */}
@@ -350,33 +366,32 @@ const MisciWorkSpace = ({
                   selected={currentTabIndex === 0}
                 />
               </Tab>
-             {
-              !errorPresent &&  <Tab className={`outline-none`}>
-              <TabItem
-                icon={
-                  <div>
-                    <img src="/icons/questions_icon.svg" alt="" />
-                  </div>
-                }
-                title={"Article"}
-                selected={currentTabIndex === 1}
-              />
-            </Tab> 
-             }
+              {!errorPresent && (
+                <Tab className={`outline-none`}>
+                  <TabItem
+                    icon={
+                      <div>
+                        <img src="/icons/questions_icon.svg" alt="" />
+                      </div>
+                    }
+                    title={"Article"}
+                    selected={currentTabIndex === 1}
+                  />
+                </Tab>
+              )}
             </Tab.List>
             <Tab.Panel className={`w-full h-full flex `}>
-              <div
-                className="w-[70%] bg-neutral-100 rounded-2xl flex relative h-full"
-              >
+              <div className="w-[70%] bg-neutral-100 rounded-2xl flex relative h-full">
                 <div className="flex-col  w-full justify-start items-start gap-7 inline-flex">
                   <div className="bg-opacity-70 w-full h-full justify-start items-center gap-5 flex flex-col">
                     <div className="w-full text-slate-800 text-xl font-bold leading-relaxed tracking-tight min-h-20 bg-[#FF8980] flex flex-col items-center sticky top-0 z-20 rounded-b-[3rem] ">
                       {/* {userquestion} */}
                       <div className="flex w-full items-center  gap-4 p-4 px-8 justify-start">
-                        <div className="h-14 w-14 text-red-500 border-white "
-                        style={{
-                          mixBlendMode: 'luminosity'
-                        }}
+                        <div
+                          className="h-14 w-14 text-red-500 border-white "
+                          style={{
+                            mixBlendMode: "luminosity",
+                          }}
                         >
                           <img src="../icons/qmark.svg" alt="" />
                         </div>
@@ -392,18 +407,32 @@ const MisciWorkSpace = ({
                           <img src="../icons/tick.svg" alt="" />
                         </span>
                         <div className="mt-4 text-lg w-[95%]">
-                          <DynamicAnswersData html={editorAnswersData ?? ""} short_answer={shortAnswer} detailed_answer={detailedAnswer}/>
+                          <DynamicAnswersData
+                            html={editorAnswersData ?? ""}
+                            short_answer={shortAnswer}
+                            detailed_answer={detailedAnswer}
+                          />
                         </div>
                       </div>
                     </div>
-                     
-                    <div className="mt-[-10%] z-0"
-                    style={{
-                      filter: 'grayscale(80%)',
-                      opacity: '0.1'
-                    }}
-                    > 
-                    <img style={{width: 673, height: 479, opacity: 0.99, mixBlendMode: 'darken', borderRadius: 53}} src="../ground.png" />
+
+                    <div
+                      className="mt-[-10%] z-0"
+                      style={{
+                        filter: "grayscale(80%)",
+                        opacity: "0.1",
+                      }}
+                    >
+                      <img
+                        style={{
+                          width: 673,
+                          height: 479,
+                          opacity: 0.99,
+                          mixBlendMode: "darken",
+                          borderRadius: 53,
+                        }}
+                        src="../ground.png"
+                      />
                     </div>
                   </div>
                 </div>
@@ -438,16 +467,26 @@ const MisciWorkSpace = ({
                     </>
                   ) : (
                     <>
-                      <LottiePlayer
-                        loop
-                        autoplay
-                        animationData={opener_loading}
-                        className="h-24"
-                      />
+                      {errorPresent ? (
+                        <>
+                          <span className="text-gray-800 text-2xl font-bold leading-none text-center">
+                            {articleLoaderErrorText}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <LottiePlayer
+                            loop
+                            autoplay
+                            animationData={opener_loading}
+                            className="h-24"
+                          />
 
-                      <span className="text-gray-800 text-2xl font-bold leading-none text-center">
-                        We are almost there
-                      </span>
+                          <span className="text-gray-800 text-2xl font-bold leading-none text-center">
+                            We are almost there
+                          </span>
+                        </>
+                      )}
                     </>
                   )}
                 </div>
@@ -526,8 +565,7 @@ const MisciWorkSpace = ({
                         <div className="flex justify-between w-full items-center">
                           <h3 className="pt-[0.65em] font-semibold">Sources</h3>
                         </div>
-                        <div className="flex gap-[0.5em] flex-wrap h-full w-full  overflow-x-hidden overflow-y-scroll"
-                        >
+                        <div className="flex gap-[0.5em] flex-wrap h-full w-full  overflow-x-hidden overflow-y-scroll">
                           {references?.map((ref) => {
                             return <Chip key={ref.id} text={ref.source} />;
                           })}
