@@ -407,13 +407,18 @@ router.post('/re-generate', async (req: any, res: any) => {
         )
     )
     const noteReferences = await db.db('lilleBlogs').collection('notesReferences').find({
-        article_id: articleIds
-    })
-    let notesRefUrls = []
+        article_id: {
+            $in: articleIds
+        }
+    }).toArray()
+    let notesRefUrls: any[] = []
     if(noteReferences && noteReferences.length) {
-        notesRefUrls = noteReferences.map((data: any) => notesRefUrls.push(data.urls))
+        noteReferences.forEach((data: any) => {
+            console.log(data.urls, "data.urls")
+            notesRefUrls = [...notesRefUrls, ...data.urls]
+        })
     }
-    // console.log(texts)
+
     try {
         let refUrls: {
             url: string
