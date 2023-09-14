@@ -29,6 +29,7 @@ import NextDraftIssueModal from "@/modals/NextDraftIssueModal";
 import { useIdeaState } from "@/store/appState";
 import PublishMisciModal from "@/modals/PublishMisciModal";
 import IdeaTag from "@/components/IdeaTag";
+import TextModal from "@/modals/TextModal";
 interface MisciWorkSpaceProps {
   subscriptionData: StepCompleteData | undefined;
   question: string;
@@ -51,6 +52,7 @@ const MisciWorkSpace = ({
   const [userquestion, setQuestion] = useState<string>("");
   const [listOfIdeas, setListOfIdeas] = useState<any[]>([]);
   // const [initailListOfIdeas, setInitialListOfIdeas] = useState<any[]>([]);
+  const [AnswersReadmore, setAnswersReadMore] = useState(false);
   const [listOfUnusedIdeas, setListOfUnusedIdeas] = useState<any>([]);
   const router = useRouter();
   const [EditorSetUpCompleted, setEditorSetUpCompleted] = useState(false);
@@ -252,7 +254,7 @@ const MisciWorkSpace = ({
           id="answersEditor"
           dangerouslySetInnerHTML={{ __html: mySafeHTML }}
         ></div> */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 relative">
           {short_answer.length > 0 ? (
             <>
               <div>
@@ -269,8 +271,24 @@ const MisciWorkSpace = ({
             <></>
           )}
           {/* under line */}
-          <div>
+          <div className="">
             <p dangerouslySetInnerHTML={{ __html: detailed_answer }}></p>
+            {/* read more brn */}
+
+            {detailed_answer.length > 2500 && (
+              <div className="absolute bottom-[-5%] right-0">
+                <button
+                  className="p-2 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600 text-white 
+                transition duration-300 ease-in-out 
+                hover:bg-indigo-700 hover:border-indigo-700 hover:shadow-lg hover:scale-105"
+                  onClick={() => {
+                    setAnswersReadMore(true);
+                  }}
+                >
+                  Read More
+                </button>
+              </div>
+            )}
           </div>
         </div>
         <br />
@@ -342,6 +360,20 @@ const MisciWorkSpace = ({
         showModal={showPublishModal}
         setShowModal={setShowPublishModal}
       />
+      <TextModal
+        isOpen={AnswersReadmore}
+        setIsOpen={setAnswersReadMore}
+        question={question}
+        children={
+          <>
+            <p
+              dangerouslySetInnerHTML={{
+                __html: detailedAnswer,
+              }}
+            ></p>
+          </>
+        }
+      />
       <div
         className="flex"
         style={{
@@ -383,7 +415,7 @@ const MisciWorkSpace = ({
             <Tab.Panel className={`w-full h-full flex `}>
               <div className="w-[70%] bg-neutral-100 rounded-2xl flex relative h-full">
                 <div className="flex-col  w-full justify-start items-start gap-7 inline-flex">
-                  <div className="bg-opacity-70 w-full h-full justify-start items-center gap-5 flex flex-col overflow-y-scroll">
+                  <div className="bg-opacity-70 w-full h-full justify-start items-center gap-5 flex flex-col">
                     <div className="w-full text-slate-800 text-xl font-bold leading-relaxed tracking-tight min-h-20 bg-[#FF8980] flex flex-col items-center sticky top-0 z-20 rounded-b-[3rem] ">
                       {/* {userquestion} */}
                       <div className="flex w-full items-center  gap-4 p-4 px-8 justify-start">
@@ -411,7 +443,7 @@ const MisciWorkSpace = ({
                             html={editorAnswersData ?? ""}
                             short_answer={shortAnswer}
                             detailed_answer={detailedAnswer}
-                          /> 
+                          />
                         </div>
                       </div>
                     </div>
