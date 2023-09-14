@@ -128,13 +128,14 @@ const PublishMisciModal = ({
          
         <div className="w-full h-full">
           <div
-            className="absolute flex w-full items-center justify-between"
+            className="absolute px-4 flex w-full items-center justify-end"
             style={{
               top: "10%",
+              right: '0%'
             }}
           >
             <button
-              className="w-6 h-6 self-end"
+              className="w-6 h-6"
               onClick={() => {
                 handleClose();
               }}
