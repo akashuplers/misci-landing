@@ -32,12 +32,16 @@ import IdeaTag from "@/components/IdeaTag";
 interface MisciWorkSpaceProps {
   subscriptionData: StepCompleteData | undefined;
   question: string;
+  errorPresent: boolean;
+  setErrorPresent: any;
+  loadingMisciblog: boolean;
+  setLoadingMisciblog: any;
 }
 const MisciWorkSpace = ({
   subscriptionData,
   question,
+  errorPresent, setErrorPresent, loadingMisciblog, setLoadingMisciblog
 }: MisciWorkSpaceProps) => {
-  const [loadingMisciblog, setLoadingMisciblog] = React.useState(true);
   const [misciblog, setMisciblog] = React.useState<any>(null);
   const [currentTabIndex, setCurrentTabIndex] = React.useState(0);
   const [editorAnswersData, setEditorAnswersData] = React.useState<any>(null);
@@ -52,7 +56,6 @@ const MisciWorkSpace = ({
   const [editorArticleData, setEditorArticleData] = useState<any>(null);
   const [blogId, setBlogId] = useState("");
   const [nextDraftLoader, setNextDraftLoader] = useState(false);
-  const [errorPresent, setErrorPresent] = useState(false);
   const [shortAnswer, setShortAnswer] = useState<string>("");
   const [detailedAnswer, setDetailedAnswer] = useState<string>("");
   const [references, setReferences] = useState<
@@ -130,6 +133,7 @@ const MisciWorkSpace = ({
       //   delay: 10000
       // });
       setEditorAnswersData(ErrorBase.errorAnswerWithQuestion(question));
+      setDetailedAnswer(ErrorBase.errorAnswerWithQuestion(question));
       setLoadingMisciblog(false);
       setErrorPresent(true);
       
@@ -139,6 +143,13 @@ const MisciWorkSpace = ({
       // }, 8000);
     }
   }, [subscriptionData?.stepCompletes?.step]);
+  useEffect(() => {
+    if(errorPresent===true){
+      setDetailedAnswer(ErrorBase.errorAnswerWithQuestion(question));
+      setEditorAnswersData(ErrorBase.errorAnswerWithQuestion(question));
+      setLoadingMisciblog(false);
+    }
+  }, [errorPresent]);
 
   useEffect(() => {
     console.log(getInitialListOfIdeas());
@@ -180,8 +191,8 @@ const MisciWorkSpace = ({
     })
       .then((res) => {
         if (res?.data?.error === true) {
-          // This question goes beyond the library that we built for the Ground to Gourmet exhibit! You might be able to find the answer by using Lille.ai with web access, which you can try for yourself at https://www.lille.ai.
           setEditorAnswersData(ErrorBase.errorAnswerWithQuestion(question));
+          setDetailedAnswer(ErrorBase.errorAnswerWithQuestion(question));
           setLoadingMisciblog(false);
         } else {
           console.log(res);
@@ -219,8 +230,7 @@ const MisciWorkSpace = ({
   }
 
   const DynamicAnswersData = ({ html, short_answer, detailed_answer }: { html: string , detailed_answer:string, short_answer:string}) => {
-    var mySafeHTML = structuredClone(html);
-    mySafeHTML = DOMPurify.sanitize(mySafeHTML);
+
     return (
       <div className="">
         {/* <div
@@ -233,7 +243,7 @@ const MisciWorkSpace = ({
             <div>
             <p>
               Short Answer: <span
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(short_answer) }}
+              dangerouslySetInnerHTML={{ __html: short_answer }}
               ></span>
             </p>
           </div>
@@ -243,7 +253,7 @@ const MisciWorkSpace = ({
           {/* under line */}
           <div>
             <p
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(detailed_answer) }}>
+              dangerouslySetInnerHTML={{ __html: detailed_answer }}>
             </p>
           </div>
         </div>

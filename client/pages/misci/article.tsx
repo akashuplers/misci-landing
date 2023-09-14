@@ -36,7 +36,9 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   const [userAbleUserIDForSubs, setUserAbleUserIDForSubs] = useState<
     string | null
   >("");
+  const [errorPresent, setErrorPresent] = useState(false);
   const router = useRouter();
+  const [loadingMisciblog, setLoadingMisciblog] = React.useState(true);
   const [getToken, setGetToken] = useState<string | null>("");
   const {
     data: subsData,
@@ -82,9 +84,17 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     const userId = getUserToken();
     const tempiId = localStorage.getItem("tempId");
     generateMisci({ question, userId: tempiId ?? "" })
-      .then((res) => {})
+      .then((res) => {
+        console.log(res);
+        if(res.error==true){
+          setErrorPresent(true)
+        }
+      })
       .catch((err) => {
         console.log(err);
+        if(err.response.data.error==true){
+          setErrorPresent(true);
+        }
       })
       .finally(() => {
         console.log("finally");
@@ -96,7 +106,9 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       <Head>
         <title className="capitalize">{capitalizeText(question)}</title>
       </Head>
-        <MisciWorkSpace subscriptionData={subsData} question={question} />
+        <MisciWorkSpace subscriptionData={subsData} question={question}  
+        setErrorPresent={setErrorPresent}  errorPresent={errorPresent} setLoadingMisciblog={setLoadingMisciblog} loadingMisciblog={loadingMisciblog}/>
+
     </>
   );
 };
