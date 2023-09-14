@@ -6,7 +6,7 @@ import {
   generateMisci,
   regenerateNextDraft,
 } from "@/helpers/apiMethodsHelpers";
-import { classNames, getUserToken } from "@/store/appHelpers";
+import { capitalizeText, classNames, getUserToken } from "@/store/appHelpers";
 import { StepCompleteData } from "@/store/types";
 import { useSubscription } from "@apollo/client";
 import { useRouter } from "next/router";
@@ -94,7 +94,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   return (
     <>
       <Head>
-        <title>{question}</title>
+        <title className="capitalize">{capitalizeText(question)}</title>
       </Head>
         <MisciWorkSpace subscriptionData={subsData} question={question} />
     </>
