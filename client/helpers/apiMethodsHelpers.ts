@@ -286,7 +286,7 @@ export const generateMisci = async (postData: PostData) => {
   } catch (error) {
     // Handle errors here
     console.error(error);
-    throw error; // You can choose to handle the error or rethrow it
+    return error; 
   }
 };
 
@@ -304,3 +304,12 @@ export const regenerateNextDraft = async ({ideas , blog_id , onStart, onComplete
     console.log(error);
   }
 }
+
+export const misciBlogPublish = async ({blog_id, email, name}:{ blog_id: string, email:string, name:string}) =>{
+  try {
+    const response  =await http.post(API_ROUTES.MISCI_PUBLISH, {blogId : blog_id, email, name});
+    return response.data;
+  }catch (error){
+    console.log(error);
+  }
+};

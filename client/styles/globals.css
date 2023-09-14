@@ -29,6 +29,11 @@ html {
   scroll-behavior: smooth;
 }
 
+*{
+  /* outline */
+  outline: 0px solid transparent;
+}
+
 :root {
   --my-mobile-sidebar-height: unset;
   --sidebar-width: 12.5rem;
@@ -115,7 +120,7 @@ html {
 
 /* width */
 ::-webkit-scrollbar {
-  width: 3px;
+  width: 0px;
 }
 
 /* Track */

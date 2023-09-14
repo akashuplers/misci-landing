@@ -296,3 +296,19 @@ export const useGlobalBlogID = create<GlobalBlogID>((set) => ({
 }));
 
 export const  MODAL_OVERLAY_BG_COLOR:string = 'rgba(0,0,0,0.5)'
+
+
+// initialListOfIdeas 
+
+
+interface IdeaState {
+  initialListOfIdeas: string[];  // Corrected property name
+  setInitialListOfIdeas: (ideas: string[]) => void;
+  getInitialListOfIdeas: () => string[];  // Corrected property name
+}
+
+export const useIdeaState = create<IdeaState>((set , get) => ({
+  initialListOfIdeas: [],
+  setInitialListOfIdeas: (ideas) => set({ initialListOfIdeas: ideas }),
+  getInitialListOfIdeas: () => get().initialListOfIdeas,
+}));

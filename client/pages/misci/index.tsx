@@ -17,6 +17,7 @@ import {
 import ErrorBase from "@/store/errors";
 
 const MiSci = () => {
+  
   const [keyword, setkeyword] = useState("");
   const [getUserIdForSubs, setGetUserIdForSubs] = useState<string | null>("");
   const [getTempIdForSubs, setGetTempIdForSubs] = useState<string | null>("");
@@ -33,35 +34,35 @@ const MiSci = () => {
     error: false,
     message: "",
   });
-  const {
-    data: subsData,
-    loading: subsLoading,
-    error: subsError,
-  } = useSubscription<StepCompleteData>(STEP_COMPLETES_SUBSCRIPTION, {
-    variables: { userId: userAbleUserIDForSubs },
-  });
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const tokenFromLocalStorage = localStorage.getItem("token");
-      const userIdFromLocalStorage = localStorage.getItem("userId");
-      const tempIdFromLocalStorage = localStorage.getItem("tempId");
-      setGetTokenForSubs(tokenFromLocalStorage);
-      setGetToken(tokenFromLocalStorage);
-      setGetUserIdForSubs(userIdFromLocalStorage);
-      setGetTempIdForSubs(tempIdFromLocalStorage);
-      const userAbleUserID = tokenFromLocalStorage
-        ? userIdFromLocalStorage
-        : tempIdFromLocalStorage;
-      setUserAbleUserIDForSubs(tempIdFromLocalStorage);
-      console.log(
-        getUserIdForSubs,
-        getTempIdForSubs,
-        getTokenForSubs,
-        userAbleUserIDForSubs,
-        "FROM USER"
-      );
-    }
-  }, [subsError]);
+  // const {
+  //   data: subsData,
+  //   loading: subsLoading,
+  //   error: subsError,
+  // } = useSubscription<StepCompleteData>(STEP_COMPLETES_SUBSCRIPTION, {
+  //   variables: { userId: userAbleUserIDForSubs },
+  // });
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const tokenFromLocalStorage = localStorage.getItem("token");
+  //     const userIdFromLocalStorage = localStorage.getItem("userId");
+  //     const tempIdFromLocalStorage = localStorage.getItem("tempId");
+  //     setGetTokenForSubs(tokenFromLocalStorage);
+  //     setGetToken(tokenFromLocalStorage);
+  //     setGetUserIdForSubs(userIdFromLocalStorage);
+  //     setGetTempIdForSubs(tempIdFromLocalStorage);
+  //     const userAbleUserID = tokenFromLocalStorage
+  //       ? userIdFromLocalStorage
+  //       : tempIdFromLocalStorage;
+  //     setUserAbleUserIDForSubs(tempIdFromLocalStorage);
+  //     console.log(
+  //       getUserIdForSubs,
+  //       getTempIdForSubs,
+  //       getTokenForSubs,
+  //       userAbleUserIDForSubs,
+  //       "FROM USER"
+  //     );
+  //   }
+  // }, [subsError]);
 
   const router = useRouter();
   function handleMISCIGenerate() {
@@ -221,6 +222,7 @@ const KeywordInput = ({
   setKeyword,
   setInputError,
 }: KeywordInputProps) => {
+  const router = useRouter();
   return (
     <input
       type="text"
@@ -261,6 +263,15 @@ const KeywordInput = ({
         }
 
         setKeyword(text);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          router.push({
+            pathname: "/misci/article",
+            query: { question: keyword },
+          });
+        }
       }}
     />
   );

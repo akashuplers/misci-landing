@@ -21,37 +21,15 @@ export const Chip = ({
 }: Props) => {
   return (
     <>
-      {wholeData != null ? (
-        <Tooltip
-          content={wholeData.realSource}
-          direction="top"
-          className="text-xs"
-        >
-          <button
-            {...rest}
-            className={`h-8 px-[18px] py-1.5  rounded-full justify-center items-center inline-flex ${
-              selected
-                ? "bg-indigo-700 text-white"
-                : "bg-gray-200 text-slate-700 "
-            }`}
-            onClick={() => handleClick && handleClick(index ?? 0)}
-          >
-            <span className=" text-sm font-normal leading-tight">{text}</span>
-          </button>
-        </Tooltip>
-      ) : (
-        <button
-          {...rest}
-          className={`h-8 px-[18px] py-1.5  rounded-full justify-center items-center gap-2.5 inline-flex ${
-            selected
-              ? "bg-indigo-700 text-white"
-              : "bg-gray-200 text-slate-700 "
-          }`}
-          onClick={() => handleClick && handleClick(index ?? 0)}
-        >
-          <span className=" text-sm font-normal leading-tight">{text}</span>
-        </button>
-      )}
+      <div
+        {...rest}
+        className={`min-h-[2rem] px-[18px] rounded-full justify-center items-center gap-2.5 inline-flex  ${
+          selected ? "bg-indigo-700 text-white" : "bg-gray-200 text-slate-700 "
+        }`}
+        onClick={() => handleClick && handleClick(index ?? 0)}
+      >
+        <h3 className=" text-sm font-normal leading-tight">{text}</h3>
+      </div>
     </>
   );
 };
@@ -230,21 +208,40 @@ interface TabItem {
   disabled?: boolean;
   selected?: boolean;
   showIcon?: boolean;
+  count?: number;
+  showOnLeft?: boolean;
 }
-export function TabItem({ title, content, icon, disabled, selected , showIcon=true}: TabItem) {
+export function TabItem({
+  title,
+  content,
+  icon,
+  disabled,
+  selected,
+  showIcon = true,
+  count,
+  showOnLeft = false,
+}: TabItem) {
   return (
     <div
       className={classNames(
-        "rounded-lg h-full p-2.5 text-sm font-medium leading-5 outline-none text-gray-700",
+        "rounded-lg h-full p-2.5 w-full relative text-sm font-medium leading-5 outline-none text-gray-700",
         selected
           ? "border-gray-200 text-black"
           : "text-gray-100 hover:bg-white/[0.12]"
       )}
     >
-      <div className="flex">
-        {
-          showIcon && <div className="w-5 h-5 mr-2">{icon}</div>
-        }
+      <div
+        className={`flex items-center justify-around ${
+          showOnLeft ? "flex-row-reverse" : "flex-row"
+        } gap-2 py-1`}
+      >
+        {/* noftication, */}
+        {count ? (
+          <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full">
+            {count}
+          </span>
+        ) : null}
+        {showIcon && <div className="w-5 h-5 mr-2">{icon}</div>}
         <div className="text-base font-medium leading-none">{title}</div>
       </div>
       {selected ? ( // under line
