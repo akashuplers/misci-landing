@@ -383,7 +383,7 @@ const MisciWorkSpace = ({
             <Tab.Panel className={`w-full h-full flex `}>
               <div className="w-[70%] bg-neutral-100 rounded-2xl flex relative h-full">
                 <div className="flex-col  w-full justify-start items-start gap-7 inline-flex">
-                  <div className="bg-opacity-70 w-full h-full justify-start items-center gap-5 flex flex-col">
+                  <div className="bg-opacity-70 w-full h-full justify-start items-center gap-5 flex flex-col overflow-y-scroll">
                     <div className="w-full text-slate-800 text-xl font-bold leading-relaxed tracking-tight min-h-20 bg-[#FF8980] flex flex-col items-center sticky top-0 z-20 rounded-b-[3rem] ">
                       {/* {userquestion} */}
                       <div className="flex w-full items-center  gap-4 p-4 px-8 justify-start">
@@ -411,7 +411,7 @@ const MisciWorkSpace = ({
                             html={editorAnswersData ?? ""}
                             short_answer={shortAnswer}
                             detailed_answer={detailedAnswer}
-                          />
+                          /> 
                         </div>
                       </div>
                     </div>
@@ -444,7 +444,7 @@ const MisciWorkSpace = ({
               >
                 <div
                   style={{ backgroundImage: "url(../bg-gray-misci.jpeg)" }}
-                  className="h-full  bg-contain bg-opacity-70 flex items-center px-4 justify-center rounded-lg flex-col gap-2"
+                  className="h-full  bg-cover bg-opacity-50 flex items-center px-4 justify-center rounded-lg flex-col gap-2"
                 >
                   {isArticleTabReady ? (
                     <>
