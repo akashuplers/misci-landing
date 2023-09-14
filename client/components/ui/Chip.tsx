@@ -21,37 +21,15 @@ export const Chip = ({
 }: Props) => {
   return (
     <>
-      {wholeData != null ? (
-        <Tooltip
-          content={wholeData.realSource}
-          direction="top"
-          className="text-xs"
-        >
-          <button
-            {...rest}
-            className={`min-h-8 px-[18px]   rounded-full justify-center items-center inline-flex ${
-              selected
-                ? "bg-indigo-700 text-white"
-                : "bg-gray-200 text-slate-700 "
-            }`}
-            onClick={() => handleClick && handleClick(index ?? 0)}
-          >
-            <span className=" text-sm py-3 font-normal leading-tight">{text+ 'aslkjfaskfjalsdfjasldkfjalksdjfalskdjf'}</span>
-          </button>
-        </Tooltip>
-      ) : (
-        <button
-          {...rest}
-          className={`min-h-[2rem] px-[18px] rounded-full justify-center items-center gap-2.5 inline-flex ${
-            selected
-              ? "bg-indigo-700 text-white"
-              : "bg-gray-200 text-slate-700 "
-          }`}
-          onClick={() => handleClick && handleClick(index ?? 0)}
-        >
-          <span className=" text-sm font-normal leading-tight">{text}</span>
-        </button>
-      )}
+      <div
+        {...rest}
+        className={`min-h-[2rem] px-[18px] rounded-full justify-center items-center gap-2.5 inline-flex  ${
+          selected ? "bg-indigo-700 text-white" : "bg-gray-200 text-slate-700 "
+        }`}
+        onClick={() => handleClick && handleClick(index ?? 0)}
+      >
+        <h3 className=" text-sm font-normal leading-tight">{text}</h3>
+      </div>
     </>
   );
 };
@@ -231,7 +209,7 @@ interface TabItem {
   selected?: boolean;
   showIcon?: boolean;
   count?: number;
-  showOnLeft? : boolean
+  showOnLeft?: boolean;
 }
 export function TabItem({
   title,
@@ -241,7 +219,7 @@ export function TabItem({
   selected,
   showIcon = true,
   count,
-showOnLeft = false
+  showOnLeft = false,
 }: TabItem) {
   return (
     <div
@@ -252,8 +230,11 @@ showOnLeft = false
           : "text-gray-100 hover:bg-white/[0.12]"
       )}
     >
-      <div className={`flex items-center justify-around ${
-showOnLeft ? 'flex-row-reverse' :'flex-row'} gap-2 py-1`}>
+      <div
+        className={`flex items-center justify-around ${
+          showOnLeft ? "flex-row-reverse" : "flex-row"
+        } gap-2 py-1`}
+      >
         {/* noftication, */}
         {count ? (
           <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full">
