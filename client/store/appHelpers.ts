@@ -458,3 +458,10 @@ export function isOnlySpecialChars(str: string): boolean {
   // Check if the string matches the regular expression
   return regex.test(str);
 }
+
+
+export function capitalizeText(text:string) {
+  return text.toLowerCase().replace(/^(.)|\s+(.)/g, function($1) {
+      return $1.toUpperCase();
+  });
+}
