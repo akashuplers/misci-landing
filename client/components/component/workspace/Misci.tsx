@@ -143,14 +143,20 @@ const MisciWorkSpace = ({
   function handleNextDraft() {
     var payload = [];
     const payloadList = [...listOfIdeas];
+    const payloadListUnused = [...listOfUnusedIdeas];
     for (let index = 0; index < payloadList.length; index++) {
       const element = payloadList[index];
       if (element.used == 1) {
         payload.push({ ...element, text: element.idea });
       }
     }
+    for (let index = 0; index < payloadListUnused.length; index++) {
+      const element = payloadListUnused[index];
+      if (element.used == 1) {
+        payload.push({ ...element, text: element.idea });
+      }
+    }
     console.log(payload, getInitialListOfIdeas());
-
     if (payload.length == getInitialListOfIdeas().length) {
       setShowNextDraftIssueModal(true);
       return;
@@ -336,18 +342,18 @@ const MisciWorkSpace = ({
                         >
                           <img src="../icons/qmark.svg" alt="" />
                         </div>
-                        <div className="text-center text-white text-2xl  m-auto">
+                        <div className="text-center text-white text-2xl  m-auto capitalize">
                           <h2>{question}</h2>
                         </div>
                       </div>
                     </div>
                     <div className="z-10 mx-12 flex w-[90%] border border-gray-200 p-2 bg-white shadow-xl rounded-xl min-h-[50%]">
-                      <div className="flex items-start gap-4 px-2 text-black font-medium text-base">
+                      <div className="flex items-start gap-4 px-2 text-black font-medium text-base w-full">
                         {/* ticket */}
-                        <span className="h-12 w-12 text-green-500">
+                        <span className="h-12 w-[5%] text-green-500">
                           <img src="../icons/tick.svg" alt="" />
                         </span>
-                        <div className="mt-4 text-lg">
+                        <div className="mt-4 text-lg w-[95%]">
                           <DynamicAnswersData html={editorAnswersData ?? ""} />
                         </div>
                       </div>
@@ -445,21 +451,21 @@ const MisciWorkSpace = ({
                 </>
               </div>
               <div
-                className="w-[30%] max-h-full p-2 flex-col flex relative border-l border-gray-200 gap-6"
+                className="w-[30%] max-h-full p-2 flex-col flex relative border-l border-gray-200 gap-3"
                 id="leftContent"
               >
                 <>
-                  <div className="text-xs px-2 mb-24 lg:mb-0" id="regenblog">
+                  <div className="text-xs mb-24 lg:mb-0" id="regenblog">
                     {/* h1 Insight only for mobile screens */}
                     <h1 className="text-2xl  font-semibold text-gray-800 my-4 lg:hidden">
                       Insights
                     </h1>
-                    <div className="flex jusify-between items-center gap-[1.25em]">
+                    <div className="flex jusify-between items-center">
                       <p className="font-normal w-[100%] lg:w-[70%] text-base">
                         Create your next draft on the basis of your edits.
                       </p>
                       <button
-                        className="cta flex items-center  p-2 font-semibold gap-2.5 justify-center"
+                        className="cta flex items-center w-[212px]  p-2 font-semibold gap-2.5 justify-center"
                         disabled={nextDraftLoader}
                         onClick={() => handleNextDraft()}
                       >
@@ -471,20 +477,18 @@ const MisciWorkSpace = ({
                   <div className="flex flex-col justify-start gap-4 w-full">
                     <div className="w-full justify-start items-center gap-2.5 flex">
                       <div className="flex-col justify-center items-start gap-2 flex w-full">
-                        <div className="flex justify-between w-full items-center py-2">
+                        <div className="flex justify-between w-full items-center">
                           <h3 className="pt-[0.65em] font-semibold">
                             Questions
                           </h3>
                         </div>
-                        <div className=" opacity-70 text-blue-950 text-base font-normal leading-none">
+                        <div className=" opacity-70 text-blue-950 capitalize text-base font-normal leading-none">
                           {userquestion}
                         </div>
-                        <div className="flex justify-between w-full items-center py-2">
+                        <div className="flex justify-between w-full items-center">
                           <h3 className="pt-[0.65em] font-semibold">Sources</h3>
                         </div>
-                        <div
-                          className="flex gap-[0.5em] flex-wrap h-full w-full  overflow-x-hidden overflow-y-scroll !pb-0 px-4"
-                          style={{ padding: "0.75em 0.25em" }}
+                        <div className="flex gap-[0.5em] flex-wrap h-full w-full  overflow-x-hidden overflow-y-scroll"
                         >
                           {references?.map((ref) => {
                             return <Chip key={ref.id} text={ref.source} />;
@@ -608,6 +612,7 @@ const UnsedIteamTabs = ({
                 showIcon={false}
                 selected={currentEditTabIndex === index}
                 count={tab.notificationCount}
+                showOnLeft={true}
               />
             </Tab>
           ))}
