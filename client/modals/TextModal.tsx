@@ -1,26 +1,29 @@
-import { Dialog, Transition } from '@headlessui/react'
-import { XMarkIcon } from '@heroicons/react/24/outline';
-import React, { Fragment, useState } from 'react'
-import Modal from 'react-modal';
-interface ITextModal{
-    children: React.ReactNode,
-    isOpen: boolean,
-    setIsOpen: (isOpen: boolean) => void,
-    question: string
+import { Dialog, Transition } from "@headlessui/react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import React, { Fragment, useState } from "react";
+import Modal from "react-modal";
+interface ITextModal {
+    detailedAnswer: string;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  question: string;
 }
-export default function TextModal( {children, isOpen, setIsOpen, question}: ITextModal) {
-
+export default function TextModal({
+    detailedAnswer,
+  isOpen,
+  setIsOpen,
+  question,
+}: ITextModal) {
   function closeModal() {
-    setIsOpen(false)
+    setIsOpen(false);
   }
 
   function openModal() {
-    setIsOpen(true)
+    setIsOpen(true);
   }
 
   return (
     <>
-    
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50 " onClose={closeModal}>
           <Transition.Child
@@ -46,30 +49,37 @@ export default function TextModal( {children, isOpen, setIsOpen, question}: ITex
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel  className="w-full  transform overflow-y-scroll rounded-2xl bg-white px-4 text-left align-middle shadow-xl transition-all relative"
-                style={{
-                    maxHeight: '60vh',
-                    width: '60vw',
-                    padding: '0px',
+                <Dialog.Panel
+                  className="w-full  transform overflow-y-scroll rounded-2xl bg-white px-4 text-left align-middle shadow-xl transition-all relative"
+                  style={{
+                    maxHeight: "60vh",
+                    width: "60vw",
+                    padding: "0px",
                     // px 4
-                    paddingBottom: '0px',
-                    paddingTop: '0px',
-                    paddingRight: '2rem',
-                    paddingLeft: '2rem'
-                }}
+                    paddingBottom: "0px",
+                    paddingTop: "0px",
+                    paddingRight: "2rem",
+                    paddingLeft: "2rem",
+                  }}
                 >
-                  <div
-                    className="h-14 flex items-center justify-between text-xl font-medium leading-6 text-gray-900 capitalize sticky top-0 bg-white "
-                  >
+                  <div className="h-14 flex items-center justify-between text-xl font-medium leading-6 text-gray-900 capitalize sticky top-0 bg-white ">
                     {question}
-                    <button className="outline-none  w-6 h-6" onClick={closeModal}>
-                        <XMarkIcon className="w-6 h-6" />
+                    <button
+                      className="outline-none  w-6 h-6"
+                      onClick={closeModal}
+                    >
+                      <XMarkIcon className="w-6 h-6" />
                     </button>
                   </div>
                   <div className="mt-2 overflow-y-scroll">
-                    {children}
+                    <>
+                      <p
+                        dangerouslySetInnerHTML={{
+                          __html: detailedAnswer,
+                        }}
+                      ></p>
+                    </>
                   </div>
-
                 </Dialog.Panel>
               </Transition.Child>
             </div>
@@ -77,5 +87,5 @@ export default function TextModal( {children, isOpen, setIsOpen, question}: ITex
         </Dialog>
       </Transition>
     </>
-  )
+  );
 }
