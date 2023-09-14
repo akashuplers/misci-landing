@@ -55,7 +55,7 @@ router.post('/generate', async (req: any, res: any) => {
         const userData = await db.db('admin').collection('users').findOne({
             email: userEmail.email
         })
-        const askMeAnswers = await new Python({userId: userData?._id}).getAskMeAnswers(question)
+        const askMeAnswers = await new Python({userId: userData?._id.toString()}).getAskMeAnswers(question)
         console.log(askMeAnswers, "askMeAnswers")
         if(!askMeAnswers) {
             publish({userId, keyword: null, step: "ANSWER_FETCHING_FAILED", data: null})
@@ -65,7 +65,8 @@ router.post('/generate', async (req: any, res: any) => {
         }
         const article = askMeAnswers?.internal_results?.main_document
         console.log(article, "article")
-        const answers = askMeAnswers?.internal_results?.main_document?.answer
+        const answers = askMeAnswers?.internal_results?.main_document?.answer_sentence
+        const shortAnswer = askMeAnswers?.internal_results?.main_document?.answer
         const title = askMeAnswers?.internal_results?.main_document?.title
         const answersObj = {
             published: false,
@@ -99,6 +100,8 @@ router.post('/generate', async (req: any, res: any) => {
             email: userData.email,
             keyword: title,
             question,
+            short_answer: shortAnswer,
+            detailed_answer: answers,
             status: "draft",
             // imageUrl: imageUrl ? imageUrl : process.env.PLACEHOLDER_IMAGE,
             // imageSrc,
