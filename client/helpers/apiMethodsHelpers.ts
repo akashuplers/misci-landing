@@ -286,7 +286,7 @@ export const generateMisci = async (postData: PostData) => {
   } catch (error) {
     // Handle errors here
     console.error(error);
-    throw error; // You can choose to handle the error or rethrow it
+    return error; 
   }
 };
 
