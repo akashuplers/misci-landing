@@ -53,6 +53,8 @@ const MisciWorkSpace = ({
   const [blogId, setBlogId] = useState("");
   const [nextDraftLoader, setNextDraftLoader] = useState(false);
   const [errorPresent, setErrorPresent] = useState(false);
+  const [shortAnswer, setShortAnswer] = useState<string>("");
+  const [detailedAnswer, setDetailedAnswer] = useState<string>("");
   const [references, setReferences] = useState<
     {
       id: string;
@@ -73,6 +75,8 @@ const MisciWorkSpace = ({
       console.log("answers loaded");
       setBlogId(subscriptionData?.stepCompletes.data?._id);
       const data = subscriptionData?.stepCompletes.data;
+      setShortAnswer(data?.short_answer);
+      setDetailedAnswer(data?.detailed_answer);
       setMisciblog(data);
       console.log(data);
       const aa = data?.publish_data?.find((d: any) => d.platform === "answers");
@@ -214,15 +218,35 @@ const MisciWorkSpace = ({
       .finally(() => {});
   }
 
-  const DynamicAnswersData = ({ html }: { html: string }) => {
+  const DynamicAnswersData = ({ html, short_answer, detailed_answer }: { html: string , detailed_answer:string, short_answer:string}) => {
     var mySafeHTML = structuredClone(html);
     mySafeHTML = DOMPurify.sanitize(mySafeHTML);
     return (
       <div className="">
-        <div
+        {/* <div
           id="answersEditor"
           dangerouslySetInnerHTML={{ __html: mySafeHTML }}
-        ></div>
+        ></div> */}
+        <div className="flex flex-col gap-4">
+          {
+            short_answer.length > 0 ? <>
+            <div>
+            <p>
+              Short Answer: <span
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(short_answer) }}
+              ></span>
+            </p>
+          </div>
+          <div className="border-b border-gray-200"></div>
+</>: <></>
+          }
+          {/* under line */}
+          <div>
+            <p
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(detailed_answer) }}>
+            </p>
+          </div>
+        </div>
         <br />
       </div>
     );
@@ -314,17 +338,19 @@ const MisciWorkSpace = ({
                   selected={currentTabIndex === 0}
                 />
               </Tab>
-              <Tab className={`outline-none`}>
-                <TabItem
-                  icon={
-                    <div>
-                      <img src="/icons/questions_icon.svg" alt="" />
-                    </div>
-                  }
-                  title={"Article"}
-                  selected={currentTabIndex === 1}
-                />
-              </Tab>
+             {
+              !errorPresent &&  <Tab className={`outline-none`}>
+              <TabItem
+                icon={
+                  <div>
+                    <img src="/icons/questions_icon.svg" alt="" />
+                  </div>
+                }
+                title={"Article"}
+                selected={currentTabIndex === 1}
+              />
+            </Tab> 
+             }
             </Tab.List>
             <Tab.Panel className={`w-full h-full flex `}>
               <div
@@ -332,7 +358,7 @@ const MisciWorkSpace = ({
               >
                 <div className="flex-col  w-full justify-start items-start gap-7 inline-flex">
                   <div className="bg-opacity-70 w-full h-full justify-start items-center gap-5 flex flex-col">
-                    <div className="w-full text-slate-800 text-xl font-bold leading-relaxed tracking-tight min-h-20 bg-[#FF8980] flex flex-col items-center  rounded-b-[3rem] ">
+                    <div className="w-full text-slate-800 text-xl font-bold leading-relaxed tracking-tight min-h-20 bg-[#FF8980] flex flex-col items-center sticky top-0 z-20 rounded-b-[3rem] ">
                       {/* {userquestion} */}
                       <div className="flex w-full items-center  gap-4 p-4 px-8 justify-start">
                         <div className="h-14 w-14 text-red-500 border-white "
@@ -347,14 +373,14 @@ const MisciWorkSpace = ({
                         </div>
                       </div>
                     </div>
-                    <div className="z-10 mx-12 flex w-[90%] border border-gray-200 p-2 bg-white shadow-xl rounded-xl min-h-[50%]">
+                    <div className="z-10 mx-12 flex w-[90%] border border-gray-200 p-2 bg-white shadow-xl rounded-xl  h-full max-w-full">
                       <div className="flex items-start gap-4 px-2 text-black font-medium text-base w-full">
                         {/* ticket */}
                         <span className="h-12 w-[5%] text-green-500">
                           <img src="../icons/tick.svg" alt="" />
                         </span>
                         <div className="mt-4 text-lg w-[95%]">
-                          <DynamicAnswersData html={editorAnswersData ?? ""} />
+                          <DynamicAnswersData html={editorAnswersData ?? ""} short_answer={shortAnswer} detailed_answer={detailedAnswer}/>
                         </div>
                       </div>
                     </div>
