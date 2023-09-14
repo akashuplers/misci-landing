@@ -9,6 +9,7 @@ const initialValues = {
   email: "",
   name: "",
 };
+const DEFAULT_SECONDS = 10;
 
 const PublishMisciModal = ({
   showModal,
@@ -21,13 +22,13 @@ const PublishMisciModal = ({
 }) => {
   const [showRedirectionModal, setShowRedirectionModal] = React.useState(false);
   const [youShoulBeRedirected, setYouShoulBeRedirected] = React.useState(true);
-  const [seconds, setSeconds] = React.useState(5);
+  const [seconds, setSeconds] = React.useState(DEFAULT_SECONDS);
   const router = useRouter();
   const [timeoutId, setTimeoutId] = React.useState<any>(null);
   const [intervalId , setIntervalId] = React.useState<any>(null);
   function handleClose () {
     setShowRedirectionModal(false);
-    setSeconds(5);
+    setSeconds(DEFAULT_SECONDS);
     setTimeoutId(null);
     clearTimeout(timeoutId);
     setShowModal(false);
@@ -64,9 +65,10 @@ const PublishMisciModal = ({
         }, 1000);
         setIntervalId(intervalTime);
         let timeoutID =  setTimeout(() => {
+          // alert("/misci")
           router.push('/misci')
           clearInterval(intervalTime);
-        }, 6500);
+        }, ((DEFAULT_SECONDS +  1) * 1500));
         setTimeoutId(timeoutID)
       });
   };

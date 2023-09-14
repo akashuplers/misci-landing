@@ -342,7 +342,7 @@ const MisciWorkSpace = ({
                         >
                           <img src="../icons/qmark.svg" alt="" />
                         </div>
-                        <div className="text-center text-white text-2xl  m-auto">
+                        <div className="text-center text-white text-2xl  m-auto capitalize">
                           <h2>{question}</h2>
                         </div>
                       </div>
@@ -465,7 +465,7 @@ const MisciWorkSpace = ({
                         Create your next draft on the basis of your edits.
                       </p>
                       <button
-                        className="cta flex items-center  p-2 font-semibold gap-2.5 justify-center"
+                        className="cta flex items-center w-[212px]  p-2 font-semibold gap-2.5 justify-center"
                         disabled={nextDraftLoader}
                         onClick={() => handleNextDraft()}
                       >
@@ -482,7 +482,7 @@ const MisciWorkSpace = ({
                             Questions
                           </h3>
                         </div>
-                        <div className=" opacity-70 text-blue-950 text-base font-normal leading-none">
+                        <div className=" opacity-70 text-blue-950 capitalize text-base font-normal leading-none">
                           {userquestion}
                         </div>
                         <div className="flex justify-between w-full items-center py-2">
@@ -614,6 +614,7 @@ const UnsedIteamTabs = ({
                 showIcon={false}
                 selected={currentEditTabIndex === index}
                 count={tab.notificationCount}
+                showOnLeft={true}
               />
             </Tab>
           ))}
