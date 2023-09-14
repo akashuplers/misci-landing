@@ -100,7 +100,8 @@ const MisciWorkSpace = ({
       console.log(data);
 
       setBlogId(subscriptionData?.stepCompletes.data?._id);
-
+      setShortAnswer(subscriptionData?.stepCompletes.data?.short_answer);
+      setDetailedAnswer(subscriptionData?.stepCompletes.data?.detailed_answer);
       // Create new arrays or objects when setting the state
       setListOfIdeas([...data]);
       setInitialListOfIdeas([
@@ -125,6 +126,7 @@ const MisciWorkSpace = ({
       const answerHtml = jsonToHtml(answers?.tiny_mce_data);
       console.log(answerHtml);
       setEditorAnswersData(answerHtml);
+      setLoadingMisciblog(false);
     }
     // @ts-ignore
     if (step == "ANSWER_FETCHING_FAILED") {
