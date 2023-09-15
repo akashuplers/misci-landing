@@ -58,7 +58,9 @@ router.post('/generate', async (req: any, res: any) => {
         const askMeAnswers = await new Python({userId: userData?._id.toString()}).getAskMeAnswers(question)
         console.log(askMeAnswers, "askMeAnswers")
         if(!askMeAnswers) {
-            publish({userId, keyword: null, step: "ANSWER_FETCHING_FAILED", data: null})
+            setTimeout(() => {
+                publish({userId, keyword: null, step: "ANSWER_FETCHING_FAILED", data: null})
+            }, 3000)
             return res
             .status(400)
             .send({ error: true, message: "No answers found!" });    
