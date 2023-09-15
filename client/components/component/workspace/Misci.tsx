@@ -75,6 +75,16 @@ const MisciWorkSpace = ({
   // const [initailListOfIdeas, setInitialListOfIdeas] = useState<any[]>([]);
   const { getInitialListOfIdeas, setInitialListOfIdeas } = useIdeaState();
   const [articleLoaderErrorText, setArticleLoaderErrorText] = useState("");
+  function handleReset(){
+    setCurrentTabIndex(0);
+    setEditorAnswersData(null);
+    setQuestion("");
+    setAnswersReadMore(false);
+    setIsArticleTabReady(false);
+    setEditorAnswersData(null);
+    setShortAnswer("");
+    setReferences([]);
+  }
   useEffect(() => {
     const step = subscriptionData?.stepCompletes.step;
     console.log("sub ran", step);
@@ -230,6 +240,7 @@ const MisciWorkSpace = ({
           setListOfIdeas((prev) => {
             return [...getAllIdeasWith1];
           });
+          setInitialListOfIdeas([...getAllIdeasWith1, ...getAllIdeasWith1]);
           setQuestion(res?.data?.question);
           setBlogId(res?.data?._id);
           setReferences(res?.data?.references);
@@ -336,6 +347,7 @@ const MisciWorkSpace = ({
         <button
           onClick={() => {
             router.back();
+            handleReset();
           }}
         >
           <span>

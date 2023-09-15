@@ -10,7 +10,7 @@ import { capitalizeText, classNames, getUserToken } from "@/store/appHelpers";
 import { StepCompleteData } from "@/store/types";
 import { useSubscription } from "@apollo/client";
 import { useRouter } from "next/router";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import Head from "next/head";
 import MisciWorkSpace from "@/components/component/workspace/Misci";
@@ -36,6 +36,8 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   const [userAbleUserIDForSubs, setUserAbleUserIDForSubs] = useState<
     string | null
   >("");
+  const [allReadyCalled, setAllReadyCalled] = useState(false);
+  const shouldFetch = useRef(true);
   const [errorPresent, setErrorPresent] = useState(false);
   const router = useRouter();
   const [loadingMisciblog, setLoadingMisciblog] = React.useState(true);
@@ -83,34 +85,43 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     console.log(localStorage);
     const userId = getUserToken();
     const tempiId = localStorage.getItem("tempId");
-    generateMisci({ question, userId: tempiId ?? "" })
-      .then((res) => {
-        console.log(res);
-        console.log("NON 400")
-        if(res.data.error==true){
-          setErrorPresent(true)
-        }
-      })
-      .catch((err) => {
-        console.log("400+")
-        console.log(err);
-        if(err.response.data.error==true){
-          setErrorPresent(true);
-        }
-      })
-      .finally(() => {
-        console.log("finally");
-      });
-  }, []);
+    if (shouldFetch.current) {
+      shouldFetch.current=false
+      generateMisci({ question, userId: tempiId ?? "" })
+        .then((res) => {
+          console.log(res);
+          console.log("NON 400");
+          if (res.data.error == true) {
+            setErrorPresent(true);
+          }
+        })
+        .catch((err) => {
+          console.log("400+");
+          console.log(err);
+          if (err.response.data.error == true) {
+            setErrorPresent(true);
+          }
+        })
+        .finally(() => {
+          setAllReadyCalled(false);
+          console.log("finally");
+        });
+    }
+  }, [shouldFetch]);
 
   return (
     <>
       <Head>
         <title className="capitalize">{capitalizeText(question)}</title>
       </Head>
-        <MisciWorkSpace subscriptionData={subsData} question={question}  
-        setErrorPresent={setErrorPresent}  errorPresent={errorPresent} setLoadingMisciblog={setLoadingMisciblog} loadingMisciblog={loadingMisciblog}/>
-
+      <MisciWorkSpace
+        subscriptionData={subsData}
+        question={question}
+        setErrorPresent={setErrorPresent}
+        errorPresent={errorPresent}
+        setLoadingMisciblog={setLoadingMisciblog}
+        loadingMisciblog={loadingMisciblog}
+      />
     </>
   );
 };
