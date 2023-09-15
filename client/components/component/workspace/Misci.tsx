@@ -272,10 +272,18 @@ const MisciWorkSpace = ({
           )}
           {/* under line */}
           <div className="">
-            <p dangerouslySetInnerHTML={{ __html: detailed_answer }}></p>
+            <p
+              dangerouslySetInnerHTML={{
+                __html:
+                  // remove text after 2k chars
+                  detailed_answer.length > 2000
+                    ? detailed_answer.slice(0, 2000) + "..."
+                    : detailed_answer,
+              }}
+            ></p>
             {/* read more brn */}
 
-            {detailed_answer.length > 2500 && (
+            {detailed_answer.length > 2000 && (
               <div className="absolute bottom-[-5%] right-0">
                 <button
                   className="p-2 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600 text-white 
@@ -406,8 +414,8 @@ const MisciWorkSpace = ({
             </Tab.List>
             <Tab.Panel className={`w-full h-full flex `}>
               <div className="w-[70%] bg-neutral-100 rounded-2xl flex relative h-full">
-                <div className="flex-col  w-full justify-start items-start gap-7 inline-flex">
-                  <div className="bg-opacity-70 w-full h-full justify-start items-center gap-5 flex flex-col">
+                <div className="flex-col  w-full justify-start overflow-y-scroll items-start gap-7 inline-flex">
+                  <div className="bg-opacity-70 w-full overflow-y-scroll h-full justify-start items-center gap-5 flex flex-col">
                     <div className="w-full text-slate-800 text-xl font-bold leading-relaxed tracking-tight min-h-20 bg-[#FF8980] flex flex-col items-center sticky top-0 z-20 rounded-b-[3rem] ">
                       {/* {userquestion} */}
                       <div className="flex w-full items-center  gap-4 p-4 px-8 justify-start">
