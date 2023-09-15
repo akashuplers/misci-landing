@@ -88,8 +88,7 @@ const PublishMisciModal = ({
       errors.name = "Name is required";
     } else if(!/^[a-zA-Z ]*$/.test(values.name)) {
       errors.name = "Invalid name";
-    } 
-
+    }
     return errors;
   };
   return (
