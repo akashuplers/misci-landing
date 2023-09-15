@@ -270,7 +270,7 @@ const MisciWorkSpace = ({
             <>
               <div>
                 <p>
-                  Short Answer:{" "}
+                  Answer:{" "}
                   <span
                     dangerouslySetInnerHTML={{ __html: short_answer }}
                   ></span>

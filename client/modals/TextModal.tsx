@@ -50,12 +50,12 @@ export default function TextModal({
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel
+                id='text-modal-panel'
                   className="w-full  transform overflow-y-scroll rounded-2xl bg-white px-4 text-left align-middle shadow-xl transition-all relative"
                   style={{
-                    maxHeight: "60vh",
+                    maxHeight: "80vh",
                     width: "60vw",
                     padding: "0px",
-                    // px 4
                     paddingBottom: "0px",
                     paddingTop: "0px",
                     paddingRight: "2rem",
