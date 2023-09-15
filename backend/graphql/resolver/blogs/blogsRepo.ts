@@ -331,7 +331,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         const key = keys[index];
         try {
             if((type.length && type.includes(key) && key === "wordpress") || (!type.length && key === "wordpress")) {
-                const gptPrompt = `Please forget old prompt and act as an new expert writer and using the below pasted ideas write a blog with inputs as follows:\n${title && title.length ? `Topic is "${title}"\n${tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"`}`: tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"` }\n${keywords.length ? `Use these keywords: "${keywords.join('","')}" \nMinimum limit is "1000 words"`: `Minimum limit is "1000 words"`}\n"Strictly Add no references in the bottom"\nHighlight the H1 & H2 html tags\nProvide the conclusion at the end with Conclusion as heading\nStrictly use all these points: ${text}`
+                const gptPrompt = `Please forget old prompt and act as an new expert writer and using the below pasted ideas write a blog with inputs as follows:\n${title && title.length ? `Topic is "${title}"\n${tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"`}`: tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"` }\n${keywords.length ? `Use these keywords: "${keywords.join('","')}" \nMinimum limit is "1000 words"`: `Minimum limit is "1000 words"`}\n"Strictly Add no references in the bottom"\nHighlight the H1 & H2 html tags\nStrictly donot include any references and backlinking\nProvide the conclusion at the end with Conclusion as heading\nStrictly use all these points: ${text}`
                 const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? gptPrompt : 
                     `Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
                     ${title && title.length ? `'Topic is "${title}"'`: "" }
@@ -339,6 +339,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                     ${keywords.length ? `'Use these keywords: "${keywords.join('","')}'" \n 'Minimum limit is "1000 words"'`: `Limit is "1000 words"`}
                     "Highlight the H1 & H2 html tags"
                     "Strictly Add no references in the bottom"
+                    "Strictly donot include any references and backlinking"
                     "Provide the conclusion at the end with Conclusion as heading"`}`, db}).textCompletion(chatgptApis.timeout)
                 console.log(chatGPTText, "blog")    
                 newsLetter = {...newsLetter, [key]: chatGPTText}
