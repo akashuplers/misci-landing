@@ -86,11 +86,13 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     generateMisci({ question, userId: tempiId ?? "" })
       .then((res) => {
         console.log(res);
-        if(res.error==true){
+        console.log("NON 400")
+        if(res.data.error==true){
           setErrorPresent(true)
         }
       })
       .catch((err) => {
+        console.log("400+")
         console.log(err);
         if(err.response.data.error==true){
           setErrorPresent(true);
