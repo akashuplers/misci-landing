@@ -118,34 +118,35 @@ const PublishMisciModal = ({
             bottom: "",
             zIndex: "999",
             maxWidth: "55%",
-            width: "35%",
+            width: "40%",
             marginRight: "-50%",
             minHeight: "40%",
+            maxHeight: '100vh',
             transform: "translate(-50%, -50%)",
             padding: "1rem",
-            paddingBottom: "0px",
             outline: "none",
           },
         }}
       >
          
         <div className="w-full h-full">
-          <div
-            className="absolute px-4 flex w-full items-center justify-end"
+          <button
+            className="absolute  flex items-center justify-end z-50 outline-none h-8 w-8"
             style={{
-              top: "10%",
-              right: '0%'
+              top: "8%",
+              right: '2%'
+            }}
+            onClick={() => {
+              handleClose();
             }}
           >
-            <button
+            <span
               className="w-6 h-6"
-              onClick={() => {
-                handleClose();
-              }}
+           
             >
               <XMarkIcon className="w-6 h-6" />
-            </button>
-          </div>
+            </span>
+          </button>
 
           {showRedirectionModal ? (
             <>

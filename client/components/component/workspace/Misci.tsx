@@ -425,7 +425,7 @@ const MisciWorkSpace = ({
               )}
             </Tab.List>
             <Tab.Panel className={`w-full h-full flex `}>
-              <div className="w-[70%] bg-neutral-100 rounded-2xl flex relative h-full">
+              <div className="w-[70%] bg-neutral-100 rounded-2xl overflow-y-scroll flex relative h-full">
                 <div className="flex-col  w-full justify-start overflow-y-scroll items-start gap-7 inline-flex">
                   <div className="bg-opacity-70 w-full overflow-y-scroll h-full justify-start items-center gap-5 flex flex-col">
                     <div className="w-full text-slate-800 text-xl font-bold leading-relaxed tracking-tight min-h-20 bg-[#FF8980] flex flex-col items-center sticky top-0 z-20 rounded-b-[3rem] ">
