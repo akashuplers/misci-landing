@@ -11,6 +11,7 @@ export default function NativeEditor(props: NativeEditorProps) {
   return (
     <Editor
     value={ props.value}
+    apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
     init={{
       setup: (editor) => {
         props.onSetup(editor);
