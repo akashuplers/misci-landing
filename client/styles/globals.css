@@ -138,6 +138,25 @@ html {
   background: #555;
 }
 
+#text-modal-panel::-webkit-scrollbar {
+  width: 10px;
+}
+#text-modal-panel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+#text-modal-panel::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+#text-modal-panel::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+
 .newsletter {
   position: relative;
 }

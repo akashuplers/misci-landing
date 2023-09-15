@@ -75,6 +75,16 @@ const MisciWorkSpace = ({
   // const [initailListOfIdeas, setInitialListOfIdeas] = useState<any[]>([]);
   const { getInitialListOfIdeas, setInitialListOfIdeas } = useIdeaState();
   const [articleLoaderErrorText, setArticleLoaderErrorText] = useState("");
+  function handleReset(){
+    setCurrentTabIndex(0);
+    setEditorAnswersData(null);
+    setQuestion("");
+    setAnswersReadMore(false);
+    setIsArticleTabReady(false);
+    setEditorAnswersData(null);
+    setShortAnswer("");
+    setReferences([]);
+  }
   useEffect(() => {
     const step = subscriptionData?.stepCompletes.step;
     console.log("sub ran", step);
@@ -230,6 +240,7 @@ const MisciWorkSpace = ({
           setListOfIdeas((prev) => {
             return [...getAllIdeasWith1];
           });
+          setInitialListOfIdeas([...getAllIdeasWith1, ...getAllIdeasWith1]);
           setQuestion(res?.data?.question);
           setBlogId(res?.data?._id);
           setReferences(res?.data?.references);
@@ -259,7 +270,7 @@ const MisciWorkSpace = ({
             <>
               <div>
                 <p>
-                  Short Answer:{" "}
+                  Answer:{" "}
                   <span
                     dangerouslySetInnerHTML={{ __html: short_answer }}
                   ></span>
@@ -336,6 +347,7 @@ const MisciWorkSpace = ({
         <button
           onClick={() => {
             router.back();
+            handleReset();
           }}
         >
           <span>
@@ -413,7 +425,7 @@ const MisciWorkSpace = ({
               )}
             </Tab.List>
             <Tab.Panel className={`w-full h-full flex `}>
-              <div className="w-[70%] bg-neutral-100 rounded-2xl flex relative h-full">
+              <div className="w-[70%] bg-neutral-100 rounded-2xl overflow-y-scroll flex relative h-full">
                 <div className="flex-col  w-full justify-start overflow-y-scroll items-start gap-7 inline-flex">
                   <div className="bg-opacity-70 w-full overflow-y-scroll h-full justify-start items-center gap-5 flex flex-col">
                     <div className="w-full text-slate-800 text-xl font-bold leading-relaxed tracking-tight min-h-20 bg-[#FF8980] flex flex-col items-center sticky top-0 z-20 rounded-b-[3rem] ">

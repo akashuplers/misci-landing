@@ -47,10 +47,11 @@ router.post('/publish', async (req: any, res: any) => {
     }
 })
 router.post('/generate', async (req: any, res: any) => {
-    const {question, userId} = req.body
+    let {question, userId} = req.body
     const db = req.app.get('dbLive')
     const userEmail = await db.db('lilleAdmin').collection('misciEmail').findOne()
     console.log(userEmail)
+    question = question.charAt(0).toUpperCase() + question.slice(1)
     try {
         const userData = await db.db('admin').collection('users').findOne({
             email: userEmail.email
