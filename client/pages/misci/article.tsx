@@ -28,7 +28,7 @@ export const getServerSideProps = async (context: any) => {
 interface MiSciProps {
   question: string;
 }
-const DEFAULT_REDIRECT_TIME = (seconds = 10) => seconds * 1000;
+const DEFAULT_REDIRECT_TIME = (seconds = 120) => seconds * 1000;
 const REDIRECT_TO_PAGE = '/misci';
 const MiSciArticle = ({ question }: MiSciProps) => {
   const [getUserIdForSubs, setGetUserIdForSubs] = useState<string | null>("");
