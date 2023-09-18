@@ -6,6 +6,7 @@ interface NativeEditorProps {
   onSetup: (editor: any) => void;
   height?: string;
   iframeRef?: any;
+  ref?: any;
 }
 
 export default function NativeEditor(props: NativeEditorProps) {
