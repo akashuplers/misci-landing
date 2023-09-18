@@ -5,6 +5,7 @@ import { misciBlogPublish } from "@/helpers/apiMethodsHelpers";
 import { toast } from "react-toastify";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
+import { useMisciArticleState } from "@/store/appState";
 const initialValues = {
   email: "",
   name: "",
@@ -22,6 +23,7 @@ const PublishMisciModal = ({
 }) => {
   const [showRedirectionModal, setShowRedirectionModal] = React.useState(false);
   const [youShoulBeRedirected, setYouShoulBeRedirected] = React.useState(true);
+  const { currentTabIndex, setCurrentTabIndex } = useMisciArticleState();
   const [seconds, setSeconds] = React.useState(DEFAULT_SECONDS);
   const router = useRouter();
   const [timeoutId, setTimeoutId] = React.useState<any>(null);
@@ -166,6 +168,7 @@ const PublishMisciModal = ({
                     clearInterval(intervalId);
                     clearTimeout(timeoutId);
                     setShowModal(false);
+                    setCurrentTabIndex(0);
                     handleClose();
                   }}
                 >
@@ -173,7 +176,7 @@ const PublishMisciModal = ({
                     <div className="justify-center items-center inline-flex">
                       <div className="px-1 justify-start items-center gap-2.5 flex">
                         <div className="text-center text-white text-sm font-bold leading-normal">
-                          Go Back
+                          Go Back To Answer
                         </div>
                       </div>
                     </div>
