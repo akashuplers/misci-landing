@@ -5,12 +5,15 @@ interface NativeEditorProps {
   onEditorChange: (content: string, editor: any) => void;
   onSetup: (editor: any) => void;
   height?: string;
+  iframeRef?: any;
+  ref?: any;
 }
 
 export default function NativeEditor(props: NativeEditorProps) {
   return (
     <Editor
     value={ props.value}
+    ref={props.iframeRef}
     apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
     init={{
       setup: (editor) => {

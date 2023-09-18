@@ -37,10 +37,12 @@ interface MisciWorkSpaceProps {
   setErrorPresent: any;
   loadingMisciblog: boolean;
   setLoadingMisciblog: any;
+  iframeRef: any;
 }
 const MisciWorkSpace = ({
   subscriptionData,
   question,
+  iframeRef,
   errorPresent,
   setErrorPresent,
   loadingMisciblog,
@@ -559,6 +561,7 @@ const MisciWorkSpace = ({
                   ) : (
                     <div className="relative w-full">
                       <NativeEditor
+                      ref={iframeRef}
                         value={editorArticleData}
                         onEditorChange={(content: any, editor: any) => {
                           setEditorArticleData(content);
