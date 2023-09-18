@@ -312,3 +312,12 @@ export const useIdeaState = create<IdeaState>((set , get) => ({
   setInitialListOfIdeas: (ideas) => set({ initialListOfIdeas: ideas }),
   getInitialListOfIdeas: () => get().initialListOfIdeas,
 }));
+
+interface MisciArticleState {
+  currentTabIndex : number;
+  setCurrentTabIndex: (index: number) => void;
+}
+export const useMisciArticleState = create<MisciArticleState>((set, get) => ({
+  currentTabIndex: 0,
+  setCurrentTabIndex: (index) => set({ currentTabIndex: index }),
+}));

@@ -26,7 +26,7 @@ import { Tab } from "@headlessui/react";
 import { Badge } from "@radix-ui/themes";
 import ErrorBase from "@/store/errors";
 import NextDraftIssueModal from "@/modals/NextDraftIssueModal";
-import { useIdeaState } from "@/store/appState";
+import { useIdeaState, useMisciArticleState } from "@/store/appState";
 import PublishMisciModal from "@/modals/PublishMisciModal";
 import IdeaTag from "@/components/IdeaTag";
 import TextModal from "@/modals/TextModal";
@@ -38,6 +38,7 @@ interface MisciWorkSpaceProps {
   loadingMisciblog: boolean;
   setLoadingMisciblog: any;
   iframeRef: any;
+  setAppLoaderStatus: any;
 }
 const MisciWorkSpace = ({
   subscriptionData,
@@ -47,9 +48,9 @@ const MisciWorkSpace = ({
   setErrorPresent,
   loadingMisciblog,
   setLoadingMisciblog,
+  setAppLoaderStatus,
 }: MisciWorkSpaceProps) => {
   const [misciblog, setMisciblog] = React.useState<any>(null);
-  const [currentTabIndex, setCurrentTabIndex] = React.useState(0);
   const [editorAnswersData, setEditorAnswersData] = React.useState<any>(null);
   const [userquestion, setQuestion] = useState<string>("");
   const [listOfIdeas, setListOfIdeas] = useState<any[]>([]);
@@ -65,6 +66,7 @@ const MisciWorkSpace = ({
   const [nextDraftLoader, setNextDraftLoader] = useState(false);
   const [shortAnswer, setShortAnswer] = useState<string>("");
   const [detailedAnswer, setDetailedAnswer] = useState<string>("");
+  const { currentTabIndex, setCurrentTabIndex } = useMisciArticleState();
   const [references, setReferences] = useState<
     {
       id: string;
@@ -174,6 +176,17 @@ const MisciWorkSpace = ({
   }, [errorPresent]);
 
   useEffect(() => {
+
+    // if anyone is true make it true
+    if(nextDraftLoader || loadingMisciblog || !isArticleTabReady){
+      setAppLoaderStatus(true);
+    }else{
+      setAppLoaderStatus(false);
+    }
+
+  },[nextDraftLoader, isArticleTabReady, loadingMisciblog])
+
+  useEffect(() => {
     console.log(getInitialListOfIdeas());
     console.log(listOfIdeas);
   }, [listOfIdeas]);
@@ -205,10 +218,12 @@ const MisciWorkSpace = ({
       onStart: () => {
         console.log("started");
         setNextDraftLoader(true);
+        setAppLoaderStatus(true);
       },
       onCompleted: () => {
         console.log("completed");
         setNextDraftLoader(false);
+        setAppLoaderStatus(true);
       },
     })
       .then((res) => {
@@ -249,7 +264,9 @@ const MisciWorkSpace = ({
           console.log("regen completedc");
         }
       })
-      .finally(() => {});
+      .finally(() => {
+        setAppLoaderStatus(true);
+      });
   }
 
   const DynamicAnswersData = ({
@@ -463,7 +480,7 @@ const MisciWorkSpace = ({
                     </div>
 
                     <div
-                      className="mt-[-10%] z-0"
+                      className="z-0"
                       style={{
                         filter: "grayscale(80%)",
                         opacity: "0.1",
@@ -561,7 +578,7 @@ const MisciWorkSpace = ({
                   ) : (
                     <div className="relative w-full">
                       <NativeEditor
-                        ref={iframeRef}
+                        iframeRef={iframeRef}
                         value={editorArticleData}
                         onEditorChange={(content: any, editor: any) => {
                           setEditorArticleData(content);
