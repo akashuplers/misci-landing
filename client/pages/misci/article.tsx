@@ -46,6 +46,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   const [loadingMisciblog, setLoadingMisciblog] = React.useState(true);
   const [getToken, setGetToken] = useState<string | null>("");
   const [userActive, setUserActive] = useState(false);
+  const iframeRef = useRef<any>(null);
   const [showRedirectionModal, setShowRedirectionModal] = useState(false);
   // const [getSecondsToRedirect, setGetSecondsToRedirect] = useState(
   //   SECONDS_TO_REDIRECT
@@ -55,6 +56,15 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   );
   let intervalId :any;
   let timeoutId :any;
+  
+    // Function to attach event listeners to the iframe
+    const attachListenersToIframe = () => {
+      const iframe = iframeRef.current;
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.addEventListener('mousemove', resetTimeout);
+        iframe.contentWindow.addEventListener('keypress', resetTimeout);
+      }
+    };
   
   const resetTimeout = () => {
     console.log("reset");
@@ -76,8 +86,8 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     }, 1000);
   
     timeoutId = setTimeout(() => {
-      router.push(REDIRECT_TO_PAGE);
-      // alert("redirect");
+      // router.push(REDIRECT_TO_PAGE);
+      alert("redirect");
     }, DEFAULT_REDIRECT_TIME());
   };
   
@@ -88,11 +98,22 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     window.addEventListener("mousemove", resetTimeout);
     window.addEventListener("click", resetTimeout);
     window.addEventListener("keypress", resetTimeout);
+    const iframe = iframeRef.current;
+    if (iframe && iframe?.contentWindow) {
+      iframe?.contentWindow?.addEventListener('mousemove', resetTimeout);
+      iframe?.contentWindow?.addEventListener('keypress', resetTimeout);
+    }
+
     return () => {
       clearTimeout(timeoutId);
       window.removeEventListener("mousemove", resetTimeout);
       window.removeEventListener("click", resetTimeout);
       window.removeEventListener("keypress", resetTimeout);
+      const iframe = iframeRef.current;
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.removeEventListener('mousemove', resetTimeout);
+        iframe.contentWindow.removeEventListener('keypress', resetTimeout);
+      }
     };
   }, []);
   const {
@@ -180,6 +201,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
         errorPresent={errorPresent}
         setLoadingMisciblog={setLoadingMisciblog}
         loadingMisciblog={loadingMisciblog}
+        iframeRef={iframeRef}
       />
     </>
   );
