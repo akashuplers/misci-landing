@@ -28,7 +28,8 @@ export const getServerSideProps = async (context: any) => {
 interface MiSciProps {
   question: string;
 }
-
+const DEFAULT_REDIRECT_TIME = (seconds = 10) => seconds * 1000;
+const REDIRECT_TO_PAGE = '/misci';
 const MiSciArticle = ({ question }: MiSciProps) => {
   const [getUserIdForSubs, setGetUserIdForSubs] = useState<string | null>("");
   const [getTempIdForSubs, setGetTempIdForSubs] = useState<string | null>("");
@@ -42,6 +43,28 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   const router = useRouter();
   const [loadingMisciblog, setLoadingMisciblog] = React.useState(true);
   const [getToken, setGetToken] = useState<string | null>("");
+  const [userActive, setUserActive] = useState(false);
+  let timeoutId :any;
+
+  const resetTimeout = () => {
+    console.log("reset");
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      router.push(REDIRECT_TO_PAGE); 
+    }, DEFAULT_REDIRECT_TIME()); };
+
+  useEffect(() => {
+    resetTimeout(); 
+    window.addEventListener('mousemove', resetTimeout);
+    window.addEventListener('click', resetTimeout);
+    window.addEventListener('keypress', resetTimeout);
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('mousemove', resetTimeout);
+      window.removeEventListener('click', resetTimeout);
+      window.removeEventListener('keypress', resetTimeout);
+    };
+  }, []);
   const {
     data: subsData,
     loading: subsLoading,
