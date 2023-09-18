@@ -878,8 +878,8 @@ Page.getInitialProps = async (content: NextPageContext): Promise<PageProps> => {
   // const title = wordpressData?.children[0].children[0].children[0];
   const title = getBlogTitle(wordpressData?.children[0]);
   const image =
-    wordpressData?.children[1].children[0].children[0].attributes.src;
-  const description = wordpressData?.children[4].children[0];
+    wordpressData?.children[1]?.children[0]?.children[0]?.attributes.src;
+  const description = wordpressData?.children[4]?.children[0];
 
   const url = `${serverUrl}/public/${authorSocialMedia}/${authorUserName}/${blogSlug}/${blogSlugH2}/${authorBlogId}`;
   const blogData = {
