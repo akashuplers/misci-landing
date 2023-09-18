@@ -76,8 +76,8 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     }, 1000);
   
     timeoutId = setTimeout(() => {
-      // router.push(REDIRECT_TO_PAGE);
-      alert("redirect");
+      router.push(REDIRECT_TO_PAGE);
+      // alert("redirect");
     }, DEFAULT_REDIRECT_TIME());
   };
   
