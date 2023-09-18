@@ -77,7 +77,7 @@ const MisciWorkSpace = ({
   // const [initailListOfIdeas, setInitialListOfIdeas] = useState<any[]>([]);
   const { getInitialListOfIdeas, setInitialListOfIdeas } = useIdeaState();
   const [articleLoaderErrorText, setArticleLoaderErrorText] = useState("");
-  function handleReset(){
+  function handleReset() {
     setCurrentTabIndex(0);
     setEditorAnswersData(null);
     setQuestion("");
@@ -561,7 +561,7 @@ const MisciWorkSpace = ({
                   ) : (
                     <div className="relative w-full">
                       <NativeEditor
-                      ref={iframeRef}
+                        ref={iframeRef}
                         value={editorArticleData}
                         onEditorChange={(content: any, editor: any) => {
                           setEditorArticleData(content);
