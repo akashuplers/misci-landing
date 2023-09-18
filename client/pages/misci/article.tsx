@@ -15,6 +15,7 @@ import { ToastContainer, toast } from "react-toastify";
 import Head from "next/head";
 import MisciWorkSpace from "@/components/component/workspace/Misci";
 import ErrorBase from "@/store/errors";
+import RedirectionModal from "@/modals/RedirectionAlertModal";
 export const getServerSideProps = async (context: any) => {
   console.log(context);
   console.log("server");
@@ -28,8 +29,9 @@ export const getServerSideProps = async (context: any) => {
 interface MiSciProps {
   question: string;
 }
-const DEFAULT_REDIRECT_TIME = (seconds = 120) => seconds * 1000;
-const REDIRECT_TO_PAGE = '/misci';
+const SECONDS_TO_REDIRECT = 20;
+const DEFAULT_REDIRECT_TIME = (seconds = SECONDS_TO_REDIRECT) => seconds * 1000;
+const REDIRECT_TO_PAGE = "/misci";
 const MiSciArticle = ({ question }: MiSciProps) => {
   const [getUserIdForSubs, setGetUserIdForSubs] = useState<string | null>("");
   const [getTempIdForSubs, setGetTempIdForSubs] = useState<string | null>("");
@@ -44,25 +46,53 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   const [loadingMisciblog, setLoadingMisciblog] = React.useState(true);
   const [getToken, setGetToken] = useState<string | null>("");
   const [userActive, setUserActive] = useState(false);
+  const [showRedirectionModal, setShowRedirectionModal] = useState(false);
+  // const [getSecondsToRedirect, setGetSecondsToRedirect] = useState(
+  //   SECONDS_TO_REDIRECT
+  // );
+  const [secondsToRedirect, setSecondsToRedirect] = useState(
+    SECONDS_TO_REDIRECT
+  );
+  let intervalId :any;
   let timeoutId :any;
-
+  
   const resetTimeout = () => {
     console.log("reset");
     clearTimeout(timeoutId);
+    clearInterval(intervalId);
+    setSecondsToRedirect(SECONDS_TO_REDIRECT);
+    // Assuming getSecondsToRedirect is a state variable managed using useState.
+    console.log(secondsToRedirect);
+    intervalId = setInterval(() => {
+      console.log(secondsToRedirect);
+      // Update the state to decrement getSecondsToRedirect.
+      setSecondsToRedirect((seconds) => {
+        if (seconds === 0) {
+          clearInterval(intervalId);
+          return 0;
+        }
+        return seconds - 1;
+      });
+    }, 1000);
+  
     timeoutId = setTimeout(() => {
-      router.push(REDIRECT_TO_PAGE); 
-    }, DEFAULT_REDIRECT_TIME()); };
+      // router.push(REDIRECT_TO_PAGE);
+      alert("redirect");
+    }, DEFAULT_REDIRECT_TIME());
+  };
+  
+  useEffect(() => { console.log(secondsToRedirect) } , [secondsToRedirect])
 
   useEffect(() => {
-    resetTimeout(); 
-    window.addEventListener('mousemove', resetTimeout);
-    window.addEventListener('click', resetTimeout);
-    window.addEventListener('keypress', resetTimeout);
+    resetTimeout();
+    window.addEventListener("mousemove", resetTimeout);
+    window.addEventListener("click", resetTimeout);
+    window.addEventListener("keypress", resetTimeout);
     return () => {
       clearTimeout(timeoutId);
-      window.removeEventListener('mousemove', resetTimeout);
-      window.removeEventListener('click', resetTimeout);
-      window.removeEventListener('keypress', resetTimeout);
+      window.removeEventListener("mousemove", resetTimeout);
+      window.removeEventListener("click", resetTimeout);
+      window.removeEventListener("keypress", resetTimeout);
     };
   }, []);
   const {
@@ -109,7 +139,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     const userId = getUserToken();
     const tempiId = localStorage.getItem("tempId");
     if (shouldFetch.current) {
-      shouldFetch.current=false
+      shouldFetch.current = false;
       generateMisci({ question, userId: tempiId ?? "" })
         .then((res) => {
           console.log(res);
@@ -137,6 +167,12 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       <Head>
         <title className="capitalize">{capitalizeText(question)}</title>
       </Head>
+      <ToastContainer />
+      <RedirectionModal
+        isOpen={secondsToRedirect <= 10}
+        secondsToRedirect={secondsToRedirect}
+        onRequestClose={() => setShowRedirectionModal(false)}
+      />
       <MisciWorkSpace
         subscriptionData={subsData}
         question={question}
