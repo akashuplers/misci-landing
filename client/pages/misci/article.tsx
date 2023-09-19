@@ -74,6 +74,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       setSecondsToRedirect(SECONDS_TO_REDIRECT);
   
       // Start the timer again
+<<<<<<< Updated upstream
       intervalId = setInterval(() => {
         setSecondsToRedirect((seconds) => {
           console.log(seconds, " :inside interval");
@@ -89,6 +90,25 @@ const MiSciArticle = ({ question }: MiSciProps) => {
           return seconds - 1;
         });
       }, 1000);
+=======
+      // intervalId = setInterval(() => {
+      //   setSecondsToRedirect((seconds) => {
+      //     console.log(seconds, " :inside interval", secondsToRedirect);
+      //     if (seconds <= 1 ) {
+      //       // Perform your redirect logic here
+      //       // router.push(REDIRECT_TO_PAGE);
+      //       // console.log()
+      //       let shouldIRedirect = showRedirectionModalPopupStatus();
+      //       console.log(shouldIRedirect, "from handle interaction");
+      //       if(shouldIRedirect){
+      //         router.push(REDIRECT_TO_PAGE);
+      //       }
+      //       return 0;
+      //     }
+      //     return seconds - 1;
+      //   });
+      // }, 1000);
+>>>>>>> Stashed changes
       // setIntervalId(localintervalId);
     };
 
