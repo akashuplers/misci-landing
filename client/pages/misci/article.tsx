@@ -57,6 +57,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   const mainArticleContainerRef = useRef<any>(null);
   const [secondsToRedirect, setSecondsToRedirect] =
     useState(SECONDS_TO_REDIRECT);
+  const counterRef = useRef(SECONDS_TO_REDIRECT);
   const [tinyMceChangeCheck, setTinyMceChangeCheck] = useState(false);
     // const [intervalId, setIntervalId] = useState<any>(null);
   // const [timeoutId, setTimeoutId] = useState<any>(null);
@@ -72,11 +73,12 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       clearTimeout(timeoutId);
       clearInterval(intervalId);
       setSecondsToRedirect(SECONDS_TO_REDIRECT);
+      counterRef.current = SECONDS_TO_REDIRECT;
       // Start the timer again
       intervalId = setInterval(() => {
         setSecondsToRedirect((seconds) => {
-          console.log(seconds, " :inside interval", secondsToRedirect);
-          if (seconds <= 1 ) {
+          console.log(': counter ref', counterRef.current);
+          if (seconds <= 0 ) {
             // Perform your redirect logic here
             // router.push(REDIRECT_TO_PAGE);
             // console.log()
@@ -84,11 +86,18 @@ const MiSciArticle = ({ question }: MiSciProps) => {
             console.log(shouldIRedirect, "from handle interaction");
             if(shouldIRedirect){
               router.push(REDIRECT_TO_PAGE);
+              setCurrentTabIndex(0);
             }
             return 0;
           }
           return seconds - 1;
         });
+        // counterRef.current = counterRef.current - 1;/
+        if(counterRef.current <= 0){
+          clearInterval(intervalId);
+        }else{
+          counterRef.current = counterRef.current - 1;
+        }
       }, 1000);
       // setIntervalId(localintervalId);
     };
@@ -182,12 +191,12 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       appLoaderStatus,
       documentVisibilityState,
       secondsToRedirect, 
-      "from showRedirectionModalPopupStatus"
+      "from showRedirectionModalPopupStatus", ' : counterref', counterRef.current
     );
     if (
       appLoaderStatus == false &&
       documentVisibilityState == "visible" &&
-      secondsToRedirect <= 10
+      counterRef.current <= 10
     ) {
       console.log("true, please route");
       return true;
@@ -259,7 +268,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
         .catch((err) => {
           console.log("400+");
           console.log(err);
-          if (err.response.data.error == true) {
+          if (err?.response?.data?.error == true) {
             setErrorPresent(true);
           }
         })
