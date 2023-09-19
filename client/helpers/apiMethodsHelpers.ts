@@ -276,9 +276,11 @@ export async function fetchBlogData(
 interface PostData {
   question: string;
   userId: string;
+  onStart: () => void;
 }
 
 export const generateMisci = async (postData: PostData) => {
+  postData.onStart();
   const response = await http.post(API_ROUTES.MISCI_GENERATE, postData);
   return response;
 };

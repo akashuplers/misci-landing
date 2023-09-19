@@ -5,21 +5,60 @@ interface NativeEditorProps {
   onEditorChange: (content: string, editor: any) => void;
   onSetup: (editor: any) => void;
   height?: string;
+  iframeRef?: any;
+  onInit: (editor:any) => void;
+  ref?: any;
 }
+const contentStyle = `
+
+::-webkit-scrollbar {
+  width: 5px; /* Adjust the width to your preference */
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent; /* Make the track transparent */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: transparent; /* Make the handle (thumb) transparent */
+  border: 1px solid transparent; /* Hide the handle border */
+}
+
+/* Corner */
+::-webkit-scrollbar-corner {
+  background: transparent; /* Make the corner transparent */
+}
+`
 
 export default function NativeEditor(props: NativeEditorProps) {
   return (
     <Editor
+    
     value={ props.value}
+    ref={props.iframeRef}
     apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
     init={{
+      // hide scrollbar but scrollbar should be prenst
+      content_style:  contentStyle,
       setup: (editor) => {
         props.onSetup(editor);
       },
       init_instance_callback: function (editor) {
-        editor.on("ExecCommand", function (e) {
-          
+        
+        editor.on('ExecCommand', function(e) {
+          console.log('The ' + e.command + ' command was fired.');
         });
+        // add event listeners
+        editor.on('NodeChange', function(e) {
+          console.log('New node change: ' + e.element.nodeName);
+        }
+        );
+        console.log('Editor is initialized.');
+        props.onInit(editor);
+        
+        // keypress, click, scroll, mouseover
       },
       skin: "naked",
       icons: "small",

@@ -15,6 +15,8 @@ import { ToastContainer, toast } from "react-toastify";
 import Head from "next/head";
 import MisciWorkSpace from "@/components/component/workspace/Misci";
 import ErrorBase from "@/store/errors";
+import RedirectionModal from "@/modals/RedirectionAlertModal";
+import { useMisciArticleState } from "@/store/appState";
 export const getServerSideProps = async (context: any) => {
   console.log(context);
   console.log("server");
@@ -28,7 +30,11 @@ export const getServerSideProps = async (context: any) => {
 interface MiSciProps {
   question: string;
 }
-
+const mainArticleContainer = 'mainArticleContainer';
+const EVENT_FOR_RESET = ["mousemove", "keypress", "click", "scroll"];
+const SECONDS_TO_REDIRECT = 120;
+const DEFAULT_REDIRECT_TIME = (seconds = SECONDS_TO_REDIRECT) => seconds * 1000;
+const REDIRECT_TO_PAGE = "/misci";
 const MiSciArticle = ({ question }: MiSciProps) => {
   const [getUserIdForSubs, setGetUserIdForSubs] = useState<string | null>("");
   const [getTempIdForSubs, setGetTempIdForSubs] = useState<string | null>("");
@@ -36,12 +42,173 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   const [userAbleUserIDForSubs, setUserAbleUserIDForSubs] = useState<
     string | null
   >("");
+  const { currentTabIndex, setCurrentTabIndex } = useMisciArticleState();
+  const [appLoaderStatus, setAppLoaderStatus] = useState(true);
   const [allReadyCalled, setAllReadyCalled] = useState(false);
   const shouldFetch = useRef(true);
   const [errorPresent, setErrorPresent] = useState(false);
   const router = useRouter();
   const [loadingMisciblog, setLoadingMisciblog] = React.useState(true);
   const [getToken, setGetToken] = useState<string | null>("");
+  const [userActive, setUserActive] = useState(false);
+  const iframeRef = useRef<any>(null);
+  const [showRedirectionModal, setShowRedirectionModal] = useState(false);
+  const [reStart, setReStart] = useState(false);
+  const mainArticleContainerRef = useRef<any>(null);
+  const [secondsToRedirect, setSecondsToRedirect] =
+    useState(SECONDS_TO_REDIRECT);
+  const [tinyMceChangeCheck, setTinyMceChangeCheck] = useState(false);
+    // const [intervalId, setIntervalId] = useState<any>(null);
+  // const [timeoutId, setTimeoutId] = useState<any>(null);
+  function tinyMceChangeCheckFunction() {
+    setTinyMceChangeCheck((prev)=>!prev);
+  }
+  useEffect(() => {
+    let intervalId:any = null;
+    let timeoutId:any = null;
+    const handleInteraction = () => {
+      console.log(secondsToRedirect);
+       
+      clearTimeout(timeoutId);
+      clearInterval(intervalId);
+      setSecondsToRedirect(SECONDS_TO_REDIRECT);
+  
+      // Start the timer again
+      // intervalId = setInterval(() => {
+      //   setSecondsToRedirect((seconds) => {
+      //     console.log(seconds, " :inside interval", secondsToRedirect);
+      //     if (seconds <= 1 ) {
+      //       // Perform your redirect logic here
+      //       // router.push(REDIRECT_TO_PAGE);
+      //       // console.log()
+      //       let shouldIRedirect = showRedirectionModalPopupStatus();
+      //       console.log(shouldIRedirect, "from handle interaction");
+      //       if(shouldIRedirect){
+      //         router.push(REDIRECT_TO_PAGE);
+      //       }
+      //       return 0;
+      //     }
+      //     return seconds - 1;
+      //   });
+      // }, 1000);
+      // setIntervalId(localintervalId);
+    };
+
+    // Initial setup
+    handleInteraction();
+
+    if(mainArticleContainerRef.current){
+      mainArticleContainerRef.current.addEventListener("mousemove", handleInteraction);
+      mainArticleContainerRef.current.addEventListener("keydown", handleInteraction);
+      mainArticleContainerRef.current.addEventListener("mousemove", handleInteraction);
+      mainArticleContainerRef.current.addEventListener("keydown", handleInteraction);
+      mainArticleContainerRef.current.addEventListener("click", handleInteraction);
+      mainArticleContainerRef.current.addEventListener("scroll", handleInteraction);
+      mainArticleContainerRef.current.addEventListener("touchstart", handleInteraction);
+    }
+
+    // Event listeners to detect user interaction
+    // window.addEventListener("mousemove", handleInteraction);
+    // window.addEventListener("keydown", handleInteraction);
+    // window.addEventListener("click", handleInteraction);
+    // window.addEventListener("scroll", handleInteraction);
+    // window.addEventListener("touchstart", handleInteraction);
+
+    // Clear timers and remove event listeners on component unmount
+    const addEventListenerToTinyMCE = () => {
+      const tinymceElement = document.querySelector('iframe[id*="tiny"]');
+      console.log('tinymce');
+      console.log(tinymceElement);
+      console.log('tinymce');
+      if (tinymceElement) {
+        // @ts-ignore
+        console.log(tinymceElement.contentWindow?.document);
+        // @ts-ignore
+        console.log(tinymceElement.contentWindow?.document.body.addEventListener);
+        // @ts-ignore
+        tinymceElement.contentWindow?.document.body.addEventListener("click", handleInteraction);
+        // @ts-ignore
+        
+        tinymceElement.contentWindow?.document.body.addEventListener("scroll", handleInteraction);
+        // @ts-ignore
+        
+        tinymceElement.contentWindow?.document.body.addEventListener("touchstart", handleInteraction);
+        // @ts-ignore
+        
+        tinymceElement.contentWindow?.document.body.addEventListener("keydown", handleInteraction);
+        // @ts-ignore
+        tinymceElement.contentWindow?.document.body.addEventListener("mousemove", handleInteraction);
+
+      }
+    };
+    addEventListenerToTinyMCE();
+    // Use a MutationObserver to watch for changes in the DOM
+    const observer = new MutationObserver((mutationsList, observer) => {
+      // Check if TinyMCE has been added to the DOM
+      if (document.querySelector('iframe[id*="tiny"]')) {
+        // If TinyMCE is now present, stop observing and add the event listener
+        observer.disconnect();
+        addEventListenerToTinyMCE();
+      }
+    });
+
+    // Start observing changes in the DOM
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => {
+      clearTimeout(timeoutId);
+      clearInterval(intervalId);
+      // window.removeEventListener("mousemove", handleInteraction);
+      // window.removeEventListener("keydown", handleInteraction);
+      // window.removeEventListener("mousemove", handleInteraction);
+      // window.removeEventListener("keydown", handleInteraction);
+      // window.removeEventListener("click", handleInteraction);
+      // window.removeEventListener("scroll", handleInteraction);
+      // window.removeEventListener("touchstart", handleInteraction);
+      if(mainArticleContainerRef.current){
+        mainArticleContainerRef.current.removeEventListener("mousemove", handleInteraction);
+        mainArticleContainerRef.current.removeEventListener("keydown", handleInteraction);
+        mainArticleContainerRef.current.removeEventListener("mousemove", handleInteraction);
+        mainArticleContainerRef.current.removeEventListener("keydown", handleInteraction);
+        mainArticleContainerRef.current.removeEventListener("click", handleInteraction);
+        mainArticleContainerRef.current.removeEventListener("scroll", handleInteraction);
+        mainArticleContainerRef.current.removeEventListener("touchstart", handleInteraction);
+      }
+      observer.disconnect();
+    };
+  }, [tinyMceChangeCheck, appLoaderStatus]);
+  // useEffect(() => {
+  //   console.log(secondsToRedirect);
+  //   if(secondsToRedirect<=10 && secondsToRedirect>0){
+
+  //   }
+  //   if(secondsToRedirect<=0)
+  //   {
+  //     // clearInte
+  //     // setSecondsToRedirect(SECONDS_TO_REDIRECT)
+  //     // if(reStart==true){
+  //     //   setReStart(false);
+  //     // }
+  //   }
+  // }, [secondsToRedirect]);
+  function showRedirectionModalPopupStatus() {
+    const documentVisibilityState =
+      typeof document !== "undefined" ? document.visibilityState : null;
+    console.log(
+      appLoaderStatus,
+      documentVisibilityState,
+      "from showRedirectionModalPopupStatus"
+    );
+    if (
+      appLoaderStatus == false &&
+      documentVisibilityState == "visible" &&
+      secondsToRedirect <= 10
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+ 
   const {
     data: subsData,
     loading: subsLoading,
@@ -86,8 +253,14 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     const userId = getUserToken();
     const tempiId = localStorage.getItem("tempId");
     if (shouldFetch.current) {
-      shouldFetch.current=false
-      generateMisci({ question, userId: tempiId ?? "" })
+      shouldFetch.current = false;
+      generateMisci({
+        question,
+        userId: tempiId ?? "",
+        onStart() {
+          setLoadingMisciblog(true);
+        },
+      })
         .then((res) => {
           console.log(res);
           console.log("NON 400");
@@ -103,6 +276,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
           }
         })
         .finally(() => {
+          setLoadingMisciblog(false);
           setAllReadyCalled(false);
           console.log("finally");
         });
@@ -114,6 +288,17 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       <Head>
         <title className="capitalize">{capitalizeText(question)}</title>
       </Head>
+      <ToastContainer />
+      <RedirectionModal
+        isOpen={showRedirectionModalPopupStatus()}
+        secondsToRedirect={secondsToRedirect}
+        onRequestClose={() => {
+          setShowRedirectionModal(false);
+          setSecondsToRedirect(SECONDS_TO_REDIRECT);
+        }}
+        setCurrentTabIndex={setCurrentTabIndex}
+      />
+      <div id={mainArticleContainer} ref={mainArticleContainerRef}>
       <MisciWorkSpace
         subscriptionData={subsData}
         question={question}
@@ -121,7 +306,11 @@ const MiSciArticle = ({ question }: MiSciProps) => {
         errorPresent={errorPresent}
         setLoadingMisciblog={setLoadingMisciblog}
         loadingMisciblog={loadingMisciblog}
+        iframeRef={iframeRef}
+        setAppLoaderStatus={setAppLoaderStatus}
+        resetTimeout={tinyMceChangeCheckFunction}
       />
+      </div>
     </>
   );
 };

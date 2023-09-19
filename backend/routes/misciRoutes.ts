@@ -56,7 +56,15 @@ router.post('/generate', async (req: any, res: any) => {
         const userData = await db.db('admin').collection('users').findOne({
             email: userEmail.email
         })
-        const askMeAnswers = await new Python({userId: userData?._id.toString()}).getAskMeAnswers(question)
+        let askMeAnswers = null
+        try {
+            askMeAnswers = await new Python({userId: userData?._id.toString()}).getAskMeAnswers(question)
+        }catch(e){
+            console.log(e, "python answer crashed")
+            return res
+            .status(400)
+            .send({ error: true, message: "No answers found!" });    
+        }
         console.log(askMeAnswers, "askMeAnswers")
         if(!askMeAnswers) {
             setTimeout(() => {
