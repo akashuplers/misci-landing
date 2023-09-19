@@ -67,6 +67,8 @@ type Comments {
 type UrlObj {
     url: String
     source: String
+    type: String
+    id: String
 }
 
 type PublishData {
@@ -153,6 +155,8 @@ input UpdateBlogOptions {
 input RegenerateBlogOptions {
     ideas: [IdeasInput]!
     blog_id: String!
+    useOldWebSource: Boolean
+    updatedTopic: String
 }
 
 input IdeasInput {

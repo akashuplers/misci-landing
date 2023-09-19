@@ -47,6 +47,8 @@ export interface Ideas {
 export interface ReGenerateBlogMutationArg {
     ideas: [Ideas];
     blog_id: string
+    useOldWebSource: Boolean
+    updatedTopic: string
 }
 
 export interface User {

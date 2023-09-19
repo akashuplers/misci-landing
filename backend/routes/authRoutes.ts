@@ -11,7 +11,7 @@ import { authMiddleware } from "../middleWare/authToken";
 import { daysBetween, diff_hours, diff_minutes, getDateString, getTimeStamp, monthDiff, timeFromMins, timeToMins } from "../utils/date";
 import { verify } from "jsonwebtoken";
 import { sendContributionEmail, sendEmails, sendForgotPasswordEmail } from "../utils/mailJetConfig";
-import { assignTweetQuota, blogGeneration, fetchArticleById, fetchArticleUrls, fetchUser, publishBlog, updateUserCredit } from "../graphql/resolver/blogs/blogsRepo";
+import { assignTweetQuota, blogGeneration, fetchArticleById, fetchArticleUrls, fetchBlog, fetchBlogIdeas, fetchUser, publishBlog, updateUserCredit } from "../graphql/resolver/blogs/blogsRepo";
 import { ChatGPT } from "../services/chatGPT";
 import { Python } from "../services/python";
 import { publish } from "../utils/subscription";
@@ -1526,7 +1526,78 @@ router.post('/request-trial', async (req: any, res: any) => {
       message: "Request accepted!"
   })
 })
-
+router.post('/remove-sources', [authMiddleware], async (req: any, res: any) => {
+  const db = req.app.get('db')
+  const user = req.user
+  const {blogId, sourceId} = req.body
+  if(!user || !Object.keys(user).length) {
+    return res.status(401).send({
+      type: "ERROR",
+      message: "Not Authorized!"
+    })
+  }
+  let userDetails = null
+  if(user && Object.keys(user).length) {
+    userDetails = await fetchUser({id: user.id, db})
+    if(!userDetails) {
+      return res.status(400).send({
+        type: "ERROR",
+        message: "@No user found"
+      })
+    }
+    if(userDetails.credits <= 0) {
+      return res.status(400).send({
+        type: "ERROR",
+        message: "@Credit exhausted"
+      })
+    }
+  }
+  const article = await db.db('lilleArticles').collection('articles').findOne({_id: sourceId})
+  const blog = await fetchBlog({id: blogId, db})
+  const blogIdeas = await fetchBlogIdeas({id: blogId, db})
+  let updatedSourcesArray = []
+  let updatedArticleIdsArray = []
+  let updatedBlogIdeasArray = []
+  let updatedTagsArray = []
+  console.log(blog.sourcesArray)
+  console.log(blog.article_id)
+  console.log("================================")
+  if(blog.sourcesArray && blog.sourcesArray.length) {
+    updatedSourcesArray = blog.sourcesArray.filter((data: any) => data.id !== sourceId)
+  }
+  if(blog.article_id && blog.article_id.length) {
+    updatedArticleIdsArray = blog.article_id.filter((data: any) => data !== sourceId)
+  }
+  if(blogIdeas && blogIdeas?.ideas?.length) {
+    updatedBlogIdeasArray = blogIdeas?.ideas.filter((data: any) => data.article_id !== sourceId)
+  }
+  if(blog.tags && blog.tags.length) {
+    updatedTagsArray = blog.tags.filter((data: any) => article._source.driver.includes(data))
+  }
+  console.log(updatedSourcesArray)
+  console.log(updatedArticleIdsArray)
+  console.log(updatedBlogIdeasArray)
+  await db.db('lilleBlogs').collection('blogs').updateOne({
+    _id: new ObjectID(blogId)
+  }, {
+    $set: {
+      article_id: updatedArticleIdsArray,
+      sourcesArray: updatedSourcesArray,
+      tags: updatedTagsArray,
+    }
+  })
+  await db.db('lilleBlogs').collection('blogIdeas').updateOne({
+    blog_id: new ObjectID(blogId)
+  }, {
+    $set: {
+      ideas: updatedBlogIdeasArray
+    }
+  })
+  return res.status(200).send({
+    type: "ERROR",
+    message: "Source Deleted"
+  })
+})
 router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], async (req: any, res: any) => {
   let startRequest = new Date()
   const db = req.app.get('db')
@@ -1534,6 +1605,7 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
   let {keyword, article_ids: articleIds, keywords, urls, tones, user_id: userId} = req.body
   let files = req.files
   let combinedArticleIds: string[] = []
+  let sourcesArray: any[] = []
   // let keyword = args.options.keyword
   // let articleIds: any[] = args.options.article_ids
   // let keywords = args.options.keywords
@@ -1634,7 +1706,13 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
   }
   if(!combinedArticleIds?.length) {
       try {
-        combinedArticleIds = await new Python({userId: userId}).uploadKeyword({keyword, timeout:60000})
+        // combinedArticleIds = await new Python({userId: userId}).uploadKeyword({keyword, timeout:60000})
+        combinedArticleIds = [ 'e84cb604-52f9-11ee-ac29-0242ac130002' ]
+        combinedArticleIds.map((id) => sourcesArray.push({
+          type: "web",
+          id
+        }))
+        
       }catch(e){
           console.log(e, "error from python")
       }
@@ -1650,8 +1728,12 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
     for (let index = 0; index < urls.length; index++) {
       const url = urls[index];
       try {
-        const urlUploadRes = await new Python({userId}).uploadUrl({url})
-        urlsArticleIds.push(urlUploadRes)
+        // const urlUploadRes = await new Python({userId}).uploadUrl({url})
+        urlsArticleIds.push("f3cfc4d4-52f9-11ee-ac29-0242ac130002")
+        sourcesArray.push({
+          type: "url",
+          id:"f3cfc4d4-52f9-11ee-ac29-0242ac130002"
+        })
       }catch(e: any){
         unprocessedUrls.push(url)
       }
@@ -1682,6 +1764,33 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
   if(fileArticleIds) {
     combinedArticleIds = [...combinedArticleIds, ...fileArticleIds]
   }
+  console.log(combinedArticleIds, "combinedArticleIds")
+  if(sourcesArray && sourcesArray.length) {
+    sourcesArray = await (
+      Promise.all(
+        sourcesArray.map(async (source) => {
+          const articleData = await db.db('lilleArticles').collection('articles').findOne({
+            _id: source.id
+          })
+          const name = articleData._source?.source?.name
+          if(source.type === "url" || source.type === "web") {
+            return {
+              ...source,
+              source: name,
+              url: articleData?._source?.orig_url
+            }
+          } else {
+            return {
+              ...source,
+              source: name && (name === "file" || name === "note") ? articleData._source.title : name,
+              url: null
+            }
+          }
+        })
+      )
+    )
+  }
+  console.log(sourcesArray, "sourcesArray")
   let pythonEnd = new Date()
   let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
   let texts = ""
@@ -1744,6 +1853,7 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
           }
       });
       if(combinedArticleIds && combinedArticleIds.length) refUrls = await fetchArticleUrls({db, articleId: combinedArticleIds})
+      console.log(refUrls, "refUrls")
       const blogGeneratedData: any = await blogGeneration({
           db,
           text: !articlesData.length ? keyword : texts,
@@ -1772,6 +1882,7 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
               tags: uniqueTags,
               imageUrl: imageUrl ? imageUrl : process.env.PLACEHOLDER_IMAGE,
               imageSrc,
+              sourcesArray,
               date: getTimeStamp(),
               updatedAt: getTimeStamp(),
           }
@@ -1858,7 +1969,7 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
           }
           return res.status(200).send({
             type: "SUCCESS",
-            data:{...blogDetails, ideas: blogIdeasDetails, references: refUrls, pythonRespTime, respTime, unprocessedFiles, unprocessedUrls}
+            data:{...blogDetails, ideas: blogIdeasDetails, references: sourcesArray, pythonRespTime, respTime, unprocessedFiles, unprocessedUrls}
           })
       }else{
           console.log(blogGeneratedData, "blogGeneratedData")
