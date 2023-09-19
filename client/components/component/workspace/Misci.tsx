@@ -39,6 +39,7 @@ interface MisciWorkSpaceProps {
   setLoadingMisciblog: any;
   iframeRef: any;
   setAppLoaderStatus: any;
+  resetTimeout: any;
 }
 const MisciWorkSpace = ({
   subscriptionData,
@@ -49,6 +50,7 @@ const MisciWorkSpace = ({
   loadingMisciblog,
   setLoadingMisciblog,
   setAppLoaderStatus,
+  resetTimeout
 }: MisciWorkSpaceProps) => {
   const [misciblog, setMisciblog] = React.useState<any>(null);
   const [editorAnswersData, setEditorAnswersData] = React.useState<any>(null);
@@ -585,6 +587,10 @@ const MisciWorkSpace = ({
                         }}
                         onSetup={(editor: any) => {
                           setEditorSetUpCompleted(true);
+                          // resetTimeout();
+                        }}
+                        onInit={(editor : any) => {
+                          resetTimeout();
                         }}
                       />
                     </div>
