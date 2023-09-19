@@ -32,7 +32,7 @@ interface MiSciProps {
 }
 const mainArticleContainer = 'mainArticleContainer';
 const EVENT_FOR_RESET = ["mousemove", "keypress", "click", "scroll"];
-const SECONDS_TO_REDIRECT = 120;
+const SECONDS_TO_REDIRECT = 15;
 const DEFAULT_REDIRECT_TIME = (seconds = SECONDS_TO_REDIRECT) => seconds * 1000;
 const REDIRECT_TO_PAGE = "/misci";
 const MiSciArticle = ({ question }: MiSciProps) => {
@@ -68,23 +68,24 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     let timeoutId:any = null;
     const handleInteraction = () => {
       console.log(secondsToRedirect);
-       
+      console.log('running handler  ')
       clearTimeout(timeoutId);
       clearInterval(intervalId);
       setSecondsToRedirect(SECONDS_TO_REDIRECT);
-  
       // Start the timer again
       intervalId = setInterval(() => {
         setSecondsToRedirect((seconds) => {
-          console.log(seconds, " :inside interval");
-          if (seconds === 0) {
-            clearInterval(intervalId);
+          console.log(seconds, " :inside interval", secondsToRedirect);
+          if (seconds <= 1 ) {
             // Perform your redirect logic here
             // router.push(REDIRECT_TO_PAGE);
-            if(showRedirectionModalPopupStatus()){
+            // console.log()
+            let shouldIRedirect = showRedirectionModalPopupStatus();
+            console.log(shouldIRedirect, "from handle interaction");
+            if(shouldIRedirect){
               router.push(REDIRECT_TO_PAGE);
             }
-            // alert("Redirect");
+            return 0;
           }
           return seconds - 1;
         });
@@ -174,26 +175,13 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       observer.disconnect();
     };
   }, [tinyMceChangeCheck, appLoaderStatus]);
-  // useEffect(() => {
-  //   console.log(secondsToRedirect);
-  //   if(secondsToRedirect<=10 && secondsToRedirect>0){
-
-  //   }
-  //   if(secondsToRedirect<=0)
-  //   {
-  //     // clearInte
-  //     // setSecondsToRedirect(SECONDS_TO_REDIRECT)
-  //     // if(reStart==true){
-  //     //   setReStart(false);
-  //     // }
-  //   }
-  // }, [secondsToRedirect]);
   function showRedirectionModalPopupStatus() {
     const documentVisibilityState =
       typeof document !== "undefined" ? document.visibilityState : null;
     console.log(
       appLoaderStatus,
       documentVisibilityState,
+      secondsToRedirect, 
       "from showRedirectionModalPopupStatus"
     );
     if (
@@ -201,8 +189,10 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       documentVisibilityState == "visible" &&
       secondsToRedirect <= 10
     ) {
+      console.log("true, please route");
       return true;
     }
+    console.log("false, please stay");
     return false;
   }
 
@@ -292,7 +282,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
         secondsToRedirect={secondsToRedirect}
         onRequestClose={() => {
           setShowRedirectionModal(false);
-          setSecondsToRedirect(SECONDS_TO_REDIRECT);
+          tinyMceChangeCheckFunction();
         }}
         setCurrentTabIndex={setCurrentTabIndex}
       />
