@@ -32,7 +32,7 @@ interface MiSciProps {
 }
 const mainArticleContainer = 'mainArticleContainer';
 const EVENT_FOR_RESET = ["mousemove", "keypress", "click", "scroll"];
-const SECONDS_TO_REDIRECT = 15;
+const SECONDS_TO_REDIRECT = 120;
 const DEFAULT_REDIRECT_TIME = (seconds = SECONDS_TO_REDIRECT) => seconds * 1000;
 const REDIRECT_TO_PAGE = "/misci";
 const MiSciArticle = ({ question }: MiSciProps) => {
