@@ -133,6 +133,31 @@ html {
   background: #888;
 }
 
+/* ifram scrolbar */
+iframe[id*="tiny"]::-webkit-scrollbar {
+  width: 10px;
+}
+iframe::-webkit-scrollbar {
+  width: 0px;
+}
+
+/* Track */
+iframe[id*="tiny"]::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+iframe > body::-webkit-scrollbar-track {
+  background: red;
+}
+/* Handle */
+
+iframe[id*="tiny"]::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+iframe {
+  overflow: hidden !important;
+}
+
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
