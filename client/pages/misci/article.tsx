@@ -74,23 +74,6 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       setSecondsToRedirect(SECONDS_TO_REDIRECT);
   
       // Start the timer again
-<<<<<<< Updated upstream
-      intervalId = setInterval(() => {
-        setSecondsToRedirect((seconds) => {
-          console.log(seconds, " :inside interval");
-          if (seconds === 0) {
-            clearInterval(intervalId);
-            // Perform your redirect logic here
-            // router.push(REDIRECT_TO_PAGE);
-            if(showRedirectionModalPopupStatus()){
-              router.push(REDIRECT_TO_PAGE);
-            }
-            // alert("Redirect");
-          }
-          return seconds - 1;
-        });
-      }, 1000);
-=======
       // intervalId = setInterval(() => {
       //   setSecondsToRedirect((seconds) => {
       //     console.log(seconds, " :inside interval", secondsToRedirect);
@@ -108,7 +91,6 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       //     return seconds - 1;
       //   });
       // }, 1000);
->>>>>>> Stashed changes
       // setIntervalId(localintervalId);
     };
 
