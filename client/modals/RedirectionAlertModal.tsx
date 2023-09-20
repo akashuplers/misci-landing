@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import Modal from 'react-modal';
 interface IRedirectionModal {
     isOpen: boolean;
@@ -6,8 +7,9 @@ interface IRedirectionModal {
     setCurrentTabIndex: (index: number) => void;
 }
 const RedirectionModal = ({ isOpen, secondsToRedirect, onRequestClose, setCurrentTabIndex } : IRedirectionModal) => {
+  const router = useRouter();
   const pSeconds  = Math.abs(secondsToRedirect);
-    return (
+  return (
       <Modal
         isOpen={isOpen}
         onRequestClose={onRequestClose}
