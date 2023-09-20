@@ -92,6 +92,7 @@ type IdeasArr {
     used: Int
     reference: Reference
     name: String
+    type: String
 }
 
 type Reference {

@@ -1530,73 +1530,83 @@ router.post('/remove-sources', [authMiddleware], async (req: any, res: any) => {
   const db = req.app.get('db')
   const user = req.user
   const {blogId, sourceId} = req.body
-  if(!user || !Object.keys(user).length) {
-    return res.status(401).send({
+  try {
+    if(!user || !Object.keys(user).length) {
+      return res.status(401).send({
+        type: "ERROR",
+        message: "Not Authorized!"
+      })
+    }
+    let userDetails = null
+    if(user && Object.keys(user).length) {
+      userDetails = await fetchUser({id: user.id, db})
+      if(!userDetails) {
+        return res.status(400).send({
+          type: "ERROR",
+          message: "@No user found"
+        })
+      }
+      if(userDetails.credits <= 0) {
+        return res.status(400).send({
+          type: "ERROR",
+          message: "@Credit exhausted"
+        })
+      }
+    }
+    const article = await db.db('lilleArticles').collection('articles').findOne({_id: sourceId})
+    const blog = await fetchBlog({id: blogId, db})
+    const blogIdeas = await fetchBlogIdeas({id: blogId, db})
+    let updatedSourcesArray = []
+    let updatedArticleIdsArray = []
+    let updatedBlogIdeasArray = []
+    let updatedTagsArray = []
+    console.log(blog.sourcesArray)
+    console.log(blog.article_id)
+    console.log("================================")
+    if(blog.sourcesArray && blog.sourcesArray.length) {
+      updatedSourcesArray = blog.sourcesArray.filter((data: any) => data.id !== sourceId)
+    }
+    if(blog.article_id && blog.article_id.length) {
+      updatedArticleIdsArray = blog.article_id.filter((data: any) => data !== sourceId)
+    }
+    if(blogIdeas && blogIdeas?.ideas?.length) {
+      updatedBlogIdeasArray = blogIdeas?.ideas.filter((data: any) => data.article_id !== sourceId)
+    }
+    if(blog.tags && blog.tags.length) {
+      updatedTagsArray = blog.tags.filter((data: any) => article._source.driver.includes(data))
+    }
+    console.log(updatedSourcesArray)
+    console.log(updatedArticleIdsArray)
+    console.log(updatedBlogIdeasArray)
+    const updatedBlog = await db.db('lilleBlogs').collection('blogs').findOneAndUpdate({
+      _id: new ObjectID(blogId)
+    }, {
+      $set: {
+        article_id: updatedArticleIdsArray,
+        sourcesArray: updatedSourcesArray,
+        tags: updatedTagsArray,
+      }
+    }, {returnDocument: "after"})
+    const updatedBlogIdeas = await db.db('lilleBlogs').collection('blogIdeas').findOneAndUpdate({
+      blog_id: new ObjectID(blogId)
+    }, {
+      $set: {
+        ideas: updatedBlogIdeasArray
+      }
+    }, {returnDocument: "after"})
+    return res.status(200).send({
+      type: "SUCCESS",
+      message: "Source Deleted",
+      blogIdeas: updatedBlogIdeas?.value || blog,
+      blog: updatedBlog?.value || blogIdeas,
+    })
+  }catch(e){
+    console.log(e, "remove source")
+    return res.status(400).send({
       type: "ERROR",
-      message: "Not Authorized!"
+      message: e.message
     })
   }
-  let userDetails = null
-  if(user && Object.keys(user).length) {
-    userDetails = await fetchUser({id: user.id, db})
-    if(!userDetails) {
-      return res.status(400).send({
-        type: "ERROR",
-        message: "@No user found"
-      })
-    }
-    if(userDetails.credits <= 0) {
-      return res.status(400).send({
-        type: "ERROR",
-        message: "@Credit exhausted"
-      })
-    }
-  }
-  const article = await db.db('lilleArticles').collection('articles').findOne({_id: sourceId})
-  const blog = await fetchBlog({id: blogId, db})
-  const blogIdeas = await fetchBlogIdeas({id: blogId, db})
-  let updatedSourcesArray = []
-  let updatedArticleIdsArray = []
-  let updatedBlogIdeasArray = []
-  let updatedTagsArray = []
-  console.log(blog.sourcesArray)
-  console.log(blog.article_id)
-  console.log("================================")
-  if(blog.sourcesArray && blog.sourcesArray.length) {
-    updatedSourcesArray = blog.sourcesArray.filter((data: any) => data.id !== sourceId)
-  }
-  if(blog.article_id && blog.article_id.length) {
-    updatedArticleIdsArray = blog.article_id.filter((data: any) => data !== sourceId)
-  }
-  if(blogIdeas && blogIdeas?.ideas?.length) {
-    updatedBlogIdeasArray = blogIdeas?.ideas.filter((data: any) => data.article_id !== sourceId)
-  }
-  if(blog.tags && blog.tags.length) {
-    updatedTagsArray = blog.tags.filter((data: any) => article._source.driver.includes(data))
-  }
-  console.log(updatedSourcesArray)
-  console.log(updatedArticleIdsArray)
-  console.log(updatedBlogIdeasArray)
-  await db.db('lilleBlogs').collection('blogs').updateOne({
-    _id: new ObjectID(blogId)
-  }, {
-    $set: {
-      article_id: updatedArticleIdsArray,
-      sourcesArray: updatedSourcesArray,
-      tags: updatedTagsArray,
-    }
-  })
-  await db.db('lilleBlogs').collection('blogIdeas').updateOne({
-    blog_id: new ObjectID(blogId)
-  }, {
-    $set: {
-      ideas: updatedBlogIdeasArray
-    }
-  })
-  return res.status(200).send({
-    type: "ERROR",
-    message: "Source Deleted"
-  })
 })
 router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], async (req: any, res: any) => {
   let startRequest = new Date()
@@ -1703,11 +1713,11 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
           ...updatedBlogIdeas,
           _id: insertBlogIdeas.insertedId
       }, references: refUrls}
-  }
+    }
   if(!combinedArticleIds?.length) {
       try {
-        // combinedArticleIds = await new Python({userId: userId}).uploadKeyword({keyword, timeout:60000})
-        combinedArticleIds = [ 'e84cb604-52f9-11ee-ac29-0242ac130002' ]
+        combinedArticleIds = await new Python({userId: userId}).uploadKeyword({keyword, timeout:60000})
+        // combinedArticleIds = [ 'e84cb604-52f9-11ee-ac29-0242ac130002' ]
         combinedArticleIds.map((id) => sourcesArray.push({
           type: "web",
           id
@@ -1728,11 +1738,11 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
     for (let index = 0; index < urls.length; index++) {
       const url = urls[index];
       try {
-        // const urlUploadRes = await new Python({userId}).uploadUrl({url})
-        urlsArticleIds.push("f3cfc4d4-52f9-11ee-ac29-0242ac130002")
+        const urlUploadRes = await new Python({userId}).uploadUrl({url})
+        urlsArticleIds.push(urlUploadRes)
         sourcesArray.push({
           type: "url",
-          id:"f3cfc4d4-52f9-11ee-ac29-0242ac130002"
+          id: urlUploadRes
         })
       }catch(e: any){
         unprocessedUrls.push(url)
@@ -1745,6 +1755,10 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
       try {
         const fileUploadRes = await new Python({userId}).uploadFile({file})
         fileArticleIds.push(fileUploadRes)
+        sourcesArray.push({
+          type: "file",
+          id: fileUploadRes
+        })
       }catch(e: any){
         unprocessedFiles.push(file.originalname)
       }
@@ -1910,12 +1924,18 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
                       updatedIdeas.map(async (ideasData: any) => {
                           if(ideasData.article_id) {
                               const article = await fetchArticleById({id: ideasData.article_id, db, userId})
+                              const sourceFilter = sourcesArray.find((source: any) => source.id === ideasData.article_id)
+                              let type = null
+                              if(sourceFilter) {
+                                type = sourceFilter.type
+                              }
                               return {
                                   ...ideasData,
+                                  type,
                                   reference: {
                                       type: "article",
                                       link: article._source.orig_url,
-                                      id: ideasData.article_id
+                                      id: ideasData.article_id,
                                   }
                               }
                           } else {
