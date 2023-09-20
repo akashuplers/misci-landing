@@ -161,7 +161,7 @@ const MisciWorkSpace = ({
       setLoadingMisciblog(false);
       setArticleLoaderErrorText(ErrorBase.unableToGenerateArticle);
       setErrorPresent(true);
-
+      setAppLoaderStatus(false);
       // setTimeout(() => {
       //   // take to /misci
       //   router.push("/misci");
@@ -174,6 +174,7 @@ const MisciWorkSpace = ({
       setEditorAnswersData(ErrorBase.errorAnswerWithQuestion(question));
       setLoadingMisciblog(false);
       setArticleLoaderErrorText(ErrorBase.unableToGenerateArticle);
+      setAppLoaderStatus(false);
     }
   }, [errorPresent]);
 
