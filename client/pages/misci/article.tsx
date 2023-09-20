@@ -57,6 +57,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
   const mainArticleContainerRef = useRef<any>(null);
   const [secondsToRedirect, setSecondsToRedirect] =
     useState(SECONDS_TO_REDIRECT);
+  const counterRef = useRef(SECONDS_TO_REDIRECT);
   const [tinyMceChangeCheck, setTinyMceChangeCheck] = useState(false);
     // const [intervalId, setIntervalId] = useState<any>(null);
   // const [timeoutId, setTimeoutId] = useState<any>(null);
@@ -68,29 +69,36 @@ const MiSciArticle = ({ question }: MiSciProps) => {
     let timeoutId:any = null;
     const handleInteraction = () => {
       console.log(secondsToRedirect);
-       
+      console.log('running handler  ')
       clearTimeout(timeoutId);
       clearInterval(intervalId);
       setSecondsToRedirect(SECONDS_TO_REDIRECT);
-  
+      counterRef.current = SECONDS_TO_REDIRECT;
       // Start the timer again
-      // intervalId = setInterval(() => {
-      //   setSecondsToRedirect((seconds) => {
-      //     console.log(seconds, " :inside interval", secondsToRedirect);
-      //     if (seconds <= 1 ) {
-      //       // Perform your redirect logic here
-      //       // router.push(REDIRECT_TO_PAGE);
-      //       // console.log()
-      //       let shouldIRedirect = showRedirectionModalPopupStatus();
-      //       console.log(shouldIRedirect, "from handle interaction");
-      //       if(shouldIRedirect){
-      //         router.push(REDIRECT_TO_PAGE);
-      //       }
-      //       return 0;
-      //     }
-      //     return seconds - 1;
-      //   });
-      // }, 1000);
+      intervalId = setInterval(() => {
+        setSecondsToRedirect((seconds) => {
+          console.log(': counter ref', counterRef.current);
+          if (seconds <= 0 ) {
+            // Perform your redirect logic here
+            // router.push(REDIRECT_TO_PAGE);
+            // console.log()
+            let shouldIRedirect = showRedirectionModalPopupStatus();
+            console.log(shouldIRedirect, "from handle interaction");
+            if(shouldIRedirect){
+              router.push(REDIRECT_TO_PAGE);
+              setCurrentTabIndex(0);
+            }
+            return 0;
+          }
+          return seconds - 1;
+        });
+        // counterRef.current = counterRef.current - 1;/
+        if(counterRef.current <= 0){
+          clearInterval(intervalId);
+        }else{
+          counterRef.current = counterRef.current - 1;
+        }
+      }, 1000);
       // setIntervalId(localintervalId);
     };
 
@@ -176,35 +184,24 @@ const MiSciArticle = ({ question }: MiSciProps) => {
       observer.disconnect();
     };
   }, [tinyMceChangeCheck, appLoaderStatus]);
-  // useEffect(() => {
-  //   console.log(secondsToRedirect);
-  //   if(secondsToRedirect<=10 && secondsToRedirect>0){
-
-  //   }
-  //   if(secondsToRedirect<=0)
-  //   {
-  //     // clearInte
-  //     // setSecondsToRedirect(SECONDS_TO_REDIRECT)
-  //     // if(reStart==true){
-  //     //   setReStart(false);
-  //     // }
-  //   }
-  // }, [secondsToRedirect]);
   function showRedirectionModalPopupStatus() {
     const documentVisibilityState =
       typeof document !== "undefined" ? document.visibilityState : null;
     console.log(
       appLoaderStatus,
       documentVisibilityState,
-      "from showRedirectionModalPopupStatus"
+      secondsToRedirect, 
+      "from showRedirectionModalPopupStatus", ' : counterref', counterRef.current
     );
     if (
       appLoaderStatus == false &&
       documentVisibilityState == "visible" &&
-      secondsToRedirect <= 10
+      counterRef.current <= 10
     ) {
+      console.log("true, please route");
       return true;
     }
+    console.log("false, please stay");
     return false;
   }
 
@@ -271,7 +268,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
         .catch((err) => {
           console.log("400+");
           console.log(err);
-          if (err.response.data.error == true) {
+          if (err?.response?.data?.error == true) {
             setErrorPresent(true);
           }
         })
@@ -294,7 +291,7 @@ const MiSciArticle = ({ question }: MiSciProps) => {
         secondsToRedirect={secondsToRedirect}
         onRequestClose={() => {
           setShowRedirectionModal(false);
-          setSecondsToRedirect(SECONDS_TO_REDIRECT);
+          tinyMceChangeCheckFunction();
         }}
         setCurrentTabIndex={setCurrentTabIndex}
       />
