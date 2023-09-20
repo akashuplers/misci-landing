@@ -25,8 +25,14 @@ router.get("/coffee-prices", async (request: any, reply: any) => {
 router.post('/api/payment', async (request: any, reply: any) => {
     console.log(request.body);
     const body = request.body
-    const session = await new Stripe().getCheckoutSession(body)
-    return reply.status(303).json({ id: session.id });
+    try {
+        const session = await new Stripe().getCheckoutSession(body)
+        return reply.status(303).json({ id: session.id });
+    }catch(e){
+        return reply.status(400).send({
+            message: e.message
+        })
+    }
 });
 
 

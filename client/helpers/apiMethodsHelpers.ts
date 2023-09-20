@@ -276,40 +276,56 @@ export async function fetchBlogData(
 interface PostData {
   question: string;
   userId: string;
+  onStart: () => void;
 }
 
 export const generateMisci = async (postData: PostData) => {
+  postData.onStart();
+  const response = await http.post(API_ROUTES.MISCI_GENERATE, postData);
+  return response;
+};
+
+export const regenerateNextDraft = async ({
+  ideas,
+  blog_id,
+  onStart,
+  onCompleted,
+}: {
+  ideas: any[];
+  blog_id: string;
+  onStart: () => void;
+  onCompleted: () => void;
+}) => {
   try {
-    const response = await http.post(API_ROUTES.MISCI_GENERATE, postData);
-    // Assuming you want to return the response data
+    onStart();
+    const response = await http.post(API_ROUTES.MISCI_REGENERATE, {
+      ideas,
+      blog_id,
+    });
+    onCompleted();
     return response.data;
   } catch (error) {
-    // Handle errors here
-    console.error(error);
-    throw error; // You can choose to handle the error or rethrow it
+    console.log(error);
   }
 };
 
-
-
-export const regenerateNextDraft = async ({ideas , blog_id , onStart, onCompleted}:{
-  ideas: any[] , blog_id: string; onStart: () => void; onCompleted: () => void;
-}) =>{
+export const misciBlogPublish = async ({
+  blog_id,
+  email,
+  name,
+}: {
+  blog_id: string;
+  email: string;
+  name: string;
+}) => {
   try {
-    onStart();
-    const response  =await http.post(API_ROUTES.MISCI_REGENERATE, {ideas, blog_id});
-    onCompleted();
+    const response = await http.post(API_ROUTES.MISCI_PUBLISH, {
+      blogId: blog_id,
+      email,
+      name,
+    });
     return response.data;
-  }catch (error){
-    console.log(error);
-  }
-}
-
-export const misciBlogPublish = async ({blog_id, email, name}:{ blog_id: string, email:string, name:string}) =>{
-  try {
-    const response  =await http.post(API_ROUTES.MISCI_PUBLISH, {blogId : blog_id, email, name});
-    return response.data;
-  }catch (error){
+  } catch (error) {
     console.log(error);
   }
 };

@@ -5,6 +5,7 @@ import { misciBlogPublish } from "@/helpers/apiMethodsHelpers";
 import { toast } from "react-toastify";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
+import { useMisciArticleState } from "@/store/appState";
 const initialValues = {
   email: "",
   name: "",
@@ -22,6 +23,7 @@ const PublishMisciModal = ({
 }) => {
   const [showRedirectionModal, setShowRedirectionModal] = React.useState(false);
   const [youShoulBeRedirected, setYouShoulBeRedirected] = React.useState(true);
+  const { currentTabIndex, setCurrentTabIndex } = useMisciArticleState();
   const [seconds, setSeconds] = React.useState(DEFAULT_SECONDS);
   const router = useRouter();
   const [timeoutId, setTimeoutId] = React.useState<any>(null);
@@ -86,8 +88,9 @@ const PublishMisciModal = ({
 
     if (!values.name) {
       errors.name = "Name is required";
+    } else if(!/^[a-zA-Z ]*$/.test(values.name)) {
+      errors.name = "Invalid name";
     }
-
     return errors;
   };
   return (
@@ -117,34 +120,35 @@ const PublishMisciModal = ({
             bottom: "",
             zIndex: "999",
             maxWidth: "55%",
-            width: "35%",
+            width: "40%",
             marginRight: "-50%",
             minHeight: "40%",
+            maxHeight: '100vh',
             transform: "translate(-50%, -50%)",
             padding: "1rem",
-            paddingBottom: "0px",
             outline: "none",
           },
         }}
       >
          
         <div className="w-full h-full">
-          <div
-            className="absolute px-4 flex w-full items-center justify-end"
+          <button
+            className="absolute  flex items-center justify-end z-50 outline-none h-8 w-8"
             style={{
-              top: "10%",
-              right: '0%'
+              top: "8%",
+              right: '2%'
+            }}
+            onClick={() => {
+              handleClose();
             }}
           >
-            <button
+            <span
               className="w-6 h-6"
-              onClick={() => {
-                handleClose();
-              }}
+           
             >
               <XMarkIcon className="w-6 h-6" />
-            </button>
-          </div>
+            </span>
+          </button>
 
           {showRedirectionModal ? (
             <>
@@ -164,6 +168,7 @@ const PublishMisciModal = ({
                     clearInterval(intervalId);
                     clearTimeout(timeoutId);
                     setShowModal(false);
+                    setCurrentTabIndex(0);
                     handleClose();
                   }}
                 >
@@ -171,7 +176,7 @@ const PublishMisciModal = ({
                     <div className="justify-center items-center inline-flex">
                       <div className="px-1 justify-start items-center gap-2.5 flex">
                         <div className="text-center text-white text-sm font-bold leading-normal">
-                          Go Back
+                          Go Back To Answer
                         </div>
                       </div>
                     </div>

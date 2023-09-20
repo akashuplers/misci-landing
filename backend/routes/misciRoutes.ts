@@ -47,18 +47,29 @@ router.post('/publish', async (req: any, res: any) => {
     }
 })
 router.post('/generate', async (req: any, res: any) => {
-    const {question, userId} = req.body
+    let {question, userId} = req.body
     const db = req.app.get('dbLive')
     const userEmail = await db.db('lilleAdmin').collection('misciEmail').findOne()
     console.log(userEmail)
+    question = question.charAt(0).toUpperCase() + question.slice(1)
     try {
         const userData = await db.db('admin').collection('users').findOne({
             email: userEmail.email
         })
-        const askMeAnswers = await new Python({userId: userData?._id.toString()}).getAskMeAnswers(question)
+        let askMeAnswers = null
+        try {
+            askMeAnswers = await new Python({userId: userData?._id.toString()}).getAskMeAnswers(question)
+        }catch(e){
+            console.log(e, "python answer crashed")
+            return res
+            .status(400)
+            .send({ error: true, message: "No answers found!" });    
+        }
         console.log(askMeAnswers, "askMeAnswers")
         if(!askMeAnswers) {
-            publish({userId, keyword: null, step: "ANSWER_FETCHING_FAILED", data: null})
+            setTimeout(() => {
+                publish({userId, keyword: null, step: "ANSWER_FETCHING_FAILED", data: null})
+            }, 3000)
             return res
             .status(400)
             .send({ error: true, message: "No answers found!" });    
@@ -121,7 +132,9 @@ router.post('/generate', async (req: any, res: any) => {
         const insertedData = await db.db('lilleBlogs').collection('blogs').insertOne(finalBlogObj)
         const data = await db.db('lilleBlogs').collection('blogs').findOne({_id: new ObjectID(insertedData.insertedId)})
         console.log(data, "data")
-        publish({userId, keyword: null, step: "ANSWER_FETCHING_COMPLETED", data})
+        setTimeout(() => {
+            publish({userId, keyword: null, step: "ANSWER_FETCHING_COMPLETED", data})
+        }, 3000)
         const articleIds = [article.id]
         let pythonEnd = new Date()
         // let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
@@ -405,13 +418,18 @@ router.post('/re-generate', async (req: any, res: any) => {
         )
     )
     const noteReferences = await db.db('lilleBlogs').collection('notesReferences').find({
-        article_id: articleIds
-    })
-    let notesRefUrls = []
+        article_id: {
+            $in: articleIds
+        }
+    }).toArray()
+    let notesRefUrls: any[] = []
     if(noteReferences && noteReferences.length) {
-        notesRefUrls = noteReferences.map((data: any) => notesRefUrls.push(data.urls))
+        noteReferences.forEach((data: any) => {
+            console.log(data.urls, "data.urls")
+            notesRefUrls = [...notesRefUrls, ...data.urls]
+        })
     }
-    // console.log(texts)
+
     try {
         let refUrls: {
             url: string

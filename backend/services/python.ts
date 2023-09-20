@@ -160,14 +160,18 @@ export class Python {
                     'user_id': this.userId, 
                     'company_id': 'nowigence', 
                     'question': question
-                }
+                },
+                timeout: 15000
             }
             console.log(config, "config")
             const pythonRes = await axios(config)
-            console.log(pythonRes.data)
+            console.log(pythonRes.data, "python response")
             console.log(pythonRes?.data?.internal_results?.main_document?.answer, "answer")
             console.log(!pythonRes?.data?.internal_results?.main_document?.id?.length, "answer")
             if(pythonRes?.data && !pythonRes?.data?.internal_results?.main_document?.id?.length) {
+                return null
+            }
+            if(!pythonRes?.data || !Object.keys(pythonRes).length || !Object.keys(pythonRes.data).length) {
                 return null
             }
             return pythonRes.data

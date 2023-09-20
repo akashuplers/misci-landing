@@ -26,24 +26,38 @@ import { Tab } from "@headlessui/react";
 import { Badge } from "@radix-ui/themes";
 import ErrorBase from "@/store/errors";
 import NextDraftIssueModal from "@/modals/NextDraftIssueModal";
-import { useIdeaState } from "@/store/appState";
+import { useIdeaState, useMisciArticleState } from "@/store/appState";
 import PublishMisciModal from "@/modals/PublishMisciModal";
 import IdeaTag from "@/components/IdeaTag";
+import TextModal from "@/modals/TextModal";
 interface MisciWorkSpaceProps {
   subscriptionData: StepCompleteData | undefined;
   question: string;
+  errorPresent: boolean;
+  setErrorPresent: any;
+  loadingMisciblog: boolean;
+  setLoadingMisciblog: any;
+  iframeRef: any;
+  setAppLoaderStatus: any;
+  resetTimeout: any;
 }
 const MisciWorkSpace = ({
   subscriptionData,
   question,
+  iframeRef,
+  errorPresent,
+  setErrorPresent,
+  loadingMisciblog,
+  setLoadingMisciblog,
+  setAppLoaderStatus,
+  resetTimeout
 }: MisciWorkSpaceProps) => {
-  const [loadingMisciblog, setLoadingMisciblog] = React.useState(true);
   const [misciblog, setMisciblog] = React.useState<any>(null);
-  const [currentTabIndex, setCurrentTabIndex] = React.useState(0);
   const [editorAnswersData, setEditorAnswersData] = React.useState<any>(null);
   const [userquestion, setQuestion] = useState<string>("");
   const [listOfIdeas, setListOfIdeas] = useState<any[]>([]);
   // const [initailListOfIdeas, setInitialListOfIdeas] = useState<any[]>([]);
+  const [AnswersReadmore, setAnswersReadMore] = useState(false);
   const [listOfUnusedIdeas, setListOfUnusedIdeas] = useState<any>([]);
   const router = useRouter();
   const [EditorSetUpCompleted, setEditorSetUpCompleted] = useState(false);
@@ -52,9 +66,9 @@ const MisciWorkSpace = ({
   const [editorArticleData, setEditorArticleData] = useState<any>(null);
   const [blogId, setBlogId] = useState("");
   const [nextDraftLoader, setNextDraftLoader] = useState(false);
-  const [errorPresent, setErrorPresent] = useState(false);
   const [shortAnswer, setShortAnswer] = useState<string>("");
   const [detailedAnswer, setDetailedAnswer] = useState<string>("");
+  const { currentTabIndex, setCurrentTabIndex } = useMisciArticleState();
   const [references, setReferences] = useState<
     {
       id: string;
@@ -66,7 +80,17 @@ const MisciWorkSpace = ({
   const [showPublishModal, setShowPublishModal] = useState(false);
   // const [initailListOfIdeas, setInitialListOfIdeas] = useState<any[]>([]);
   const { getInitialListOfIdeas, setInitialListOfIdeas } = useIdeaState();
-
+  const [articleLoaderErrorText, setArticleLoaderErrorText] = useState("");
+  function handleReset() {
+    setCurrentTabIndex(0);
+    setEditorAnswersData(null);
+    setQuestion("");
+    setAnswersReadMore(false);
+    setIsArticleTabReady(false);
+    setEditorAnswersData(null);
+    setShortAnswer("");
+    setReferences([]);
+  }
   useEffect(() => {
     const step = subscriptionData?.stepCompletes.step;
     console.log("sub ran", step);
@@ -97,7 +121,8 @@ const MisciWorkSpace = ({
       console.log(data);
 
       setBlogId(subscriptionData?.stepCompletes.data?._id);
-
+      setShortAnswer(subscriptionData?.stepCompletes.data?.short_answer);
+      setDetailedAnswer(subscriptionData?.stepCompletes.data?.detailed_answer);
       // Create new arrays or objects when setting the state
       setListOfIdeas([...data]);
       setInitialListOfIdeas([
@@ -122,6 +147,7 @@ const MisciWorkSpace = ({
       const answerHtml = jsonToHtml(answers?.tiny_mce_data);
       console.log(answerHtml);
       setEditorAnswersData(answerHtml);
+      setLoadingMisciblog(false);
     }
     // @ts-ignore
     if (step == "ANSWER_FETCHING_FAILED") {
@@ -130,15 +156,37 @@ const MisciWorkSpace = ({
       //   delay: 10000
       // });
       setEditorAnswersData(ErrorBase.errorAnswerWithQuestion(question));
+      setDetailedAnswer(ErrorBase.errorAnswerWithQuestion(question));
+      setArticleLoaderErrorText(ErrorBase.unableToGenerateArticle);
       setLoadingMisciblog(false);
+      setArticleLoaderErrorText(ErrorBase.unableToGenerateArticle);
       setErrorPresent(true);
-      
+
       // setTimeout(() => {
       //   // take to /misci
       //   router.push("/misci");
       // }, 8000);
     }
   }, [subscriptionData?.stepCompletes?.step]);
+  useEffect(() => {
+    if (errorPresent === true) {
+      setDetailedAnswer(ErrorBase.errorAnswerWithQuestion(question));
+      setEditorAnswersData(ErrorBase.errorAnswerWithQuestion(question));
+      setLoadingMisciblog(false);
+      setArticleLoaderErrorText(ErrorBase.unableToGenerateArticle);
+    }
+  }, [errorPresent]);
+
+  useEffect(() => {
+
+    // if anyone is true make it true
+    if(nextDraftLoader || loadingMisciblog || !isArticleTabReady){
+      setAppLoaderStatus(true);
+    }else{
+      setAppLoaderStatus(false);
+    }
+
+  },[nextDraftLoader, isArticleTabReady, loadingMisciblog])
 
   useEffect(() => {
     console.log(getInitialListOfIdeas());
@@ -172,16 +220,18 @@ const MisciWorkSpace = ({
       onStart: () => {
         console.log("started");
         setNextDraftLoader(true);
+        setAppLoaderStatus(true);
       },
       onCompleted: () => {
         console.log("completed");
         setNextDraftLoader(false);
+        setAppLoaderStatus(true);
       },
     })
       .then((res) => {
         if (res?.data?.error === true) {
-          // This question goes beyond the library that we built for the Ground to Gourmet exhibit! You might be able to find the answer by using Lille.ai with web access, which you can try for yourself at https://www.lille.ai.
           setEditorAnswersData(ErrorBase.errorAnswerWithQuestion(question));
+          setDetailedAnswer(ErrorBase.errorAnswerWithQuestion(question));
           setLoadingMisciblog(false);
         } else {
           console.log(res);
@@ -205,46 +255,80 @@ const MisciWorkSpace = ({
             (idea: any) => idea.used == 1
           );
           console.log([...getAllIdeasWith1, ...ideas]);
-          // get only used == 
+          // get only used ==
           setListOfIdeas((prev) => {
             return [...getAllIdeasWith1];
           });
+          setInitialListOfIdeas([...getAllIdeasWith1, ...getAllIdeasWith1]);
           setQuestion(res?.data?.question);
           setBlogId(res?.data?._id);
           setReferences(res?.data?.references);
           console.log("regen completedc");
         }
       })
-      .finally(() => {});
+      .finally(() => {
+        setAppLoaderStatus(true);
+      });
   }
 
-  const DynamicAnswersData = ({ html, short_answer, detailed_answer }: { html: string , detailed_answer:string, short_answer:string}) => {
-    var mySafeHTML = structuredClone(html);
-    mySafeHTML = DOMPurify.sanitize(mySafeHTML);
+  const DynamicAnswersData = ({
+    html,
+    short_answer,
+    detailed_answer,
+  }: {
+    html: string;
+    detailed_answer: string;
+    short_answer: string;
+  }) => {
     return (
       <div className="">
         {/* <div
           id="answersEditor"
           dangerouslySetInnerHTML={{ __html: mySafeHTML }}
         ></div> */}
-        <div className="flex flex-col gap-4">
-          {
-            short_answer.length > 0 ? <>
-            <div>
-            <p>
-              Short Answer: <span
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(short_answer) }}
-              ></span>
-            </p>
-          </div>
-          <div className="border-b border-gray-200"></div>
-</>: <></>
-          }
+        <div className="flex flex-col gap-4 relative">
+          {short_answer.length > 0 ? (
+            <>
+              <div>
+                <p>
+                  Answer:{" "}
+                  <span
+                    dangerouslySetInnerHTML={{ __html: short_answer }}
+                  ></span>
+                </p>
+              </div>
+              <div className="border-b border-gray-200"></div>
+            </>
+          ) : (
+            <></>
+          )}
           {/* under line */}
-          <div>
+          <div className="">
             <p
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(detailed_answer) }}>
-            </p>
+              dangerouslySetInnerHTML={{
+                __html:
+                  // remove text after 2k chars
+                  detailed_answer.length > 2000
+                    ? detailed_answer.slice(0, 2000) + "..."
+                    : detailed_answer,
+              }}
+            ></p>
+            {/* read more brn */}
+
+            {detailed_answer.length > 2000 && (
+              <div className="absolute bottom-[-5%] right-0">
+                <button
+                  className="p-2 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600 text-white 
+                transition duration-300 ease-in-out 
+                hover:bg-indigo-700 hover:border-indigo-700 hover:shadow-lg hover:scale-105"
+                  onClick={() => {
+                    setAnswersReadMore(true);
+                  }}
+                >
+                  Read More
+                </button>
+              </div>
+            )}
           </div>
         </div>
         <br />
@@ -284,6 +368,7 @@ const MisciWorkSpace = ({
         <button
           onClick={() => {
             router.back();
+            handleReset();
           }}
         >
           <span>
@@ -291,17 +376,19 @@ const MisciWorkSpace = ({
           </span>
         </button>
         <div className="justify-start items-center gap-4 flex">
-        {!errorPresent &&   <button
-            className="p-2 bg-indigo-600 rounded-lg shadow justify-center items-center gap-2.5 flex"
-            onClick={() => {
-              setShowPublishModal(true);
-            }}
-          >
-            <span className="-rotate-45">
-              <PaperAirplaneIcon className="h-5 w-5 text-white" />
-            </span>
-            <span className="text-white text-base font-medium">Publish</span>
-          </button>}
+          {!errorPresent && (
+            <button
+              className="p-2 bg-indigo-600 rounded-lg shadow justify-center items-center gap-2.5 flex"
+              onClick={() => {
+                setShowPublishModal(true);
+              }}
+            >
+              <span className="-rotate-45">
+                <PaperAirplaneIcon className="h-5 w-5 text-white" />
+              </span>
+              <span className="text-white text-base font-medium">Publish</span>
+            </button>
+          )}
         </div>
       </header>
       {/* modals */}
@@ -313,6 +400,12 @@ const MisciWorkSpace = ({
         blogId={blogId}
         showModal={showPublishModal}
         setShowModal={setShowPublishModal}
+      />
+      <TextModal
+        isOpen={AnswersReadmore}
+        setIsOpen={setAnswersReadMore}
+        question={question}
+        detailedAnswer={detailedAnswer}
       />
       <div
         className="flex"
@@ -338,33 +431,32 @@ const MisciWorkSpace = ({
                   selected={currentTabIndex === 0}
                 />
               </Tab>
-             {
-              !errorPresent &&  <Tab className={`outline-none`}>
-              <TabItem
-                icon={
-                  <div>
-                    <img src="/icons/questions_icon.svg" alt="" />
-                  </div>
-                }
-                title={"Article"}
-                selected={currentTabIndex === 1}
-              />
-            </Tab> 
-             }
+              {!errorPresent && (
+                <Tab className={`outline-none`}>
+                  <TabItem
+                    icon={
+                      <div>
+                        <img src="/icons/questions_icon.svg" alt="" />
+                      </div>
+                    }
+                    title={"Article"}
+                    selected={currentTabIndex === 1}
+                  />
+                </Tab>
+              )}
             </Tab.List>
             <Tab.Panel className={`w-full h-full flex `}>
-              <div
-                className="w-[70%] bg-neutral-100 rounded-2xl flex relative h-full"
-              >
-                <div className="flex-col  w-full justify-start items-start gap-7 inline-flex">
-                  <div className="bg-opacity-70 w-full h-full justify-start items-center gap-5 flex flex-col">
+              <div className="w-[70%] bg-neutral-100 rounded-2xl overflow-y-scroll flex relative h-full">
+                <div className="flex-col  w-full justify-start overflow-y-scroll items-start gap-7 inline-flex">
+                  <div className="bg-opacity-70 w-full overflow-y-scroll h-full justify-start items-center gap-5 flex flex-col">
                     <div className="w-full text-slate-800 text-xl font-bold leading-relaxed tracking-tight min-h-20 bg-[#FF8980] flex flex-col items-center sticky top-0 z-20 rounded-b-[3rem] ">
                       {/* {userquestion} */}
                       <div className="flex w-full items-center  gap-4 p-4 px-8 justify-start">
-                        <div className="h-14 w-14 text-red-500 border-white "
-                        style={{
-                          mixBlendMode: 'luminosity'
-                        }}
+                        <div
+                          className="h-14 w-14 text-red-500 border-white "
+                          style={{
+                            mixBlendMode: "luminosity",
+                          }}
                         >
                           <img src="../icons/qmark.svg" alt="" />
                         </div>
@@ -380,18 +472,32 @@ const MisciWorkSpace = ({
                           <img src="../icons/tick.svg" alt="" />
                         </span>
                         <div className="mt-4 text-lg w-[95%]">
-                          <DynamicAnswersData html={editorAnswersData ?? ""} short_answer={shortAnswer} detailed_answer={detailedAnswer}/>
+                          <DynamicAnswersData
+                            html={editorAnswersData ?? ""}
+                            short_answer={shortAnswer}
+                            detailed_answer={detailedAnswer}
+                          />
                         </div>
                       </div>
                     </div>
-                     
-                    <div className="mt-[-10%] z-0"
-                    style={{
-                      filter: 'grayscale(80%)',
-                      opacity: '0.1'
-                    }}
-                    > 
-                    <img style={{width: 673, height: 479, opacity: 0.99, mixBlendMode: 'darken', borderRadius: 53}} src="../ground.png" />
+
+                    <div
+                      className="z-0"
+                      style={{
+                        filter: "grayscale(80%)",
+                        opacity: "0.1",
+                      }}
+                    >
+                      <img
+                        style={{
+                          width: 673,
+                          height: 479,
+                          opacity: 0.99,
+                          mixBlendMode: "darken",
+                          borderRadius: 53,
+                        }}
+                        src="../ground.png"
+                      />
                     </div>
                   </div>
                 </div>
@@ -403,7 +509,7 @@ const MisciWorkSpace = ({
               >
                 <div
                   style={{ backgroundImage: "url(../bg-gray-misci.jpeg)" }}
-                  className="h-full  bg-contain bg-opacity-70 flex items-center px-4 justify-center rounded-lg flex-col gap-2"
+                  className="h-full  bg-cover bg-opacity-50 flex items-center px-4 justify-center rounded-lg flex-col gap-2"
                 >
                   {isArticleTabReady ? (
                     <>
@@ -426,16 +532,26 @@ const MisciWorkSpace = ({
                     </>
                   ) : (
                     <>
-                      <LottiePlayer
-                        loop
-                        autoplay
-                        animationData={opener_loading}
-                        className="h-24"
-                      />
+                      {errorPresent ? (
+                        <>
+                          <span className="text-gray-800 text-2xl font-bold leading-none text-center">
+                            {articleLoaderErrorText}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <LottiePlayer
+                            loop
+                            autoplay
+                            animationData={opener_loading}
+                            className="h-24"
+                          />
 
-                      <span className="text-gray-800 text-2xl font-bold leading-none text-center">
-                        We are almost there
-                      </span>
+                          <span className="text-gray-800 text-2xl font-bold leading-none text-center">
+                            We are almost there
+                          </span>
+                        </>
+                      )}
                     </>
                   )}
                 </div>
@@ -464,12 +580,17 @@ const MisciWorkSpace = ({
                   ) : (
                     <div className="relative w-full">
                       <NativeEditor
+                        iframeRef={iframeRef}
                         value={editorArticleData}
                         onEditorChange={(content: any, editor: any) => {
                           setEditorArticleData(content);
                         }}
                         onSetup={(editor: any) => {
                           setEditorSetUpCompleted(true);
+                          // resetTimeout();
+                        }}
+                        onInit={(editor : any) => {
+                          resetTimeout();
                         }}
                       />
                     </div>
@@ -514,8 +635,7 @@ const MisciWorkSpace = ({
                         <div className="flex justify-between w-full items-center">
                           <h3 className="pt-[0.65em] font-semibold">Sources</h3>
                         </div>
-                        <div className="flex gap-[0.5em] flex-wrap h-full w-full  overflow-x-hidden overflow-y-scroll"
-                        >
+                        <div className="flex gap-[0.5em] flex-wrap h-full w-full  overflow-x-hidden overflow-y-scroll">
                           {references?.map((ref) => {
                             return <Chip key={ref.id} text={ref.source} />;
                           })}

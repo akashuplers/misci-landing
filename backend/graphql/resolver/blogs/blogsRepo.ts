@@ -492,6 +492,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                         "style": "font-size: 10pt;"
                                                     },
                                                     "children": [
+                                                        misci ? data: 
                                                         {
                                                             "tag": "A",
                                                             "attributes": {
@@ -520,6 +521,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                                         "style": "font-size: 10pt;"
                                                     },
                                                     "children": [
+                                                        misci ? (data.url !== "No url for this file" ? data.url : data.source) : 
                                                         {
                                                             "tag": "A",
                                                             "attributes": {
