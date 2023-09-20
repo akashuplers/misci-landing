@@ -16,7 +16,7 @@ import FreshFilteredIdeaItem from "./FreshFilteredIdeaItem";
 import FreshIdeaForm from "./FreshIdeaForm";
 import FreshIdeaReference from "./FreshIdeaReference";
 import IdeaComponent from "./IdeaComponent";
-import IdeaTag from "./IdeaTag";
+import IdeaTag, { SourceColors, SourceTab } from "./IdeaTag";
 import LoaderScan from "./LoaderScan";
 import MainIdeaItem from "./MainIdeaItem";
 import TrialEndedModal from "./TrialEndedModal";
@@ -81,7 +81,7 @@ export default function DashboardInsights({
   const updateCredit = useStore((state) => state.updateCredit);
   const updateisSave = useStore((state) => state.updateisSave);
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
-
+  const [ideasTab, setIdeasTab] = useState(0);
   const [filteredIdeas, setFilteredIdeas] = useState([]);
   const [notUniquefilteredIdeas, setNotUniqueFilteredIdeas] = useState([]);
   const { showTwitterThreadUI, setShowTwitterThreadUI } = useThreadsUIStore();
@@ -649,7 +649,7 @@ export default function DashboardInsights({
   const handleUsedIdeas = (arr) => {
     setArrUsed(arr);
   };
-  
+
   function postFormData(e) {
     e.preventDefault();
     setNewIdeaLoad(true);
@@ -854,14 +854,14 @@ export default function DashboardInsights({
       {creditModal && (
         <TrialEndedModal setTrailModal={setCreditModal} topic={null} />
       )}
-      <div className="text-xs px-2 mb-24 lg:mb-0" style={{ borderLeft: "2px solid #d2d2d2" }} id="regenblog">
+      <div className="text-xs px-2 mb-24 lg:mb-0 h-full" style={{ borderLeft: "2px solid #d2d2d2" }} id="regenblog">
         {/* h1 Insight only for mobile screens */}
-        <h1 className="text-2xl  font-semibold text-gray-800 my-4 lg:hidden">
-          Insights
+        <h1 className="pt-[0.65em] font-semibold">
+          WORKSPACE
         </h1>
         <div className="flex jusify-between gap-[1.25em]">
           <p className="font-normal w-[100%] lg:w-[70%] text-sm">
-          Create your next draft on the basis of your edits and uploads.
+            Create your next draft on the basis of your edits and uploads.
           </p>
           <button
             className="cta flex items-center gap-2 self-start !py-2 !font-semibold"
@@ -875,7 +875,7 @@ export default function DashboardInsights({
             }
           >
             <RegenerateIcon />
-            Next Draft
+            Current Topic
           </button>
         </div>
 
@@ -912,9 +912,55 @@ export default function DashboardInsights({
             </div>
           </div>
         )}
+
+        <div>
+          <div className="flex justify-between w-full items-start py-2 flex flex-col">
+            <h3 className="pt-[0.65em] font-semibold">Draft Topic</h3>
+            <div className="opacity-70 text-gray-800 text-sm font-normal">What is programming?</div>
+          </div>
+        </div>
         <div>
           <div className="flex justify-between w-full items-center py-2">
             <h3 className="pt-[0.65em] font-semibold">Sources</h3>
+          </div>
+          <div className="flex items-center gap-2 py-1.5">
+            <SourceTab SourceColor={'yellow'} title={'Web'} selected={ideasTab == 0}
+              onClick={
+                () => {
+                  setIdeasTab(0);
+                }
+              }
+            />
+            <SourceTab SourceColor={'orange'} title={'My Urls'}
+              onClick={
+                () => {
+                  setIdeasTab(1);
+                }
+
+              }
+              selected={ideasTab == 1} />
+            <SourceTab SourceColor={'blue'} title={'My Documents'} onClick={
+              () => {
+                setIdeasTab(2);
+              }
+
+            }
+              selected={ideasTab == 2}
+            />
+          </div>
+          <div className="justify-between items-start gap-60 flex w-full">
+            <div className="opacity-70 text-gray-800 text-sm font-normal">Use New Sources in Next Draft</div>
+            <div className="justify-center items-center flex">
+              {/* <div className="w-3 h-3 relative flex-col justify-start items-start flex" /> */}
+              {/* checkbox */}
+              <input
+                type="checkbox"
+                className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-none focus:ring-blue-500"
+                style={{
+                  borderRadius: '2px'
+                }}
+              />
+            </div>
           </div>
           <div
             className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
@@ -953,143 +999,110 @@ export default function DashboardInsights({
             )}
           </div>
         </div>
-        <div className="flex py-2 relative gap-5">
-          <button
-            className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs"
-            onClick={(e) => {
-              setIdeaType("used");
-            }}
-          >
-            Used Idea(s){" "}
-            <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
-              {ideas?.length}
-            </span>
-          </button>
-
-          <button
-            className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs realtive"
-            onClick={(e) => {
-              if (isAuthenticated) setIdeaType("fresh");
-              else {
-                updateisSave();
-              }
-            }}
-          >
-            <Image
-              src="/lightBulb.png"
-              alt="lightBulb"
-              width={20}
-              height={20}
-              style={{ pointerEvents: "none" }}
-            />
-            Unused Idea(s){" "}
-            {freshIdeas?.length > 0 && (
-              <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
-                {freshIdeas?.length}
-              </span>
-            )}
-          </button>
-          {(
-            <>
-              {/* <span className="mt-3 text-sm ml-3">Select all </span>
-              <div
-                className={`md:w-10 md:h-5 w-7 h-2 flex items-center  rounded-full p-1 cursor-pointer mt-3 ${toggle == false ? 'bg-indigo-500' : 'bg-gray-300'} transform duration-300 ease-in-out`}
-                onClick={() => {
-                  ideaType === "used" ? handleSelectAllUsedIdeas() : handleSelectAll();
-                  setToggle(!toggle);
+        {
+//ideasTab == 0 ?
+           <>
+            <div className="flex py-2 relative gap-5">
+              <button
+                className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs flex items-center justify-around gap-1"
+                onClick={(e) => {
+                  setIdeaType("used");
                 }}
               >
-                <div
-                  className={
-                    "bg-black md:w-5 md:h-5 h-4 w-4 rounded-full shadow-md transform duration-300 ease-in-out" +
-                    (toggle ? null : toggleClass)
-                  }
-                ></div>
-              </div> */}
-            </>
-          )}
-        </div>
-        <div
-          className=" dashboardInsightsUsedSectionHeight overflow-y-scroll px-2"
-        >
-          {ideaType === "used"
-            ? filteredIdeas?.length > 0
-              ? filteredIdeas?.map((idea, index) => {
-                return (
-                  <UsedFilteredIdeaItem
-                    key={index}
-                    index={index}
-                    idea={idea}
-                    filteredIdeas={filteredIdeas}
-                    setFilteredIdeas={setFilteredIdeas}
-                    ideas={ideas}
-                    setIdeas={setIdeas}
-                    handleUsedIdeas={handleUsedIdeas}
-                    handleCitationFunction={handleCitationFunction}
-                  />
-                );
-              })
-              : ideas?.map((idea, index) => {
-                return (
-                  <MainIdeaItem
-                    key={index}
-                    index={index}
-                    idea={idea}
-                    ideas={ideas}
-                    setIdeas={setIdeas}
-                    handleUsedIdeas={handleUsedIdeas}
-                    handleCitationFunction={handleCitationFunction}
-                  />
-                );
-              })
-            : ""}
-          {ideaType === "fresh" && (
-            <div className="w-full">
-              {isAuthenticated && (
-                <>
-                  <FreshIdeaForm
-                    postFormData={postFormData}
-                    newIdeaLoad={newIdeaLoad}
-                    ideaType={ideaType}
-                    formInput={formInput}
-                    handleFormChange={handleFormChange}
-                    hover={hover}
-                    handleFileUpload={handleFileUpload}
-                  />
-                </>
-              )}
-              {freshFilteredIdeas?.length > 0
-                ? freshFilteredIdeas?.map((idea, index) => {
-                  return (
-                    <FreshFilteredIdeaItem
-                      key={index}
-                      index={index}
-                      idea={idea}
-                      handleCitationFunction={handleCitationFunction}
-                      filteredIdeas={filteredIdeas}
-                      setFilteredIdeas={setFilteredIdeas}
-                      ideas={ideas}
-                      setIdeas={setIdeas}
-                      handleUsedIdeas={handleUsedIdeas}
-                    />
-                  );
-                })
-                : freshIdeas?.map((idea, index) => {
-                  return (
-                    <IdeaComponent
-                      key={index}
-                      index={index}
-                      idea={idea}
-                      handleCitationFunction={handleCitationFunction}
-                      handleInputClick={handleInputClick}
-                      freshIdeas={freshIdeas}
-                      setFreshIdeas={setFreshIdeas}
-                    />
-                  );
-                })}
+                {/* Used Idea(s){" "} */}
+                Idea
+                <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
+                  {ideas?.length}
+                </span>
+              </button>
+
+
             </div>
-          )}
-        </div>
+            <div
+              className=" dashboardInsightsUsedSectionHeight overflow-y-scroll px-2"
+            >
+              {ideaType === "used"
+                ? filteredIdeas?.length > 0
+                  ? filteredIdeas?.map((idea, index) => {
+                    return (
+                      <UsedFilteredIdeaItem
+                        key={index}
+                        index={index}
+                        idea={idea}
+                        filteredIdeas={filteredIdeas}
+                        setFilteredIdeas={setFilteredIdeas}
+                        ideas={ideas}
+                        setIdeas={setIdeas}
+                        handleUsedIdeas={handleUsedIdeas}
+                        handleCitationFunction={handleCitationFunction}
+                      />
+                    );
+                  })
+                  : ideas?.map((idea, index) => {
+                    return (
+                      <MainIdeaItem
+                        key={index}
+                        index={index}
+                        idea={idea}
+                        ideas={ideas}
+                        setIdeas={setIdeas}
+                        handleUsedIdeas={handleUsedIdeas}
+                        handleCitationFunction={handleCitationFunction}
+                      />
+                    );
+                  })
+                : ""}
+              {ideaType === "fresh" && (
+                <div className="w-full">
+                  {isAuthenticated && (
+                    <>
+                      <FreshIdeaForm
+                        postFormData={postFormData}
+                        newIdeaLoad={newIdeaLoad}
+                        ideaType={ideaType}
+                        formInput={formInput}
+                        handleFormChange={handleFormChange}
+                        hover={hover}
+                        handleFileUpload={handleFileUpload}
+                      />
+                    </>
+                  )}
+                  {freshFilteredIdeas?.length > 0
+                    ? freshFilteredIdeas?.map((idea, index) => {
+                      return (
+                        <FreshFilteredIdeaItem
+                          key={index}
+                          index={index}
+                          idea={idea}
+                          handleCitationFunction={handleCitationFunction}
+                          filteredIdeas={filteredIdeas}
+                          setFilteredIdeas={setFilteredIdeas}
+                          ideas={ideas}
+                          setIdeas={setIdeas}
+                          handleUsedIdeas={handleUsedIdeas}
+                        />
+                      );
+                    })
+                    : freshIdeas?.map((idea, index) => {
+                      return (
+                        <IdeaComponent
+                          key={index}
+                          index={index}
+                          idea={idea}
+                          handleCitationFunction={handleCitationFunction}
+                          handleInputClick={handleInputClick}
+                          freshIdeas={freshIdeas}
+                          setFreshIdeas={setFreshIdeas}
+                        />
+                      );
+                    })}
+                </div>
+              )}
+            </div>
+
+          </> 
+          // : <></>
+        }
       </div>
     </>
   );

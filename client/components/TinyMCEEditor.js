@@ -50,7 +50,7 @@ import LoaderPlane from "./LoaderPlane";
 import Threads from "./ThreadsUI";
 import TrialEndedModal from "./TrialEndedModal";
 import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
-import { BASE_PRICE } from "@/store/appContants";
+import { BASE_PRICE, contentStyle } from "@/store/appContants";
 import useSendSavedTimeOfUser from "@/hooks/useSendSavedTimeOfUser";
 import { calculateUsedCredits } from "@/store/appHelpers";
 const stripePromise = loadStripe(
@@ -2303,6 +2303,7 @@ export default function TinyMCEEditor({
               value={updatedText || editorText}
               apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
               init={{
+                content_style:  contentStyle,
                 setup: (editor) => {
                   if (editor.inline) {
                     registerPageMouseUp(editor, throttledStore);

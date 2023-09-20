@@ -1,10 +1,11 @@
+import { LinkIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 const UsedReference = ({ reference, index, handleRefClick }) => {
     return (
         <div
             key={index}
-            className="ref-button cta relative"
-            style={{    
+            className="ref-button cta relative flex justify-between items-center "
+            style={{
                 borderRadius: "100px",
                 padding: "0.25em 0.75em",
                 backgroundColor: "#e9e9e9",
@@ -17,6 +18,10 @@ const UsedReference = ({ reference, index, handleRefClick }) => {
             data-source={reference.source}
         >
             {reference.source}
+            <span className="flex gap-[0.05rem] text-slate-400">
+                <LinkIcon className="w-4 h-4 ml-2" />
+                <TrashIcon className="w-4 h-4 ml-2" />
+            </span>
             <span
                 className=""
                 style={{
