@@ -32,6 +32,8 @@ html {
 *{
   /* outline */
   outline: 0px solid transparent;
+  color: unset;
+  text-decoration: none;
 }
 
 :root {
@@ -442,21 +444,9 @@ iframe {
   left: 0;
 }
 
-
-/* input[type='checkbox'],
-input[type='radio'] {
-  border-radius: 100px;
-  appearance: none;
-  -webkit-appearance: none;
-  outline: none;
-  cursor: pointer;
+input[type='checkbox']:hover{
+  background-color: transparent;
 }
-
-input[type='checkbox']:checked,
-input[type='radio']:checked {
-  background-color: var(--primary-blue);
-} */
-
 .authenticationModal label {
   position: relative;
 }
