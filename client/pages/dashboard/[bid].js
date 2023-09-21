@@ -190,7 +190,6 @@ export default function Post({typeIsRepurpose}) {
       }
     },
   });
-  console.log(data)
   useEffect(() => {
     const query = router.query;
     const { payment } = router.query;
