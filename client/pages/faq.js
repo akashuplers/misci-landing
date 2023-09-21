@@ -89,7 +89,7 @@ const faqs =  [
   },
   {
       "question": "I have more questions. How can I contact Lille.ai support?",
-      "answer": "Lille.ai’s dedicated support team will be glad to assist you. Engage with us through the platform’s chat feature or email at customersuccess@lille.ai question , and answer keywords."
+      "answer": "Lille.ai’s dedicated support team will be glad to assist you. Engage with us through the platform’s chat feature or email at customersuccess@lille.ai."
   }
 ]
 
