@@ -11,65 +11,82 @@ interface IDeleteModal {
 function DeleteModal(props: IDeleteModal) {
   return (
     <Modal
-      isOpen={props.isOpen}
-      onRequestClose={props.onCancel}
-      ariaHideApp={false}
-      className="modalModalWidth flex items-center justify-center"
-      style={{
-        overlay: {
-          backgroundColor: "rgba(0,0,0,0.5)",
-          zIndex: "9999",
-        },
-        content: {
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          right: "auto",
-          border: "none",
-          background: "white",
-          // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
-          borderRadius: "8px",
-          // width: "100%",
-          bottom: "",
-          zIndex: "999",
-          maxWidth: "55%",
-          width: "30%",
-          marginRight: "-50%",
-          maxHeight: "100vh",
-          transform: "translate(-50%, -50%)",
-          outline: "none",
-        },
-      }}
+    isOpen={props.isOpen}
+    onRequestClose={props.onCancel}
+    ariaHideApp={false}
+    className="w-[100%] sm:w-[38%] max-h-[95%]"
+    style={{
+      overlay: {
+        backgroundColor: "rgba(0,0,0,0.5)",
+        zIndex: "9999",
+      },
+      content: {
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        right: "auto",
+        border: "none",
+        background: "white",
+        // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
+        borderRadius: "8px",
+        height: "280px",
+        // width: "100%",
+        maxWidth: "380px",
+        bottom: "",
+        zIndex: "999",
+        marginRight: "-50%",
+        transform: "translate(-50%, -50%)",
+        padding: "30px",
+        paddingBottom: "0px",
+      },
+    }}
+  >
+    <button
+      className="absolute right-[35px]"
+      onClick={props.onCancel}
     >
-      <div className="w-full h-full bg-white rounded-lg shadow-lg p-4">
-        <button
-          className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
-          onClick={props.onCancel}
-        >
-          <XCircleIcon />
-        </button>
-        <div className="text-center w-full">
-          <QuestionMarkCircleIcon
-            className="mx-auto my-4 w-32 h-32 rounded-full text-red-300 bg-red-500"
-          />
-          <p className="text-lg font-semibold">Delete this item?</p>
-        </div>
-        <div className="mt-4 flex justify-around space-x-4 w-full">
-          
-          <button
-            className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded"
-            onClick={props.onCancel}
-          >
-            Cancel
-          </button>
-          <button
-            className="border-red-500 ring-1 focus:ring-1 ring-red-500 bg-red-300 hover:bg-red-500 text-white px-4 py-2 rounded"
-            onClick={() => props.onDelete(props.data)}
-          >
-            Delete
-          </button>
-        </div>
-      </div>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth="1.5"
+        stroke="currentColor"
+        className="w-6 h-6"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M6 18L18 6M6 6l12 12"
+        />
+      </svg>
+    </button>
+    <div className="mx-auto pb-4">
+      <img className="mx-auto h-12" src="/info.png" />
+    </div>
+    <div className="mx-auto font-bold text-2xl pl-[25%]">
+      Are you sure
+    </div>
+    <p className="text-gray-500 text-base font-medium mt-4 mx-auto">
+      Are you sure you want to delete ?
+    </p>
+    <div className="flex m-9">
+      <button
+        className="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
+        onClick={() => {
+          props.onCancel()
+        }}
+      >
+        No
+      </button>
+      <button
+        className="w-[240px]  bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded"
+        onClick={() => {
+          props.onDelete(props.data)
+        }}
+      >
+        YES, Delete
+      </button>
+    </div>
     </Modal>
   );
 }
