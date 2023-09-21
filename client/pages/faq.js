@@ -4,71 +4,92 @@ import { useState } from 'react'
 
 const faqs =  [
   {
-    "question": "What is Lille.ai?",
-    "answer": "Lille.ai is an AI-powered co-pilot for content research, discovery, and writing. It can read tons of stuff from the internet and documents you give it, and then it helps you write about it. And the best part? It tells you exactly where it found the information, so you know it's trustworthy. Plus, it works with tools like Google Drive and social media sites. It serves as a one shop stop for you to efficiently interact with and manage information."
+      "question": "What is Lille.ai?",
+      "answer": "Lille.ai is an AI-powered co-pilot for content research, discovery, and writing. It can read tons of information from the internet and documents you give it, and then it helps you write about it. And the best part? It tells you with precise source reference, so you know it is trustworthy. Its seamless integration with platforms like Google Drive and popular social media ensures you have a holistic content management experience."
   },
   {
-    "question": "Generate Draft  - What is this?",
-    "answer": `Lille allows user to upload maximum six items ( A prompt i.e. a topic and combination of URLs and Files ) from where a user can generate the content for an article. User can use the input box at home page to add a prompt, URLs and Files, click on 'Generate Draft' that shows the extracted keywords from the uploaded content. User is asked to select some keywords from the given keywords, URL(s) or File(s) related to selected keywords are used to generate the article. Paid users have the option to choose the tone setting and few other instructions for the article creation. The URLs or Files that are used to generate the article based on the selected keywords are shown at the end of the generated article as references. NOTE: Bigger size files and lengthier articles from the URLs uploaded will add to response time.`
+      "question": "Why was Lille.ai created?",
+      "answer": "Lille.ai, a SaaS application was created to help people deal with the overwhelming influx of information in the digital era. It acts as an extended memory, streamlining the process of information retrieval, organization, and dissemination."
   },
   {
-    "question": "What kind of content can I generate with Lille.ai?",
-    "answer": "You can choose to send a prompt or add URLs/Files on the home page, e.g., use 'Benefits of Ginger' as a prompt, and click the 'Generate Draft' button to see and select the extracted keywords. Once a article is created after you process to generate the draft, Lille show the ideas that have been used to create the article in the right-side panel. You can also provide a topic, URL, or a file (size < 3MB) to generate fresh ideas and then select some or all of the fresh ideas in combination with some or all or none of the used ideas, and click 'Regenerate' to regenerate the already created article."
+      "question": "Who should use Lille.ai?",
+      "answer": "Lille.ai is great for people who write a lot or need to find information quickly. It quickly assists you by providing the structure and the various views that can help you write or research large volumes of content efficiently. If you write for websites (content creators) or help websites get found (SEO specialists) or post a lot on social media (influencers), Lille is then your co-pilot. It's also super helpful for teams who use writing to connect with their customers, and for anyone who has a lot of information to sort through, like researchers, teachers, and students. In nutshell writers, bloggers, content creators, journalists, researchers, teachers and students can reap the benefits using Lille.ai."
   },
   {
-    "question": "How do I sign up or login to Lille.ai?",
-    "answer": "You can sign up for Lille.ai using your email address, Google account, or LinkedIn account. If you already have an account with Lille.ai, just enter your email address and password in the 'Login' fields to access your dashboard."
-  },{
-    "question": "Why was Lille.ai created?",
-    answer: `Lille.ai, a SaaS application was created to help people deal with too much information. It serves as a powerful memory that helps you find, organize, and share information easily.`
+      "question": "What value does Lille.ai offer?",
+      "answer": "With Lille.ai, you can write your first draft super-fast - 80% faster than before! It boosts your content marketing outputs by 27x, gets more than 590% more impressions in 60 days or less. It is like having a super-power for writing! And the best part? Your writing will always sound like you, and you will not have to spend weeks making changes."
   },
   {
-    'question': 'Who should use Lille.ai?',
-    answer: `Lille.ai is great for people who write a lot or need to find information quickly. It quickly assists you by providing the structure and the various views that can help you write or research large volumes of content efficiently. If you write for websites (content creators) or help websites get found (SEO specialists), or post a lot on social media (influencers), Lille is then your co-pilot. It's also super helpful for teams who use writing to connect with their customers, and for anyone who has a lot of information to sort through, like researchers, teachers, and students.`
+      "question": "How is Lille.ai different from other writing tools like ChatGPT?",
+      "answer": "Lille does not make things up - it always tells you where the information comes from. Plus, it lets you control how your writing sounds and how long it is. And it helps you find the most important points for your writing and makes sure your writing is ready to be shared on any platform. Moreover, its intelligent content research auto-pilot curates the most relevant points, ensuring your content is platform-ready and optimized for SEO through auto-backlinking."
   },
   {
-    "question": "What are the different ways of creating a draft in Lille.ai?",
-    "answer": "You can choose from the given trending topics on the home page or type in your own topic, e.g., 'Benefits of Ginger', and click the 'Generate' button to create a article. Once a article is created, we show the ideas that have been used to create the article in the right-side panel. You can also provide a topic, URL, or a file (size < 3MB) to generate fresh ideas and then select some or all of the fresh ideas in combination with some or all or none of the used ideas, and click 'Regenerate' to regenerate the already created article."
+      "question": "Isn't Lille.ai like Jasper and CopyAI?",
+      "answer": "Well, Lille.ai is special because it lets you add your own content to mix with information from the web. This means you're writing has depth and is unique. Plus, if you have lots of documents that you need to refer to often, Lille.ai can help you use those too! And do not worry, your information is always safe and private with us. The answers produced remain as your intellectual property.\n\nThese features are not available in Jasper and CopyAI."
   },
   {
-    "question": "How much does Lille.ai cost?",
-    "answer": "Lille.ai has a free plan with a limited number of credits. We also offer paid plans with additional features: $15.95 monthly, $39.95 quarterly, and $149.95 yearly."
-  },{
-
-    "question": 'What value does Lille.ai offer?',
-    answer: `With Lille.ai, you can write your first draft super fast - 80% faster than before! It boosts your content marketing outputs by 27x, gets more than 590% more impressions in 60 days or less. It's like having a super-power for writing! And the best part? Your writing will always sound like you, and you won't have to spend weeks making changes.`
+      "question": "How do I sign up or log in to Lille.ai?",
+      "answer": "Joining Lille.ai is effortless. Signup using your email, Google account, or LinkedIn account. If you already have an account, just enter your email and password to access the platform."
   },
   {
-    "question": "How is Lille.ai different from other writing tools like ChatGPT?",
-    answer: `Lille doesn't make things up - it always tells you where the information comes from. Plus, it lets you control how your writing sounds and how long it is. And, it helps you find the most important points for your writing and makes sure your writing is ready to be shared on any platform. Its content research auto-pilot brings the most relevant points for you to consider while generating outputs that automates SEO with backlinking.`
+      "question": "I see 'Wrong Credentials' message when I submit username and password that I know.",
+      "answer": "If you had created an account with Lille.ai but now face difficulty in login and you see 'wrong credentials' message when you add username and password it means either username is wrong, or the password is wrong. If you have not received any email from the Lille team mentioning any account blocking, then your account is active, but you need to remember the correct credentials. Lille provides the 'forgot password' feature on the login pop up itself. Click on that and follow the instructions to reset your password in case password is the issue otherwise you will get to know if your username exists or not."
   },
   {
-    "question": "What are the benefits of a paid plan?",
-    "answer": "Paid plans grant full feature access, including 200 credits per month, the ability to create and regenerate contents with your topics, unlimited publishing on top social media platforms, and the opportunity for customization. You can go to the settings page and edit the daily feed preferences in the respective tab. You'll also have access to our support team for any inquiries or issues."
+      "question": "How can I create content with Lille.ai?",
+      "answer": "Lille.ai’s intuitive homepage is your starting point. Open https://www.lille.ai and on the home page, simply type in the topic that you have in mind and hit ‘Generate Draft’.  Lille.ai will understand that you want to create the content based on the given topic, it will search the web to look for relevant content from the prominent sources to gather the ideas and finally uses its AI engine to create the content for you. For example, you can type in 'Benefits of Ginger' or ‘Global Warming is changing into Global Simmering’ as a topic.\n\nWeb as source is there by default but you can also provide additional source of ideas as a URL or your own document. Select either ‘URLs’ or ‘Documents’ option for that and upload the URL or FILE that you want to act as the additional source of ideas in addition to the topic in the input box.\n\nOnce you hit ‘Generate Draft’ Lille’s real time progress bar will show how the content creation proceeds."
   },
   {
-    "question": "How does the credit system work?",
-    "answer": "Each action (like generating or regenerating content) costs a credit. The free plan offers up to 25 credits. Upgrading to a paid plan gives you additional benefits like more credits and full feature access."
+      "question": "Generate Draft - What is this?",
+      "answer": "Generate Draft’ crafts preliminary content for your review. You are using Lille.ai to create relevant and meaningful content for you based on the topic you provide. You can always upload a URL or a file to act as an additional source of ideas for content creation. When the content is created and shown to you in the workspace where you reach after you hit the ‘Generate Draft’ button and progress bar completes its run, the content presented to you is a draft version. You can review it and save it as the final copy, or you can edit the content or change the image etc. and save and finally publish as per your choice of the publishing platforms given to you. NOTE: Bigger size files and lengthier articles from the URLs uploaded will add to response time."
   },
   {
-    "question": "What does the Lille.ai dashboard offer?",
-    "answer": "You can generate any article using the 'Generate New' link and access your previously saved contents in the saved list. Once you publish a article, you can find it in the published list. A article can be published to the Lille platform and shared via WhatsApp, Telegram, Twitter, LinkedIn, etc."
+      "question": "Next Draft - What is this?",
+      "answer": "Once the draft content is created after you provide the topic and hit the ‘Generate Draft’ on the home page, Lille shows the ideas that have been used to create the draft in the right-side panel. You can also provide a topic, URL, or a file (size < 3MB) to generate fresh ideas and then select some or all the fresh ideas in combination with some or all or none of the used ideas and click 'Next Draft' to regenerate the already created draft. This feature reimagines your draft to better resonate with your intent.\n\nNOTE: Bigger size files and lengthier articles from the URLs uploaded will add to response time."
   },
   {
-    "question": "What are 'trending topics' on Lille.ai?",
-    "answer": "Trending topics are popular subjects or themes that are currently relevant or widely discussed on the internet. Lille.ai suggests trending topics that you can use as inspiration for your content. These suggestions change dynamically and are not user-specific."
+      "question": "How much does Lille.ai cost?",
+      "answer": "Lille.ai’s pricing structure caters to varied needs: Lille.ai has a free plan with a limited number of credits. We also offer paid plans with additional features at $49/month, $129/quarter, and $468/year."
   },
   {
-    "question": "What is the maximum file size one can upload to get the fresh ideas?",
-    "answer": "Lille allows maximum 7MB files to be uploaded. One can upload files of formats .pdf, .docx and .txt to generate fresh ideas. NOTE:  Bigger size files uploaded will add to response time."
+      "question": "What are the benefits of a paid plan?",
+      "answer": "Paid plans unlock full feature access, including 200 credits per month, the ability to create and regenerate contents with your topics, unlimited publishing to social media platforms, and the ability to set your tone. You can visit the settings page and edit the daily feed preferences in the respective tab. You'll also have access to our dedicated support team for any inquiries or issues."
   },
   {
-    "question": "Can I publish my content directly to social media platforms?",
-    "answer": "Yes, with our paid plans, you can enjoy unlimited publishing of the content you create on Lille.ai directly to top social media platforms."
+      "question": "Can I publish my content directly to social media platforms?",
+      "answer": "Absolutely. As a Premium user you can effortlessly publish your content from Lille.ai on leading social media platforms, enhancing web visibility. With our paid plans, you can enjoy unlimited publishing of the content. The publishing URL will contain your profile name, the title of the article, and a key heading from the published content."
   },
   {
-    "question": "Can I customize the content generation by Lille.ai?",
-    "answer": "Yes, customization possibilities are available. You can talk to our support team for more details on this. The generated content is designed to serve as a foundation which you can further refine to match your specific needs."
+      "question": "What about the privacy of the content I create or the research that I do?",
+      "answer": "The way you train Lille to assist you is private and personal to you. We are not a web search engine who use your prompts to help others or appeal to a large audience. Your use and your data is private to you. Only publicly published content is accessible in Lille.ai's library, ensuring your intellectual property remains yours. The benefit is that other users will then be able to use your content as reference quoting your content."
+  },
+  {
+      "question": "Can I upload any type of URLs and Files in addition to the topic for generating the draft?",
+      "answer": "URLs with paywalls or restricted access might face limitations. Lille will show you the alert message if you upload such a URL. Lille.ai supports uploads up to 7MB in .pdf, .docx, and .txt formats to generate the draft content. Files that have password-based access or need digital authorization may not work well. NOTE: Bigger size files uploaded will add to response time. If you have bigger files that you want to use for content generation, reach out to our support team and we will be glad to help you out."
+  },
+  {
+      "question": "Does Lille.ai have a reward program?",
+      "answer": "Yes, we do! Each time you create or publish your content with Lille.ai, you earn points. With these points, you can get cool gifts like t-shirts and other accessories."
+  },
+  {
+      "question": "How does Lille.ai keep my data safe?",
+      "answer": "Keeping your information safe is super important to us. Lille.ai uses robust SSL encryption, coupled with rigorous system monitoring, to ensure data integrity. We use strong security to make sure that only the right people can access the platform and they do not have access to the documents uploaded by you. Plus, we keep a close watch on our systems to make sure they are always fail safe."
+  },
+  {
+      "question": "What If I need customization in the process of content generation as well as publishing?",
+      "answer": "Yes, customization possibilities are available. Please reach out to our support team for bespoke adjustments or feature requests. The generated content is designed to serve as a foundation which you can further refine to match your specific needs. Also, we can add other publishing platforms that may be needed. We have already done customizations for some of our existing customers."
+  },
+  {
+      "question": "What is the basis of the claim that Lille is saving lots of time for the users?",
+      "answer": "Upon receiving a topic from the user, Lille swiftly sources relevant ideas from the web. These ideas are then processed by Lille's sophisticated AI and ML algorithms, resulting in crafting a comprehensive draft article. This article is not only structured with distinct headings and a conclusion but also meticulously references every source. Notably, Lille embeds backlinks within the content itself, signifying how specific sections are influenced by their respective sources.\n\nCompleting this intricate process takes Lille about a minute. Contrast this efficiency with the traditional human approach: conceptualizing, researching, and then drafting. Our research indicates that a person typically invests around 30 minutes crafting an article on a standard topic. Using this benchmark, Lille.ai calculates and displays the time each user saves per article."
+  },
+  {
+      "question": "Can I control what sources are used to generate my article?",
+      "answer": "Absolutely! If you supply only a topic, Lille.ai offers the flexibility to regenerate content by selecting or deselecting ideas derived from specific sources. Simply navigate to the workspace panel on the right and select the desired source to view associated ideas. Additionally, you can provide a topic accompanied by specific URLs to base your article on. After reviewing the generated content, you are free to include or exclude ideas from any uploaded URL, allowing you to tailor the article even further. Should you change your mind about certain aspects, regenerating the content is a breeze."
+  },
+  {
+      "question": "I have more questions. How can I contact Lille.ai support?",
+      "answer": "Lille.ai’s dedicated support team will be glad to assist you. Engage with us through the platform’s chat feature or email at customersuccess@lille.ai question , and answer keywords."
   }
 ]
 
