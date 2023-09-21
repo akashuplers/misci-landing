@@ -40,6 +40,7 @@ type Blog {
     imageSrc: String
     imageUrl: String
     savedTime: String
+    keyword: String
     likes: Int
     userDetail: User
     comments: [Comments]
