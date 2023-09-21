@@ -66,7 +66,7 @@ function DeleteModal(props: IDeleteModal) {
     <div className="mx-auto font-bold text-2xl pl-[25%]">
       Are you sure
     </div>
-    <p className="text-gray-500 text-base font-medium mt-4 mx-auto">
+    <p className="text-center text-gray-500 text-base font-medium mt-4 mx-auto">
       Are you sure you want to delete ?
     </p>
     <div className="flex m-9">
