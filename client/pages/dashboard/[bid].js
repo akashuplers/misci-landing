@@ -190,6 +190,7 @@ export default function Post({typeIsRepurpose}) {
       }
     },
   });
+  console.log(data)
   useEffect(() => {
     const query = router.query;
     const { payment } = router.query;
@@ -482,6 +483,7 @@ You can add your own image, click on the image and use image options icon.`}
               setNdResTime={setNdResTime}
               setOption={setOption}
               option={option}
+              keyword={data?.fetchBlog?.keyword}
             />
           </div>
         </div>

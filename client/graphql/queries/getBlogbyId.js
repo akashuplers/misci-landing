@@ -16,6 +16,7 @@ query FetchBlog($fetchBlogId: String!) {
         email
         date
     }
+    keyword
     userDetail {
         profileImage
         linkedInUserName
@@ -28,8 +29,6 @@ query FetchBlog($fetchBlogId: String!) {
     references {
         url
         source    
-        type    
-        id    
     }
     freshIdeasReferences {
         url
@@ -44,7 +43,6 @@ query FetchBlog($fetchBlogId: String!) {
         idea
         article_id
         name
-        type    
         reference {
             type
             link
