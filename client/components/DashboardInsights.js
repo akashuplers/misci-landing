@@ -908,7 +908,7 @@ export default function DashboardInsights({
             <div className="flex justify-between w-full items-center py-2">
               {/* <h3 className="pt-[0.65em] font-semibold">Filtering Keywords</h3> */}
             </div>
-            <div
+            {/* <div
               className="flex gap-[0.5em] flex-wrap h-full lg:max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
               style={{ padding: "0.75em 0.25em" }}
             >
@@ -933,7 +933,7 @@ export default function DashboardInsights({
                     );
                   })
                   : "Generate fresh ideas to see tags"}
-            </div>
+            </div> */}
           </div>
         )}
 
