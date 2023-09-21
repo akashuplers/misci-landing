@@ -1,8 +1,13 @@
+import DeleteModal from "@/modals/DeleteModal";
 import { LinkIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const UsedReference = ({ reference, index, handleRefClick }) => {
+    const [showDeleteModal, setShowDeleteModal]= useState(false);
+
     return (
+       <>
         <div
             key={index}
             className="ref-button cta relative flex justify-between items-center "
@@ -26,7 +31,9 @@ const UsedReference = ({ reference, index, handleRefClick }) => {
                 <LinkIcon className="w-4 h-4 ml-2" />
                 </a>
                 <TrashIcon className="w-4 h-4 ml-2" onClick={
-                    handleRefClick
+                    ()=>{
+                        setShowDeleteModal(true)
+                    }
                 }/>
             </span>
             <span
@@ -51,6 +58,15 @@ const UsedReference = ({ reference, index, handleRefClick }) => {
                 {index + 1}
             </span>
         </div>
+                <DeleteModal isOpen={showDeleteModal} onCancel={()=>{
+                    setShowDeleteModal(false)
+                }}
+                data={null}
+                onDelete={()=>{
+                    setShowDeleteModal(false)
+                }}
+                />
+        </>
     );
 };
 
