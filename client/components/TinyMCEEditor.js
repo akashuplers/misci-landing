@@ -129,8 +129,6 @@ export default function TinyMCEEditor({
   const [isEditorTextUpdated, setIsEditorTextUpdated] = useState(false);
   const [initailEditorText, setInitailEditorText] = useState(editorText);
   const { twitterThreadData, setTwitterThreadData } = useTwitterThreadStore();
-  
-
   const [prevTwitterThreads, setPrevTwitterThreads] =
     useState(twitterThreadData);
   const [pauseTwitterPublish, setPauseTwitterPublish] = useState(false);
