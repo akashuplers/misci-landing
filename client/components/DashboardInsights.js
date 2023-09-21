@@ -83,7 +83,7 @@ export default function DashboardInsights({
   const updateCredit = useStore((state) => state.updateCredit);
   const updateisSave = useStore((state) => state.updateisSave);
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
-  const [ideasTab, setIdeasTab] = useState(0);
+  const [ideasTab, setIdeasTab] = useState(null);
   const [filteredIdeas, setFilteredIdeas] = useState([]);
   const [notUniquefilteredIdeas, setNotUniqueFilteredIdeas] = useState([]);
   const { showTwitterThreadUI, setShowTwitterThreadUI } = useThreadsUIStore();
@@ -787,6 +787,28 @@ export default function DashboardInsights({
 
     return titleCase.trim();
   }
+  let sortedIdeas = [];
+  if(ideas?.length > 0){
+    if(ideasTab===0){
+      sortedIdeas = ideas?.filter((idea) => idea.type === "web");
+    }else if (ideasTab===1){
+      sortedIdeas = ideas?.filter((idea) => idea.type === "url");
+    }else if (ideasTab===2){
+      sortedIdeas = ideas?.filter((idea) => idea.type === "file");
+    }else{
+      // none
+      sortedIdeas = ideas;
+    }
+  }
+  function handleIdeasTabClick(index) {
+    setIdeasTab((prev)=>{
+      if(prev===index){
+        return null;}
+      else{
+        return index;
+      }
+    });
+  }
 
   if (loading || regenLoading) return <LoaderScan />;
   return (
@@ -930,21 +952,21 @@ export default function DashboardInsights({
             <SourceTab SourceColor={'yellow'} title={'Web'} selected={ideasTab == 0}
               onClick={
                 () => {
-                  setIdeasTab(0);
+                  handleIdeasTabClick(0);
                 }
               }
             />
             <SourceTab SourceColor={'orange'} title={'My Urls'}
               onClick={
                 () => {
-                  setIdeasTab(1);
+                  handleIdeasTabClick(1);
                 }
 
               }
               selected={ideasTab == 1} />
             <SourceTab SourceColor={'blue'} title={'My Documents'} onClick={
               () => {
-                setIdeasTab(2);
+                handleIdeasTabClick(2);
               }
 
             }
@@ -1043,7 +1065,9 @@ export default function DashboardInsights({
                       />
                     );
                   })
-                  : ideas?.map((idea, index) => {
+                  : sortedIdeas?.map((idea, index) => {
+                    // sort if IdeasTab==0, then show only those who are .type=="web"
+                    
                     console.log(idea)
                     return (
                       <MainIdeaItem

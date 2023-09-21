@@ -18,11 +18,11 @@ const MainIdeaItem = ({ index, idea, ideas, typeOfIdea, setIdeas, handleUsedIdea
     // let color = SourceColors[typeOfIdea] || 'bg-blue-800';
     let realTypeOfIdea = typeOfIdea;
     if (typeOfIdea == 'web') {
-        typeOfIdea = 'blue';
+        typeOfIdea = '#EEC800';
     } else if (typeOfIdea == 'url') {
-        typeOfIdea = 'orange';
+        typeOfIdea = '#F5C6C3';
     } else if (typeOfIdea == 'file') {
-        typeOfIdea = 'yellow';
+        typeOfIdea = '#004AAD';
     }
     getBgColorForCheckbox(typeOfIdea);
     const color = SourceColors[typeOfIdea] || 'bg-blue-800';
