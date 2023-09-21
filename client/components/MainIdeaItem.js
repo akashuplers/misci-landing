@@ -139,3 +139,5 @@ const MainIdeaItem = ({ index, idea, ideas, typeOfIdea, setIdeas, handleUsedIdea
 };
 
 export default MainIdeaItem;
+
+
