@@ -23,6 +23,7 @@ import TrialEndedModal from "./TrialEndedModal";
 import UsedFilteredIdeaItem from "./UsedFilteredIdeaItem";
 import UsedReference from "./UsedReference";
 import { RegenerateIcon } from "./localicons/localicons";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 export function checkFileFormatAndSize(file) {
   var extension = file.name.split(".").pop().toLowerCase();
   var allowedFormats = ["pdf", "docx", "txt"];
@@ -64,6 +65,7 @@ export default function DashboardInsights({
   option,
   setNdResTime,
 }) {
+  console.log(oldFreshIdeaTags, ideas, freshIdeasReferences);
   const [enabled, setEnabled] = useState(false);
   const [isOpen, setOpen] = useState(false);
   const [formInput, setformInput] = useState("");
@@ -882,7 +884,7 @@ export default function DashboardInsights({
         {tags?.length > 0 && (
           <div>
             <div className="flex justify-between w-full items-center py-2">
-              <h3 className="pt-[0.65em] font-semibold">Filtering Keywords</h3>
+              {/* <h3 className="pt-[0.65em] font-semibold">Filtering Keywords</h3> */}
             </div>
             <div
               className="flex gap-[0.5em] flex-wrap h-full lg:max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
@@ -920,8 +922,9 @@ export default function DashboardInsights({
           </div>
         </div>
         <div>
-          <div className="flex justify-between w-full items-center py-2">
-            <h3 className="pt-[0.65em] font-semibold">Sources</h3>
+          <div className="flex gap-2 justify-start w-full items-center py-2">
+            <h3 className="font-semibold">Sources</h3>
+            <InformationCircleIcon className="h-4 w-4 text-gray-500"/>
           </div>
           <div className="flex items-center gap-2 py-1.5">
             <SourceTab SourceColor={'yellow'} title={'Web'} selected={ideasTab == 0}
@@ -969,9 +972,11 @@ export default function DashboardInsights({
             {ideaType === "used" ? (
               reference?.length > 0 ? (
                 reference?.map((ref, index) => {
+                  console.log(ref);
                   return (
                     <UsedReference
                       key={index}
+                      type={ref.type}
                       reference={ref}
                       index={index}
                       handleRefClick={handleRefClick}
@@ -1039,12 +1044,14 @@ export default function DashboardInsights({
                     );
                   })
                   : ideas?.map((idea, index) => {
+                    console.log(idea)
                     return (
                       <MainIdeaItem
                         key={index}
                         index={index}
                         idea={idea}
                         ideas={ideas}
+                        typeOfIdea={idea?.type}
                         setIdeas={setIdeas}
                         handleUsedIdeas={handleUsedIdeas}
                         handleCitationFunction={handleCitationFunction}

@@ -443,7 +443,7 @@ iframe {
 }
 
 
-input[type='checkbox'],
+/* input[type='checkbox'],
 input[type='radio'] {
   border-radius: 100px;
   appearance: none;
@@ -455,7 +455,7 @@ input[type='radio'] {
 input[type='checkbox']:checked,
 input[type='radio']:checked {
   background-color: var(--primary-blue);
-}
+} */
 
 .authenticationModal label {
   position: relative;

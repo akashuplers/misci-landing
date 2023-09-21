@@ -1,7 +1,22 @@
 import Link from 'next/link';
 import React from 'react';
 
-const MainIdeaItem = ({ index, idea, ideas, setIdeas, handleUsedIdeas, handleCitationFunction }) => {
+const SourceColors = {
+    blue: 'bg-blue-800',
+    orange: 'bg-red-300',
+    yellow: 'bg-yellow-500',
+}
+const MainIdeaItem = ({ index, idea, ideas, typeOfIdea, setIdeas, handleUsedIdeas, handleCitationFunction }) => {
+    // let color = SourceColors[typeOfIdea] || 'bg-blue-800';
+    let realTypeOfIdea = typeOfIdea;
+    if (typeOfIdea == 'web') {
+        typeOfIdea = 'blue';
+    } else if (typeOfIdea == 'url') {
+        typeOfIdea = 'orange';
+    } else if (typeOfIdea == 'file') {
+        typeOfIdea = 'yellow';
+    }
+    const color = SourceColors[typeOfIdea] || 'bg-blue-800';
     const handleCheckboxClick = (e) => {
         const updatedIdeas = ideas.map((el, elIndex) =>
             elIndex === index ? { ...el, used: el.used === 1 ? 0 : 1 } : el
@@ -31,7 +46,7 @@ const MainIdeaItem = ({ index, idea, ideas, setIdeas, handleUsedIdeas, handleCit
             <div className="flex justify-between gap-5 w-full">
                 <p className="text-[13px]" style={
                     {
-                        textDecoration : !idea?.used ? "line-through": "none"
+                        textDecoration: !idea?.used ? "line-through" : "none"
                     }
                 }>{idea?.idea}</p>
                 <a
@@ -73,10 +88,15 @@ const MainIdeaItem = ({ index, idea, ideas, setIdeas, handleUsedIdeas, handleCit
                     </div>
                 </a>
                 <input
+                    data-idea-type={realTypeOfIdea}
                     type="checkbox"
-                    className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-none focus:ring-blue-500"
+                    // className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-none focus:ring-blue-500"
+                    className={` 
+                            mb-4 w-4 h-4 ${color} bg-gray-100 border-gray-300 rounded-none focus:ring-${typeOfIdea}-500
+                            checked:bg-${typeOfIdea}-600 border border-${typeOfIdea}-500
+                    `}
                     style={{
-                        borderRadius: '2px'
+                        borderRadius: '2px',
                     }}
                     checked={idea?.used}
                     onClick={handleCheckboxClick}

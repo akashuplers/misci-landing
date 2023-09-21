@@ -1,4 +1,5 @@
 import { LinkIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
 
 const UsedReference = ({ reference, index, handleRefClick }) => {
     return (
@@ -19,8 +20,14 @@ const UsedReference = ({ reference, index, handleRefClick }) => {
         >
             {reference.source}
             <span className="flex gap-[0.05rem] text-slate-400">
+                <a href={reference.url} 
+                target="_blank"
+                >
                 <LinkIcon className="w-4 h-4 ml-2" />
-                <TrashIcon className="w-4 h-4 ml-2" />
+                </a>
+                <TrashIcon className="w-4 h-4 ml-2" onClick={
+                    handleRefClick
+                }/>
             </span>
             <span
                 className=""
