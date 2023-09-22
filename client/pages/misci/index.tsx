@@ -114,20 +114,31 @@ const MiSci = () => {
           zIndex: -1,
         }}
       />
-      <div className="w-[50%] p-8 min-h-[500px] relative rounded-lg shadow-xl border border-white backdrop-blur-lg flex-col justify-start items-center gap-6 inline-flex">
-        <div className=" max-w-[80%] flex items-center justify-around">
-          <span className="w-48 h-48 relative flex items-center justify-center">
+      <div className="md:w-[60%] w-full p-8 min-h-[500px] h-full md:h-auto justify-center relative rounded-lg shadow-xl border border-white backdrop-blur-lg flex-col justify-start items-center gap-6 inline-flex">
+        <div className=" max-w-[80%] flex items-center justify-around flex-col md:flex-row">
+          <span className="w-[6rem] min-w-[6rem] relative flex items-center justify-center">
             <img
-              className="object-fit w-36 h-36"
+              className="h-full w-full"
               style={{
                 mixBlendMode: "color-burn",
+                objectFit: 'cover'
               }}
               src="/miscinew.png"
               alt="MisciLog"
             />
           </span>
-          <Lottie animationData={infinityLoop} className="h-24" />
-          <img className="w-48 h-48" src="/misci_main.png" alt="misci_main" />
+          <Lottie animationData={infinityLoop} className="min-w-[4rem] w-[4rem]" />
+          <span className="w-[12rem] min-w-[12rem]" >
+            <img 
+              className="h-[60px] w-full"
+              style={{
+                mixBlendMode: "color-burn",
+                objectFit: 'cover'
+              }}
+              src="/misci_main.png" 
+              alt="misci_main" 
+            />
+          </span>
         </div>
         <div
           style={{
@@ -153,8 +164,8 @@ const MiSci = () => {
           }}
           className="rounded-full shadow-lg right-0 top-[20%]"
         />
-        <div className="w-full relative h-full">
-          <div className="w-full h-full justify-start items-center gap-2.5 inline-flex flex-col ">
+        <div className="w-full relative ">
+          <div className="w-full  justify-start items-center gap-2.5 inline-flex flex-col ">
             <div
               className={`relative w-full min-h-[60px] bg-white bg-opacity-25 rounded-lg shadow border border-indigo-600 backdrop-blur-lg justify-start items-center gap-3 inline-flex border py-2.5 `}
             >
