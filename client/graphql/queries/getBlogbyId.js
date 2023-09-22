@@ -43,6 +43,7 @@ query FetchBlog($fetchBlogId: String!) {
         idea
         article_id
         name
+        type
         reference {
             type
             link
