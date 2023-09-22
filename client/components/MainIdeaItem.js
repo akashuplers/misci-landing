@@ -51,7 +51,13 @@ const MainIdeaItem = ({ index, idea, ideas, typeOfIdea, setIdeas, handleUsedIdea
     };
 
     return (
-        <div className="flex pb-3 usedIdeas" key={index}>
+        <div className="flex pb-3 usedIdeas gap-1" key={index}>
+                  <div className={` w-1.5 h-1.5  rounded-full mt-1`}
+                  style={{
+                    backgroundColor: idea?.used ? typeOfIdea : 'white',
+                    opacity: idea?.used ? 1 : 0.5,
+                }}
+                  />
             <div className="flex justify-between gap-5 w-full">
                 <p className="text-[13px]" style={
                     {

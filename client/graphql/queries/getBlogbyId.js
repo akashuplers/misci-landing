@@ -28,7 +28,8 @@ query FetchBlog($fetchBlogId: String!) {
     savedTime
     references {
         url
-        source    
+        source
+        type
     }
     freshIdeasReferences {
         url

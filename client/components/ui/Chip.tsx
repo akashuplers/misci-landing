@@ -33,8 +33,7 @@ export const Chip = ({
       </div>
     </>
   );
-};
-
+}; 
 interface FileChipProps extends React.HTMLAttributes<HTMLDivElement> {
   rest?: any;
   fileName: string;
