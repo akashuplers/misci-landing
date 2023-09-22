@@ -1041,7 +1041,7 @@ export default function DashboardInsights({
                     setIdeaType("used");
                   }}
                 >
-                  {/* Used Idea(s){" "} */}
+                  <div className={`bg-blue-500 w-1.5 h-1.5  rounded-full`} />
                   Idea
                   <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
                     {ideas?.length}
