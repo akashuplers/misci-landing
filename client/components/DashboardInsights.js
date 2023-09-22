@@ -159,7 +159,7 @@ export default function DashboardInsights({
   const [regenSelected, setRegenSelected] = useState([]);
 
   const isAuthenticated = useStore((state) => state.isAuthenticated);
-  const [newReference, setNewRefeence]= useState({});
+  const [newReference, setNewReference]= useState({});
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -639,6 +639,9 @@ export default function DashboardInsights({
     setformInput(file.name);
     setFile(file);
   }
+  useEffect(()=>{
+    console.log(reference)
+  },[reference])
   function handleFormChange(e) {
     const value = e.target.value;
     setformInput(value);
@@ -792,33 +795,18 @@ export default function DashboardInsights({
     return titleCase.trim();
   }
   let sortedRef = [];
-  if(ideasTab === 0){
-    // [{...type}]
-    // type ==web
-    let newRef = [];
-    reference?.forEach((el, index) => {
-      if (el.type === "web") {
-        newRef.push(el);
-      }
-    });
-    sortedRef = newRef;
-  } else if(ideasTab === 1){
-    let newRef = [];
-    reference?.forEach((el, index) => {
-      if (el.type === "url") {
-        newRef.push(el);
-      }
-    })
-  } else if(ideasTab === 2){
-    let newRef = [];
-    reference?.forEach((el, index) => {
-      if (el.type === "file") {
-        newRef.push(el);
-      }
-    })
-  } else{
-    sortedRef = [...reference];  
+
+  if (ideasTab === 0) {
+    sortedRef = reference?.filter((el) => el.type == "web") || [];
+  } else if (ideasTab === 1) {
+    sortedRef = reference?.filter((el) => el.type == "url") || [];
+  } else if (ideasTab === 2) {
+    sortedRef = reference?.filter((el) => el.type == "file") || [];
+  } else {
+    sortedRef = [...reference];
   }
+  console.log("sortedRef")
+  console.log(sortedRef)
   function handleIdeasTabClick(index) {
     setIdeasTab((prev) => {
       return index;
@@ -995,7 +983,6 @@ export default function DashboardInsights({
             {ideaType === "used" ? (
               reference?.length > 0 ? (
                 sortedRef?.map((ref, index) => {
-                  console.log(ref);
                   return (
                     <UsedReference
                       key={index}
@@ -1056,7 +1043,7 @@ export default function DashboardInsights({
                       setNewReference((prev)=>({
                         ...prev,
                         source: e.target.value,
-                        type: 'url'
+                        type: "url"
                       }))
                     }}
                   placeholder="Add URL"/>
@@ -1064,8 +1051,7 @@ export default function DashboardInsights({
                     onClick={()=>{
                       setReference((prev)=>{
                         const lastIndex = prev.length - 1;
-                        return [...prev, {...newReference, 
-                        index: lastIndex+1}]
+                        return [...prev, {...newReference,}]
                       })
                     }}
                   
@@ -1136,8 +1122,6 @@ export default function DashboardInsights({
                   );
                 })
                 : ideas?.map((idea, index) => {
-                  // sort if IdeasTab==0, then show only those who are .type=="web"
-                  console.log(idea)
                   return (
                     <MainIdeaItem
                       key={index}
