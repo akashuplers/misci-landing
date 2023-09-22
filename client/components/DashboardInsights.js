@@ -27,7 +27,7 @@ import { ArrowLeftIcon, DocumentIcon, InformationCircleIcon, PlusIcon, XCircleIc
 import { ArrowLongLeftIcon, DocumentPlusIcon } from "@heroicons/react/20/solid";
 import { FileComponent } from "./ui/Chip";
 export function checkFileFormatAndSize(file) {
-  var extension = file.name.split(".").pop().toLowerCase();
+  var extension = file?.name?.split(".").pop().toLowerCase();
   var allowedFormats = ["pdf", "docx", "txt"];
 
   if (!allowedFormats.includes(extension)) {
@@ -159,7 +159,7 @@ export default function DashboardInsights({
   const [regenSelected, setRegenSelected] = useState([]);
 
   const isAuthenticated = useStore((state) => state.isAuthenticated);
-  const [newReference, setNewReference]= useState({});
+  const [newReference, setNewReference] = useState({});
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -534,7 +534,7 @@ export default function DashboardInsights({
     }));
     handleUsedIdeas(arr);
   }
-  
+
   function handleSelectAll() {
     if (toggle) {
       if (freshFilteredIdeas?.length > 0) {
@@ -639,9 +639,9 @@ export default function DashboardInsights({
     setformInput(file.name);
     setFile(file);
   }
-  useEffect(()=>{
+  useEffect(() => {
     console.log(reference)
-  },[reference])
+  }, [reference])
   function handleFormChange(e) {
     const value = e.target.value;
     setformInput(value);
@@ -701,10 +701,10 @@ export default function DashboardInsights({
 
     axios(config)
       .then((response) => {
-        setIdeaType("fresh");
-        setFreshIdeas(response.data.data);
-        setFreshIdeaReferences(response.data.references);
-        setFreshIdeaTags(response.data.freshIdeasTags);
+        // setIdeaType("fresh");
+        setIdeas(response.data.data);
+        setReference(response.data.references);
+        setTags(response.data.freshIdeasTags);
 
         setPyResTime(response.data.pythonRespTime);
         setNdResTime(response.data.respTime);
@@ -1015,8 +1015,9 @@ export default function DashboardInsights({
           </div>
           {
             ideasTab == 0 && <>
-              <div className="justify-between items-start gap-60 flex w-full">
-                <div className="opacity-70 text-gray-800 text-sm font-normal">Use New Sources in Next Draft</div>
+              <div className="flex flex-col w-full">
+               <div className="flex justify-between w-full">
+               <div className="flex opacity-70 text-gray-800 text-sm font-normal">Use New Sources in Next Draft</div>
                 <div className="justify-center items-center flex">
                   {/* <div className="w-3 h-3 relative flex-col justify-start items-start flex" /> */}
                   {/* checkbox */}
@@ -1028,7 +1029,26 @@ export default function DashboardInsights({
                     }}
                   />
                 </div>
-              </div></>
+               </div>
+                <div className="w-full h-full justify-start items-center gap-3 inline-flex">
+                  <ArrowLongLeftIcon className="w-6 h-6 text-indigo-500" />
+                  <input className="grow shrink basis-0 h-full px-2.5 py-2 rounded-lg border border-indigo-500 border-opacity-20 justify-start items-start gap-2.5 flex"
+                    value={newReference.source}
+                    onChange={(e) => {
+                      setformInput(e.target.value)
+                    }}
+                    placeholder="Add Topic" />
+                  <button className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
+                    onClick={(event) => {
+                      postFormData(event);
+                    }}
+                  >
+                    <PlusIcon />
+                  </button>
+                </div>
+
+              </div>
+              </>
 
           }
           {
@@ -1039,25 +1059,18 @@ export default function DashboardInsights({
                   <ArrowLongLeftIcon className="w-6 h-6 text-indigo-500" />
                   <input className="grow shrink basis-0 h-full px-2.5 py-2 rounded-lg border border-indigo-500 border-opacity-20 justify-start items-start gap-2.5 flex"
                     value={newReference.source}
-                    onChange={(e)=>{
-                      setNewReference((prev)=>({
-                        ...prev,
-                        source: e.target.value,
-                        type: "url"
-                      }))
+                    onChange={(e) => {
+                      setformInput(e.target.value)
                     }}
-                  placeholder="Add URL"/>
+                    placeholder="Add URL" />
                   <button className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
-                    onClick={()=>{
-                      setReference((prev)=>{
-                        const lastIndex = prev.length - 1;
-                        return [...prev, {...newReference,}]
-                      })
+                    onClick={(event) => {
+
+                      postFormData(event);
                     }}
-                  
-                   >
-                <PlusIcon />
-              </button>
+                  >
+                    <PlusIcon />
+                  </button>
                 </div>
               </div>
             </div>
@@ -1065,23 +1078,23 @@ export default function DashboardInsights({
           {
             ideasTab == 2 && <div className="px-4 flex flex-col gap-3">
               <div>
-                {/* <FileComponent name="My Documents" size="3MB" /> */}
                 {
                   file ? <FileComponent name={file.name} size={Math.round(file.size / 1000) + "KB"} onDelete={
                     () => { setFile(null) }
-                  } /> : <FileComponent name="No file chosen" size="" />
+                  } /> : <label htmlFor="input-file">
+                    <FileComponent name="No file chosen" size="" />
+                  </label>
                 }
               </div>
-              <label htmlFor="input-file" className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border" >
+              <label className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border" onClick={postFormData}>
                 <PlusIcon />
               </label>
-              {/* file input */}
               <input id="input-file" type="file" className="hidden"
                 onChange={handleFileUpload}
               />
             </div>
           }
-          
+
         </div>
 
         <>
@@ -1098,96 +1111,45 @@ export default function DashboardInsights({
                 {ideas?.length}
               </span>
             </button>
-
-
-          </div>
-          <div
-            className=" dashboardInsightsUsedSectionHeight overflow-y-scroll px-2"
-          >
-            {ideaType === "used"
-              ? filteredIdeas?.length > 0
-                ? filteredIdeas?.map((idea, index) => {
-                  return (
-                    <UsedFilteredIdeaItem
-                      key={index}
-                      index={index}
-                      idea={idea}
-                      filteredIdeas={filteredIdeas}
-                      setFilteredIdeas={setFilteredIdeas}
-                      ideas={ideas}
-                      setIdeas={setIdeas}
-                      handleUsedIdeas={handleUsedIdeas}
-                      handleCitationFunction={handleCitationFunction}
-                    />
-                  );
-                })
-                : ideas?.map((idea, index) => {
-                  return (
-                    <MainIdeaItem
-                      key={index}
-                      index={index}
-                      idea={idea}
-                      ideas={ideas}
-                      typeOfIdea={idea?.type}
-                      setIdeas={setIdeas}
-                      handleUsedIdeas={handleUsedIdeas}
-                      handleCitationFunction={handleCitationFunction}
-                    />
-                  );
-                })
-              : ""}
-            {ideaType === "fresh" && (
-              <div className="w-full">
-                {isAuthenticated && (
-                  <>
-                    <FreshIdeaForm
-                      postFormData={postFormData}
-                      newIdeaLoad={newIdeaLoad}
-                      ideaType={ideaType}
-                      formInput={formInput}
-                      handleFormChange={handleFormChange}
-                      hover={hover}
-                      handleFileUpload={handleFileUpload}
-                    />
-                  </>
-                )}
-                {freshFilteredIdeas?.length > 0
-                  ? freshFilteredIdeas?.map((idea, index) => {
-                    return (
-                      <FreshFilteredIdeaItem
-                        key={index}
-                        index={index}
-                        idea={idea}
-                        handleCitationFunction={handleCitationFunction}
-                        filteredIdeas={filteredIdeas}
-                        setFilteredIdeas={setFilteredIdeas}
-                        ideas={ideas}
-                        setIdeas={setIdeas}
-                        handleUsedIdeas={handleUsedIdeas}
-                      />
-                    );
-                  })
-                  : freshIdeas?.map((idea, index) => {
-                    return (
-                      <IdeaComponent
-                        key={index}
-                        index={index}
-                        idea={idea}
-                        handleCitationFunction={handleCitationFunction}
-                        handleInputClick={handleInputClick}
-                        freshIdeas={freshIdeas}
-                        setFreshIdeas={setFreshIdeas}
-                      />
-                    );
-                  })}
-              </div>
-            )}
-          </div>
-
+            </div>
+      
+            <div>
+              {newIdeaLoad==false ? (
+                <div className="dashboardInsightsUsedSectionHeight overflow-y-scroll px-2">
+                  {filteredIdeas?.length > 0
+                      ? filteredIdeas?.map((idea, index) => (
+                        <UsedFilteredIdeaItem
+                          key={index}
+                          index={index}
+                          idea={idea}
+                          filteredIdeas={filteredIdeas}
+                          setFilteredIdeas={setFilteredIdeas}
+                          ideas={ideas}
+                          setIdeas={setIdeas}
+                          handleUsedIdeas={handleUsedIdeas}
+                          handleCitationFunction={handleCitationFunction}
+                        />
+                      ))
+                      : ideas?.map((idea, index) => (
+                        <MainIdeaItem
+                          key={index}
+                          index={index}
+                          idea={idea}
+                          ideas={ideas}
+                          typeOfIdea={idea?.type}
+                          setIdeas={setIdeas}
+                          handleUsedIdeas={handleUsedIdeas}
+                          handleCitationFunction={handleCitationFunction}
+                        />
+                      ))}
+                </div>
+              ) : (
+                <div className="flex justify-center items-center">
+                  <LoaderScan />
+                </div>
+              )}
+            </div>
         </>
-
-
-
       </div>
     </>
   );
