@@ -114,9 +114,9 @@ const MiSci = () => {
           zIndex: -1,
         }}
       />
-      <div className="md:w-[60%] w-full p-8 min-h-[500px] h-full md:h-auto justify-center relative rounded-lg shadow-xl border border-white backdrop-blur-lg flex-col justify-start items-center gap-6 inline-flex">
-        <div className=" max-w-[80%] flex items-center justify-around flex-col md:flex-row">
-          <span className="w-[6rem] min-w-[6rem] relative flex items-center justify-center">
+      <div className="md:w-[50%] md:min-w-[550px] w-full p-8 min-h-[500px] h-full md:h-auto justify-center relative rounded-lg shadow-xl border border-white backdrop-blur-lg flex-col justify-start items-center gap-6 inline-flex">
+        <div className="max-w-[80%] mb-6 flex items-center justify-around flex-col md:flex-row">
+          <span className="w-[8rem] min-w-[8rem] relative flex items-center justify-center">
             <img
               className="h-full w-full"
               style={{
@@ -127,8 +127,8 @@ const MiSci = () => {
               alt="MisciLog"
             />
           </span>
-          <Lottie animationData={infinityLoop} className="min-w-[4rem] w-[4rem]" />
-          <span className="w-[12rem] min-w-[12rem]" >
+          <Lottie animationData={infinityLoop} className="w-[5rem] min-w-[5rem]" />
+          <span className="w-[9rem] min-w-[9rem]" >
             <img 
               className="h-[60px] w-full"
               style={{
