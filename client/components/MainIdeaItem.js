@@ -64,7 +64,7 @@ const MainIdeaItem = ({ index, idea, ideas, typeOfIdea, setIdeas, handleUsedIdea
                         textDecoration: !idea?.used ? "line-through" : "none"
                     }
                 }>{idea?.idea}</p>
-                <a
+             <a
                     style={{
                         color: "var(--primary-blue)",
                         alignSelf: "flex-start",
@@ -75,7 +75,7 @@ const MainIdeaItem = ({ index, idea, ideas, typeOfIdea, setIdeas, handleUsedIdea
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                 >
-                    {handleCitationFunction(idea?.name)}
+                    {handleCitationFunction(idea?.name)}{" "}
                     <div
                         className={`hidden referenceTooltip${index}`}
                         style={{
