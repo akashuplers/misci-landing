@@ -161,7 +161,7 @@ export class Python {
                     'company_id': 'nowigence', 
                     'question': question
                 },
-                timeout: 15000
+                timeout: 60000
             }
             console.log(config, "config")
             const pythonRes = await axios(config)
