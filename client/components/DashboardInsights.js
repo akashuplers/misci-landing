@@ -23,7 +23,7 @@ import TrialEndedModal from "./TrialEndedModal";
 import UsedFilteredIdeaItem from "./UsedFilteredIdeaItem";
 import UsedReference from "./UsedReference";
 import { RegenerateIcon } from "./localicons/localicons";
-import { ArrowLeftIcon, DocumentIcon, InformationCircleIcon, PlusIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, CheckIcon, DocumentIcon, InformationCircleIcon, PlusIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { ArrowLongLeftIcon, DocumentPlusIcon } from "@heroicons/react/20/solid";
 import { FileComponent } from "./ui/Chip";
 export function checkFileFormatAndSize(file) {
@@ -1015,12 +1015,10 @@ export default function DashboardInsights({
           </div>
           {
             ideasTab == 0 && <>
-              <div className="flex flex-col w-full">
+              {/* <div className="flex flex-col w-full">
                <div className="flex justify-between w-full">
                <div className="flex opacity-70 text-gray-800 text-sm font-normal">Use New Sources in Next Draft</div>
                 <div className="justify-center items-center flex">
-                  {/* <div className="w-3 h-3 relative flex-col justify-start items-start flex" /> */}
-                  {/* checkbox */}
                   <input
                     type="checkbox"
                     className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-none focus:ring-blue-500"
@@ -1036,7 +1034,7 @@ export default function DashboardInsights({
                     value={newReference.source}
                     onChange={(e) => {
                       setformInput(e.target.value)
-                    }}
+                    }}  
                     placeholder="Add Topic" />
                   <button className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
                     onClick={(event) => {
@@ -1046,8 +1044,8 @@ export default function DashboardInsights({
                     <PlusIcon />
                   </button>
                 </div>
-
-              </div>
+              </div> 
+              */}
               </>
 
           }
@@ -1068,7 +1066,9 @@ export default function DashboardInsights({
                       postFormData(event, "URL");
                     }}
                   >
-                    <PlusIcon />
+                    {
+                      formInput!=null ? <PlusIcon /> : <CheckIcon/>
+                    }
                   </button>
                 </div>
               </div>
@@ -1086,7 +1086,9 @@ export default function DashboardInsights({
                 }
               </div>
               <label className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border" onClick={postFormData}>
-                <PlusIcon />
+          {
+            file != null ? <PlusIcon /> : <CheckIcon/>
+          }
               </label>
               <input id="input-file" type="file" className="hidden"
                 onChange={handleFileUpload}
