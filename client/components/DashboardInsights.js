@@ -659,7 +659,7 @@ export default function DashboardInsights({
     setArrUsed(arr);
   };
 
-  function postFormData(e) {
+  function postFormData(e, type) {
     e.preventDefault();
     setNewIdeaLoad(true);
 
@@ -717,7 +717,7 @@ export default function DashboardInsights({
       .catch((error) => {
         console.log("error", error);
         toast.error(
-          "Host has denied the extraction from this URL. Please try again or try some other URL.",
+          `Host has denied the extraction from this ${type ?? "File"}. Please try again or try some other ${type??"File"}.`,
           {
             autoClose: 10000, // 10 seconds
           }
@@ -1040,7 +1040,7 @@ export default function DashboardInsights({
                     placeholder="Add Topic" />
                   <button className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
                     onClick={(event) => {
-                      postFormData(event);
+                      postFormData(event, 'Topic');
                     }}
                   >
                     <PlusIcon />
@@ -1066,7 +1066,7 @@ export default function DashboardInsights({
                   <button className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
                     onClick={(event) => {
 
-                      postFormData(event);
+                      postFormData(event, "URL");
                     }}
                   >
                     <PlusIcon />
