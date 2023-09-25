@@ -1067,7 +1067,7 @@ export default function DashboardInsights({
                     }}
                   >
                     {
-                      formInput!=null ? <PlusIcon /> : <CheckIcon/>
+                      formInput==null ? <PlusIcon /> : <CheckIcon/>
                     }
                   </button>
                 </div>
@@ -1087,7 +1087,7 @@ export default function DashboardInsights({
               </div>
               <label className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border" onClick={postFormData}>
           {
-            file != null ? <PlusIcon /> : <CheckIcon/>
+            file == null ? <PlusIcon /> : <CheckIcon/>
           }
               </label>
               <input id="input-file" type="file" className="hidden"
