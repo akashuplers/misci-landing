@@ -19,6 +19,7 @@ export const Chip = ({
   index,
   wholeData,
   rest,
+  onDelete,
 }: Props) => {
   return (
     <>
@@ -30,6 +31,9 @@ export const Chip = ({
         onClick={() => handleClick && handleClick(index ?? 0)}
       >
         <h3 className=" text-sm font-normal leading-tight">{text}</h3>
+        <button className="w-3 h-3 relative rounded" onClick={()=>{onDelete && onDelete(wholeData)}}>
+          <XCircleIcon />
+          </button>
       </div>
     </>
   );

@@ -30,7 +30,6 @@ export const SourceColors = {
 }
 export const SourceTab =({title, SourceColor, selected, onClick}) => {
   const color = SourceColors[SourceColor] || 'bg-blue-800';
-  console.log(SourceColor, SourceColors);
   return <div className={`relative h-6 gap-1.5 py-1 justify-around items-center inline-flex `} onClick={onClick ?? console.log}>
   <div className={` ${color} w-1.5 h-1.5  rounded-full`} />
   <div className="text-gray-800 text-xs font-normal ">{title}</div>

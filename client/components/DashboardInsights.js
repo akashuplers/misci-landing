@@ -10,7 +10,11 @@ import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
 import { ContributionCheck } from "../helpers/ContributionCheck";
 import { jsonToHtml } from "../helpers/helper";
-import useStore, { useByMeCoffeModal, useThreadsUIStore, useTwitterThreadStore } from "../store/store";
+import useStore, {
+  useByMeCoffeModal,
+  useThreadsUIStore,
+  useTwitterThreadStore,
+} from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import FreshFilteredIdeaItem from "./FreshFilteredIdeaItem";
 import FreshIdeaForm from "./FreshIdeaForm";
@@ -23,9 +27,17 @@ import TrialEndedModal from "./TrialEndedModal";
 import UsedFilteredIdeaItem from "./UsedFilteredIdeaItem";
 import UsedReference from "./UsedReference";
 import { RegenerateIcon } from "./localicons/localicons";
-import { ArrowLeftIcon, CheckIcon, DocumentIcon, InformationCircleIcon, PlusIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowLeftIcon,
+  CheckIcon,
+  DocumentIcon,
+  InformationCircleIcon,
+  PlusIcon,
+  XCircleIcon,
+} from "@heroicons/react/24/outline";
 import { ArrowLongLeftIcon, DocumentPlusIcon } from "@heroicons/react/20/solid";
-import { FileComponent } from "./ui/Chip";
+import { Chip, FileComponent } from "./ui/Chip";
+import { Badge } from "@radix-ui/themes";
 export function checkFileFormatAndSize(file) {
   var extension = file?.name?.split(".").pop().toLowerCase();
   var allowedFormats = ["pdf", "docx", "txt"];
@@ -66,14 +78,14 @@ export default function DashboardInsights({
   setOption,
   option,
   setNdResTime,
-  keyword
+  keyword,
 }) {
-  console.log(oldFreshIdeaTags, ideas, freshIdeasReferences);
   const [enabled, setEnabled] = useState(false);
   const [isOpen, setOpen] = useState(false);
   const [formInput, setformInput] = useState("");
   const [urlValid, setUrlValid] = useState(false);
   const [file, setFile] = useState(null);
+  const [inputFiles, setInputFiles] = useState([]);
   const [fileValid, setFileValid] = useState(false);
   const [arrUsed, setArrUsed] = useState([]);
   const [arrFresh, setArrFresh] = useState([]);
@@ -97,7 +109,7 @@ export default function DashboardInsights({
   const [toggle, setToggle] = useState(true);
   const toggleClass = " transform translate-x-3";
   const creditLeft = useStore((state) => state.creditLeft);
-
+  const [inputUrls, setinputUrls] = useState([]);
   useEffect(() => {
     setFreshIdeas(oldFreshIdeas);
   }, [oldFreshIdeas]);
@@ -128,7 +140,7 @@ export default function DashboardInsights({
 
         if (
           `${networkError}` ===
-          "ServerError: Response not successful: Received status code 401" &&
+            "ServerError: Response not successful: Received status code 401" &&
           isauth
         ) {
           localStorage.clear();
@@ -239,7 +251,6 @@ export default function DashboardInsights({
     if (!toggle) {
       setToggle(!toggle);
     }
-
   }
 
   useEffect(() => {
@@ -287,14 +298,19 @@ export default function DashboardInsights({
         const lowerCaseSearchObject = searchObject?.toLowerCase();
         const ideaName = idea?.name?.toLowerCase();
 
-        if (filterObject?.criteria === "tag" && ideaOfIdea?.includes(lowerCaseSearchObject)) {
+        if (
+          filterObject?.criteria === "tag" &&
+          ideaOfIdea?.includes(lowerCaseSearchObject)
+        ) {
           setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-        } else if (filterObject?.criteria === "ref" && ideaName === lowerCaseSearchObject) {
+        } else if (
+          filterObject?.criteria === "ref" &&
+          ideaName === lowerCaseSearchObject
+        ) {
           setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
         }
       });
     });
-
   }, [filteredArray]);
 
   // We create a set so that the values are unique, and multiple ideas are not added
@@ -393,7 +409,6 @@ export default function DashboardInsights({
       (obj, index, self) => index === self.findIndex((t) => t.text === obj.text)
     );
     if (newarr?.length >= 1) {
-
       RegenerateBlog({
         variables: {
           options: {
@@ -429,14 +444,24 @@ export default function DashboardInsights({
             (pd) => pd?.platform === "twitter"
           );
           if (aaThreads?.threads?.length <= 0) {
-            setTwitterThreadData(twitterThreadData)
+            setTwitterThreadData(twitterThreadData);
           } else {
-            const theLastThread = aaThreads.threads[aaThreads.threads.length - 1];
+            const theLastThread =
+              aaThreads.threads[aaThreads.threads.length - 1];
             // merge this will text with 2nd last tweet
-            var theSecondLastThread = aaThreads.threads[aaThreads.threads.length - 2];
-            if (theLastThread !== undefined && theLastThread !== null && theLastThread !== "") {
+            var theSecondLastThread =
+              aaThreads.threads[aaThreads.threads.length - 2];
+            if (
+              theLastThread !== undefined &&
+              theLastThread !== null &&
+              theLastThread !== ""
+            ) {
               // const mergedText = theSecondLastThread + " ." + theLastThread;
-              if (theSecondLastThread === undefined || theSecondLastThread === null || theSecondLastThread === "") {
+              if (
+                theSecondLastThread === undefined ||
+                theSecondLastThread === null ||
+                theSecondLastThread === ""
+              ) {
                 theSecondLastThread = "";
               } else {
                 theSecondLastThread = theSecondLastThread + " .";
@@ -516,22 +541,25 @@ export default function DashboardInsights({
     }
   }
 
-  // wrtie a function to seelect all use ideas 
+  // wrtie a function to seelect all use ideas
   // function handleSelectAllUsedIdeas() {
   //   alert('running used ideas')
   // }
   function handleSelectAllUsedIdeas() {
     const updatedAllIdeas = ideas.map((el, elIndex) => {
       return {
-        ...el, used: toggle ? 1 : 0
-      }
+        ...el,
+        used: toggle ? 1 : 0,
+      };
     });
     setIdeas(updatedAllIdeas);
 
-    const arr = updatedAllIdeas.filter((element) => element.used).map((element) => ({
-      text: element.idea,
-      article_id: element.article_id,
-    }));
+    const arr = updatedAllIdeas
+      .filter((element) => element.used)
+      .map((element) => ({
+        text: element.idea,
+        article_id: element.article_id,
+      }));
     handleUsedIdeas(arr);
   }
 
@@ -611,37 +639,40 @@ export default function DashboardInsights({
       }
     }
   }
-
   function handleFileUpload({ target }) {
-    const FORMATCHECK = checkFileFormatAndSize(target.files[0]);
-    // alert(FORMATCHECK, "FORMATCHECK")
-    if (!FORMATCHECK) {
-      return;
+    const selectFiles = target.files;
+    let fileSizesMoreThan3MB = false;
+    
+    for (let i = 0; i < selectFiles.length; i++) {
+      const file = selectFiles[i];
+      
+      // Check file format and size for each file
+      if (!checkFileFormatAndSize(file)) {
+        return;
+      }
+  
+      const fileSizeMB = file.size / (1024 * 1024); // Convert size to MB
+      if (fileSizeMB > 3) {
+        fileSizesMoreThan3MB = true;
+        break; // Stop checking if one file exceeds the size limit
+      }
     }
-    setFileValid(true);
-    setUrlValid(false);
-
-    const file = target.files[0];
-
-    // Check if file is defined
-    if (!file) {
-      toast.error("No file chosen");
-      return;
-    }
-
-    const fileSizeMB = file.size / (1024 * 1024); // convert size to MB
-
-    if (fileSizeMB > 3) {
+  
+    if (fileSizesMoreThan3MB) {
       toast.error("File size cannot exceed 3MB");
-      return; // stop function execution after showing the error
+      return; // Stop function execution after showing the error
     }
-
-    setformInput(file.name);
-    setFile(file);
+  
+    const newFiles = Array.from(selectFiles);
+    setInputFiles((prev) => {
+      return [...prev, ...newFiles];
+    });
+    console.log(inputFiles);
   }
+  
   useEffect(() => {
-    console.log(reference)
-  }, [reference])
+    console.log(reference);
+  }, [reference]);
   function handleFormChange(e) {
     const value = e.target.value;
     setformInput(value);
@@ -659,39 +690,49 @@ export default function DashboardInsights({
     setArrUsed(arr);
   };
 
-  function postFormData(e, type ="File") {
+  function postFormData(e, type = "File") {
     e.preventDefault();
     setNewIdeaLoad(true);
-
+  
+    // Define the base URL and the raw data object
     let url = API_BASE_PATH;
     let raw;
-      if(type === "File"){
+  
+    if (type === "File") {
+      // For file uploads
       url += API_ROUTES.FILE_UPLOAD;
       raw = new FormData();
-      raw.append("file", file);
+      console.log(inputFiles);
+      raw.append("files", inputFiles[0], inputFiles[0].name);
       raw.append("blog_id", blog_id);
-    } else if (type == "URL"){
+    } else if (type === "URL") {
+      // For URL uploads
       url += API_ROUTES.URL_UPLOAD;
       raw = {
-        url: formInput,
+        urls: inputUrls,
         blog_id: blog_id,
       };
     } else {
+      // For keyword uploads
       url += API_ROUTES.KEYWORD_UPLOAD;
       raw = {
         keyword: formInput,
         blog_id: blog_id,
       };
     }
-
+  
+    // Define headers, including Authorization if available
     const myHeaders = {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
+      contentType: "multipart/form-data",
     };
-
+  
+    // Set Content-Type based on file validity
     if (!fileValid) {
       myHeaders["Content-Type"] = "application/json";
     }
-
+  
+    // Define the Axios config object
     const config = {
       method: "post",
       url: url,
@@ -717,7 +758,9 @@ export default function DashboardInsights({
       .catch((error) => {
         console.log("error", error);
         toast.error(
-          `Host has denied the extraction from this ${type ?? "File"}. Please try again or try some other ${type??"File"}.`,
+          `Host has denied the extraction from this ${
+            type ?? "File"
+          }. Please try again or try some other ${type ?? "File"}.`,
           {
             autoClose: 10000, // 10 seconds
           }
@@ -741,10 +784,10 @@ export default function DashboardInsights({
       // Regular expression for URL validation
       var pattern = new RegExp(
         "^(https?:\\/\\/)?" + // protocol
-        "((([a-zA-Z\\d]([a-zA-Z\\d-]{0,61}[a-zA-Z\\d])?)\\.)+[a-zA-Z]{2,})(:\\d{2,5})?" + // domain name and optional port
-        "(\\/[-a-zA-Z\\d%@_.~+&:]*)*" + // path
-        "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" + // query string
-        "(\\#[-a-zA-Z\\d_]*)?$",
+          "((([a-zA-Z\\d]([a-zA-Z\\d-]{0,61}[a-zA-Z\\d])?)\\.)+[a-zA-Z]{2,})(:\\d{2,5})?" + // domain name and optional port
+          "(\\/[-a-zA-Z\\d%@_.~+&:]*)*" + // path
+          "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" + // query string
+          "(\\#[-a-zA-Z\\d_]*)?$",
         "i"
       ); // fragment locator
       return pattern.test(formInput);
@@ -805,8 +848,8 @@ export default function DashboardInsights({
   } else {
     sortedRef = [...reference];
   }
-  console.log("sortedRef")
-  console.log(sortedRef)
+  console.log("sortedRef");
+  console.log(sortedRef);
   function handleIdeasTabClick(index) {
     setIdeasTab((prev) => {
       return index;
@@ -881,11 +924,13 @@ export default function DashboardInsights({
       {creditModal && (
         <TrialEndedModal setTrailModal={setCreditModal} topic={null} />
       )}
-      <div className="text-xs px-2 mb-24 lg:mb-0 h-full" style={{ borderLeft: "2px solid #d2d2d2" }} id="regenblog">
+      <div
+        className="text-xs px-2 mb-24 lg:mb-0 h-full"
+        style={{ borderLeft: "2px solid #d2d2d2" }}
+        id="regenblog"
+      >
         {/* h1 Insight only for mobile screens */}
-        <h1 className="pt-[0.65em] font-semibold">
-          WORKSPACE
-        </h1>
+        <h1 className="pt-[0.65em] font-semibold">WORKSPACE</h1>
         <div className="flex jusify-between gap-[1.25em]">
           <p className="font-normal w-[100%] lg:w-[70%] text-sm">
             Create your next draft on the basis of your edits and uploads.
@@ -896,9 +941,9 @@ export default function DashboardInsights({
               isAuthenticated
                 ? handleRegenerate
                 : () => {
-                  updateisSave();
-                  // setAuthenticationModalOpen(true);
-                }
+                    updateisSave();
+                    // setAuthenticationModalOpen(true);
+                  }
             }
           >
             <RegenerateIcon />
@@ -943,7 +988,9 @@ export default function DashboardInsights({
         <div>
           <div className="flex justify-between w-full items-start py-2 flex flex-col">
             <h3 className="pt-[0.65em] font-semibold">Draft Topic</h3>
-            <div className="opacity-70 text-gray-800 text-sm font-normal capitalize">{keyword} ?</div>
+            <div className="opacity-70 text-gray-800 text-sm font-normal capitalize">
+              {keyword} ?
+            </div>
           </div>
         </div>
         <div>
@@ -952,27 +999,28 @@ export default function DashboardInsights({
             <InformationCircleIcon className="h-4 w-4 text-gray-500" />
           </div>
           <div className="flex items-center gap-2 py-1.5">
-            <SourceTab SourceColor={'yellow'} title={'Web'} selected={ideasTab == 0}
-              onClick={
-                () => {
-                  handleIdeasTabClick(0);
-                }
-              }
+            <SourceTab
+              SourceColor={"yellow"}
+              title={"Web"}
+              selected={ideasTab == 0}
+              onClick={() => {
+                handleIdeasTabClick(0);
+              }}
             />
-            <SourceTab SourceColor={'orange'} title={'My Urls'}
-              onClick={
-                () => {
-                  handleIdeasTabClick(1);
-                }
-
-              }
-              selected={ideasTab == 1} />
-            <SourceTab SourceColor={'blue'} title={'My Documents'} onClick={
-              () => {
+            <SourceTab
+              SourceColor={"orange"}
+              title={"My Urls"}
+              onClick={() => {
+                handleIdeasTabClick(1);
+              }}
+              selected={ideasTab == 1}
+            />
+            <SourceTab
+              SourceColor={"blue"}
+              title={"My Documents"}
+              onClick={() => {
                 handleIdeasTabClick(2);
-              }
-
-            }
+              }}
               selected={ideasTab == 2}
             />
           </div>
@@ -1013,8 +1061,8 @@ export default function DashboardInsights({
               <div>Generate fresh ideas to see sources</div>
             )}
           </div>
-          {
-            ideasTab == 0 && <>
+          {ideasTab == 0 && (
+            <>
               {/* <div className="flex flex-col w-full">
                <div className="flex justify-between w-full">
                <div className="flex opacity-70 text-gray-800 text-sm font-normal">Use New Sources in Next Draft</div>
@@ -1046,56 +1094,110 @@ export default function DashboardInsights({
                 </div>
               </div> 
               */}
-              </>
-
-          }
-          {
-            ideasTab == 1 && <div className="px-4 flex flex-col gap-3">
-              <div></div>
+            </>
+          )}
+          {ideasTab == 1 && (
+            <div className="px-4 flex flex-col gap-3">
+              <div>
+                {inputUrls.map((url, index) => {
+                  return (
+                    <Chip
+                      key={index}
+                      onDelete={() => {
+                        setinputUrls((prev) => {
+                          return prev.filter((el, i) => i !== index);
+                        });
+                      }}
+                      wholeData={index}
+                      text={url}
+                    />
+                  );
+                })}
+              </div>
               <div>
                 <div className="w-full h-full justify-start items-center gap-3 inline-flex">
                   <ArrowLongLeftIcon className="w-6 h-6 text-indigo-500" />
-                  <input className="grow shrink basis-0 h-full px-2.5 py-2 rounded-lg border border-indigo-500 border-opacity-20 justify-start items-start gap-2.5 flex"
+                  <input
+                    className="grow shrink basis-0 h-full px-2.5 py-2 rounded-lg border border-indigo-500 border-opacity-20 justify-start items-start gap-2.5 flex"
                     value={newReference.source}
                     onChange={(e) => {
-                      setformInput(e.target.value)
+                      setformInput(e.target.value);
                     }}
-                    placeholder="Add URL" />
-                  <button className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
+                    placeholder="Add URL"
+                  />
+                  <button
+                    className="w-6 h-6 relative  textSuperman-indigo-500 bg-slate-100 rounded-sm border"
                     onClick={(event) => {
-                      postFormData(event, "URL");
+                      setinputUrls((prev) => {
+                        return [...prev, formInput];
+                      });
                     }}
                   >
-                    {
-                      formInput==null ? <PlusIcon /> : <CheckIcon/>
-                    }
+                    {<PlusIcon />}
                   </button>
                 </div>
               </div>
-            </div>
-          }
-          {
-            ideasTab == 2 && <div className="px-4 flex flex-col gap-3">
               <div>
-                {
-                  file ? <FileComponent name={file.name} size={Math.round(file.size / 1000) + "KB"} onDelete={
-                    () => { setFile(null) }
-                  } /> : <label htmlFor="input-file">
-                    <FileComponent name="No file chosen" size="" />
-                  </label>
-                }
+                <button
+                  className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
+                  onClick={(event) => {
+                    postFormData(event, "URL");
+                  }}
+                >
+                  {<CheckIcon />}
+                </button>
               </div>
-              <label className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border" onClick={postFormData}>
-          {
-            file == null ? <PlusIcon /> : <CheckIcon/>
-          }
-              </label>
-              <input id="input-file" type="file" className="hidden"
+            </div>
+          )}
+          {ideasTab == 2 && (
+            <div className="px-4 flex flex-col gap-3">
+              <div className="flex w-full items-end gap-2 justify-between">
+                <div className="w-full">
+                  {inputFiles.length > 0 ? (
+                    inputFiles.map((file, index) => {
+                      return (
+                        <FileComponent
+                          name={file.name}
+                          size={Math.round(file.size / 1000) + "KB"}
+                          fileData={index}
+                          onDelete={(index) => {
+                            setInputFiles((prev) => {
+                              return prev.filter((el, i) => i !== index);
+                            });
+                          }}
+                        />
+                      );
+                    })
+                  ) : (
+                    <label htmlFor="input-file">
+                      <FileComponent name="No file chosen" size="" />
+                    </label>
+                  )}
+                </div>
+                <div className="w-[5%] h-full my-1 justify-end flex-col items-end gap-3 inline-flex">
+                  <label
+                    htmlFor="input-file"
+                    className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
+                  >
+                    {file == null ? <PlusIcon /> : <CheckIcon />}
+                  </label>
+                </div>
+              </div>
+              <buttton
+                className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
+                onClick={postFormData}
+              >
+                <CheckIcon />
+              </buttton>
+              <input
+                multiple={true}
+                id="input-file"
+                type="file"
+                className="hidden"
                 onChange={handleFileUpload}
               />
             </div>
-          }
-
+          )}
         </div>
 
         <>
@@ -1112,44 +1214,44 @@ export default function DashboardInsights({
                 {ideas?.length}
               </span>
             </button>
-            </div>
-      
-            <div>
-              {newIdeaLoad==false ? (
-                <div className="dashboardInsightsUsedSectionHeight overflow-y-scroll px-2">
-                  {filteredIdeas?.length > 0
-                      ? filteredIdeas?.map((idea, index) => (
-                        <UsedFilteredIdeaItem
-                          key={index}
-                          index={index}
-                          idea={idea}
-                          filteredIdeas={filteredIdeas}
-                          setFilteredIdeas={setFilteredIdeas}
-                          ideas={ideas}
-                          setIdeas={setIdeas}
-                          handleUsedIdeas={handleUsedIdeas}
-                          handleCitationFunction={handleCitationFunction}
-                        />
-                      ))
-                      : ideas?.map((idea, index) => (
-                        <MainIdeaItem
-                          key={index}
-                          index={index}
-                          idea={idea}
-                          ideas={ideas}
-                          typeOfIdea={idea?.type}
-                          setIdeas={setIdeas}
-                          handleUsedIdeas={handleUsedIdeas}
-                          handleCitationFunction={handleCitationFunction}
-                        />
-                      ))}
-                </div>
-              ) : (
-                <div className="flex justify-center items-center">
-                  <LoaderScan />
-                </div>
-              )}
-            </div>
+          </div>
+
+          <div>
+            {newIdeaLoad == false ? (
+              <div className="dashboardInsightsUsedSectionHeight overflow-y-scroll px-2">
+                {filteredIdeas?.length > 0
+                  ? filteredIdeas?.map((idea, index) => (
+                      <UsedFilteredIdeaItem
+                        key={index}
+                        index={index}
+                        idea={idea}
+                        filteredIdeas={filteredIdeas}
+                        setFilteredIdeas={setFilteredIdeas}
+                        ideas={ideas}
+                        setIdeas={setIdeas}
+                        handleUsedIdeas={handleUsedIdeas}
+                        handleCitationFunction={handleCitationFunction}
+                      />
+                    ))
+                  : ideas?.map((idea, index) => (
+                      <MainIdeaItem
+                        key={index}
+                        index={index}
+                        idea={idea}
+                        ideas={ideas}
+                        typeOfIdea={idea?.type}
+                        setIdeas={setIdeas}
+                        handleUsedIdeas={handleUsedIdeas}
+                        handleCitationFunction={handleCitationFunction}
+                      />
+                    ))}
+              </div>
+            ) : (
+              <div className="flex justify-center items-center">
+                <LoaderScan />
+              </div>
+            )}
+          </div>
         </>
       </div>
     </>
