@@ -79,6 +79,7 @@ router.post('/generate', async (req: any, res: any) => {
         const answers = askMeAnswers?.internal_results?.main_document?.answer_sentence
         const shortAnswer = askMeAnswers?.internal_results?.main_document?.answer
         const title = askMeAnswers?.internal_results?.main_document?.title
+        const answer_image = (askMeAnswers?.external_results?.main_document?.id && askMeAnswers?.external_results?.main_document?.id !== "Not Available" && askMeAnswers?.external_results?.main_document?.id )|| null
         const answersObj = {
             published: false,
                 published_date: false,
@@ -113,6 +114,7 @@ router.post('/generate', async (req: any, res: any) => {
             question,
             short_answer: shortAnswer,
             detailed_answer: answers,
+            answer_image: answer_image,
             status: "draft",
             // imageUrl: imageUrl ? imageUrl : process.env.PLACEHOLDER_IMAGE,
             // imageSrc,
@@ -227,7 +229,7 @@ router.post('/generate', async (req: any, res: any) => {
             userId: userId,
             keywords: [],
             tones: [],
-            type: ["wordpress", "title"],
+            type: ["wordpress"],
             misci: true,
             notesRefUrls
         })
