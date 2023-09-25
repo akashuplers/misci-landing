@@ -703,7 +703,10 @@ export default function DashboardInsights({
       url += API_ROUTES.FILE_UPLOAD;
       raw = new FormData();
       console.log(inputFiles);
-      raw.append("files", inputFiles[0], inputFiles[0].name);
+      // raw.append("files", inputFiles[0], inputFiles[0].name);
+      for(const file of inputFiles) {
+        raw.append("files", file, file.name);
+      }
       raw.append("blog_id", blog_id);
     } else if (type === "URL") {
       // For URL uploads
@@ -721,28 +724,28 @@ export default function DashboardInsights({
       };
     }
   
-    // Define headers, including Authorization if available
+    const getToken = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+    const tempId = localStorage.getItem("tempId");
+    let user_id;
+    if (userId) {
+      user_id = userId;
+    } else {
+      user_id = tempId;
+    }
+    raw.append("userId", user_id)
     const myHeaders = {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
       contentType: "multipart/form-data",
     };
-  
-    // Set Content-Type based on file validity
-    if (!fileValid) {
-      myHeaders["Content-Type"] = "application/json";
-    }
-  
-    // Define the Axios config object
     const config = {
       method: "post",
-      url: url,
       headers: myHeaders,
-      data: raw,
+      body: raw,
     };
 
-    axios(config)
+    fetch(url, config)
       .then((response) => {
-        // setIdeaType("fresh");
         setIdeas(response.data.data);
         setReference(response.data.references);
         setTags(response.data.freshIdeasTags);
