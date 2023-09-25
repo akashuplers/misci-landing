@@ -659,18 +659,18 @@ export default function DashboardInsights({
     setArrUsed(arr);
   };
 
-  function postFormData(e, type) {
+  function postFormData(e, type ="File") {
     e.preventDefault();
     setNewIdeaLoad(true);
 
     let url = API_BASE_PATH;
     let raw;
-    if (fileValid) {
+      if(type === "File"){
       url += API_ROUTES.FILE_UPLOAD;
       raw = new FormData();
       raw.append("file", file);
       raw.append("blog_id", blog_id);
-    } else if (urlValid) {
+    } else if (type == "URL"){
       url += API_ROUTES.URL_UPLOAD;
       raw = {
         url: formInput,
@@ -1065,7 +1065,6 @@ export default function DashboardInsights({
                     placeholder="Add URL" />
                   <button className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
                     onClick={(event) => {
-
                       postFormData(event, "URL");
                     }}
                   >
