@@ -113,12 +113,22 @@ export default function Post({typeIsRepurpose}) {
   }, []);
 
 
+  function handleSetIdeas (ideas) {
+    // add a new properly initailUsedd = used 
+    const newIdeas = ideas.map((idea) => {
+      return { ...idea, initailUsed :idea.used };
+    });
+    setIdeas(newIdeas);
+    setInitailIdeas(newIdeas)
+  } 
+
 
   useEffect(() => {
     if (data == null) return;
     setBlogData(data.fetchBlog);
-    setInitailIdeas(data.fetchBlog.ideas.ideas);
-    setIdeas(data.fetchBlog.ideas.ideas);
+    // setInitailIdeas(data.fetchBlog.ideas.ideas);
+    // setIdeas(data.fetchBlog.ideas.ideas);
+    handleSetIdeas(data.fetchBlog.ideas.ideas)
     setTags(data.fetchBlog.tags);
     setFreshIdeaTags(data.fetchBlog.freshIdeasTags);
     setFreshIdeasReferences(data.fetchBlog.freshIdeasReferences);

@@ -60,7 +60,7 @@ const MainIdeaItem = ({ index, idea, ideas, typeOfIdea, setIdeas, handleUsedIdea
             <div className="flex justify-between gap-5 w-full">
                 <p className="text-[13px]" style={
                     {
-                        textDecoration: !idea?.used ? "line-through" : "none"
+                        textDecoration: !idea?.initailUsed ? "line-through" : "none"
                     }
                 }>{idea?.idea}</p>
              <a

@@ -429,8 +429,9 @@ export default function DashboardInsights({
         onCompleted: (data) => {
           updateCredit();
           setBlogData(data?.regenerateBlog);
-          setInitailIdeas(data?.regenerateBlog?.ideas?.ideas);
-          setIdeas(data?.regenerateBlog?.ideas?.ideas);
+          // setInitailIdeas(data?.regenerateBlog?.ideas?.ideas);
+          // setIdeas(data?.regenerateBlog?.ideas?.ideas);
+          handleSelectAll(data?.regenerateBlog?.ideas?.ideas);
           setTags(data?.regenerateBlog?.tags);
           setFreshIdeaTags(data?.regenerateBlog?.freshIdeasTags);
           setReference(data?.regenerateBlog?.references);
@@ -799,8 +800,9 @@ export default function DashboardInsights({
 
     fetch(url, config)
       .then((response) => {
-        setInitailIdeas(response.data.data);
-        setIdeas(response.data.data);
+        // setInitailIdeas(response.data.data);
+        // setIdeas(response.data.data);
+        handleSetIdeas(response.data.data);
         setReference(response.data.references);
         setTags(response.data.freshIdeasTags);
 
@@ -830,6 +832,17 @@ export default function DashboardInsights({
         setNewIdeaLoad(false);
       });
   }
+
+  function handleSetIdeas (ideas) {
+    // add a new properly initailUsedd = used 
+    const newIdeas = ideas.map((idea) => {
+      return { ...idea, initailUsed :idea.used };
+    });
+    setIdeas(newIdeas);
+    setInitailIdeas(newIdeas)
+  } 
+
+
 
   function handleRefDelete(id){
     const payload={
