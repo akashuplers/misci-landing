@@ -734,12 +734,21 @@ initailIdeas,
   };
 
   function postFormData(e, type = "File") {
+    debugger;
     e.preventDefault();
     setNewIdeaLoad(true);
-  
+    const getToken = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+    const tempId = localStorage.getItem("tempId");
+    let user_id;
+    if (getToken) {
+      user_id = userId;
+    } else {
+      user_id = tempId;
+    }
     // Define the base URL and the raw data object
     let url = API_BASE_PATH;
-    let raw;
+    let raw ={};
   
     if (type === "File") {
       // For file uploads
@@ -750,41 +759,40 @@ initailIdeas,
       for(const file of inputFiles) {
         raw.append("files", file, file.name);
       }
+      raw.append("userId", user_id);
       raw.append("blog_id", blog_id);
     } else if (type === "URL") {
       // For URL uploads
       url += API_ROUTES.URL_UPLOAD;
-      raw = {
+      raw =JSON.stringify({
         urls: inputUrls,
         blog_id: blog_id,
-      };
+        userId: user_id,
+      });
     } else {
       // For keyword uploads
       url += API_ROUTES.KEYWORD_UPLOAD;
-      raw = {
+      raw = JSON.stringify({
         keyword: formInput,
         blog_id: blog_id,
-      };
+        userId: user_id,
+      });
     }
   
-    const getToken = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId");
-    const tempId = localStorage.getItem("tempId");
-    let user_id;
-    if (userId) {
-      user_id = userId;
+ 
+    const headers =  new Headers();
+    if (type === "File") {
+      headers.delete("Content-Type"); // Remove Content-Type for FormData
     } else {
-      user_id = tempId;
+      headers.append("Content-Type", "application/json"); // Set Content-Type for JSON
     }
-    raw.append("userId", user_id)
-    const myHeaders = {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-      contentType: "multipart/form-data",
-    };
+    headers.append("Authorization", "Bearer " + getToken);
+    debugger;
+    console.log(headers)
     const config = {
       method: "post",
-      headers: myHeaders,
-      body: raw,
+      headers: headers,
+      body: raw,      
     };
 
     fetch(url, config)
