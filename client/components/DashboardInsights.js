@@ -73,7 +73,7 @@ export default function DashboardInsights({
   setblog_id,
   tags,
   setInitailIdeas,
-initailIdeas,
+  initailIdeas,
   setTags,
   freshIdeaTags: oldFreshIdeaTags,
   freshIdeasReferences,
@@ -837,7 +837,7 @@ initailIdeas,
       sourceId: id
     }
     DeleteRefSources(payload).then((res)=>{ 
-       if(res.error===true){
+       if(res.type!= "SUCCESS"){
         toast.error(res.message)
       return; 
       }
