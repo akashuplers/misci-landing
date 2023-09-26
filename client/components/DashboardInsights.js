@@ -39,6 +39,7 @@ import { ArrowLongLeftIcon, DocumentPlusIcon } from "@heroicons/react/20/solid";
 import { Chip, FileComponent } from "./ui/Chip";
 import { Badge } from "@radix-ui/themes";
 import { DeleteRefSources } from "@/helpers/apiMethodsHelpers";
+import Tooltip from "./ui/Tooltip";
 export function checkFileFormatAndSize(file) {
   var extension = file?.name?.split(".").pop().toLowerCase();
   var allowedFormats = ["pdf", "docx", "txt"];
@@ -1082,7 +1083,9 @@ export default function DashboardInsights({
         <div>
           <div className="flex gap-2 justify-start w-full items-center py-2">
             <h3 className="font-semibold">Sources</h3>
+            <Tooltip content="Lille's AI dynamically curates these sources from the internet to inspire your articles and provide relevant ideas."> 
             <InformationCircleIcon className="h-4 w-4 text-gray-500" />
+            </Tooltip>
           </div>
           <div className="flex items-center gap-2 py-1.5">
             <SourceTab
