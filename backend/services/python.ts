@@ -154,7 +154,7 @@ export class Python {
                 {
                     'user_id': this.userId, 
                     'company_id': 'nowigence', 
-                    'question': question
+                    'question': question,
                 }
             ]);
             const config: any = {
@@ -164,7 +164,7 @@ export class Python {
                     'Content-Type': 'application/json'
                 },
                 data,
-                timeout: 15000
+                timeout: 60000
             }
             console.log(config, "config")
             const pythonRes = await axios(config)
