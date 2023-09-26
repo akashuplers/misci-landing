@@ -10,6 +10,7 @@ interface Props extends React.HTMLAttributes<HTMLButtonElement> {
   index?: number;
   wholeData?: any;
   rest?: any;
+  onDelete?: (data?:any) => void;
 }
 
 export const Chip = ({

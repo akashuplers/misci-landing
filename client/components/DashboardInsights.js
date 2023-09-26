@@ -1160,6 +1160,7 @@ export default function DashboardInsights({
                     inputFiles.map((file, index) => {
                       return (
                         <FileComponent
+                        key={index}
                           name={file.name}
                           size={Math.round(file.size / 1000) + "KB"}
                           fileData={index}
