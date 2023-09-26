@@ -353,7 +353,7 @@ const MisciWorkSpace = ({
              <img
               className="w-full h-full rounded-full object-cover"
               src={image}
-              alt="sjpwmgimag"
+              alt=""
             />
              </div>
           </div>
