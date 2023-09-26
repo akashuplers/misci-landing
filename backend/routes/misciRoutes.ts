@@ -2,7 +2,7 @@ import { ObjectID, ObjectId } from "mongodb";
 import { Python } from "../services/python";
 import { diff_minutes, getTimeStamp } from "../utils/date";
 import { publish } from "../utils/subscription";
-import { blogGeneration, fetchArticleById, fetchArticleUrls, fetchBlog, fetchBlogIdeas, fetchUsedBlogIdeasByIdea, fetchUser } from "../graphql/resolver/blogs/blogsRepo";
+import { blogGeneration, fetchArticleById, fetchArticleUrls, fetchBlog, fetchBlogIdeas, fetchUsedBlogIdeasByIdea, fetchUser, publishBlog } from "../graphql/resolver/blogs/blogsRepo";
 
 const express = require("express");
 const router = express.Router();
@@ -32,6 +32,7 @@ router.post('/publish', async (req: any, res: any) => {
             }, {
                 upsert: true
             })
+            await publishBlog({id: blogId, db, platform: "wordpress"})
             return res
             .status(200)
             .send({ error: false, message: "Published!" });    
