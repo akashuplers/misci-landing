@@ -1052,7 +1052,7 @@ export const blogResolvers = {
                 source: string
             }[] = []
             if(updatedBlog) refUrls = await fetchArticleUrls({db, blog: updatedBlog})
-            return {...updatedBlog, ideas: blogIdeas, references: refUrls}
+            return {...updatedBlog, ideas: blogIdeas, references: blogDetails.sourcesArray && blogDetails.sourcesArray.length ? blogDetails.sourcesArray : refUrls}
         },
         irNotify: async (
             parent: unknown, args: {options: IRNotifiyArgs[]}, {db, pubsub}: any
