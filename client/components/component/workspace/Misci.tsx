@@ -31,7 +31,7 @@ import PublishMisciModal from "@/modals/PublishMisciModal";
 import IdeaTag from "@/components/IdeaTag";
 import TextModal from "@/modals/TextModal";
 
-const resetTimeoutForSave= (id:string, newID:string) => {
+const resetTimeoutForSave= (id:any, newID:any) => {
   clearTimeout(id);
   return newID;
 };
@@ -74,9 +74,9 @@ const MisciWorkSpace = ({
   const [shortAnswer, setShortAnswer] = useState<string>("");
   const [detailedAnswer, setDetailedAnswer] = useState<string>("");
   const { currentTabIndex, setCurrentTabIndex } = useMisciArticleState();
-  const [timeout, setTimeoutId] = useState(null);
-  const [imageURL, setImageURL] = useState();
-  const [answerImage, setAnswerImage] = useState<string>();
+  const [timeout, setTimeoutId] = useState<any>(null);
+  const [imageURL, setImageURL] = useState("");
+  const [answerImage, setAnswerImage] = useState<string>("");
   const [references, setReferences] = useState<
     {
       id: string;
