@@ -331,52 +331,29 @@ export const misciBlogPublish = async ({
 };
 
 
-export function DeleteRefSources(payload: {
-  blogId: string;
-  sourceId: string;
-}) {
-  // Define your headers
-  var myHeaders = new Headers();
-
-  const getToken = localStorage.getItem("token");
-  const getUserId = localStorage.getItem("userId");
-  const getTempId = localStorage.getItem("tempId");
-let user_id = getToken ? getToken : getTempId;
-
-
-
-  myHeaders.append("Authorization", "Bearer " + user_id);
+export const saveMisciBlog = (payload: object) => {
+  // Create headers
+  const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
 
-  // Create the raw JSON payload
-  var raw = JSON.stringify(payload);
-
-  // Define request options
-  var requestOptions:any = {
+  // Create requestOptions
+  const requestOptions: RequestInit = {
     method: 'POST',
     headers: myHeaders,
-    body: raw,
+    body: JSON.stringify(payload),
     redirect: 'follow'
   };
 
-  // Make the API request and return the promise
-  return fetch("https://maverick.lille.ai/auth/remove-sources", requestOptions)
-    .then(response => response.json())
+  const url = API_BASE_PATH + API_ROUTES.MISCI_SAVE;
+  // Make the API call and return the promise
+  return fetch(url, requestOptions)
+    .then(response => response.text())
     .then(result => {
-      // Parse the response JSON if needed
-      // You can return the parsed result here
+      // You can add additional processing here if needed
       return result;
     })
     .catch(error => {
-      // Handle errors if necessary
       console.log('error', error);
-      // You can also throw an error or handle it differently as needed
-      return error;
+      throw error; // Optionally rethrow the error for handling in your component
     });
-}
-
-// Example usage:
-var payload = {
-  "blogId": "650ae6f7200ce465a8924c62",
-  "sourceId": "eae96595-57b1-11ee-ac29-0242ac130002"
 };
