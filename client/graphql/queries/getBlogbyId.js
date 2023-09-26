@@ -30,6 +30,7 @@ query FetchBlog($fetchBlogId: String!) {
         url
         source
         type
+        id
     }
     freshIdeasReferences {
         url

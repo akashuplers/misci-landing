@@ -38,6 +38,7 @@ import {
 import { ArrowLongLeftIcon, DocumentPlusIcon } from "@heroicons/react/20/solid";
 import { Chip, FileComponent } from "./ui/Chip";
 import { Badge } from "@radix-ui/themes";
+import { DeleteRefSources } from "@/helpers/apiMethodsHelpers";
 export function checkFileFormatAndSize(file) {
   var extension = file?.name?.split(".").pop().toLowerCase();
   var allowedFormats = ["pdf", "docx", "txt"];
@@ -66,6 +67,7 @@ export default function DashboardInsights({
   loading,
   ideas,
   setIdeas,
+  refetchBlog, 
   freshIdeas: oldFreshIdeas,
   blog_id,
   setblog_id,
@@ -829,6 +831,26 @@ initailIdeas,
       });
   }
 
+  function handleRefDelete(id){
+    const payload={
+      blogId: blog_id,
+      sourceId: id
+    }
+    DeleteRefSources(payload).then((res)=>{ 
+       if(res.error===true){
+        toast.error(res.message)
+      return; 
+      }
+       
+      if(res.status===500){
+        toast.error("Something went wrong")
+        return;
+      }
+      toast.success(res.message);
+      refetchBlog();
+    })
+  }
+
   useEffect(() => {
     var expression =
       /[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)?/gi;
@@ -1093,6 +1115,9 @@ initailIdeas,
                       reference={ref}
                       index={index}
                       handleRefClick={handleRefClick}
+                      onDelete={
+                        () => handleRefDelete(ref.id)
+                      }
                     />
                   );
                 })

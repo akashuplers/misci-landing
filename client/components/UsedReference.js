@@ -1,9 +1,10 @@
 import DeleteModal from "@/modals/DeleteModal";
 import { LinkIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { popoverContentPropDefs } from "@radix-ui/themes";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const UsedReference = ({ reference, index, handleRefClick }) => {
+const UsedReference = ({ reference, index, handleRefClick, onDelete }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     return (
@@ -61,8 +62,9 @@ const UsedReference = ({ reference, index, handleRefClick }) => {
             <DeleteModal isOpen={showDeleteModal} onCancel={() => {
                 setShowDeleteModal(false)
             }}
-                data={null}
-                onDelete={() => {
+                data={reference}
+                onDelete={()=>{
+                    onDelete(reference)
                     setShowDeleteModal(false)
                 }}
             />

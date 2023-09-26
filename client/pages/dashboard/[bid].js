@@ -466,6 +466,7 @@ You can add your own image, click on the image and use image options icon.`}
           >
             <DashboardInsights
               ideas={ideas}
+              refetchBlog={refetchBlog}
               setIdeas={setIdeas}
               tags={tags}
               setInitailIdeas={setInitailIdeas}
