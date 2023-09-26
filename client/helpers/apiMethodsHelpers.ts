@@ -329,3 +329,31 @@ export const misciBlogPublish = async ({
     console.log(error);
   }
 };
+
+
+export const saveMisciBlog = (payload: object) => {
+  // Create headers
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+
+  // Create requestOptions
+  const requestOptions: RequestInit = {
+    method: 'POST',
+    headers: myHeaders,
+    body: JSON.stringify(payload),
+    redirect: 'follow'
+  };
+
+  const url = API_BASE_PATH + API_ROUTES.MISCI_SAVE;
+  // Make the API call and return the promise
+  return fetch(url, requestOptions)
+    .then(response => response.text())
+    .then(result => {
+      // You can add additional processing here if needed
+      return result;
+    })
+    .catch(error => {
+      console.log('error', error);
+      throw error; // Optionally rethrow the error for handling in your component
+    });
+};
