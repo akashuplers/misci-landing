@@ -715,10 +715,7 @@ export default function DashboardInsights({
     });
     console.log(inputFiles);
   }
-  
-  useEffect(() => {
-    console.log(reference);
-  }, [reference]);
+
   function handleFormChange(e) {
     const value = e.target.value;
     setformInput(value);
@@ -800,31 +797,30 @@ export default function DashboardInsights({
 
     fetch(url, config)
       .then((response) => {
+        return response.json();
+      })
+      .then((response) => {
+        debugger;
+        if (response.type != "SUCCESS") {
+          toast.error(response.message);
+          return;
+        }
+        toast.success(response.message);
         // setInitailIdeas(response.data.data);
         // setIdeas(response.data.data);
-        handleSetIdeas(response.data.data);
-        setReference(response.data.references);
-        setTags(response.data.freshIdeasTags);
+        // handleSetIdeas(response.data.data);
+        // setReference(response.data.references);
+        // setTags(response.data.freshIdeasTags);
 
-        setPyResTime(response.data.pythonRespTime);
-        setNdResTime(response.data.respTime);
-        const fresh = document.querySelector(".idea-button.fresh");
-        const used = document.querySelector(".idea-button.used");
+        refetchBlog();
+        // setPyResTime(response.data.pythonRespTime);
+        // setNdResTime(response.data.respTime);
+        // const fresh = document.querySelector(".idea-button.fresh");
+        // const used = document.querySelector(".idea-button.used");
 
-        used.classList.remove("active");
-        fresh.classList.add("active");
-      })
-      .catch((error) => {
-        console.log("error", error);
-        toast.error(
-          `Host has denied the extraction from this ${
-            type ?? "File"
-          }. Please try again or try some other ${type ?? "File"}.`,
-          {
-            autoClose: 10000, // 10 seconds
-          }
-        );
-      })
+        // used.classList.remove("active");
+        // fresh.classList.add("active");
+      }) 
       .finally(() => {
         setformInput("");
         setFileValid(false);
