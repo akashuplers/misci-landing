@@ -381,3 +381,30 @@ var payload = {
   "blogId": "650ae6f7200ce465a8924c62",
   "sourceId": "eae96595-57b1-11ee-ac29-0242ac130002"
 };
+
+export const saveMisciBlog = (payload: object) => {
+  // Create headers
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+
+  // Create requestOptions
+  const requestOptions: RequestInit = {
+    method: 'POST',
+    headers: myHeaders,
+    body: JSON.stringify(payload),
+    redirect: 'follow'
+  };
+
+  const url = API_BASE_PATH + API_ROUTES.MISCI_SAVE;
+  // Make the API call and return the promise
+  return fetch(url, requestOptions)
+    .then(response => response.text())
+    .then(result => {
+      // You can add additional processing here if needed
+      return result;
+    })
+    .catch(error => {
+      console.log('error', error);
+      throw error; // Optionally rethrow the error for handling in your component
+    });
+};
