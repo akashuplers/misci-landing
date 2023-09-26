@@ -1,6 +1,7 @@
 import { DocumentIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import Tooltip from "./Tooltip";
 import { classNames } from "@/store/appHelpers";
+import { DocumentPlusIcon } from "@heroicons/react/20/solid";
 
 interface Props extends React.HTMLAttributes<HTMLButtonElement> {
   selected?: boolean;
@@ -9,6 +10,7 @@ interface Props extends React.HTMLAttributes<HTMLButtonElement> {
   index?: number;
   wholeData?: any;
   rest?: any;
+  onDelete?: (data?:any) => void;
 }
 
 export const Chip = ({
@@ -18,6 +20,7 @@ export const Chip = ({
   index,
   wholeData,
   rest,
+  onDelete,
 }: Props) => {
   return (
     <>
@@ -29,11 +32,13 @@ export const Chip = ({
         onClick={() => handleClick && handleClick(index ?? 0)}
       >
         <h3 className=" text-sm font-normal leading-tight">{text}</h3>
+        <button className="w-3 h-3 relative rounded" onClick={()=>{onDelete && onDelete(wholeData)}}>
+          <XCircleIcon />
+          </button>
       </div>
     </>
   );
-};
-
+}; 
 interface FileChipProps extends React.HTMLAttributes<HTMLDivElement> {
   rest?: any;
   fileName: string;
@@ -251,4 +256,36 @@ export function TabItem({
       )}
     </div>
   );
+}
+
+
+
+
+interface IFileComponentProps{
+  name: string;
+  size: string;
+  onClick?: (data?:any) => void;
+  onDelete?: (data?:any) => void;
+  fileData?: any;
+}
+export function FileComponent(props: IFileComponentProps){
+  return <div className="w-full h-16 p-2 rounded-lg border border-slate-300 justify-start items-center gap-3 inline-flex" onClick={()=>{props.onClick && props.onClick(props.fileData)}}>
+      <div className="p-3 bg-violet-100 rounded flex-col justify-center items-center inline-flex">
+        <div className="w-6 h-6 relative flex-col justify-center items-center flex text-indigo-500" >
+          <DocumentPlusIcon/>
+          </div>
+      </div>
+      <div className="grow shrink basis-0 flex-col justify-center items-start inline-flex">
+        <div className="self-stretch h-9 flex-col justify-center items-start gap-0.5 flex">
+          <div className="self-stretch text-gray-800 text-sm font-medium leading-tight">{props.name}</div>
+          <div className="opacity-50 text-gray-800 text-xs font-medium leading-none">{props.size}</div>
+        </div>
+      </div>
+      <button className="w-4 h-4 relative rounded" 
+      onClick={()=>{props.onDelete && props.onDelete(props.fileData)}}
+      >
+        <XCircleIcon />
+      </button>
+    </div>
+
 }

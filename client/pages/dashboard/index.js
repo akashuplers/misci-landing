@@ -580,6 +580,7 @@ You can add your own image, click on the image and use image options icon.`}
               setReference={setReference}
               setOption={setOption}
               option={option}
+              keyword={""}
             />
           </div>
         </div>

@@ -10,21 +10,37 @@ import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
 import { ContributionCheck } from "../helpers/ContributionCheck";
 import { jsonToHtml } from "../helpers/helper";
-import useStore, { useByMeCoffeModal, useThreadsUIStore, useTwitterThreadStore } from "../store/store";
+import useStore, {
+  useByMeCoffeModal,
+  useThreadsUIStore,
+  useTwitterThreadStore,
+} from "../store/store";
 import AuthenticationModal from "./AuthenticationModal";
 import FreshFilteredIdeaItem from "./FreshFilteredIdeaItem";
 import FreshIdeaForm from "./FreshIdeaForm";
 import FreshIdeaReference from "./FreshIdeaReference";
 import IdeaComponent from "./IdeaComponent";
-import IdeaTag from "./IdeaTag";
+import IdeaTag, { SourceColors, SourceTab } from "./IdeaTag";
 import LoaderScan from "./LoaderScan";
 import MainIdeaItem from "./MainIdeaItem";
 import TrialEndedModal from "./TrialEndedModal";
 import UsedFilteredIdeaItem from "./UsedFilteredIdeaItem";
 import UsedReference from "./UsedReference";
 import { RegenerateIcon } from "./localicons/localicons";
+import {
+  ArrowLeftIcon,
+  CheckIcon,
+  DocumentIcon,
+  InformationCircleIcon,
+  PlusIcon,
+  XCircleIcon,
+} from "@heroicons/react/24/outline";
+import { ArrowLongLeftIcon, DocumentPlusIcon } from "@heroicons/react/20/solid";
+import { Chip, FileComponent } from "./ui/Chip";
+import { Badge } from "@radix-ui/themes";
+import { DeleteRefSources } from "@/helpers/apiMethodsHelpers";
 export function checkFileFormatAndSize(file) {
-  var extension = file.name.split(".").pop().toLowerCase();
+  var extension = file?.name?.split(".").pop().toLowerCase();
   var allowedFormats = ["pdf", "docx", "txt"];
 
   if (!allowedFormats.includes(extension)) {
@@ -43,14 +59,21 @@ export function checkFileFormatAndSize(file) {
 
   return true;
 }
+const RE_BUTTON_TOPIC = {
+  topic: "Current Topic",
+  next: "Next Draft",
+}
 export default function DashboardInsights({
   loading,
   ideas,
   setIdeas,
+  refetchBlog, 
   freshIdeas: oldFreshIdeas,
   blog_id,
   setblog_id,
   tags,
+  setInitailIdeas,
+  initailIdeas,
   setTags,
   freshIdeaTags: oldFreshIdeaTags,
   freshIdeasReferences,
@@ -63,12 +86,14 @@ export default function DashboardInsights({
   setOption,
   option,
   setNdResTime,
+  keyword,
 }) {
   const [enabled, setEnabled] = useState(false);
   const [isOpen, setOpen] = useState(false);
   const [formInput, setformInput] = useState("");
   const [urlValid, setUrlValid] = useState(false);
   const [file, setFile] = useState(null);
+  const [inputFiles, setInputFiles] = useState([]);
   const [fileValid, setFileValid] = useState(false);
   const [arrUsed, setArrUsed] = useState([]);
   const [arrFresh, setArrFresh] = useState([]);
@@ -81,18 +106,20 @@ export default function DashboardInsights({
   const updateCredit = useStore((state) => state.updateCredit);
   const updateisSave = useStore((state) => state.updateisSave);
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
-
+  const [ideasTab, setIdeasTab] = useState(0);
   const [filteredIdeas, setFilteredIdeas] = useState([]);
   const [notUniquefilteredIdeas, setNotUniqueFilteredIdeas] = useState([]);
   const { showTwitterThreadUI, setShowTwitterThreadUI } = useThreadsUIStore();
-
+  const [currentIndexTitle, setCurrentIndexTitle]= useState("Current Topic")
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const setShowContributionModal = useByMeCoffeModal(
     (state) => state.toggleModal
   );
+
   const [toggle, setToggle] = useState(true);
   const toggleClass = " transform translate-x-3";
   const creditLeft = useStore((state) => state.creditLeft);
-
+  const [inputUrls, setinputUrls] = useState([]);
   useEffect(() => {
     setFreshIdeas(oldFreshIdeas);
   }, [oldFreshIdeas]);
@@ -123,7 +150,7 @@ export default function DashboardInsights({
 
         if (
           `${networkError}` ===
-          "ServerError: Response not successful: Received status code 401" &&
+            "ServerError: Response not successful: Received status code 401" &&
           isauth
         ) {
           localStorage.clear();
@@ -154,7 +181,7 @@ export default function DashboardInsights({
   const [regenSelected, setRegenSelected] = useState([]);
 
   const isAuthenticated = useStore((state) => state.isAuthenticated);
-
+  const [newReference, setNewReference] = useState({});
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -234,7 +261,6 @@ export default function DashboardInsights({
     if (!toggle) {
       setToggle(!toggle);
     }
-
   }
 
   useEffect(() => {
@@ -282,14 +308,19 @@ export default function DashboardInsights({
         const lowerCaseSearchObject = searchObject?.toLowerCase();
         const ideaName = idea?.name?.toLowerCase();
 
-        if (filterObject?.criteria === "tag" && ideaOfIdea?.includes(lowerCaseSearchObject)) {
+        if (
+          filterObject?.criteria === "tag" &&
+          ideaOfIdea?.includes(lowerCaseSearchObject)
+        ) {
           setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-        } else if (filterObject?.criteria === "ref" && ideaName === lowerCaseSearchObject) {
+        } else if (
+          filterObject?.criteria === "ref" &&
+          ideaName === lowerCaseSearchObject
+        ) {
           setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
         }
       });
     });
-
   }, [filteredArray]);
 
   // We create a set so that the values are unique, and multiple ideas are not added
@@ -388,7 +419,6 @@ export default function DashboardInsights({
       (obj, index, self) => index === self.findIndex((t) => t.text === obj.text)
     );
     if (newarr?.length >= 1) {
-
       RegenerateBlog({
         variables: {
           options: {
@@ -399,7 +429,9 @@ export default function DashboardInsights({
         onCompleted: (data) => {
           updateCredit();
           setBlogData(data?.regenerateBlog);
-          setIdeas(data?.regenerateBlog?.ideas?.ideas);
+          // setInitailIdeas(data?.regenerateBlog?.ideas?.ideas);
+          // setIdeas(data?.regenerateBlog?.ideas?.ideas);
+          handleSelectAll(data?.regenerateBlog?.ideas?.ideas);
           setTags(data?.regenerateBlog?.tags);
           setFreshIdeaTags(data?.regenerateBlog?.freshIdeasTags);
           setReference(data?.regenerateBlog?.references);
@@ -424,14 +456,24 @@ export default function DashboardInsights({
             (pd) => pd?.platform === "twitter"
           );
           if (aaThreads?.threads?.length <= 0) {
-            setTwitterThreadData(twitterThreadData)
+            setTwitterThreadData(twitterThreadData);
           } else {
-            const theLastThread = aaThreads.threads[aaThreads.threads.length - 1];
+            const theLastThread =
+              aaThreads.threads[aaThreads.threads.length - 1];
             // merge this will text with 2nd last tweet
-            var theSecondLastThread = aaThreads.threads[aaThreads.threads.length - 2];
-            if (theLastThread !== undefined && theLastThread !== null && theLastThread !== "") {
+            var theSecondLastThread =
+              aaThreads.threads[aaThreads.threads.length - 2];
+            if (
+              theLastThread !== undefined &&
+              theLastThread !== null &&
+              theLastThread !== ""
+            ) {
               // const mergedText = theSecondLastThread + " ." + theLastThread;
-              if (theSecondLastThread === undefined || theSecondLastThread === null || theSecondLastThread === "") {
+              if (
+                theSecondLastThread === undefined ||
+                theSecondLastThread === null ||
+                theSecondLastThread === ""
+              ) {
                 theSecondLastThread = "";
               } else {
                 theSecondLastThread = theSecondLastThread + " .";
@@ -511,24 +553,62 @@ export default function DashboardInsights({
     }
   }
 
-  // wrtie a function to seelect all use ideas 
+  // wrtie a function to seelect all use ideas
   // function handleSelectAllUsedIdeas() {
   //   alert('running used ideas')
   // }
   function handleSelectAllUsedIdeas() {
     const updatedAllIdeas = ideas.map((el, elIndex) => {
       return {
-        ...el, used: toggle ? 1 : 0
-      }
+        ...el,
+        used: toggle ? 1 : 0,
+      };
     });
     setIdeas(updatedAllIdeas);
 
-    const arr = updatedAllIdeas.filter((element) => element.used).map((element) => ({
-      text: element.idea,
-      article_id: element.article_id,
-    }));
+    const arr = updatedAllIdeas
+      .filter((element) => element.used)
+      .map((element) => ({
+        text: element.idea,
+        article_id: element.article_id,
+      }));
     handleUsedIdeas(arr);
   }
+  // on change on ideas
+  useEffect(() => { 
+    console.log("changes in ideas");
+
+    const ideasMapWithIndex = {};
+    ideas.forEach((idea, index) => {
+      ideasMapWithIndex[index] = idea.used ? 1: 0;
+    });
+    console.log(ideasMapWithIndex);
+    const initialIdeasMapWithIndex = {};
+    
+    console.log(ideas, initailIdeas)
+    initailIdeas.forEach((idea, index) => {
+      initialIdeasMapWithIndex[index] = idea.used ? 1: 0;
+    }
+    );
+    
+    console.log(initialIdeasMapWithIndex);
+    let mapsAreEqual = true;
+    for (const key in ideasMapWithIndex) {
+      if (ideasMapWithIndex[key] !== initialIdeasMapWithIndex[key]) {
+        mapsAreEqual = false;
+        break; // If a mismatch is found, no need to continue checking
+      }
+    }
+  
+    if (mapsAreEqual) {
+      console.log("The values in the maps are the same.");
+      setCurrentIndexTitle(RE_BUTTON_TOPIC.topic)
+    } else {
+      setCurrentIndexTitle(RE_BUTTON_TOPIC.next);
+      console.log("The values in the maps are not the same.");
+    }
+  }, [ideas, initailIdeas]);
+
   function handleSelectAll() {
     if (toggle) {
       if (freshFilteredIdeas?.length > 0) {
@@ -605,34 +685,37 @@ export default function DashboardInsights({
       }
     }
   }
-
   function handleFileUpload({ target }) {
-    const FORMATCHECK = checkFileFormatAndSize(target.files[0]);
-    // alert(FORMATCHECK, "FORMATCHECK")
-    if (!FORMATCHECK) {
-      return;
+    const selectFiles = target.files;
+    let fileSizesMoreThan3MB = false;
+    
+    for (let i = 0; i < selectFiles.length; i++) {
+      const file = selectFiles[i];
+      
+      // Check file format and size for each file
+      if (!checkFileFormatAndSize(file)) {
+        return;
+      }
+  
+      const fileSizeMB = file.size / (1024 * 1024); // Convert size to MB
+      if (fileSizeMB > 3) {
+        fileSizesMoreThan3MB = true;
+        break; // Stop checking if one file exceeds the size limit
+      }
     }
-    setFileValid(true);
-    setUrlValid(false);
-
-    const file = target.files[0];
-
-    // Check if file is defined
-    if (!file) {
-      toast.error("No file chosen");
-      return;
-    }
-
-    const fileSizeMB = file.size / (1024 * 1024); // convert size to MB
-
-    if (fileSizeMB > 3) {
+  
+    if (fileSizesMoreThan3MB) {
       toast.error("File size cannot exceed 3MB");
-      return; // stop function execution after showing the error
+      return; // Stop function execution after showing the error
     }
-
-    setformInput(file.name);
-    setFile(file);
+  
+    const newFiles = Array.from(selectFiles);
+    setInputFiles((prev) => {
+      return [...prev, ...newFiles];
+    });
+    console.log(inputFiles);
   }
+
   function handleFormChange(e) {
     const value = e.target.value;
     setformInput(value);
@@ -649,74 +732,132 @@ export default function DashboardInsights({
   const handleUsedIdeas = (arr) => {
     setArrUsed(arr);
   };
-  
-  function postFormData(e) {
+
+  function postFormData(e, type = "File") {
+    debugger;
     e.preventDefault();
     setNewIdeaLoad(true);
-
+    const getToken = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+    const tempId = localStorage.getItem("tempId");
+    let user_id;
+    if (getToken) {
+      user_id = userId;
+    } else {
+      user_id = tempId;
+    }
+    // Define the base URL and the raw data object
     let url = API_BASE_PATH;
-    let raw;
-    if (fileValid) {
+    let raw ={};
+  
+    if (type === "File") {
+      // For file uploads
       url += API_ROUTES.FILE_UPLOAD;
       raw = new FormData();
-      raw.append("file", file);
+      console.log(inputFiles);
+      // raw.append("files", inputFiles[0], inputFiles[0].name);
+      for(const file of inputFiles) {
+        raw.append("files", file, file.name);
+      }
+      raw.append("userId", user_id);
       raw.append("blog_id", blog_id);
-    } else if (urlValid) {
+    } else if (type === "URL") {
+      // For URL uploads
       url += API_ROUTES.URL_UPLOAD;
-      raw = {
-        url: formInput,
+      raw =JSON.stringify({
+        urls: inputUrls,
         blog_id: blog_id,
-      };
+        userId: user_id,
+      });
     } else {
+      // For keyword uploads
       url += API_ROUTES.KEYWORD_UPLOAD;
-      raw = {
+      raw = JSON.stringify({
         keyword: formInput,
         blog_id: blog_id,
-      };
+        userId: user_id,
+      });
     }
-
-    const myHeaders = {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    };
-
-    if (!fileValid) {
-      myHeaders["Content-Type"] = "application/json";
+  
+ 
+    const headers =  new Headers();
+    if (type === "File") {
+      headers.delete("Content-Type"); // Remove Content-Type for FormData
+    } else {
+      headers.append("Content-Type", "application/json"); // Set Content-Type for JSON
     }
-
+    headers.append("Authorization", "Bearer " + getToken);
+    debugger;
+    console.log(headers)
     const config = {
       method: "post",
-      url: url,
-      headers: myHeaders,
-      data: raw,
+      headers: headers,
+      body: raw,      
     };
 
-    axios(config)
+    fetch(url, config)
       .then((response) => {
-        setIdeaType("fresh");
-        setFreshIdeas(response.data.data);
-        setFreshIdeaReferences(response.data.references);
-        setFreshIdeaTags(response.data.freshIdeasTags);
-
-        setPyResTime(response.data.pythonRespTime);
-        setNdResTime(response.data.respTime);
-        const fresh = document.querySelector(".idea-button.fresh");
-        const used = document.querySelector(".idea-button.used");
-
-        used.classList.remove("active");
-        fresh.classList.add("active");
+        return response.json();
       })
-      .catch((error) => {
-        console.log("error", error);
-         toast.error(error?.response?.data?.message || 'Host has denied the extraction from this URL. Please try again or try some other URL.', {
-    autoClose: 10000, // 10 seconds
-  });
-      })
+      .then((response) => {
+        debugger;
+        if (response.type != "SUCCESS") {
+          toast.error(response.message);
+          return;
+        }
+        toast.success(response.message);
+        // setInitailIdeas(response.data.data);
+        // setIdeas(response.data.data);
+        // handleSetIdeas(response.data.data);
+        // setReference(response.data.references);
+        // setTags(response.data.freshIdeasTags);
+
+        refetchBlog();
+        // setPyResTime(response.data.pythonRespTime);
+        // setNdResTime(response.data.respTime);
+        // const fresh = document.querySelector(".idea-button.fresh");
+        // const used = document.querySelector(".idea-button.used");
+
+        // used.classList.remove("active");
+        // fresh.classList.add("active");
+      }) 
       .finally(() => {
         setformInput("");
         setFileValid(false);
         setUrlValid(false);
         setNewIdeaLoad(false);
       });
+  }
+
+  function handleSetIdeas (ideas) {
+    // add a new properly initailUsedd = used 
+    const newIdeas = ideas.map((idea) => {
+      return { ...idea, initailUsed :idea.used };
+    });
+    setIdeas(newIdeas);
+    setInitailIdeas(newIdeas)
+  } 
+
+
+
+  function handleRefDelete(id){
+    const payload={
+      blogId: blog_id,
+      sourceId: id
+    }
+    DeleteRefSources(payload).then((res)=>{ 
+       if(res.type!= "SUCCESS"){
+        toast.error(res.message)
+      return; 
+      }
+       
+      if(res.status===500){
+        toast.error("Something went wrong")
+        return;
+      }
+      toast.success(res.message);
+      refetchBlog();
+    })
   }
 
   useEffect(() => {
@@ -729,10 +870,10 @@ export default function DashboardInsights({
       // Regular expression for URL validation
       var pattern = new RegExp(
         "^(https?:\\/\\/)?" + // protocol
-        "((([a-zA-Z\\d]([a-zA-Z\\d-]{0,61}[a-zA-Z\\d])?)\\.)+[a-zA-Z]{2,})(:\\d{2,5})?" + // domain name and optional port
-        "(\\/[-a-zA-Z\\d%@_.~+&:]*)*" + // path
-        "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" + // query string
-        "(\\#[-a-zA-Z\\d_]*)?$",
+          "((([a-zA-Z\\d]([a-zA-Z\\d-]{0,61}[a-zA-Z\\d])?)\\.)+[a-zA-Z]{2,})(:\\d{2,5})?" + // domain name and optional port
+          "(\\/[-a-zA-Z\\d%@_.~+&:]*)*" + // path
+          "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" + // query string
+          "(\\#[-a-zA-Z\\d_]*)?$",
         "i"
       ); // fragment locator
       return pattern.test(formInput);
@@ -781,6 +922,24 @@ export default function DashboardInsights({
     }
 
     return titleCase.trim();
+  }
+  let sortedRef = [];
+
+  if (ideasTab === 0) {
+    sortedRef = reference?.filter((el) => el.type == "web") || [];
+  } else if (ideasTab === 1) {
+    sortedRef = reference?.filter((el) => el.type == "url") || [];
+  } else if (ideasTab === 2) {
+    sortedRef = reference?.filter((el) => el.type == "file") || [];
+  } else {
+    sortedRef = [...reference];
+  }
+  console.log("sortedRef");
+  console.log(sortedRef);
+  function handleIdeasTabClick(index) {
+    setIdeasTab((prev) => {
+      return index;
+    });
   }
 
   if (loading || regenLoading) return <LoaderScan />;
@@ -851,14 +1010,16 @@ export default function DashboardInsights({
       {creditModal && (
         <TrialEndedModal setTrailModal={setCreditModal} topic={null} />
       )}
-      <div className="text-xs px-2 mb-24 lg:mb-0" style={{ borderLeft: "2px solid #d2d2d2" }} id="regenblog">
+      <div
+        className="text-xs px-2 mb-24 lg:mb-0 h-full"
+        style={{ borderLeft: "2px solid #d2d2d2" }}
+        id="regenblog"
+      >
         {/* h1 Insight only for mobile screens */}
-        <h1 className="text-2xl  font-semibold text-gray-800 my-4 lg:hidden">
-          Insights
-        </h1>
+        <h1 className="pt-[0.65em] font-semibold">WORKSPACE</h1>
         <div className="flex jusify-between gap-[1.25em]">
           <p className="font-normal w-[100%] lg:w-[70%] text-sm">
-          Create your next draft on the basis of your edits and uploads.
+            Create your next draft on the basis of your edits and uploads.
           </p>
           <button
             className="cta flex items-center gap-2 self-start !py-2 !font-semibold"
@@ -866,22 +1027,22 @@ export default function DashboardInsights({
               isAuthenticated
                 ? handleRegenerate
                 : () => {
-                  updateisSave();
-                  // setAuthenticationModalOpen(true);
-                }
+                    updateisSave();
+                    // setAuthenticationModalOpen(true);
+                  }
             }
           >
             <RegenerateIcon />
-            Next Draft
+            {currentIndexTitle}
           </button>
         </div>
 
         {tags?.length > 0 && (
           <div>
             <div className="flex justify-between w-full items-center py-2">
-              <h3 className="pt-[0.65em] font-semibold">Filtering Keywords</h3>
+              {/* <h3 className="pt-[0.65em] font-semibold">Filtering Keywords</h3> */}
             </div>
-            <div
+            {/* <div
               className="flex gap-[0.5em] flex-wrap h-full lg:max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
               style={{ padding: "0.75em 0.25em" }}
             >
@@ -906,26 +1067,66 @@ export default function DashboardInsights({
                     );
                   })
                   : "Generate fresh ideas to see tags"}
-            </div>
+            </div> */}
           </div>
         )}
+
         <div>
-          <div className="flex justify-between w-full items-center py-2">
-            <h3 className="pt-[0.65em] font-semibold">Sources</h3>
+          <div className="flex justify-between w-full items-start py-2 flex flex-col">
+            <h3 className="pt-[0.65em] font-semibold">Draft Topic</h3>
+            <div className="opacity-70 text-gray-800 text-sm font-normal capitalize">
+              {keyword} ?
+            </div>
+          </div>
+        </div>
+        <div>
+          <div className="flex gap-2 justify-start w-full items-center py-2">
+            <h3 className="font-semibold">Sources</h3>
+            <InformationCircleIcon className="h-4 w-4 text-gray-500" />
+          </div>
+          <div className="flex items-center gap-2 py-1.5">
+            <SourceTab
+              SourceColor={"yellow"}
+              title={"Web"}
+              selected={ideasTab == 0}
+              onClick={() => {
+                handleIdeasTabClick(0);
+              }}
+            />
+            <SourceTab
+              SourceColor={"orange"}
+              title={"My Urls"}
+              onClick={() => {
+                handleIdeasTabClick(1);
+              }}
+              selected={ideasTab == 1}
+            />
+            <SourceTab
+              SourceColor={"blue"}
+              title={"My Documents"}
+              onClick={() => {
+                handleIdeasTabClick(2);
+              }}
+              selected={ideasTab == 2}
+            />
           </div>
           <div
-            className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
+            className="flex gap-[0.5em] my-2 flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
             style={{ padding: "0.75em 0.5em" }}
           >
             {ideaType === "used" ? (
               reference?.length > 0 ? (
-                reference?.map((ref, index) => {
+                sortedRef?.map((ref, index) => {
                   return (
                     <UsedReference
                       key={index}
+                      type={ref.type}
                       reference={ref}
                       index={index}
                       handleRefClick={handleRefClick}
+                      onDelete={
+                        () => handleRefDelete(ref.id)
+                      }
                     />
                   );
                 })
@@ -949,144 +1150,199 @@ export default function DashboardInsights({
               <div>Generate fresh ideas to see sources</div>
             )}
           </div>
-        </div>
-        <div className="flex py-2 relative gap-5">
-          <button
-            className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs"
-            onClick={(e) => {
-              setIdeaType("used");
-            }}
-          >
-            Used Idea(s){" "}
-            <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
-              {ideas?.length}
-            </span>
-          </button>
-
-          <button
-            className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs realtive"
-            onClick={(e) => {
-              if (isAuthenticated) setIdeaType("fresh");
-              else {
-                updateisSave();
-              }
-            }}
-          >
-            <Image
-              src="/lightBulb.png"
-              alt="lightBulb"
-              width={20}
-              height={20}
-              style={{ pointerEvents: "none" }}
-            />
-            Unused Idea(s){" "}
-            {freshIdeas?.length > 0 && (
-              <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
-                {freshIdeas?.length}
-              </span>
-            )}
-          </button>
-          {(
+          {ideasTab == 0 && (
             <>
-              {/* <span className="mt-3 text-sm ml-3">Select all </span>
-              <div
-                className={`md:w-10 md:h-5 w-7 h-2 flex items-center  rounded-full p-1 cursor-pointer mt-3 ${toggle == false ? 'bg-indigo-500' : 'bg-gray-300'} transform duration-300 ease-in-out`}
-                onClick={() => {
-                  ideaType === "used" ? handleSelectAllUsedIdeas() : handleSelectAll();
-                  setToggle(!toggle);
-                }}
-              >
-                <div
-                  className={
-                    "bg-black md:w-5 md:h-5 h-4 w-4 rounded-full shadow-md transform duration-300 ease-in-out" +
-                    (toggle ? null : toggleClass)
-                  }
-                ></div>
-              </div> */}
+              {/* <div className="flex flex-col w-full">
+               <div className="flex justify-between w-full">
+               <div className="flex opacity-70 text-gray-800 text-sm font-normal">Use New Sources in Next Draft</div>
+                <div className="justify-center items-center flex">
+                  <input
+                    type="checkbox"
+                    className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-none focus:ring-blue-500"
+                    style={{
+                      borderRadius: '2px'
+                    }}
+                  />
+                </div>
+               </div>
+                <div className="w-full h-full justify-start items-center gap-3 inline-flex">
+                  <ArrowLongLeftIcon className="w-6 h-6 text-indigo-500" />
+                  <input className="grow shrink basis-0 h-full px-2.5 py-2 rounded-lg border border-indigo-500 border-opacity-20 justify-start items-start gap-2.5 flex"
+                    value={newReference.source}
+                    onChange={(e) => {
+                      setformInput(e.target.value)
+                    }}  
+                    placeholder="Add Topic" />
+                  <button className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
+                    onClick={(event) => {
+                      postFormData(event, 'Topic');
+                    }}
+                  >
+                    <PlusIcon />
+                  </button>
+                </div>
+              </div> 
+              */}
             </>
           )}
-        </div>
-        <div
-          className=" dashboardInsightsUsedSectionHeight overflow-y-scroll px-2"
-        >
-          {ideaType === "used"
-            ? filteredIdeas?.length > 0
-              ? filteredIdeas?.map((idea, index) => {
-                return (
-                  <UsedFilteredIdeaItem
-                    key={index}
-                    index={index}
-                    idea={idea}
-                    filteredIdeas={filteredIdeas}
-                    setFilteredIdeas={setFilteredIdeas}
-                    ideas={ideas}
-                    setIdeas={setIdeas}
-                    handleUsedIdeas={handleUsedIdeas}
-                    handleCitationFunction={handleCitationFunction}
-                  />
-                );
-              })
-              : ideas?.map((idea, index) => {
-                return (
-                  <MainIdeaItem
-                    key={index}
-                    index={index}
-                    idea={idea}
-                    ideas={ideas}
-                    setIdeas={setIdeas}
-                    handleUsedIdeas={handleUsedIdeas}
-                    handleCitationFunction={handleCitationFunction}
-                  />
-                );
-              })
-            : ""}
-          {ideaType === "fresh" && (
-            <div className="w-full">
-              {isAuthenticated && (
-                <>
-                  <FreshIdeaForm
-                    postFormData={postFormData}
-                    newIdeaLoad={newIdeaLoad}
-                    ideaType={ideaType}
-                    formInput={formInput}
-                    handleFormChange={handleFormChange}
-                    hover={hover}
-                    handleFileUpload={handleFileUpload}
-                  />
-                </>
-              )}
-              {freshFilteredIdeas?.length > 0
-                ? freshFilteredIdeas?.map((idea, index) => {
+          {ideasTab == 1 && (
+            <div className="px-4 flex flex-col gap-3">
+              <div>
+                {inputUrls.map((url, index) => {
                   return (
-                    <FreshFilteredIdeaItem
+                    <Chip
                       key={index}
-                      index={index}
-                      idea={idea}
-                      handleCitationFunction={handleCitationFunction}
-                      filteredIdeas={filteredIdeas}
-                      setFilteredIdeas={setFilteredIdeas}
-                      ideas={ideas}
-                      setIdeas={setIdeas}
-                      handleUsedIdeas={handleUsedIdeas}
-                    />
-                  );
-                })
-                : freshIdeas?.map((idea, index) => {
-                  return (
-                    <IdeaComponent
-                      key={index}
-                      index={index}
-                      idea={idea}
-                      handleCitationFunction={handleCitationFunction}
-                      handleInputClick={handleInputClick}
-                      freshIdeas={freshIdeas}
-                      setFreshIdeas={setFreshIdeas}
+                      onDelete={() => {
+                        setinputUrls((prev) => {
+                          return prev.filter((el, i) => i !== index);
+                        });
+                      }}
+                      wholeData={index}
+                      text={url}
                     />
                   );
                 })}
+              </div>
+              <div>
+                <div className="w-full h-full justify-start items-center gap-3 inline-flex">
+                  <ArrowLongLeftIcon className="w-6 h-6 text-indigo-500" />
+                  <input
+                    className="grow shrink basis-0 h-full px-2.5 py-2 rounded-lg border border-indigo-500 border-opacity-20 justify-start items-start gap-2.5 flex"
+                    value={newReference.source}
+                    onChange={(e) => {
+                      setformInput(e.target.value);
+                    }}
+                    placeholder="Add URL"
+                  />
+                  <button
+                    className="w-6 h-6 relative  textSuperman-indigo-500 bg-slate-100 rounded-sm border"
+                    onClick={(event) => {
+                      setinputUrls((prev) => {
+                        return [...prev, formInput];
+                      });
+                    }}
+                  >
+                    {<PlusIcon />}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <button
+                  className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
+                  onClick={(event) => {
+                    postFormData(event, "URL");
+                  }}
+                >
+                  {<CheckIcon />}
+                </button>
+              </div>
+            </div>
+          )}
+          {ideasTab == 2 && (
+            <div className="px-4 flex flex-col gap-3">
+              <div className="flex w-full items-end gap-2 justify-between">
+                <div className="w-full">
+                  {inputFiles.length > 0 ? (
+                    inputFiles.map((file, index) => {
+                      return (
+                        <FileComponent
+                        key={index}
+                          name={file.name}
+                          size={Math.round(file.size / 1000) + "KB"}
+                          fileData={index}
+                          onDelete={(index) => {
+                            setInputFiles((prev) => {
+                              return prev.filter((el, i) => i !== index);
+                            });
+                          }}
+                        />
+                      );
+                    })
+                  ) : (
+                    <label htmlFor="input-file">
+                      <FileComponent name="No file chosen" size="" />
+                    </label>
+                  )}
+                </div>
+                <div className="w-[5%] h-full my-1 justify-end flex-col items-end gap-3 inline-flex">
+                  <label
+                    htmlFor="input-file"
+                    className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
+                  >
+                    {file == null ? <PlusIcon /> : <CheckIcon />}
+                  </label>
+                </div>
+              </div>
+              <buttton
+                className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
+                onClick={postFormData}
+              >
+                <CheckIcon />
+              </buttton>
+              <input
+                multiple={true}
+                id="input-file"
+                type="file"
+                className="hidden"
+                onChange={handleFileUpload}
+              />
             </div>
           )}
         </div>
+
+        <>
+          <div className="flex py-2 relative gap-5">
+            <button
+              className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs flex items-center justify-around gap-1"
+              onClick={(e) => {
+                setIdeaType("used");
+              }}
+            >
+              <div className={`bg-blue-500 w-1.5 h-1.5  rounded-full`} />
+              Idea
+              <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
+                {ideas?.length}
+              </span>
+            </button>
+          </div>
+
+          <div>
+            {newIdeaLoad == false ? (
+              <div className="dashboardInsightsUsedSectionHeight overflow-y-scroll px-2">
+                {filteredIdeas?.length > 0
+                  ? filteredIdeas?.map((idea, index) => (
+                      <UsedFilteredIdeaItem
+                        key={index}
+                        index={index}
+                        idea={idea}
+                        filteredIdeas={filteredIdeas}
+                        setFilteredIdeas={setFilteredIdeas}
+                        ideas={ideas}
+                        setIdeas={setIdeas}
+                        handleUsedIdeas={handleUsedIdeas}
+                        handleCitationFunction={handleCitationFunction}
+                      />
+                    ))
+                  : ideas?.map((idea, index) => (
+                      <MainIdeaItem
+                        key={index}
+                        index={index}
+                        idea={idea}
+                        ideas={ideas}
+                        typeOfIdea={idea?.type}
+                        setIdeas={setIdeas}
+                        handleUsedIdeas={handleUsedIdeas}
+                        handleCitationFunction={handleCitationFunction}
+                      />
+                    ))}
+              </div>
+            ) : (
+              <div className="flex justify-center items-center">
+                <LoaderScan />
+              </div>
+            )}
+          </div>
+        </>
       </div>
     </>
   );

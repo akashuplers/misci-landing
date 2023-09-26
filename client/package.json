@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.7.10",
+    "@atlassian/aui": "^9.8.0",
     "@firebase/auth": "^0.22.0",
     "@headlessui/react": "^1.7.13",
     "@heroicons/react": "^2.0.16",

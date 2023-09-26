@@ -34,6 +34,7 @@ export default function Post({typeIsRepurpose}) {
   const [reference, setReference] = useState([]);
   const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
   const [alreadyShownDisclaimer, setAlreadyShownDisclaimer] = useState(false);
+  const[initailIdeas, setInitailIdeas] = useState([]);
   const [disclaimerCheck, setDisclaimerCheck] = useState(false);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
   const { option, setOption } = useTabOptionStore();
@@ -112,11 +113,22 @@ export default function Post({typeIsRepurpose}) {
   }, []);
 
 
+  function handleSetIdeas (ideas) {
+    // add a new properly initailUsedd = used 
+    const newIdeas = ideas.map((idea) => {
+      return { ...idea, initailUsed :idea.used };
+    });
+    setIdeas(newIdeas);
+    setInitailIdeas(newIdeas)
+  } 
+
 
   useEffect(() => {
     if (data == null) return;
     setBlogData(data.fetchBlog);
-    setIdeas(data.fetchBlog.ideas.ideas);
+    // setInitailIdeas(data.fetchBlog.ideas.ideas);
+    // setIdeas(data.fetchBlog.ideas.ideas);
+    handleSetIdeas(data.fetchBlog.ideas.ideas)
     setTags(data.fetchBlog.tags);
     setFreshIdeaTags(data.fetchBlog.freshIdeasTags);
     setFreshIdeasReferences(data.fetchBlog.freshIdeasReferences);
@@ -464,8 +476,11 @@ You can add your own image, click on the image and use image options icon.`}
           >
             <DashboardInsights
               ideas={ideas}
+              refetchBlog={refetchBlog}
               setIdeas={setIdeas}
               tags={tags}
+              setInitailIdeas={setInitailIdeas}
+              initailIdeas={initailIdeas}
               setTags={setTags}
               freshIdeaTags={freshIdeaTags}
               freshIdeas={freshIdeas}
@@ -482,6 +497,7 @@ You can add your own image, click on the image and use image options icon.`}
               setNdResTime={setNdResTime}
               setOption={setOption}
               option={option}
+              keyword={data?.fetchBlog?.keyword}
             />
           </div>
         </div>
