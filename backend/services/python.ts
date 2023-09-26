@@ -150,31 +150,38 @@ export class Python {
     }
     async getAskMeAnswers (question: string){
         try {
+            let data = JSON.stringify([
+                {
+                    'user_id': this.userId, 
+                    'company_id': 'nowigence', 
+                    'question': question
+                }
+            ]);
             const config: any = {
                 method: 'post',
                 url: `${process.env.PLUARIS_PYTHON_REST_BASE_ENDPOINT}/ask-me`,
                 headers: { 
                     'Content-Type': 'application/json'
                 },
-                data: {
-                    'user_id': this.userId, 
-                    'company_id': 'nowigence', 
-                    'question': question
-                },
+                data,
                 timeout: 15000
             }
             console.log(config, "config")
             const pythonRes = await axios(config)
             console.log(pythonRes.data, "python response")
-            console.log(pythonRes?.data?.internal_results?.main_document?.answer, "answer")
-            console.log(!pythonRes?.data?.internal_results?.main_document?.id?.length, "answer")
-            if(pythonRes?.data && !pythonRes?.data?.internal_results?.main_document?.id?.length) {
+            if(!pythonRes.data || !pythonRes?.data.length ) {
                 return null
             }
-            if(!pythonRes?.data || !Object.keys(pythonRes).length || !Object.keys(pythonRes.data).length) {
+            const res = pythonRes?.data[0]
+            console.log(res?.internal_results?.main_document?.answer, "answer")
+            console.log(!res?.internal_results?.main_document?.id?.length, "answer")
+            if(res && !res?.internal_results?.main_document?.id?.length) {
                 return null
             }
-            return pythonRes.data
+            if(!res || !Object.keys(res).length || !Object.keys(res).length) {
+                return null
+            }
+            return res
         }catch(e){
             console.log(e.message, "error")
             console.log(e, "error from python for ask me")
