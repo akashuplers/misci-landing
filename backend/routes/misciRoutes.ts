@@ -2,7 +2,7 @@ import { ObjectID, ObjectId } from "mongodb";
 import { Python } from "../services/python";
 import { diff_minutes, getTimeStamp } from "../utils/date";
 import { publish } from "../utils/subscription";
-import { blogGeneration, fetchArticleById, fetchArticleUrls, fetchBlog, fetchBlogIdeas, fetchUsedBlogIdeasByIdea, fetchUser } from "../graphql/resolver/blogs/blogsRepo";
+import { blogGeneration, fetchArticleById, fetchArticleUrls, fetchBlog, fetchBlogIdeas, fetchUsedBlogIdeasByIdea, fetchUser, publishBlog } from "../graphql/resolver/blogs/blogsRepo";
 
 const express = require("express");
 const router = express.Router();
@@ -32,6 +32,7 @@ router.post('/publish', async (req: any, res: any) => {
             }, {
                 upsert: true
             })
+            await publishBlog({id: blogId, db, platform: "wordpress"})
             return res
             .status(200)
             .send({ error: false, message: "Published!" });    
@@ -45,6 +46,47 @@ router.post('/publish', async (req: any, res: any) => {
             .status(400)
             .send({ error: true, message: e.message });    
     }
+})
+router.post('/blog/save', async (req: any, res: any) => {
+    try {
+        const db = req.app.get('dbLive')
+        const {blogId, tinymce_json, platform, imageUrl, imageSrc, description} = req.body
+        const blogDetails = await fetchBlog({id: blogId, db})
+        if(!blogDetails){
+            return res
+            .status(400)
+            .send({ error: true, message: "No Blog Found!" });    
+        }
+        const userId = blogDetails.userId
+        let updatedPublisData = blogDetails.publish_data.map((data: any) => {
+            if(platform === data.platform) {
+                return {
+                    ...data,
+                    tiny_mce_data: tinymce_json
+                }
+            } else {
+                return {...data}
+            }
+        })
+        await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(blogId)}, {
+            $set: {
+                publish_data: updatedPublisData,
+                status: blogDetails.status === 'published' ? blogDetails.status : "saved",
+                userId: new ObjectID(userId),
+                updatedAt: getTimeStamp(),
+                imageUrl: imageUrl && imageUrl.length && imageUrl !== blogDetails.imageUrl ? imageUrl : blogDetails.imageUrl,
+                imageSrc: imageSrc,
+                description: description || blogDetails.description,
+            }
+        })
+        return res
+                .status(200)
+                .send({ error: false, data: "Saved!" });   
+    }catch(e){
+        return res
+            .status(400)
+            .send({ error: true, message: e.message });    
+    } 
 })
 router.post('/generate', async (req: any, res: any) => {
     let {question, userId} = req.body
@@ -79,6 +121,7 @@ router.post('/generate', async (req: any, res: any) => {
         const answers = askMeAnswers?.internal_results?.main_document?.answer_sentence
         const shortAnswer = askMeAnswers?.internal_results?.main_document?.answer
         const title = askMeAnswers?.internal_results?.main_document?.title
+        const answer_image = (askMeAnswers?.external_results?.main_document?.id && askMeAnswers?.external_results?.main_document?.id !== "Not Available" && askMeAnswers?.external_results?.main_document?.id )|| null
         const answersObj = {
             published: false,
                 published_date: false,
@@ -113,6 +156,7 @@ router.post('/generate', async (req: any, res: any) => {
             question,
             short_answer: shortAnswer,
             detailed_answer: answers,
+            answer_image: answer_image,
             status: "draft",
             // imageUrl: imageUrl ? imageUrl : process.env.PLACEHOLDER_IMAGE,
             // imageSrc,
@@ -227,7 +271,7 @@ router.post('/generate', async (req: any, res: any) => {
             userId: userId,
             keywords: [],
             tones: [],
-            type: ["wordpress", "title"],
+            type: ["wordpress"],
             misci: true,
             notesRefUrls
         })
