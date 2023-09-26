@@ -1319,6 +1319,7 @@ export default function DashboardInsights({
                         setFilteredIdeas={setFilteredIdeas}
                         ideas={ideas}
                         setIdeas={setIdeas}
+                        typeOfIdea={idea?.type}
                         handleUsedIdeas={handleUsedIdeas}
                         handleCitationFunction={handleCitationFunction}
                       />
