@@ -1,7 +1,7 @@
 import "react-toastify/dist/ReactToastify.css";
-import { regenerateNextDraft } from "@/helpers/apiMethodsHelpers";
+import { regenerateNextDraft, saveMisciBlog } from "@/helpers/apiMethodsHelpers";
 import ReactLoading from "react-loading";
-import { jsonToHtml } from "@/helpers/helper";
+import { htmlToJson, jsonToHtml } from "@/helpers/helper";
 import { StepCompleteData } from "@/store/types";
 import {
   ArrowLeftIcon,
@@ -30,6 +30,11 @@ import { useIdeaState, useMisciArticleState } from "@/store/appState";
 import PublishMisciModal from "@/modals/PublishMisciModal";
 import IdeaTag from "@/components/IdeaTag";
 import TextModal from "@/modals/TextModal";
+
+const resetTimeoutForSave= (id, newID) => {
+  clearTimeout(id);
+  return newID;
+};
 interface MisciWorkSpaceProps {
   subscriptionData: StepCompleteData | undefined;
   question: string;
@@ -69,6 +74,8 @@ const MisciWorkSpace = ({
   const [shortAnswer, setShortAnswer] = useState<string>("");
   const [detailedAnswer, setDetailedAnswer] = useState<string>("");
   const { currentTabIndex, setCurrentTabIndex } = useMisciArticleState();
+  const [timeout, setTimeoutId] = useState(null);
+  const [imageURL, setImageURL] = useState();
   const [references, setReferences] = useState<
     {
       id: string;
@@ -161,7 +168,7 @@ const MisciWorkSpace = ({
       setLoadingMisciblog(false);
       setArticleLoaderErrorText(ErrorBase.unableToGenerateArticle);
       setErrorPresent(true);
-      setAppLoaderStatus(false);
+
       // setTimeout(() => {
       //   // take to /misci
       //   router.push("/misci");
@@ -174,7 +181,6 @@ const MisciWorkSpace = ({
       setEditorAnswersData(ErrorBase.errorAnswerWithQuestion(question));
       setLoadingMisciblog(false);
       setArticleLoaderErrorText(ErrorBase.unableToGenerateArticle);
-      setAppLoaderStatus(false);
     }
   }, [errorPresent]);
 
@@ -189,6 +195,37 @@ const MisciWorkSpace = ({
 
   },[nextDraftLoader, isArticleTabReady, loadingMisciblog])
 
+  function saveValue(contentToSave:any){
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(editorArticleData, "text/html");
+    const img = doc?.querySelector("img");
+    const src = img?.getAttribute("src");
+
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = editorArticleData;
+    const elementsToRemove = tempDiv.querySelectorAll("h3");
+    for (let i = 0; i < elementsToRemove.length; i++) {
+      const element:any = elementsToRemove[i];
+      element.parentNode.removeChild(element);
+    }
+    const elementsToRemove2 = tempDiv.querySelectorAll("a");
+    for (let i = 0; i < elementsToRemove2.length; i++) {
+      const element:any = elementsToRemove2[i];
+      element?.parentNode.removeChild(element);
+    }
+    const textContent = tempDiv.textContent;
+    const jsonDoc = htmlToJson(contentToSave, imageURL).children;
+    const formatedJSON = { children: [...jsonDoc] };
+    var optionsForUpdate = {
+      tinymce_json: formatedJSON,
+      blogId: blogId,
+      imageUrl: src,
+      platform: "wordpress",
+      description: textContent,
+    }; 
+    saveMisciBlog(optionsForUpdate).then((res) => console.log(res)).catch((err) => console.log(err));
+  }
   useEffect(() => {
     console.log(getInitialListOfIdeas());
     console.log(listOfIdeas);
@@ -585,6 +622,9 @@ const MisciWorkSpace = ({
                         value={editorArticleData}
                         onEditorChange={(content: any, editor: any) => {
                           setEditorArticleData(content);
+                          const newTimeout = resetTimeoutForSave(timeout, setTimeout(() => { saveValue(content)
+                          }, 400));
+                          setTimeoutId(newTimeout);
                         }}
                         onSetup={(editor: any) => {
                           setEditorSetUpCompleted(true);
