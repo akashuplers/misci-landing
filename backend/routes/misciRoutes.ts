@@ -46,6 +46,47 @@ router.post('/publish', async (req: any, res: any) => {
             .send({ error: true, message: e.message });    
     }
 })
+router.post('/blog/save', async (req: any, res: any) => {
+    try {
+        const db = req.app.get('dbLive')
+        const {blogId, tinymce_json, platform, imageUrl, imageSrc, description} = req.body
+        const blogDetails = await fetchBlog({id: blogId, db})
+        if(!blogDetails){
+            return res
+            .status(400)
+            .send({ error: true, message: "No Blog Found!" });    
+        }
+        const userId = blogDetails.userId
+        let updatedPublisData = blogDetails.publish_data.map((data: any) => {
+            if(platform === data.platform) {
+                return {
+                    ...data,
+                    tiny_mce_data: tinymce_json
+                }
+            } else {
+                return {...data}
+            }
+        })
+        await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(blogId)}, {
+            $set: {
+                publish_data: updatedPublisData,
+                status: blogDetails.status === 'published' ? blogDetails.status : "saved",
+                userId: new ObjectID(userId),
+                updatedAt: getTimeStamp(),
+                imageUrl: imageUrl && imageUrl.length && imageUrl !== blogDetails.imageUrl ? imageUrl : blogDetails.imageUrl,
+                imageSrc: imageSrc,
+                description: description || blogDetails.description,
+            }
+        })
+        return res
+                .status(200)
+                .send({ error: false, data: "Saved!" });   
+    }catch(e){
+        return res
+            .status(400)
+            .send({ error: true, message: e.message });    
+    } 
+})
 router.post('/generate', async (req: any, res: any) => {
     let {question, userId} = req.body
     const db = req.app.get('dbLive')
