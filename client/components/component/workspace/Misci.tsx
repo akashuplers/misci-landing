@@ -1,7 +1,7 @@
 import "react-toastify/dist/ReactToastify.css";
-import { regenerateNextDraft } from "@/helpers/apiMethodsHelpers";
+import { regenerateNextDraft, saveMisciBlog } from "@/helpers/apiMethodsHelpers";
 import ReactLoading from "react-loading";
-import { jsonToHtml } from "@/helpers/helper";
+import { htmlToJson, jsonToHtml } from "@/helpers/helper";
 import { StepCompleteData } from "@/store/types";
 import {
   ArrowLeftIcon,
@@ -30,6 +30,11 @@ import { useIdeaState, useMisciArticleState } from "@/store/appState";
 import PublishMisciModal from "@/modals/PublishMisciModal";
 import IdeaTag from "@/components/IdeaTag";
 import TextModal from "@/modals/TextModal";
+
+const resetTimeoutForSave= (id, newID) => {
+  clearTimeout(id);
+  return newID;
+};
 interface MisciWorkSpaceProps {
   subscriptionData: StepCompleteData | undefined;
   question: string;
@@ -69,6 +74,9 @@ const MisciWorkSpace = ({
   const [shortAnswer, setShortAnswer] = useState<string>("");
   const [detailedAnswer, setDetailedAnswer] = useState<string>("");
   const { currentTabIndex, setCurrentTabIndex } = useMisciArticleState();
+  const [timeout, setTimeoutId] = useState(null);
+  const [imageURL, setImageURL] = useState();
+  const [answerImage, setAnswerImage] = useState<string>();
   const [references, setReferences] = useState<
     {
       id: string;
@@ -100,6 +108,9 @@ const MisciWorkSpace = ({
       setBlogId(subscriptionData?.stepCompletes.data?._id);
       const data = subscriptionData?.stepCompletes.data;
       setShortAnswer(data?.short_answer);
+      debugger;
+      setAnswerImage(data?.answer_image);
+      // setAnswerImage("https://pluarisazurestorage.blob.core.windows.net/nowigence-images/askme-images/fecad21d-5c64-11ee-a8c3-0242c0a8e002.jpg");
       setDetailedAnswer(data?.detailed_answer);
       setMisciblog(data);
       console.log(data);
@@ -115,10 +126,13 @@ const MisciWorkSpace = ({
       setLoadingMisciblog(false);
     }
     if (step == "BLOG_GENERATION_COMPLETED") {
+      debugger;
       console.log("IDEAS LOADED");
       console.log(subscriptionData);
       const data = subscriptionData?.stepCompletes.data.ideas.ideas;
       console.log(data);
+      // setAnswerImage(data?.answer_image);
+      // setAnswerImage("https://pluarisazurestorage.blob.core.windows.net/nowigence-images/askme-images/fecad21d-5c64-11ee-a8c3-0242c0a8e002.jpg");
 
       setBlogId(subscriptionData?.stepCompletes.data?._id);
       setShortAnswer(subscriptionData?.stepCompletes.data?.short_answer);
@@ -188,6 +202,37 @@ const MisciWorkSpace = ({
 
   },[nextDraftLoader, isArticleTabReady, loadingMisciblog])
 
+  function saveValue(contentToSave:any){
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(editorArticleData, "text/html");
+    const img = doc?.querySelector("img");
+    const src = img?.getAttribute("src");
+
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = editorArticleData;
+    const elementsToRemove = tempDiv.querySelectorAll("h3");
+    for (let i = 0; i < elementsToRemove.length; i++) {
+      const element:any = elementsToRemove[i];
+      element.parentNode.removeChild(element);
+    }
+    const elementsToRemove2 = tempDiv.querySelectorAll("a");
+    for (let i = 0; i < elementsToRemove2.length; i++) {
+      const element:any = elementsToRemove2[i];
+      element?.parentNode.removeChild(element);
+    }
+    const textContent = tempDiv.textContent;
+    const jsonDoc = htmlToJson(contentToSave, imageURL).children;
+    const formatedJSON = { children: [...jsonDoc] };
+    var optionsForUpdate = {
+      tinymce_json: formatedJSON,
+      blogId: blogId,
+      imageUrl: src,
+      platform: "wordpress",
+      description: textContent,
+    }; 
+    saveMisciBlog(optionsForUpdate).then((res) => console.log(res)).catch((err) => console.log(err));
+  }
   useEffect(() => {
     console.log(getInitialListOfIdeas());
     console.log(listOfIdeas);
@@ -275,10 +320,12 @@ const MisciWorkSpace = ({
     html,
     short_answer,
     detailed_answer,
+    image
   }: {
     html: string;
     detailed_answer: string;
     short_answer: string;
+    image:string,
   }) => {
     return (
       <div className="">
@@ -287,6 +334,8 @@ const MisciWorkSpace = ({
           dangerouslySetInnerHTML={{ __html: mySafeHTML }}
         ></div> */}
         <div className="flex flex-col gap-4 relative">
+          {/* show image */}
+         
           {short_answer.length > 0 ? (
             <>
               <div>
@@ -298,6 +347,16 @@ const MisciWorkSpace = ({
                 </p>
               </div>
               <div className="border-b border-gray-200"></div>
+
+              <div className="flex justify-center items-center ">
+             <div className="w-[50%]">
+             <img
+              className="w-full h-full rounded-full object-cover"
+              src={image}
+              alt=""
+            />
+             </div>
+          </div>
             </>
           ) : (
             <></>
@@ -473,6 +532,7 @@ const MisciWorkSpace = ({
                         </span>
                         <div className="mt-4 text-lg w-[95%]">
                           <DynamicAnswersData
+                          image={answerImage}
                             html={editorAnswersData ?? ""}
                             short_answer={shortAnswer}
                             detailed_answer={detailedAnswer}
@@ -584,6 +644,9 @@ const MisciWorkSpace = ({
                         value={editorArticleData}
                         onEditorChange={(content: any, editor: any) => {
                           setEditorArticleData(content);
+                          const newTimeout = resetTimeoutForSave(timeout, setTimeout(() => { saveValue(content)
+                          }, 400));
+                          setTimeoutId(newTimeout);
                         }}
                         onSetup={(editor: any) => {
                           setEditorSetUpCompleted(true);
