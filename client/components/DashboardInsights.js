@@ -58,6 +58,10 @@ export function checkFileFormatAndSize(file) {
 
   return true;
 }
+const RE_BUTTON_TOPIC = {
+  topic: "Current Topic",
+  next: "Next Draft",
+}
 export default function DashboardInsights({
   loading,
   ideas,
@@ -66,6 +70,8 @@ export default function DashboardInsights({
   blog_id,
   setblog_id,
   tags,
+  setInitailIdeas,
+initailIdeas,
   setTags,
   freshIdeaTags: oldFreshIdeaTags,
   freshIdeasReferences,
@@ -102,10 +108,12 @@ export default function DashboardInsights({
   const [filteredIdeas, setFilteredIdeas] = useState([]);
   const [notUniquefilteredIdeas, setNotUniqueFilteredIdeas] = useState([]);
   const { showTwitterThreadUI, setShowTwitterThreadUI } = useThreadsUIStore();
+  const [currentIndexTitle, setCurrentIndexTitle]= useState("Current Topic")
   const [selectedFiles, setSelectedFiles] = useState([]);
   const setShowContributionModal = useByMeCoffeModal(
     (state) => state.toggleModal
   );
+
   const [toggle, setToggle] = useState(true);
   const toggleClass = " transform translate-x-3";
   const creditLeft = useStore((state) => state.creditLeft);
@@ -419,6 +427,7 @@ export default function DashboardInsights({
         onCompleted: (data) => {
           updateCredit();
           setBlogData(data?.regenerateBlog);
+          setInitailIdeas(data?.regenerateBlog?.ideas?.ideas);
           setIdeas(data?.regenerateBlog?.ideas?.ideas);
           setTags(data?.regenerateBlog?.tags);
           setFreshIdeaTags(data?.regenerateBlog?.freshIdeasTags);
@@ -562,6 +571,40 @@ export default function DashboardInsights({
       }));
     handleUsedIdeas(arr);
   }
+  // on change on ideas
+  useEffect(() => { 
+    console.log("changes in ideas");
+
+    const ideasMapWithIndex = {};
+    ideas.forEach((idea, index) => {
+      ideasMapWithIndex[index] = idea.used ? 1: 0;
+    });
+    console.log(ideasMapWithIndex);
+    const initialIdeasMapWithIndex = {};
+    
+    console.log(ideas, initailIdeas)
+    initailIdeas.forEach((idea, index) => {
+      initialIdeasMapWithIndex[index] = idea.used ? 1: 0;
+    }
+    );
+    
+    console.log(initialIdeasMapWithIndex);
+    let mapsAreEqual = true;
+    for (const key in ideasMapWithIndex) {
+      if (ideasMapWithIndex[key] !== initialIdeasMapWithIndex[key]) {
+        mapsAreEqual = false;
+        break; // If a mismatch is found, no need to continue checking
+      }
+    }
+  
+    if (mapsAreEqual) {
+      console.log("The values in the maps are the same.");
+      setCurrentIndexTitle(RE_BUTTON_TOPIC.topic)
+    } else {
+      setCurrentIndexTitle(RE_BUTTON_TOPIC.next);
+      console.log("The values in the maps are not the same.");
+    }
+  }, [ideas, initailIdeas]);
 
   function handleSelectAll() {
     if (toggle) {
@@ -746,6 +789,7 @@ export default function DashboardInsights({
 
     fetch(url, config)
       .then((response) => {
+        setInitailIdeas(response.data.data);
         setIdeas(response.data.data);
         setReference(response.data.references);
         setTags(response.data.freshIdeasTags);
@@ -950,7 +994,7 @@ export default function DashboardInsights({
             }
           >
             <RegenerateIcon />
-            Current Topic
+            {currentIndexTitle}
           </button>
         </div>
 

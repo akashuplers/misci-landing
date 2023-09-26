@@ -31,7 +31,6 @@ const MainIdeaItem = ({ index, idea, ideas, typeOfIdea, setIdeas, handleUsedIdea
             elIndex === index ? { ...el, used: el.used === 1 ? 0 : 1 } : el
         );
         setIdeas(updatedIdeas);
-
         const arr = updatedIdeas
             .filter((element) => element.used)
             .map((element) => ({

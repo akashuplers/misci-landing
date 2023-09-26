@@ -34,6 +34,7 @@ export default function Post({typeIsRepurpose}) {
   const [reference, setReference] = useState([]);
   const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
   const [alreadyShownDisclaimer, setAlreadyShownDisclaimer] = useState(false);
+  const[initailIdeas, setInitailIdeas] = useState([]);
   const [disclaimerCheck, setDisclaimerCheck] = useState(false);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
   const { option, setOption } = useTabOptionStore();
@@ -116,6 +117,7 @@ export default function Post({typeIsRepurpose}) {
   useEffect(() => {
     if (data == null) return;
     setBlogData(data.fetchBlog);
+    setInitailIdeas(data.fetchBlog.ideas.ideas);
     setIdeas(data.fetchBlog.ideas.ideas);
     setTags(data.fetchBlog.tags);
     setFreshIdeaTags(data.fetchBlog.freshIdeasTags);
@@ -466,6 +468,8 @@ You can add your own image, click on the image and use image options icon.`}
               ideas={ideas}
               setIdeas={setIdeas}
               tags={tags}
+              setInitailIdeas={setInitailIdeas}
+              initailIdeas={initailIdeas}
               setTags={setTags}
               freshIdeaTags={freshIdeaTags}
               freshIdeas={freshIdeas}
