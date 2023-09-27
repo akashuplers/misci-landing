@@ -1613,7 +1613,7 @@ router.post('/remove-sources', [authMiddleware], async (req: any, res: any) => {
       type: "SUCCESS",
       message: "Source Deleted",
       blogIdeas: updatedBlogIdeas?.value || blog,
-      blog: {...updatedBlog?.value, sourcesArray: uniqueSources} || blog,
+      blog: updatedBlog?.value || blog,
     })
   }catch(e){
     console.log(e, "remove source")

@@ -947,19 +947,19 @@ export const fetchArticleUrls = async ({
             })
         }
     }
-    let uniqueUrls : {
-        url: string
-        source: string
-        id?: string
-    }[] = [];
-    urls.forEach((c) => {
-        const dupe = uniqueUrls.find((data: {
-            url: string
-            source: string
-        }) => data.source === c.source)
-        if(!dupe) uniqueUrls.push(c)
-    });
-    return uniqueUrls
+    // let uniqueUrls : {
+    //     url: string
+    //     source: string
+    //     id?: string
+    // }[] = [];
+    // urls.forEach((c) => {
+    //     const dupe = uniqueUrls.find((data: {
+    //         url: string
+    //         source: string
+    //     }) => data.source === c.source)
+    //     if(!dupe) uniqueUrls.push(c)
+    // });
+    return urls
 }
 
 export const getSavedTime = async (db: any, blogId: string) => {
