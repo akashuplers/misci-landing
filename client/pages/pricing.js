@@ -22,10 +22,10 @@ export default function Pricing() {
         headers: {
           "Content-Type": "application/json",
         },
-      }).then((res) => res.data);
+      }).then((res) => res?.data);
 
-      setPriceData(pricesRes.data.data);
-      console.log(pricesRes.data.data);
+      setPriceData(pricesRes?.data.data);
+      console.log(pricesRes?.data.data);
     };
   }, []);
 
@@ -37,17 +37,17 @@ export default function Pricing() {
     console.log(plan);
     let selectPriceData = "";
     if (plan.subscriptionType === "Quarterly") {
-      selectPriceData = plans.filter((item) => {
+      selectPriceData = plans?.filter((item) => {
         return item?.subscriptionType === "Quarterly";
       });
       setPriceId(selectPriceData[0].priceId);
     } else if (plan.subscriptionType === "Yearly") {
-      selectPriceData = plans.filter((item) => {
+      selectPriceData = plans?.filter((item) => {
         return item?.subscriptionType === "Yearly";
       });
       setPriceId(selectPriceData[0].priceId);
     } else {
-      selectPriceData = plans.filter((item) => {
+      selectPriceData = plans?.filter((item) => {
         return item?.subscriptionType === "Monthly";
       });
       setPriceId(selectPriceData[0].priceId);
@@ -68,7 +68,7 @@ export default function Pricing() {
         headers: {
           "Content-Type": "application/json",
         },
-      }).then((res) => res.data);
+      }).then((res) => res?.data);
 
       console.log(pricesRes?.data, "pricesRes");
       const updatedPricesArray = pricesRes?.data?.data?.map((price) => {
@@ -90,10 +90,10 @@ export default function Pricing() {
         };
       });
 
-      const sortedPlans = updatedPricesArray.sort((a, b) => {
+      const sortedPlans = updatedPricesArray?.sort((a, b) => {
         const order = ["Monthly", "Quarterly", "Yearly"];
         return (
-          order.indexOf(a.subscriptionType) - order.indexOf(b.subscriptionType)
+          order.indexOf(a.subscriptionType) - order?.indexOf(b.subscriptionType)
         );
       });
 
@@ -104,9 +104,9 @@ export default function Pricing() {
   }, []);
 
   useEffect(() => {
-    if (plans && plans.length) setCurrentPlan(plans[0]);
-    if (plans.length > 0) {
-      const temp = plans.filter((item) => {
+    if (plans && plans?.length) setCurrentPlan(plans[0]);
+    if (plans?.length > 0) {
+      const temp = plans?.filter((item) => {
         return item?.subscriptionType === "Yearly";
       });
       setPriceId(temp[0].priceId);
@@ -172,11 +172,12 @@ export default function Pricing() {
                 }
               >
                 <img src="/pricing.png" className="mx-auto center h-40"></img>
-                <p className="text-center mx-auto">
-                 Empower Your Knowledge Journey with Lille.ai
-                </p>
-                <p>
-                For every thought you generate, we amplify its brilliance. Let`s make it count together!</p>
+                 <p className="text-center mx-auto text-[16px] font-semibold from-[#fb847d] to-black ">
+    Empower Your Knowledge Journey with Lille.ai
+  </p>
+  <p className="text-center mx-auto text-[14px] text-[#0E0E2C]">
+    For every thought you generate, we amplify its brilliance. Let's make it count together!
+  </p>
               </div>
               <div className=" mb-28 lg:mb-1 flex max-sm:flex-col w-full max-sm:space-y-8 sm:space-x-4 justify-center align-middle items-center">
                 <div
@@ -207,7 +208,7 @@ export default function Pricing() {
                     onClick={() => {
                       setIsOpen(true);
                     }}
-                    className="bg-[#3CC0F6] bottom-2   absolute w-[40%] inline-block right-[1rem] cursor-pointer  font-semibold text-[16px] no-underline text-[#0E0E2C] rounded-[10px] p-4"
+                    className="bg-[#fb847d] bottom-2  text-center  absolute w-[40%] inline-block right-[1rem] cursor-pointer  font-semibold text-[16px] no-underline text-[#0E0E2C] rounded-[10px] p-4"
                   >
                     Try for free
                   </div>
@@ -216,7 +217,7 @@ export default function Pricing() {
                 <div
                   style={{
                     background:
-                      "linear-gradient(157.47deg, #182735 14.91%, #15324E 96.07%)",
+                      "linear-gradient(157.47deg, rgb(0 74 174) 14.91%, rgb(0 14 33) 96.07%)",
                     boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
                   }}
                   ref={heightRef}
@@ -230,26 +231,29 @@ export default function Pricing() {
                       ${currentPlan?.price}
                     </p>
                   </div>
-                  <div className=" mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px]"></div>
-                  <div className="flex bg-[#fffff] items-center rounded-[59px] h-[55px] w-full justify-between px-2">
-                    {plans.length > 0 &&
-                      plans.map((item, i) => {
-                        return (
-                          <div
-                            key={i}
-                            onClick={() => subscriptionPlan(item)}
-                            className={`cursor-pointer rounded-[55px] px-[7.5px] md:px-[19px] py-[8px] ${
-                              currentPlan?.subscriptionType ===
-                              item.subscriptionType
-                                ? "bg-[#3cc0f6] text-[#ffffff]"
-                                : "bg-[#ffffff] text-[#000000]"
-                            }`}
-                          >
-                            {item.subscriptionType}
-                          </div>
-                        );
-                      })}
-                  </div>
+                  <div className=" mt-4 mb-4 bg-gradient-to-r from-[#fb847d] to-transparent h-[2px]"></div>
+<div className="flex bg-[#feffff] items-center rounded-[59px] h-[55px] w-full justify-between px-2">
+  {plans?.length > 0 &&
+    plans?.map((item, i) => {
+      return (
+        <div
+          key={i}
+          onClick={() => subscriptionPlan(item)}
+          className={`cursor-pointer rounded-[55px] px-[7.5px] md:px-[25px] py-[8px]
+          transition duration-300 ease-in-out
+          ${
+            currentPlan?.subscriptionType === item.subscriptionType
+              ? "bg-[#fb847d] text-[#ffffff]"
+              : "bg-[#ffffff] text-[#000000]"
+          }`}
+        >
+          {item.subscriptionType}
+        </div>
+      );
+    })}
+</div>
+
+
                   <div className="flex  flex-col items-start justify-start mt-4">
                     {" "}
                     {UpgradeFeatures.map((item, i) => {
@@ -266,36 +270,44 @@ export default function Pricing() {
                       }}
                       className="justify-self-end"
                     >
-                      <div className="bg-[#3CC0F6] bottom-6 inline-block right-[1rem] cursor-pointer w-[40%] font-semibold text-[16px] no-underline text-[#0E0E2C] rounded-[10px] p-4">
-                        Get Started
-                      </div>
+<div className="bg-[#fb847d] text-center bottom-6 inline-block right-[1rem] cursor-pointer w-[40%] font-semibold text-[16px] no-underline text-[#0E0E2C] rounded-[10px] p-4 
+    transition-all duration-300 ease-in-out 
+    hover:bg-[#f77f6e] hover:scale-105 hover:text-[#ffffff]">
+  Get Started
+</div>
+
                     </Link>
                   </div>
                 </div>
               </div>
            <div className="mx-auto mt-24 max-w-7xl px-6 sm:mt-32 lg:px-8">
-          <div className="mx-auto grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-12 sm:max-w-xl sm:grid-cols-6 sm:gap-x-10 sm:gap-y-14 lg:mx-0 lg:max-w-none lg:grid-cols-5">
-            <img
+          <p className="text-2xl text-center mx-auto"> In the media </p>
+          <div className="mx-auto text-center  grid max-w-lg grid-cols-1 items-center gap-x-8 gap-y-12 sm:max-w-xl sm:grid-cols-1 sm:gap-x-10 sm:gap-y-14 lg:mx-auto lg:max-w-2xl lg:grid-cols-3">
+         
+<a href="https://www.bizjournals.com/albany/inno/stories/news/2023/05/30/nowigence-lille-artificial-intelligence-chatgpt.html">
+   <img
               className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
               src="https://www.globenewswire.com/content/logo/color.svg"
               alt="Transistor"
               width={158}
               height={48}
-            />
+            /></a>
+<a href="https://fox2now.com/business/press-releases/globenewswire/8848313/lille-ai-is-launched-generate-communications-with-full-traceability-and-control">
             <img
               className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
               src="https://fox2now.com/wp-content/uploads/sites/14/2020/02/cropped-FOX2NOW.png"
               alt="Tuple"
               width={158}
               height={48}
-            />
+            /></a>
+      <a href="https://www.bizjournals.com/albany/inno/stories/news/2023/05/30/nowigence-lille-artificial-intelligence-chatgpt.html">
             <img
               className="col-span-2 max-h-12 w-full object-contain sm:col-start-2 lg:col-span-1"
-              src="https://tailwindui.com/img/logos/158x48/savvycal-logo-gray-900.svg"
+              src="/albany.png"
               alt="SavvyCal"
               width={158}
               height={48}
-            />
+            /></a>
     
           </div>
           <div className="mt-16 flex justify-center">
