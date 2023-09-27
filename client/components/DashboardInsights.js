@@ -244,25 +244,69 @@ export default function DashboardInsights({
   }
 
   function handleRefClick(e) {
-    e.target.classList.toggle("active");
+    debugger;
+    // e.target.classList.toggle("active");
     //const refCount = e.target.firstElementChild;
 
     /* Adding or removing the keywords to an array */
     const filterText = e.target.dataset.source;
+    // loop over all the ideas and get the same filter source
+  
+    let shouldInclude = true;
+    // alReadyInFilter.forEach((el) => {
+    //   if (el.filterText === filterText) {
+    //     shouldInclude = false;
+    //     return;
+    //   }
+    // });
+    const filteredIdeasList = [];
 
-    const valueExists = filteredArray.find(
-      (el) => Object.values(el).indexOf(filterText) > -1
-    );
-    if (valueExists) {
-      setFilteredArray((prev) => [
-        ...prev.filter((el) => el.filterText !== filterText),
-      ]);
-    } else {
-      setFilteredArray((prev) => [...prev, { filterText, criteria: "ref" }]);
+    const alreadyInFitlerArray = [...alReadyInFilter];
+    alreadyInFitlerArray.forEach((el) => {
+      if (el.filterText === filterText) {
+        shouldInclude = false;
+        return;
+      }
+    });
+    if(!shouldInclude){
+      alreadyInFitlerArray.push(filterText);
+    }else{
+      // remove from thje
+      alreadyInFitlerArray.filter((el) => el.filterText !== filterText);
     }
-    if (!toggle) {
-      setToggle(!toggle);
+
+
+    if(shouldInclude){
+      
+    }else{
+
+      if(alreadyInFitlerArray.length === 0){
+        setFilteredIdeas([]);
+      }else{
+        ideas.forEach((idea) => {
+          if (alreadyInFitlerArray.includes(idea?.name)) {
+            filteredIdeasList.push(idea);
+          }
+        });
+        setFilteredIdeas(filteredIdeasList);
+      }
     }
+    setFilteredIdeas((prev) => {
+      return [...prev, filterText];
+    })
+    // const valueExists = filteredArray.find(
+    //   (el) => Object.values(el).indexOf(filterText) > -1
+    // );
+    // if (valueExists) {
+    //   setFilteredArray((prev) => [
+    //     ...prev.filter((el) => el.filterText !== filterText),
+    //   ]);
+    // } else {
+    //   setFilteredArray((prev) => [...prev, { filterText, criteria: "ref" }]);
+    // }
+    // if (!toggle) {
+    //   setToggle(!toggle);
+    // }
   }
 
   useEffect(() => {
@@ -333,19 +377,19 @@ export default function DashboardInsights({
     
     // Create a new array from the Set object
     let uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse);
-    uniqueFilteredArray = uniqueFilteredArray.sort((a, b) => {
-      // Handle null cases by placing them at the end of the sorted array
-      if (a?.name === null && b?.name === null) {
-        return 0; // Both are null, no change in order
-      } else if (a?.name === null) {
-        return 1; // 'a' is null, move it to the end
-      } else if (b?.name === null) {
-        return -1; // 'b' is null, move it to the end
-      } else {
-        // Compare non-null values normally
-        return a.name.localeCompare(b.name);
-      }
-    });
+    // uniqueFilteredArray = uniqueFilteredArray.sort((a, b) => {
+    //   // Handle null cases by placing them at the end of the sorted array
+    //   if (a?.name === null && b?.name === null) {
+    //     return 0; // Both are null, no change in order
+    //   } else if (a?.name === null) {
+    //     return 1; // 'a' is null, move it to the end
+    //   } else if (b?.name === null) {
+    //     return -1; // 'b' is null, move it to the end
+    //   } else {
+    //     // Compare non-null values normally
+    //     return a.name.localeCompare(b.name);
+    //   }
+    // });
     
 
     // Add a new property to each idea calles citation number.
@@ -449,7 +493,12 @@ export default function DashboardInsights({
           handleSelectAll(data?.regenerateBlog?.ideas?.ideas);
           setTags(data?.regenerateBlog?.tags);
           setFreshIdeaTags(data?.regenerateBlog?.freshIdeasTags);
-          setReference(data?.regenerateBlog?.references);
+          let referencesList = data.fetchBlog.references;
+          let newreferencesList = referencesList.map((reference) => {
+            const localId = Math.random().toString(36).substr(2, 9);
+            return { ...reference, selected: false , localId};
+          });
+          setReference(newreferencesList);
           setFreshIdeaReferences(data?.regenerateBlog?.freshIdeasReferences);
           setFreshIdeas(data?.regenerateBlog?.ideas?.freshIdeas);
           setPyResTime(data?.regenerateBlog?.pythonRespTime);
@@ -901,6 +950,7 @@ export default function DashboardInsights({
     }
   }, [formInput]);
 
+  const [alReadyInFilter, setAlReadyInFilter] = useState([]);
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const [authenticationModalType, setAuthneticationModalType] =
     useState("signup");
@@ -909,28 +959,15 @@ export default function DashboardInsights({
     Gbid = localStorage.getItem("Gbid");
   }
 
-  function handleCitationFunction(source) {
-    debugger;
-    let filtered;
-    // if (ideaType === "used") {
-      reference.forEach((el, index) => {
-        if (el.source === source) {
-          filtered = index;
-        }
-      });
-    // } else if (ideaType === "fresh") {
-    //   freshIdeasReferences.forEach((el, index) => {
-    //     if (el.source === source) {
-    //       filtered = index;
-    //     }
-    //   });
-    // }
-
-    if (filtered === 0 || filtered) {
-      return filtered + 1;
-    } else {
-      return null;
-    }
+  function handleCitationFunction(idea) {
+    const idOfIdea = idea?.article_id || id;
+    const listOfRefWithSameId = [];
+    ideas.forEach((el) => {
+      if (el.id === idOfIdea) {
+        listOfRefWithSameId.push(el);
+      }
+    });
+    return listOfRefWithSameId.length;
   }
 
   function toTitleCase(str) {
@@ -948,6 +985,39 @@ export default function DashboardInsights({
   let sortedRefAr = [];
   let sortedIdeas = [];
   let filteredSortedIdeas = [];
+  let newFilteredIdeas = [];
+  debugger;
+  let letRefIdMapWithArticleId = {};
+
+  const allReferenceWithSelectedTrue = reference?.filter( (el) => el.selected === true) || [];
+
+  const idCountMap = {};
+  // const 
+
+
+// Loop through the data and count occurrences by 'id'
+ideas.forEach(item => {
+  const id = item.article_id;
+  // If the id exists in the map, increment the count; otherwise, initialize it to 1
+  idCountMap[id] = (idCountMap[id] || 0) + 1;
+});
+function getCount(id) {
+  debugger;
+  return idCountMap[id] || 0;
+}
+debugger;
+  ideas?.forEach((idea) => {
+    if(allReferenceWithSelectedTrue.length>0){
+      allReferenceWithSelectedTrue.forEach((ref) => {
+        if (idea?.article_id === ref?.id) {
+          newFilteredIdeas.push(idea);
+        }
+      });
+    }else{
+      newFilteredIdeas = [];
+    }
+  });
+
   if (ideasTab === 0) {
     sortedRefAr = reference?.filter((el) => el.type == "web") || [];
     sortedIdeas = ideas?.filter((el) => el.type =='web') || [];
@@ -963,7 +1033,7 @@ export default function DashboardInsights({
   } else if (ideasTab === 2) {
     sortedRefAr = reference?.filter((el) => el.type == "file") || [];
     sortedIdeas = ideas?.filter((el) => el.type =='file') || [];
-    if(filteredIdeas.length>0){
+    if(filteredIdeas?.length>0){
       filteredSortedIdeas = filteredIdeas?.filter((el)=>el.type=='file') || []; 
     }
   } else {
@@ -1152,6 +1222,7 @@ export default function DashboardInsights({
               selected={ideasTab == 2}
             />
           </div>
+
           <div
             className="flex gap-[0.5em] my-2 flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0 h-[50px] -z-10"
             style={{ padding: "0.75em 0.5em" }}
@@ -1163,8 +1234,10 @@ export default function DashboardInsights({
                     <UsedReference
                       key={index}
                       type={ref.type}
+                      idCountMap={getCount}
                       reference={ref}
                       index={index}
+                      setReference={setReference}
                       handleCitationFunction={handleCitationFunction}
                       handleRefClick={handleRefClick}
                       onDelete={() => handleRefDelete(ref.id)}
@@ -1254,6 +1327,7 @@ export default function DashboardInsights({
                 </div>
                </div>
                 <div className="w-full h-full justify-start items-center gap-3 inline-flex">
+                idea?.article_id + " \n" + 
                   <ArrowLongLeftIcon className="w-6 h-6 text-indigo-500" />
                   <input className="grow shrink basis-0 h-full px-2.5 py-2 rounded-lg border border-indigo-500 border-opacity-20 justify-start items-start gap-2.5 flex"
                     value={newReference.source}
@@ -1391,7 +1465,10 @@ export default function DashboardInsights({
               <div className={`bg-blue-500 w-1.5 h-1.5  rounded-full`} />
               Idea
               <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
-                {ideas?.length}
+                {/* {ideas?.length} */}
+                {
+                  newFilteredIdeas?.length >0 ? newFilteredIdeas?.length : ideas?.length
+                }
               </span>
             </button>
           </div>
@@ -1399,12 +1476,14 @@ export default function DashboardInsights({
           <div>
             {newIdeaLoad == false ? (
               <div className="dashboardInsightsUsedSectionHeight overflow-y-scroll px-2">
-                {filteredIdeas?.length > 0
-                  ? filteredIdeas?.map((idea, index) => (
+                {newFilteredIdeas?.length > 0
+                  ? newFilteredIdeas?.map((idea, index) => (
                       <UsedFilteredIdeaItem
                         key={index}
                         index={index}
                         idea={idea}
+                        idCountMap={getCount}
+
                         filteredIdeas={filteredIdeas}
                         setFilteredIdeas={setFilteredIdeas}
                         ideas={ideas}
@@ -1418,6 +1497,7 @@ export default function DashboardInsights({
                       <MainIdeaItem
                         key={index}
                         index={index}
+                        idCountMap={getCount}
                         idea={idea}
                         ideas={ideas}
                         typeOfIdea={idea?.type}

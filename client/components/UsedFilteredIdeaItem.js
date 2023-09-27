@@ -17,6 +17,7 @@ const UsedFilteredIdeaItem = ({
     filteredIdeas,
     setFilteredIdeas,
     ideas,
+    idCountMap,
     typeOfIdea,
     setIdeas,
     handleUsedIdeas,
@@ -64,6 +65,12 @@ const UsedFilteredIdeaItem = ({
 
     return (
         <div className={`flex pb-3 rounded-none border-none` + " filteredIdeas: " + idea?.idea} key={index}>
+            <div className={`mr-1 w-1.5 h-1.5  rounded-full mt-1`}
+                  style={{
+                    backgroundColor: typeOfIdea,
+                    opacity: idea?.used ? 1 : 0.5,
+                }}
+                  />
             <div className="flex justify-between gap-5 w-full">
                 <p className="text-[13px]" style={{
                         textDecoration : !idea?.initailUsed ? "line-through": "none"
@@ -79,7 +86,7 @@ const UsedFilteredIdeaItem = ({
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                 >
-                    {handleCitationFunction(idea?.name)}
+                    {idCountMap(idea?.article_id)}
                     <div
                         className={`hidden referenceTooltip${index}`}
                         style={{
