@@ -64,7 +64,7 @@ const UsedFilteredIdeaItem = ({
     };
 
     return (
-        <div className={`flex pb-3 rounded-none` + " filteredIdeas: " + idea?.idea} key={index}>
+        <div className={`flex pb-3 rounded-none border-none` + " filteredIdeas: " + idea?.idea} key={index}>
             <div className="flex justify-between gap-5 w-full">
                 <p className="text-[13px]" style={{
                         textDecoration : !idea?.initailUsed ? "line-through": "none"
