@@ -1153,7 +1153,7 @@ export default function DashboardInsights({
             />
           </div>
           <div
-            className="flex gap-[0.5em] my-2 flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
+            className="flex gap-[0.5em] my-2 flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0 h-[50px] -z-10"
             style={{ padding: "0.75em 0.5em" }}
           >
             {ideaType === "used" ? (
