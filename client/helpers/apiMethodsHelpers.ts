@@ -331,29 +331,53 @@ export const misciBlogPublish = async ({
 };
 
 
-export const saveMisciBlog = (payload: object) => {
-  // Create headers
-  const myHeaders = new Headers();
+export function DeleteRefSources(payload: {
+  blogId: string;
+  sourceId: string;
+}) {
+  // Define your headers
+  var myHeaders = new Headers();
+
+  const getToken = localStorage.getItem("token");
+  const getUserId = localStorage.getItem("userId");
+  const getTempId = localStorage.getItem("tempId");
+let user_id = getToken ? getToken : getTempId;
+
+
+
+  myHeaders.append("Authorization", "Bearer " + user_id);
   myHeaders.append("Content-Type", "application/json");
 
-  // Create requestOptions
-  const requestOptions: RequestInit = {
+  // Create the raw JSON payload
+  var raw = JSON.stringify(payload);
+
+  // Define request options
+  var requestOptions:any = {
     method: 'POST',
     headers: myHeaders,
-    body: JSON.stringify(payload),
+    body: raw,
     redirect: 'follow'
   };
 
-  const url = API_BASE_PATH + API_ROUTES.MISCI_SAVE;
-  // Make the API call and return the promise
+  let url = API_BASE_PATH + API_ROUTES.DELETE_REF_SOURCES;
+  // Make the API request and return the promise
   return fetch(url, requestOptions)
-    .then(response => response.text())
+    .then(response => response.json())
     .then(result => {
-      // You can add additional processing here if needed
+      // Parse the response JSON if needed
+      // You can return the parsed result here
       return result;
     })
     .catch(error => {
+      // Handle errors if necessary
       console.log('error', error);
-      throw error; // Optionally rethrow the error for handling in your component
+      // You can also throw an error or handle it differently as needed
+      return error;
     });
+}
+
+// Example usage:
+var payload = {
+  "blogId": "650ae6f7200ce465a8924c62",
+  "sourceId": "eae96595-57b1-11ee-ac29-0242ac130002"
 };
