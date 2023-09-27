@@ -329,12 +329,23 @@ export default function DashboardInsights({
     const uniqueFilteredSet = new Set(
       notUniquefilteredIdeas.map(JSON.stringify)
     );
-
+    
     // Create a new array from the Set object
     let uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse);
-    uniqueFilteredArray = uniqueFilteredArray.sort((a, b) =>
-      a?.name.localeCompare(b?.name)
-    );
+    uniqueFilteredArray = uniqueFilteredArray.sort((a, b) => {
+      // Handle null cases by placing them at the end of the sorted array
+      if (a?.name === null && b?.name === null) {
+        return 0; // Both are null, no change in order
+      } else if (a?.name === null) {
+        return 1; // 'a' is null, move it to the end
+      } else if (b?.name === null) {
+        return -1; // 'b' is null, move it to the end
+      } else {
+        // Compare non-null values normally
+        return a.name.localeCompare(b.name);
+      }
+    });
+    
 
     // Add a new property to each idea calles citation number.
     var prevLink = uniqueFilteredArray[0]?.name;
@@ -1083,7 +1094,7 @@ export default function DashboardInsights({
         <div>
           <div className="flex gap-2 justify-start w-full items-center py-2">
             <h3 className="font-semibold">Sources</h3>
-            <Tooltip content="Lille's AI dynamically curates these sources from the internet to inspire your articles and provide relevant ideas."> 
+            <Tooltip content="Lille's AI dynamically curates these sources from the internet to inspire your articles and provide relevant ideas.">  
             <InformationCircleIcon className="h-4 w-4 text-gray-500" />
             </Tooltip>
           </div>
