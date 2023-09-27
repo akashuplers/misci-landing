@@ -4,7 +4,7 @@ import { popoverContentPropDefs } from "@radix-ui/themes";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const UsedReference = ({ reference, index, handleRefClick, onDelete }) => {
+const UsedReference = ({ reference, index, handleRefClick, onDelete, handleCitationFunction }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     return (
@@ -56,7 +56,8 @@ const UsedReference = ({ reference, index, handleRefClick, onDelete }) => {
                         alignItems: "center",
                     }}
                 >
-                    {index + 1}
+                    {/* {index + 1} */}
+                    {handleCitationFunction(reference?.source   )}
                 </span>
             </div>
             <DeleteModal isOpen={showDeleteModal} onCancel={() => {

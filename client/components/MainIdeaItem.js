@@ -26,13 +26,16 @@ const MainIdeaItem = ({ index, idea, ideas, typeOfIdea, setIdeas, handleUsedIdea
     }
     getBgColorForCheckbox(typeOfIdea);
     const color = SourceColors[typeOfIdea] || 'bg-blue-800';
+    const updatedFilteredIdeas = ideas.map((el, elIndex) =>
+        elIndex === index ? { ...el, used: el.used === 1 ? 0 : 1 } : el
+    );
     const handleCheckboxClick = (e) => {
-        const updatedIdeas = ideas.map((el, elIndex) =>
-            elIndex === index ? { ...el, used: el.used === 1 ? 0 : 1 } : el
-        );
-        setIdeas(updatedIdeas);
-        const arr = updatedIdeas
-            .filter((element) => element.used)
+        const ideasCopy = ideas.map((element) => {
+            const found = updatedFilteredIdeas.find((pd) => pd.idea === element.idea);
+            return found ? found : element;
+        });
+        setIdeas(ideasCopy);
+        const arr = updatedFilteredIdeas.filter((element) => element.used)
             .map((element) => ({
                 text: element.idea,
                 article_id: element.article_id,
