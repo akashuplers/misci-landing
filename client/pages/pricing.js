@@ -9,9 +9,6 @@ import Navbar from "../components/Navbar";
 import { API_BASE_PATH } from "../constants/apiEndpoints";
 import styles from "../styles/price.module.css";
 import { MonthlyPlans, STRIPE_CONST_AMOUNT, UpgradeFeatures } from "@/store/appContants";
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
 export default function Pricing() {
   const [priceData, setPriceData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -116,45 +113,6 @@ export default function Pricing() {
   }, [plans]);
 
   const [type, setType] = useState("signup");
-  const [isMonthly, setIsMonthly] = useState(true);
-
-  let [categories] = useState({
-    Monthly: [
-      {
-        id: 1,
-        title: "Does drinking coffee make you smarter?",
-        date: "5h ago",
-        commentCount: 5,
-        shareCount: 2,
-      },
-      {
-        id: 2,
-        title: "So you've bought coffee... now what?",
-        date: "2h ago",
-        commentCount: 3,
-        shareCount: 2,
-      },
-    ],
-    Yearly: [
-      {
-        id: 1,
-        title: "Is tech making coffee better or worse?",
-        date: "Jan 7",
-        commentCount: 29,
-        shareCount: 16,
-      },
-      {
-        id: 2,
-        title: "The most innovative things happening in coffee",
-        date: "Mar 19",
-        commentCount: 24,
-        shareCount: 12,
-      },
-    ],
-  });
-  function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-  }
   const heightRef = useRef(null);
   const [heightOfAnother, setHeightOfAnother] = useState(0);
   useEffect(() => {
@@ -268,9 +226,6 @@ export default function Pricing() {
                     </p>
                     <p className="text-[64px]  font-bold">
                       ${currentPlan?.price}
-                      {/* <span className="text-[16px] leading-[26px] tracking-[0.5px] text-[#ffffff]">
-                  /month
-                </span> */}
                     </p>
                   </div>
                   <div className=" mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px]"></div>
