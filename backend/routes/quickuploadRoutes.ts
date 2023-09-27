@@ -51,6 +51,24 @@ router.post('/urls', authMiddleware, async (req: any, res: any) => {
         }[] = []
         let unusedIdeas: any[] = []
         let freshIdeasTags: string[] = []
+        const blog = await fetchBlog({id: blog_id, db})
+        const blogIdeas = await fetchBlogIdeas({id: blog_id, db})
+        let sourcesArray = blog.sourcesArray && blog.sourcesArray.length ? blog.sourcesArray : []
+        if(!sourcesArray.length) {
+            sourcesArray = await (
+                Promise.all(
+                    blog.article_id.map(async (id: string) => {
+                        const article = await fetchArticles({db, id})
+                        return {
+                            type: "web",
+                            id,
+                            source: article._source?.source?.name && (article._source?.source?.name === "file" || article._source?.source?.name === "note")  ? article._source.title : article._source?.source?.name,
+                            url: article?._source.orig_url || ""
+                        }
+                    })
+                )
+            )
+        }
         for (let index = 0; index < articleIds.length; index++) {
             const id = articleIds[index];
             if(id) {
@@ -99,36 +117,15 @@ router.post('/urls', authMiddleware, async (req: any, res: any) => {
                             )
                         )
                     }
+                    sourcesArray.push({
+                        type: "url",
+                        id: id,
+                        source: article._source?.source?.name && (article._source?.source?.name === "file" || article._source?.source?.name === "note")  ? article._source.title : article._source?.source?.name,
+                        url: article._source.orig_url
+                    })
                 }
             }
         }
-        const blog = await fetchBlog({id: blog_id, db})
-        const blogIdeas = await fetchBlogIdeas({id: blog_id, db})
-        let sourcesArray = blog.sourcesArray && blog.sourcesArray.length ? blog.sourcesArray : []
-        if(!sourcesArray.length) {
-            sourcesArray = await (
-                Promise.all(
-                    blog.article_id.map(async (id: string) => {
-                        const article = await fetchArticles({db, id})
-                        return {
-                            type: "web",
-                            id,
-                            source: article._source?.source?.name && (article._source?.source?.name === "file" || article._source?.source?.name === "note")  ? article._source.title : article._source?.source?.name,
-                            url: article?._source.orig_url || ""
-                        }
-                    })
-                )
-            )
-        }
-        unusedIdeas.forEach((data) => {
-            console.log(data, "data")
-            sourcesArray.push({
-                type: "url",
-                id: data.article_id,
-                source: data.name,
-                url: data?.reference?.link || ""
-            })
-        })
         const filteredIds = articleIds.filter((id: string) => id !== null && id !== undefined)
         console.log(filteredIds, "filteredIds")
         console.log(blog.article_id, "filteredIds")
