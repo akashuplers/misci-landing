@@ -945,19 +945,37 @@ export default function DashboardInsights({
 
     return titleCase.trim();
   }
-  let sortedRef = [];
-
+  let sortedRefAr = [];
+  let sortedIdeas = [];
+  let filteredSortedIdeas = [];
   if (ideasTab === 0) {
-    sortedRef = reference?.filter((el) => el.type == "web") || [];
+    sortedRefAr = reference?.filter((el) => el.type == "web") || [];
+    sortedIdeas = ideas?.filter((el) => el.type =='web') || [];
+    if(filteredIdeas.length>0){
+      filteredSortedIdeas = filteredIdeas?.filter((el)=>el.type=='web') || []; 
+    }
   } else if (ideasTab === 1) {
-    sortedRef = reference?.filter((el) => el.type == "url") || [];
+    sortedRefAr = reference?.filter((el) => el.type == "url") || [];
+    sortedIdeas = ideas?.filter((el) => el.type =='url') || [];
+    if(filteredIdeas.length>0){
+      filteredSortedIdeas = filteredIdeas?.filter((el)=>el.type=='url') || []; 
+    }
   } else if (ideasTab === 2) {
-    sortedRef = reference?.filter((el) => el.type == "file") || [];
+    sortedRefAr = reference?.filter((el) => el.type == "file") || [];
+    sortedIdeas = ideas?.filter((el) => el.type =='file') || [];
+    if(filteredIdeas.length>0){
+      filteredSortedIdeas = filteredIdeas?.filter((el)=>el.type=='file') || []; 
+    }
   } else {
-    sortedRef = [...reference];
+    sortedRefAr = [...reference];
+    sortedIdeas = [...ideas];
+    if(filteredIdeas.length>0){
+      filteredSortedIdeas = []; 
+    }
   }
+
   console.log("sortedRef");
-  console.log(sortedRef);
+  console.log(sortedRefAr);
   function handleIdeasTabClick(index) {
     setIdeasTab((prev) => {
       return index;
@@ -1140,13 +1158,14 @@ export default function DashboardInsights({
           >
             {ideaType === "used" ? (
               reference?.length > 0 ? (
-                sortedRef?.map((ref, index) => {
+                sortedRefAr?.map((ref, index) => {
                   return (
                     <UsedReference
                       key={index}
                       type={ref.type}
                       reference={ref}
                       index={index}
+                      handleCitationFunction={handleCitationFunction}
                       handleRefClick={handleRefClick}
                       onDelete={() => handleRefDelete(ref.id)}
                     />
@@ -1381,7 +1400,7 @@ export default function DashboardInsights({
             {newIdeaLoad == false ? (
               <div className="dashboardInsightsUsedSectionHeight overflow-y-scroll px-2">
                 {filteredIdeas?.length > 0
-                  ? filteredIdeas?.map((idea, index) => (
+                  ? filteredSortedIdeas?.map((idea, index) => (
                       <UsedFilteredIdeaItem
                         key={index}
                         index={index}
@@ -1395,7 +1414,7 @@ export default function DashboardInsights({
                         handleCitationFunction={handleCitationFunction}
                       />
                     ))
-                  : ideas?.map((idea, index) => (
+                  : sortedIdeas?.map((idea, index) => (
                       <MainIdeaItem
                         key={index}
                         index={index}
