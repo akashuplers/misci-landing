@@ -359,8 +359,9 @@ let user_id = getToken ? getToken : getTempId;
     redirect: 'follow'
   };
 
+  let url = API_BASE_PATH + API_ROUTES.DELETE_REF_SOURCES;
   // Make the API request and return the promise
-  return fetch("https://maverick.lille.ai/auth/remove-sources", requestOptions)
+  return fetch(url, requestOptions)
     .then(response => response.json())
     .then(result => {
       // Parse the response JSON if needed

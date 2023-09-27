@@ -29,7 +29,8 @@ export const API_ROUTES = {
   NEW_GENERATE_API: "/auth/generate",
   MISCI_GENERATE: "/misci/generate",
   MISCI_REGENERATE: "/misci/re-generate",
-  MISCI_PUBLISH: '/misci/publish'
+  MISCI_PUBLISH: '/misci/publish',
+  DELETE_REF_SOURCES: '/auth/remove-sources'
 };
 
 export const LI_API_ENDPOINTS = {
