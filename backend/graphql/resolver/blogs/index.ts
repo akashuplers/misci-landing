@@ -60,11 +60,26 @@ export const blogResolvers = {
                 const savedTimeData = await getSavedTime(db, blogDetails._id)
                 const comments = await db.db('lilleBlogs').collection('comments').find({blogId: new ObjectID(id)}).toArray()
                 const userDetail = await fetchUser({db, id: blogDetails.userId})
+                let uniqueSources : {
+                    url: string
+                    source: string
+                    id?: string
+                    type?: string
+                  }[] = [];
+                if(blogDetails.sourcesArray && blogDetails.sourcesArray.length) {
+                    blogDetails.sourcesArray.forEach((c: any) => {
+                        const dupe = uniqueSources.find((data: {
+                            url: string
+                            source: string
+                        }) => data.source === c.source)
+                        if(!dupe) uniqueSources.push(c)
+                    });
+                }
                 return {...blogDetails, ideas: {
                     ...blogIdeas,
                     ideas: updatedIdeas,
                     freshIdeas: updatedFreshIdeas?.length ? updatedFreshIdeas : null
-                }, likes: blogDetails.likes || 0,  references: blogDetails.sourcesArray && blogDetails.sourcesArray.length ? blogDetails.sourcesArray : refUrls, freshIdeasReferences:refUrlsFreshIdeas, savedTime: savedTimeData ? savedTimeData.time : null, comments, userDetail}
+                }, likes: blogDetails.likes || 0,  references: uniqueSources && uniqueSources.length ? uniqueSources : refUrls, freshIdeasReferences:refUrlsFreshIdeas, savedTime: savedTimeData ? savedTimeData.time : null, comments, userDetail}
             }catch(e) {
                 console.log(e)
             }
@@ -967,7 +982,22 @@ export const blogResolvers = {
                             `,
                         });
                     }
-                    return {...blogDetails, ideas: blogIdeasDetails, references: blogDetails.sourcesArray && blogDetails.sourcesArray.length ? blogDetails.sourcesArray : refUrls, respTime, freshIdeasReferences:refUrlsFreshIdeas}
+                    let uniqueSources : {
+                        url: string
+                        source: string
+                        id?: string
+                        type?: string
+                      }[] = [];
+                    if(blogDetails.sourcesArray && blogDetails.sourcesArray.length) {
+                        blogDetails.sourcesArray.forEach((c: any) => {
+                            const dupe = uniqueSources.find((data: {
+                                url: string
+                                source: string
+                            }) => data.source === c.source)
+                            if(!dupe) uniqueSources.push(c)
+                        });
+                    }
+                    return {...blogDetails, ideas: blogIdeasDetails, references: uniqueSources && uniqueSources.length ? uniqueSources : refUrls, respTime, freshIdeasReferences:refUrlsFreshIdeas}
                 }else{
                     console.log(blogGeneratedData, "blogGeneratedData")
                     throw "Something Went wrong!"

@@ -1594,11 +1594,26 @@ router.post('/remove-sources', [authMiddleware], async (req: any, res: any) => {
         ideas: updatedBlogIdeasArray
       }
     }, {returnDocument: "after"})
+    let uniqueSources : {
+      url: string
+      source: string
+      id?: string
+      type?: string
+    }[] = [];
+    if(blog.sourcesArray && blog.sourcesArray.length) {
+      blog.sourcesArray.forEach((c: any) => {
+        const dupe = uniqueSources.find((data: {
+            url: string
+            source: string
+        }) => data.source === c.source)
+        if(!dupe) uniqueSources.push(c)
+      });
+    }
     return res.status(200).send({
       type: "SUCCESS",
       message: "Source Deleted",
       blogIdeas: updatedBlogIdeas?.value || blog,
-      blog: updatedBlog?.value || blogIdeas,
+      blog: {...updatedBlog?.value, sourcesArray: uniqueSources} || blog,
     })
   }catch(e){
     console.log(e, "remove source")
@@ -1987,9 +2002,21 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
                   });
               }
           }
+          let uniqueSources : {
+            url: string
+            source: string
+            id?: string
+          }[] = [];
+          sourcesArray.forEach((c) => {
+              const dupe = uniqueSources.find((data: {
+                  url: string
+                  source: string
+              }) => data.source === c.source)
+              if(!dupe) uniqueSources.push(c)
+          });
           return res.status(200).send({
             type: "SUCCESS",
-            data:{...blogDetails, ideas: blogIdeasDetails, references: sourcesArray, pythonRespTime, respTime, unprocessedFiles, unprocessedUrls}
+            data:{...blogDetails, ideas: blogIdeasDetails, references: uniqueSources, pythonRespTime, respTime, unprocessedFiles, unprocessedUrls}
           })
       }else{
           console.log(blogGeneratedData, "blogGeneratedData")
