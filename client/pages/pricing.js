@@ -284,7 +284,7 @@ export default function Pricing() {
             />
             <img
               className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
-              src="https://tailwindui.com/img/logos/158x48/tuple-logo-gray-900.svg"
+              src="https://fox2now.com/wp-content/uploads/sites/14/2020/02/cropped-FOX2NOW.png"
               alt="Tuple"
               width={158}
               height={48}
@@ -296,13 +296,7 @@ export default function Pricing() {
               width={158}
               height={48}
             />
-            <img
-              className="col-span-2 col-start-2 max-h-12 w-full object-contain sm:col-start-auto lg:col-span-1"
-              src="https://tailwindui.com/img/logos/158x48/statamic-logo-gray-900.svg"
-              alt="Statamic"
-              width={158}
-              height={48}
-            />
+    
           </div>
           <div className="mt-16 flex justify-center">
             <p className="relative rounded-full bg-gray-50 px-4 py-1.5 text-sm leading-6 text-gray-600 ring-1 ring-inset ring-gray-900/5">
