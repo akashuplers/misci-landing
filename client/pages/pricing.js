@@ -176,7 +176,8 @@ export default function Pricing() {
     Empower Your Knowledge Journey with Lille.ai
   </p>
   <p className="text-center mx-auto text-[14px] text-[#0E0E2C]">
-    For every thought you generate, we amplify its brilliance. Let's make it count together!
+    For every thought you generate, we amplify its brilliance.<br></br>
+ Let's make it count together!
   </p>
               </div>
               <div className=" mb-28 lg:mb-1 flex max-sm:flex-col w-full max-sm:space-y-8 sm:space-x-4 justify-center align-middle items-center">
