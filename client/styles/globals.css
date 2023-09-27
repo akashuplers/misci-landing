@@ -603,6 +603,7 @@ input[type=number] {
 .Tooltip-Wrapper {
   display: inline-block;
   position: relative;
+  z-index:  99999;
 }
 
 /* Absolute positioning */
