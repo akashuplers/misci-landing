@@ -599,7 +599,7 @@ export const blogResolvers = {
             let webIds: string[] = []
             if((updatedTopic && updatedTopic !== blog.keyword) || (!useOldWebSource)) {
                 try {
-                    webIds = await new Python({userId: user.id}).uploadKeyword({keyword: updatedTopic, timeout:60000})
+                    webIds = await new Python({userId: user.id}).uploadKeyword({keyword: updatedTopic || blog.keyword, timeout:60000})
                     // webIds = [
                     //     '1401370b-578f-11ee-ac29-0242ac130002',
                     //     '1ac9c9dc-578f-11ee-ac29-0242ac130002',
@@ -842,7 +842,7 @@ export const blogResolvers = {
                             status: "draft",
                             description,
                             article_id: articleIds,
-                            keyword: updatedTopic !== blog.keyword ? updatedTopic : blog.keyword,
+                            keyword: updatedTopic && updatedTopic !== blog.keyword ? updatedTopic : blog.keyword,
                             sourcesArray,
                             tags: uniqueTags,
                             imageUrl: imageUrl ? imageUrl : blog.imageUrl,
