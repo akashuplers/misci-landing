@@ -331,7 +331,7 @@ export const misciBlogPublish = async ({
 };
 
 
-export function DeleteRefSources(payload: {
+export async function DeleteRefSources(payload: {
   blogId: string;
   sourceId: string;
 }) {

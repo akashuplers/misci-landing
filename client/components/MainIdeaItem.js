@@ -14,7 +14,7 @@ function getBgColorForCheckbox(color) {
     const before = `checked:before:bg-${color}-500`;
     return `${border} ${bg} ${before}`;
 }
-const MainIdeaItem = ({ index, idea, ideas, typeOfIdea, setIdeas, handleUsedIdeas, handleCitationFunction }) => {
+const MainIdeaItem = ({ index, idea, idCountMap,ideas, typeOfIdea, setIdeas, handleUsedIdeas, handleCitationFunction }) => {
     // let color = SourceColors[typeOfIdea] || 'bg-blue-800';
     let realTypeOfIdea = typeOfIdea;
     if (typeOfIdea == 'web') {
@@ -56,7 +56,7 @@ const MainIdeaItem = ({ index, idea, ideas, typeOfIdea, setIdeas, handleUsedIdea
         <div className="flex pb-3 usedIdeas gap-1" key={index}>
                   <div className={` w-1.5 h-1.5  rounded-full mt-1`}
                   style={{
-                    backgroundColor: idea?.used ? typeOfIdea : 'white',
+                    backgroundColor: typeOfIdea,
                     opacity: idea?.used ? 1 : 0.5,
                 }}
                   />
@@ -77,7 +77,9 @@ const MainIdeaItem = ({ index, idea, ideas, typeOfIdea, setIdeas, handleUsedIdea
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                 >
-                    {handleCitationFunction(idea?.name)}{" "}
+                    {/* {handleCitationFunction(idea)}{" "} */}
+                    {/* {idCountMap[idea?.article_id]} */}
+                    {idCountMap(idea?.article_id)}
                     <div
                         className={`hidden referenceTooltip${index}`}
                         style={{

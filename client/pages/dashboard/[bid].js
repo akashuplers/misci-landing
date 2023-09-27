@@ -132,7 +132,12 @@ export default function Post({typeIsRepurpose}) {
     setTags(data.fetchBlog.tags);
     setFreshIdeaTags(data.fetchBlog.freshIdeasTags);
     setFreshIdeasReferences(data.fetchBlog.freshIdeasReferences);
-    setReference(data.fetchBlog.references);
+    let referencesList = data.fetchBlog.references;
+    let newreferencesList = referencesList.map((reference) => {
+      const localId = Math.random().toString(36).substr(2, 9);
+      return { ...reference, selected: false , localId};
+    });
+    setReference(newreferencesList);
     setFreshIdeas(data.fetchBlog.ideas.freshIdeas);
     const newArray = data.fetchBlog.publish_data.filter(
       (obj) => obj.platform === "wordpress"

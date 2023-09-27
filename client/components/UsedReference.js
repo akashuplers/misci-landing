@@ -6,14 +6,16 @@ import { Link } from "react-router-dom";
 import React from 'react';
 import * as Tooltip from '@radix-ui/react-tooltip';
 
-const UsedReference = ({ reference, index, handleRefClick, onDelete, handleCitationFunction }) => {
+const UsedReference = ({ reference, setReference, index, handleRefClick, onDelete, handleCitationFunction, idCountMap }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     return (
       <>
         <div
           key={index}
-          className="ref-button cta relative flex justify-between items-center "
+          className={`ref-button cta relative flex justify-between items-center ${
+            reference.selected ? "active" : ""
+          }`}
           style={{
             borderRadius: "100px",
             padding: "0.25em 0.75em",
@@ -23,7 +25,15 @@ const UsedReference = ({ reference, index, handleRefClick, onDelete, handleCitat
             cursor: "pointer",
             userSelect: "none",
           }}
-          onClick={handleRefClick}
+          onClick={(e)=>{
+            setReference((prev)=>{
+              let newRef = [...prev];
+              let localId = reference.localId;
+              let refIndex = newRef.findIndex((ref)=>ref.localId === localId);
+              newRef[refIndex].selected = !newRef[refIndex].selected;
+              return newRef;
+            })
+          }}
           data-source={reference.source}
         >
           {reference.source}
@@ -79,9 +89,8 @@ const UsedReference = ({ reference, index, handleRefClick, onDelete, handleCitat
               zIndex: "0",
               alignItems: "center",
             }}
-          >
-            {/* {index + 1} */}
-            {handleCitationFunction(reference?.source)}
+          > 
+            {idCountMap(reference?.id)}
           </span>
         </div>
         <DeleteModal
