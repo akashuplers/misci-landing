@@ -38,7 +38,7 @@ export class Python {
                 data : uploadData
             };
             const pythonRes = await axios(config)
-            console.log(pythonRes.data)
+            console.log(pythonRes.data, "python response for url")
             if(pythonRes.data && pythonRes.data.length) {
                 return pythonRes.data[0]
             }
@@ -108,6 +108,7 @@ export class Python {
             };
             const pythonRes = await axios(config)
             await fs.unlinkSync(data.file.originalname)
+            console.log(pythonRes.data, "python response for file")
             if(pythonRes.data && pythonRes.data.length) {
                 return pythonRes.data[0]
             }
