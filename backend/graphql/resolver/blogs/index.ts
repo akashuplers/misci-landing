@@ -600,12 +600,6 @@ export const blogResolvers = {
             if((updatedTopic && updatedTopic !== blog.keyword) || (!useOldWebSource)) {
                 try {
                     webIds = await new Python({userId: user.id}).uploadKeyword({keyword: updatedTopic || blog.keyword, timeout:60000})
-                    // webIds = [
-                    //     '1401370b-578f-11ee-ac29-0242ac130002',
-                    //     '1ac9c9dc-578f-11ee-ac29-0242ac130002',
-                    //     '229281df-578f-11ee-ac29-0242ac130002',
-                    //     '267ff7ef-578f-11ee-ac29-0242ac130002'
-                    // ]
                     articleIds = [...articleIds, ...webIds]
                 }catch(e){
                     console.log(e, "error from python")
@@ -649,13 +643,9 @@ export const blogResolvers = {
                     return
                 }
             })
-            // console.log(sourcesArray, "sourcesArray")
-            // console.log(articleIds)
-            // console.log(ideasArr)
-            // console.log(lastWebIdeas)
             console.log(ideasArr, "before")
-            // console.log(texts)
-            // console.log(ideas)
+            console.log(sourcesArray, "sourcesArray")
+
             let newWebData: any[] = []
             if(webIds && webIds.length) {
                 newWebData = await (
@@ -710,7 +700,7 @@ export const blogResolvers = {
                 })
             }
             console.log(ideasArr, "ideasArr")
-            console.log(texts, "texts")
+            // console.log(newWebData, "newWebData")
             // // console.log(texts)
             try {
                 let refUrls: {
@@ -727,8 +717,9 @@ export const blogResolvers = {
                     $in: articleIds
                 }}, {projection: {
                     "_source.source.name": 1,
+                    "_source.title": 1,
                 }}).toArray()
-                articleNames = articleNames.map((data: any) => ({_id: data._id, name: data?._source?.source.name}))
+                articleNames = articleNames.map((data: any) => ({_id: data._id, name: (data?._source?.source.name === "file" || data?._source?.source.name === "note") ? data?._source.title : data?._source?.source.name}))
                 console.log(refUrls, "refUrls")
                 console.log(sourcesArray, "sourcesArray")
                 let startChatGptRequest = new Date()
