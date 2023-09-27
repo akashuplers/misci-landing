@@ -35,7 +35,6 @@ const UsedFilteredIdeaItem = ({
         elIndex === index ? { ...el, used: el.used === 1 ? 0 : 1 } : el
     );
     const handleCheckboxClick = () => {
-      
         setFilteredIdeas(updatedFilteredIdeas);
 
         const ideasCopy = ideas.map((element) => {

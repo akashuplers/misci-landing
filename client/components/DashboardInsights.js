@@ -116,6 +116,7 @@ export default function DashboardInsights({
   const setShowContributionModal = useByMeCoffeModal(
     (state) => state.toggleModal
   );
+  const [userNextSourcesCheck, setUserNextSourcesCheck] = useState(false);
 
   const [toggle, setToggle] = useState(true);
   const toggleClass = " transform translate-x-3";
@@ -436,6 +437,8 @@ export default function DashboardInsights({
           options: {
             ideas: newarr,
             blog_id: blog_id,
+            useOldWebSource: !userNextSourcesCheck,
+            updatedTopic: keyword
           },
         },
         onCompleted: (data) => {
@@ -901,20 +904,21 @@ export default function DashboardInsights({
   }
 
   function handleCitationFunction(source) {
+    debugger;
     let filtered;
-    if (ideaType === "used") {
+    // if (ideaType === "used") {
       reference.forEach((el, index) => {
         if (el.source === source) {
           filtered = index;
         }
       });
-    } else if (ideaType === "fresh") {
-      freshIdeasReferences.forEach((el, index) => {
-        if (el.source === source) {
-          filtered = index;
-        }
-      });
-    }
+    // } else if (ideaType === "fresh") {
+    //   freshIdeasReferences.forEach((el, index) => {
+    //     if (el.source === source) {
+    //       filtered = index;
+    //     }
+    //   });
+    // }
 
     if (filtered === 0 || filtered) {
       return filtered + 1;
@@ -1087,15 +1091,15 @@ export default function DashboardInsights({
           <div className="flex justify-between w-full items-start py-2 flex flex-col">
             <h3 className="pt-[0.65em] font-semibold">Draft Topic</h3>
             <div className="opacity-70 text-gray-800 text-sm font-normal capitalize">
-              {keyword ? keyword + " ?": ""} 
+              {keyword ? keyword + " ?" : ""}
             </div>
           </div>
         </div>
         <div>
           <div className="flex gap-2 justify-start w-full items-center py-2">
             <h3 className="font-semibold">Sources</h3>
-            <Tooltip content="Lille's AI dynamically curates these sources from the internet to inspire your articles and provide relevant ideas.">  
-            <InformationCircleIcon className="h-4 w-4 text-gray-500" />
+            <Tooltip content="Lille's AI dynamically curates these sources from the internet to inspire your articles and provide relevant ideas.">
+              <InformationCircleIcon className="h-4 w-4 text-gray-500" />
             </Tooltip>
           </div>
           <div className="flex items-center gap-2 py-1.5">
@@ -1138,9 +1142,7 @@ export default function DashboardInsights({
                       reference={ref}
                       index={index}
                       handleRefClick={handleRefClick}
-                      onDelete={
-                        () => handleRefDelete(ref.id)
-                      }
+                      onDelete={() => handleRefDelete(ref.id)}
                     />
                   );
                 })
@@ -1166,6 +1168,53 @@ export default function DashboardInsights({
           </div>
           {ideasTab == 0 && (
             <>
+              <div className="w-full justify-between pr-5 items-center  inline-flex">
+                <div className="opacity-70 text-gray-800 text-xs font-normal">
+                  Use New Sources in Next Draft
+                </div>
+                <div className="relative rounded-sm border-none border-slate-400" >
+                <div class="inline-flex items-start">
+                    <label
+                        class="relative flex justify-center cursor-pointer items-center rounded-full p-3"
+                        for="checkbox-1"
+                        data-ripple-dark="true"
+                    > 
+                        <input
+                            type="checkbox"
+                            class={`before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-md border border-blue-gray-200 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity hover:before:opacity-10 `} 
+                            id="checkbox-1"
+                            checked={userNextSourcesCheck}
+                            onChange={
+                              (e)=>{
+                                setUserNextSourcesCheck(e.target.checked)
+                              }
+                            }
+                            style={{
+                                 
+                            }}
+                        />
+                        <div class="pointer-events-none absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 text-white opacity-0 transition-opacity peer-checked:opacity-100">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-3.5 w-3.5"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                stroke="currentColor"
+                                stroke-width="1"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clip-rule="evenodd"
+                                ></path>
+                            </svg>
+                        </div>
+                    </label>
+                </div>
+                  
+
+                </div>
+              </div>
               {/* <div className="flex flex-col w-full">
                <div className="flex justify-between w-full">
                <div className="flex opacity-70 text-gray-800 text-sm font-normal">Use New Sources in Next Draft</div>
@@ -1260,7 +1309,7 @@ export default function DashboardInsights({
                     inputFiles.map((file, index) => {
                       return (
                         <FileComponent
-                        key={index}
+                          key={index}
                           name={file.name}
                           size={Math.round(file.size / 1000) + "KB"}
                           fileData={index}
