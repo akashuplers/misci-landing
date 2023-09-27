@@ -779,10 +779,15 @@ export default function DashboardInsights({
     } else if (type === "URL") {
       // For URL uploads
       url += API_ROUTES.URL_UPLOAD;
+      const urls = [...inputUrls, newReference.source];
+      setinputUrls(urls);
       raw =JSON.stringify({
-        urls: inputUrls,
+        urls: urls,
         blog_id: blog_id,
         userId: user_id,
+      });
+      setNewReference((prev)=>{
+        return {...prev, source: ""}
       });
     } else {
       // For keyword uploads
@@ -815,7 +820,6 @@ export default function DashboardInsights({
         return response.json();
       })
       .then((response) => {
-        debugger;
         if (response.type != "SUCCESS") {
           toast.error(response.message);
           return;
@@ -827,7 +831,7 @@ export default function DashboardInsights({
         // setReference(response.data.references);
         // setTags(response.data.freshIdeasTags);
 
-        refetchBlog();
+        
         // setPyResTime(response.data.pythonRespTime);
         // setNdResTime(response.data.respTime);
         // const fresh = document.querySelector(".idea-button.fresh");
@@ -837,10 +841,12 @@ export default function DashboardInsights({
         // fresh.classList.add("active");
       }) 
       .finally(() => {
-        setformInput("");
-        setFileValid(false);
-        setUrlValid(false);
-        setNewIdeaLoad(false);
+        refetchBlog().then((res) => {
+          setformInput("");
+          setFileValid(false);
+          setUrlValid(false);
+          setNewIdeaLoad(false);
+        });
       });
   }
 
@@ -1273,7 +1279,9 @@ export default function DashboardInsights({
                     className="grow shrink basis-0 h-full px-2.5 py-2 rounded-lg border border-indigo-500 border-opacity-20 justify-start items-start gap-2.5 flex"
                     value={newReference.source}
                     onChange={(e) => {
-                      setformInput(e.target.value);
+                      setNewReference((prev) => {
+                        return { ...prev, source: e.target.value };
+                      });
                     }}
                     placeholder="Add URL"
                   />
@@ -1281,7 +1289,7 @@ export default function DashboardInsights({
                     className="w-6 h-6 relative  textSuperman-indigo-500 bg-slate-100 rounded-sm border"
                     onClick={(event) => {
                       setinputUrls((prev) => {
-                        return [...prev, formInput];
+                        return [...prev,  newReference.source];
                       });
                     }}
                   >
