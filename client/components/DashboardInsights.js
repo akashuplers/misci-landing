@@ -1400,7 +1400,7 @@ export default function DashboardInsights({
             {newIdeaLoad == false ? (
               <div className="dashboardInsightsUsedSectionHeight overflow-y-scroll px-2">
                 {filteredIdeas?.length > 0
-                  ? filteredSortedIdeas?.map((idea, index) => (
+                  ? filteredIdeas?.map((idea, index) => (
                       <UsedFilteredIdeaItem
                         key={index}
                         index={index}
@@ -1414,7 +1414,7 @@ export default function DashboardInsights({
                         handleCitationFunction={handleCitationFunction}
                       />
                     ))
-                  : sortedIdeas?.map((idea, index) => (
+                  : ideas?.map((idea, index) => (
                       <MainIdeaItem
                         key={index}
                         index={index}
