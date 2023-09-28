@@ -894,6 +894,7 @@ export default function DashboardInsights({
           setformInput("");
           setFileValid(false);
           setUrlValid(false);
+          setInputFiles([]);
           setNewIdeaLoad(false);
         });
       });
@@ -1349,7 +1350,7 @@ debugger;
           )}
           {ideasTab == 1 && (
             <div className="px-4 flex flex-col gap-3">
-              <div>
+              <div className="flex flex-row gap-2 flex-wrap max-h-[100px] overflow-y-scroll" >
                 {inputUrls.map((url, index) => {
                   return (
                     <Chip
@@ -1410,7 +1411,7 @@ debugger;
             <div className="px-4 flex flex-col gap-3">
               <div className="flex w-full items-end gap-2 justify-between">
                 <div className="w-full">
-                  {inputFiles.length > 0 ? (
+                  {inputFiles?.length > 0 ? (
                     inputFiles.map((file, index) => {
                       return (
                         <FileComponent
