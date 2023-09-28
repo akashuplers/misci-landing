@@ -200,7 +200,7 @@ export default function Pricing() {
                       Beginner`s Voyage - Free Plan
                     </p>
                     <p className="text-[44px] text-[#182735] leading-[112%] text-left font-bold">
-                     25 Credits to fuel your exploration. 
+                    1 Month Free
                     </p>
                     <p className=" text-[#182735] text-left leading-[26px] text-[18px] font-medium mb-4">
                      Craft and Share with the world on Lille.ai platform, LinkedIn, and broadcast your voice with 3 daily tweets on Twitter. 
