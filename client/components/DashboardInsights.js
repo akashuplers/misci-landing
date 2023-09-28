@@ -1186,7 +1186,7 @@ debugger;
           <div className="flex justify-between w-full items-start py-2 flex flex-col">
             <h3 className="pt-[0.65em] font-semibold">Draft Topic</h3>
             <div className="opacity-70 text-gray-800 text-sm font-normal capitalize">
-              {keyword ? keyword + " ?" : ""}
+              {keyword}
             </div>
           </div>
         </div>
