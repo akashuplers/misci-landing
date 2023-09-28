@@ -90,7 +90,7 @@ router.post('/urls', authMiddleware, async (req: any, res: any) => {
                                 article_id: id,
                                 used: 0,
                                 name: name && (name === "file" || name === "note")  ? article._source.title : name,
-                                type: "urls",
+                                type: "url",
                             })
                         }
                     })
