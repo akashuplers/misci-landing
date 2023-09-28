@@ -351,7 +351,7 @@ const MisciWorkSpace = ({
               <div className="flex justify-center items-center ">
              <div className="w-[50%]">
              <img
-              className="w-full h-full rounded-full object-cover"
+              className="w-full h-full rounded-md  object-cover"
               src={image}
               alt=""
             />
