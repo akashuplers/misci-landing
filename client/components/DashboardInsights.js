@@ -1384,6 +1384,10 @@ debugger;
                       setinputUrls((prev) => {
                         return [...prev,  newReference.source];
                       });
+                      setNewReference((prev) => {
+                        return { ...prev, source: "" };
+                      }
+                      );
                     }}
                   >
                     {<PlusIcon />}
