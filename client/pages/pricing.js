@@ -203,7 +203,7 @@ export default function Pricing() {
                     1 Month Free
                     </p>
                     <p className=" text-[#182735] text-left leading-[26px] text-[18px] font-medium mb-4">
-                     Craft and Share with the world on Lille.ai platform, LinkedIn, and broadcast your voice with 3 daily tweets on Twitter. 
+                     Craft and Share with the world on Lille.ai platform, LinkedIn, and broadcast your voice with 3 daily tweets on X. 
 
                     </p>
     <p className=" text-[#182735] text-left leading-[26px] text-[18px] font-medium mb-4">
