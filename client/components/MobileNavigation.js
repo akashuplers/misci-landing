@@ -26,8 +26,8 @@ const mobileNavigation = [
     icon: QuestionMarkCircleIcon,
   },
   {
-    name: "About Us",
-    href: "/about",
+    name: "Value",
+    href: "/aboutus",
     icon: InformationCircleIcon,
   },
   {

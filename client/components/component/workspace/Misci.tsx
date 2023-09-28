@@ -301,7 +301,7 @@ const MisciWorkSpace = ({
           );
           console.log([...getAllIdeasWith1, ...ideas]);
           // get only used ==
-          setListOfIdeas((prev) => {
+          setListOfIdeas((prev : any) => {
             return [...getAllIdeasWith1];
           });
           setInitialListOfIdeas([...getAllIdeasWith1, ...getAllIdeasWith1]);
@@ -351,7 +351,7 @@ const MisciWorkSpace = ({
               <div className="flex justify-center items-center ">
              <div className="w-[50%]">
              <img
-              className="w-full h-full rounded-full object-cover"
+              className="w-full h-full rounded-md  object-cover"
               src={image}
               alt=""
             />
@@ -699,7 +699,7 @@ const MisciWorkSpace = ({
                           <h3 className="pt-[0.65em] font-semibold">Sources</h3>
                         </div>
                         <div className="flex gap-[0.5em] flex-wrap h-full w-full  overflow-x-hidden overflow-y-scroll">
-                          {references?.map((ref) => {
+                          {references?.map((ref:any) => {
                             return <Chip key={ref.id} text={ref.source} />;
                           })}
                         </div>
