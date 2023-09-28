@@ -894,6 +894,7 @@ export default function DashboardInsights({
           setformInput("");
           setFileValid(false);
           setUrlValid(false);
+          setInputFiles([]);
           setNewIdeaLoad(false);
         });
       });
@@ -1185,7 +1186,7 @@ debugger;
           <div className="flex justify-between w-full items-start py-2 flex flex-col">
             <h3 className="pt-[0.65em] font-semibold">Draft Topic</h3>
             <div className="opacity-70 text-gray-800 text-sm font-normal capitalize">
-              {keyword ? keyword + " ?" : ""}
+              {keyword}
             </div>
           </div>
         </div>
@@ -1349,7 +1350,7 @@ debugger;
           )}
           {ideasTab == 1 && (
             <div className="px-4 flex flex-col gap-3">
-              <div>
+              <div className="flex flex-row gap-2 flex-wrap max-h-[100px] overflow-y-scroll" >
                 {inputUrls.map((url, index) => {
                   return (
                     <Chip
@@ -1410,7 +1411,7 @@ debugger;
             <div className="px-4 flex flex-col gap-3">
               <div className="flex w-full items-end gap-2 justify-between">
                 <div className="w-full">
-                  {inputFiles.length > 0 ? (
+                  {inputFiles?.length > 0 ? (
                     inputFiles.map((file, index) => {
                       return (
                         <FileComponent

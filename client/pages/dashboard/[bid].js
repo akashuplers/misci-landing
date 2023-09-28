@@ -114,9 +114,15 @@ export default function Post({typeIsRepurpose}) {
 
 
   function handleSetIdeas (ideas) {
-    // add a new properly initailUsedd = used 
+    // add a new properly initailUsedd = used
+    const validTypes =['web', 'url', 'file'] 
     const newIdeas = ideas.map((idea) => {
-      return { ...idea, initailUsed :idea.used };
+      // return { ...idea, initailUsed :idea.used, };
+      if(idea?.type==null || idea?.type==undefined || idea?.type=='' || !validTypes.includes(idea?.type)){
+        return { ...idea, initailUsed :idea.used, type:'web' };
+      }else{
+        return { ...idea, initailUsed :idea.used };
+      }
     });
     setIdeas(newIdeas);
     setInitailIdeas(newIdeas)
