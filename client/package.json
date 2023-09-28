@@ -64,7 +64,7 @@
     "react-text-transition": "^3.1.0",
     "react-textarea-autosize": "^8.4.1",
     "react-toastify": "^9.1.2",
-    "sass": "^1.63.6",
+    "sass": "^1.68.0",
     "subscriptions-transport-ws": "^0.9.19",
     "swiper": "^9.4.1",
     "tinymce": "^6.4.0",
