@@ -4,10 +4,11 @@ export const TYPES_OF_GENERATE = {
 };
 export const BASE_PRICE = 100;
 export const UpgradeFeatures = [
-  "Full Features Access with 200 Credits monthly validity",
-  "Unlimited saving and publishing of Contents and LinkedIn Posts. 6 tweets per day on Twitter",
-  "Create/Regenerate contents with your topics",
-  "Customization possibilities, Talk to our support team",
+  "At just $49/month (Score more savings with our $129 quarterly & $468 annual options!) ",
+  "💡 200 Monthly Credits for uninterrupted creativity. ",
+  "♾️ Limitless horizons: Save, edit, and publish content. From LinkedIn posts to insightful daily twitter threads. ",
+  "🛠 Bespoke Adaptations: Align Lille.ai to fit your unique needs, with customization possibilities and dedicated support. ",
+  "🔭 Perfect for: Visionaries in search of the ultimate content tool. ",
 ];
 export const STRIPE_CONST_AMOUNT = 100;
 export const APP_REGEXP = {
