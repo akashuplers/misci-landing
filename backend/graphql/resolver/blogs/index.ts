@@ -849,7 +849,7 @@ export const blogResolvers = {
                                     if(ideasData.article_id) {
                                         const article = await fetchArticleById({id: ideasData.article_id, db, userId: blog.userId})
                                         const sourceFilter = sourcesArray.find((source: any) => source.id === ideasData.article_id)
-                                        let type = null
+                                        let type = "web"
                                         if(sourceFilter) {
                                             type = sourceFilter.type
                                         }
