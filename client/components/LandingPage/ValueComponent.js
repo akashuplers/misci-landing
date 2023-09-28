@@ -35,11 +35,10 @@ export default function ValueComponent() {
   const colors = ['#4939FA', '#F4928A', '#E9C403']; // An array of your colors
 
   return (
-    <div className="p-0">
+    <div className="pt-12">
       <div className="container mx-auto">
 
-          <img className="h-48 mx-auto center -mt-12" src="/screenshots/about.png" alt="About Us" />
-
+      
         {valueSections.map((section, index) => (
           <div
             key={index}
