@@ -42,21 +42,21 @@ export default function Pricing() {
   const subscriptionPlan = (plan) => {
     console.log(plan);
     let selectPriceData = "";
-    if (plan.subscriptionType === "Quarterly") {
+    if (plan?.subscriptionType === "Quarterly") {
       selectPriceData = plans?.filter((item) => {
         return item?.subscriptionType === "Quarterly";
       });
-      setPriceId(selectPriceData[0].priceId);
-    } else if (plan.subscriptionType === "Yearly") {
+      setPriceId(selectPriceData[0]?.priceId);
+    } else if (plan?.subscriptionType === "Yearly") {
       selectPriceData = plans?.filter((item) => {
         return item?.subscriptionType === "Yearly";
       });
-      setPriceId(selectPriceData[0].priceId);
+      setPriceId(selectPriceData[0]?.priceId);
     } else {
       selectPriceData = plans?.filter((item) => {
         return item?.subscriptionType === "Monthly";
       });
-      setPriceId(selectPriceData[0].priceId);
+      setPriceId(selectPriceData[0]?.priceId);
     }
 
     setCurrentPlan(plan);
