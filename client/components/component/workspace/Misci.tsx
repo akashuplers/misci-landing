@@ -31,7 +31,7 @@ import PublishMisciModal from "@/modals/PublishMisciModal";
 import IdeaTag from "@/components/IdeaTag";
 import TextModal from "@/modals/TextModal";
 
-const resetTimeoutForSave= (id, newID) => {
+const resetTimeoutForSave= (id:any, newID:any) => {
   clearTimeout(id);
   return newID;
 };
