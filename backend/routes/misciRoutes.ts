@@ -712,6 +712,7 @@ router.post('/test-upload',uploadStrategy, async (req: any, res: any) => {
         const db = req.app.get('dbLive')
         console.log(req.file, "akash")
         const file = xlsx.read(req.file.buffer)
+        const sheetToPick = req.body.sheet
         console.log(file,req.file, "akash")
         // Reading our test file
         const userEmail = await db.db('lilleAdmin').collection('misciEmail').findOne()
@@ -722,13 +723,23 @@ router.post('/test-upload',uploadStrategy, async (req: any, res: any) => {
         let data: any = []
         
         const sheets = file.SheetNames
-        
+        console.log(sheets, "sheets")
+        console.log(sheetToPick, "sheetToPick")
         for(let i = 0; i < sheets.length; i++)
         {
-            const temp = xlsx.utils.sheet_to_json(file.Sheets[file.SheetNames[i]])
-            temp.forEach((res: any) => {
-                data.push(res)
-            })
+            if(sheetToPick) {
+                if(file.SheetNames[i] === sheetToPick) {
+                    const temp = xlsx.utils.sheet_to_json(file.Sheets[sheetToPick])
+                    temp.forEach((res: any) => {
+                        data.push(res)
+                    })
+                }
+            }else{
+                const temp = xlsx.utils.sheet_to_json(file.Sheets[file.SheetNames[i]])
+                temp.forEach((res: any) => {
+                    data.push(res)
+                })
+            }
         }
         // Printing data
         console.log(data)
