@@ -9,7 +9,11 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: { colors: {
+        'primary': '#4939FA',
+        'secondary': '#F4928A',
+        'tertiary': '#E9C403'
+      },},
   },
   plugins: [require("@tailwindcss/forms"),require('tailwind-scrollbar'),
 ],
