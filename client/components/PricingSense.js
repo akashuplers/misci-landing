@@ -2,9 +2,9 @@ import React from 'react';
 
 const PricingSense = () => {
   return (
-    <div className="bg-[#4939FA] text-white py-14 px-8 rounded-md">
+    <div className="bg-[#241c7a] text-white py-14 px-8 ">
       <h2 className="text-4xl font-bold mb-8 text-center bg-[#241c7a] w-1/2 rounded-md mx-auto p-4">Why Lille.ai Stands Out?</h2>
-      <div className="grid md:grid-cols-2 gap-12">
+      <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
         <div className="hover:bg-[#F4928A] hover:text-[#4939FA] transition duration-300 p-4 rounded-lg cursor-pointer">
           <h3 className="text-2xl font-semibold">Deep Dive Analysis</h3>
           <p>A unique blend of extractive and generative AI, offering a comprehensive first draft response to even the most complex queries.</p>

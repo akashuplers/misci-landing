@@ -9,8 +9,8 @@ const ComparisonUI = () => {
         alt="Background" 
         className="absolute top-0 left-0 w-full h-full object-cover opacity-10 z-1"
       />
-        <div className='z-10 relative'>
-      <h1 className="text-4xl font-bold mb-12">Key Features that Elevate Lille.ai:</h1>
+        <div className='z-10 relative max-w-5xl mx-auto'>
+      <h1 className="text-4xl font-bold mb-12 text-center">Key Features that Elevate Lille.ai</h1>
       <div className="grid md:grid-cols-2 gap-12 mb-20">
         {[
           'Content Customization: Enriched by Co-Pilot, crafted by you.',
