@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-const ComparisonUI = () => {
+const ComparisonUI = ({onPress}) => {
   return (
     <div className="relative text-white py-20 px-8 bg-[#4839fa]">
       <img 
@@ -39,10 +39,14 @@ const ComparisonUI = () => {
           </div>
         ))}
       </div>
-      <div className="bg-[#F4928A] mt-12 p-8 rounded-lg">
+      <div className="bg-[#F4928A] mt-12 p-8 rounded-lg text-center">
         <h2 className="text-3xl font-bold mb-4">Your Ideas Deserve Brilliance.</h2>
         <p>Craft, refine, and shine with Lille.ai. Embrace a transformative content journey, tailored just for you.</p>
+ <button onClick={onPress} className="mt-4 bg-gradient-to-r from-[#4939FA] via-[#402fff] to-[#0a4bfc] text-white py-2 px-6 rounded-full text-lg font-semibold shadow-lg transform hover:scale-105 hover:shadow-xl transition duration-300 ease-in-out">
+      Embark with Lille.ai now
+    </button>
       </div>
+
         </div>
     </div>
   );

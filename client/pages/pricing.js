@@ -16,6 +16,7 @@ import {
   UpgradeFeatures,
 } from "@/store/appContants";
 import MoblieUnAuthFooter from "@/components/LandingPage/MoblieUnAuthFooter";
+
 export default function Pricing() {
   const [priceData, setPriceData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -202,8 +203,12 @@ export default function Pricing() {
                     <p className="text-[44px] text-[#182735] leading-[112%] text-left font-bold">
                     1 Month Free
                     </p>
-                    <p className=" text-[#182735] text-left leading-[26px] text-[18px] font-medium mb-4">
-                     Craft and Share with the world on Lille.ai platform, LinkedIn, and broadcast your voice with 3 daily tweets on X. 
+                    <p className=" text-[#182735] text-left leading-[26px] text-[18px] font-medium mb-4" style={{lineHeight: 1.4}}>
+                     Craft and Share with the world on Lille.ai platform, <img style={{    display: 'inline-block',
+    width: '20px',
+    height: '20px'}} src="/li.png"></img> and broadcast your voice with 3 daily tweets on <img style={{    display: 'inline-block',
+    width: '32px',
+    height: '20px'}} src="/x.png"></img>
 
                     </p>
     <p className=" text-[#182735] text-left leading-[26px] text-[18px] font-medium mb-4">
@@ -258,7 +263,8 @@ export default function Pricing() {
                           <div
                             key={i}
                             onClick={() => subscriptionPlan(item)}
-                            className={`cursor-pointer rounded-[55px] px-[7.5px] md:px-[25px] py-[8px]
+                            
+                            className={`cursor-pointer rounded-[55px] text-center w-[50%]  px-[7.5px] md:px-[25px] py-[8px]
           transition duration-300 ease-in-out
           ${
             currentPlan?.subscriptionType === item.subscriptionType
@@ -302,7 +308,10 @@ export default function Pricing() {
   <div className="mx-auto mt-24  sm:mt-32 ">
                 <PricingSense />
               </div>  <div className="mx-auto  ">
-                <ComparisionUI />
+                <ComparisionUI onPress={() => {
+                      setIsOpen(true);
+                    }} />
+
               </div>
               {/* <div className="mx-auto mt-24 max-w-7xl px-6 sm:mt-32 lg:px-8">
                  <h3 className="text-4xl font-bold mb-8 text-center bg-[#241c7a] w-1/2 rounded-md mx-auto p-4 text-white">
@@ -362,6 +371,7 @@ export default function Pricing() {
           </a>
         </div>
       </div>
+      {/* <MoblieUnAuthFooter/> */}
     </>
   );
 }
