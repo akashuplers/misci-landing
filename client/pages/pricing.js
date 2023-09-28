@@ -205,6 +205,8 @@ export default function Pricing() {
                     <p className=" text-[#182735] text-left leading-[26px] text-[18px] font-medium mb-4" style={{lineHeight: 1.4}}>
                      Craft and Share with the world on Lille.ai platform, post it on LinkedIn and broadcast your voice with 3 daily tweets on <img style={{    display: 'inline-block',
     width: '32px',
+    marginTop: '-5px',
+    marginLeft: '-5px',
     height: '20px'}} src="/x.png"></img>
 
                     </p>

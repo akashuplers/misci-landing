@@ -375,7 +375,7 @@ const CheckoutForm = ({
         style={{
           backdropFilter: "blur(10px)",
         }}
-        className={" py-3  px-4 w-[60%] mx-auto rounded rounded-5 my-3"}
+        className={" py-3  px-4 w-full sm:w-[60%] mx-auto rounded rounded-5 my-3"}
       >
         <div className="px-4 mt-7">
           <h2 className="fw-bold text-4xl  my-2 ">Join us today 👋</h2>
