@@ -151,7 +151,7 @@ export default function Subscription({ query }) {
                         <div
                           key={i}
                           onClick={() => subscriptionPlan(item)}
-                          className={`w-[33%] text-[18px] font-medium cursor-pointer rounded-[55px] px-[19px] py-[8px] ${currentPlan?.subscriptionType === item.subscriptionType
+                          className={`w-[49%] text-[18px] text-center font-medium cursor-pointer rounded-[55px] px-[19px] py-[8px] ${currentPlan?.subscriptionType === item.subscriptionType
                             ? "bg-[#fb847d] text-[#ffffff]"
                             : "bg-[#ECEDF5] text-[#13213E]"
                             }`}
@@ -168,7 +168,7 @@ export default function Subscription({ query }) {
                       "linear-gradient(157.47deg, rgb(0 74 174) 14.91%, rgb(0 14 33) 96.07%)",
                     boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
                   }}
-                  className="flex relative flex-col rounded-[4px] text-[#ffffff] p-4 w-[306px] sm:w-[392px] md:h-full h-[200px]"
+                  className="flex relative flex-col rounded-[4px] text-[#ffffff] p-4 w-full sm:w-[392px]  md:h-full h-full  sm:h-[200px]"
                 >
                   <div className="flex flex-col items-start justify-start mt-4">
                     <p className="font-semibold text-[24px] pb-2 capitalize">

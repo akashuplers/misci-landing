@@ -22,7 +22,7 @@ export default function ValueComponent() {
   },
   {
     question: "Why should marketing pros like me choose Lille.ai?",
-    answer: "Look, we understand you. Content Marketing in the digital age demands precision. Lille.ai not only targets but tailor's content, analyzing oceans of information for that laser-focused approach. Think higher conversion rates and satisfying ROIs. Lille.ai isn't just a tool—it's your next content marketing co-pilot.",
+    answer: "Look, we understand you. Content Marketing in the digital age demands precision. Lille.ai not only targets but tailors content, analyzing oceans of information for that laser-focused approach. Think of higher conversion rates and satisfying ROIs. Lille.ai isn't just a tool—it's your next content marketing co-pilot.",
     imageURL: "/screenshots/4.jpg",
   },
   {
