@@ -1,9 +1,14 @@
 export default function ValueComponent() {
   const valueSections = [
    {
+    question: "Can Lille.ai cover diverse topics?",
+    answer: "From reading and understanding URL’s, documents to academic papers, it's equipped to assist on diverse topics. With Lille.ai, you’ve got a Swiss Army knife for information. ",
+    imageURL: "/screenshots/1.jpg",
+  },
+   {
     question: "Could Lille.ai potentially replace my job?",
     answer: "Definitely not. Remember the rise of calculators in the mid-90s? They didn’t take jobs but instead made tasks faster and even created new job opportunities. Similarly, Lille.ai isn't here to replace you, but to help you navigate the vast information landscape more effectively. Think of it as your personal assistant, making information access and presentation more efficient and enjoyable.",
-    imageURL: "/screenshots/1.jpg",
+    imageURL: "/screenshots/7.jpg",
   },
   {
     question: "With so many generative AI tools around since ChatGPT's launch, why should I pick Lille.ai?",
@@ -36,7 +41,7 @@ export default function ValueComponent() {
 
   return (
     <div className="pt-12">
-      <div className="container mx-auto">
+      <div className="container mx-auto max-w-full sm:max-w-5xl">
 
       
         {valueSections.map((section, index) => (

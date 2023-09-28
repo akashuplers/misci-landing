@@ -4,7 +4,7 @@ export const TYPES_OF_GENERATE = {
 };
 export const BASE_PRICE = 100;
 export const UpgradeFeatures = [
-  "At just $49/month (Score more savings with our $129 quarterly & $468 annual options!) ",
+  "At just $49/month (Score more savings with our $468 annual option!) ",
   "💡 200 Monthly Credits for uninterrupted creativity. ",
   "♾️ Limitless horizons: Save, edit, and publish content. From LinkedIn posts to insightful daily twitter threads. ",
   "🛠 Bespoke Adaptations: Align Lille.ai to fit your unique needs, with customization possibilities and dedicated support. ",

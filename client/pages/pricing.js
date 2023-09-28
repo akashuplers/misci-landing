@@ -179,12 +179,11 @@ export default function Pricing() {
                 }
               >
                 <img src="/pricing.png" className="mx-auto center h-40"></img>
-                <p className="text-center mx-auto text-[16px] font-semibold from-[#fb847d] to-black ">
+                <p className="text-center mx-auto text-[20px] font-semibold from-[#fb847d] to-black ">
                   Empower Your Knowledge Journey with Lille.ai
                 </p>
-                <p className="text-center mx-auto text-[14px] text-[#0E0E2C]">
+                <p className="text-center mx-auto text-[18px] text-[#0E0E2C]">
                   For every thought you generate, we amplify its brilliance.
-                  <br></br>
                   Let`s make it count together!
                 </p>
               </div>
@@ -194,19 +193,17 @@ export default function Pricing() {
                     boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
                     height: heightOfAnother + "px",
                   }}
-                  className="flex sm:flex-wrap sm:flex-row relative max-sm:flex-col bg-[#ffffff] rounded-[0.75rem] p-4 w-[21rem] md:w-[392px] lg:h-full h-[600px]"
+                  className="flex sm:flex-wrap sm:flex-row relative max-sm:flex-col bg-[#ffffff] rounded-[0.75rem] p-4 w-[21rem] md:w-[432px] lg:h-full h-[600px]"
                 >
                   <div className="flex flex-col items-start justify-start gap-4 mt-4">
                     <p className="text-[#182735] font-semibold text-[24px] leading-[26px]">
                       Beginner`s Voyage - Free Plan
                     </p>
-                    <p className="text-[44px] text-[#182735] leading-[112%] text-left font-bold">
+                    <p className="text-[44px] text-[#182735] leading-[112%] text-left font-bold pb-8">
                     1 Month Free
                     </p>
                     <p className=" text-[#182735] text-left leading-[26px] text-[18px] font-medium mb-4" style={{lineHeight: 1.4}}>
-                     Craft and Share with the world on Lille.ai platform, <img style={{    display: 'inline-block',
-    width: '20px',
-    height: '20px'}} src="/li.png"></img> and broadcast your voice with 3 daily tweets on <img style={{    display: 'inline-block',
+                     Craft and Share with the world on Lille.ai platform, post it on LinkedIn and broadcast your voice with 3 daily tweets on <img style={{    display: 'inline-block',
     width: '32px',
     height: '20px'}} src="/x.png"></img>
 
@@ -215,7 +212,7 @@ export default function Pricing() {
                     Access to Advanced AI & ML tools and integration with popular web search engines for visibility. 
 
                     </p>
-    <p className=" text-[#182735] text-left leading-[26px] text-[18px] font-medium mb-4">
+    <p className=" text-[#182735] text-left leading-[26px] text-[18px] font-medium mb-4 absolute bottom-[9%]">
                     🔴 Ideal for: Those embarking on their content journey.  
 
                     </p>
@@ -229,7 +226,7 @@ export default function Pricing() {
                       setIsOpen(true);
                     }}
                 style={{    position: 'absolute',bottom: 10,
-    width: '90%'}}
+    width: '92%'}}
                     className="bg-[#fb847d]  h-42 text-center bottom-6 inline-block right-[1rem] cursor-pointer font-semibold text-[16px] no-underline text-[#0E0E2C] rounded-[10px] p-4 
     transition-all duration-300 ease-in-out 
     hover:bg-[#f77f6e] hover:scale-105 hover:text-[#ffffff]"
@@ -245,7 +242,7 @@ export default function Pricing() {
                     boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
                   }}
                   ref={heightRef}
-                  className="flex relative flex-col  rounded-[0.75rem] text-[#ffffff] p-4 w-[21rem] md:w-[392px] h-full"
+                  className="flex relative flex-col  rounded-[0.75rem] text-[#ffffff] p-4 w-[21rem] md:w-[432px] h-full"
                 >
                   <div className="flex flex-col  items-start justify-start mt-4">
                     <p className=" font-semibold text-[24px] pb-2 capitalize">
