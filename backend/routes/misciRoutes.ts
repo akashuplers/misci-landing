@@ -214,6 +214,7 @@ router.get('/weekly-report', async (req: any, res: any) => {
                   short_answer: 1,
                   detailed_answer: 1,
                   timestamp: 1,
+                  date: 1,
                 },
             },
         ]).toArray()
@@ -228,6 +229,10 @@ router.get('/weekly-report', async (req: any, res: any) => {
                         "short answer": data.short_answer,
                         "detail answer": data.detailed_answer,
                         "date": getDateString(data.timestamp),
+<<<<<<< Updated upstream
+=======
+                        "timestamp": getDateString(data.timestamp, true),
+>>>>>>> Stashed changes
                     })
                 })
             )
@@ -436,7 +441,8 @@ router.post('/generate', async (req: any, res: any) => {
             date: getTimeStamp(),
             updatedAt: getTimeStamp(),
             type: "misci",
-            answers
+            answers,
+            dns: req.get('host')
         }
         const noteReferences = await db.db('lilleBlogs').collection('notesReferences').findOne({
             article_id: article.id
