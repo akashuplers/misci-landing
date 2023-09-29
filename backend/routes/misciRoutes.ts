@@ -105,11 +105,12 @@ router.get('/export-report',async (req: any, res: any) => {
                         "article description": data.blogs.description,
                         "formatted article": convertedData,
                         "question": data.blogs.question,
+                        "date": getDateString(data.timestamp),
                     })
                 })
             )
         )
-        let Headers = ['blog id', 'name', 'email', 'article description', 'formatted article', 'question'];
+        let Headers = ['blog id', 'name', 'email', 'formatted article', 'question', 'date' ];
         // preparedData = normsOccurances.map((normData: any) => {
         // return Headers.map((header) => {
         //     console.log(header, "header")
@@ -214,6 +215,7 @@ router.get('/weekly-report', async (req: any, res: any) => {
                   short_answer: 1,
                   detailed_answer: 1,
                   timestamp: 1,
+                  date: 1,
                 },
             },
         ]).toArray()
@@ -228,11 +230,12 @@ router.get('/weekly-report', async (req: any, res: any) => {
                         "short answer": data.short_answer,
                         "detail answer": data.detailed_answer,
                         "date": getDateString(data.timestamp),
+                        "timestamp": getDateString(data.timestamp, true),
                     })
                 })
             )
         )
-        let Headers = ['blog id', 'question', 'short answer', 'detail answer', 'formatted article'];
+        let Headers = ['blog id', 'question', 'short answer', 'detail answer', "date", "timestamp"];
         console.log(preparedData, "Data")
         const wb = xlsx.utils.book_new(),
         ws = xlsx.utils.json_to_sheet(preparedData);
@@ -436,7 +439,8 @@ router.post('/generate', async (req: any, res: any) => {
             date: getTimeStamp(),
             updatedAt: getTimeStamp(),
             type: "misci",
-            answers
+            answers,
+            dns: req.get('host')
         }
         const noteReferences = await db.db('lilleBlogs').collection('notesReferences').findOne({
             article_id: article.id
