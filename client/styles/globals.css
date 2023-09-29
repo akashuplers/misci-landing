@@ -398,6 +398,7 @@ iframe {
     width: calc(100vw - var(--sidebar-width));
     margin-top: var(--topbar-height);
     margin-left: auto;
+    overflow-y: hidden;
   }
 
   .authenticatedLayout {
