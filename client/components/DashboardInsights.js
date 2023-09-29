@@ -481,6 +481,7 @@ export default function DashboardInsights({
           },
         },
         onCompleted: (data) => {
+         try{
           updateCredit();
           setBlogData(data?.regenerateBlog);
           // setInitailIdeas(data?.regenerateBlog?.ideas?.ideas);
@@ -488,7 +489,7 @@ export default function DashboardInsights({
           handleSelectAll(data?.regenerateBlog?.ideas?.ideas);
           setTags(data?.regenerateBlog?.tags);
           setFreshIdeaTags(data?.regenerateBlog?.freshIdeasTags);
-          let referencesList = data.fetchBlog.references;
+          let referencesList = data?.fetchBlog.references;
           let newreferencesList = referencesList.map((reference) => {
             const localId = Math.random().toString(36).substr(2, 9);
             return { ...reference, selected: false, localId };
@@ -584,6 +585,9 @@ export default function DashboardInsights({
             setShowContributionModal(true);
           }
           // setOption(prevState => prevState);
+         } catch (err){
+          console.log(err);
+         }
         },
         onError: (error) => {
           console.error("Credit Exhaust or any other error", error.message);
@@ -593,6 +597,7 @@ export default function DashboardInsights({
           } else {
             if (error.message) {
               console.log("error", error.message);
+              toast.error(error.message);
               setOpen(true);
             }
           }
