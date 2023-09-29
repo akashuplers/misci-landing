@@ -961,14 +961,9 @@ export default function DashboardInsights({
   }
 
   function handleCitationFunction(idea) {
-    const idOfIdea = idea?.article_id || id;
-    const listOfRefWithSameId = [];
-    ideas.forEach((el) => {
-      if (el.id === idOfIdea) {
-        listOfRefWithSameId.push(el);
-      }
-    });
-    return listOfRefWithSameId.length;
+    const idOfIdea = idea?.article_id;
+    const count = getCount(idOfIdea);
+    return count;    
   }
 
   function toTitleCase(str) {
@@ -993,15 +988,16 @@ export default function DashboardInsights({
   const allReferenceWithSelectedTrue = reference?.filter( (el) => el.selected === true) || [];
 
   const idCountMap = {};
-  // const 
-
-
-// Loop through the data and count occurrences by 'id'
+reference.forEach(item => {
+  const id = item.id;
+  idCountMap[id] = 0;
+})
 ideas.forEach(item => {
   const id = item.article_id;
-  // If the id exists in the map, increment the count; otherwise, initialize it to 1
-  idCountMap[id] = (idCountMap[id] || 0) + 1;
-});
+  if(idCountMap[id] !== undefined && idCountMap[id] !== null){
+    idCountMap[id] = (idCountMap[id] || 0) + 1;
+  }
+})
 function getCount(id) {
   debugger;
   return idCountMap[id] || 0;
