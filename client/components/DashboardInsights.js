@@ -993,7 +993,7 @@ export default function DashboardInsights({
       }
     }
 
-    return -1; // Return -1 if the key is not found in the object
+    return 0; // Return -1 if the key is not found in the object
   }
 
   function getCount(id) {
