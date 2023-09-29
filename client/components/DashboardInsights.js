@@ -1122,7 +1122,8 @@ function getCount(id) {
         style={{ borderLeft: "2px solid #d2d2d2" }}
         id="regenblog"
       >
-        {/* h1 Insight only for mobile screens */}
+        <div>
+          {/* h1 Insight only for mobile screens */}
         <h1 className="pt-[0.65em] font-semibold">WORKSPACE</h1>
         <div className="flex jusify-between gap-[1.25em]">
           <p className="font-normal w-[100%] lg:w-[70%] text-sm">
@@ -1143,40 +1144,6 @@ function getCount(id) {
             {currentIndexTitle}
           </button>
         </div>
-
-        {tags?.length > 0 && (
-          <div>
-            <div className="flex justify-between w-full items-center py-2">
-              {/* <h3 className="pt-[0.65em] font-semibold">Filtering Keywords</h3> */}
-            </div>
-            {/* <div
-              className="flex gap-[0.5em] flex-wrap h-full lg:max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
-              style={{ padding: "0.75em 0.25em" }}
-            >
-              {ideaType === "used"
-                ? tags?.map((tag, i) => {
-                  return (
-                    <IdeaTag
-                      key={i}
-                      tag={tag}
-                      handleTagClick={handleTagClick}
-                    />
-                  );
-                })
-                : freshIdeaTags?.length > 0
-                  ? freshIdeaTags?.map((tag, i) => {
-                    return (
-                      <IdeaTag
-                        key={i}
-                        tag={tag}
-                        handleTagClick={handleTagClick}
-                      />
-                    );
-                  })
-                  : "Generate fresh ideas to see tags"}
-            </div> */}
-          </div>
-        )}
 
         <div>
           <div className="flex justify-between w-full items-start py-2 flex flex-col">
@@ -1310,43 +1277,12 @@ function getCount(id) {
 
                 </div>
               </div>
-              {/* <div className="flex flex-col w-full">
-               <div className="flex justify-between w-full">
-               <div className="flex opacity-70 text-gray-800 text-sm font-normal">Use New Sources in Next Draft</div>
-                <div className="justify-center items-center flex">
-                  <input
-                    type="checkbox"
-                    className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-none focus:ring-blue-500"
-                    style={{
-                      borderRadius: '2px'
-                    }}
-                  />
-                </div>
-               </div>
-                <div className="w-full h-full justify-start items-center gap-3 inline-flex">
-                idea?.article_id + " \n" + 
-                  <ArrowLongLeftIcon className="w-6 h-6 text-indigo-500" />
-                  <input className="grow shrink basis-0 h-full px-2.5 py-2 rounded-lg border border-indigo-500 border-opacity-20 justify-start items-start gap-2.5 flex"
-                    value={newReference.source}
-                    onChange={(e) => {
-                      setformInput(e.target.value)
-                    }}  
-                    placeholder="Add Topic" />
-                  <button className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
-                    onClick={(event) => {
-                      postFormData(event, 'Topic');
-                    }}
-                  >
-                    <PlusIcon />
-                  </button>
-                </div>
-              </div> 
-              */}
+     
             </>
           )}
           {ideasTab == 1 && (
             <div className="px-4 flex flex-col gap-3">
-              <div className="flex flex-row gap-2 flex-wrap max-h-[100px] overflow-y-scroll" >
+              <div className="flex flex-row gap-2 flex-wrap max-h-[80px] overflow-y-scroll" >
                 {inputUrls.map((url, index) => {
                   return (
                     <Chip
@@ -1456,9 +1392,11 @@ function getCount(id) {
             </div>
           )}
         </div>
+        </div>
 
-        <>
-          <div className="flex py-2 relative gap-5">
+      <div>
+        
+      <div className="flex py-2 relative gap-5">
             <button
               className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs flex items-center justify-around gap-1"
               onClick={(e) => {
@@ -1516,7 +1454,7 @@ function getCount(id) {
               </div>
             )}
           </div>
-        </>
+      </div>
       </div>
     </>
   );
