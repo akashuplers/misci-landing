@@ -229,10 +229,7 @@ router.get('/weekly-report', async (req: any, res: any) => {
                         "short answer": data.short_answer,
                         "detail answer": data.detailed_answer,
                         "date": getDateString(data.timestamp),
-<<<<<<< Updated upstream
-=======
                         "timestamp": getDateString(data.timestamp, true),
->>>>>>> Stashed changes
                     })
                 })
             )
