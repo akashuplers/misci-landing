@@ -244,7 +244,7 @@ export default function DashboardInsights({
   }
 
   function handleRefClick(e) {
-    debugger;
+    
     // e.target.classList.toggle("active");
     //const refCount = e.target.firstElementChild;
 
@@ -798,7 +798,7 @@ export default function DashboardInsights({
   };
 
   function postFormData(e, type = "File") {
-    debugger;
+    
     e.preventDefault();
     setNewIdeaLoad(true);
     const getToken = localStorage.getItem("token");
@@ -856,7 +856,7 @@ export default function DashboardInsights({
       headers.append("Content-Type", "application/json"); // Set Content-Type for JSON
     }
     headers.append("Authorization", "Bearer " + getToken);
-    debugger;
+    
     console.log(headers)
     const config = {
       method: "post",
@@ -982,7 +982,7 @@ export default function DashboardInsights({
   let sortedIdeas = [];
   let filteredSortedIdeas = [];
   let newFilteredIdeas = [];
-  debugger;
+  
   let letRefIdMapWithArticleId = {};
 
   const allReferenceWithSelectedTrue = reference?.filter( (el) => el.selected === true) || [];
@@ -999,10 +999,10 @@ ideas.forEach(item => {
   }
 })
 function getCount(id) {
-  debugger;
+  
   return idCountMap[id] || 0;
 }
-debugger;
+
   ideas?.forEach((idea) => {
     if(allReferenceWithSelectedTrue.length>0){
       allReferenceWithSelectedTrue.forEach((ref) => {
@@ -1378,13 +1378,15 @@ debugger;
                   <button
                     className="w-6 h-6 relative  textSuperman-indigo-500 bg-slate-100 rounded-sm border"
                     onClick={(event) => {
-                      setinputUrls((prev) => {
-                        return [...prev,  newReference.source];
-                      });
+                      if(newReference.source.trim().length > 0)
+                      {
+                        setinputUrls((prev) => {
+                          return [...prev,  newReference.source];
+                        })
+                      }
                       setNewReference((prev) => {
                         return { ...prev, source: "" };
-                      }
-                      );
+                      })
                     }}
                   >
                     {<PlusIcon />}
