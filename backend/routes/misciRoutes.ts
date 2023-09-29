@@ -141,7 +141,7 @@ router.get('/export-report',async (req: any, res: any) => {
         const path = require('path');
 
         // Define the path to the local file you want to serve for download
-        const filePath = path.join(__dirname, '../Test.xlsx');
+        const filePath = path.join(__dirname, '../../Test.xlsx');
         console.log(__dirname, "__dirname")
 
         // Set the content type for the response
