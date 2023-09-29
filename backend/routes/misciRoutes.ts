@@ -8,7 +8,8 @@ const xlsx = require('xlsx');
 const { convert } = require('html-to-text');
 import { saveAs } from 'file-saver';
 import {Blob} from 'buffer';
-
+import { sendEmails } from "../utils/mailJetConfig";
+const fs = require('fs')
 
 const express = require("express");
 const router = express.Router();
@@ -128,7 +129,6 @@ router.get('/export-report',async (req: any, res: any) => {
         // const blob = new Blob([res], {
         //     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         // });
-        const fs = require('fs')
 
         // const data = fs.readFileSync('./Test.xlsx', {encoding:'base64'})
         // const base64 = Buffer.from(data,"base64")
@@ -142,7 +142,7 @@ router.get('/export-report',async (req: any, res: any) => {
 
         // Define the path to the local file you want to serve for download
         const filePath = path.join(__dirname, '../../Test.xlsx');
-        console.log(__dirname, "__dirname")
+        console.log(__dirname, filePath,"__dirname")
 
         // Set the content type for the response
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -157,6 +157,124 @@ router.get('/export-report',async (req: any, res: any) => {
             console.log("Done!")
             fs.unlinkSync("Test.xlsx")
         });
+    }catch(e){
+        console.log(e, "e")
+        return res.status(400).send({
+            error: true,
+            message: e.message
+        })
+    }
+})
+router.get('/weekly-report', async (req: any, res: any) => {
+    const db = req.app.get('dbLive')
+    try{
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)  
+        console.log(sevenDaysAgo, "sevenDaysAgo")
+        const misciData = await db.db('lilleBlogs').collection('blogs').aggregate([
+            {
+              $match:
+                /**
+                 * query: The query in MQL.
+                 */
+                {
+                  $and: [
+                    {
+                      date: {
+                        $gte: getTimeStamp(sevenDaysAgo),
+                      },
+                    },
+                    {
+                      type: "misci",
+                    },
+                  ],
+                },
+            },
+            {
+              $addFields: {
+                timestamp: {
+                  $toDate: {
+                    $multiply: [
+                      {
+                        $toLong: "$date",
+                      },
+                      1000,
+                    ],
+                  },
+                },
+              },
+            },
+            {
+              $project:
+                /**
+                 * specifications: The fields to
+                 *   include or exclude.
+                 */
+                {
+                  question: 1,
+                  short_answer: 1,
+                  detailed_answer: 1,
+                  timestamp: 1,
+                },
+            },
+        ]).toArray()
+        console.log(misciData, "data")
+        let preparedData: any[] = []
+        await (
+            Promise.all(
+                misciData.map(async (data: any) => {
+                    preparedData.push({
+                        "blog id": data._id.toString(),
+                        question: data.question,
+                        "short answer": data.short_answer,
+                        "detail answer": data.detailed_answer,
+                        "date": getDateString(data.timestamp),
+                    })
+                })
+            )
+        )
+        let Headers = ['blog id', 'question', 'short answer', 'detail answer', 'formatted article'];
+        console.log(preparedData, "Data")
+        const wb = xlsx.utils.book_new(),
+        ws = xlsx.utils.json_to_sheet(preparedData);
+
+        xlsx.utils.book_append_sheet(wb, ws, "Sheet1");
+        xlsx.utils.sheet_add_aoa(ws, [Headers]) 
+        // res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        // res.setHeader("Content-Disposition", "attachment; filename=" + "Test.xlsx");        
+        const resp = await xlsx.writeFile(wb, "Report.xlsx");
+        const path = require('path');
+        const filePath = path.join(__dirname, '../../Report.xlsx');
+        const fileStream = fs.createReadStream(filePath);
+        var fileBuffer = Buffer.from(filePath, 'base64')
+        console.log(fileBuffer, "fileBuffer")
+        fs.readFile(filePath,async function(err: any,data: any){
+            await sendEmails({
+                to: [
+                { Email: `tarun.gandhi@nowigence.com`, Name: `Tarun Gandhi` },
+                { Email: `arvind.ajimal@nowigence.com`, Name: `Arvind Ajimal` },
+                { Email: `subham.mahanta@nowigence.com`, Name: `Subham Mahanta` },
+                { Email: `akash.sharma@nowigence.com`, Name: `Akash Sharma` }
+                ],
+                subject: "Weekly Misci Report",
+                textMsg: "",
+                htmlMsg: `
+                    <p>Hello All,</p>
+                    <p>Please Find weekly report</p>
+                `,
+                attachments: [
+                    {
+                        fileName: "Report.xlsx",
+                        content: data,
+                        contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    }
+                ]
+            });
+            fs.unlinkSync("Report.xlsx")
+            return res.status(200).send({
+                error: false,
+                message: "Report sent!"
+            })
+        })
     }catch(e){
         console.log(e, "e")
         return res.status(400).send({
@@ -867,6 +985,7 @@ router.post('/test-upload',uploadStrategy, async (req: any, res: any) => {
         const db = req.app.get('dbLive')
         console.log(req.file, "akash")
         const file = xlsx.read(req.file.buffer)
+        const sheetToPick = req.body.sheet
         console.log(file,req.file, "akash")
         // Reading our test file
         const userEmail = await db.db('lilleAdmin').collection('misciEmail').findOne()
@@ -877,13 +996,23 @@ router.post('/test-upload',uploadStrategy, async (req: any, res: any) => {
         let data: any = []
         
         const sheets = file.SheetNames
-        
+        console.log(sheets, "sheets")
+        console.log(sheetToPick, "sheetToPick")
         for(let i = 0; i < sheets.length; i++)
         {
-            const temp = xlsx.utils.sheet_to_json(file.Sheets[file.SheetNames[i]])
-            temp.forEach((res: any) => {
-                data.push(res)
-            })
+            if(sheetToPick) {
+                if(file.SheetNames[i] === sheetToPick) {
+                    const temp = xlsx.utils.sheet_to_json(file.Sheets[sheetToPick])
+                    temp.forEach((res: any) => {
+                        data.push(res)
+                    })
+                }
+            }else{
+                const temp = xlsx.utils.sheet_to_json(file.Sheets[file.SheetNames[i]])
+                temp.forEach((res: any) => {
+                    data.push(res)
+                })
+            }
         }
         // Printing data
         console.log(data)
