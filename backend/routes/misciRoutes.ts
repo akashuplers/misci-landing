@@ -1,8 +1,14 @@
 import { ObjectID, ObjectId } from "mongodb";
 import { Python } from "../services/python";
-import { diff_minutes, getTimeStamp } from "../utils/date";
+import { diff_minutes, getDateString, getTimeStamp } from "../utils/date";
 import { publish } from "../utils/subscription";
 import { blogGeneration, fetchArticleById, fetchArticleUrls, fetchBlog, fetchBlogIdeas, fetchUsedBlogIdeasByIdea, fetchUser, publishBlog } from "../graphql/resolver/blogs/blogsRepo";
+import { bufferToStream, jsonToHtml } from "../utils/html";
+const xlsx = require('xlsx');
+const { convert } = require('html-to-text');
+import { saveAs } from 'file-saver';
+import {Blob} from 'buffer';
+
 
 const express = require("express");
 const router = express.Router();
@@ -10,6 +16,155 @@ const multer = require("multer");
 const inMemoryStorage = multer.memoryStorage();
 const uploadStrategy = multer({ storage: inMemoryStorage }).single('file');
 
+
+router.get('/export-report',async (req: any, res: any) => {
+    const db = req.app.get('dbLive')
+    try{
+        const misciData = await db.db('lilleBlogs').collection('misciPublishedBlogs').aggregate([
+            {
+              $lookup:
+                /**
+                 * from: The target collection.
+                 * localField: The local join field.
+                 * foreignField: The target join field.
+                 * as: The name for the results.
+                 * pipeline: Optional pipeline to run on the foreign collection.
+                 * let: Optional variables to use in the pipeline field stages.
+                 */
+                {
+                  from: "blogs",
+                  localField: "blogId",
+                  foreignField: "_id",
+                  as: "blogs",
+                },
+            },
+            {
+              $unwind: "$blogs",
+            },
+            {
+              $addFields:
+                /**
+                 * newField: The new field name.
+                 * expression: The new field expression.
+                 */
+                {
+                  timestamp: {
+                    $toDate: {
+                      $multiply: [
+                        {
+                          $toLong: "$date",
+                        },
+                        1000,
+                      ],
+                    },
+                  },
+                },
+            },
+            {
+              $project:
+                /**
+                 * specifications: The fields to
+                 *   include or exclude.
+                 */
+                {
+                  name: 1,
+                  email: 1,
+                  blogId: 1,
+                  "blogs.description": 1,
+                  timestamp: 1,
+                  "blogs.question": 1,
+                  "blogs.publish_data": 1,
+                },
+            },
+        ]).toArray()
+        console.log(misciData, "misciData")
+        let preparedData: any[] = []
+        await (
+            Promise.all(
+                misciData.map(async (data: any) => {
+                    const publishData = data?.blogs?.publish_data.find((pd: any) => pd.platform === "wordpress")
+                    let convertedData = ""
+                    if(publishData) {
+                        convertedData = jsonToHtml(publishData.tiny_mce_data)
+                        console.log(convertedData, "convertedData")
+                        const options = {
+                            wordwrap: 130,
+                            // ...
+                        };
+                        const html = convertedData.replace('""', '"');
+                        const text = convert(html, options);
+                        console.log(text);
+                        convertedData = text
+                    }
+                    console.log(publishData)
+                    preparedData.push({
+                        "blog id": data.blogId.toString(),
+                        name: data.name,
+                        email: data.email,
+                        "article description": data.blogs.description,
+                        "formatted article": convertedData,
+                        "question": data.blogs.question,
+                    })
+                })
+            )
+        )
+        let Headers = ['blog id', 'name', 'email', 'article description', 'formatted article', 'question'];
+        // preparedData = normsOccurances.map((normData: any) => {
+        // return Headers.map((header) => {
+        //     console.log(header, "header")
+        //     return normData[header]
+        // })
+        // })
+        console.log(preparedData, "Data")
+        const wb = xlsx.utils.book_new(),
+        ws = xlsx.utils.json_to_sheet(preparedData);
+
+        xlsx.utils.book_append_sheet(wb, ws, "Sheet1");
+        xlsx.utils.sheet_add_aoa(ws, [Headers]) 
+        // res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        // res.setHeader("Content-Disposition", "attachment; filename=" + "Test.xlsx");        
+        const resp = await xlsx.writeFile(wb, "Test.xlsx");
+        const stream = bufferToStream(resp)
+        // const blob = new Blob([res], {
+        //     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        // });
+        const fs = require('fs')
+
+        // const data = fs.readFileSync('./Test.xlsx', {encoding:'base64'})
+        // const base64 = Buffer.from(data,"base64")
+        // const blob = new Blob([base64], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+        // // console.log(blob)
+        // // console.log(data)
+        // saveAs(blob, "file.xlsx");
+        // return res.end()
+
+        const path = require('path');
+
+        // Define the path to the local file you want to serve for download
+        const filePath = path.join(__dirname, '../Test.xlsx');
+        console.log(__dirname, "__dirname")
+
+        // Set the content type for the response
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+        // Set the "Content-Disposition" header to specify the file name for the download
+        res.setHeader('Content-Disposition', 'attachment; filename='+"MisciReport-"+getDateString(new Date())+".xlsx");
+
+        // Create a read stream from the file and pipe it to the response
+        const fileStream = fs.createReadStream(filePath);
+        let streamProcess = fileStream.pipe(res)
+        streamProcess.on('finish', () =>{
+            console.log("Done!")
+            fs.unlinkSync("Test.xlsx")
+        });
+    }catch(e){
+        console.log(e, "e")
+        return res.status(400).send({
+            error: true,
+            message: e.message
+        })
+    }
+})
 
 router.post('/publish', async (req: any, res: any) => {
     const db = req.app.get('dbLive')
