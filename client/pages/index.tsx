@@ -1276,14 +1276,14 @@ export default function Home({ payment, randomLiveUsersCount }) {
               }}
             >
               <div
-                className={`mt-[10%] ${isAuthenticated
+                className={`mt-[-50%] ${isAuthenticated
                   ? keywordsOFBlogs.length == 0 && "lg:mt-[10%]"
                   : keywordsOFBlogs.length == 0 && "lg:mt-[-10%]"
-                  }`}
+                 } w-[100vw] lg:w-full px-2`}
               >
                 <RotatingText/> 
                 <div
-                  className="w-full lg:min-w-[850px] lg:max-w-[850px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
+                  className="w-full lg:min-w-[850px] lg:max-w-[850px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-2 lg:p-8 mx-2 lg:m-0"
                   style={{
                     background: "rgba(255, 255, 255, 0.5)",
                     outline: 'none !important' 
@@ -1301,9 +1301,9 @@ export default function Home({ payment, randomLiveUsersCount }) {
                       <Tab.List className="justify-start items-center gap-3 inline-flex">
                         {tabs.map((tab) => (
 
-                          <Tab
+                         <Tab
                             key={tab.id}
-                            className={`${tab.label === "Web"  ? "w-24" : "w-32"} h-8 px-2.5 py-1 border-b border-indigo-600 ring-0  focus:ring-0  justify-center items-center gap-2.5 inline-flex text-base font-medium text-gray-800 ${activeTab === tab.id ? "border-b-2 border-indigo-600 text-gray-800" : "text-gray-600 border-none"}`}>
+                            className={`${tab.label === "Web"  ? "lg:w-24" : "lg:w-32"} h-8  px-0.5 lg:px-2.5 py-1 border-b border-indigo-600 ring-0  focus:ring-0  justify-center items-center gap-2.5 inline-flex text-base font-medium text-gray-800 ${activeTab === tab.id ? "border-b-2 border-indigo-600 text-gray-800" : "text-gray-600 border-none"}`}>
                             {tab.label}
                           </Tab>
                         ))}
@@ -1549,7 +1549,7 @@ const KeywordInput = ({ maxLength, placeholder, keyword, setKeyword }: KeywordIn
 
 const RotatingText = React.memo(()=> {
   return (
-    <div className="relative flex text-3xl items-center  justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing lg:min-w-[900px]">
+    <div className="relative flex lg:mb-[20px] text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing lg:min-w-[900px]">
       Lille is your <TextTransitionEffect text={TEXTS2} />
       Co-Pilot
       <div className="hidden lg:block absolute right-0 md:right-[-10%]">
