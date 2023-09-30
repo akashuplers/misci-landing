@@ -105,11 +105,12 @@ router.get('/export-report',async (req: any, res: any) => {
                         "article description": data.blogs.description,
                         "formatted article": convertedData,
                         "question": data.blogs.question,
+                        "date": getDateString(data.timestamp),
                     })
                 })
             )
         )
-        let Headers = ['blog id', 'name', 'email', 'article description', 'formatted article', 'question'];
+        let Headers = ['blog id', 'name', 'email', 'formatted article', 'question', 'date' ];
         // preparedData = normsOccurances.map((normData: any) => {
         // return Headers.map((header) => {
         //     console.log(header, "header")
@@ -234,7 +235,7 @@ router.get('/weekly-report', async (req: any, res: any) => {
                 })
             )
         )
-        let Headers = ['blog id', 'question', 'short answer', 'detail answer', 'formatted article'];
+        let Headers = ['blog id', 'question', 'short answer', 'detail answer', "date", "timestamp"];
         console.log(preparedData, "Data")
         const wb = xlsx.utils.book_new(),
         ws = xlsx.utils.json_to_sheet(preparedData);
