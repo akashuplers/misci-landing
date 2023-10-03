@@ -1,17 +1,9 @@
-<<<<<<< HEAD
 import {
   ArrowRightIcon
 } from "@heroicons/react/24/outline";
 import React from 'react';
 import MoblieUnAuthFooter from '../components/LandingPage/MoblieUnAuthFooter';
 import Layout from "../components/Layout";
-=======
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
-import React from "react";
-import MoblieUnAuthFooter from "../components/LandingPage/MoblieUnAuthFooter";
-import Layout from "../components/Layout";
-import ValueComponent from "../components/LandingPage/ValueComponent";
->>>>>>> misc-cp-prod-adg
 
 const AboutUsFeatures = [
   {
@@ -30,13 +22,8 @@ const AboutUsFeatures = [
 
 const AboutUS = () => {
   function scrollToUserDemo() {
-<<<<<<< HEAD
     const userDemoElement = document.querySelector('.userDemo');
     userDemoElement?.scrollIntoView({ behavior: 'smooth' });
-=======
-    const userDemoElement = document.querySelector(".userDemo");
-    userDemoElement?.scrollIntoView({ behavior: "smooth" });
->>>>>>> misc-cp-prod-adg
   }
   const welcomeImage = "/welcome.svg";
   const lilleLogo = "/lille_logo_new.png";
@@ -45,17 +32,6 @@ const AboutUS = () => {
 
   return (
     <Layout>
-<<<<<<< HEAD
-
-      <div>
-        <div className="relative bg-gradient-to-b from-violet-50 to-violet-50 pt-20 min-h-screen">
-          <div className="flex lg:flex-row flex-col mx-auto max-w-5xl items-center justify-center lg:justify-between">
-            <div className="lg:w-[40%] flex flex-col lg:gap-16 items-center justify-center lg:justify-between lg:block">
-              <div className="w-full flex-col justify-start items-center ">
-                <div className="h-14 text-slate-800  text-2xl lg:text-5xl text-center lg:text-start font-bold leading-10">
-                  About us
-                </div>
-=======
       <div className="relative bg-gradient-to-b from-violet-50 to-violet-50 pt-20 min-h-screen">
         <div >
           <img className="h-48 mx-auto center -mt-12" src="/screenshots/about.png" alt="About Us" />
@@ -66,7 +42,6 @@ const AboutUS = () => {
                 {/* <div className="h-14 text-slate-800  text-2xl lg:text-5xl text-center lg:text-start font-bold leading-10">
                   Value
                 </div> */}
->>>>>>> misc-cp-prod-adg
               </div>
               <div className="opacity-70  text-center lg:text-start text-slate-600 text-[16px] font-normal leading-7">
                 {`Lille is your secret weapon for automating backlinking by leveraging existing URLs on your website. Plus, it can read word documents, text files, and PDFs to generate fresh, engaging content.`}
@@ -102,15 +77,6 @@ const AboutUS = () => {
             <img src={teamDesktop} alt="team" className="w-full h-full" />
           </div>
         </div>
-<<<<<<< HEAD
-        <MoblieUnAuthFooter />
-      </div>
-    </Layout>
-  )
-}
-
-export default AboutUS
-=======
  <ValueComponent />
         <MoblieUnAuthFooter />
       </div>
@@ -119,7 +85,6 @@ export default AboutUS
 };
 
 export default AboutUS;
->>>>>>> misc-cp-prod-adg
 const SectionSpacer = () => {
   return <div className="my-8"></div>;
 };

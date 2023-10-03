@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { classNames } from '@/store/appHelpers';
 import Link from 'next/link';
 import React, { useState } from 'react';
@@ -37,20 +36,6 @@ const MainIdeaItem = ({ index, idea, idCountMap,ideas, typeOfIdea, setIdeas, han
         });
         setIdeas(ideasCopy);
         const arr = updatedFilteredIdeas.filter((element) => element.used)
-=======
-import Link from 'next/link';
-import React from 'react';
-
-const MainIdeaItem = ({ index, idea, ideas, setIdeas, handleUsedIdeas, handleCitationFunction }) => {
-    const handleCheckboxClick = (e) => {
-        const updatedIdeas = ideas.map((el, elIndex) =>
-            elIndex === index ? { ...el, used: el.used === 1 ? 0 : 1 } : el
-        );
-        setIdeas(updatedIdeas);
-
-        const arr = updatedIdeas
-            .filter((element) => element.used)
->>>>>>> misc-cp-prod-adg
             .map((element) => ({
                 text: element.idea,
                 article_id: element.article_id,
@@ -68,7 +53,6 @@ const MainIdeaItem = ({ index, idea, ideas, setIdeas, handleUsedIdeas, handleCit
     };
 
     return (
-<<<<<<< HEAD
         <div className="flex pb-3 usedIdeas gap-1" key={index}>
                   <div className={` w-2 h-2  rounded-full mt-1`}
                   style={{
@@ -84,12 +68,6 @@ const MainIdeaItem = ({ index, idea, ideas, setIdeas, handleUsedIdeas, handleCit
                     }
                 }>{idea?.idea}</p>
              <a
-=======
-        <div className="flex pb-3 usedIdeas" key={index}>
-            <div className="flex justify-between gap-5 w-full">
-                <p className="text-[13px]">{idea?.idea}</p>
-                <a
->>>>>>> misc-cp-prod-adg
                     style={{
                         color: "var(--primary-blue)",
                         alignSelf: "flex-start",
@@ -100,13 +78,9 @@ const MainIdeaItem = ({ index, idea, ideas, setIdeas, handleUsedIdeas, handleCit
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                 >
-<<<<<<< HEAD
                     {/* {handleCitationFunction(idea)}{" "} */}
                     {/* {idCountMap[idea?.article_id]} */}
                     {idCountMap(idea?.article_id)}
-=======
-                    {handleCitationFunction(idea?.name)}
->>>>>>> misc-cp-prod-adg
                     <div
                         className={`hidden referenceTooltip${index}`}
                         style={{
@@ -133,7 +107,6 @@ const MainIdeaItem = ({ index, idea, ideas, setIdeas, handleUsedIdeas, handleCit
                         )}
                     </div>
                 </a>
-<<<<<<< HEAD
                 <div class="inline-flex items-start">
                     <label
                         class="relative flex cursor-pointer items-center rounded-full p-3"
@@ -171,25 +144,11 @@ const MainIdeaItem = ({ index, idea, ideas, setIdeas, handleUsedIdeas, handleCit
                         </div>
                     </label>
                 </div>
-=======
-                <input
-                    type="checkbox"
-                    className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-none focus:ring-blue-500"
-                    style={{
-                        borderRadius: '2px'
-                    }}
-                    checked={idea?.used}
-                    onClick={handleCheckboxClick}
-                />
->>>>>>> misc-cp-prod-adg
             </div>
         </div>
     );
 };
 
 export default MainIdeaItem;
-<<<<<<< HEAD
 
 
-=======
->>>>>>> misc-cp-prod-adg

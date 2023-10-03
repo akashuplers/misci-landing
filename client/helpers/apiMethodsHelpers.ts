@@ -331,7 +331,6 @@ export const misciBlogPublish = async ({
 };
 
 
-<<<<<<< HEAD
 export async function DeleteRefSources(payload: {
   blogId: string;
   sourceId: string;
@@ -383,8 +382,6 @@ var payload = {
   "sourceId": "eae96595-57b1-11ee-ac29-0242ac130002"
 };
 
-=======
->>>>>>> misc-cp-prod-adg
 export const saveMisciBlog = (payload: object) => {
   // Create headers
   const myHeaders = new Headers();

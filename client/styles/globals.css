@@ -32,11 +32,8 @@ html {
 *{
   /* outline */
   outline: 0px solid transparent;
-<<<<<<< HEAD
   color: unset;
   text-decoration: none;
-=======
->>>>>>> misc-cp-prod-adg
 }
 
 :root {
@@ -447,11 +444,6 @@ iframe {
   left: 0;
 }
 
-<<<<<<< HEAD
-input[type='checkbox']:hover{
-  background-color: transparent;
-}
-=======
 
 input[type='checkbox'],
 input[type='radio'] {
@@ -467,7 +459,6 @@ input[type='radio']:checked {
   background-color: var(--primary-blue);
 }
 
->>>>>>> misc-cp-prod-adg
 .authenticationModal label {
   position: relative;
 }
@@ -624,10 +615,7 @@ input[type=number] {
 .Tooltip-Wrapper {
   display: inline-block;
   position: relative;
-<<<<<<< HEAD
   z-index:  99999;
-=======
->>>>>>> misc-cp-prod-adg
 }
 
 /* Absolute positioning */

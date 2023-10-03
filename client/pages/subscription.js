@@ -151,13 +151,8 @@ export default function Subscription({ query }) {
                         <div
                           key={i}
                           onClick={() => subscriptionPlan(item)}
-<<<<<<< HEAD
-                          className={`w-[33%] text-[18px] font-medium cursor-pointer rounded-[55px] px-[19px] py-[8px] ${currentPlan?.subscriptionType === item.subscriptionType
-                            ? "bg-[#3cc0f6] text-[#ffffff]"
-=======
                           className={`w-[49%] text-[18px] text-center font-medium cursor-pointer rounded-[55px] px-[19px] py-[8px] ${currentPlan?.subscriptionType === item.subscriptionType
                             ? "bg-[#fb847d] text-[#ffffff]"
->>>>>>> misc-cp-prod-adg
                             : "bg-[#ECEDF5] text-[#13213E]"
                             }`}
                         >
@@ -170,17 +165,10 @@ export default function Subscription({ query }) {
                 <div
                   style={{
                     background:
-<<<<<<< HEAD
-                      "linear-gradient(157.47deg, #182735 14.91%, #15324E 96.07%)",
-                    boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
-                  }}
-                  className="flex relative flex-col rounded-[4px] text-[#ffffff] p-4 w-[306px] sm:w-[392px] md:h-full h-[200px]"
-=======
                       "linear-gradient(157.47deg, rgb(0 74 174) 14.91%, rgb(0 14 33) 96.07%)",
                     boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
                   }}
                   className="flex relative flex-col rounded-[4px] text-[#ffffff] p-4 w-full sm:w-[392px]  md:h-full h-full  sm:h-[200px]"
->>>>>>> misc-cp-prod-adg
                 >
                   <div className="flex flex-col items-start justify-start mt-4">
                     <p className="font-semibold text-[24px] pb-2 capitalize">
@@ -188,11 +176,7 @@ export default function Subscription({ query }) {
                     </p>
                     <p className="text-[64px] font-bold">${currentPlan?.price}</p>
                   </div>
-<<<<<<< HEAD
-                  <div className="h-[2px] mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px] hidden md:block"></div>
-=======
                   <div className="h-[2px] mt-4 mb-4 bg-gradient-to-r from-[#fb847d] to-transparent h-[2px] hidden md:block"></div>
->>>>>>> misc-cp-prod-adg
 
                   <div className="flex flex-col items-start justify-start mt-4 text-left">
                     {UpgradeFeatures.map((item, i) => {

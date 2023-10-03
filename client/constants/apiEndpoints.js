@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 export const API_BASE_PATH = "https://maverick.lille.ai";
-=======
-export const API_BASE_PATH = "https://lille.ai";
->>>>>>> misc-cp-prod-adg
 
 export const API_ROUTES = {
   TEMP_ID: "/auth/temp/user",
@@ -13,15 +9,9 @@ export const API_ROUTES = {
   LOGIN_ENDPOINT: "/auth/user/login",
   SOCIAL_LOGIN_ENDPOINT: "/auth/user/social/login",
   UPDATE_PROFILE: "/auth/update-profile",
-<<<<<<< HEAD
   URL_UPLOAD: "/quickupload/urls",
   KEYWORD_UPLOAD: "/quickupload/keyword",
   FILE_UPLOAD: "/quickupload/files",
-=======
-  URL_UPLOAD: "/quickupload/url",
-  KEYWORD_UPLOAD: "/quickupload/keyword",
-  FILE_UPLOAD: "/quickupload/file",
->>>>>>> misc-cp-prod-adg
   IMAGE_UPLOAD: "/upload/image/base64",
   FORGOT_PASSWORD: "/auth/forgot-password",
   RESET_PASSWORD: "/auth/reset",
@@ -40,10 +30,7 @@ export const API_ROUTES = {
   MISCI_GENERATE: "/misci/generate",
   MISCI_REGENERATE: "/misci/re-generate",
   MISCI_PUBLISH: '/misci/publish',
-<<<<<<< HEAD
   DELETE_REF_SOURCES: '/auth/remove-sources',
-=======
->>>>>>> misc-cp-prod-adg
   MISCI_SAVE: '/misci/blog/save',
 };
 

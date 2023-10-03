@@ -10,32 +10,19 @@ import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { regenerateBlog } from "../graphql/mutations/regenerateBlog";
 import { ContributionCheck } from "../helpers/ContributionCheck";
 import { jsonToHtml } from "../helpers/helper";
-<<<<<<< HEAD
-import useStore, {
-  useByMeCoffeModal,
-  useThreadsUIStore,
-  useTwitterThreadStore,
-} from "../store/store";
-=======
 import useStore, { useByMeCoffeModal, useThreadsUIStore, useTwitterThreadStore } from "../store/store";
->>>>>>> misc-cp-prod-adg
 import AuthenticationModal from "./AuthenticationModal";
 import FreshFilteredIdeaItem from "./FreshFilteredIdeaItem";
 import FreshIdeaForm from "./FreshIdeaForm";
 import FreshIdeaReference from "./FreshIdeaReference";
 import IdeaComponent from "./IdeaComponent";
-<<<<<<< HEAD
 import IdeaTag, { SourceColors, SourceTab } from "./IdeaTag";
-=======
-import IdeaTag from "./IdeaTag";
->>>>>>> misc-cp-prod-adg
 import LoaderScan from "./LoaderScan";
 import MainIdeaItem from "./MainIdeaItem";
 import TrialEndedModal from "./TrialEndedModal";
 import UsedFilteredIdeaItem from "./UsedFilteredIdeaItem";
 import UsedReference from "./UsedReference";
 import { RegenerateIcon } from "./localicons/localicons";
-<<<<<<< HEAD
 import {
   ArrowLeftIcon,
   CheckIcon,
@@ -51,10 +38,6 @@ import { DeleteRefSources } from "@/helpers/apiMethodsHelpers";
 import Tooltip from "./ui/Tooltip";
 export function checkFileFormatAndSize(file) {
   var extension = file?.name?.split(".").pop().toLowerCase();
-=======
-export function checkFileFormatAndSize(file) {
-  var extension = file.name.split(".").pop().toLowerCase();
->>>>>>> misc-cp-prod-adg
   var allowedFormats = ["pdf", "docx", "txt"];
 
   if (!allowedFormats.includes(extension)) {
@@ -73,30 +56,18 @@ export function checkFileFormatAndSize(file) {
 
   return true;
 }
-<<<<<<< HEAD
 const RE_BUTTON_TOPIC = {
   topic: "Current Topic",
   next: "Next Draft",
 };
-=======
->>>>>>> misc-cp-prod-adg
 export default function DashboardInsights({
   loading,
   ideas,
   setIdeas,
-<<<<<<< HEAD
-  refetchBlog,
-=======
->>>>>>> misc-cp-prod-adg
   freshIdeas: oldFreshIdeas,
   blog_id,
   setblog_id,
   tags,
-<<<<<<< HEAD
-  setInitailIdeas,
-  initailIdeas,
-=======
->>>>>>> misc-cp-prod-adg
   setTags,
   freshIdeaTags: oldFreshIdeaTags,
   freshIdeasReferences,
@@ -109,20 +80,14 @@ export default function DashboardInsights({
   setOption,
   option,
   setNdResTime,
-<<<<<<< HEAD
   keyword,
-=======
->>>>>>> misc-cp-prod-adg
 }) {
   const [enabled, setEnabled] = useState(false);
   const [isOpen, setOpen] = useState(false);
   const [formInput, setformInput] = useState("");
   const [urlValid, setUrlValid] = useState(false);
   const [file, setFile] = useState(null);
-<<<<<<< HEAD
   const [inputFiles, setInputFiles] = useState([]);
-=======
->>>>>>> misc-cp-prod-adg
   const [fileValid, setFileValid] = useState(false);
   const [arrUsed, setArrUsed] = useState([]);
   const [arrFresh, setArrFresh] = useState([]);
@@ -135,7 +100,6 @@ export default function DashboardInsights({
   const updateCredit = useStore((state) => state.updateCredit);
   const updateisSave = useStore((state) => state.updateisSave);
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
-<<<<<<< HEAD
   const [ideasTab, setIdeasTab] = useState(0);
   const [filteredIdeas, setFilteredIdeas] = useState([]);
   const [notUniquefilteredIdeas, setNotUniqueFilteredIdeas] = useState([]);
@@ -151,20 +115,6 @@ export default function DashboardInsights({
   const toggleClass = " transform translate-x-3";
   const creditLeft = useStore((state) => state.creditLeft);
   const [inputUrls, setinputUrls] = useState([]);
-=======
-
-  const [filteredIdeas, setFilteredIdeas] = useState([]);
-  const [notUniquefilteredIdeas, setNotUniqueFilteredIdeas] = useState([]);
-  const { showTwitterThreadUI, setShowTwitterThreadUI } = useThreadsUIStore();
-
-  const setShowContributionModal = useByMeCoffeModal(
-    (state) => state.toggleModal
-  );
-  const [toggle, setToggle] = useState(true);
-  const toggleClass = " transform translate-x-3";
-  const creditLeft = useStore((state) => state.creditLeft);
-
->>>>>>> misc-cp-prod-adg
   useEffect(() => {
     setFreshIdeas(oldFreshIdeas);
   }, [oldFreshIdeas]);
@@ -195,11 +145,7 @@ export default function DashboardInsights({
 
         if (
           `${networkError}` ===
-<<<<<<< HEAD
             "ServerError: Response not successful: Received status code 401" &&
-=======
-          "ServerError: Response not successful: Received status code 401" &&
->>>>>>> misc-cp-prod-adg
           isauth
         ) {
           localStorage.clear();
@@ -230,11 +176,7 @@ export default function DashboardInsights({
   const [regenSelected, setRegenSelected] = useState([]);
 
   const isAuthenticated = useStore((state) => state.isAuthenticated);
-<<<<<<< HEAD
   const [newReference, setNewReference] = useState({});
-=======
-
->>>>>>> misc-cp-prod-adg
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -295,16 +237,11 @@ export default function DashboardInsights({
   }
 
   function handleRefClick(e) {
-<<<<<<< HEAD
     // e.target.classList.toggle("active");
-=======
-    e.target.classList.toggle("active");
->>>>>>> misc-cp-prod-adg
     //const refCount = e.target.firstElementChild;
 
     /* Adding or removing the keywords to an array */
     const filterText = e.target.dataset.source;
-<<<<<<< HEAD
     // loop over all the ideas and get the same filter source
 
     let shouldInclude = true;
@@ -359,23 +296,6 @@ export default function DashboardInsights({
     // if (!toggle) {
     //   setToggle(!toggle);
     // }
-=======
-
-    const valueExists = filteredArray.find(
-      (el) => Object.values(el).indexOf(filterText) > -1
-    );
-    if (valueExists) {
-      setFilteredArray((prev) => [
-        ...prev.filter((el) => el.filterText !== filterText),
-      ]);
-    } else {
-      setFilteredArray((prev) => [...prev, { filterText, criteria: "ref" }]);
-    }
-    if (!toggle) {
-      setToggle(!toggle);
-    }
-
->>>>>>> misc-cp-prod-adg
   }
 
   useEffect(() => {
@@ -423,7 +343,6 @@ export default function DashboardInsights({
         const lowerCaseSearchObject = searchObject?.toLowerCase();
         const ideaName = idea?.name?.toLowerCase();
 
-<<<<<<< HEAD
         if (
           filterObject?.criteria === "tag" &&
           ideaOfIdea?.includes(lowerCaseSearchObject)
@@ -433,19 +352,10 @@ export default function DashboardInsights({
           filterObject?.criteria === "ref" &&
           ideaName === lowerCaseSearchObject
         ) {
-=======
-        if (filterObject?.criteria === "tag" && ideaOfIdea?.includes(lowerCaseSearchObject)) {
-          setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-        } else if (filterObject?.criteria === "ref" && ideaName === lowerCaseSearchObject) {
->>>>>>> misc-cp-prod-adg
           setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
         }
       });
     });
-<<<<<<< HEAD
-=======
-
->>>>>>> misc-cp-prod-adg
   }, [filteredArray]);
 
   // We create a set so that the values are unique, and multiple ideas are not added
@@ -456,25 +366,9 @@ export default function DashboardInsights({
 
     // Create a new array from the Set object
     let uniqueFilteredArray = Array.from(uniqueFilteredSet).map(JSON.parse);
-<<<<<<< HEAD
-    // uniqueFilteredArray = uniqueFilteredArray.sort((a, b) => {
-    //   // Handle null cases by placing them at the end of the sorted array
-    //   if (a?.name === null && b?.name === null) {
-    //     return 0; // Both are null, no change in order
-    //   } else if (a?.name === null) {
-    //     return 1; // 'a' is null, move it to the end
-    //   } else if (b?.name === null) {
-    //     return -1; // 'b' is null, move it to the end
-    //   } else {
-    //     // Compare non-null values normally
-    //     return a.name.localeCompare(b.name);
-    //   }
-    // });
-=======
     uniqueFilteredArray = uniqueFilteredArray.sort((a, b) =>
       a?.name.localeCompare(b?.name)
     );
->>>>>>> misc-cp-prod-adg
 
     // Add a new property to each idea calles citation number.
     var prevLink = uniqueFilteredArray[0]?.name;
@@ -560,16 +454,11 @@ export default function DashboardInsights({
       (obj, index, self) => index === self.findIndex((t) => t.text === obj.text)
     );
     if (newarr?.length >= 1) {
-<<<<<<< HEAD
-=======
-
->>>>>>> misc-cp-prod-adg
       RegenerateBlog({
         variables: {
           options: {
             ideas: newarr,
             blog_id: blog_id,
-<<<<<<< HEAD
             useOldWebSource: !userNextSourcesCheck,
             updatedTopic: keyword,
           },
@@ -589,17 +478,6 @@ export default function DashboardInsights({
             return { ...reference, selected: false, localId };
           });
           setReference(newreferencesList);
-=======
-          },
-        },
-        onCompleted: (data) => {
-          updateCredit();
-          setBlogData(data?.regenerateBlog);
-          setIdeas(data?.regenerateBlog?.ideas?.ideas);
-          setTags(data?.regenerateBlog?.tags);
-          setFreshIdeaTags(data?.regenerateBlog?.freshIdeasTags);
-          setReference(data?.regenerateBlog?.references);
->>>>>>> misc-cp-prod-adg
           setFreshIdeaReferences(data?.regenerateBlog?.freshIdeasReferences);
           setFreshIdeas(data?.regenerateBlog?.ideas?.freshIdeas);
           setPyResTime(data?.regenerateBlog?.pythonRespTime);
@@ -621,7 +499,6 @@ export default function DashboardInsights({
             (pd) => pd?.platform === "twitter"
           );
           if (aaThreads?.threads?.length <= 0) {
-<<<<<<< HEAD
             setTwitterThreadData(twitterThreadData);
           } else {
             const theLastThread =
@@ -640,16 +517,6 @@ export default function DashboardInsights({
                 theSecondLastThread === null ||
                 theSecondLastThread === ""
               ) {
-=======
-            setTwitterThreadData(twitterThreadData)
-          } else {
-            const theLastThread = aaThreads.threads[aaThreads.threads.length - 1];
-            // merge this will text with 2nd last tweet
-            var theSecondLastThread = aaThreads.threads[aaThreads.threads.length - 2];
-            if (theLastThread !== undefined && theLastThread !== null && theLastThread !== "") {
-              // const mergedText = theSecondLastThread + " ." + theLastThread;
-              if (theSecondLastThread === undefined || theSecondLastThread === null || theSecondLastThread === "") {
->>>>>>> misc-cp-prod-adg
                 theSecondLastThread = "";
               } else {
                 theSecondLastThread = theSecondLastThread + " .";
@@ -701,12 +568,9 @@ export default function DashboardInsights({
             setShowContributionModal(true);
           }
           // setOption(prevState => prevState);
-<<<<<<< HEAD
          } catch (err){
           console.log(err);
          }
-=======
->>>>>>> misc-cp-prod-adg
         },
         onError: (error) => {
           console.error("Credit Exhaust or any other error", error.message);
@@ -716,10 +580,7 @@ export default function DashboardInsights({
           } else {
             if (error.message) {
               console.log("error", error.message);
-<<<<<<< HEAD
               toast.error(error.message);
-=======
->>>>>>> misc-cp-prod-adg
               setOpen(true);
             }
           }
@@ -739,18 +600,13 @@ export default function DashboardInsights({
     }
   }
 
-<<<<<<< HEAD
   // wrtie a function to seelect all use ideas
-=======
-  // wrtie a function to seelect all use ideas 
->>>>>>> misc-cp-prod-adg
   // function handleSelectAllUsedIdeas() {
   //   alert('running used ideas')
   // }
   function handleSelectAllUsedIdeas() {
     const updatedAllIdeas = ideas.map((el, elIndex) => {
       return {
-<<<<<<< HEAD
         ...el,
         used: toggle ? 1 : 0,
       };
@@ -799,19 +655,6 @@ export default function DashboardInsights({
     }
   }, [ideas, initailIdeas]);
 
-=======
-        ...el, used: toggle ? 1 : 0
-      }
-    });
-    setIdeas(updatedAllIdeas);
-
-    const arr = updatedAllIdeas.filter((element) => element.used).map((element) => ({
-      text: element.idea,
-      article_id: element.article_id,
-    }));
-    handleUsedIdeas(arr);
-  }
->>>>>>> misc-cp-prod-adg
   function handleSelectAll() {
     if (toggle) {
       if (freshFilteredIdeas?.length > 0) {
@@ -888,7 +731,6 @@ export default function DashboardInsights({
       }
     }
   }
-<<<<<<< HEAD
   function handleFileUpload({ target }) {
     const selectFiles = target.files;
     let fileSizesMoreThan3MB = false;
@@ -920,36 +762,6 @@ export default function DashboardInsights({
     console.log(inputFiles);
   }
 
-=======
-
-  function handleFileUpload({ target }) {
-    const FORMATCHECK = checkFileFormatAndSize(target.files[0]);
-    // alert(FORMATCHECK, "FORMATCHECK")
-    if (!FORMATCHECK) {
-      return;
-    }
-    setFileValid(true);
-    setUrlValid(false);
-
-    const file = target.files[0];
-
-    // Check if file is defined
-    if (!file) {
-      toast.error("No file chosen");
-      return;
-    }
-
-    const fileSizeMB = file.size / (1024 * 1024); // convert size to MB
-
-    if (fileSizeMB > 3) {
-      toast.error("File size cannot exceed 3MB");
-      return; // stop function execution after showing the error
-    }
-
-    setformInput(file.name);
-    setFile(file);
-  }
->>>>>>> misc-cp-prod-adg
   function handleFormChange(e) {
     const value = e.target.value;
     setformInput(value);
@@ -966,7 +778,6 @@ export default function DashboardInsights({
   const handleUsedIdeas = (arr) => {
     setArrUsed(arr);
   };
-<<<<<<< HEAD
 
   function postFormData(e, type = "File") {
     e.preventDefault();
@@ -1060,79 +871,10 @@ export default function DashboardInsights({
         setFileValid(false);
         setUrlValid(false);
         setInputFiles([]);
-=======
-  
-  function postFormData(e) {
-    e.preventDefault();
-    setNewIdeaLoad(true);
-
-    let url = API_BASE_PATH;
-    let raw;
-    if (fileValid) {
-      url += API_ROUTES.FILE_UPLOAD;
-      raw = new FormData();
-      raw.append("file", file);
-      raw.append("blog_id", blog_id);
-    } else if (urlValid) {
-      url += API_ROUTES.URL_UPLOAD;
-      raw = {
-        url: formInput,
-        blog_id: blog_id,
-      };
-    } else {
-      url += API_ROUTES.KEYWORD_UPLOAD;
-      raw = {
-        keyword: formInput,
-        blog_id: blog_id,
-      };
-    }
-
-    const myHeaders = {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    };
-
-    if (!fileValid) {
-      myHeaders["Content-Type"] = "application/json";
-    }
-
-    const config = {
-      method: "post",
-      url: url,
-      headers: myHeaders,
-      data: raw,
-    };
-
-    axios(config)
-      .then((response) => {
-        setIdeaType("fresh");
-        setFreshIdeas(response.data.data);
-        setFreshIdeaReferences(response.data.references);
-        setFreshIdeaTags(response.data.freshIdeasTags);
-
-        setPyResTime(response.data.pythonRespTime);
-        setNdResTime(response.data.respTime);
-        const fresh = document.querySelector(".idea-button.fresh");
-        const used = document.querySelector(".idea-button.used");
-
-        used.classList.remove("active");
-        fresh.classList.add("active");
-      })
-      .catch((error) => {
-        console.log("error", error);
-         toast.error(error?.response?.data?.message || 'Host has denied the extraction from this URL. Please try again or try some other URL.', {
-    autoClose: 10000, // 10 seconds
-  });
-      })
-      .finally(() => {
-        setformInput("");
-        setFileValid(false);
-        setUrlValid(false);
->>>>>>> misc-cp-prod-adg
         setNewIdeaLoad(false);
       });
   }
 
-<<<<<<< HEAD
   function handleSetIdeas(ideas) {
     // add a new properly initailUsedd = used
     const newIdeas = ideas.map((idea) => {
@@ -1162,8 +904,6 @@ export default function DashboardInsights({
     });
   }
 
-=======
->>>>>>> misc-cp-prod-adg
   useEffect(() => {
     var expression =
       /[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)?/gi;
@@ -1174,27 +914,17 @@ export default function DashboardInsights({
       // Regular expression for URL validation
       var pattern = new RegExp(
         "^(https?:\\/\\/)?" + // protocol
-<<<<<<< HEAD
           "((([a-zA-Z\\d]([a-zA-Z\\d-]{0,61}[a-zA-Z\\d])?)\\.)+[a-zA-Z]{2,})(:\\d{2,5})?" + // domain name and optional port
           "(\\/[-a-zA-Z\\d%@_.~+&:]*)*" + // path
           "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" + // query string
           "(\\#[-a-zA-Z\\d_]*)?$",
-=======
-        "((([a-zA-Z\\d]([a-zA-Z\\d-]{0,61}[a-zA-Z\\d])?)\\.)+[a-zA-Z]{2,})(:\\d{2,5})?" + // domain name and optional port
-        "(\\/[-a-zA-Z\\d%@_.~+&:]*)*" + // path
-        "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" + // query string
-        "(\\#[-a-zA-Z\\d_]*)?$",
->>>>>>> misc-cp-prod-adg
         "i"
       ); // fragment locator
       return pattern.test(formInput);
     }
   }, [formInput]);
 
-<<<<<<< HEAD
   const [alReadyInFilter, setAlReadyInFilter] = useState([]);
-=======
->>>>>>> misc-cp-prod-adg
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const [authenticationModalType, setAuthneticationModalType] =
     useState("signup");
@@ -1203,34 +933,10 @@ export default function DashboardInsights({
     Gbid = localStorage.getItem("Gbid");
   }
 
-<<<<<<< HEAD
   function handleCitationFunction(idea) {
     const idOfIdea = idea?.article_id;
     const count = getCount(idOfIdea);
     return count;
-=======
-  function handleCitationFunction(source) {
-    let filtered;
-    if (ideaType === "used") {
-      reference.forEach((el, index) => {
-        if (el.source === source) {
-          filtered = index;
-        }
-      });
-    } else if (ideaType === "fresh") {
-      freshIdeasReferences.forEach((el, index) => {
-        if (el.source === source) {
-          filtered = index;
-        }
-      });
-    }
-
-    if (filtered === 0 || filtered) {
-      return filtered + 1;
-    } else {
-      return null;
-    }
->>>>>>> misc-cp-prod-adg
   }
 
   function toTitleCase(str) {
@@ -1245,7 +951,6 @@ export default function DashboardInsights({
 
     return titleCase.trim();
   }
-<<<<<<< HEAD
   let sortedRefAr = [];
   let sortedIdeas = [];
   let filteredSortedIdeas = [];
@@ -1331,8 +1036,6 @@ export default function DashboardInsights({
       return index;
     });
   }
-=======
->>>>>>> misc-cp-prod-adg
 
   if (loading || regenLoading) return <LoaderScan />;
   return (
@@ -1402,7 +1105,6 @@ export default function DashboardInsights({
       {creditModal && (
         <TrialEndedModal setTrailModal={setCreditModal} topic={null} />
       )}
-<<<<<<< HEAD
       <div
         className="text-xs px-2 mb-24 lg:mb-0 h-full"
         style={{ borderLeft: "2px solid #d2d2d2" }}
@@ -1513,85 +1215,11 @@ export default function DashboardInsights({
                 freshIdeasReferences?.map((ref, index) => {
                   return ref.source !== "file" ? (
                     <FreshIdeaReference
-=======
-      <div className="text-xs px-2 mb-24 lg:mb-0" style={{ borderLeft: "2px solid #d2d2d2" }} id="regenblog">
-        {/* h1 Insight only for mobile screens */}
-        <h1 className="text-2xl  font-semibold text-gray-800 my-4 lg:hidden">
-          Insights
-        </h1>
-        <div className="flex jusify-between gap-[1.25em]">
-          <p className="font-normal w-[100%] lg:w-[70%] text-sm">
-          Create your next draft on the basis of your edits and uploads.
-          </p>
-          <button
-            className="cta flex items-center gap-2 self-start !py-2 !font-semibold"
-            onClick={
-              isAuthenticated
-                ? handleRegenerate
-                : () => {
-                  updateisSave();
-                  // setAuthenticationModalOpen(true);
-                }
-            }
-          >
-            <RegenerateIcon />
-            Next Draft
-          </button>
-        </div>
-
-        {tags?.length > 0 && (
-          <div>
-            <div className="flex justify-between w-full items-center py-2">
-              <h3 className="pt-[0.65em] font-semibold">Filtering Keywords</h3>
-            </div>
-            <div
-              className="flex gap-[0.5em] flex-wrap h-full lg:max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
-              style={{ padding: "0.75em 0.25em" }}
-            >
-              {ideaType === "used"
-                ? tags?.map((tag, i) => {
-                  return (
-                    <IdeaTag
-                      key={i}
-                      tag={tag}
-                      handleTagClick={handleTagClick}
-                    />
-                  );
-                })
-                : freshIdeaTags?.length > 0
-                  ? freshIdeaTags?.map((tag, i) => {
-                    return (
-                      <IdeaTag
-                        key={i}
-                        tag={tag}
-                        handleTagClick={handleTagClick}
-                      />
-                    );
-                  })
-                  : "Generate fresh ideas to see tags"}
-            </div>
-          </div>
-        )}
-        <div>
-          <div className="flex justify-between w-full items-center py-2">
-            <h3 className="pt-[0.65em] font-semibold">Sources</h3>
-          </div>
-          <div
-            className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
-            style={{ padding: "0.75em 0.5em" }}
-          >
-            {ideaType === "used" ? (
-              reference?.length > 0 ? (
-                reference?.map((ref, index) => {
-                  return (
-                    <UsedReference
->>>>>>> misc-cp-prod-adg
                       key={index}
                       reference={ref}
                       index={index}
                       handleRefClick={handleRefClick}
                     />
-<<<<<<< HEAD
                   ) : (
                     <div>File upload does not contain sources. </div>
                   );
@@ -1817,167 +1445,6 @@ export default function DashboardInsights({
               </div>
             )}
           </div>
-=======
-                  );
-                })
-              ) : (
-                <div>Used Idea sources not found</div>
-              )
-            ) : freshIdeasReferences?.length > 0 ? (
-              freshIdeasReferences?.map((ref, index) => {
-                return ref.source !== "file" ? (
-                  <FreshIdeaReference
-                    key={index}
-                    reference={ref}
-                    index={index}
-                    handleRefClick={handleRefClick}
-                  />
-                ) : (
-                  <div>File upload does not contain sources. </div>
-                );
-              })
-            ) : (
-              <div>Generate fresh ideas to see sources</div>
-            )}
-          </div>
-        </div>
-        <div className="flex py-2 relative gap-5">
-          <button
-            className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs"
-            onClick={(e) => {
-              setIdeaType("used");
-            }}
-          >
-            Used Idea(s){" "}
-            <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
-              {ideas?.length}
-            </span>
-          </button>
-
-          <button
-            className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs realtive"
-            onClick={(e) => {
-              if (isAuthenticated) setIdeaType("fresh");
-              else {
-                updateisSave();
-              }
-            }}
-          >
-            <Image
-              src="/lightBulb.png"
-              alt="lightBulb"
-              width={20}
-              height={20}
-              style={{ pointerEvents: "none" }}
-            />
-            Unused Idea(s){" "}
-            {freshIdeas?.length > 0 && (
-              <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
-                {freshIdeas?.length}
-              </span>
-            )}
-          </button>
-          {(
-            <>
-              {/* <span className="mt-3 text-sm ml-3">Select all </span>
-              <div
-                className={`md:w-10 md:h-5 w-7 h-2 flex items-center  rounded-full p-1 cursor-pointer mt-3 ${toggle == false ? 'bg-indigo-500' : 'bg-gray-300'} transform duration-300 ease-in-out`}
-                onClick={() => {
-                  ideaType === "used" ? handleSelectAllUsedIdeas() : handleSelectAll();
-                  setToggle(!toggle);
-                }}
-              >
-                <div
-                  className={
-                    "bg-black md:w-5 md:h-5 h-4 w-4 rounded-full shadow-md transform duration-300 ease-in-out" +
-                    (toggle ? null : toggleClass)
-                  }
-                ></div>
-              </div> */}
-            </>
-          )}
-        </div>
-        <div
-          className=" dashboardInsightsUsedSectionHeight overflow-y-scroll px-2"
-        >
-          {ideaType === "used"
-            ? filteredIdeas?.length > 0
-              ? filteredIdeas?.map((idea, index) => {
-                return (
-                  <UsedFilteredIdeaItem
-                    key={index}
-                    index={index}
-                    idea={idea}
-                    filteredIdeas={filteredIdeas}
-                    setFilteredIdeas={setFilteredIdeas}
-                    ideas={ideas}
-                    setIdeas={setIdeas}
-                    handleUsedIdeas={handleUsedIdeas}
-                    handleCitationFunction={handleCitationFunction}
-                  />
-                );
-              })
-              : ideas?.map((idea, index) => {
-                return (
-                  <MainIdeaItem
-                    key={index}
-                    index={index}
-                    idea={idea}
-                    ideas={ideas}
-                    setIdeas={setIdeas}
-                    handleUsedIdeas={handleUsedIdeas}
-                    handleCitationFunction={handleCitationFunction}
-                  />
-                );
-              })
-            : ""}
-          {ideaType === "fresh" && (
-            <div className="w-full">
-              {isAuthenticated && (
-                <>
-                  <FreshIdeaForm
-                    postFormData={postFormData}
-                    newIdeaLoad={newIdeaLoad}
-                    ideaType={ideaType}
-                    formInput={formInput}
-                    handleFormChange={handleFormChange}
-                    hover={hover}
-                    handleFileUpload={handleFileUpload}
-                  />
-                </>
-              )}
-              {freshFilteredIdeas?.length > 0
-                ? freshFilteredIdeas?.map((idea, index) => {
-                  return (
-                    <FreshFilteredIdeaItem
-                      key={index}
-                      index={index}
-                      idea={idea}
-                      handleCitationFunction={handleCitationFunction}
-                      filteredIdeas={filteredIdeas}
-                      setFilteredIdeas={setFilteredIdeas}
-                      ideas={ideas}
-                      setIdeas={setIdeas}
-                      handleUsedIdeas={handleUsedIdeas}
-                    />
-                  );
-                })
-                : freshIdeas?.map((idea, index) => {
-                  return (
-                    <IdeaComponent
-                      key={index}
-                      index={index}
-                      idea={idea}
-                      handleCitationFunction={handleCitationFunction}
-                      handleInputClick={handleInputClick}
-                      freshIdeas={freshIdeas}
-                      setFreshIdeas={setFreshIdeas}
-                    />
-                  );
-                })}
-            </div>
-          )}
->>>>>>> misc-cp-prod-adg
         </div>
       </div>
     </>
