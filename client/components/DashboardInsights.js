@@ -80,7 +80,10 @@ export default function DashboardInsights({
   setOption,
   option,
   setNdResTime,
+  refetchBlog,
   keyword,
+  setInitailIdeas,
+  initailIdeas
 }) {
   const [enabled, setEnabled] = useState(false);
   const [isOpen, setOpen] = useState(false);
@@ -472,14 +475,14 @@ export default function DashboardInsights({
           handleSelectAll(data?.regenerateBlog?.ideas?.ideas);
           setTags(data?.regenerateBlog?.tags);
           setFreshIdeaTags(data?.regenerateBlog?.freshIdeasTags);
-          let referencesList = data?.fetchBlog.references;
+          let referencesList = data?.regenerateBlog.references;
           let newreferencesList = referencesList.map((reference) => {
             const localId = Math.random().toString(36).substr(2, 9);
             return { ...reference, selected: false, localId };
           });
           setReference(newreferencesList);
           setFreshIdeaReferences(data?.regenerateBlog?.freshIdeasReferences);
-          setFreshIdeas(data?.regenerateBlog?.ideas?.freshIdeas);
+          setFreshIdeas(data?.regenerateBlog?.freshIdeas);
           setPyResTime(data?.regenerateBlog?.pythonRespTime);
           setNdResTime(data?.regenerateBlog?.respTime);
 
@@ -636,7 +639,7 @@ export default function DashboardInsights({
     initailIdeas.forEach((idea, index) => {
       initialIdeasMapWithIndex[index] = idea.used ? 1 : 0;
     });
-
+    debugger;
     console.log(initialIdeasMapWithIndex);
     let mapsAreEqual = true;
     for (const key in ideasMapWithIndex) {
@@ -1188,7 +1191,9 @@ export default function DashboardInsights({
             </div>
 
             <div
-              className="flex gap-[0.5em] my-2 flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0 h-[50px] -z-10"
+              className={`
+              flex gap-[0.5em] my-2 flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0 -z-10 ${sortedRefAr.length > 0 ? "h-[50px]" : "hidden"}
+              `}
               style={{ padding: "0.75em 0.5em" }}
             >
               {ideaType === "used" ? (

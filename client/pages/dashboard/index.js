@@ -581,6 +581,7 @@ You can add your own image, click on the image and use image options icon.`}
               setOption={setOption}
               option={option}
               keyword={""}
+              refetchBlog={()=>{}}
             />
           </div>
         </div>
