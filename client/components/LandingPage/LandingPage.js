@@ -286,14 +286,22 @@ const LandingPage = () => {
                     ))}
                 </div>
             </div> */}
+<<<<<<< HEAD
             {/* ABOUT US */}
+=======
+            {/* Value */}
+>>>>>>> misc-cp-prod-adg
             <SectionSpacer />
             {/* <div className="relative bg-gradient-to-b from-violet-50 to-violet-50 pt-20">
                 {/*  <div className="flex lg:flex-row flex-col mx-auto max-w-5xl items-center justify-center lg:justify-between">
                     <div className="lg:w-[40%] flex flex-col lg:gap-16 items-center justify-center lg:justify-between lg:block">
                         <div className="w-full flex-col justify-start items-center ">
                             <div className="h-14 text-slate-800  text-2xl lg:text-5xl text-center lg:text-start font-bold leading-10">
+<<<<<<< HEAD
                                 About us
+=======
+                                Value
+>>>>>>> misc-cp-prod-adg
                             </div>
                         </div>
                         <div className="opacity-70  text-center lg:text-start text-slate-600 text-[16px] font-normal leading-7">

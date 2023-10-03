@@ -375,7 +375,7 @@ const CheckoutForm = ({
         style={{
           backdropFilter: "blur(10px)",
         }}
-        className={" py-3  px-4 w-[60%] mx-auto rounded rounded-5 my-3"}
+        className={" py-3  px-4 w-full sm:w-[60%] mx-auto rounded rounded-5 my-3"}
       >
         <div className="px-4 mt-7">
           <h2 className="fw-bold text-4xl  my-2 ">Join us today 👋</h2>
@@ -632,7 +632,7 @@ const CheckoutForm = ({
                     justifyContent: "center",
                     gap: "5px",
                   }}
-                  className="bg-[#3CC0F6] text-[16px] opacity-50 font-bold text-[#13213e] rounded-[4px] py-[20px] w-[100%] mb-3"
+                  className="bg-[#fb847d] text-[16px] opacity-50 font-bold text-[#13213e] rounded-[4px] py-[20px] w-[100%] mb-3"
                 >
                   Subscribe
                   {/* {btnClicked && <div className={styles.subsloader}></div>} */}
@@ -646,7 +646,7 @@ const CheckoutForm = ({
                     e.preventDefault();
                     createSubscription();
                   }}
-                  className="bg-[#3CC0F6] text-[16px] cursor-pointer font-bold text-[#13213e] rounded-[4px] py-[20px] w-[100%] mb-3"
+                  className="bg-[#fb847d] text-[16px] cursor-pointer font-bold text-[#13213e] rounded-[4px] py-[20px] w-[100%] mb-3"
                 >
                   Subscribe
                 </button>

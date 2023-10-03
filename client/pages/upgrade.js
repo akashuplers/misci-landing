@@ -154,10 +154,17 @@ export default function Upgrade() {
                               onClick={() => subscriptionPlan(item)}
                               className={`w-[33%]  text-[18px] font-medium cursor-pointer rounded-[55px] px-[19px] py-[8px] ${currentPlan?.subscriptionType ===
                                 item.subscriptionType
+<<<<<<< HEAD
                                 ? "bg-[#3cc0f6] text-[#13213E]"
                                 : "bg-[#ECEDF5] text-[#13213E]"
                                 }`}
                             // className="bg-[#3cc0f6] cursor-pointer rounded-[55px] px-[19px] py-[8px]"
+=======
+                                ? "bg-[#fb847d] text-[#13213E]"
+                                : "bg-[#ECEDF5] text-[#13213E]"
+                                }`}
+                            // className="bg-[#fb847d] cursor-pointer rounded-[55px] px-[19px] py-[8px]"
+>>>>>>> misc-cp-prod-adg
                             >
                               {item.subscriptionType}
                             </div>
@@ -168,7 +175,11 @@ export default function Upgrade() {
                     <div
                       style={{
                         background:
+<<<<<<< HEAD
                           "linear-gradient(157.47deg, #182735 14.91%, #15324E 96.07%)",
+=======
+                          "linear-gradient(157.47deg, rgb(0 74 174) 14.91%, rgb(0 14 33) 96.07%)",
+>>>>>>> misc-cp-prod-adg
                         boxShadow: "0px 20px 60px rgba(9, 37, 89, 0.16)",
                       }}
                       className="flex relative flex-col  rounded-[4px] text-[#ffffff] p-4 w-[306px] sm:w-[392px] lg:h-full md:h-[590px] h-[200px]"
@@ -184,7 +195,11 @@ export default function Upgrade() {
                           </span> */}
                         </p>
                       </div>
+<<<<<<< HEAD
                       <div className="h-[2px] mt-4 mb-4 bg-gradient-to-r from-[#3cc0f6] to-transparent h-[2px] hidden md:block"></div>
+=======
+                      <div className="h-[2px] mt-4 mb-4 bg-gradient-to-r from-[#fb847d] to-transparent h-[2px] hidden md:block"></div>
+>>>>>>> misc-cp-prod-adg
 
                       <div className="flex  flex-col items-start justify-start mt-4 hidden md:block text-left">
                         {UpgradeFeatures.map((item, i) => {

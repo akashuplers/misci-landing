@@ -2,7 +2,11 @@ import { Python } from "../services/python"
 import { authMiddleware } from "../middleWare/authToken"
 import { fetchArticles } from "../repos"
 import { ObjectID } from "bson"
+<<<<<<< HEAD
 import { fetchArticleById, fetchArticleUrls, fetchBlog, fetchBlogIdeas, fetchUsedBlogIdeasByIdea } from "../graphql/resolver/blogs/blogsRepo"
+=======
+import { fetchArticleById, fetchArticleUrls, fetchUsedBlogIdeasByIdea } from "../graphql/resolver/blogs/blogsRepo"
+>>>>>>> misc-cp-prod-adg
 import { diff_minutes } from "../utils/date"
 
 const express = require('express')
@@ -12,6 +16,7 @@ const inMemoryStorage = multer.memoryStorage();
 const uploadStrategy = multer({ storage: inMemoryStorage }).single('file');
 const mulitUploadStrategy = multer({ storage: inMemoryStorage });
 
+<<<<<<< HEAD
 router.post('/urls', authMiddleware, async (req: any, res: any) => {
     let startRequest = new Date()
     const db = req.app.get('db')
@@ -171,6 +176,103 @@ router.post('/urls', authMiddleware, async (req: any, res: any) => {
         return res.status(400).send({
             type: "ERROR",
             message: e.message
+=======
+router.post('/url', authMiddleware, async (req: any, res: any) => {
+    let startRequest = new Date()
+    const db = req.app.get('db')
+    const {url, blog_id} = req.body
+    const user = req.user
+    if(!user) throw "No user found!"
+    try {
+        let pythonStart = new Date()
+        const articleid = await new Python({userId: user.id}).uploadUrl({url})
+        let pythonEnd = new Date()
+        let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
+        const article = await fetchArticles({db, id: articleid})
+        const name = article._source?.source?.name
+        if(article) {
+            let freshIdeas: any[] = []
+            let freshIdeasTags: string[] = []
+            if(article._source.driver) {
+                freshIdeasTags = article._source.driver
+            } else {
+                const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
+            }
+            article?._source?.summary.forEach((summary: string, index: number) => {
+                if(index < 10) {
+                    freshIdeas.push({
+                        idea: summary,
+                        article_id: articleid,
+                        used: 0,
+                        name: name && name === "file" ? "note" : name,
+                    })
+                }
+            })
+            if(freshIdeas && freshIdeas.length) {
+                freshIdeas = await (
+                    Promise.all(
+                        freshIdeas.map(async (ideasData: any) => {
+                            if(ideasData.article_id) {
+                                const article = await fetchArticleById({id: ideasData.article_id, db, userId: user.id})
+                                return {
+                                    ...ideasData,
+                                    reference: {
+                                        type: "article",
+                                        link: article._source.orig_url,
+                                        id: ideasData.article_id
+                                    }
+                                }
+                            } else {
+                                return {
+                                    ...ideasData
+                                }
+                            }
+                        })       
+                    )
+                )
+            }
+            if(blog_id){
+                await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(blog_id)}, {
+                    $set: {
+                        freshIdeasTags
+                    }
+                })
+                await db.db('lilleBlogs').collection('blogIdeas').updateOne({blog_id: new ObjectID(blog_id)}, {
+                    $set: {
+                        freshIdeas
+                    }
+                })
+            }
+            let endRequest = new Date()
+            let respTime = diff_minutes(endRequest, startRequest)    
+            let refUrls: {
+                url: string
+                source: string
+            }[] = []
+            if(articleid) refUrls = await fetchArticleUrls({db, articleId: [articleid]})
+            return res.status(200).send({
+                type: "SUCCESS",
+                data: freshIdeas,
+                respTime,
+                pythonRespTime,
+                references: refUrls,
+                freshIdeasTags: freshIdeasTags,
+            })
+        } else {
+            return res.status(400).send({
+                type: "SUCCESS",
+                data: "No ideas found!!",
+                pythonRespTime
+            })
+        }
+    }catch (e) {
+        return res.status(400).send({
+            type: "ERROR",
+            message: "Host has denied the extraction from this URL. Please try again or try some other URL."
+>>>>>>> misc-cp-prod-adg
         })
     }
 })
@@ -272,6 +374,7 @@ router.post('/keyword', authMiddleware, async (req: any, res: any) => {
     }
 })
 
+<<<<<<< HEAD
 router.post('/files', [authMiddleware, mulitUploadStrategy.array('files')], async (req: any, res: any) => {
     let startRequest = new Date()
     const db = req.app.get('db')
@@ -427,6 +530,95 @@ router.post('/files', [authMiddleware, mulitUploadStrategy.array('files')], asyn
                 message: "File uploaded by you has denied the extraction, Please try some other file.",
                 unprocessedFiles
             })    
+=======
+router.post('/file', [authMiddleware, uploadStrategy], async (req: any, res: any) => {
+    let startRequest = new Date()
+    const db = req.app.get('db')
+    const {blog_id} = req.body
+    const file = req.file
+    const user = req.user
+    if(!user) throw "No user found!"
+    try {
+        let pythonStart = new Date()
+        const articleid = await new Python({userId: user.id}).uploadFile({file})
+        let pythonEnd = new Date()
+        let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
+        const article = await fetchArticles({db, id: articleid})
+        const name = article._source?.source?.name
+        if(article) {
+            let freshIdeas: any[] = []
+            let freshIdeasTags: string[] = []
+            if(article._source.driver) {
+                freshIdeasTags = article._source.driver
+            } else {
+                const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                freshIdeasTags.push(...productsTags, ...organizationTags, ...personsTags)
+            }
+            const name = article._source?.source?.name
+            article?._source?.summary.forEach((summary: string, index: number) => {
+                if(index < 10) {
+                    freshIdeas.push({
+                        idea: summary,
+                        article_id: articleid,
+                        used: 0,
+                        name: name && name === "file" ? "note" : name,
+                    })
+                }
+            })
+            if(freshIdeas && freshIdeas.length) {
+                freshIdeas = await (
+                    Promise.all(
+                        freshIdeas.map(async (ideasData: any) => {
+                            if(ideasData.article_id) {
+                                const article = await fetchArticleById({id: ideasData.article_id, db, userId: user.id})
+                                return {
+                                    ...ideasData,
+                                    reference: {
+                                        type: "article",
+                                        link: article._source.orig_url,
+                                        id: ideasData.article_id
+                                    }
+                                }
+                            } else {
+                                return {
+                                    ...ideasData
+                                }
+                            }
+                        })       
+                    )
+                )
+            }
+            if(blog_id){
+                await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(blog_id)}, {
+                    $set: {
+                        freshIdeasTags
+                    }
+                })
+                await db.db('lilleBlogs').collection('blogIdeas').updateOne({blog_id: new ObjectID(blog_id)}, {
+                    $set: {
+                        freshIdeas
+                    }
+                })
+            }
+            let refUrls: {
+                url: string
+                source: string
+            }[] = []    
+            if(articleid) refUrls = await fetchArticleUrls({db, articleId: [articleid]})    
+            let endRequest = new Date()
+            let respTime = diff_minutes(endRequest, startRequest)      
+            return res.status(200).send({
+                type: "SUCCESS",
+                data: freshIdeas,
+                respTime,
+                pythonRespTime,
+                references: refUrls,
+                freshIdeasTags,
+                name: article._source.name
+            })
+>>>>>>> misc-cp-prod-adg
         } else {
             return res.status(400).send({
                 type: "SUCCESS",
@@ -434,7 +626,10 @@ router.post('/files', [authMiddleware, mulitUploadStrategy.array('files')], asyn
                 pythonRespTime
             })
         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> misc-cp-prod-adg
     }catch (e) {
         console.log(e, "error from python")
         return res.status(400).send({

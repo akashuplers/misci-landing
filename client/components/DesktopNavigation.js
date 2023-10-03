@@ -68,7 +68,11 @@ var desktopNavigationRoutes = [
     current: false,
   },
   {
+<<<<<<< HEAD
     name: "About us",
+=======
+    name: "Value",
+>>>>>>> misc-cp-prod-adg
     href: "/aboutus",
     current: false,
   },

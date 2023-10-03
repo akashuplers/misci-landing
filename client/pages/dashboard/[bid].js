@@ -34,7 +34,10 @@ export default function Post({typeIsRepurpose}) {
   const [reference, setReference] = useState([]);
   const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
   const [alreadyShownDisclaimer, setAlreadyShownDisclaimer] = useState(false);
+<<<<<<< HEAD
   const[initailIdeas, setInitailIdeas] = useState([]);
+=======
+>>>>>>> misc-cp-prod-adg
   const [disclaimerCheck, setDisclaimerCheck] = useState(false);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
   const { option, setOption } = useTabOptionStore();
@@ -113,6 +116,7 @@ export default function Post({typeIsRepurpose}) {
   }, []);
 
 
+<<<<<<< HEAD
   function handleSetIdeas (ideas) {
     // add a new properly initailUsedd = used
     const validTypes =['web', 'url', 'file'] 
@@ -128,10 +132,13 @@ export default function Post({typeIsRepurpose}) {
     setInitailIdeas(newIdeas)
   } 
 
+=======
+>>>>>>> misc-cp-prod-adg
 
   useEffect(() => {
     if (data == null) return;
     setBlogData(data.fetchBlog);
+<<<<<<< HEAD
     // setInitailIdeas(data.fetchBlog.ideas.ideas);
     // setIdeas(data.fetchBlog.ideas.ideas);
     handleSetIdeas(data.fetchBlog.ideas.ideas)
@@ -144,6 +151,13 @@ export default function Post({typeIsRepurpose}) {
       return { ...reference, selected: false , localId};
     });
     setReference(newreferencesList);
+=======
+    setIdeas(data.fetchBlog.ideas.ideas);
+    setTags(data.fetchBlog.tags);
+    setFreshIdeaTags(data.fetchBlog.freshIdeasTags);
+    setFreshIdeasReferences(data.fetchBlog.freshIdeasReferences);
+    setReference(data.fetchBlog.references);
+>>>>>>> misc-cp-prod-adg
     setFreshIdeas(data.fetchBlog.ideas.freshIdeas);
     const newArray = data.fetchBlog.publish_data.filter(
       (obj) => obj.platform === "wordpress"
@@ -487,11 +501,16 @@ You can add your own image, click on the image and use image options icon.`}
           >
             <DashboardInsights
               ideas={ideas}
+<<<<<<< HEAD
               refetchBlog={refetchBlog}
               setIdeas={setIdeas}
               tags={tags}
               setInitailIdeas={setInitailIdeas}
               initailIdeas={initailIdeas}
+=======
+              setIdeas={setIdeas}
+              tags={tags}
+>>>>>>> misc-cp-prod-adg
               setTags={setTags}
               freshIdeaTags={freshIdeaTags}
               freshIdeas={freshIdeas}
@@ -508,7 +527,10 @@ You can add your own image, click on the image and use image options icon.`}
               setNdResTime={setNdResTime}
               setOption={setOption}
               option={option}
+<<<<<<< HEAD
               keyword={data?.fetchBlog?.keyword}
+=======
+>>>>>>> misc-cp-prod-adg
             />
           </div>
         </div>

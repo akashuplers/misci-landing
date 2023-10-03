@@ -1,7 +1,10 @@
 import { DocumentIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import Tooltip from "./Tooltip";
 import { classNames } from "@/store/appHelpers";
+<<<<<<< HEAD
 import { DocumentPlusIcon } from "@heroicons/react/20/solid";
+=======
+>>>>>>> misc-cp-prod-adg
 
 interface Props extends React.HTMLAttributes<HTMLButtonElement> {
   selected?: boolean;
@@ -10,17 +13,27 @@ interface Props extends React.HTMLAttributes<HTMLButtonElement> {
   index?: number;
   wholeData?: any;
   rest?: any;
+<<<<<<< HEAD
   onDelete?: (data?:any) => void;
+=======
+>>>>>>> misc-cp-prod-adg
 }
 
 export const Chip = ({
   selected = false,
+<<<<<<< HEAD
   text  = "",
+=======
+  text,
+>>>>>>> misc-cp-prod-adg
   handleClick,
   index,
   wholeData,
   rest,
+<<<<<<< HEAD
   onDelete,
+=======
+>>>>>>> misc-cp-prod-adg
 }: Props) => {
   return (
     <>
@@ -31,6 +44,7 @@ export const Chip = ({
         }`}
         onClick={() => handleClick && handleClick(index ?? 0)}
       >
+<<<<<<< HEAD
         <h3 className=" text-sm font-normal leading-tight">{
           text?.length > 50 ? text?.slice(0,50) + "..." : text
         }</h3>
@@ -41,6 +55,14 @@ export const Chip = ({
     </>
   );
 }; 
+=======
+        <h3 className=" text-sm font-normal leading-tight">{text}</h3>
+      </div>
+    </>
+  );
+};
+
+>>>>>>> misc-cp-prod-adg
 interface FileChipProps extends React.HTMLAttributes<HTMLDivElement> {
   rest?: any;
   fileName: string;
@@ -259,6 +281,7 @@ export function TabItem({
     </div>
   );
 }
+<<<<<<< HEAD
 
 
 
@@ -291,3 +314,5 @@ export function FileComponent(props: IFileComponentProps){
     </div>
 
 }
+=======
+>>>>>>> misc-cp-prod-adg

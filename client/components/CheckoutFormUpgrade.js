@@ -366,7 +366,7 @@ const CheckoutFormUpgrade = ({
                     justifyContent: "center",
                     gap: "5px",
                   }}
-                  className="bg-[#3CC0F6] text-[16px] opacity-50 font-bold text-[#13213e] rounded-[4px] py-[20px] w-[100%] mb-3"
+                  className="bg-[#fb847d] text-[16px] opacity-50 font-bold text-[#13213e] rounded-[4px] py-[20px] w-[100%] mb-3"
                 >
                   Subscribe
                   {/* {btnClicked && <div className={styles.subsloader}></div>} */}

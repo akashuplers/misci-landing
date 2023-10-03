@@ -1,4 +1,5 @@
 import Link from 'next/link';
+<<<<<<< HEAD
 const SourceColors = {
     blue: 'bg-blue-800',
     orange: 'bg-red-300',
@@ -11,18 +12,25 @@ function getBgColorForCheckbox(color) {
     const before = `checked:before:bg-${color}-500`;
     return `${border} ${bg} ${before}`;
 }
+=======
+
+>>>>>>> misc-cp-prod-adg
 const UsedFilteredIdeaItem = ({
     index,
     idea,
     filteredIdeas,
     setFilteredIdeas,
     ideas,
+<<<<<<< HEAD
     idCountMap,
     typeOfIdea,
+=======
+>>>>>>> misc-cp-prod-adg
     setIdeas,
     handleUsedIdeas,
     handleCitationFunction,
 }) => {
+<<<<<<< HEAD
     let realTypeOfIdea = typeOfIdea;
     if (typeOfIdea == 'web') {
         typeOfIdea = '#EEC800';
@@ -36,6 +44,12 @@ const UsedFilteredIdeaItem = ({
         elIndex === index ? { ...el, used: el.used === 1 ? 0 : 1 } : el
     );
     const handleCheckboxClick = () => {
+=======
+    const handleCheckboxClick = () => {
+        const updatedFilteredIdeas = filteredIdeas.map((el, elIndex) =>
+            elIndex === index ? { ...el, used: el.used === 1 ? 0 : 1 } : el
+        );
+>>>>>>> misc-cp-prod-adg
         setFilteredIdeas(updatedFilteredIdeas);
 
         const ideasCopy = ideas.map((element) => {
@@ -64,6 +78,7 @@ const UsedFilteredIdeaItem = ({
     };
 
     return (
+<<<<<<< HEAD
         <div className={`flex pb-3 rounded-none border-none` + " filteredIdeas: " + idea?.idea} key={index}>
             <div className={`mr-1 w-2 h-2  rounded-full mt-1`}
                   style={{
@@ -76,6 +91,11 @@ const UsedFilteredIdeaItem = ({
                         textDecoration : !idea?.initailUsed ? "line-through": "none",
                         lineBreak: 'anywhere'
                 }}>{idea?.idea} </p>
+=======
+        <div className={`flex pb-3 rounded-none` + " filteredIdeas: " + idea?.idea} key={index}>
+            <div className="flex justify-between gap-5 w-full">
+                <p className="text-[13px]">{idea?.idea} </p>
+>>>>>>> misc-cp-prod-adg
                 <a
                     style={{
                         color: "var(--primary-blue)",
@@ -87,7 +107,11 @@ const UsedFilteredIdeaItem = ({
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                 >
+<<<<<<< HEAD
                     {idCountMap(idea?.article_id)}
+=======
+                    {handleCitationFunction(idea?.name)}
+>>>>>>> misc-cp-prod-adg
                     <div
                         className={`hidden referenceTooltip${index}`}
                         style={{
@@ -114,6 +138,7 @@ const UsedFilteredIdeaItem = ({
                         )}
                     </div>
                 </a>
+<<<<<<< HEAD
                 <div class="inline-flex items-start">
                     <label
                         class="relative flex cursor-pointer items-center rounded-full p-3"
@@ -151,6 +176,17 @@ const UsedFilteredIdeaItem = ({
                         </div>
                     </label>
                 </div>
+=======
+                <input
+                    type="checkbox"
+                    className="mb-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-none focus:ring-blue-500"
+                    checked={idea?.used}
+    style={{
+                        borderRadius: '2px'
+                    }}
+                    onClick={handleCheckboxClick}
+                />
+>>>>>>> misc-cp-prod-adg
             </div>
         </div>
     );

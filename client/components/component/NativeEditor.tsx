@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 import { contentStyle } from "@/store/appContants";
+=======
+>>>>>>> misc-cp-prod-adg
 import { Editor } from "@tinymce/tinymce-react";
 
 interface NativeEditorProps {
@@ -10,7 +13,32 @@ interface NativeEditorProps {
   onInit: (editor:any) => void;
   ref?: any;
 }
+<<<<<<< HEAD
 
+=======
+const contentStyle = `
+
+::-webkit-scrollbar {
+  width: 5px; /* Adjust the width to your preference */
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent; /* Make the track transparent */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: transparent; /* Make the handle (thumb) transparent */
+  border: 1px solid transparent; /* Hide the handle border */
+}
+
+/* Corner */
+::-webkit-scrollbar-corner {
+  background: transparent; /* Make the corner transparent */
+}
+`
+>>>>>>> misc-cp-prod-adg
 
 export default function NativeEditor(props: NativeEditorProps) {
   return (

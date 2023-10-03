@@ -26,8 +26,13 @@ const mobileNavigation = [
     icon: QuestionMarkCircleIcon,
   },
   {
+<<<<<<< HEAD
     name: "About Us",
     href: "/about",
+=======
+    name: "Value",
+    href: "/aboutus",
+>>>>>>> misc-cp-prod-adg
     icon: InformationCircleIcon,
   },
   {

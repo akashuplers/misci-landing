@@ -22,6 +22,7 @@ const IdeaTag = ({ tag, handleTagClick }) => {
 };
 
 export default IdeaTag;
+<<<<<<< HEAD
 
 export const SourceColors = {
   blue: 'bg-blue-800',
@@ -40,3 +41,5 @@ export const SourceTab =({title, SourceColor, selected, onClick}) => {
   }
 </div>
 }
+=======
+>>>>>>> misc-cp-prod-adg
