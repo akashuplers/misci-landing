@@ -4,6 +4,7 @@ import {
 import React from 'react';
 import MoblieUnAuthFooter from '../components/LandingPage/MoblieUnAuthFooter';
 import Layout from "../components/Layout";
+import ValueComponent from "../components/LandingPage/ValueComponent";
 
 const AboutUsFeatures = [
   {
