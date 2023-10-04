@@ -90,6 +90,13 @@ router.post('/blog/save', async (req: any, res: any) => {
 })
 router.post('/generate', async (req: any, res: any) => {
     let {question, userId} = req.body
+    let ipAddress = req.headers['x-forwarded-for']?.split(", ")?.[0] || req.ip || req.socket.remoteAddress;
+    console.log(ipAddress, "ipAddress")
+    console.log(req.socket.remoteAddress, "ipAddress")
+    console.log(req.headers['x-forwarded-for'], "ipAddress")
+    console.log(req.ip, "ipAddress")
+    console.log(req.ips, "ipAddress")
+    
     const db = req.app.get('dbLive')
     const userEmail = await db.db('lilleAdmin').collection('misciEmail').findOne()
     console.log(userEmail)
@@ -163,7 +170,8 @@ router.post('/generate', async (req: any, res: any) => {
             date: getTimeStamp(),
             updatedAt: getTimeStamp(),
             type: "misci",
-            answers
+            answers,
+            ipAddress 
         }
         const noteReferences = await db.db('lilleBlogs').collection('notesReferences').findOne({
             article_id: article.id
