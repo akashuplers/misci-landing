@@ -1,8 +1,10 @@
-export const getDateString = (date: Date) => {
+export const getDateString = (date: Date, time=false) => {
     // TODO: MOVE THIS TO A FUNCTION
-    let today = date;
+    let today: any = date;
     let dd = today.getDate();
     let mm = today.getMonth() + 1; //January is 0!
+    let hr = today.getHours(); //January is 0!
+    let min = today.getMinutes(); //January is 0!
 
     let yyyy = today.getFullYear();
     if (dd < 10) {
@@ -16,6 +18,7 @@ export const getDateString = (date: Date) => {
 
     //@ts-ignore
     today = `${yyyy}-${mm}-${dd}`;
+    if(time) today += ` ${hr}:${min}` ;
     return today
 }
 
