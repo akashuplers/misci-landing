@@ -1195,7 +1195,16 @@ export default function DashboardInsights({
               flex gap-[0.5em] my-2 flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0 -z-10 ${sortedRefAr.length > 0 ? "h-[50px]" : "hidden"}
               `}
               style={{ padding: "0.75em 0.5em" }}
+              onClick={() => {
+                if (isAuthenticated) {
+                  console.log('no changes');
+                } else {
+                  setAuthenticationModalOpen(true);
+                }
+              }}
             >
+              <div className="flex flex-row gap-2 flex-wrap max-h-[80px] z-30 overflow-y-scroll absolute w-full h-full border-red-500 bg-transparent">
+                </div>
               {ideaType === "used" ? (
                 reference?.length > 0 ? (
                   sortedRefAr?.map((ref, index) => {
@@ -1436,6 +1445,7 @@ export default function DashboardInsights({
                         index={index}
                         idCountMap={getIndexByKey}
                         idea={idea}
+
                         ideas={ideas}
                         typeOfIdea={idea?.type}
                         setIdeas={setIdeas}
