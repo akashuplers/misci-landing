@@ -34,7 +34,7 @@ export const Chip = ({
         <h3 className=" text-sm font-normal leading-tight">{
           text?.length > 50 ? text?.slice(0,50) + "..." : text
         }</h3>
-        <button className="w-3 h-3 relative rounded" onClick={()=>{onDelete && onDelete(wholeData)}}>
+        <button className="w-5 h-5 relative rounded text-slate-700" onClick={()=>{onDelete && onDelete(wholeData)}}>
           <XCircleIcon />
           </button>
       </div>
