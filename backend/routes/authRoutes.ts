@@ -1733,6 +1733,9 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
       try {
         combinedArticleIds = await new Python({userId: userId}).uploadKeyword({keyword, timeout:60000})
         // combinedArticleIds = [ 'e84cb604-52f9-11ee-ac29-0242ac130002' ]
+        if(combinedArticleIds && combinedArticleIds.length) {
+          combinedArticleIds = combinedArticleIds.filter((data) => data !== "None")
+        }
         combinedArticleIds.map((id) => sourcesArray.push({
           type: "web",
           id

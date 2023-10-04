@@ -600,6 +600,9 @@ export const blogResolvers = {
             if((updatedTopic && updatedTopic !== blog.keyword) || (!useOldWebSource)) {
                 try {
                     webIds = await new Python({userId: user.id}).uploadKeyword({keyword: updatedTopic || blog.keyword, timeout:60000})
+                    if(webIds && webIds.length) {
+                        webIds = webIds.filter((data) => data !== "None")
+                    }
                     articleIds = [...articleIds, ...webIds]
                 }catch(e){
                     console.log(e, "error from python")
