@@ -1118,11 +1118,13 @@ export default function DashboardInsights({
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
-            paddingBottom: '2em'
+            paddingBottom: '2em',
+            paddingTop: '1em',
+            fontSize: '1.5em'
           }}>
             <h1 className="pt-[0.65em] font-semibold">WORKSPACE</h1>
             <XMarkIcon 
-              className="w-5 h-5 text-slate-800"
+              className="w-7 h-7 text-slate-800"
               onClick={() => {
                 const container = document.querySelector(".dashboardInsightMobile");
                 container.classList.remove("open")
