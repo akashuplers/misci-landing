@@ -1132,7 +1132,7 @@ export default function DashboardInsights({
             />
           </div>
           <div className="flex jusify-between gap-[1.25em]">
-            <p className="font-normal w-[76%] lg:w-[70%] text-sm">
+            <p className="font-normal w-[70%] lg:w-[70%] text-sm">
               Create your next draft on the basis of your edits and uploads.
             </p>
             <button
