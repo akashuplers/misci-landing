@@ -2053,7 +2053,7 @@ export default function TinyMCEEditor({
               className={`flex w-full lg:w-auto lg:mt-auto justify-end md:justify-start ${isAuthenticated ? "md:mt-5" : "md:mt-[70px]"} mt-0`}
               style={{ gap: "0.25em", marginLeft: "auto" }}
             >
-              <div className="pt-2 mr-auto">
+              {windowWidth <=768 && <div className="pt-2 mr-auto">
                 <button onClick={() => router.back()}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -2068,7 +2068,7 @@ export default function TinyMCEEditor({
                     />
                   </svg>
                 </button>
-              </div>
+              </div>}
               
               {windowWidth > 768 && <button
                 className="cta text-red-500"
