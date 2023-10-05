@@ -683,7 +683,7 @@ export default function Sidebar() {
             </main>
           </div>
           {path !== "/" ? (
-            <div className="flex flex-row px-2 md:relative absolute top-[65px] md:top-auto">
+            <div className="flex flex-row px-2 md:relative hidden md:block">
               <div className="pt-4">
                 <button onClick={() => router.back()}>
                   <svg
