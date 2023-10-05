@@ -446,36 +446,42 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 usedIdeasArr = description?.split('. ')
                                 if(!misci && ideasArr && ideasArr.length && refUrls && refUrls?.length) {
                                     let articleIds: string[] = []
+                                    let refBlogs = []
                                     refUrls?.map((refUrl) => articleIds.push(refUrl.id))
-                                    const refBlogs = await new Python({userId}).getReferences({
-                                        text: updatedContent,
-                                        article_ids: articleIds
-                                    })   
-                                    refBlogs.forEach((data: any) => {
-                                        // console.log(data, "data")
-                                        if(Object.keys(data)?.length) {
-                                            const key = Object.keys(data)[0]
-                                            const matchedId = data[key]
-                                            let text = key
-                                            const filteredSourceIndex = refUrls?.findIndex((source: any) => source.id === matchedId)
-                                            console.log(filteredSourceIndex, "match")
-                                            // let foundFullStop = false
-                                            // if (key[key.length-1] !== ".") {
-                                            //     text = key.slice(0,-1);    
-                                            //     foundFullStop = true
-                                            // }
-                                            if(filteredSourceIndex > -1) {
-                                                const filteredSource = refUrls[filteredSourceIndex]
-                                                contentWithRef += `${text} <a href="${filteredSource?.url}" target="_blank" title="${filteredSourceIndex + 1} - ${filteredSource?.url}">[${filteredSourceIndex + 1}]</a>.` 
-                                            }else{
-                                                if(updatedContent.charAt(updatedContent.lastIndexOf(key) + key.length) === ".") {
-                                                    contentWithRef += `${text}.`
-                                                } else {
-                                                    contentWithRef += `${text}`
+                                    try {
+                                        refBlogs = await new Python({userId}).getReferences({
+                                            text: updatedContent,
+                                            article_ids: articleIds
+                                        })   
+                                        refBlogs.forEach((data: any) => {
+                                            // console.log(data, "data")
+                                            if(Object.keys(data)?.length) {
+                                                const key = Object.keys(data)[0]
+                                                const matchedId = data[key]
+                                                let text = key
+                                                const filteredSourceIndex = refUrls?.findIndex((source: any) => source.id === matchedId)
+                                                console.log(filteredSourceIndex, "match")
+                                                // let foundFullStop = false
+                                                // if (key[key.length-1] !== ".") {
+                                                //     text = key.slice(0,-1);    
+                                                //     foundFullStop = true
+                                                // }
+                                                if(filteredSourceIndex > -1) {
+                                                    const filteredSource = refUrls[filteredSourceIndex]
+                                                    contentWithRef += `${text} <a href="${filteredSource?.url}" target="_blank" title="${filteredSourceIndex + 1} - ${filteredSource?.url}">[${filteredSourceIndex + 1}]</a>.` 
+                                                }else{
+                                                    if(updatedContent.charAt(updatedContent.lastIndexOf(key) + key.length) === ".") {
+                                                        contentWithRef += `${text}.`
+                                                    } else {
+                                                        contentWithRef += `${text}`
+                                                    }
                                                 }
                                             }
-                                        }
-                                    })
+                                        })
+                                    }catch(e){
+                                        console.log(e?.response?.data, "error from python for backlinkings")
+                                    }
+                                    if(!refBlogs || !refBlogs.length) contentWithRef = updatedContent
                                 }
                                 publish({userId, keyword: title || "", step: "BACKLINK_COMPLETED"})
                                 const htmlTagRegex = /<[^>]*>([^<]*)<\/[^>]*>/g; // Regular expression to match HTML tags

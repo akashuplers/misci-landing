@@ -639,15 +639,21 @@ export const blogResolvers = {
                 const duplicate = ideasArr.find((ideaData) => ideaData.idea === idea.idea && ideaData.article_id === idea.article_id)
                 console.log(duplicate, "duplicate")
                 if(!duplicate) {
-                    ideasArr.push({idea: idea.idea, article_id: idea.article_id})
-                    ideas.push({text: idea.idea, article_id: idea.article_id})
-                    return texts += `${index+1} - ${idea.idea} \n`
+                    const matchedIdea = ideas.find((selectedIdea: any) => selectedIdea.text === idea.idea)
+                    if(matchedIdea) {
+                        ideasArr.push({idea: idea.idea, article_id: idea.article_id})
+                        ideas.push({text: idea.idea, article_id: idea.article_id})
+                        return texts += `${index+1} - ${idea.idea} \n`
+                    } else {
+                        return
+                    }
                 } else {
                     return
                 }
             })
-            console.log(ideasArr, "before")
             console.log(sourcesArray, "sourcesArray")
+            console.log(ideasArr, "ideasArr")
+            // console.log(ideas, "ideas")
 
             let newWebData: any[] = []
             if(webIds && webIds.length) {
@@ -703,8 +709,8 @@ export const blogResolvers = {
                 })
             }
             console.log(ideasArr, "ideasArr")
-            // console.log(newWebData, "newWebData")
-            // // console.log(texts)
+            console.log(newWebData, "newWebData")
+            // console.log(texts)
             try {
                 let refUrls: {
                     url: string
