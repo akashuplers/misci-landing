@@ -1324,6 +1324,13 @@ export default function Home({ payment, randomLiveUsersCount }) {
                                     setKeyword={setkeyword}
                                     placeholder={tabsPlaceholders[tab.id]}
                                     maxLength={100}
+                                    onKeyDown={
+                                       (e) => {
+                                        if (e.key === "Enter") {
+                                          disableGenerateButton ? null : handleGenerateClick();
+                                        }
+                                      }
+                                    }
                                   />
                                 </div>
                               </div>
@@ -1527,9 +1534,10 @@ type KeywordInputProps = {
   placeholder: string;
   keyword: string;
   setKeyword: React.Dispatch<React.SetStateAction<string>>;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
-const KeywordInput = ({ maxLength, placeholder, keyword, setKeyword }: KeywordInputProps) => {
+const KeywordInput = ({ maxLength, placeholder, keyword, setKeyword , onKeyDown}: KeywordInputProps) => {
   return (
     <input
       type="text"
@@ -1541,6 +1549,12 @@ const KeywordInput = ({ maxLength, placeholder, keyword, setKeyword }: KeywordIn
         const text = e.target.value;
         console.log(text.length);
         setKeyword(text);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          onKeyDown ? onKeyDown(e) : null; 
+        }
       }}
     />
   );
