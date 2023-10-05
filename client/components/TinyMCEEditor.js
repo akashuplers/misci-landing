@@ -147,6 +147,9 @@ export default function TinyMCEEditor({
   const [hasDataChanged, setHasDataChanged] = useState(false);
 
   const [isEditorReady, setIsEditorReady] = useState(false);
+
+  const [windowWidth, setWindowWidth] = useState(0);
+
   const handleEditorInit = () => {
     setIsEditorReady(true);
   };
@@ -816,6 +819,17 @@ export default function TinyMCEEditor({
         setCallBack(window.location.origin + "/dashboard");
       }
     }
+
+    setWindowWidth(window.innerWidth);
+  
+    const setWidthForDashboardInsight = () => {
+      console.log(window.innerWidth, 'halert')
+      setWindowWidth(window.innerWidth)
+    }
+
+    window.addEventListener('resize', setWidthForDashboardInsight)
+
+    return () => window.removeEventListener("resize", setWidthForDashboardInsight)
   }, []);
   const handleconnectLinkedin = () => {
     localStorage.setItem("loginProcess", true);
@@ -2041,7 +2055,7 @@ export default function TinyMCEEditor({
                 }`}
               style={{ gap: "0.25em", marginLeft: "auto" }}
             >
-              <button
+              {windowWidth > 768 && <button
                 className="cta text-red-500"
                 onClick={() => {
                   if (showTwitterThreadUI == true) {
@@ -2061,7 +2075,15 @@ export default function TinyMCEEditor({
                 ) : (
                   saveText
                 )}
-              </button>
+              </button>}
+              {windowWidth <=768 && <button
+                className="cta text-red-500"
+                onClick={() => {
+                  
+                }}
+              >
+                Workspace
+              </button>}
               {option === "linkedin" ? (
                 linkedInAccessToken ? (
                   <button
