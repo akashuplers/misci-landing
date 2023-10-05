@@ -55,12 +55,20 @@ const MainIdeaItem = ({
   };
 
   const handleMouseEnter = () => {
-    document?.querySelector(`.referenceTooltip${index}`)
+    try{
+      document?.querySelector(`.referenceTooltip${index}`)
       .classList.remove("hidden");
+    }catch(e){
+      console.log(e)
+    }
   };
 
   const handleMouseLeave = () => {
-    document?.querySelector(`.referenceTooltip${index}`).classList.add("hidden");
+    try{
+      document?.querySelector(`.referenceTooltip${index}`).classList.add("hidden");
+    }catch (e){
+      console.log(e)
+    }
   };
 
   return (
@@ -88,7 +96,6 @@ const MainIdeaItem = ({
             alignSelf: "flex-start",
             position: "relative",
             marginLeft: "auto",
-            cursor: "pointer",
           }}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}

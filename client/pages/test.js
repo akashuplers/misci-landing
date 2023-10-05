@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useState } from 'react'
 import Router from "next/router";
 import * as styles from './test.module.scss'
 import axios from 'axios'
-import {API_BASE_PATH} from '../../client/constants/apiEndpoints'
+import {API_BASE_PATH} from '../constants/apiEndpoints'
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const Test = () => {
