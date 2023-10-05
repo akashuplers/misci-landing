@@ -1196,6 +1196,18 @@ export default function DashboardInsights({
               `}
               style={{ padding: "0.75em 0.5em" }}
             >
+              {
+                !isAuthenticated && <div
+                 onClick={() => {
+                  if (isAuthenticated) {
+                    console.log('no changes');
+                  } else {
+                    setAuthenticationModalOpen(true);
+                  }
+                }}
+                 className="flex flex-row gap-2 flex-wrap max-h-[80px] z-30 overflow-y-scroll absolute w-full h-full border-red-500 bg-transparent">
+                  </div> 
+              }
               {ideaType === "used" ? (
                 reference?.length > 0 ? (
                   sortedRefAr?.map((ref, index) => {
@@ -1436,6 +1448,7 @@ export default function DashboardInsights({
                         index={index}
                         idCountMap={getIndexByKey}
                         idea={idea}
+
                         ideas={ideas}
                         typeOfIdea={idea?.type}
                         setIdeas={setIdeas}
