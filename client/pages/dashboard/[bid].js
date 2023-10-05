@@ -110,6 +110,15 @@ export default function Post({typeIsRepurpose}) {
   const { setShowTwitterThreadUI } = useThreadsUIStore();
   useEffect(() => {
     setWindowWidth(window.innerWidth);
+  
+    const setWidthForDashboardInsight = () => {
+      console.log(window.innerWidth, 'halert')
+      setWindowWidth(window.innerWidth)
+    }
+
+    window.addEventListener('resize', setWidthForDashboardInsight)
+
+    return () => window.removeEventListener("resize", setWidthForDashboardInsight)
   }, []);
 
 
@@ -432,7 +441,7 @@ You can add your own image, click on the image and use image options icon.`}
             numberOfPieces={2000}
           />
         }
-        <div className="flex  flex-col md:flex-row  lg:mb-6 lg:h-[88vh]">
+        <div className={`flex flex-col md:flex-row  lg:mb-6 lg:h-[88vh] ${windowWidth <= 768 ? 'dashboardInsightMobileContainer' : ''}`}>
           {pfmodal && (
             <PreferencesModal
               pfmodal={pfmodal}
@@ -483,7 +492,7 @@ You can add your own image, click on the image and use image options icon.`}
             />
           </div>
           <div
-            className="relative dashboardInsightWidth"
+            className={`relative dashboardInsightWidth ${windowWidth <= 768 ? 'dashboardInsightMobile' : 'desktop'}`}
           >
             <DashboardInsights
               ideas={ideas}

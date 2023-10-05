@@ -824,3 +824,19 @@ iframe::-webkit-scrollbar-thumb {
 iframe::-webkit-scrollbar-thumb:hover {
   background: #555; /* You can change this color to your preference */
 }
+
+/* dashboardinsight responsiveness */
+
+.dashboardInsightMobileContainer{
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 85px;
+}
+
+.dashboardInsightMobile{
+  /* display: none; */
+  position: absolute;
+  background-color: white;
+  top: 100%;
+  z-index: 10;
+}
