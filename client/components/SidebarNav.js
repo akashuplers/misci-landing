@@ -194,7 +194,7 @@ export default function Sidebar() {
     console.log("element height");
     document.documentElement.style.setProperty(
       "--my-mobile-sidebar-height",
-      `${elementHeight}px`
+      `${elementHeight - 50}px`
     );
   }, []);
   const { setShowTwitterThreadUI } = useThreadsUIStore();
@@ -536,7 +536,7 @@ export default function Sidebar() {
                   )}
                 </div>
                 <div className="flex">
-                  <h1 className="text-2xl font-semibold text-gray-900 p-3">
+                  <h1 className="text-2xl font-semibold text-gray-900 p-3 hidden md:block">
                     {title}
                   </h1>
                 </div>
@@ -683,7 +683,7 @@ export default function Sidebar() {
             </main>
           </div>
           {path !== "/" ? (
-            <div className="flex flex-row px-2 ">
+            <div className="flex flex-row px-2 md:relative absolute top-[65px] md:top-auto">
               <div className="pt-4">
                 <button onClick={() => router.back()}>
                   <svg
@@ -701,7 +701,7 @@ export default function Sidebar() {
                 </button>
               </div>
               <div className="flex">
-                <h1 className="text-2xl font-semibold text-gray-900 p-3">
+                <h1 className="text-2xl font-semibold text-gray-900 p-3 hidden md:block">
                   {title}
                 </h1>
               </div>

@@ -1941,13 +1941,12 @@ export default function TinyMCEEditor({
             paddingBottom: "0.5em",
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
           }}
-          className="text-sm mx-2 flex flex-wrap relative"
+          className="text-sm mx-2 flex flex-wrap relative md:flex-row flex-col-reverse items-start"
         >
           {isAuthenticated ? (
             <div
-              className="sticky top-0 flex items-center justify-center"
+              className="sticky top-0 flex items-center justify-center mt-5 md:mt-0"
               style={{
                 display: "flex",
                 gap: "0.25em",
@@ -2051,8 +2050,7 @@ export default function TinyMCEEditor({
           )}
           {!isPublished ? (
             <div
-              className={`flex w-full  lg:w-auto   lg:mt-auto ${isAuthenticated ? "mt-5" : "mt-[70px]"
-                }`}
+              className={`flex w-full lg:w-auto lg:mt-auto justify-end md:justify-start ${isAuthenticated ? "md:mt-5" : "md:mt-[70px]"} mt-0`}
               style={{ gap: "0.25em", marginLeft: "auto" }}
             >
               {windowWidth > 768 && <button
@@ -2193,7 +2191,7 @@ export default function TinyMCEEditor({
             </div>
           ) : (
             <div
-              className="flex w-full lg:w-auto mt-5 lg:mt-auto"
+              className="flex w-full lg:w-auto md:mt-5 mt-0 lg:mt-auto justify-end md:justify-start"
               style={{ gap: "0.25em", marginLeft: "auto" }}
             >
               <button
