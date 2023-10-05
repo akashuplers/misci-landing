@@ -62,8 +62,8 @@ router.post('/urls', authMiddleware, async (req: any, res: any) => {
                         return {
                             type: "web",
                             id,
-                            source: article._source?.source?.name && (article._source?.source?.name === "file" || article._source?.source?.name === "note")  ? article._source.title : article._source?.source?.name,
-                            url: article?._source.orig_url || ""
+                            source: article ? (article._source?.source?.name && (article._source?.source?.name === "file" || article._source?.source?.name === "note")  ? article._source.title : article._source?.source?.name) : "",
+                            url: article ? (article?._source.orig_url || "") : ""
                         }
                     })
                 )
@@ -329,8 +329,8 @@ router.post('/files', [authMiddleware, mulitUploadStrategy.array('files')], asyn
                         return {
                             type: "web",
                             id,
-                            source: article._source?.source?.name && (article._source?.source?.name === "file" || article._source?.source?.name === "note")  ? article._source.title : article._source?.source?.name,
-                            url: article?._source.orig_url || ""
+                            source: article ? (article._source?.source?.name && (article._source?.source?.name === "file" || article._source?.source?.name === "note")  ? article._source.title : article._source?.source?.name) : "",
+                            url: article? (article?._source.orig_url || "") : ""
                         }
                     })
                 )
