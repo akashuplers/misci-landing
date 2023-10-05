@@ -588,7 +588,7 @@ export const blogResolvers = {
                 article_id: string;
             }[] = []
             ideas.forEach((idea, index) => {
-                if(!articleIds.includes(idea.article_id)) articleIds.push(idea.article_id)
+                if(idea.article_id && !articleIds.includes(idea.article_id)) articleIds.push(idea.article_id)   
                 ideasArr.push({idea: idea.text, article_id: idea.article_id})
                 return texts += `${index+1} - ${idea.text} \n`
             })
