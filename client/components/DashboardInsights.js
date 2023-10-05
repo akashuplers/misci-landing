@@ -30,6 +30,7 @@ import {
   InformationCircleIcon,
   PlusIcon,
   XCircleIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { ArrowLongLeftIcon, DocumentPlusIcon } from "@heroicons/react/20/solid";
 import { Chip, FileComponent } from "./ui/Chip";
@@ -1114,9 +1115,22 @@ export default function DashboardInsights({
       >
         <div>
           {/* h1 Insight only for mobile screens */}
-          <h1 className="pt-[0.65em] font-semibold">WORKSPACE</h1>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            paddingBottom: '2em'
+          }}>
+            <h1 className="pt-[0.65em] font-semibold">WORKSPACE</h1>
+            <XMarkIcon 
+              className="w-5 h-5 text-slate-800"
+              onClick={() => {
+                const container = document.querySelector(".dashboardInsightMobile");
+                container.classList.remove("open")
+              }}
+            />
+          </div>
           <div className="flex jusify-between gap-[1.25em]">
-            <p className="font-normal w-[100%] lg:w-[70%] text-sm">
+            <p className="font-normal w-[76%] lg:w-[70%] text-sm">
               Create your next draft on the basis of your edits and uploads.
             </p>
             <button

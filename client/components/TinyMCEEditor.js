@@ -2079,7 +2079,8 @@ export default function TinyMCEEditor({
               {windowWidth <=768 && <button
                 className="cta text-red-500"
                 onClick={() => {
-                  
+                  const container = document.querySelector(".dashboardInsightMobile");
+                  container.classList.add("open")
                 }}
               >
                 Workspace

@@ -837,6 +837,13 @@ iframe::-webkit-scrollbar-thumb:hover {
   /* display: none; */
   position: absolute;
   background-color: white;
-  top: 100%;
+  bottom: -100%;
   z-index: 10;
+  transition: all 0.25s ease-in-out;
+  height: 95vh;
+}
+
+.dashboardInsightMobile.open{
+  bottom: 0;
+  overflow: scroll;
 }
