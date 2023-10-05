@@ -29,17 +29,27 @@ router.post('/urls', authMiddleware, async (req: any, res: any) => {
         }
         let pythonStart = new Date()
         let unprocessedUrls: string[] = []
-        const articleIds = await (
-            Promise.all(
-                urls.map(async (url: string) => {
-                    try {
-                        return await new Python({userId}).uploadUrl({url})
-                    }catch(e: any){
-                        unprocessedUrls.push(url)
-                    }
-                })
-            )
-        )
+        let articleIds: string[] = []
+        for (let index = 0; index < urls.length; index++) {
+            const url = urls[index];
+            try {
+                const id = await new Python({userId}).uploadUrl({url})
+                articleIds.push(id)
+            }catch(e: any){
+                unprocessedUrls.push(url)
+            }
+        }
+        // articleIds = await (
+        //     Promise.all(
+        //         urls.map(async (url: string) => {
+        //             try {
+        //                 return await new Python({userId}).uploadUrl({url})
+        //             }catch(e: any){
+        //                 unprocessedUrls.push(url)
+        //             }
+        //         })
+        //     )
+        // )
         let pythonEnd = new Date()
         let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
         console.log(articleIds)
