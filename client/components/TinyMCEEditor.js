@@ -2097,6 +2097,7 @@ export default function TinyMCEEditor({
                   const container = document.querySelector(".dashboardInsightMobile");
                   container.classList.add("open")
                 }}
+                style={{userSelect: 'none'}}
               >
                 Workspace
               </button>}
