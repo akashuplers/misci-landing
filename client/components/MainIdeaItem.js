@@ -142,7 +142,7 @@ const MainIdeaItem = ({
         </a>
         <div class="inline-flex items-start">
           <label
-            class="relative flex cursor-pointer items-center rounded-full p-3"
+            class="relative flex cursor-pointer items-center rounded-full"
             for="checkbox-1"
             data-ripple-dark="true"
           >
