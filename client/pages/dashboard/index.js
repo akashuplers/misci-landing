@@ -141,18 +141,24 @@ export default function dashboard({ query }) {
 
   const {handleManualRefresh:refreshDataForUserTime} = useUserTimeSave();
 
-  useEffect(() => {
-    setWindowWidth(window,innerWidth);
+  const closeWorkspaceSheetForMobile = (e) => {
+    const workspaceDiv = document.querySelector(".dashboardInsightMobile");
+    const workspaceOpenButton = document.querySelector(".workspace-open-button")
 
-    const setWidthForDashboardInsight = () => {
-      console.log(window.innerWidth, 'halert')
-      setWindowWidth(window.innerWidth)
+    if(!!workspaceDiv && !workspaceDiv.contains(e.target) && !workspaceOpenButton.contains(e.target)  && workspaceDiv.classList.contains("open")){
+      workspaceDiv.classList.remove("open");
     }
+  }
 
-    window.addEventListener('resize', setWidthForDashboardInsight)
+  const setWidthForDashboardInsight = () => {
+    console.log(window.innerWidth, 'halert')
+    setWindowWidth(window.innerWidth)
+  }
 
+  useEffect(() => {
+    
     if (type != undefined && type && type === TYPES_OF_GENERATE.REPURPOSE) {
-
+      
     } else {
       if (!topic && !bid && !loginProcess) {
         alert("Blog was not saved.\nPlease generate the blog again");
@@ -160,7 +166,14 @@ export default function dashboard({ query }) {
       }
     }
 
-    return () => window.removeEventListener("resize", setWidthForDashboardInsight)
+    setWindowWidth(window,innerWidth);
+
+    window.addEventListener("click", closeWorkspaceSheetForMobile)
+
+    return () => {
+      window.removeEventListener("resize", setWidthForDashboardInsight)
+      window.removeEventListener("click", closeWorkspaceSheetForMobile)
+    }
   }, []);
 
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog, {

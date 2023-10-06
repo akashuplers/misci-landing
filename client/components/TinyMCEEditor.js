@@ -2092,10 +2092,10 @@ export default function TinyMCEEditor({
                 )}
               </button>}
               {windowWidth <=768 && <button
-                className="cta text-red-500"
+                className="cta text-red-500 workspace-open-button"
                 onClick={() => {
                   const container = document.querySelector(".dashboardInsightMobile");
-                  container.classList.add("open")
+                  container.classList.toggle("open")
                 }}
                 style={{userSelect: 'none'}}
               >

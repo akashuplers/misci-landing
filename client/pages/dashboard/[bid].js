@@ -108,17 +108,33 @@ export default function Post({typeIsRepurpose}) {
   const [windowHeight, setWindowHeight] = useState(0);
   const [showOTPModal, setShowOTPModal] = useState(false);
   const { setShowTwitterThreadUI } = useThreadsUIStore();
+
+
+  const setWidthForDashboardInsight = () => {
+    console.log(window.innerWidth, 'halert')
+    setWindowWidth(window.innerWidth)
+  }
+
+  const closeWorkspaceSheetForMobile = (e) => {
+    const workspaceDiv = document.querySelector(".dashboardInsightMobile");
+    const workspaceOpenButton = document.querySelector(".workspace-open-button")
+
+    if(!!workspaceDiv && !workspaceDiv.contains(e.target) && !workspaceOpenButton.contains(e.target)  && workspaceDiv.classList.contains("open")){
+      workspaceDiv.classList.remove("open");
+    }
+  }
+
   useEffect(() => {
     setWindowWidth(window.innerWidth);
   
-    const setWidthForDashboardInsight = () => {
-      console.log(window.innerWidth, 'halert')
-      setWindowWidth(window.innerWidth)
-    }
-
     window.addEventListener('resize', setWidthForDashboardInsight)
 
-    return () => window.removeEventListener("resize", setWidthForDashboardInsight)
+    window.addEventListener("click", closeWorkspaceSheetForMobile)
+
+    return () => {
+      window.removeEventListener("resize", setWidthForDashboardInsight)
+      window.removeEventListener("click", closeWorkspaceSheetForMobile)
+    }
   }, []);
 
 
