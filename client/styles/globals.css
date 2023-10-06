@@ -848,5 +848,9 @@ iframe::-webkit-scrollbar-thumb:hover {
 
 .dashboardInsightMobile.open{
   bottom: 0;
+}
+
+.idea-container > div:nth-child(2){
   overflow: scroll;
+  height: 95%;
 }
