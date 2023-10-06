@@ -1426,30 +1426,36 @@ export default function DashboardInsights({
 
           <div>
             {newIdeaLoad == false ? (
-              <div className="dashboardInsightsUsedSectionHeight overflow-y-scroll px-2">
+              <div className="dashboardInsightsUsedSectionHeight overflow-y-scroll p-2">
                 {newFilteredIdeas?.length > 0
-                  ? newFilteredIdeas?.map((idea, index) => (
-                      <UsedFilteredIdeaItem
-                        key={index}
-                        index={index}
-                        idea={idea}
-                        idCountMap={getIndexByKey}
-                        filteredIdeas={filteredIdeas}
-                        setFilteredIdeas={setFilteredIdeas}
-                        ideas={ideas}
-                        setIdeas={setIdeas}
-                        typeOfIdea={idea?.type}
-                        handleUsedIdeas={handleUsedIdeas}
-                        handleCitationFunction={handleCitationFunction}
-                      />
-                    ))
+                  ? newFilteredIdeas?.map((idea, index) => {
+                    return (
+                      <>
+                       <UsedFilteredIdeaItem
+                         key={index}
+                         index={index}
+                         idea={idea}
+                         idCountMap={getIndexByKey}
+                         filteredIdeas={newFilteredIdeas}
+                         setFilteredIdeas={setFilteredIdeas}
+                         ideas={ideas}
+                         setIdeas={setIdeas}
+                         typeOfIdea={idea?.type}
+                         handleUsedIdeas={handleUsedIdeas}
+                         handleCitationFunction={handleCitationFunction}
+                       />
+                 
+                      <br />
+                 
+                      </>
+                    );
+                  })
                   : ideas?.map((idea, index) => (
                       <MainIdeaItem
                         key={index}
                         index={index}
                         idCountMap={getIndexByKey}
                         idea={idea}
-
                         ideas={ideas}
                         typeOfIdea={idea?.type}
                         setIdeas={setIdeas}
