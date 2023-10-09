@@ -87,7 +87,7 @@ const UsedFilteredIdeaItem = ({
             lineBreak: "anywhere",
           }}
         >
-          {idea?.idea}{"test "}
+          {idea?.idea}
         </p>
         <a
           style={{
