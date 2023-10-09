@@ -97,8 +97,20 @@ const MainIdeaItem = ({
             position: "relative",
             marginLeft: "auto",
           }}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          onMouseEnter={
+            ()=>{
+              if(realTypeOfIdea!='file'){
+                handleMouseEnter( )
+              }
+            }
+          }
+          onMouseLeave={
+            ()=>{
+              if(realTypeOfIdea!='file'){
+                handleMouseLeave( )
+              }
+            }
+          }
         >
           {/* {handleCitationFunction(idea)}{" "} */}
           {/* {idCountMap[idea?.article_id]} */}
