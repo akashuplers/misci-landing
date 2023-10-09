@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import React from 'react';
 import * as Tooltip from '@radix-ui/react-tooltip';
 
-const UsedReference = ({ reference, setReference, index, handleRefClick, onDelete, handleCitationFunction, idCountMap,hideTrashIcon }) => {
+const UsedReference = ({ reference, setReference, index, handleRefClick,type, onDelete, handleCitationFunction, idCountMap,hideTrashIcon }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     return (

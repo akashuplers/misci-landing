@@ -1222,7 +1222,7 @@ export default function DashboardInsights({
                         handleCitationFunction={handleCitationFunction}
                         handleRefClick={handleRefClick}
                         onDelete={() => handleRefDelete(ref.id)}
-                        hideTrashIcon={ideasTab==0}
+                        hideTrashIcon={ideasTab==0 || ideasTab==2 }
                       />
                     );
                   })
