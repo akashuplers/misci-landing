@@ -1198,8 +1198,7 @@ export default function DashboardInsights({
             </div>
 
             <div
-              className={`
-              flex gap-[0.5em] my-2 flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0 -z-10 ${sortedRefAr.length > 0 ? "h-[50px]" : "hidden"}
+              className={` filebarScrollable flex gap-[0.5em] my-2 flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0 -z-10 ${sortedRefAr.length > 0 ? "h-[50px]" : "hidden"}
               `}
               style={{ padding: "0.75em 0.5em" }}
             >
@@ -1299,7 +1298,7 @@ export default function DashboardInsights({
               </>
             )}
             {ideasTab == 1 && (
-              <div className="px-4 flex flex-col gap-3">
+              <div className="px-4 flex flex-col gap-3 filebarScrollable">
                 <div className="flex flex-row gap-2 flex-wrap max-h-[80px] overflow-y-scroll">
                   {inputUrls.length > 0 &&
                     inputUrls.map((url, index) => {
@@ -1432,7 +1431,7 @@ export default function DashboardInsights({
 
           <div>
             {newIdeaLoad == false ? (
-              <div className="dashboardInsightsUsedSectionHeight overflow-y-scroll p-2">
+              <div className="dashboardInsightsUsedSectionHeight overflow-y-scroll p-2 overflow-x-hidden">
                 {newFilteredIdeas?.length > 0
                   ? newFilteredIdeas?.map((idea, index) => {
                     return (
