@@ -122,7 +122,8 @@ html {
 
 /* width */
 ::-webkit-scrollbar {
-  width: 0px;
+  width: 6px;
+  border-radius: 10px;
 }
 
 /* Track */
@@ -853,4 +854,7 @@ iframe::-webkit-scrollbar-thumb:hover {
 .idea-container > div:nth-child(2){
   overflow: scroll;
   height: 95%;
+}
+.filebarScrollable {
+  margin-right: 3.5rem;
 }

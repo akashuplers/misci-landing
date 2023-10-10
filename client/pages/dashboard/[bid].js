@@ -143,10 +143,11 @@ export default function Post({typeIsRepurpose}) {
     const validTypes =['web', 'url', 'file'] 
     const newIdeas = ideas.map((idea) => {
       // return { ...idea, initailUsed :idea.used, };
+      const randomeId = Math.random().toString(36).substr(2, 9);
       if(idea?.type==null || idea?.type==undefined || idea?.type=='' || !validTypes.includes(idea?.type)){
-        return { ...idea, initailUsed :idea.used, type:'web' };
+        return { ...idea, initailUsed :idea.used, type:'web',tempId: randomeId };
       }else{
-        return { ...idea, initailUsed :idea.used };
+        return { ...idea, initailUsed :idea.used, tempId: randomeId };
       }
     });
     setIdeas(newIdeas);

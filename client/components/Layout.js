@@ -6,10 +6,14 @@ import { toast } from "react-toastify";
 import useStore, { MeeDataStore, useUserData } from "../store/store";
 import Navbar from "./Navbar";
 import Sidebar from "./SidebarNav";
+import { useRouter } from "next/router";
 
 export default function Layout({ blogId,  children }) {
+  
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const updateAuthentication = useStore((state) => state.updateAuthentication);
+  const router = useRouter();
+  const pathName = router.pathname;
   const { meeData, getUserData, updateUserData } = useUserData();
   var getToken;
   useEffect(() => {
@@ -21,11 +25,16 @@ export default function Layout({ blogId,  children }) {
   useEffect(() => {
     updateAuthentication();
   }, []);
+  const styles = {
+    marginTop : '10vh'
+  }
 
   return (
     <Fragment>
       {isAuthenticated ? <Sidebar /> : <Navbar isOpen={false} blogId={blogId} />}
-      <div className={isAuthenticated ? `authenticatedLayout` : ''}>{children}</div>
+      <div className={isAuthenticated ? `authenticatedLayout` : ''}
+      style={ pathName !='/'?styles: {}}
+      >{children}</div>
     </Fragment>
   );
 }

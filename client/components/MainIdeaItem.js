@@ -97,8 +97,20 @@ const MainIdeaItem = ({
             position: "relative",
             marginLeft: "auto",
           }}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          onMouseEnter={
+            ()=>{
+              if(realTypeOfIdea!='file'){
+                handleMouseEnter( )
+              }
+            }
+          }
+          onMouseLeave={
+            ()=>{
+              if(realTypeOfIdea!='file'){
+                handleMouseLeave( )
+              }
+            }
+          }
         >
           {/* {handleCitationFunction(idea)}{" "} */}
           {/* {idCountMap[idea?.article_id]} */}
@@ -142,7 +154,7 @@ const MainIdeaItem = ({
         </a>
         <div class="inline-flex items-start">
           <label
-            class="relative flex cursor-pointer items-center rounded-full p-3"
+            class="relative flex cursor-pointer items-center rounded-full"
             for="checkbox-1"
             data-ripple-dark="true"
           >

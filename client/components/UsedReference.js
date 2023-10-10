@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import React from 'react';
 import * as Tooltip from '@radix-ui/react-tooltip';
 
-const UsedReference = ({ reference, setReference, index, handleRefClick, onDelete, handleCitationFunction, idCountMap }) => {
+const UsedReference = ({ reference, setReference, index, handleRefClick,type, onDelete, handleCitationFunction, idCountMap,hideTrashIcon }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     return (
@@ -25,14 +25,14 @@ const UsedReference = ({ reference, setReference, index, handleRefClick, onDelet
             cursor: "pointer",
             userSelect: "none",
           }}
-          onClick={(e)=>{
-            setReference((prev)=>{
+          onClick={(e) => {
+            setReference((prev) => {
               let newRef = [...prev];
               let localId = reference.localId;
-              let refIndex = newRef.findIndex((ref)=>ref.localId === localId);
+              let refIndex = newRef.findIndex((ref) => ref.localId === localId);
               newRef[refIndex].selected = !newRef[refIndex].selected;
               return newRef;
-            })
+            });
           }}
           data-source={reference.source}
         >
@@ -48,28 +48,30 @@ const UsedReference = ({ reference, setReference, index, handleRefClick, onDelet
             <Tooltip.Provider>
               <Tooltip.Root>
                 <Tooltip.Trigger asChild>
-                <a href={reference.url}
-                        target="_blank"
-                    >
-                        <LinkIcon className="w-4 h-4 ml-2" />
-                    </a>
+                  <a href={reference.url} target="_blank">
+                    <LinkIcon className="w-4 h-4 ml-2" />
+                  </a>
                 </Tooltip.Trigger>
                 <Tooltip.Portal>
                   <Tooltip.Content className="TooltipContent" sideOffset={5}>
                     <div className="bg-gray-900 rounded-2xl px-5 text-white h-full w-96 z-50">
-                    {reference.url}
+                      {reference.url}
                     </div>
                   </Tooltip.Content>
                 </Tooltip.Portal>
               </Tooltip.Root>
             </Tooltip.Provider>
 
-            <TrashIcon
-              className="w-4 h-4 ml-2"
-              onClick={() => {
-                setShowDeleteModal(true);
-              }}
-            />
+            {!hideTrashIcon && (
+              <>
+                <TrashIcon
+                  className="w-4 h-4 ml-2"
+                  onClick={() => {
+                    setShowDeleteModal(true);
+                  }}
+                />
+              </>
+            )}
           </span>
           <span
             className=""
@@ -89,7 +91,7 @@ const UsedReference = ({ reference, setReference, index, handleRefClick, onDelet
               zIndex: "0",
               alignItems: "center",
             }}
-          > 
+          >
             {idCountMap(reference?.id)}
           </span>
         </div>

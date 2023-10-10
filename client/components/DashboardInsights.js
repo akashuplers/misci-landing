@@ -1031,7 +1031,6 @@ export default function DashboardInsights({
       filteredSortedIdeas = [];
     }
   }
-
   console.log("sortedRef");
   console.log(sortedRefAr);
   function handleIdeasTabClick(index) {
@@ -1039,7 +1038,15 @@ export default function DashboardInsights({
       return index;
     });
   }
-
+  // newFilteredIdeas = newFilteredIdeas.filter((idea, index, self) => {}))
+  const uniqueIdeas = new Set();
+  newFilteredIdeas = newFilteredIdeas.filter((idea) => {
+    if (!uniqueIdeas.has(idea.tempId)) {
+      uniqueIdeas.add(idea.tempId);
+      return true;
+    }
+    return false;
+  });
   if (loading || regenLoading) return <LoaderScan />;
   return (
     <>
@@ -1206,8 +1213,7 @@ export default function DashboardInsights({
             </div>
 
             <div
-              className={`
-              flex gap-[0.5em] my-2 flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0 -z-10 ${sortedRefAr.length > 0 ? "h-[50px]" : "hidden"}
+              className={` filebarScrollable flex gap-[0.5em] my-2 flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0 -z-10 ${sortedRefAr.length > 0 ? "h-[50px]" : "hidden"}
               `}
               style={{ padding: "0.75em 0.5em" }}
             >
@@ -1237,6 +1243,7 @@ export default function DashboardInsights({
                         handleCitationFunction={handleCitationFunction}
                         handleRefClick={handleRefClick}
                         onDelete={() => handleRefDelete(ref.id)}
+                        hideTrashIcon={ideasTab==0}
                       />
                     );
                   })
@@ -1306,7 +1313,7 @@ export default function DashboardInsights({
               </>
             )}
             {ideasTab == 1 && (
-              <div className="px-4 flex flex-col gap-3">
+              <div className="px-4 flex flex-col gap-3 filebarScrollable">
                 <div className="flex flex-row gap-2 flex-wrap max-h-[80px] overflow-y-scroll">
                   {inputUrls.length > 0 &&
                     inputUrls.map((url, index) => {
@@ -1440,30 +1447,36 @@ export default function DashboardInsights({
 
           <div>
             {newIdeaLoad == false ? (
-              <div className="dashboardInsightsUsedSectionHeight overflow-y-scroll px-2">
+              <div className="dashboardInsightsUsedSectionHeight overflow-y-scroll p-2 overflow-x-hidden">
                 {newFilteredIdeas?.length > 0
-                  ? newFilteredIdeas?.map((idea, index) => (
-                      <UsedFilteredIdeaItem
-                        key={index}
-                        index={index}
-                        idea={idea}
-                        idCountMap={getIndexByKey}
-                        filteredIdeas={filteredIdeas}
-                        setFilteredIdeas={setFilteredIdeas}
-                        ideas={ideas}
-                        setIdeas={setIdeas}
-                        typeOfIdea={idea?.type}
-                        handleUsedIdeas={handleUsedIdeas}
-                        handleCitationFunction={handleCitationFunction}
-                      />
-                    ))
+                  ? newFilteredIdeas?.map((idea, index) => {
+                    return (
+                      <>
+                       <UsedFilteredIdeaItem
+                         key={index}
+                         index={index}
+                         idea={idea}
+                         idCountMap={getIndexByKey}
+                         filteredIdeas={newFilteredIdeas}
+                         setFilteredIdeas={setFilteredIdeas}
+                         ideas={ideas}
+                         setIdeas={setIdeas}
+                         typeOfIdea={idea?.type}
+                         handleUsedIdeas={handleUsedIdeas}
+                         handleCitationFunction={handleCitationFunction}
+                       />
+                 
+                      <br />
+                 
+                      </>
+                    );
+                  })
                   : ideas?.map((idea, index) => (
                       <MainIdeaItem
                         key={index}
                         index={index}
                         idCountMap={getIndexByKey}
                         idea={idea}
-
                         ideas={ideas}
                         typeOfIdea={idea?.type}
                         setIdeas={setIdeas}
