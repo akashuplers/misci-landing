@@ -229,63 +229,63 @@ router.get('/weekly-report', async (req: any, res: any) => {
         console.log(misciData, "data")
         console.log(misciAdminData, "misciAdminData")
         let preparedData: any[] = []
-        // await (
-        //     Promise.all(
-        //         misciData.map(async (data: any) => {
-        //             preparedData.push({
-        //                 "blog id": data._id.toString(),
-        //                 question: data.question,
-        //                 "short answer": data.short_answer,
-        //                 "detail answer": data.detailed_answer,
-        //                 "date": getDateString(data.timestamp),
-        //                 "timestamp": getDateString(data.timestamp, true),
-        //             })
-        //         })
-        //     )
-        // )
-        // let Headers = ['blog id', 'question', 'short answer', 'detail answer', "date", "timestamp"];
-        // console.log(preparedData, "Data")
-        // const wb = xlsx.utils.book_new(),
-        // ws = xlsx.utils.json_to_sheet(preparedData);
+        await (
+            Promise.all(
+                misciData.map(async (data: any) => {
+                    preparedData.push({
+                        "blog id": data._id.toString(),
+                        question: data.question,
+                        "short answer": data.short_answer,
+                        "detail answer": data.detailed_answer,
+                        "date": getDateString(data.timestamp),
+                        "timestamp": getDateString(data.timestamp, true),
+                    })
+                })
+            )
+        )
+        let Headers = ['blog id', 'question', 'short answer', 'detail answer', "date", "timestamp"];
+        console.log(preparedData, "Data")
+        const wb = xlsx.utils.book_new(),
+        ws = xlsx.utils.json_to_sheet(preparedData);
 
-        // xlsx.utils.book_append_sheet(wb, ws, "Sheet1");
-        // xlsx.utils.sheet_add_aoa(ws, [Headers]) 
-        // // res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        // // res.setHeader("Content-Disposition", "attachment; filename=" + "Test.xlsx");        
-        // const resp = await xlsx.writeFile(wb, "Report.xlsx");
-        // const path = require('path');
-        // const filePath = path.join(__dirname, '../../Report.xlsx');
-        // const fileStream = fs.createReadStream(filePath);
-        // var fileBuffer = Buffer.from(filePath, 'base64')
-        // console.log(fileBuffer, "fileBuffer")
-        // fs.readFile(filePath,async function(err: any,data: any){
-        //     await sendEmails({
-        //         to: [
-        //         { Email: `tarun.gandhi@nowigence.com`, Name: `Tarun Gandhi` },
-        //         { Email: `arvind.ajimal@nowigence.com`, Name: `Arvind Ajimal` },
-        //         { Email: `subham.mahanta@nowigence.com`, Name: `Subham Mahanta` },
-        //         { Email: `akash.sharma@nowigence.com`, Name: `Akash Sharma` }
-        //         ],
-        //         subject: "Weekly Misci Report",
-        //         textMsg: "",
-        //         htmlMsg: `
-        //             <p>Hello All,</p>
-        //             <p>Please Find weekly report</p>
-        //         `,
-        //         attachments: [
-        //             {
-        //                 fileName: "Report.xlsx",
-        //                 content: data,
-        //                 contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        //             }
-        //         ]
-        //     });
-        //     fs.unlinkSync("Report.xlsx")
-        //     return res.status(200).send({
-        //         error: false,
-        //         message: "Report sent!"
-        //     })
-        // })
+        xlsx.utils.book_append_sheet(wb, ws, "Sheet1");
+        xlsx.utils.sheet_add_aoa(ws, [Headers]) 
+        // res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        // res.setHeader("Content-Disposition", "attachment; filename=" + "Test.xlsx");        
+        const resp = await xlsx.writeFile(wb, "Report.xlsx");
+        const path = require('path');
+        const filePath = path.join(__dirname, '../../Report.xlsx');
+        const fileStream = fs.createReadStream(filePath);
+        var fileBuffer = Buffer.from(filePath, 'base64')
+        console.log(fileBuffer, "fileBuffer")
+        fs.readFile(filePath,async function(err: any,data: any){
+            await sendEmails({
+                to: [
+                { Email: `tarun.gandhi@nowigence.com`, Name: `Tarun Gandhi` },
+                { Email: `arvind.ajimal@nowigence.com`, Name: `Arvind Ajimal` },
+                { Email: `subham.mahanta@nowigence.com`, Name: `Subham Mahanta` },
+                { Email: `akash.sharma@nowigence.com`, Name: `Akash Sharma` }
+                ],
+                subject: "Weekly Misci Report",
+                textMsg: "",
+                htmlMsg: `
+                    <p>Hello All,</p>
+                    <p>Please Find weekly report</p>
+                `,
+                attachments: [
+                    {
+                        fileName: "Report.xlsx",
+                        content: data,
+                        contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    }
+                ]
+            });
+            fs.unlinkSync("Report.xlsx")
+            return res.status(200).send({
+                error: false,
+                message: "Report sent!"
+            })
+        })
     }catch(e){
         console.log(e, "e")
         return res.status(400).send({
