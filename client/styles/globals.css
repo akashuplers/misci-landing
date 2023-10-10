@@ -849,7 +849,7 @@ iframe::-webkit-scrollbar-thumb:hover {
   bottom: -110%;
   z-index: 10;
   transition: all 0.25s ease-in-out;
-  height: 80vh;
+  height: 90%;
 
   box-shadow: 0px 20px 80px 15px #000000b8;
   border-radius:25px 25px 0 0
@@ -860,7 +860,6 @@ iframe::-webkit-scrollbar-thumb:hover {
 }
 
 .idea-container > div:nth-child(2){
-  overflow: scroll;
   height: 95%;
 }
 .filebarScrollable {

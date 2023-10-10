@@ -1120,12 +1120,12 @@ export default function DashboardInsights({
         style={{ borderLeft: "2px solid #d2d2d2" }}
         id="regenblog"
       >
-        <div style={{height: '50%'}}>
+        <div>
           {/* h1 Insight only for mobile screens */}
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
-            paddingBottom: '2em',
+            paddingBottom: '1em',
             paddingTop: '1em',
             fontSize: '1.5em'
           }}>
@@ -1426,7 +1426,7 @@ export default function DashboardInsights({
           </div>
         </div>
 
-        <div className="idea-container" style={{height: '50%'}}>
+        <div className="idea-container" style={{height: '40%'}}>
           <div className="flex py-2 relative gap-5">
             <button
               className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs flex items-center justify-around gap-1"
