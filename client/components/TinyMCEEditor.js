@@ -1935,7 +1935,7 @@ export default function TinyMCEEditor({
         handleSave={handleSave}
         bid={blog_id}
       />
-      <div className="block">
+      <div className="block" style={{height: '100%'}}>
         <div
           style={{
             paddingBottom: "0.5em",
@@ -2366,7 +2366,7 @@ export default function TinyMCEEditor({
                 plugins: "lists code table codesample link",
                 menubar: false,
                 statusbar: false,
-                height: `${windowWidth > 768 ? '82vh' : '70vh'}`,
+                height: `${windowWidth > 768 ? '82vh' : '97%'}`, // if logged in then 86%
                 images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
                 images_upload_credentials: true,
                 plugins:

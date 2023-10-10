@@ -17,6 +17,14 @@
   src: url('/fonts/reg.ttf') format('ttf')
 }
 
+body, #__next{
+  min-height: 100vh;
+}
+
+#__next{
+  height: 100%;
+}
+
 #loom-companion-mv3 {
   display: none !important;
 }
@@ -831,7 +839,7 @@ iframe::-webkit-scrollbar-thumb:hover {
 .dashboardInsightMobileContainer{
   position: relative;
   overflow: hidden;
-  padding-bottom: 85px;
+  height: 100%;
 }
 
 .dashboardInsightMobile{

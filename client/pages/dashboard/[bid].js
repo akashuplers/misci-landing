@@ -493,7 +493,7 @@ You can add your own image, click on the image and use image options icon.`}
 
           <MoveToRegenPanel />
 
-          <div className="relative tiny_mce_width " >
+          <div className="relative tiny_mce_width" style={{height: '100%'}} >
             <TinyMCEEditor
               isAuthenticated={isAuthenticated}
               editorText={editorText}
