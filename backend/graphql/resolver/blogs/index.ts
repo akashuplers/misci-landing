@@ -74,83 +74,125 @@ export const blogResolvers = {
         ) => {
             const options = args.options
             let baseMatch: any = null
-            if(user) {
-                baseMatch = {
-                    userId: new ObjectID(user.id)
+            try {
+                if(user && Object.keys(user).length) {
+                    baseMatch = {
+                        userId: new ObjectID(user.id)
+                    }
                 }
-            }
-            if(options.userName) {
-                const userDetails = await db.db('lilleAdmin').collection('users').findOne({
-                    $or: [
-                        {
-                            userName: options.userName
-                        },
-                        {
-                            linkedinUserName: options.userName
-                        },
-                        {
-                            googleUserName: options.userName
-                        },
-                        {
-                            twitterUserName: options.userName
+                if(options.userName) {
+                    const userDetails = await db.db('lilleAdmin').collection('users').findOne({
+                        $or: [
+                            {
+                                userName: options.userName
+                            },
+                            {
+                                linkedinUserName: options.userName
+                            },
+                            {
+                                googleUserName: options.userName
+                            },
+                            {
+                                twitterUserName: options.userName
+                            }
+                        ]
+                    })
+                    if(!userDetails) {
+                        throw "No user found!"
+                    }
+                    baseMatch = {
+                        userId: new ObjectID(userDetails._id)
+                    }
+                    console.log(baseMatch, "baseMatch here")
+                }
+                if(options.status) {
+                    baseMatch = {
+                        ...baseMatch,
+                        status: {
+                            $in: options.status
                         }
-                    ]
-                })
-                if(!userDetails) {
-                    throw "No user found!"
+                    } 
                 }
-                baseMatch = {
-                    userId: new ObjectID(userDetails._id)
-                }
-            }
-            if(options.status) {
-                baseMatch = {
-                    ...baseMatch,
-                    status: {
-                        $in: options.status
+                const aggregate: any = [
+                    {
+                        $match: baseMatch
                     }
-                } 
-            }
-            const aggregate = [
-                {
-                    $match : baseMatch
-                },
-            ]
-            const blogLists = await db.db('lilleBlogs').collection('blogs').aggregate([
-                ...aggregate,
-                {
-                    $sort: {
-                        updatedAt: -1
-                    }
-                },
-                {
-                    $limit: options.page_limit
-                },
-                {
-                    $skip: options.page_skip
-                },
-                {
-                    $project: {
-                        _id: 1,
-                        keyword: 1,
-                        image: "$imageUrl",
-                        tags: 1,
-                        description: 1,
-                        status: 1,
-                        date: "$updatedAt",
-                    }
+                ]
+                if(options.search) {
+                    aggregate.unshift({
+                        $search: {
+                          index: "published-blog_search",
+                          phrase: {
+                            query: "The Growing Threat of Hamas Attack:",
+                            path: ["description", "keyword"],
+                          }
+                        }
+                    })
                 }
-            ]).toArray()
-            const blogCount = await db.db('lilleBlogs').collection('blogs').aggregate([
-                ...aggregate,
-                {
-                    $count: "count"
+                console.log([
+                    ...aggregate,
+                    {
+                        $sort: {
+                            updatedAt: -1
+                        }
+                    },
+                    {
+                        $limit: options.page_limit
+                    },
+                    {
+                        $skip: options.page_skip
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            keyword: 1,
+                            image: "$imageUrl",
+                            tags: 1,
+                            description: 1,
+                            status: 1,
+                            date: "$updatedAt"
+                        }
+                    }
+                ])
+                const blogLists = await db.db('lilleBlogs').collection('blogs').aggregate([
+                    ...aggregate,
+                    {
+                        $sort: {
+                            updatedAt: -1
+                        }
+                    },
+                    {
+                        $limit: options.page_limit
+                    },
+                    {
+                        $skip: options.page_skip
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            keyword: 1,
+                            image: "$imageUrl",
+                            tags: 1,
+                            description: 1,
+                            status: 1,
+                            date: "$updatedAt",
+                        }
+                    }
+                ]).toArray()
+                const blogCount = await db.db('lilleBlogs').collection('blogs').aggregate([
+                    ...aggregate,
+                    {
+                        $count: "count"
+                    }
+                ]).toArray()
+                if(blogLists.length) {
+                    return {blogs: blogLists, count: blogCount.length && blogCount[0]?.count ? blogCount[0]?.count : 0}
+                } else {
+                    return {blogs: [], count: 0}
                 }
-            ]).toArray()
-            if(blogLists.length) {
-                return {blogs: blogLists, count: blogCount.length && blogCount[0]?.count ? blogCount[0]?.count : 0}
-            } else {
-                return {blogs: [], count: 0}
+            }catch(e){
+                console.log(e, "error from get all blogs")
+                throw "@Something went wrong!"
             }
         }
     },
