@@ -857,10 +857,11 @@ iframe::-webkit-scrollbar-thumb:hover {
 
 .dashboardInsightMobile.open{
   bottom: 0;
+  overflow-y: auto;
 }
 
 .idea-container > div:nth-child(2){
-  height: 95%;
+  height: calc(100% - 55px);
 }
 .filebarScrollable {
   margin-right: 3.5rem;
