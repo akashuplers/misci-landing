@@ -1031,7 +1031,6 @@ export default function DashboardInsights({
       filteredSortedIdeas = [];
     }
   }
-
   console.log("sortedRef");
   console.log(sortedRefAr);
   function handleIdeasTabClick(index) {
@@ -1039,7 +1038,15 @@ export default function DashboardInsights({
       return index;
     });
   }
-
+  // newFilteredIdeas = newFilteredIdeas.filter((idea, index, self) => {}))
+  const uniqueIdeas = new Set();
+  newFilteredIdeas = newFilteredIdeas.filter((idea) => {
+    if (!uniqueIdeas.has(idea.tempId)) {
+      uniqueIdeas.add(idea.tempId);
+      return true;
+    }
+    return false;
+  });
   if (loading || regenLoading) return <LoaderScan />;
   return (
     <>
@@ -1404,7 +1411,6 @@ export default function DashboardInsights({
             )}
           </div>
         </div>
-
         <div>
           <div className="flex py-2 relative gap-5">
             <button

@@ -156,7 +156,7 @@ const OTPModal = (
         >
             <div className="w-full">
                 <div className="bg-white h-full py-3 rounded text-center">
-                    <h1 className="text-xl font">To verify the email you provided Lille has sent an OTP. Please check the email and add the OTP here:</h1>
+                    <h1 className="text-xl font">To verify the email you provided Lille has sent an OTP. Please check the email, Check junk or spam folders too if you don't  find the mail in your inbox, add the OTP here:</h1>
                     <div id="otp" className="flex flex-row justify-center text-center px-2 mt-5">
                         {Array.from({ length: 6 }, (_, index) => (
                             <input
