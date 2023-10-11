@@ -757,6 +757,7 @@ export const blogResolvers = {
                 let refUrls: {
                     url: string
                     source: string
+                    id?: string
                 }[] = []
                 if(articleIds && articleIds.length) refUrls = await fetchArticleUrls({db, articleId: articleIds})
                 articleIds = [...articleIds, ...blog.article_id]
@@ -770,9 +771,20 @@ export const blogResolvers = {
                     "_source.source.name": 1,
                     "_source.title": 1,
                 }}).toArray()
+                let filteredReferencesForBlog: any = []
+                ideasArr.forEach((idea: any) => {
+                    const articleIdUsed =  refUrls.find((ref) => ref?.id === idea.article_id)
+                    if(articleIdUsed) {
+                        const articleAdded = filteredReferencesForBlog.find((filter: any) => filter.id === idea.article_id)
+                        if(!articleAdded) filteredReferencesForBlog.push(articleIdUsed)
+                    }
+                })
                 articleNames = articleNames.map((data: any) => ({_id: data._id, name: (data?._source?.source.name === "file" || data?._source?.source.name === "note") ? data?._source.title : data?._source?.source.name}))
                 console.log(refUrls, "refUrls")
                 console.log(sourcesArray, "sourcesArray")
+                console.log(ideasArr, "ideasArr")
+                console.log(articleIds, "articleIds")
+                console.log(filteredReferencesForBlog, "filteredReferencesForBlog")
                 let startChatGptRequest = new Date()
                 const blogGeneratedData: any = await blogGeneration({
                     db,
@@ -782,7 +794,7 @@ export const blogResolvers = {
                     imageUrl: imageUrl ? imageUrl : blog.imageUrl,
                     imageSrc,
                     ideasArr,
-                    refUrls,
+                    refUrls: filteredReferencesForBlog && filteredReferencesForBlog.length ? filteredReferencesForBlog : refUrls,
                     userDetails,
                     userId: userDetails._id
                 })

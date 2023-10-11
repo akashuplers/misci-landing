@@ -449,10 +449,12 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     let refBlogs = []
                                     refUrls?.map((refUrl) => articleIds.push(refUrl.id))
                                     try {
+                                        console.log("============Started Backlinking===============")
                                         refBlogs = await new Python({userId}).getReferences({
                                             text: updatedContent,
                                             article_ids: articleIds
                                         })   
+                                        console.log("============Ended Backlinking===============")
                                         refBlogs.forEach((data: any) => {
                                             // console.log(data, "data")
                                             if(Object.keys(data)?.length) {
