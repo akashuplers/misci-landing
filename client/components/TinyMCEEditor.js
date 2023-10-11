@@ -1921,7 +1921,7 @@ export default function TinyMCEEditor({
         handleSave={handleSave}
         bid={blog_id}
       />
-      <div className="block">
+      <div className="block mt-0 sm:mt-4">
         <div
           style={{
             paddingBottom: "0.5em",
