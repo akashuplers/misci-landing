@@ -169,13 +169,17 @@ router.get('/export-report',async (req: any, res: any) => {
 router.get('/weekly-report', async (req: any, res: any) => {
     const db = req.app.get('dbLive')
     try{
-        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)  
+        const sevenDaysAgo = new Date(1696896000000 - 7 * 24 * 60 * 60 * 1000)  
+        console.log(sevenDaysAgo)
+        console.log(new Date("10-10-2023"))
+        console.log(Date.now())
+        console.log(getTimeStamp(sevenDaysAgo))
         const misciAdminData = await db.db('lilleAdmin').collection('misciEmail').findOne()
         let cond: any = [
             {
               date: {
                 $gte: getTimeStamp(sevenDaysAgo),
-              },
+              }
             },
             {
               type: "misci",
@@ -223,15 +227,35 @@ router.get('/weekly-report', async (req: any, res: any) => {
                   detailed_answer: 1,
                   timestamp: 1,
                   date: 1,
+                  article_id: 1,
+                  dbLocation: 1,
                 },
             },
         ]).toArray()
         console.log(misciData, "data")
         console.log(misciAdminData, "misciAdminData")
         let preparedData: any[] = []
+        const userEmail = await db.db('lilleAdmin').collection('misciEmail').findOne()
+        const userData = await db.db('admin').collection('users').findOne({
+            email: userEmail.email
+        })
         await (
             Promise.all(
                 misciData.map(async (data: any) => {
+                    // console.log(data)
+                    if(!data.dbLocation) {
+                        console.log(data, "not")
+                    }
+                    const dbLocation = data.dbLocation.find((dbLocationData: any) => dbLocationData.articleId === data.article_id[0])
+                    let source = ""
+                    let type = ""
+                    if(dbLocation){
+                        const article = await fetchArticleById({db, id: data.article_id[0], collectionName: userData.company, dbName: dbLocation.db})
+                        // console.log(article, "article")
+                        const name = article._source?.source?.name
+                        source = name && (name === "file" || name === "note") ? article._source.title : article._source?.orig_url
+                        type = name === "file" ? "file" : name === "note" ? "note" : "url"
+                    }
                     preparedData.push({
                         "blog id": data._id.toString(),
                         question: data.question,
@@ -239,11 +263,13 @@ router.get('/weekly-report', async (req: any, res: any) => {
                         "detail answer": data.detailed_answer,
                         "date": getDateString(data.timestamp),
                         "timestamp": getDateString(data.timestamp, true),
+                        "source": source,
+                        "type": type,
                     })
                 })
             )
         )
-        let Headers = ['blog id', 'question', 'short answer', 'detail answer', "date", "timestamp"];
+        let Headers = ['blog id', 'question', 'short answer', 'detail answer', "date", "timestamp", "source"];
         console.log(preparedData, "Data")
         const wb = xlsx.utils.book_new(),
         ws = xlsx.utils.json_to_sheet(preparedData);

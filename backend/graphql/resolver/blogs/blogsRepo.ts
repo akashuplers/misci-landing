@@ -881,7 +881,7 @@ export const fetchArticleById = async ({
 }: {
     id: string
     db: any
-    userId: string
+    userId?: string
     collectionName?: string | null
     dbName?: string | null
 }) => {
