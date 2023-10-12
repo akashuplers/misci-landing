@@ -1,6 +1,8 @@
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
-import React from "react";
-import MoblieUnAuthFooter from "../components/LandingPage/MoblieUnAuthFooter";
+import {
+  ArrowRightIcon
+} from "@heroicons/react/24/outline";
+import React from 'react';
+import MoblieUnAuthFooter from '../components/LandingPage/MoblieUnAuthFooter';
 import Layout from "../components/Layout";
 import ValueComponent from "../components/LandingPage/ValueComponent";
 
@@ -21,8 +23,8 @@ const AboutUsFeatures = [
 
 const AboutUS = () => {
   function scrollToUserDemo() {
-    const userDemoElement = document.querySelector(".userDemo");
-    userDemoElement?.scrollIntoView({ behavior: "smooth" });
+    const userDemoElement = document.querySelector('.userDemo');
+    userDemoElement?.scrollIntoView({ behavior: 'smooth' });
   }
   const welcomeImage = "/welcome.svg";
   const lilleLogo = "/lille_logo_new.png";

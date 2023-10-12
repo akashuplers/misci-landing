@@ -34,6 +34,7 @@ export default function Post({typeIsRepurpose}) {
   const [reference, setReference] = useState([]);
   const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
   const [alreadyShownDisclaimer, setAlreadyShownDisclaimer] = useState(false);
+  const[initailIdeas, setInitailIdeas] = useState([]);
   const [disclaimerCheck, setDisclaimerCheck] = useState(false);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
   const { option, setOption } = useTabOptionStore();
@@ -112,15 +113,38 @@ export default function Post({typeIsRepurpose}) {
   }, []);
 
 
+  function handleSetIdeas (ideas) {
+    // add a new properly initailUsedd = used
+    const validTypes =['web', 'url', 'file'] 
+    const newIdeas = ideas.map((idea) => {
+      // return { ...idea, initailUsed :idea.used, };
+      const randomeId = Math.random().toString(36).substr(2, 9);
+      if(idea?.type==null || idea?.type==undefined || idea?.type=='' || !validTypes.includes(idea?.type)){
+        return { ...idea, initailUsed :idea.used, type:'web',tempId: randomeId };
+      }else{
+        return { ...idea, initailUsed :idea.used, tempId: randomeId };
+      }
+    });
+    setIdeas(newIdeas);
+    setInitailIdeas(newIdeas)
+  } 
+
 
   useEffect(() => {
     if (data == null) return;
     setBlogData(data.fetchBlog);
-    setIdeas(data.fetchBlog.ideas.ideas);
+    // setInitailIdeas(data.fetchBlog.ideas.ideas);
+    // setIdeas(data.fetchBlog.ideas.ideas);
+    handleSetIdeas(data.fetchBlog.ideas.ideas)
     setTags(data.fetchBlog.tags);
     setFreshIdeaTags(data.fetchBlog.freshIdeasTags);
     setFreshIdeasReferences(data.fetchBlog.freshIdeasReferences);
-    setReference(data.fetchBlog.references);
+    let referencesList = data.fetchBlog.references;
+    let newreferencesList = referencesList.map((reference) => {
+      const localId = Math.random().toString(36).substr(2, 9);
+      return { ...reference, selected: false , localId};
+    });
+    setReference(newreferencesList);
     setFreshIdeas(data.fetchBlog.ideas.freshIdeas);
     const newArray = data.fetchBlog.publish_data.filter(
       (obj) => obj.platform === "wordpress"
@@ -464,8 +488,11 @@ You can add your own image, click on the image and use image options icon.`}
           >
             <DashboardInsights
               ideas={ideas}
+              refetchBlog={refetchBlog}
               setIdeas={setIdeas}
               tags={tags}
+              setInitailIdeas={setInitailIdeas}
+              initailIdeas={initailIdeas}
               setTags={setTags}
               freshIdeaTags={freshIdeaTags}
               freshIdeas={freshIdeas}
@@ -482,6 +509,7 @@ You can add your own image, click on the image and use image options icon.`}
               setNdResTime={setNdResTime}
               setOption={setOption}
               option={option}
+              keyword={data?.fetchBlog?.keyword}
             />
           </div>
         </div>

@@ -43,3 +43,27 @@ export const MonthlyPlans = [
   },
 ];
 
+
+
+export const contentStyle = `
+
+::-webkit-scrollbar {
+  width: 5px; /* Adjust the width to your preference */
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent; /* Make the track transparent */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: transparent; /* Make the handle (thumb) transparent */
+  border: 1px solid transparent; /* Hide the handle border */
+}
+
+/* Corner */
+::-webkit-scrollbar-corner {
+  background: transparent; /* Make the corner transparent */
+}
+`

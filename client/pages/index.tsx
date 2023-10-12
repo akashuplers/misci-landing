@@ -1276,14 +1276,14 @@ export default function Home({ payment, randomLiveUsersCount }) {
               }}
             >
               <div
-                className={`mt-[-50%] ${isAuthenticated
+                className={`mt-[10%] ${isAuthenticated
                   ? keywordsOFBlogs.length == 0 && "lg:mt-[10%]"
                   : keywordsOFBlogs.length == 0 && "lg:mt-[-10%]"
-                 } w-[100vw] lg:w-full px-2`}
+                  }`}
               >
                 <RotatingText/> 
                 <div
-                  className="w-full lg:min-w-[850px] lg:max-w-[850px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-2 lg:p-8 mx-2 lg:m-0"
+                  className="w-full lg:min-w-[850px] lg:max-w-[850px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
                   style={{
                     background: "rgba(255, 255, 255, 0.5)",
                     outline: 'none !important' 
@@ -1324,6 +1324,13 @@ export default function Home({ payment, randomLiveUsersCount }) {
                                     setKeyword={setkeyword}
                                     placeholder={tabsPlaceholders[tab.id]}
                                     maxLength={100}
+                                    onKeyDown={
+                                       (e) => {
+                                        if (e.key === "Enter") {
+                                          disableGenerateButton ? null : handleGenerateClick();
+                                        }
+                                      }
+                                    }
                                   />
                                 </div>
                               </div>
@@ -1527,9 +1534,10 @@ type KeywordInputProps = {
   placeholder: string;
   keyword: string;
   setKeyword: React.Dispatch<React.SetStateAction<string>>;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
-const KeywordInput = ({ maxLength, placeholder, keyword, setKeyword }: KeywordInputProps) => {
+const KeywordInput = ({ maxLength, placeholder, keyword, setKeyword , onKeyDown}: KeywordInputProps) => {
   return (
     <input
       type="text"
@@ -1541,6 +1549,12 @@ const KeywordInput = ({ maxLength, placeholder, keyword, setKeyword }: KeywordIn
         const text = e.target.value;
         console.log(text.length);
         setKeyword(text);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          onKeyDown ? onKeyDown(e) : null; 
+        }
       }}
     />
   );

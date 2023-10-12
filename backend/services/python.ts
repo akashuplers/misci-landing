@@ -38,7 +38,7 @@ export class Python {
                 data : uploadData
             };
             const pythonRes = await axios(config)
-            console.log(pythonRes.data)
+            console.log(pythonRes.data, "python response for url")
             if(pythonRes.data && pythonRes.data.length) {
                 return pythonRes.data[0]
             }
@@ -108,6 +108,7 @@ export class Python {
             };
             const pythonRes = await axios(config)
             await fs.unlinkSync(data.file.originalname)
+            console.log(pythonRes.data, "python response for file")
             if(pythonRes.data && pythonRes.data.length) {
                 return pythonRes.data[0]
             }
@@ -136,7 +137,7 @@ export class Python {
                     'Content-Type': 'application/json'
                 },
                 data : uploadData,
-                timeout: 0
+                timeout: 20000
             };
             console.log(config)
             const pythonRes = await axios(config)
@@ -154,7 +155,7 @@ export class Python {
                 {
                     'user_id': this.userId, 
                     'company_id': 'nowigence', 
-                    'question': question
+                    'question': question,
                 }
             ]);
             const config: any = {
@@ -164,7 +165,7 @@ export class Python {
                     'Content-Type': 'application/json'
                 },
                 data,
-                timeout: 15000
+                timeout: 60000
             }
             console.log(config, "config")
             const pythonRes = await axios(config)

@@ -37,21 +37,24 @@ export const blogResolvers = {
                 const id = args.id
                 const blogDetails = await fetchBlog({id, db})
                 const blogIdeas = await fetchBlogIdeas({id, db})
-                const updatedIdeas = blogIdeas?.ideas.map((data: any) => data.summary ? ({...data, idea: data.summary}) : ({...data}))
+                const updatedIdeas = blogIdeas?.ideas.map((data: any) => data.summary ? ({...data, idea: data.summary, type: data.type ? data.type : "web"}) : ({...data, type: data.type ? data.type : "web"}))
                 const updatedFreshIdeas = blogIdeas?.freshIdeas?.map((data: any) => data.summary ? ({...data, idea: data.summary}) : ({...data}))
                 let refUrls: {
                     url: string
                     source: string
                 }[] = []
+                if(!blogDetails.sourcesArray || !blogDetails.sourcesArray.length) {
+                    if(blogDetails.article_id) {
+                        let articleIds = [...blogDetails.article_id]
+                        if(blogDetails) refUrls = await fetchArticleUrls({db, articleId: articleIds})
+                    }
+                    refUrls = refUrls.map((data) => ({...data, type: 'web'}))
+                }
                 let refUrlsFreshIdeas: {
                     url: string
                     source: string
                 }[] = []
-                let freshIdeasArticle: string[] = []
-                if(blogDetails.article_id) {
-                    let articleIds = [...blogDetails.article_id]
-                    if(blogDetails) refUrls = await fetchArticleUrls({db, articleId: articleIds})
-                }                
+                let freshIdeasArticle: string[] = []                
                 blogIdeas?.freshIdeas?.forEach((idea: any) => idea.article_id ? freshIdeasArticle.push(idea.article_id) : false)
                 if(blogDetails && freshIdeasArticle && freshIdeasArticle.length) refUrlsFreshIdeas = await fetchArticleUrls({db, articleId: freshIdeasArticle})
                 const savedTimeData = await getSavedTime(db, blogDetails._id)
@@ -61,7 +64,7 @@ export const blogResolvers = {
                     ...blogIdeas,
                     ideas: updatedIdeas,
                     freshIdeas: updatedFreshIdeas?.length ? updatedFreshIdeas : null
-                }, likes: blogDetails.likes || 0,  references: refUrls, freshIdeasReferences:refUrlsFreshIdeas, savedTime: savedTimeData ? savedTimeData.time : null, comments, userDetail}
+                }, likes: blogDetails.likes || 0,  references: blogDetails.sourcesArray && blogDetails.sourcesArray.length ? blogDetails.sourcesArray : refUrls, freshIdeasReferences:refUrlsFreshIdeas, savedTime: savedTimeData ? savedTimeData.time : null, comments, userDetail}
             }catch(e) {
                 console.log(e)
             }
@@ -71,83 +74,125 @@ export const blogResolvers = {
         ) => {
             const options = args.options
             let baseMatch: any = null
-            if(user) {
-                baseMatch = {
-                    userId: new ObjectID(user.id)
+            try {
+                if(user && Object.keys(user).length) {
+                    baseMatch = {
+                        userId: new ObjectID(user.id)
+                    }
                 }
-            }
-            if(options.userName) {
-                const userDetails = await db.db('lilleAdmin').collection('users').findOne({
-                    $or: [
-                        {
-                            userName: options.userName
-                        },
-                        {
-                            linkedinUserName: options.userName
-                        },
-                        {
-                            googleUserName: options.userName
-                        },
-                        {
-                            twitterUserName: options.userName
+                if(options.userName) {
+                    const userDetails = await db.db('lilleAdmin').collection('users').findOne({
+                        $or: [
+                            {
+                                userName: options.userName
+                            },
+                            {
+                                linkedinUserName: options.userName
+                            },
+                            {
+                                googleUserName: options.userName
+                            },
+                            {
+                                twitterUserName: options.userName
+                            }
+                        ]
+                    })
+                    if(!userDetails) {
+                        throw "No user found!"
+                    }
+                    baseMatch = {
+                        userId: new ObjectID(userDetails._id)
+                    }
+                    console.log(baseMatch, "baseMatch here")
+                }
+                if(options.status) {
+                    baseMatch = {
+                        ...baseMatch,
+                        status: {
+                            $in: options.status
                         }
-                    ]
-                })
-                if(!userDetails) {
-                    throw "No user found!"
+                    } 
                 }
-                baseMatch = {
-                    userId: new ObjectID(userDetails._id)
-                }
-            }
-            if(options.status) {
-                baseMatch = {
-                    ...baseMatch,
-                    status: {
-                        $in: options.status
+                const aggregate: any = [
+                    {
+                        $match: baseMatch
                     }
-                } 
-            }
-            const aggregate = [
-                {
-                    $match : baseMatch
-                },
-            ]
-            const blogLists = await db.db('lilleBlogs').collection('blogs').aggregate([
-                ...aggregate,
-                {
-                    $sort: {
-                        updatedAt: -1
-                    }
-                },
-                {
-                    $limit: options.page_limit
-                },
-                {
-                    $skip: options.page_skip
-                },
-                {
-                    $project: {
-                        _id: 1,
-                        keyword: 1,
-                        image: "$imageUrl",
-                        tags: 1,
-                        description: 1,
-                        status: 1,
-                        date: "$updatedAt",
-                    }
+                ]
+                if(options.search) {
+                    aggregate.unshift({
+                        $search: {
+                          index: "published-blog_search",
+                          phrase: {
+                            query: "The Growing Threat of Hamas Attack:",
+                            path: ["description", "keyword"],
+                          }
+                        }
+                    })
                 }
-            ]).toArray()
-            const blogCount = await db.db('lilleBlogs').collection('blogs').aggregate([
-                ...aggregate,
-                {
-                    $count: "count"
+                console.log([
+                    ...aggregate,
+                    {
+                        $sort: {
+                            updatedAt: -1
+                        }
+                    },
+                    {
+                        $limit: options.page_limit
+                    },
+                    {
+                        $skip: options.page_skip
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            keyword: 1,
+                            image: "$imageUrl",
+                            tags: 1,
+                            description: 1,
+                            status: 1,
+                            date: "$updatedAt"
+                        }
+                    }
+                ])
+                const blogLists = await db.db('lilleBlogs').collection('blogs').aggregate([
+                    ...aggregate,
+                    {
+                        $sort: {
+                            updatedAt: -1
+                        }
+                    },
+                    {
+                        $limit: options.page_limit
+                    },
+                    {
+                        $skip: options.page_skip
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            keyword: 1,
+                            image: "$imageUrl",
+                            tags: 1,
+                            description: 1,
+                            status: 1,
+                            date: "$updatedAt",
+                        }
+                    }
+                ]).toArray()
+                const blogCount = await db.db('lilleBlogs').collection('blogs').aggregate([
+                    ...aggregate,
+                    {
+                        $count: "count"
+                    }
+                ]).toArray()
+                if(blogLists.length) {
+                    return {blogs: blogLists, count: blogCount.length && blogCount[0]?.count ? blogCount[0]?.count : 0}
+                } else {
+                    return {blogs: [], count: 0}
                 }
-            ]).toArray()
-            if(blogLists.length) {
-                return {blogs: blogLists, count: blogCount.length && blogCount[0]?.count ? blogCount[0]?.count : 0}
-            } else {
-                return {blogs: [], count: 0}
+            }catch(e){
+                console.log(e, "error from get all blogs")
+                throw "@Something went wrong!"
             }
         }
     },
@@ -568,7 +613,7 @@ export const blogResolvers = {
                 throw "@No authorization"
             }
             let startRequest = new Date()
-            const ideas = args.options.ideas, blogId = args.options.blog_id;
+            const ideas = args.options.ideas, blogId = args.options.blog_id, useOldWebSource = args.options.useOldWebSource || false, updatedTopic = args.options.updatedTopic;
             const blog = await fetchBlog({db, id: blogId})
             const blogIdeas = await fetchBlogIdeas({db, id: blogId})
             const userDetails = await fetchUser({id: user.id, db})
@@ -585,63 +630,161 @@ export const blogResolvers = {
                 article_id: string;
             }[] = []
             ideas.forEach((idea, index) => {
-                if(!articleIds.includes(idea.article_id)) articleIds.push(idea.article_id)
+                if(idea.article_id && !articleIds.includes(idea.article_id)) articleIds.push(idea.article_id)   
                 ideasArr.push({idea: idea.text, article_id: idea.article_id})
                 return texts += `${index+1} - ${idea.text} \n`
             })
             console.log(articleIds, "articleIds")
-            let articleNames = await db.db('lilleArticles').collection('articles').find({_id: {
-                $in: articleIds
-            }}, {projection: {
-                "_source.source.name": 1,
-            }}).toArray()
-            articleNames = articleNames.map((data: any) => ({_id: data._id, name: data?._source?.source.name}))
             let tags: string[] = []
             let imageUrl: string | null = null
             let imageSrc: string | null = null
-            await (
-                Promise.all(
-                    articleIds.map(async (id: String, index: number) => {
-                        if(id) {
-                            const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
-                            if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
-                                imageUrl = article.proImageLink
-                                imageSrc = article._source?.orig_url
-                            } else {
-                                if(index === (articleIds.length - 1) && !imageUrl) {
-                                    imageUrl = (process.env.PLACEHOLDER_IMAGE || article.proImageLink)
-                                    imageSrc = null
-                                }
-                            }
-                            const name = article._source?.source?.name
-                            if(article._source.driver) {
-                                tags.push(...article._source.driver)
-                            } else {
-                                const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
-                                const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
-                                const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
-                                tags.push(...productsTags, ...organizationTags, ...personsTags)
-                            }
+            let webIds: string[] = []
+            if((updatedTopic && updatedTopic !== blog.keyword) || (!useOldWebSource)) {
+                try {
+                    webIds = await new Python({userId: user.id}).uploadKeyword({keyword: updatedTopic || blog.keyword, timeout:60000})
+                    if(webIds && webIds.length) {
+                        webIds = webIds.filter((data) => data !== "None")
+                    }
+                    articleIds = [...articleIds, ...webIds]
+                }catch(e){
+                    console.log(e, "error from python")
+                }
+            }
+            let sourcesArray = blog.sourcesArray && blog.sourcesArray.length ? blog.sourcesArray : []
+            if(!sourcesArray.length) {
+                sourcesArray = await (
+                    Promise.all(
+                        blog.article_id.map(async (id: string) => {
+                            const article = await fetchArticleById({db, userId: user.id, id})
                             return {
-                                used_summaries: article._source.summary.slice(0, 10),
-                                unused_summaries: article._source.summary.slice(10),
-                                keyword: article.keyword,
-                                name: name && name === "file" ? "note" : name,
-                                id
+                                type: "web",
+                                id,
+                                source: article._source?.source?.name && (article._source?.source?.name === "file" || article._source?.source?.name === "note")  ? article._source.title : article._source?.source?.name,
+                                url: article?._source.orig_url || ""
                             }
-                        } else {
-                            return
-                        }
-                    })
+                        })
+                    )
                 )
-            )
+            }
+            let lastWebIdeas: any[] = []
+            if(useOldWebSource) {
+                sourcesArray.forEach((source: any) => {
+                    if(source.type === "web") {
+                        const filteredIdeas = blogIdeas.ideas.filter((idea: any) => idea.article_id === source.id)
+                        console.log(filteredIdeas, "filteredIdeas")
+                        lastWebIdeas = [...lastWebIdeas, ...filteredIdeas]
+                    }
+                })
+            }
+            lastWebIdeas.forEach((idea, index) => {
+                if(!articleIds.includes(idea.article_id)) articleIds.push(idea.article_id)
+                const duplicate = ideasArr.find((ideaData) => ideaData.idea === idea.idea && ideaData.article_id === idea.article_id)
+                console.log(duplicate, "duplicate")
+                if(!duplicate) {
+                    const matchedIdea = ideas.find((selectedIdea: any) => selectedIdea.text === idea.idea)
+                    if(matchedIdea) {
+                        ideasArr.push({idea: idea.idea, article_id: idea.article_id})
+                        ideas.push({text: idea.idea, article_id: idea.article_id})
+                        return texts += `${index+1} - ${idea.idea} \n`
+                    } else {
+                        return
+                    }
+                } else {
+                    return
+                }
+            })
+            console.log(sourcesArray, "sourcesArray")
+            console.log(ideasArr, "ideasArr")
+            // console.log(ideas, "ideas")
+
+            let newWebData: any[] = []
+            if(webIds && webIds.length) {
+                newWebData = await (
+                    Promise.all(
+                        webIds.map(async (id: String, index: number) => {
+                            if(id) {
+                                const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
+                                if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
+                                    imageUrl = article.proImageLink
+                                    imageSrc = article._source?.orig_url
+                                } else {
+                                    if(index === (articleIds.length - 1) && !imageUrl) {
+                                        imageUrl = (process.env.PLACEHOLDER_IMAGE || article.proImageLink)
+                                        imageSrc = null
+                                    }
+                                }
+                                const name = article._source?.source?.name
+                                if(article._source.driver) {
+                                    tags.push(...article._source.driver)
+                                } else {
+                                    const productsTags = (article.ner_norm?.PRODUCT && article.ner_norm?.PRODUCT.slice(0,3)) || []
+                                    const organizationTags = (article.ner_norm?.ORG && article.ner_norm?.ORG.slice(0,3)) || []
+                                    const personsTags = (article.ner_norm?.PERSON && article.ner_norm?.PERSON.slice(0,3)) || []
+                                    tags.push(...productsTags, ...organizationTags, ...personsTags)
+                                }
+                                sourcesArray.push({
+                                    type: "web",
+                                    id,
+                                    source: article._source?.source?.name && (article._source?.source?.name === "file" || article._source?.source?.name === "note")  ? article._source.title : article._source?.source?.name,
+                                    url: article?._source.orig_url || ""
+                                })
+                                return {
+                                    used_summaries: article._source.summary.slice(0, 10),
+                                    unused_summaries: article._source.summary.slice(10),
+                                    keyword: article.keyword,
+                                    name: name && name === "file" ? "note" : name,
+                                    id
+                                }
+                            } else {
+                                return
+                            }
+                        })
+                    )
+                )
+                newWebData.forEach((data: any) => {
+                    data.used_summaries.forEach((summary: any) => {
+                        ideasArr.push({idea: summary, article_id: data.id})
+                        ideas.push({text: summary, article_id: data.id})
+                        const lastIndex = ideasArr.length
+                        return texts += `${lastIndex+1} - ${summary} \n`
+                    })
+                })
+            }
+            console.log(ideasArr, "ideasArr")
+            console.log(newWebData, "newWebData")
             // console.log(texts)
             try {
                 let refUrls: {
                     url: string
                     source: string
+                    id?: string
                 }[] = []
                 if(articleIds && articleIds.length) refUrls = await fetchArticleUrls({db, articleId: articleIds})
+                articleIds = [...articleIds, ...blog.article_id]
+                let filteredIds: string[] = []
+                articleIds.forEach((id) => !filteredIds.includes(id) ? filteredIds.push(id) : null)
+                console.log(filteredIds, "filteredIds")
+                articleIds = filteredIds
+                let articleNames = await db.db('lilleArticles').collection('articles').find({_id: {
+                    $in: articleIds
+                }}, {projection: {
+                    "_source.source.name": 1,
+                    "_source.title": 1,
+                }}).toArray()
+                let filteredReferencesForBlog: any = []
+                ideasArr.forEach((idea: any) => {
+                    const articleIdUsed =  refUrls.find((ref) => ref?.id === idea.article_id)
+                    if(articleIdUsed) {
+                        const articleAdded = filteredReferencesForBlog.find((filter: any) => filter.id === idea.article_id)
+                        if(!articleAdded) filteredReferencesForBlog.push(articleIdUsed)
+                    }
+                })
+                articleNames = articleNames.map((data: any) => ({_id: data._id, name: (data?._source?.source.name === "file" || data?._source?.source.name === "note") ? data?._source.title : data?._source?.source.name}))
+                console.log(refUrls, "refUrls")
+                console.log(sourcesArray, "sourcesArray")
+                console.log(ideasArr, "ideasArr")
+                console.log(articleIds, "articleIds")
+                console.log(filteredReferencesForBlog, "filteredReferencesForBlog")
                 let startChatGptRequest = new Date()
                 const blogGeneratedData: any = await blogGeneration({
                     db,
@@ -651,7 +794,7 @@ export const blogResolvers = {
                     imageUrl: imageUrl ? imageUrl : blog.imageUrl,
                     imageSrc,
                     ideasArr,
-                    refUrls,
+                    refUrls: filteredReferencesForBlog && filteredReferencesForBlog.length ? filteredReferencesForBlog : refUrls,
                     userDetails,
                     userId: userDetails._id
                 })
@@ -676,7 +819,7 @@ export const blogResolvers = {
                     })
                     // if(newData.length) blog.publish_data = [...blog.publish_data, ...newData]
                     let newIdeas: any = []
-                    ideas.forEach((newIdea) => {
+                    blogIdeas.ideas.forEach((idea: any) => {
                         // ** Code for retaining old ideas on regenerating uncommented if required
                         // const filteredIdea = blogIdeas.ideas.find((oldidea: any) => newIdea.text.trim() === oldidea.idea.trim())
                         // if(filteredIdea) {
@@ -695,30 +838,56 @@ export const blogResolvers = {
                         //     )
                         // }
                         let name = null
-                        const filteredIdData = articleNames.find((data: any) => data._id === newIdea.article_id)
+                        console.log(idea, "idea")
+                        const ideaExist = ideas.find((newidea: any) => idea.idea.trim() === newidea.text.trim())
+                        const filteredIdData = articleNames.find((data: any) => data._id === idea.article_id)
+                        console.log(articleNames)
+                        console.log(filteredIdData)
                         if(filteredIdData) {
                             name = filteredIdData && filteredIdData.name === "file" ? "note" : filteredIdData.name
-                        } 
-                        return newIdeas.push(
-                            {
-                                idea: newIdea.text,
-                                article_id: newIdea.article_id,
-                                reference: null,
-                                used: 1,
-                                name
-                            }
-                        )
+                        }
+                        if(ideaExist) { 
+                            return newIdeas.push(
+                                {
+                                    idea: idea.idea,
+                                    article_id: idea.article_id,
+                                    reference: null,
+                                    used: 1,
+                                    name
+                                }
+                            )
+                        }else{
+                            return newIdeas.push(
+                                {
+                                    idea: idea.idea,
+                                    article_id: idea.article_id,
+                                    reference: null,
+                                    used: 0,
+                                    name
+                                }
+                            )
+                        }
                     })
+                    console.log(newIdeas)
                     let uniqueTags: String[] = [];
                     tags?.forEach((c) => {
                         if (!uniqueTags.includes(c)) {
                             uniqueTags.push(c);
                         }
                     });
+                    newWebData.forEach((data) => {
+                        data.used_summaries.forEach((summary: any) => {
+                            newIdeas.push({
+                                idea: summary,
+                                article_id: data.id,
+                                reference: null,
+                                used: 1,
+                                name: data.name
+                            })
+                        })
+                    })
                     const freshIdeas = blogIdeas?.freshIdeas?.filter((ideaObj: any) => !(newIdeas.map((newIdea: any) => newIdea.idea)).includes(ideaObj.idea))
                     if(newIdeas.length) blogIdeas.ideas = newIdeas
-                    console.log(newIdeas, "newIdeas")
-                    console.log(freshIdeas, "freshIdeas")
                     await db.db('lilleBlogs').collection('blogs').updateOne({
                         _id: new ObjectID(blog._id)
                     }, {
@@ -727,6 +896,8 @@ export const blogResolvers = {
                             status: "draft",
                             description,
                             article_id: articleIds,
+                            keyword: updatedTopic && updatedTopic !== blog.keyword ? updatedTopic : blog.keyword,
+                            sourcesArray,
                             tags: uniqueTags,
                             imageUrl: imageUrl ? imageUrl : blog.imageUrl,
                             imageSrc,
@@ -734,15 +905,20 @@ export const blogResolvers = {
                             updatedAt: getTimeStamp()
                         }
                     })
-                    if(blogIdeas.ideas && blogIdeas.ideas.length) {
-                        blogIdeas.ideas = await (
+                    if(newIdeas && newIdeas.length) {
+                        newIdeas = await (
                             Promise.all(
                                 blogIdeas.ideas.map(async (ideasData: any) => {
-                                    const ideaExistInBlog = await fetchUsedBlogIdeasByIdea({idea: ideasData.idea, db, userId: blog.userId})
                                     if(ideasData.article_id) {
                                         const article = await fetchArticleById({id: ideasData.article_id, db, userId: blog.userId})
+                                        const sourceFilter = sourcesArray.find((source: any) => source.id === ideasData.article_id)
+                                        let type = "web"
+                                        if(sourceFilter) {
+                                            type = sourceFilter.type
+                                        }
                                         return {
                                             ...ideasData,
+                                            type,
                                             reference: {
                                                 type: "article",
                                                 link: article._source.orig_url,
@@ -758,11 +934,13 @@ export const blogResolvers = {
                             )
                         )
                     }
+                    console.log(newIdeas, "newIdeas")
+                    console.log(freshIdeas, "freshIdeas")
                     await db.db('lilleBlogs').collection('blogIdeas').updateOne({
                         _id: new ObjectID(blogIdeas._id)
                     }, {
                         $set: {
-                            ideas: blogIdeas.ideas,
+                            ideas: newIdeas,
                             freshIdeas
                         }
                     })
@@ -843,7 +1021,7 @@ export const blogResolvers = {
                             `,
                         });
                     }
-                    return {...blogDetails, ideas: blogIdeasDetails, references: refUrls, respTime, freshIdeasReferences:refUrlsFreshIdeas}
+                    return {...blogDetails, ideas: blogIdeasDetails, references: blogDetails.sourcesArray && blogDetails.sourcesArray.length ? blogDetails.sourcesArray : refUrls, respTime, freshIdeasReferences:refUrlsFreshIdeas}
                 }else{
                     console.log(blogGeneratedData, "blogGeneratedData")
                     throw "Something Went wrong!"
@@ -928,7 +1106,7 @@ export const blogResolvers = {
                 source: string
             }[] = []
             if(updatedBlog) refUrls = await fetchArticleUrls({db, blog: updatedBlog})
-            return {...updatedBlog, ideas: blogIdeas, references: refUrls}
+            return {...updatedBlog, ideas: blogIdeas, references: blogDetails.sourcesArray && blogDetails.sourcesArray.length ? blogDetails.sourcesArray : refUrls}
         },
         irNotify: async (
             parent: unknown, args: {options: IRNotifiyArgs[]}, {db, pubsub}: any

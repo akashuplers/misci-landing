@@ -16,15 +16,28 @@ import FreshFilteredIdeaItem from "./FreshFilteredIdeaItem";
 import FreshIdeaForm from "./FreshIdeaForm";
 import FreshIdeaReference from "./FreshIdeaReference";
 import IdeaComponent from "./IdeaComponent";
-import IdeaTag from "./IdeaTag";
+import IdeaTag, { SourceColors, SourceTab } from "./IdeaTag";
 import LoaderScan from "./LoaderScan";
 import MainIdeaItem from "./MainIdeaItem";
 import TrialEndedModal from "./TrialEndedModal";
 import UsedFilteredIdeaItem from "./UsedFilteredIdeaItem";
 import UsedReference from "./UsedReference";
 import { RegenerateIcon } from "./localicons/localicons";
+import {
+  ArrowLeftIcon,
+  CheckIcon,
+  DocumentIcon,
+  InformationCircleIcon,
+  PlusIcon,
+  XCircleIcon,
+} from "@heroicons/react/24/outline";
+import { ArrowLongLeftIcon, DocumentPlusIcon } from "@heroicons/react/20/solid";
+import { Chip, FileComponent } from "./ui/Chip";
+import { Badge } from "@radix-ui/themes";
+import { DeleteRefSources } from "@/helpers/apiMethodsHelpers";
+import Tooltip from "./ui/Tooltip";
 export function checkFileFormatAndSize(file) {
-  var extension = file.name.split(".").pop().toLowerCase();
+  var extension = file?.name?.split(".").pop().toLowerCase();
   var allowedFormats = ["pdf", "docx", "txt"];
 
   if (!allowedFormats.includes(extension)) {
@@ -43,6 +56,10 @@ export function checkFileFormatAndSize(file) {
 
   return true;
 }
+const RE_BUTTON_TOPIC = {
+  topic: "Current Topic",
+  next: "Next Draft",
+};
 export default function DashboardInsights({
   loading,
   ideas,
@@ -63,12 +80,17 @@ export default function DashboardInsights({
   setOption,
   option,
   setNdResTime,
+  refetchBlog,
+  keyword,
+  setInitailIdeas,
+  initailIdeas
 }) {
   const [enabled, setEnabled] = useState(false);
   const [isOpen, setOpen] = useState(false);
   const [formInput, setformInput] = useState("");
   const [urlValid, setUrlValid] = useState(false);
   const [file, setFile] = useState(null);
+  const [inputFiles, setInputFiles] = useState([]);
   const [fileValid, setFileValid] = useState(false);
   const [arrUsed, setArrUsed] = useState([]);
   const [arrFresh, setArrFresh] = useState([]);
@@ -81,18 +103,21 @@ export default function DashboardInsights({
   const updateCredit = useStore((state) => state.updateCredit);
   const updateisSave = useStore((state) => state.updateisSave);
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
-
+  const [ideasTab, setIdeasTab] = useState(0);
   const [filteredIdeas, setFilteredIdeas] = useState([]);
   const [notUniquefilteredIdeas, setNotUniqueFilteredIdeas] = useState([]);
   const { showTwitterThreadUI, setShowTwitterThreadUI } = useThreadsUIStore();
-
+  const [currentIndexTitle, setCurrentIndexTitle] = useState("Current Topic");
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const setShowContributionModal = useByMeCoffeModal(
     (state) => state.toggleModal
   );
+  const [userNextSourcesCheck, setUserNextSourcesCheck] = useState(false);
+
   const [toggle, setToggle] = useState(true);
   const toggleClass = " transform translate-x-3";
   const creditLeft = useStore((state) => state.creditLeft);
-
+  const [inputUrls, setinputUrls] = useState([]);
   useEffect(() => {
     setFreshIdeas(oldFreshIdeas);
   }, [oldFreshIdeas]);
@@ -123,7 +148,7 @@ export default function DashboardInsights({
 
         if (
           `${networkError}` ===
-          "ServerError: Response not successful: Received status code 401" &&
+            "ServerError: Response not successful: Received status code 401" &&
           isauth
         ) {
           localStorage.clear();
@@ -154,7 +179,7 @@ export default function DashboardInsights({
   const [regenSelected, setRegenSelected] = useState([]);
 
   const isAuthenticated = useStore((state) => state.isAuthenticated);
-
+  const [newReference, setNewReference] = useState({});
   var getToken;
   if (typeof window !== "undefined") {
     getToken = localStorage.getItem("token");
@@ -215,26 +240,65 @@ export default function DashboardInsights({
   }
 
   function handleRefClick(e) {
-    e.target.classList.toggle("active");
+    // e.target.classList.toggle("active");
     //const refCount = e.target.firstElementChild;
 
     /* Adding or removing the keywords to an array */
     const filterText = e.target.dataset.source;
+    // loop over all the ideas and get the same filter source
 
-    const valueExists = filteredArray.find(
-      (el) => Object.values(el).indexOf(filterText) > -1
-    );
-    if (valueExists) {
-      setFilteredArray((prev) => [
-        ...prev.filter((el) => el.filterText !== filterText),
-      ]);
+    let shouldInclude = true;
+    // alReadyInFilter.forEach((el) => {
+    //   if (el.filterText === filterText) {
+    //     shouldInclude = false;
+    //     return;
+    //   }
+    // });
+    const filteredIdeasList = [];
+
+    const alreadyInFitlerArray = [...alReadyInFilter];
+    alreadyInFitlerArray.forEach((el) => {
+      if (el.filterText === filterText) {
+        shouldInclude = false;
+        return;
+      }
+    });
+    if (!shouldInclude) {
+      alreadyInFitlerArray.push(filterText);
     } else {
-      setFilteredArray((prev) => [...prev, { filterText, criteria: "ref" }]);
-    }
-    if (!toggle) {
-      setToggle(!toggle);
+      // remove from thje
+      alreadyInFitlerArray.filter((el) => el.filterText !== filterText);
     }
 
+    if (shouldInclude) {
+    } else {
+      if (alreadyInFitlerArray.length === 0) {
+        setFilteredIdeas([]);
+      } else {
+        ideas.forEach((idea) => {
+          if (alreadyInFitlerArray.includes(idea?.name)) {
+            filteredIdeasList.push(idea);
+          }
+        });
+        setFilteredIdeas(filteredIdeasList);
+      }
+    }
+    setFilteredIdeas((prev) => {
+      return [...prev, filterText];
+    });
+    // const valueExists = filteredArray.find(
+    //   (el) => Object.values(el).indexOf(filterText) > -1
+    // );
+    // if (valueExists) {
+    //   setFilteredArray((prev) => [
+    //     ...prev.filter((el) => el.filterText !== filterText),
+    //   ]);
+    // } else {
+    //   setFilteredArray((prev) => [...prev, { filterText, criteria: "ref" }]);
+    // }
+    // if (!toggle) {
+    //   setToggle(!toggle);
+    // }
   }
 
   useEffect(() => {
@@ -282,14 +346,19 @@ export default function DashboardInsights({
         const lowerCaseSearchObject = searchObject?.toLowerCase();
         const ideaName = idea?.name?.toLowerCase();
 
-        if (filterObject?.criteria === "tag" && ideaOfIdea?.includes(lowerCaseSearchObject)) {
+        if (
+          filterObject?.criteria === "tag" &&
+          ideaOfIdea?.includes(lowerCaseSearchObject)
+        ) {
           setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
-        } else if (filterObject?.criteria === "ref" && ideaName === lowerCaseSearchObject) {
+        } else if (
+          filterObject?.criteria === "ref" &&
+          ideaName === lowerCaseSearchObject
+        ) {
           setNotUniqueFilteredIdeas((prev) => [...prev, idea]);
         }
       });
     });
-
   }, [filteredArray]);
 
   // We create a set so that the values are unique, and multiple ideas are not added
@@ -388,23 +457,32 @@ export default function DashboardInsights({
       (obj, index, self) => index === self.findIndex((t) => t.text === obj.text)
     );
     if (newarr?.length >= 1) {
-
       RegenerateBlog({
         variables: {
           options: {
             ideas: newarr,
             blog_id: blog_id,
+            useOldWebSource: !userNextSourcesCheck,
+            updatedTopic: keyword,
           },
         },
         onCompleted: (data) => {
+         try{
           updateCredit();
           setBlogData(data?.regenerateBlog);
-          setIdeas(data?.regenerateBlog?.ideas?.ideas);
+          // setInitailIdeas(data?.regenerateBlog?.ideas?.ideas);
+          // setIdeas(data?.regenerateBlog?.ideas?.ideas);
+          handleSelectAll(data?.regenerateBlog?.ideas?.ideas);
           setTags(data?.regenerateBlog?.tags);
           setFreshIdeaTags(data?.regenerateBlog?.freshIdeasTags);
-          setReference(data?.regenerateBlog?.references);
+          let referencesList = data?.regenerateBlog.references;
+          let newreferencesList = referencesList.map((reference) => {
+            const localId = Math.random().toString(36).substr(2, 9);
+            return { ...reference, selected: false, localId };
+          });
+          setReference(newreferencesList);
           setFreshIdeaReferences(data?.regenerateBlog?.freshIdeasReferences);
-          setFreshIdeas(data?.regenerateBlog?.ideas?.freshIdeas);
+          setFreshIdeas(data?.regenerateBlog?.freshIdeas);
           setPyResTime(data?.regenerateBlog?.pythonRespTime);
           setNdResTime(data?.regenerateBlog?.respTime);
 
@@ -424,14 +502,24 @@ export default function DashboardInsights({
             (pd) => pd?.platform === "twitter"
           );
           if (aaThreads?.threads?.length <= 0) {
-            setTwitterThreadData(twitterThreadData)
+            setTwitterThreadData(twitterThreadData);
           } else {
-            const theLastThread = aaThreads.threads[aaThreads.threads.length - 1];
+            const theLastThread =
+              aaThreads.threads[aaThreads.threads.length - 1];
             // merge this will text with 2nd last tweet
-            var theSecondLastThread = aaThreads.threads[aaThreads.threads.length - 2];
-            if (theLastThread !== undefined && theLastThread !== null && theLastThread !== "") {
+            var theSecondLastThread =
+              aaThreads.threads[aaThreads.threads.length - 2];
+            if (
+              theLastThread !== undefined &&
+              theLastThread !== null &&
+              theLastThread !== ""
+            ) {
               // const mergedText = theSecondLastThread + " ." + theLastThread;
-              if (theSecondLastThread === undefined || theSecondLastThread === null || theSecondLastThread === "") {
+              if (
+                theSecondLastThread === undefined ||
+                theSecondLastThread === null ||
+                theSecondLastThread === ""
+              ) {
                 theSecondLastThread = "";
               } else {
                 theSecondLastThread = theSecondLastThread + " .";
@@ -483,6 +571,9 @@ export default function DashboardInsights({
             setShowContributionModal(true);
           }
           // setOption(prevState => prevState);
+         } catch (err){
+          console.log(err);
+         }
         },
         onError: (error) => {
           console.error("Credit Exhaust or any other error", error.message);
@@ -492,6 +583,7 @@ export default function DashboardInsights({
           } else {
             if (error.message) {
               console.log("error", error.message);
+              toast.error(error.message);
               setOpen(true);
             }
           }
@@ -511,24 +603,61 @@ export default function DashboardInsights({
     }
   }
 
-  // wrtie a function to seelect all use ideas 
+  // wrtie a function to seelect all use ideas
   // function handleSelectAllUsedIdeas() {
   //   alert('running used ideas')
   // }
   function handleSelectAllUsedIdeas() {
     const updatedAllIdeas = ideas.map((el, elIndex) => {
       return {
-        ...el, used: toggle ? 1 : 0
-      }
+        ...el,
+        used: toggle ? 1 : 0,
+      };
     });
     setIdeas(updatedAllIdeas);
 
-    const arr = updatedAllIdeas.filter((element) => element.used).map((element) => ({
-      text: element.idea,
-      article_id: element.article_id,
-    }));
+    const arr = updatedAllIdeas
+      .filter((element) => element.used)
+      .map((element) => ({
+        text: element.idea,
+        article_id: element.article_id,
+      }));
     handleUsedIdeas(arr);
   }
+  // on change on ideas
+  useEffect(() => {
+    console.log("changes in ideas");
+
+    const ideasMapWithIndex = {};
+    ideas.forEach((idea, index) => {
+      ideasMapWithIndex[index] = idea.used ? 1 : 0;
+    });
+    console.log(ideasMapWithIndex);
+    const initialIdeasMapWithIndex = {};
+
+    console.log(ideas, initailIdeas);
+    initailIdeas.forEach((idea, index) => {
+      initialIdeasMapWithIndex[index] = idea.used ? 1 : 0;
+    });
+    debugger;
+    console.log(initialIdeasMapWithIndex);
+    let mapsAreEqual = true;
+    for (const key in ideasMapWithIndex) {
+      if (ideasMapWithIndex[key] !== initialIdeasMapWithIndex[key]) {
+        mapsAreEqual = false;
+        break; // If a mismatch is found, no need to continue checking
+      }
+    }
+
+    if (mapsAreEqual) {
+      console.log("The values in the maps are the same.");
+      setCurrentIndexTitle(RE_BUTTON_TOPIC.topic);
+    } else {
+      setCurrentIndexTitle(RE_BUTTON_TOPIC.next);
+      console.log("The values in the maps are not the same.");
+    }
+  }, [ideas, initailIdeas]);
+
   function handleSelectAll() {
     if (toggle) {
       if (freshFilteredIdeas?.length > 0) {
@@ -605,34 +734,37 @@ export default function DashboardInsights({
       }
     }
   }
-
   function handleFileUpload({ target }) {
-    const FORMATCHECK = checkFileFormatAndSize(target.files[0]);
-    // alert(FORMATCHECK, "FORMATCHECK")
-    if (!FORMATCHECK) {
-      return;
+    const selectFiles = target.files;
+    let fileSizesMoreThan3MB = false;
+
+    for (let i = 0; i < selectFiles.length; i++) {
+      const file = selectFiles[i];
+
+      // Check file format and size for each file
+      if (!checkFileFormatAndSize(file)) {
+        return;
+      }
+
+      const fileSizeMB = file.size / (1024 * 1024); // Convert size to MB
+      if (fileSizeMB > 3) {
+        fileSizesMoreThan3MB = true;
+        break; // Stop checking if one file exceeds the size limit
+      }
     }
-    setFileValid(true);
-    setUrlValid(false);
 
-    const file = target.files[0];
-
-    // Check if file is defined
-    if (!file) {
-      toast.error("No file chosen");
-      return;
-    }
-
-    const fileSizeMB = file.size / (1024 * 1024); // convert size to MB
-
-    if (fileSizeMB > 3) {
+    if (fileSizesMoreThan3MB) {
       toast.error("File size cannot exceed 3MB");
-      return; // stop function execution after showing the error
+      return; // Stop function execution after showing the error
     }
 
-    setformInput(file.name);
-    setFile(file);
+    const newFiles = Array.from(selectFiles);
+    setInputFiles((prev) => {
+      return [...prev, ...newFiles];
+    });
+    console.log(inputFiles);
   }
+
   function handleFormChange(e) {
     const value = e.target.value;
     setformInput(value);
@@ -649,74 +781,130 @@ export default function DashboardInsights({
   const handleUsedIdeas = (arr) => {
     setArrUsed(arr);
   };
-  
-  function postFormData(e) {
+
+  function postFormData(e, type = "File") {
     e.preventDefault();
     setNewIdeaLoad(true);
-
+    const getToken = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+    const tempId = localStorage.getItem("tempId");
+    let user_id;
+    if (getToken) {
+      user_id = userId;
+    } else {
+      user_id = tempId;
+    }
+    // Define the base URL and the raw data object
     let url = API_BASE_PATH;
-    let raw;
-    if (fileValid) {
+    let raw = {};
+
+    if (type === "File") {
+      // For file uploads
       url += API_ROUTES.FILE_UPLOAD;
       raw = new FormData();
-      raw.append("file", file);
+      console.log(inputFiles);
+      // raw.append("files", inputFiles[0], inputFiles[0].name);
+      for (const file of inputFiles) {
+        raw.append("files", file, file.name);
+      }
+      raw.append("userId", user_id);
       raw.append("blog_id", blog_id);
-    } else if (urlValid) {
-      url += API_ROUTES.URL_UPLOAD;
-      raw = {
-        url: formInput,
-        blog_id: blog_id,
-      };
+    } else if (type === "URL") {
+      // For URL uploads
+      if (newReference.source !== "") {
+        url += API_ROUTES.URL_UPLOAD;
+        const urls = [newReference.source];
+        setinputUrls((prev) => [...prev, newReference.source]);
+        raw = JSON.stringify({
+          urls: urls,
+          blog_id: blog_id,
+          userId: user_id,
+        });
+        setNewReference((prev) => {
+          return { ...prev, source: "" };
+        });
+      }
     } else {
+      // For keyword uploads
       url += API_ROUTES.KEYWORD_UPLOAD;
-      raw = {
+      raw = JSON.stringify({
         keyword: formInput,
         blog_id: blog_id,
-      };
+        userId: user_id,
+      });
     }
 
-    const myHeaders = {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    };
-
-    if (!fileValid) {
-      myHeaders["Content-Type"] = "application/json";
+    const headers = new Headers();
+    if (type === "File") {
+      headers.delete("Content-Type"); // Remove Content-Type for FormData
+    } else {
+      headers.append("Content-Type", "application/json"); // Set Content-Type for JSON
     }
+    headers.append("Authorization", "Bearer " + getToken);
 
+    console.log(headers);
     const config = {
       method: "post",
-      url: url,
-      headers: myHeaders,
-      data: raw,
+      headers: headers,
+      body: raw,
     };
 
-    axios(config)
+    fetch(url, config)
       .then((response) => {
-        setIdeaType("fresh");
-        setFreshIdeas(response.data.data);
-        setFreshIdeaReferences(response.data.references);
-        setFreshIdeaTags(response.data.freshIdeasTags);
-
-        setPyResTime(response.data.pythonRespTime);
-        setNdResTime(response.data.respTime);
-        const fresh = document.querySelector(".idea-button.fresh");
-        const used = document.querySelector(".idea-button.used");
-
-        used.classList.remove("active");
-        fresh.classList.add("active");
+        return response.json();
       })
-      .catch((error) => {
-        console.log("error", error);
-         toast.error(error?.response?.data?.message || 'Host has denied the extraction from this URL. Please try again or try some other URL.', {
-    autoClose: 10000, // 10 seconds
-  });
+      .then((response) => {
+        if (response.type != "SUCCESS") {
+          toast.error(response.message);
+          return;
+        }
+        toast.success(response.message);
       })
       .finally(() => {
+        refetchBlog().then((res) => {
+          setformInput("");
+          setFileValid(false);
+          setUrlValid(false);
+          setInputFiles([]);
+          setNewIdeaLoad(false);
+        });
+      })
+      .catch((err) => {
         setformInput("");
         setFileValid(false);
         setUrlValid(false);
+        setInputFiles([]);
         setNewIdeaLoad(false);
       });
+  }
+
+  function handleSetIdeas(ideas) {
+    // add a new properly initailUsedd = used
+    const newIdeas = ideas.map((idea) => {
+      return { ...idea, initailUsed: idea.used };
+    });
+    setIdeas(newIdeas);
+    setInitailIdeas(newIdeas);
+  }
+
+  function handleRefDelete(id) {
+    const payload = {
+      blogId: blog_id,
+      sourceId: id,
+    };
+    DeleteRefSources(payload).then((res) => {
+      if (res.type != "SUCCESS") {
+        toast.error(res.message);
+        return;
+      }
+
+      if (res.status === 500) {
+        toast.error("Something went wrong");
+        return;
+      }
+      toast.success(res.message);
+      refetchBlog();
+    });
   }
 
   useEffect(() => {
@@ -729,16 +917,17 @@ export default function DashboardInsights({
       // Regular expression for URL validation
       var pattern = new RegExp(
         "^(https?:\\/\\/)?" + // protocol
-        "((([a-zA-Z\\d]([a-zA-Z\\d-]{0,61}[a-zA-Z\\d])?)\\.)+[a-zA-Z]{2,})(:\\d{2,5})?" + // domain name and optional port
-        "(\\/[-a-zA-Z\\d%@_.~+&:]*)*" + // path
-        "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" + // query string
-        "(\\#[-a-zA-Z\\d_]*)?$",
+          "((([a-zA-Z\\d]([a-zA-Z\\d-]{0,61}[a-zA-Z\\d])?)\\.)+[a-zA-Z]{2,})(:\\d{2,5})?" + // domain name and optional port
+          "(\\/[-a-zA-Z\\d%@_.~+&:]*)*" + // path
+          "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" + // query string
+          "(\\#[-a-zA-Z\\d_]*)?$",
         "i"
       ); // fragment locator
       return pattern.test(formInput);
     }
   }, [formInput]);
 
+  const [alReadyInFilter, setAlReadyInFilter] = useState([]);
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const [authenticationModalType, setAuthneticationModalType] =
     useState("signup");
@@ -747,27 +936,10 @@ export default function DashboardInsights({
     Gbid = localStorage.getItem("Gbid");
   }
 
-  function handleCitationFunction(source) {
-    let filtered;
-    if (ideaType === "used") {
-      reference.forEach((el, index) => {
-        if (el.source === source) {
-          filtered = index;
-        }
-      });
-    } else if (ideaType === "fresh") {
-      freshIdeasReferences.forEach((el, index) => {
-        if (el.source === source) {
-          filtered = index;
-        }
-      });
-    }
-
-    if (filtered === 0 || filtered) {
-      return filtered + 1;
-    } else {
-      return null;
-    }
+  function handleCitationFunction(idea) {
+    const idOfIdea = idea?.article_id;
+    const count = getCount(idOfIdea);
+    return count;
   }
 
   function toTitleCase(str) {
@@ -782,7 +954,99 @@ export default function DashboardInsights({
 
     return titleCase.trim();
   }
+  let sortedRefAr = [];
+  let sortedIdeas = [];
+  let filteredSortedIdeas = [];
+  let newFilteredIdeas = [];
 
+  let letRefIdMapWithArticleId = {};
+
+  const allReferenceWithSelectedTrue =
+    reference?.filter((el) => el.selected === true) || [];
+
+  const idCountMap = {};
+  reference.forEach((item) => {
+    const id = item.id;
+    idCountMap[id] = 0;
+  });
+  ideas.forEach((item) => {
+    const id = item.article_id;
+    if (idCountMap[id] !== undefined && idCountMap[id] !== null) {
+      idCountMap[id] = (idCountMap[id] || 0) + 1;
+    }
+  });
+  function getIndexByKey(keyToFind) {
+    let keys = Object.keys(idCountMap);
+
+    for (let i = 0; i < keys.length; i++) {
+      if (keys[i] === keyToFind) {
+        return i + 1;
+      }
+    }
+
+    return 0; // Return -1 if the key is not found in the object
+  }
+
+  function getCount(id) {
+    return idCountMap[id] || 0;
+  }
+
+  ideas?.forEach((idea) => {
+    if (allReferenceWithSelectedTrue.length > 0) {
+      allReferenceWithSelectedTrue.forEach((ref) => {
+        if (idea?.article_id === ref?.id) {
+          newFilteredIdeas.push(idea);
+        }
+      });
+    } else {
+      newFilteredIdeas = [];
+    }
+  });
+
+  if (ideasTab === 0) {
+    sortedRefAr = reference?.filter((el) => el.type == "web") || [];
+    sortedIdeas = ideas?.filter((el) => el.type == "web") || [];
+    if (filteredIdeas.length > 0) {
+      filteredSortedIdeas =
+        filteredIdeas?.filter((el) => el.type == "web") || [];
+    }
+  } else if (ideasTab === 1) {
+    sortedRefAr = reference?.filter((el) => el.type == "url") || [];
+    sortedIdeas = ideas?.filter((el) => el.type == "url") || [];
+    if (filteredIdeas.length > 0) {
+      filteredSortedIdeas =
+        filteredIdeas?.filter((el) => el.type == "url") || [];
+    }
+  } else if (ideasTab === 2) {
+    sortedRefAr = reference?.filter((el) => el.type == "file") || [];
+    sortedIdeas = ideas?.filter((el) => el.type == "file") || [];
+    if (filteredIdeas?.length > 0) {
+      filteredSortedIdeas =
+        filteredIdeas?.filter((el) => el.type == "file") || [];
+    }
+  } else {
+    sortedRefAr = [...reference];
+    sortedIdeas = [...ideas];
+    if (filteredIdeas.length > 0) {
+      filteredSortedIdeas = [];
+    }
+  }
+  console.log("sortedRef");
+  console.log(sortedRefAr);
+  function handleIdeasTabClick(index) {
+    setIdeasTab((prev) => {
+      return index;
+    });
+  }
+  // newFilteredIdeas = newFilteredIdeas.filter((idea, index, self) => {}))
+  const uniqueIdeas = new Set();
+  newFilteredIdeas = newFilteredIdeas.filter((idea) => {
+    if (!uniqueIdeas.has(idea.tempId)) {
+      uniqueIdeas.add(idea.tempId);
+      return true;
+    }
+    return false;
+  });
   if (loading || regenLoading) return <LoaderScan />;
   return (
     <>
@@ -851,241 +1115,366 @@ export default function DashboardInsights({
       {creditModal && (
         <TrialEndedModal setTrailModal={setCreditModal} topic={null} />
       )}
-      <div className="text-xs px-2 mb-24 lg:mb-0" style={{ borderLeft: "2px solid #d2d2d2" }} id="regenblog">
-        {/* h1 Insight only for mobile screens */}
-        <h1 className="text-2xl  font-semibold text-gray-800 my-4 lg:hidden">
-          Insights
-        </h1>
-        <div className="flex jusify-between gap-[1.25em]">
-          <p className="font-normal w-[100%] lg:w-[70%] text-sm">
-          Create your next draft on the basis of your edits and uploads.
-          </p>
-          <button
-            className="cta flex items-center gap-2 self-start !py-2 !font-semibold"
-            onClick={
-              isAuthenticated
-                ? handleRegenerate
-                : () => {
-                  updateisSave();
-                  // setAuthenticationModalOpen(true);
-                }
-            }
-          >
-            <RegenerateIcon />
-            Next Draft
-          </button>
-        </div>
-
-        {tags?.length > 0 && (
-          <div>
-            <div className="flex justify-between w-full items-center py-2">
-              <h3 className="pt-[0.65em] font-semibold">Filtering Keywords</h3>
-            </div>
-            <div
-              className="flex gap-[0.5em] flex-wrap h-full lg:max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
-              style={{ padding: "0.75em 0.25em" }}
+      <div
+        className="text-xs px-2 mb-24 lg:mb-0 h-full"
+        style={{ borderLeft: "2px solid #d2d2d2" }}
+        id="regenblog"
+      >
+        <div>
+          {/* h1 Insight only for mobile screens */}
+          <h1 className="pt-[0.65em] font-semibold">WORKSPACE</h1>
+          <div className="flex jusify-between gap-[1.25em]">
+            <p className="font-normal w-[100%] lg:w-[70%] text-sm">
+              Create your next draft on the basis of your edits and uploads.
+            </p>
+            <button
+              className="cta flex items-center gap-2 self-start !py-2 !font-semibold"
+              onClick={
+                isAuthenticated
+                  ? handleRegenerate
+                  : () => {
+                      updateisSave();
+                      setAuthenticationModalOpen(true);
+                    }
+              }
             >
-              {ideaType === "used"
-                ? tags?.map((tag, i) => {
-                  return (
-                    <IdeaTag
-                      key={i}
-                      tag={tag}
-                      handleTagClick={handleTagClick}
-                    />
-                  );
-                })
-                : freshIdeaTags?.length > 0
-                  ? freshIdeaTags?.map((tag, i) => {
+              <RegenerateIcon />
+              {currentIndexTitle}
+            </button>
+          </div>
+
+          <div>
+            <div className="flex justify-between w-full items-start py-2 flex flex-col">
+              <h3 className="pt-[0.65em] font-semibold">Draft Topic</h3>
+              <div className="opacity-70 text-gray-800 text-sm font-normal capitalize">
+                {keyword}
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex gap-2 justify-start w-full items-center py-2">
+              <h3 className="font-semibold">Sources</h3>
+              <Tooltip content="Lille's AI dynamically curates these sources from the internet to inspire your articles and provide relevant ideas.">
+                <InformationCircleIcon className="h-4 w-4 text-gray-500" />
+              </Tooltip>
+            </div>
+            <div className="flex items-center gap-2 py-1.5">
+              <SourceTab
+                SourceColor={"yellow"}
+                title={"Web"}
+                selected={ideasTab == 0}
+                onClick={() => {
+                  if (isAuthenticated) {
+                    handleIdeasTabClick(0);
+                  } else {
+                    setAuthenticationModalOpen(true);
+                  }
+                }}
+              />
+              <SourceTab
+                SourceColor={"orange"}
+                title={"My Urls"}
+                onClick={() => {
+                  if (isAuthenticated) {
+                    handleIdeasTabClick(1);
+                  } else {
+                    setAuthenticationModalOpen(true);
+                  }
+                }}
+                selected={ideasTab == 1}
+              />
+              <SourceTab
+                SourceColor={"blue"}
+                title={"My Documents"}
+                onClick={() => {
+                  if (isAuthenticated) {
+                    handleIdeasTabClick(2);
+                  } else {
+                    setAuthenticationModalOpen(true);
+                  }
+                }}
+                selected={ideasTab == 2}
+              />
+            </div>
+
+            <div
+              className={` filebarScrollable flex gap-[0.5em] my-2 flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0 -z-10 ${sortedRefAr.length > 0 ? "h-[50px]" : "hidden"}
+              `}
+              style={{ padding: "0.75em 0.5em" }}
+            >
+              {
+                !isAuthenticated && <div
+                 onClick={() => {
+                  if (isAuthenticated) {
+                    console.log('no changes');
+                  } else {
+                    setAuthenticationModalOpen(true);
+                  }
+                }}
+                 className="flex flex-row gap-2 flex-wrap max-h-[80px] z-30 overflow-y-scroll absolute w-full h-full border-red-500 bg-transparent">
+                  </div> 
+              }
+              {ideaType === "used" ? (
+                reference?.length > 0 ? (
+                  sortedRefAr?.map((ref, index) => {
                     return (
-                      <IdeaTag
-                        key={i}
-                        tag={tag}
-                        handleTagClick={handleTagClick}
+                      <UsedReference
+                        key={index}
+                        type={ref.type}
+                        idCountMap={getIndexByKey}
+                        reference={ref}
+                        index={index}
+                        setReference={setReference}
+                        handleCitationFunction={handleCitationFunction}
+                        handleRefClick={handleRefClick}
+                        onDelete={() => handleRefDelete(ref.id)}
+                        hideTrashIcon={ideasTab==0}
                       />
                     );
                   })
-                  : "Generate fresh ideas to see tags"}
-            </div>
-          </div>
-        )}
-        <div>
-          <div className="flex justify-between w-full items-center py-2">
-            <h3 className="pt-[0.65em] font-semibold">Sources</h3>
-          </div>
-          <div
-            className="flex gap-[0.5em] flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0"
-            style={{ padding: "0.75em 0.5em" }}
-          >
-            {ideaType === "used" ? (
-              reference?.length > 0 ? (
-                reference?.map((ref, index) => {
-                  return (
-                    <UsedReference
+                ) : (
+                  <div>Used Idea sources not found</div>
+                )
+              ) : freshIdeasReferences?.length > 0 ? (
+                freshIdeasReferences?.map((ref, index) => {
+                  return ref.source !== "file" ? (
+                    <FreshIdeaReference
                       key={index}
                       reference={ref}
                       index={index}
                       handleRefClick={handleRefClick}
                     />
+                  ) : (
+                    <div>File upload does not contain sources. </div>
                   );
                 })
               ) : (
-                <div>Used Idea sources not found</div>
-              )
-            ) : freshIdeasReferences?.length > 0 ? (
-              freshIdeasReferences?.map((ref, index) => {
-                return ref.source !== "file" ? (
-                  <FreshIdeaReference
-                    key={index}
-                    reference={ref}
-                    index={index}
-                    handleRefClick={handleRefClick}
-                  />
-                ) : (
-                  <div>File upload does not contain sources. </div>
-                );
-              })
-            ) : (
-              <div>Generate fresh ideas to see sources</div>
+                <div>Generate fresh ideas to see sources</div>
+              )}
+            </div>
+            {ideasTab == 0 && (
+              <>
+                <div className="w-full justify-between pr-5 items-center  inline-flex">
+                  <div className="opacity-70 text-gray-800 text-xs font-normal">
+                    Use New Sources in Next Draft
+                  </div>
+                  <div className="relative rounded-sm border-none border-slate-400">
+                    <div class="inline-flex items-start">
+                      <label
+                        class="relative flex justify-center cursor-pointer items-center rounded-full p-3"
+                        for="checkbox-1"
+                        data-ripple-dark="true"
+                      >
+                        <input
+                          type="checkbox"
+                          class={`before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-md border border-blue-gray-200 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity hover:before:opacity-10 `}
+                          id="checkbox-1"
+                          checked={userNextSourcesCheck}
+                          onChange={(e) => {
+                            setUserNextSourcesCheck(e.target.checked);
+                          }}
+                          style={{}}
+                        />
+                        <div class="pointer-events-none absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 text-white opacity-0 transition-opacity peer-checked:opacity-100">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-3.5 w-3.5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            stroke="currentColor"
+                            stroke-width="1"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clip-rule="evenodd"
+                            ></path>
+                          </svg>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+            {ideasTab == 1 && (
+              <div className="px-4 flex flex-col gap-3 filebarScrollable">
+                <div className="flex flex-row gap-2 flex-wrap max-h-[80px] overflow-y-scroll">
+                  {inputUrls.length > 0 &&
+                    inputUrls.map((url, index) => {
+                      return (
+                        <Chip
+                          key={index}
+                          onDelete={() => {
+                            setinputUrls((prev) => {
+                              return prev.filter((el, i) => i !== index);
+                            });
+                          }}
+                          wholeData={index}
+                          text={url}
+                        />
+                      );
+                    })}
+                </div>
+                <div>
+                  <div className="w-full h-full justify-start items-center gap-3 inline-flex">
+                    <ArrowLongLeftIcon className="w-6 h-6 text-indigo-500" />
+                    <input
+                      className="grow shrink basis-0 h-full px-2.5 py-2 rounded-lg border border-indigo-500 border-opacity-20 justify-start items-start gap-2.5 flex"
+                      value={newReference.source}
+                      onChange={(e) => {
+                        setNewReference((prev) => {
+                          return { ...prev, source: e.target.value };
+                        });
+                      }}
+                      placeholder="Add URL"
+                    />
+                    <button
+                      className="w-6 h-6 relative  textSuperman-indigo-500 bg-slate-100 rounded-sm border"
+                      onClick={(event) => {
+                        if (newReference.source.trim().length > 0) {
+                          setinputUrls((prev) => {
+                            return [...prev, newReference.source];
+                          });
+                        }
+                        setNewReference((prev) => {
+                          return { ...prev, source: "" };
+                        });
+                      }}
+                    >
+                      {<PlusIcon />}
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <button
+                    className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
+                    onClick={(event) => {
+                      postFormData(event, "URL");
+                    }}
+                  >
+                    {<CheckIcon />}
+                  </button>
+                </div>
+              </div>
+            )}
+            {ideasTab == 2 && (
+              <div className="px-4 flex flex-col gap-3">
+                <div className="flex w-full items-end gap-2 justify-between">
+                  <div className="w-full">
+                    {inputFiles?.length > 0 ? (
+                      inputFiles.map((file, index) => {
+                        return (
+                          <FileComponent
+                            key={index}
+                            name={file.name}
+                            size={Math.round(file.size / 1000) + "KB"}
+                            fileData={index}
+                            onDelete={(index) => {
+                              setInputFiles((prev) => {
+                                return prev.filter((el, i) => i !== index);
+                              });
+                            }}
+                          />
+                        );
+                      })
+                    ) : (
+                      <label htmlFor="input-file">
+                        <FileComponent name="No file chosen" size="" />
+                      </label>
+                    )}
+                  </div>
+                  <div className="w-[5%] h-full my-1 justify-end flex-col items-end gap-3 inline-flex">
+                    <label
+                      htmlFor="input-file"
+                      className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
+                    >
+                      {file == null ? <PlusIcon /> : <CheckIcon />}
+                    </label>
+                  </div>
+                </div>
+                <buttton
+                  className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
+                  onClick={postFormData}
+                >
+                  <CheckIcon />
+                </buttton>
+                <input
+                  multiple={true}
+                  id="input-file"
+                  type="file"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+              </div>
             )}
           </div>
         </div>
-        <div className="flex py-2 relative gap-5">
-          <button
-            className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs"
-            onClick={(e) => {
-              setIdeaType("used");
-            }}
-          >
-            Used Idea(s){" "}
-            <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
-              {ideas?.length}
-            </span>
-          </button>
-
-          <button
-            className="idea-button cta fresh m-2 ml-0 flex gap-1 items-center !p-[0.4em] !py-[0.25em] !text-xs realtive"
-            onClick={(e) => {
-              if (isAuthenticated) setIdeaType("fresh");
-              else {
-                updateisSave();
-              }
-            }}
-          >
-            <Image
-              src="/lightBulb.png"
-              alt="lightBulb"
-              width={20}
-              height={20}
-              style={{ pointerEvents: "none" }}
-            />
-            Unused Idea(s){" "}
-            {freshIdeas?.length > 0 && (
+        <div>
+          <div className="flex py-2 relative gap-5">
+            <button
+              className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs flex items-center justify-around gap-1"
+              onClick={(e) => {
+                setIdeaType("used");
+              }}
+            >
+              <div className={`bg-blue-500 w-1.5 h-1.5  rounded-full`} />
+              Idea
               <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
-                {freshIdeas?.length}
+                {/* {ideas?.length} */}
+                {newFilteredIdeas?.length > 0
+                  ? newFilteredIdeas?.length
+                  : ideas?.length}
               </span>
+            </button>
+          </div>
+
+          <div>
+            {newIdeaLoad == false ? (
+              <div className="dashboardInsightsUsedSectionHeight overflow-y-scroll p-2 overflow-x-hidden">
+                {newFilteredIdeas?.length > 0
+                  ? newFilteredIdeas?.map((idea, index) => {
+                    return (
+                      <>
+                       <UsedFilteredIdeaItem
+                         key={index}
+                         index={index}
+                         idea={idea}
+                         idCountMap={getIndexByKey}
+                         filteredIdeas={newFilteredIdeas}
+                         setFilteredIdeas={setFilteredIdeas}
+                         ideas={ideas}
+                         setIdeas={setIdeas}
+                         typeOfIdea={idea?.type}
+                         handleUsedIdeas={handleUsedIdeas}
+                         handleCitationFunction={handleCitationFunction}
+                       />
+                 
+                      <br />
+                 
+                      </>
+                    );
+                  })
+                  : ideas?.map((idea, index) => (
+                      <MainIdeaItem
+                        key={index}
+                        index={index}
+                        idCountMap={getIndexByKey}
+                        idea={idea}
+                        ideas={ideas}
+                        typeOfIdea={idea?.type}
+                        setIdeas={setIdeas}
+                        handleUsedIdeas={handleUsedIdeas}
+                        handleCitationFunction={handleCitationFunction}
+                      />
+                    ))}
+              </div>
+            ) : (
+              <div className="flex justify-center items-center">
+                <LoaderScan />
+              </div>
             )}
-          </button>
-          {(
-            <>
-              {/* <span className="mt-3 text-sm ml-3">Select all </span>
-              <div
-                className={`md:w-10 md:h-5 w-7 h-2 flex items-center  rounded-full p-1 cursor-pointer mt-3 ${toggle == false ? 'bg-indigo-500' : 'bg-gray-300'} transform duration-300 ease-in-out`}
-                onClick={() => {
-                  ideaType === "used" ? handleSelectAllUsedIdeas() : handleSelectAll();
-                  setToggle(!toggle);
-                }}
-              >
-                <div
-                  className={
-                    "bg-black md:w-5 md:h-5 h-4 w-4 rounded-full shadow-md transform duration-300 ease-in-out" +
-                    (toggle ? null : toggleClass)
-                  }
-                ></div>
-              </div> */}
-            </>
-          )}
-        </div>
-        <div
-          className=" dashboardInsightsUsedSectionHeight overflow-y-scroll px-2"
-        >
-          {ideaType === "used"
-            ? filteredIdeas?.length > 0
-              ? filteredIdeas?.map((idea, index) => {
-                return (
-                  <UsedFilteredIdeaItem
-                    key={index}
-                    index={index}
-                    idea={idea}
-                    filteredIdeas={filteredIdeas}
-                    setFilteredIdeas={setFilteredIdeas}
-                    ideas={ideas}
-                    setIdeas={setIdeas}
-                    handleUsedIdeas={handleUsedIdeas}
-                    handleCitationFunction={handleCitationFunction}
-                  />
-                );
-              })
-              : ideas?.map((idea, index) => {
-                return (
-                  <MainIdeaItem
-                    key={index}
-                    index={index}
-                    idea={idea}
-                    ideas={ideas}
-                    setIdeas={setIdeas}
-                    handleUsedIdeas={handleUsedIdeas}
-                    handleCitationFunction={handleCitationFunction}
-                  />
-                );
-              })
-            : ""}
-          {ideaType === "fresh" && (
-            <div className="w-full">
-              {isAuthenticated && (
-                <>
-                  <FreshIdeaForm
-                    postFormData={postFormData}
-                    newIdeaLoad={newIdeaLoad}
-                    ideaType={ideaType}
-                    formInput={formInput}
-                    handleFormChange={handleFormChange}
-                    hover={hover}
-                    handleFileUpload={handleFileUpload}
-                  />
-                </>
-              )}
-              {freshFilteredIdeas?.length > 0
-                ? freshFilteredIdeas?.map((idea, index) => {
-                  return (
-                    <FreshFilteredIdeaItem
-                      key={index}
-                      index={index}
-                      idea={idea}
-                      handleCitationFunction={handleCitationFunction}
-                      filteredIdeas={filteredIdeas}
-                      setFilteredIdeas={setFilteredIdeas}
-                      ideas={ideas}
-                      setIdeas={setIdeas}
-                      handleUsedIdeas={handleUsedIdeas}
-                    />
-                  );
-                })
-                : freshIdeas?.map((idea, index) => {
-                  return (
-                    <IdeaComponent
-                      key={index}
-                      index={index}
-                      idea={idea}
-                      handleCitationFunction={handleCitationFunction}
-                      handleInputClick={handleInputClick}
-                      freshIdeas={freshIdeas}
-                      setFreshIdeas={setFreshIdeas}
-                    />
-                  );
-                })}
-            </div>
-          )}
+          </div>
         </div>
       </div>
     </>

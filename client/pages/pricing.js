@@ -171,7 +171,6 @@ export default function Pricing() {
           <div className="relative h-auto">
             <div className="h-[500px] w-[100%]"></div>
             <div className=" sm:h-[400px] sm:w  -[100%]"></div>
-
             <div className="absolute max-sm:top-[20%] sm:top-[15%] lg:top-[5%] sm:left-[0%] sm:right-[8%] w-full">
               <div
                 className={
@@ -276,7 +275,6 @@ export default function Pricing() {
                         );
                       })}
                   </div>
-
                   <div className="flex  flex-col items-start justify-start mt-4">
                     {" "}
                     {UpgradeFeatures.map((item, i) => {

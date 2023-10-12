@@ -10,6 +10,7 @@ input BlogListInput {
     page_skip: Int
     status: [String]
     userName: String
+    search: String
 }
 
 type BlogListRes {
@@ -40,6 +41,7 @@ type Blog {
     imageSrc: String
     imageUrl: String
     savedTime: String
+    keyword: String
     likes: Int
     userDetail: User
     comments: [Comments]
@@ -67,6 +69,8 @@ type Comments {
 type UrlObj {
     url: String
     source: String
+    type: String
+    id: String
 }
 
 type PublishData {
@@ -90,6 +94,7 @@ type IdeasArr {
     used: Int
     reference: Reference
     name: String
+    type: String
 }
 
 type Reference {
@@ -153,6 +158,8 @@ input UpdateBlogOptions {
 input RegenerateBlogOptions {
     ideas: [IdeasInput]!
     blog_id: String!
+    useOldWebSource: Boolean
+    updatedTopic: String
 }
 
 input IdeasInput {

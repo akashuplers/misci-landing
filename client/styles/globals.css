@@ -32,6 +32,8 @@ html {
 *{
   /* outline */
   outline: 0px solid transparent;
+  color: unset;
+  text-decoration: none;
 }
 
 :root {
@@ -120,7 +122,8 @@ html {
 
 /* width */
 ::-webkit-scrollbar {
-  width: 0px;
+  width: 6px;
+  border-radius: 10px;
 }
 
 /* Track */
@@ -443,7 +446,7 @@ iframe {
 }
 
 
-input[type='checkbox'],
+/* input[type='checkbox'],
 input[type='radio'] {
   border-radius: 100px;
   appearance: none;
@@ -455,7 +458,7 @@ input[type='radio'] {
 input[type='checkbox']:checked,
 input[type='radio']:checked {
   background-color: var(--primary-blue);
-}
+} */
 
 .authenticationModal label {
   position: relative;
@@ -613,6 +616,7 @@ input[type=number] {
 .Tooltip-Wrapper {
   display: inline-block;
   position: relative;
+  z-index:  99999;
 }
 
 /* Absolute positioning */
@@ -820,4 +824,8 @@ iframe::-webkit-scrollbar-thumb {
 /* When the user hovers over the scrollbar handle */
 iframe::-webkit-scrollbar-thumb:hover {
   background: #555; /* You can change this color to your preference */
+}
+
+.filebarScrollable {
+  margin-right: 3.5rem;
 }

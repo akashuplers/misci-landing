@@ -108,7 +108,7 @@ const MisciWorkSpace = ({
       setBlogId(subscriptionData?.stepCompletes.data?._id);
       const data = subscriptionData?.stepCompletes.data;
       setShortAnswer(data?.short_answer);
-      debugger;
+      
       setAnswerImage(data?.answer_image);
       // setAnswerImage("https://pluarisazurestorage.blob.core.windows.net/nowigence-images/askme-images/fecad21d-5c64-11ee-a8c3-0242c0a8e002.jpg");
       setDetailedAnswer(data?.detailed_answer);
@@ -126,7 +126,7 @@ const MisciWorkSpace = ({
       setLoadingMisciblog(false);
     }
     if (step == "BLOG_GENERATION_COMPLETED") {
-      debugger;
+      
       console.log("IDEAS LOADED");
       console.log(subscriptionData);
       const data = subscriptionData?.stepCompletes.data.ideas.ideas;
@@ -301,7 +301,7 @@ const MisciWorkSpace = ({
           );
           console.log([...getAllIdeasWith1, ...ideas]);
           // get only used ==
-          setListOfIdeas((prev : any) => {
+          setListOfIdeas((prev) => {
             return [...getAllIdeasWith1];
           });
           setInitialListOfIdeas([...getAllIdeasWith1, ...getAllIdeasWith1]);
@@ -351,7 +351,7 @@ const MisciWorkSpace = ({
               <div className="flex justify-center items-center ">
              <div className="w-[50%]">
              <img
-              className="w-full h-full rounded-md  object-cover"
+              className="w-full h-full rounded-full object-cover"
               src={image}
               alt=""
             />
@@ -699,7 +699,7 @@ const MisciWorkSpace = ({
                           <h3 className="pt-[0.65em] font-semibold">Sources</h3>
                         </div>
                         <div className="flex gap-[0.5em] flex-wrap h-full w-full  overflow-x-hidden overflow-y-scroll">
-                          {references?.map((ref:any) => {
+                          {references?.map((ref) => {
                             return <Chip key={ref.id} text={ref.source} />;
                           })}
                         </div>

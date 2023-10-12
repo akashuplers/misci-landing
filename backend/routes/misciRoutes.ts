@@ -169,8 +169,28 @@ router.get('/export-report',async (req: any, res: any) => {
 router.get('/weekly-report', async (req: any, res: any) => {
     const db = req.app.get('dbLive')
     try{
-        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)  
-        console.log(sevenDaysAgo, "sevenDaysAgo")
+        const sevenDaysAgo = new Date(1696896000000 - 7 * 24 * 60 * 60 * 1000)  
+        console.log(sevenDaysAgo)
+        console.log(new Date("10-10-2023"))
+        console.log(Date.now())
+        console.log(getTimeStamp(sevenDaysAgo))
+        const misciAdminData = await db.db('lilleAdmin').collection('misciEmail').findOne()
+        let cond: any = [
+            {
+              date: {
+                $gte: getTimeStamp(sevenDaysAgo),
+              }
+            },
+            {
+              type: "misci",
+            },
+          ]
+
+        if(misciAdminData && misciAdminData.ips && misciAdminData.ips.length) cond.push({
+            ipAddress: {
+                $in: misciAdminData.ips
+            }
+        })
         const misciData = await db.db('lilleBlogs').collection('blogs').aggregate([
             {
               $match:
@@ -178,16 +198,7 @@ router.get('/weekly-report', async (req: any, res: any) => {
                  * query: The query in MQL.
                  */
                 {
-                  $and: [
-                    {
-                      date: {
-                        $gte: getTimeStamp(sevenDaysAgo),
-                      },
-                    },
-                    {
-                      type: "misci",
-                    },
-                  ],
+                  $and: cond,
                 },
             },
             {
@@ -216,14 +227,35 @@ router.get('/weekly-report', async (req: any, res: any) => {
                   detailed_answer: 1,
                   timestamp: 1,
                   date: 1,
+                  article_id: 1,
+                  dbLocation: 1,
                 },
             },
         ]).toArray()
         console.log(misciData, "data")
+        console.log(misciAdminData, "misciAdminData")
         let preparedData: any[] = []
+        const userEmail = await db.db('lilleAdmin').collection('misciEmail').findOne()
+        const userData = await db.db('admin').collection('users').findOne({
+            email: userEmail.email
+        })
         await (
             Promise.all(
                 misciData.map(async (data: any) => {
+                    // console.log(data)
+                    if(!data.dbLocation) {
+                        console.log(data, "not")
+                    }
+                    const dbLocation = data.dbLocation.find((dbLocationData: any) => dbLocationData.articleId === data.article_id[0])
+                    let source = ""
+                    let type = ""
+                    if(dbLocation){
+                        const article = await fetchArticleById({db, id: data.article_id[0], collectionName: userData.company, dbName: dbLocation.db})
+                        // console.log(article, "article")
+                        const name = article._source?.source?.name
+                        source = name && (name === "file" || name === "note") ? article._source.title : article._source?.orig_url
+                        type = name === "file" ? "file" : name === "note" ? "note" : "url"
+                    }
                     preparedData.push({
                         "blog id": data._id.toString(),
                         question: data.question,
@@ -231,11 +263,13 @@ router.get('/weekly-report', async (req: any, res: any) => {
                         "detail answer": data.detailed_answer,
                         "date": getDateString(data.timestamp),
                         "timestamp": getDateString(data.timestamp, true),
+                        "source": source,
+                        "type": type,
                     })
                 })
             )
         )
-        let Headers = ['blog id', 'question', 'short answer', 'detail answer', "date", "timestamp"];
+        let Headers = ['blog id', 'question', 'short answer', 'detail answer', "date", "timestamp", "source"];
         console.log(preparedData, "Data")
         const wb = xlsx.utils.book_new(),
         ws = xlsx.utils.json_to_sheet(preparedData);
@@ -366,6 +400,13 @@ router.post('/blog/save', async (req: any, res: any) => {
 })
 router.post('/generate', async (req: any, res: any) => {
     let {question, userId} = req.body
+    let ipAddress = req.headers['x-forwarded-for']?.split(", ")?.[0] || req.ip || req.socket.remoteAddress;
+    console.log(ipAddress, "ipAddress")
+    console.log(req.socket.remoteAddress, "ipAddress")
+    console.log(req.headers['x-forwarded-for'], "ipAddress")
+    console.log(req.ip, "ipAddress")
+    console.log(req.ips, "ipAddress")
+    
     const db = req.app.get('dbLive')
     const userEmail = await db.db('lilleAdmin').collection('misciEmail').findOne()
     console.log(userEmail)
@@ -440,7 +481,7 @@ router.post('/generate', async (req: any, res: any) => {
             updatedAt: getTimeStamp(),
             type: "misci",
             answers,
-            dns: req.get('host')
+            ipAddress 
         }
         const noteReferences = await db.db('lilleBlogs').collection('notesReferences').findOne({
             article_id: article.id
