@@ -656,6 +656,19 @@ input[type=number] {
   border-top-color: var(--tooltip-background-color);
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease-in-out 1;
+}
+
 /* Absolute positioning */
 .Tooltip-Tip.right {
   left: calc(100% + var(--tooltip-margin));
