@@ -11,6 +11,7 @@ const redisOptions = {
       return Math.min(times * 50, 2000);
     },
 };
+console.log(redisOptions, "redisOptions")
 export const pubsub = new RedisPubSub({
     publisher: new Redis(redisOptions as any),
     subscriber: new Redis(redisOptions as any),

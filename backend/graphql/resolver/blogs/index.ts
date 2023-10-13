@@ -74,83 +74,125 @@ export const blogResolvers = {
         ) => {
             const options = args.options
             let baseMatch: any = null
-            if(user) {
-                baseMatch = {
-                    userId: new ObjectID(user.id)
+            try {
+                if(user && Object.keys(user).length) {
+                    baseMatch = {
+                        userId: new ObjectID(user.id)
+                    }
                 }
-            }
-            if(options.userName) {
-                const userDetails = await db.db('lilleAdmin').collection('users').findOne({
-                    $or: [
-                        {
-                            userName: options.userName
-                        },
-                        {
-                            linkedinUserName: options.userName
-                        },
-                        {
-                            googleUserName: options.userName
-                        },
-                        {
-                            twitterUserName: options.userName
+                if(options.userName) {
+                    const userDetails = await db.db('lilleAdmin').collection('users').findOne({
+                        $or: [
+                            {
+                                userName: options.userName
+                            },
+                            {
+                                linkedinUserName: options.userName
+                            },
+                            {
+                                googleUserName: options.userName
+                            },
+                            {
+                                twitterUserName: options.userName
+                            }
+                        ]
+                    })
+                    if(!userDetails) {
+                        throw "No user found!"
+                    }
+                    baseMatch = {
+                        userId: new ObjectID(userDetails._id)
+                    }
+                    console.log(baseMatch, "baseMatch here")
+                }
+                if(options.status) {
+                    baseMatch = {
+                        ...baseMatch,
+                        status: {
+                            $in: options.status
                         }
-                    ]
-                })
-                if(!userDetails) {
-                    throw "No user found!"
+                    } 
                 }
-                baseMatch = {
-                    userId: new ObjectID(userDetails._id)
-                }
-            }
-            if(options.status) {
-                baseMatch = {
-                    ...baseMatch,
-                    status: {
-                        $in: options.status
+                const aggregate: any = [
+                    {
+                        $match: baseMatch
                     }
-                } 
-            }
-            const aggregate = [
-                {
-                    $match : baseMatch
-                },
-            ]
-            const blogLists = await db.db('lilleBlogs').collection('blogs').aggregate([
-                ...aggregate,
-                {
-                    $sort: {
-                        updatedAt: -1
-                    }
-                },
-                {
-                    $limit: options.page_limit
-                },
-                {
-                    $skip: options.page_skip
-                },
-                {
-                    $project: {
-                        _id: 1,
-                        keyword: 1,
-                        image: "$imageUrl",
-                        tags: 1,
-                        description: 1,
-                        status: 1,
-                        date: "$updatedAt",
-                    }
+                ]
+                if(options.search) {
+                    aggregate.unshift({
+                        $search: {
+                          index: "published-blog_search",
+                          phrase: {
+                            query: "The Growing Threat of Hamas Attack:",
+                            path: ["description", "keyword"],
+                          }
+                        }
+                    })
                 }
-            ]).toArray()
-            const blogCount = await db.db('lilleBlogs').collection('blogs').aggregate([
-                ...aggregate,
-                {
-                    $count: "count"
+                console.log([
+                    ...aggregate,
+                    {
+                        $sort: {
+                            updatedAt: -1
+                        }
+                    },
+                    {
+                        $limit: options.page_limit
+                    },
+                    {
+                        $skip: options.page_skip
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            keyword: 1,
+                            image: "$imageUrl",
+                            tags: 1,
+                            description: 1,
+                            status: 1,
+                            date: "$updatedAt"
+                        }
+                    }
+                ])
+                const blogLists = await db.db('lilleBlogs').collection('blogs').aggregate([
+                    ...aggregate,
+                    {
+                        $sort: {
+                            updatedAt: -1
+                        }
+                    },
+                    {
+                        $limit: options.page_limit
+                    },
+                    {
+                        $skip: options.page_skip
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            keyword: 1,
+                            image: "$imageUrl",
+                            tags: 1,
+                            description: 1,
+                            status: 1,
+                            date: "$updatedAt",
+                        }
+                    }
+                ]).toArray()
+                const blogCount = await db.db('lilleBlogs').collection('blogs').aggregate([
+                    ...aggregate,
+                    {
+                        $count: "count"
+                    }
+                ]).toArray()
+                if(blogLists.length) {
+                    return {blogs: blogLists, count: blogCount.length && blogCount[0]?.count ? blogCount[0]?.count : 0}
+                } else {
+                    return {blogs: [], count: 0}
                 }
-            ]).toArray()
-            if(blogLists.length) {
-                return {blogs: blogLists, count: blogCount.length && blogCount[0]?.count ? blogCount[0]?.count : 0}
-            } else {
-                return {blogs: [], count: 0}
+            }catch(e){
+                console.log(e, "error from get all blogs")
+                throw "@Something went wrong!"
             }
         }
     },
@@ -588,7 +630,7 @@ export const blogResolvers = {
                 article_id: string;
             }[] = []
             ideas.forEach((idea, index) => {
-                if(!articleIds.includes(idea.article_id)) articleIds.push(idea.article_id)
+                if(idea.article_id && !articleIds.includes(idea.article_id)) articleIds.push(idea.article_id)   
                 ideasArr.push({idea: idea.text, article_id: idea.article_id})
                 return texts += `${index+1} - ${idea.text} \n`
             })
@@ -600,6 +642,9 @@ export const blogResolvers = {
             if((updatedTopic && updatedTopic !== blog.keyword) || (!useOldWebSource)) {
                 try {
                     webIds = await new Python({userId: user.id}).uploadKeyword({keyword: updatedTopic || blog.keyword, timeout:60000})
+                    if(webIds && webIds.length) {
+                        webIds = webIds.filter((data) => data !== "None")
+                    }
                     articleIds = [...articleIds, ...webIds]
                 }catch(e){
                     console.log(e, "error from python")
@@ -636,15 +681,21 @@ export const blogResolvers = {
                 const duplicate = ideasArr.find((ideaData) => ideaData.idea === idea.idea && ideaData.article_id === idea.article_id)
                 console.log(duplicate, "duplicate")
                 if(!duplicate) {
-                    ideasArr.push({idea: idea.idea, article_id: idea.article_id})
-                    ideas.push({text: idea.idea, article_id: idea.article_id})
-                    return texts += `${index+1} - ${idea.idea} \n`
+                    const matchedIdea = ideas.find((selectedIdea: any) => selectedIdea.text === idea.idea)
+                    if(matchedIdea) {
+                        ideasArr.push({idea: idea.idea, article_id: idea.article_id})
+                        ideas.push({text: idea.idea, article_id: idea.article_id})
+                        return texts += `${index+1} - ${idea.idea} \n`
+                    } else {
+                        return
+                    }
                 } else {
                     return
                 }
             })
-            console.log(ideasArr, "before")
             console.log(sourcesArray, "sourcesArray")
+            console.log(ideasArr, "ideasArr")
+            // console.log(ideas, "ideas")
 
             let newWebData: any[] = []
             if(webIds && webIds.length) {
@@ -700,12 +751,13 @@ export const blogResolvers = {
                 })
             }
             console.log(ideasArr, "ideasArr")
-            // console.log(newWebData, "newWebData")
-            // // console.log(texts)
+            console.log(newWebData, "newWebData")
+            // console.log(texts)
             try {
                 let refUrls: {
                     url: string
                     source: string
+                    id?: string
                 }[] = []
                 if(articleIds && articleIds.length) refUrls = await fetchArticleUrls({db, articleId: articleIds})
                 articleIds = [...articleIds, ...blog.article_id]
@@ -719,9 +771,20 @@ export const blogResolvers = {
                     "_source.source.name": 1,
                     "_source.title": 1,
                 }}).toArray()
+                let filteredReferencesForBlog: any = []
+                ideasArr.forEach((idea: any) => {
+                    const articleIdUsed =  refUrls.find((ref) => ref?.id === idea.article_id)
+                    if(articleIdUsed) {
+                        const articleAdded = filteredReferencesForBlog.find((filter: any) => filter.id === idea.article_id)
+                        if(!articleAdded) filteredReferencesForBlog.push(articleIdUsed)
+                    }
+                })
                 articleNames = articleNames.map((data: any) => ({_id: data._id, name: (data?._source?.source.name === "file" || data?._source?.source.name === "note") ? data?._source.title : data?._source?.source.name}))
                 console.log(refUrls, "refUrls")
                 console.log(sourcesArray, "sourcesArray")
+                console.log(ideasArr, "ideasArr")
+                console.log(articleIds, "articleIds")
+                console.log(filteredReferencesForBlog, "filteredReferencesForBlog")
                 let startChatGptRequest = new Date()
                 const blogGeneratedData: any = await blogGeneration({
                     db,
@@ -731,7 +794,7 @@ export const blogResolvers = {
                     imageUrl: imageUrl ? imageUrl : blog.imageUrl,
                     imageSrc,
                     ideasArr,
-                    refUrls,
+                    refUrls: filteredReferencesForBlog && filteredReferencesForBlog.length ? filteredReferencesForBlog : refUrls,
                     userDetails,
                     userId: userDetails._id
                 })

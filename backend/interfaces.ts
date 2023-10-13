@@ -74,6 +74,7 @@ export interface BlogListArgs {
     page_skip: number;
     status: [String];
     userName: String;
+    search: String;
 }
 
 export interface PreferencesArgs {
