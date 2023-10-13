@@ -91,7 +91,7 @@ const MoblieUnAuthFooter = () => {
               </Link>
             </p>
             <p className="mb-4">
-              <a href="#!" className="text-white-600 hover:opacity-90 ">
+              <a href="https://blogs.lille.ai" className="text-white-600 hover:opacity-90 ">
                 Blogs
               </a>
             </p>
