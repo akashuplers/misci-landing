@@ -12,10 +12,7 @@ router.get("/prices", async (request: any, reply: any) => {
     const prices = await new Stripe().getPrices()
     console.log(prices, "prices")
     if(prices.data && prices.data.length) {
-<<<<<<< HEAD
-=======
         prices.data = prices.data.filter((price: any) => price.recurring.interval_count !== 3)
->>>>>>> misc-cp-prod-adg
         prices.data = prices.data.filter((price: any) => price.active)
     }
     return reply.status(200).send({
@@ -33,7 +30,6 @@ router.get("/coffee-prices", async (request: any, reply: any) => {
 router.post('/api/payment', async (request: any, reply: any) => {
     console.log(request.body);
     const body = request.body
-<<<<<<< HEAD
     try {
         const session = await new Stripe().getCheckoutSession(body)
         return reply.status(303).json({ id: session.id });
@@ -42,10 +38,6 @@ router.post('/api/payment', async (request: any, reply: any) => {
             message: e.message
         })
     }
-=======
-    const session = await new Stripe().getCheckoutSession(body)
-    return reply.status(303).json({ id: session.id });
->>>>>>> misc-cp-prod-adg
 });
 
 

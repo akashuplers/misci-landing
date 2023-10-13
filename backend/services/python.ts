@@ -137,7 +137,7 @@ export class Python {
                     'Content-Type': 'application/json'
                 },
                 data : uploadData,
-                timeout: 0
+                timeout: 20000
             };
             console.log(config)
             const pythonRes = await axios(config)

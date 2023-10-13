@@ -1198,7 +1198,7 @@ export default function DashboardInsights({
             </div>
 
             <div
-              className={` filebarScrollable flex gap-[0.5em] my-2 flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0 -z-10 ${sortedRefAr.length > 0 ? "h-[50px]" : "hidden"}
+              className={` filebarScrollable flex gap-[0.5em] my-2 flex-wrap max-h-[60px] overflow-y-scroll overflow-x-hidden !pb-0 -z-10 ${sortedRefAr.length > 0 ? "h-[50px]" : "hidden"}
               `}
               style={{ padding: "0.75em 0.5em" }}
             >
@@ -1211,7 +1211,7 @@ export default function DashboardInsights({
                     setAuthenticationModalOpen(true);
                   }
                 }}
-                 className="flex flex-row gap-2 flex-wrap max-h-[80px] z-30 overflow-y-scroll absolute w-full h-full border-red-500 bg-transparent">
+                 className="flex flex-row gap-2 flex-wrap max-h-[80px] z-30 overflow-y-scroll overflow-x-hidden absolute w-full h-full border-red-500 bg-transparent">
                   </div> 
               }
               {ideaType === "used" ? (
