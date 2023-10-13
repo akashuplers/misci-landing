@@ -119,6 +119,7 @@ export default function App({ Component, pageProps }: AppProps) {
     "/public/[[...slug]]",
     "/misci",
     "/misci/article",
+    '/library'
   ];
 
   useEffect(() => {
