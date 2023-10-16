@@ -26,14 +26,14 @@ export default function Layout({ blogId,  children }) {
     updateAuthentication();
   }, []);
   const styles = {
-    marginTop : '10vh'
+    height: `calc(100vh - 5rem)`
   }
 
   return (
     <Fragment>
       {isAuthenticated ? <Sidebar /> : <Navbar isOpen={false} blogId={blogId} />}
       <div className={isAuthenticated ? `authenticatedLayout` : ''}
-      style={ pathName !='/'?styles: {}}
+      style={ pathName.includes('/dashboard')?styles: {}}
       >{children}</div>
     </Fragment>
   );

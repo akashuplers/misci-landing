@@ -30,6 +30,7 @@ import {
   InformationCircleIcon,
   PlusIcon,
   XCircleIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { ArrowLongLeftIcon, DocumentPlusIcon } from "@heroicons/react/20/solid";
 import { Chip, FileComponent } from "./ui/Chip";
@@ -101,6 +102,7 @@ export default function DashboardInsights({
   const [creditModal, setCreditModal] = useState(false);
   const [freshFilteredIdeas, setFreshFilteredIdeas] = useState([]);
   const updateCredit = useStore((state) => state.updateCredit);
+  const [isWindows, setIsWindows] = useState(false);
   const updateisSave = useStore((state) => state.updateisSave);
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
   const [ideasTab, setIdeasTab] = useState(0);
@@ -360,6 +362,13 @@ export default function DashboardInsights({
       });
     });
   }, [filteredArray]);
+
+  useEffect(() => {
+    // Detect the Windows platform using userAgent
+    if (navigator.userAgent.indexOf("Windows") !== -1) {
+      setIsWindows(true);
+    }
+  }, []);
 
   // We create a set so that the values are unique, and multiple ideas are not added
   useEffect(() => {
@@ -639,7 +648,6 @@ export default function DashboardInsights({
     initailIdeas.forEach((idea, index) => {
       initialIdeasMapWithIndex[index] = idea.used ? 1 : 0;
     });
-    debugger;
     console.log(initialIdeasMapWithIndex);
     let mapsAreEqual = true;
     for (const key in ideasMapWithIndex) {
@@ -1116,15 +1124,32 @@ export default function DashboardInsights({
         <TrialEndedModal setTrailModal={setCreditModal} topic={null} />
       )}
       <div
-        className="text-xs px-2 mb-24 lg:mb-0 h-full"
+        className="text-xs px-2 lg:mb-0 h-full"
         style={{ borderLeft: "2px solid #d2d2d2" }}
         id="regenblog"
       >
-        <div>
+        <div style={isWindows ? { marginTop: "10px", minHeight: '340px',
+          height: '50%' } : { minHeight: '340px',
+          height: '50%'}}>
           {/* h1 Insight only for mobile screens */}
-          <h1 className="pt-[0.65em] font-semibold">WORKSPACE</h1>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            paddingBottom: '1em',
+            paddingTop: '1em',
+            fontSize: '1.5em'
+          }}>
+            <h1 className="pt-[0.65em] font-semibold">WORKSPACE</h1>
+            <XMarkIcon 
+              className="w-7 h-7 text-slate-800"
+              onClick={() => {
+                const container = document.querySelector(".dashboardInsightMobile");
+                container.classList.remove("open")
+              }}
+            />
+          </div>
           <div className="flex jusify-between gap-[1.25em]">
-            <p className="font-normal w-[100%] lg:w-[70%] text-sm">
+            <p className="font-normal w-[63%] lg:w-[70%] text-sm">
               Create your next draft on the basis of your edits and uploads.
             </p>
             <button
@@ -1198,7 +1223,7 @@ export default function DashboardInsights({
             </div>
 
             <div
-              className={` filebarScrollable flex gap-[0.5em] my-2 flex-wrap max-h-[60px] overflow-x-hidden overflow-y-scroll !pb-0 -z-10 ${sortedRefAr.length > 0 ? "h-[50px]" : "hidden"}
+              className={` filebarScrollable flex gap-[0.5em] my-2 flex-wrap max-h-[60px] overflow-y-scroll overflow-x-hidden !pb-0 -z-10 ${sortedRefAr.length > 0 ? "h-[50px]" : "hidden"}
               `}
               style={{ padding: "0.75em 0.5em" }}
             >
@@ -1211,7 +1236,7 @@ export default function DashboardInsights({
                     setAuthenticationModalOpen(true);
                   }
                 }}
-                 className="flex flex-row gap-2 flex-wrap max-h-[80px] z-30 overflow-y-scroll absolute w-full h-full border-red-500 bg-transparent">
+                 className="flex flex-row gap-2 flex-wrap max-h-[80px] z-30 overflow-y-scroll overflow-x-hidden absolute w-full h-full border-red-500 bg-transparent">
                   </div> 
               }
               {ideaType === "used" ? (
@@ -1410,7 +1435,8 @@ export default function DashboardInsights({
             )}
           </div>
         </div>
-        <div>
+
+        <div className="idea-container" style={{height: '45%'}}>
           <div className="flex py-2 relative gap-5">
             <button
               className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs flex items-center justify-around gap-1"

@@ -1283,7 +1283,8 @@ export default function Home({ payment, randomLiveUsersCount }) {
               >
                 <RotatingText/> 
                 <div
-                  className="w-full lg:min-w-[850px] lg:max-w-[850px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-8"
+                  className="w-full lg:min-w-[850px] animate-fadeIn lg:max-w-[850px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-4"
+
                   style={{
                     background: "rgba(255, 255, 255, 0.5)",
                     outline: 'none !important' 
@@ -1312,13 +1313,15 @@ export default function Home({ payment, randomLiveUsersCount }) {
                         {tabs.map((tab) => (
                           <Tab.Panel
                             key={tab.id}
-                            className={`
-                            ${activeTab === tab.id ? "block" : "hidden"} p-4`}
+                             className={`
+                            p-4 transition-all duration-300 ease-in-out animate-fadeIn 
+                            ${activeTab === tab.id ? "opacity-100 visible animate-fadeIn" : "opacity-0 invisible"}
+                          `}
                           >
                             {tab.upperContent ? tab.upperContent : null}
                             <div className="w-full h-full justify-center items-center gap-2.5 inline-flex">
                               <div className={`relative w-full min-h-[60px] bg-white rounded-[10px]  border py-2.5 ${keyword.length > 100 ? 'border-red-600' : 'border-indigo-600'} `}>
-                                <div className={`flex items-center flex-col md:flex-row px-2  gap-2.5 relative outline-none active:outline-none rounded-lg`}>
+                                <div className={`flex items-center flex-col md:flex-row  gap-2.5 relative outline-none active:outline-none rounded-lg`}>
                                   <KeywordInput
                                     keyword={keyword}
                                     setKeyword={setkeyword}

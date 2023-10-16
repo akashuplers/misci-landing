@@ -75,6 +75,9 @@ export const blogResolvers = {
             const options = args.options
             let baseMatch: any = null
             try {
+                baseMatch = { type : {
+                    $exists: false, $eq: null
+                } }
                 if(user && Object.keys(user).length) {
                     baseMatch = {
                         userId: new ObjectID(user.id)
@@ -123,7 +126,7 @@ export const blogResolvers = {
                         $search: {
                           index: "published-blog_search",
                           phrase: {
-                            query: "The Growing Threat of Hamas Attack:",
+                            query: options.search,
                             path: ["description", "keyword"],
                           }
                         }
@@ -132,6 +135,26 @@ export const blogResolvers = {
                 console.log([
                     ...aggregate,
                     {
+                        $lookup:
+                          /**
+                           * from: The target collection.
+                           * localField: The local join field.
+                           * foreignField: The target join field.
+                           * as: The name for the results.
+                           * pipeline: Optional pipeline to run on the foreign collection.
+                           * let: Optional variables to use in the pipeline field stages.
+                           */
+                        {
+                            from: "comments",
+                            localField: "_id",
+                            foreignField: "blogId",
+                            as: "comments",
+                        },
+                    },
+                    {
+                        $unwind: "$comments",
+                    },
+                    {
                         $sort: {
                             updatedAt: -1
                         }
@@ -143,29 +166,9 @@ export const blogResolvers = {
                         $skip: options.page_skip
                     },
                     {
-                        $project: {
-                            _id: 1,
-                            keyword: 1,
-                            image: "$imageUrl",
-                            tags: 1,
-                            description: 1,
-                            status: 1,
-                            date: "$updatedAt"
-                        }
-                    }
-                ])
-                const blogLists = await db.db('lilleBlogs').collection('blogs').aggregate([
-                    ...aggregate,
-                    {
-                        $sort: {
-                            updatedAt: -1
-                        }
-                    },
-                    {
-                        $limit: options.page_limit
-                    },
-                    {
-                        $skip: options.page_skip
+                        $addFields:{
+                          totalComments:{$size:"$comments"}, 
+                        } 
                     },
                     {
                         $project: {
@@ -176,9 +179,76 @@ export const blogResolvers = {
                             description: 1,
                             status: 1,
                             date: "$updatedAt",
+                            likes: 1,
+                            totalComments: 1
+                        }
+                    }
+                ])
+                let blogLists = await db.db('lilleBlogs').collection('blogs').aggregate([
+                    ...aggregate,
+                    {
+                        $lookup:
+                          /**
+                           * from: The target collection.
+                           * localField: The local join field.
+                           * foreignField: The target join field.
+                           * as: The name for the results.
+                           * pipeline: Optional pipeline to run on the foreign collection.
+                           * let: Optional variables to use in the pipeline field stages.
+                           */
+                        {
+                            from: "comments",
+                            localField: "_id",
+                            foreignField: "blogId",
+                            as: "comments",
+                        },
+                    },
+                    {
+                        $sort: {
+                            updatedAt: -1
+                        }
+                    },
+                    {
+                        $limit: options.page_limit
+                    },
+                    {
+                        $skip: options.page_skip
+                    },
+                    {
+                        $addFields:{
+                          totalComments:{$size:"$comments"}, 
+                        } 
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            title: "$keyword",
+                            image: "$imageUrl",
+                            tags: 1,
+                            description: 1,
+                            status: 1,
+                            date: "$updatedAt",
+                            likes: 1,
+                            totalComments: 1,
+                            userId: 1
                         }
                     }
                 ]).toArray()
+                blogLists = await (
+                    Promise.all(
+                        blogLists.map(async (blog: any) => {
+                            const user = await fetchUser({db, id: blog.userId})
+                            // console.log(blog.userId, blog, user)
+                            return {
+                                ...blog,
+                                profileImage: user.profileImage,
+                                linkedInUserName: user.linkedInUserName,
+                                twitterUserName: user.twitterUserName,
+                                userName: user.userName,
+                            }
+                        })
+                    )
+                )
                 const blogCount = await db.db('lilleBlogs').collection('blogs').aggregate([
                     ...aggregate,
                     {
