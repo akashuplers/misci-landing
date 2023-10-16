@@ -75,6 +75,9 @@ export const blogResolvers = {
             const options = args.options
             let baseMatch: any = null
             try {
+                baseMatch = { type : {
+                    $exists: false, $eq: null
+                } }
                 if(user && Object.keys(user).length) {
                     baseMatch = {
                         userId: new ObjectID(user.id)
@@ -235,7 +238,7 @@ export const blogResolvers = {
                     Promise.all(
                         blogLists.map(async (blog: any) => {
                             const user = await fetchUser({db, id: blog.userId})
-                            console.log(blog.userId, blog, user)
+                            // console.log(blog.userId, blog, user)
                             return {
                                 ...blog,
                                 profileImage: user.profileImage,
