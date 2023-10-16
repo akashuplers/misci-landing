@@ -10,6 +10,7 @@ import { LibModuleProps } from "@/store/types";
 import { useRouter } from "next/router";
 import { RelativeTimeString } from "@/components/ui/RelativeTimeString";
 import { FloatingBalls } from "@/components/ui/Chip";
+import { useDebounce } from "@uidotdev/usehooks";
 const GET_BLOGS = gql`
   query GetAllBlogs($options: BlogListInput) {
     getAllBlogs(options: $options) {
@@ -30,7 +31,7 @@ const GET_BLOGS = gql`
 export default function Library() {
   const [pageSkip, setPageSkip] = useState(0);
   const [search, setSearch] = useState<string>();
-
+  const debouncedSearchTerm = useDebounce(search, 300);
   // Define your query options
   const { loading, error, data, refetch } = useQuery(GET_BLOGS, {
     variables: {
@@ -38,7 +39,7 @@ export default function Library() {
         status: ["published"],
         page_skip: 0,
         page_limit: 7,
-        search: search,
+        search: debouncedSearchTerm,
       },
     },
   });
@@ -47,11 +48,12 @@ export default function Library() {
   };
   useEffect(() => {
     refetch();
-  }, [search]);
+  }, [debouncedSearchTerm]);
+
   const { clearCurrentLibraryData, setCurrentLibraryData, currentLibraryData } =
     useLibState();
 
-    const skecelton = [1,2,3,4,5,6,7]
+  const skecelton = [1, 2, 3, 4, 5, 6, 7];
   return (
     <Layout blogId={null}>
       <div className="lib-container max-w-full mx-auto relative overflow-x-hidden">
@@ -96,18 +98,20 @@ export default function Library() {
           </div>
         </section>
         <section className="mt-10 h-full  lg:px-10 grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-screen-2xl mx-auto overflow-hidden">
-          {data  ? data?.getAllBlogs?.blogs.map((item: any, index: number) => {
-              return (
-                <LibModule
-                  key={index}
-                  {...item}
-                  id={index}
-                  setCurrentLibraryData={setCurrentLibraryData}
-                />
-              );
-            })
-            : skecelton.map((item: any, index: number) => { return <LibModuleSkeleton key={index} />})
-          }
+          {data
+            ? data?.getAllBlogs?.blogs.map((item: any, index: number) => {
+                return (
+                  <LibModule
+                    key={index}
+                    {...item}
+                    id={index}
+                    setCurrentLibraryData={setCurrentLibraryData}
+                  />
+                );
+              })
+            : skecelton.map((item: any, index: number) => {
+                return <LibModuleSkeleton key={index} />;
+              })}
 
           <Pagination
             totalItems={data?.getAllBlogs?.count}
@@ -146,7 +150,9 @@ function LibModule(props: LibModuleProps) {
               {props.title ?? props.description.slice(0, 50) + "..."}
             </div>
             <div className="lg:w-80 text-zinc-800 text-sm font-normal  capitalize leading-none">
-              {props.title? props.description.slice(0, 100) + "..." : props.description.slice(60, 120) + "..."}
+              {props.title
+                ? props.description.slice(0, 100) + "..."
+                : props.description.slice(60, 120) + "..."}
             </div>
             <div className="text-stone-300 text-xs font-normal  capitalize leading-3">
               <RelativeTimeString date={Number(props.date)} />
@@ -161,7 +167,6 @@ function LibModule(props: LibModuleProps) {
     </div>
   );
 }
-
 
 function LibModuleSkeleton() {
   return (
