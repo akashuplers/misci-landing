@@ -17,9 +17,25 @@ export default function GoogleDriveModal({ showModal, setShowModal, meeData} : P
   const [userGDUrl, setUserGDUrl] = useState<string>("");
   const [userEmail, setUserEmail] = useState<string>("");
 
-  useEffect(() => { 
+  const [windowWidth, setWindowWidth] = useState(0);
+
+  useEffect(() => {
+    console.log(windowWidth, 'halert')
+  },[windowWidth])
+
+    useEffect(() => { 
+
+        setWindowWidth(window.innerWidth);
+  
+        const setWidthForDashboardInsight = () => {
+            console.log(window.innerWidth, 'halert')
+            setWindowWidth(window.innerWidth)
+        }
+
+        window.addEventListener('resize', setWidthForDashboardInsight)
         return () => {
             setScreen(SCREENS_FOR_GD.MAIN);
+            window.removeEventListener("resize", setWidthForDashboardInsight)
         }
     }, [])
 function handleUploadGoogleDrive(e:any){
@@ -58,7 +74,7 @@ function handleUploadGoogleDrive(e:any){
                 backgroundColor: "rgba(0,0,0,0.5)",
                 zIndex: "9999",
             },
-            content: {
+            content: windowWidth > 992 ?  {
                 position: "absolute",
                 top: "50%",
                 left: "50%",
@@ -73,10 +89,25 @@ function handleUploadGoogleDrive(e:any){
                 maxWidth: '55%',
                 width: '100%',
                 marginRight: "-50%",
-                height: '55%',
+                height: '65%',
                 transform: "translate(-50%, -50%)",
                 padding: "30px",
                 paddingBottom: "0px",
+            } : {
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                right: 'auto',
+                border: 'none',
+                background: 'white',
+                borderRadius: '8px',
+                zIndex: '999',
+                maxWidth: '90%',
+                width: '100%',
+                marginRight: '-50%',
+                height: '75%',
+                transform: 'translate(-50%, -50%)',
+                padding: '30px 30px 0px'
             },
         }}
     >
@@ -106,11 +137,8 @@ function handleUploadGoogleDrive(e:any){
         </button>
         {
             screen == SCREENS_FOR_GD.MAIN ? 
-            <div className='flex items-center justify-center h-full py-10'>
-                        <img className="w-[232.75px] h-[178.29px] max-w-[50%] max-h-[70%]" src="./gdrive.gif" style={{
-                            maxWidth: '50%',
-                            maxHeight: '70%'
-                        }}  />
+            <div className='flex flex-col lg:flex-row items-center justify-center h-full py-10'>
+                        <img className="w-[90%] lg:max-w-[50%]" src="./gdrive.gif"/>
                         <form className="w-full h-full p-6 bg-white rounded-lg flex-col justify-center items-start gap-8 inline-flex"
                                 onSubmit={handleUploadGoogleDrive}
                         >
@@ -166,10 +194,7 @@ function handleUploadGoogleDrive(e:any){
             </div> : 
             <>
                         <div className="w-full h-full px-6 py-10 bg-white rounded-lg flex-col justify-center items-center gap-10 inline-flex">
-                            <img className="w-[232.75px] h-[80%]" src="./thanku.gif" style={{
-                                maxWidth: '50%',
-                                maxHeight: '70%'
-                            }} />
+                            <img className="w-[90%] lg:max-w-[50%]" src="./thanku.gif"/>
                             <div className="self-stretch text-center text-black text-[19px] font-medium leading-normal">Thank you! Lille Team will mail back with a creative blog url</div>
                         </div>
             </>

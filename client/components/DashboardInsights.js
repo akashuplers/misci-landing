@@ -30,6 +30,7 @@ import {
   InformationCircleIcon,
   PlusIcon,
   XCircleIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { ArrowLongLeftIcon, DocumentPlusIcon } from "@heroicons/react/20/solid";
 import { Chip, FileComponent } from "./ui/Chip";
@@ -1123,15 +1124,32 @@ export default function DashboardInsights({
         <TrialEndedModal setTrailModal={setCreditModal} topic={null} />
       )}
       <div
-        className="text-xs px-2 mb-24 lg:mb-0 h-full"
+        className="text-xs px-2 lg:mb-0 h-full"
         style={{ borderLeft: "2px solid #d2d2d2" }}
         id="regenblog"
       >
-        <div style={isWindows ? { marginTop: "10px" } : {}}>
+        <div style={isWindows ? { marginTop: "10px", minHeight: '340px',
+          height: '50%' } : { minHeight: '340px',
+          height: '50%'}}>
           {/* h1 Insight only for mobile screens */}
-          <h1 className="pt-[0.65em] font-semibold">WORKSPACE</h1>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            paddingBottom: '1em',
+            paddingTop: '1em',
+            fontSize: '1.5em'
+          }}>
+            <h1 className="pt-[0.65em] font-semibold">WORKSPACE</h1>
+            <XMarkIcon 
+              className="w-7 h-7 text-slate-800"
+              onClick={() => {
+                const container = document.querySelector(".dashboardInsightMobile");
+                container.classList.remove("open")
+              }}
+            />
+          </div>
           <div className="flex jusify-between gap-[1.25em]">
-            <p className="font-normal w-[100%] lg:w-[70%] text-sm">
+            <p className="font-normal w-[63%] lg:w-[70%] text-sm">
               Create your next draft on the basis of your edits and uploads.
             </p>
             <button
@@ -1417,7 +1435,8 @@ export default function DashboardInsights({
             )}
           </div>
         </div>
-        <div>
+
+        <div className="idea-container" style={{height: '45%'}}>
           <div className="flex py-2 relative gap-5">
             <button
               className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs flex items-center justify-around gap-1"

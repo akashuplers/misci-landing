@@ -108,8 +108,33 @@ export default function Post({typeIsRepurpose}) {
   const [windowHeight, setWindowHeight] = useState(0);
   const [showOTPModal, setShowOTPModal] = useState(false);
   const { setShowTwitterThreadUI } = useThreadsUIStore();
+
+
+  const setWidthForDashboardInsight = () => {
+    console.log(window.innerWidth, 'halert')
+    setWindowWidth(window.innerWidth)
+  }
+
+  const closeWorkspaceSheetForMobile = (e) => {
+    const workspaceDiv = document.querySelector(".dashboardInsightMobile");
+    const workspaceOpenButton = document.querySelector(".workspace-open-button")
+
+    if(!!workspaceDiv && !workspaceDiv.contains(e.target) && !workspaceOpenButton.contains(e.target)  && workspaceDiv.classList.contains("open")){
+      workspaceDiv.classList.remove("open");
+    }
+  }
+
   useEffect(() => {
     setWindowWidth(window.innerWidth);
+  
+    window.addEventListener('resize', setWidthForDashboardInsight)
+
+    window.addEventListener("click", closeWorkspaceSheetForMobile)
+
+    return () => {
+      window.removeEventListener("resize", setWidthForDashboardInsight)
+      window.removeEventListener("click", closeWorkspaceSheetForMobile)
+    }
   }, []);
 
 
@@ -433,7 +458,7 @@ You can add your own image, click on the image and use image options icon.`}
             numberOfPieces={2000}
           />
         }
-        <div className="flex  flex-col md:flex-row  lg:mb-6 lg:h-[88vh]">
+        <div className={`flex flex-col md:flex-row  lg:mb-6 lg:h-[88vh] ${windowWidth <= 768 ? 'dashboardInsightMobileContainer' : ''}`}>
           {pfmodal && (
             <PreferencesModal
               pfmodal={pfmodal}
@@ -468,7 +493,7 @@ You can add your own image, click on the image and use image options icon.`}
 
           <MoveToRegenPanel />
 
-          <div className="relative tiny_mce_width " >
+          <div className="relative tiny_mce_width" style={{height: '100%'}} >
             <TinyMCEEditor
               isAuthenticated={isAuthenticated}
               editorText={editorText}
@@ -484,7 +509,7 @@ You can add your own image, click on the image and use image options icon.`}
             />
           </div>
           <div
-            className="relative dashboardInsightWidth"
+            className={`relative dashboardInsightWidth ${windowWidth <= 768 ? 'dashboardInsightMobile' : 'desktop'}`}
           >
             <DashboardInsights
               ideas={ideas}

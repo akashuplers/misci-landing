@@ -62,6 +62,8 @@ export default function dashboard({ query }) {
   const [isPublish, seIsPublish] = useState(false);
   const [showOTPModal, setShowOTPModal] = useState(false);
 
+  const [windowWidth, setWindowWidth] = useState(0)
+
   console.log('MEE DATA GET IN ZUSLAND');
   // const { userTimeSave, loading: userDataLoading, error: userDataError } = useUserTimeSave();
   // const {}
@@ -139,14 +141,38 @@ export default function dashboard({ query }) {
 
   const {handleManualRefresh:refreshDataForUserTime} = useUserTimeSave();
 
-  useEffect(() => {
-    if (type != undefined && type && type === TYPES_OF_GENERATE.REPURPOSE) {
+  const closeWorkspaceSheetForMobile = (e) => {
+    const workspaceDiv = document.querySelector(".dashboardInsightMobile");
+    const workspaceOpenButton = document.querySelector(".workspace-open-button")
 
+    if(!!workspaceDiv && !workspaceDiv.contains(e.target) && !workspaceOpenButton.contains(e.target)  && workspaceDiv.classList.contains("open")){
+      workspaceDiv.classList.remove("open");
+    }
+  }
+
+  const setWidthForDashboardInsight = () => {
+    console.log(window.innerWidth, 'halert')
+    setWindowWidth(window.innerWidth)
+  }
+
+  useEffect(() => {
+    
+    if (type != undefined && type && type === TYPES_OF_GENERATE.REPURPOSE) {
+      
     } else {
       if (!topic && !bid && !loginProcess) {
         alert("Blog was not saved.\nPlease generate the blog again");
         window.location.href = "/";
       }
+    }
+
+    setWindowWidth(window,innerWidth);
+
+    window.addEventListener("click", closeWorkspaceSheetForMobile)
+
+    return () => {
+      window.removeEventListener("resize", setWidthForDashboardInsight)
+      window.removeEventListener("click", closeWorkspaceSheetForMobile)
     }
   }, []);
 
@@ -516,7 +542,7 @@ You can add your own image, click on the image and use image options icon.`}
           </div>
         </Modal>
 
-        <div className="flex  flex-col md:flex-row  lg:mb-6 lg:h-[88vh]">
+        <div className={`flex  flex-col md:flex-row  lg:mb-6 lg:h-[88vh] ${windowWidth <= 768 ? 'dashboardInsightMobileContainer' : ''}`}>
           {API_BASE_PATH === "https://maverick.lille.ai" && (
             <div
               style={{
@@ -558,7 +584,7 @@ You can add your own image, click on the image and use image options icon.`}
             />
           </div>
           <div
-            className="relative dashboardInsightWidth"
+            className={`relative dashboardInsightWidth ${windowWidth <= 768 ? 'dashboardInsightMobile' : 'desktop'}`}
           >
             <DashboardInsights
               ideas={ideas}

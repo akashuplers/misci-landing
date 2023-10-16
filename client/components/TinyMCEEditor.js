@@ -148,6 +148,9 @@ export default function TinyMCEEditor({
   const [hasDataChanged, setHasDataChanged] = useState(false);
 
   const [isEditorReady, setIsEditorReady] = useState(false);
+
+  const [windowWidth, setWindowWidth] = useState(0);
+
   const handleEditorInit = () => {
     setIsEditorReady(true);
   };
@@ -825,6 +828,17 @@ export default function TinyMCEEditor({
         setCallBack(window.location.origin + "/dashboard");
       }
     }
+
+    setWindowWidth(window.innerWidth);
+  
+    const setWidthForDashboardInsight = () => {
+      console.log(window.innerWidth, 'halert')
+      setWindowWidth(window.innerWidth)
+    }
+
+    window.addEventListener('resize', setWidthForDashboardInsight)
+
+    return () => window.removeEventListener("resize", setWidthForDashboardInsight)
   }, []);
   const handleconnectLinkedin = () => {
     localStorage.setItem("loginProcess", true);
@@ -1930,19 +1944,19 @@ export default function TinyMCEEditor({
         handleSave={handleSave}
         bid={blog_id}
       />
-      <div className="block mt-0 sm:mt-4" style={isWindows ? { marginTop: "10px" } : {}}>
+      <div className="block mt-0 sm:mt-4" style={isWindows ? { marginTop: "10px", height: '100%' } : {height: '100%'}}>
+
         <div
           style={{
             paddingBottom: "0.5em",
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
           }}
-          className="text-sm mx-2 flex flex-wrap relative"
+          className="text-sm mx-2 flex flex-wrap relative md:flex-row flex-col-reverse items-start"
         >
           {isAuthenticated ? (
             <div
-              className="sticky top-0 flex items-center justify-center"
+              className="sticky top-0 flex items-center justify-center mt-5 md:mt-0"
               style={{
                 display: "flex",
                 gap: "0.25em",
@@ -2046,11 +2060,27 @@ export default function TinyMCEEditor({
           )}
           {!isPublished ? (
             <div
-              className={`flex w-full  lg:w-auto   lg:mt-auto ${isAuthenticated ? "mt-5" : "mt-[70px]"
-                }`}
+              className={`flex w-full lg:w-auto lg:mt-auto justify-end md:justify-start ${isAuthenticated ? "md:mt-5" : "md:mt-[70px]"} mt-0`}
               style={{ gap: "0.25em", marginLeft: "auto" }}
             >
-              <button
+              {windowWidth <=768 && <div className="pt-2 mr-auto">
+                <button onClick={() => router.back()}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M11.03 3.97a.75.75 0 010 1.06l-6.22 6.22H21a.75.75 0 010 1.5H4.81l6.22 6.22a.75.75 0 11-1.06 1.06l-7.5-7.5a.75.75 0 010-1.06l7.5-7.5a.75.75 0 011.06 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </div>}
+              
+              {windowWidth > 768 && <button
                 className="cta text-red-500"
                 onClick={() => {
                   if (showTwitterThreadUI == true) {
@@ -2070,7 +2100,17 @@ export default function TinyMCEEditor({
                 ) : (
                   saveText
                 )}
-              </button>
+              </button>}
+              {windowWidth <=768 && <button
+                className="cta text-red-500 workspace-open-button"
+                onClick={() => {
+                  const container = document.querySelector(".dashboardInsightMobile");
+                  container.classList.toggle("open")
+                }}
+                style={{userSelect: 'none'}}
+              >
+                Workspace
+              </button>}
               {option === "linkedin" ? (
                 linkedInAccessToken ? (
                   <button
@@ -2179,7 +2219,7 @@ export default function TinyMCEEditor({
             </div>
           ) : (
             <div
-              className="flex w-full lg:w-auto mt-5 lg:mt-auto"
+              className="flex w-full lg:w-auto md:mt-5 mt-0 lg:mt-auto justify-end md:justify-start"
               style={{ gap: "0.25em", marginLeft: "auto" }}
             >
               <button
@@ -2336,7 +2376,7 @@ export default function TinyMCEEditor({
                 plugins: "lists code table codesample link",
                 menubar: false,
                 statusbar: false,
-                height: "82vh",
+                height: `${windowWidth > 768 ? '82vh' : '97%'}`, // if logged in then 86%
                 images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
                 images_upload_credentials: true,
                 plugins:
