@@ -647,7 +647,6 @@ export default function DashboardInsights({
     initailIdeas.forEach((idea, index) => {
       initialIdeasMapWithIndex[index] = idea.used ? 1 : 0;
     });
-    debugger;
     console.log(initialIdeasMapWithIndex);
     let mapsAreEqual = true;
     for (const key in ideasMapWithIndex) {
