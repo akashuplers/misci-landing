@@ -169,7 +169,7 @@ router.get('/export-report',async (req: any, res: any) => {
 router.get('/weekly-report', async (req: any, res: any) => {
     const db = req.app.get('dbLive')
     try{
-        const sevenDaysAgo = new Date(1696896000000 - 7 * 24 * 60 * 60 * 1000)  
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)  
         console.log(sevenDaysAgo)
         console.log(new Date("10-10-2023"))
         console.log(Date.now())
