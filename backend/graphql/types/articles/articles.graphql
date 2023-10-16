@@ -26,6 +26,12 @@ type BlogsList {
     image: String
     status: String
     date: Int
+    likes: Int
+    totalComments: Int
+    profileImage: String
+    linkedInUserName: String
+    twitterUserName: String
+    userName: String
 }
 type Blog {
     _id: ID!
