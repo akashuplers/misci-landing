@@ -101,6 +101,7 @@ export default function DashboardInsights({
   const [creditModal, setCreditModal] = useState(false);
   const [freshFilteredIdeas, setFreshFilteredIdeas] = useState([]);
   const updateCredit = useStore((state) => state.updateCredit);
+  const [isWindows, setIsWindows] = useState(false);
   const updateisSave = useStore((state) => state.updateisSave);
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
   const [ideasTab, setIdeasTab] = useState(0);
@@ -360,6 +361,13 @@ export default function DashboardInsights({
       });
     });
   }, [filteredArray]);
+
+  useEffect(() => {
+    // Detect the Windows platform using userAgent
+    if (navigator.userAgent.indexOf("Windows") !== -1) {
+      setIsWindows(true);
+    }
+  }, []);
 
   // We create a set so that the values are unique, and multiple ideas are not added
   useEffect(() => {
@@ -1120,7 +1128,7 @@ export default function DashboardInsights({
         style={{ borderLeft: "2px solid #d2d2d2" }}
         id="regenblog"
       >
-        <div>
+        <div style={isWindows ? { marginTop: "10px" } : {}}>
           {/* h1 Insight only for mobile screens */}
           <h1 className="pt-[0.65em] font-semibold">WORKSPACE</h1>
           <div className="flex jusify-between gap-[1.25em]">
