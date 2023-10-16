@@ -1,11 +1,6 @@
 import Link from "next/link";
-const SourceColors = {
-  blue: "bg-blue-800",
-  orange: "bg-red-300",
-  yellow: "bg-yellow-500",
-};
+
 function getBgColorForCheckbox(color) {
-  //  checked:border-pink-500 checked:bg-pink-500 checked:before:bg-pink-500
   const border = `checked:border-${color}-500`;
   const bg = `checked:bg-${color}-500`;
   const before = `checked:before:bg-${color}-500`;
@@ -35,7 +30,6 @@ const UsedFilteredIdeaItem = ({
   getBgColorForCheckbox(typeOfIdea);
 
   const handleCheckboxClick = () => {
-    debugger;
     const updatedFilteredIdeas = filteredIdeas.map((el, elIndex) =>
       elIndex === index ? { ...el, used: el.used === 1 ? 0 : 1 } : el
     );
