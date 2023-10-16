@@ -26,7 +26,7 @@ export default function Layout({ blogId,  children }) {
     updateAuthentication();
   }, []);
   const styles = {
-    marginTop : '10vh'
+    height: `calc(100vh - 5rem)`
   }
 
   return (

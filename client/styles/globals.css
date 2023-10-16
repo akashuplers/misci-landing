@@ -17,6 +17,14 @@
   src: url('/fonts/reg.ttf') format('ttf')
 }
 
+body, #__next{
+  min-height: 100vh;
+}
+
+#__next{
+  height: 100%;
+}
+
 #loom-companion-mv3 {
   display: none !important;
 }
@@ -839,6 +847,35 @@ iframe::-webkit-scrollbar-thumb:hover {
   background: #555; /* You can change this color to your preference */
 }
 
+/* dashboardinsight responsiveness */
+
+.dashboardInsightMobileContainer{
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+.dashboardInsightMobile{
+  /* display: none; */
+  position: absolute;
+  background-color: white;
+  bottom: -110%;
+  z-index: 10;
+  transition: all 0.25s ease-in-out;
+  height: 90%;
+
+  box-shadow: 0px 20px 80px 15px #000000b8;
+  border-radius:25px 25px 0 0
+}
+
+.dashboardInsightMobile.open{
+  bottom: 0;
+  overflow-y: auto;
+}
+
+.idea-container > div:nth-child(2){
+  height: calc(100% - 55px);
+}
 .filebarScrollable {
   margin-right: 3.5rem;
 }

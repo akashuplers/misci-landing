@@ -142,11 +142,11 @@ const GenerateLoadingModal = ({
           </div>
           <div className="self-stretch h-36 flex-col justify-start items-center gap-10 flex">
             <div className="h-14 flex-col w-[150px] justify-center items-center gap-2 flex">
-              <div style={{ width: 579, height: 30, position: 'relative' }}>
-                <div style={{ width: 579, height: 30, left: 0, top: 0, position: 'absolute', justifyContent: 'center', alignItems: 'center', display: 'inline-flex' }}>
-                  <div style={{ width: 579, height: 30, boxShadow: '0px 0px 0px ', filter: 'blur(0px)' }} />
+              <div style={{ width: 579,maxWidth: '90vw', height: 30, position: 'relative' }}>
+                <div style={{ width: 579,maxWidth: '90vw', height: 30, left: 0, top: 0, position: 'absolute', justifyContent: 'center', alignItems: 'center', display: 'inline-flex' }}>
+                  <div style={{ width: 579,maxWidth: '90vw', height: 30, boxShadow: '0px 0px 0px ', filter: 'blur(0px)' }} />
                 </div>
-                <div style={{ width: 572.62, height: 6, left: 3.19, top: 12, position: 'absolute', background: '#E6E6F8' }} className="rounded-full" />
+                <div style={{ width: 572.62,maxWidth: '90vw', height: 6, left: 3.19, top: 12, position: 'absolute', background: '#E6E6F8' }} className="rounded-full" />
                 <div style={{ width:  `${percentage.percent}%`, height: 12, left: 3.19, top: 9, position: 'absolute', background:  nativePercentage.percent < 99? '#4A3AFE' : '#19A70D'
               }}  className="rounded-full"/>
               </div>
