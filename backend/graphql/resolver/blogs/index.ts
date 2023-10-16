@@ -219,7 +219,7 @@ export const blogResolvers = {
                     {
                         $project: {
                             _id: 1,
-                            keyword: 1,
+                            title: "$keyword",
                             image: "$imageUrl",
                             tags: 1,
                             description: 1,
