@@ -18,6 +18,7 @@ export type StepType =
   | "BLOG_GENERATION_COMPLETED";
 
 
+  
 
 export interface LibModuleProps {
   _id: string;
@@ -29,4 +30,9 @@ export interface LibModuleProps {
   authorAvatar: string;
   id: string | number;
   setCurrentLibraryData?: any;
+  likes: number;
+  profileImage: string;
+  linkedInUserName: string;
+  twitterUserName: string
+  userName: string;
 }

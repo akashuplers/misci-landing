@@ -23,6 +23,12 @@ const GET_BLOGS = gql`
         tags
         status
         date
+        totalComments
+        likes
+        profileImage
+        linkedInUserName
+        twitterUserName
+        userName
       }
     }
   }
@@ -127,6 +133,7 @@ export default function Library() {
 function LibModule(props: LibModuleProps) {
   console.log(props);
   const router = useRouter();
+  const username = props.twitterUserName ?? props.linkedInUserName ?? props.userName ?? "lille";
   return (
     <div
       onClick={() => {
@@ -141,8 +148,13 @@ function LibModule(props: LibModuleProps) {
       >
         <div className="flex-col justify-start items-start gap-2.5 inline-flex h-full">
           <div className="justify-start items-center gap-2 inline-flex">
+            {/* img */}
+            <img
+              className="w-6 h-6 rounded-full"
+              src={props.profileImage ?? "https://secure.gravatar.com/avatar/42f7181c2013147d652d1c99ee035862?s=800&d=identicon"}
+            />
             <div className="text-stone-500 text-xs font-normal  capitalize leading-3">
-              {props.author}
+              {username}
             </div>
           </div>
           <div className="flex-col justify-around items-start gap-1 inline-flex h-full">
