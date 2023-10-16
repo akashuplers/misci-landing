@@ -104,6 +104,7 @@ export default function TinyMCEEditor({
   const [publishLoad, setPublishLoad] = useState(false);
   const [publishText, setPublishText] = useState("Publish");
   const [publishLinkLoad, setPublishLinkLoad] = useState(false);
+  const [isWindows, setIsWindows] = useState(false);
   const [publishTweetLoad, setPublishTweetLoad] = useState(false);
   const [publishLinkText, setPublishLinkText] = useState("Publish on Linkedin");
   const [publishTweetText, setPublishTweetText] =
@@ -507,6 +508,14 @@ export default function TinyMCEEditor({
     )
       setEditorText(editorText);
   }, [editorText]);
+
+  useEffect(() => {
+    // Detect the Windows platform using userAgent
+    if (navigator.userAgent.indexOf("Windows") !== -1) {
+      console.log("IS WINDOWS", "YES")
+      setIsWindows(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (isSave) handleSave();
@@ -1935,7 +1944,8 @@ export default function TinyMCEEditor({
         handleSave={handleSave}
         bid={blog_id}
       />
-      <div className="block" style={{height: '100%'}}>
+      <div className="block mt-0 sm:mt-4" style={isWindows ? { marginTop: "10px", height: '100%' } : {height: '100%'}}>
+
         <div
           style={{
             paddingBottom: "0.5em",

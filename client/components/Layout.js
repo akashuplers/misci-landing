@@ -33,7 +33,7 @@ export default function Layout({ blogId,  children }) {
     <Fragment>
       {isAuthenticated ? <Sidebar /> : <Navbar isOpen={false} blogId={blogId} />}
       <div className={isAuthenticated ? `authenticatedLayout` : ''}
-      style={ pathName !='/'?styles: {}}
+      style={ pathName.includes('/dashboard')?styles: {}}
       >{children}</div>
     </Fragment>
   );

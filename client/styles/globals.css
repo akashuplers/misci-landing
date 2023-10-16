@@ -130,7 +130,7 @@ html {
 
 /* width */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 3px;
   border-radius: 10px;
 }
 
@@ -662,6 +662,19 @@ input[type=number] {
 .Tooltip-Tip.top::before {
   top: 100%;
   border-top-color: var(--tooltip-background-color);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease-in-out 1;
 }
 
 /* Absolute positioning */
