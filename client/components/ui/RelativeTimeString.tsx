@@ -4,7 +4,6 @@ type Props = {
   date?: number;
 };
 export function RelativeTimeString(props: Props) {
-  debugger;
   const threeMonthsAgo = moment().subtract(3, "months").unix();
   if (!props.date) {
     const relativeTimeString = moment.unix(threeMonthsAgo).fromNow();

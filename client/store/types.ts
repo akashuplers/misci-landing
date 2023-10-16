@@ -20,6 +20,7 @@ export type StepType =
 
 
 export interface LibModuleProps {
+  _id: string;
   title: string;
   description: string;
   author: string;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Pagination from "../../components/Pagination";
 import Layout from "@/components/Layout";
 import Link from "next/link";
@@ -38,39 +38,65 @@ export default function Library() {
         status: ["published"],
         page_skip: 0,
         page_limit: 7,
-        search: search ? search : "",
+        search: search,
       },
     },
   });
   const handleSearchChange = (newSearch: string) => {
     setSearch(newSearch);
-    refetch();
   };
+  useEffect(() => {
+    refetch();
+  }, [search]);
   const { clearCurrentLibraryData, setCurrentLibraryData, currentLibraryData } =
     useLibState();
- 
+
+    const skecelton = [1,2,3,4,5,6,7]
   return (
     <Layout blogId={null}>
       <div className="lib-container max-w-full mx-auto relative overflow-x-hidden">
-    <div style={{width: 1214.42, height: 1093.78, right:'-10%', transform: 'rotate(-16.47deg)', transformOrigin: '0 0', background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)'}} className="-z-10 absolute"/>
-    <div style={{width: 1214.42, height: 1093.78, left:'40%' ,top: "120%", transform: 'rotate(-163.47deg)', transformOrigin: '0 0', background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)'}} className="-z-10 absolute"/>
-    <FloatingBalls className="absolute top-[10%] right-[2%]" />
-      <FloatingBalls className="absolute top-[50%] right-[10%]" />
+        <div
+          style={{
+            width: 1214.42,
+            height: 1093.78,
+            right: "-10%",
+            transform: "rotate(-16.47deg)",
+            transformOrigin: "0 0",
+            background:
+              "linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)",
+          }}
+          className="-z-10 absolute"
+        />
+        <div
+          style={{
+            width: 1214.42,
+            height: 1093.78,
+            left: "40%",
+            top: "120%",
+            transform: "rotate(-163.47deg)",
+            transformOrigin: "0 0",
+            background:
+              "linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)",
+          }}
+          className="-z-10 absolute"
+        />
+        <FloatingBalls className="absolute top-[10%] right-[2%]" />
+        <FloatingBalls className="absolute top-[50%] right-[10%]" />
         <section className="px-10 flex items-center justify-center sticky top-5 lg:top-10 z-20 bg-white bg-opacity-10 backdrop-blur-lg lg:gap-56 ">
           {/* header */}
-          <div className="w-[671px] h-16 pl-6 pr-3 py-5 bg-white bg-opacity-25 rounded-[10px] shadow border border-indigo-600 backdrop-blur-[18px] justify-start items-center gap-3 inline-flex">
+          <div className="w-[40%] h-16 bg-white bg-opacity-25 rounded-lg shadow border border-indigo-600 backdrop-blur-[18px] justify-start items-center gap-3 inline-flex">
             <input
-              className="w-full h-full bg-transparent text-gray-900 text-base font-normal leading-3 border-none outline-none"
+              id="1"
+              type="text"
               placeholder="Search Topics"
               value={search}
-              onChange={(e) => handleSearchChange(e.target.value ?? "")}
-              type="text"
+              onChange={(e) => handleSearchChange(e.target.value)}
+              className="peer h-full w-full rounded-lg  font-thin outline-none drop-shadow-sm transition-all duration-200 ease-in-out focus:bg-transparent focus:ring-2 focus:ring-transparent"
             />
           </div>
         </section>
-        <section className="mt-10 h-full  lg:px-10 grid grid-cols-1 lg:grid-cols-2 gap-10 place-items-center justify-center">
-          {data &&
-            data?.getAllBlogs?.blogs.map((item: any, index: number) => {
+        <section className="mt-10 h-full  lg:px-10 grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-screen-2xl mx-auto overflow-hidden">
+          {data  ? data?.getAllBlogs?.blogs.map((item: any, index: number) => {
               return (
                 <LibModule
                   key={index}
@@ -79,7 +105,9 @@ export default function Library() {
                   setCurrentLibraryData={setCurrentLibraryData}
                 />
               );
-            })}
+            })
+            : skecelton.map((item: any, index: number) => { return <LibModuleSkeleton key={index} />})
+          }
 
           <Pagination
             totalItems={data?.getAllBlogs?.count}
@@ -99,7 +127,7 @@ function LibModule(props: LibModuleProps) {
     <div
       onClick={() => {
         props.setCurrentLibraryData(props);
-        router.push(`/library/${props.id}`);
+        router.push(`/public/${props._id}`);
       }}
     >
       <div
@@ -130,6 +158,25 @@ function LibModule(props: LibModuleProps) {
           src={props.image ?? "https://via.placeholder.com/189x146"}
         />
       </div>
+    </div>
+  );
+}
+
+
+function LibModuleSkeleton() {
+  return (
+    <div className="w-full h-52 px-10 py-7 bg-gray-200 bg-opacity-20 rounded-lg border border-white backdrop-blur-2xl justify-between items-center inline-flex transition-all duration-300 shadow-lg">
+      <div className="flex-col justify-start items-start gap-2.5 inline-flex h-full">
+        <div className="justify-start items-center gap-2 inline-flex">
+          <div className="text-stone-500 text-xs font-normal capitalize leading-3 w-20 h-4 bg-gray-400 animate-pulse"></div>
+        </div>
+        <div className="flex-col justify-around items-start gap-1 inline-flex h-full">
+          <div className="lg:w-80 text-zinc-800 text-lg font-bold capitalize leading-tight h-7 bg-gray-400 animate-pulse"></div>
+          <div className="lg:w-80 text-zinc-800 text-sm font-normal capitalize leading-none h-4 bg-gray-400 animate-pulse"></div>
+          <div className="text-stone-300 text-xs font-normal capitalize leading-3 w-28 h-4 bg-gray-400 animate-pulse"></div>
+        </div>
+      </div>
+      <div className="w-20 lg:w-48 h-36 rounded bg-gray-400 animate-pulse"></div>
     </div>
   );
 }
