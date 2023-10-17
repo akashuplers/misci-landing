@@ -4,6 +4,7 @@ import styles from "./styles/pagination.module.css"
 const PAGE_COUNT = 12;
 
 const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
+    console.log(totalItems, pageSkip, setPageSkip);
     const totalPages = Math.ceil(totalItems / PAGE_COUNT)
     const [currentPage, setCurrentPage] = useState(pageSkip + 1);
     const [visiblePages, setVisiblePages] = useState(

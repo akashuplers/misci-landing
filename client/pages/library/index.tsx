@@ -34,17 +34,22 @@ const GET_BLOGS = gql`
   }
 `;
 
+const PAGE_COUNT = 12;
 export default function Library() {
   const [pageSkip, setPageSkip] = useState(0);
+  const [pageLimit, setPageLimit] = useState(10);
   const [search, setSearch] = useState<string>();
   const debouncedSearchTerm = useDebounce(search, 300);
+
   // Define your query options
+
+
   const { loading, error, data, refetch } = useQuery(GET_BLOGS, {
     variables: {
       options: {
         status: ["published"],
-        page_skip: 0,
-        page_limit: 7,
+        page_skip: pageSkip * PAGE_COUNT,
+        page_limit: (1+pageSkip) * PAGE_COUNT,
         search: debouncedSearchTerm,
       },
     },
@@ -92,7 +97,7 @@ export default function Library() {
         <FloatingBalls className="absolute top-[50%] right-[10%]" />
         <section className="px-10 flex items-center justify-center sticky top-5 lg:top-10 z-20 bg-white bg-opacity-10 backdrop-blur-lg lg:gap-56 ">
           {/* header */}
-          <div className="w-[40%] h-16 bg-white bg-opacity-25 rounded-lg shadow border border-indigo-600 backdrop-blur-[18px] justify-start items-center gap-3 inline-flex">
+          <div className="w-[40%] h-16 bg-white bg-opacity-25 rounded-lg shadow border border-indigo-600 backdrop-blur-[18px] justify-start items-center gap-3 inline-flex my-4">
             <input
               id="1"
               type="text"
@@ -118,13 +123,12 @@ export default function Library() {
             : skecelton.map((item: any, index: number) => {
                 return <LibModuleSkeleton key={index} />;
               })}
-
-          <Pagination
+        </section>
+        <Pagination
             totalItems={data?.getAllBlogs?.count}
             pageSkip={pageSkip}
             setPageSkip={setPageSkip}
           />
-        </section>
       </div>
     </Layout>
   );
