@@ -124,11 +124,15 @@ export default function Library() {
                 return <LibModuleSkeleton key={index} />;
               })}
         </section>
-        <Pagination
+        {
+          data?.getAllBlogs?.blogs.length > 0 && (
+            <Pagination
             totalItems={data?.getAllBlogs?.count}
             pageSkip={pageSkip}
             setPageSkip={setPageSkip}
           />
+          )
+        }
       </div>
     </Layout>
   );
