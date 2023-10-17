@@ -16,3 +16,23 @@ export type StepType =
   | "ANSWER_FETCHING_FAILED"
   | "BLOG_GENERATED_COMPLETED"
   | "BLOG_GENERATION_COMPLETED";
+
+
+  
+
+export interface LibModuleProps {
+  _id: string;
+  title: string;
+  description: string;
+  author: string;
+  date: string;
+  image: string;
+  authorAvatar: string;
+  id: string | number;
+  setCurrentLibraryData?: any;
+  likes: number;
+  profileImage: string;
+  linkedInUserName: string;
+  twitterUserName: string
+  userName: string;
+}

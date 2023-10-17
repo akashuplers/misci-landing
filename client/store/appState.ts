@@ -5,6 +5,7 @@ import {create} from 'zustand';
 import { meeGetState } from '@/graphql/querys/mee';
 import axios from 'axios';
 import { GRAPHQL_URL } from '@/constants';
+import { LibModuleProps } from './types';
 
 
 interface IRePurposeFileState {
@@ -328,4 +329,15 @@ interface ISecondsToRedirect {
 export const useSecondsToRedirect = create<ISecondsToRedirect>((set) => ({
   seconds: 0,
   setSeconds: (seconds) => set({ seconds }),
+}));
+
+interface LibState {
+  currentLibraryData: LibModuleProps | null;
+  setCurrentLibraryData: (data: LibModuleProps) => void;
+  clearCurrentLibraryData: () => void;
+}
+export const useLibState = create<LibState>((set) => ({
+  currentLibraryData: null,
+  setCurrentLibraryData: (data) => set({ currentLibraryData: data }),
+  clearCurrentLibraryData: () => set({ currentLibraryData: null }),
 }));

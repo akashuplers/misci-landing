@@ -82,3 +82,4 @@ query FetchBlog($fetchBlogId: String!) {
 `
 
 export const getBlogbyId = gql`${getBlogbyIdState}`
+
