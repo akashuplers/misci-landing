@@ -35,7 +35,6 @@ const UsedFilteredIdeaItem = ({
   getBgColorForCheckbox(typeOfIdea);
 
   const handleCheckboxClick = () => {
-    debugger;
     const updatedFilteredIdeas = filteredIdeas.map((el, elIndex) =>
       elIndex === index ? { ...el, used: el.used === 1 ? 0 : 1 } : el
     );

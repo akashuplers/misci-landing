@@ -138,7 +138,7 @@ function LibModule(props: LibModuleProps) {
     <div
       onClick={() => {
         props.setCurrentLibraryData(props);
-        router.push(`/public/${props._id}`);
+        router.push(`/public/${props._id}?source=library`);
       }}
     >
       <div
