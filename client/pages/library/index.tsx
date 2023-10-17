@@ -185,15 +185,15 @@ function LibModuleSkeleton() {
     <div className="w-full h-52 px-10 py-7 bg-gray-200 bg-opacity-20 rounded-lg border border-white backdrop-blur-2xl justify-between items-center inline-flex transition-all duration-300 shadow-lg">
       <div className="flex-col justify-start items-start gap-2.5 inline-flex h-full">
         <div className="justify-start items-center gap-2 inline-flex">
-          <div className="text-stone-500 text-xs font-normal capitalize leading-3 w-20 h-4 bg-gray-400 animate-pulse"></div>
+          <div className="text-stone-500 text-xs font-normal capitalize  rounded-md leading-3 w-20 h-4 bg-gray-400 animate-pulse"></div>
         </div>
         <div className="flex-col justify-around items-start gap-1 inline-flex h-full">
-          <div className="lg:w-80 text-zinc-800 text-lg font-bold capitalize leading-tight h-7 bg-gray-400 animate-pulse"></div>
-          <div className="lg:w-80 text-zinc-800 text-sm font-normal capitalize leading-none h-4 bg-gray-400 animate-pulse"></div>
+          <div className="lg:w-80 text-zinc-800 rounded-md text-lg font-bold capitalize leading-tight h-7 bg-gray-400 animate-pulse"></div>
+          <div className="lg:w-80 text-zinc-800 rounded-md text-sm font-normal capitalize leading-none h-4 bg-gray-400 animate-pulse"></div>
           <div className="text-stone-300 text-xs font-normal capitalize leading-3 w-28 h-4 bg-gray-400 animate-pulse"></div>
         </div>
       </div>
-      <div className="w-20 lg:w-48 h-36 rounded bg-gray-400 animate-pulse"></div>
+      <div className="w-20 lg:w-48 h-36 rounded-md bg-gray-400 animate-pulse"></div>
     </div>
   );
 }

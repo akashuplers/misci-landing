@@ -50,6 +50,7 @@ interface PageProps {
     description: string;
     url: string;
   };
+  isSourceLibrary: boolean
 }
 
 function Page({
@@ -58,6 +59,7 @@ function Page({
   authorSocialMedia,
   blogSlug,
   blogData,
+  isSourceLibrary
 }: PageProps) {
   // console.log(query);
   const router = useRouter();
@@ -247,7 +249,9 @@ function Page({
     </a>
       `;      
     // add at the top of tempElement
+    if(isSourceLibrary){
     tempElement.insertBefore(backButton, tempElement.firstChild);
+    }
       var modifiedHtml = tempElement.innerHTML;
       const phraseToRemove =
         "A placeholder image has been added, you can upload your own image.";
@@ -870,7 +874,14 @@ const InputBox = ({
 };
 Page.getInitialProps = async (content: NextPageContext): Promise<PageProps> => {
   console.log(content.query);
-
+  console.log(content);
+  let isSourceLibrary = false
+  if(content.query?.source){
+    // isSourceLibrary=  true;
+    if(content.query?.source=='library'){
+      isSourceLibrary= true;
+    }
+  }
   const req = content.req;
   // Construct the server URL based on the incoming request
   const serverProtocol = req?.headers["x-forwarded-proto"] || "http";
@@ -886,7 +897,6 @@ Page.getInitialProps = async (content: NextPageContext): Promise<PageProps> => {
   const wordpressData = dataFromGetBlogByIdAPI?.fetchBlog?.publish_data.find(
     (pd) => pd.platform === "wordpress"
   ).tiny_mce_data;
-  console.log(dataFromGetBlogByIdAPI);
 
   // const title = wordpressData?.children[0].children[0].children[0];
   const title = getBlogTitle(wordpressData?.children[0]);
@@ -908,6 +918,7 @@ Page.getInitialProps = async (content: NextPageContext): Promise<PageProps> => {
     blogSlug,
     authorSocialMedia,
     blogData,
+    isSourceLibrary
   };
 };
 
