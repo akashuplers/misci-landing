@@ -1,6 +1,7 @@
 import { format, fromUnixTime, max } from "date-fns";
 import { APP_REGEXP } from "./appContants";
 import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
+import moment from "moment";
 
 export function getRelativeTimeString(
   date: Date | number,
@@ -140,6 +141,15 @@ export const unixToLocalYear = (unixTime: number) => {
 
   return formattedDate;
 };
+export function convertUnixTimestampToFormattedDate(unixTime:any) {
+  const date = fromUnixTime(unixTime);
+  const formattedDate = format(date, "MMMM do, yyyy");
+  console.log(formattedDate);
+
+  return formattedDate;
+
+}
+
 
 export function calculateUsedCredits(userData: {
   totalCredits: number;
