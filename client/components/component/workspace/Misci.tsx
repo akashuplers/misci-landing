@@ -623,7 +623,7 @@ const MisciWorkSpace = ({
                           setAnswersReadMore={setAnswersReadMore}
                             html={editorAnswersData ?? ""}
                             short_answer={shortAnswer}
-                            detailed_answer={detailedAnswer+ detailedAnswer+detailedAnswer+detailedAnswer}
+                            detailed_answer={detailedAnswer}
                           />
                         </div>
                       </div>
