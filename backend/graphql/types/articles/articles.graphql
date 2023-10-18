@@ -22,7 +22,7 @@ type BlogsList {
     _id: ID!
     title: String
     description: String
-    tags: [String]!
+    tags: [String]
     image: String
     status: String
     date: Int
