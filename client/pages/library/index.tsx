@@ -186,7 +186,7 @@ function LibModule(props: LibModuleProps) {
                 ? props.description.slice(0, 100) + "..."
                 : props.description.slice(60, 120) + "..."}
             </div>
-            <div className="text-stone-300 text-xs font-normal  capitalize leading-3">
+            <div className="text-gray-600 text-xs font-normal  capitalize leading-3">
               <RelativeTimeString date={Number(props.date)} />
             </div>
           </div>
