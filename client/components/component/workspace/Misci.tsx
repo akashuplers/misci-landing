@@ -47,6 +47,120 @@ interface MisciWorkSpaceProps {
   setAppLoaderStatus: any;
   resetTimeout: any;
 }
+
+const DynamicAnswersData = ({
+  html,
+  short_answer,
+  detailed_answer,
+  image,
+  setAnswersReadMore
+}: {
+  html: string;
+  detailed_answer: string;
+  short_answer: string;
+  image:string,
+  setAnswersReadMore : any
+}) => {
+  return (
+    <div className="">
+      {/* <div
+        id="answersEditor"
+        dangerouslySetInnerHTML={{ __html: mySafeHTML }}
+      ></div> */}
+      <div className="flex flex-col gap-4 relative">
+        {/* show image */}
+       
+        {short_answer.length > 0 ? (
+          <>
+            <div>
+              <p>
+                Answer:{" "}
+                <span
+                  dangerouslySetInnerHTML={{ __html: short_answer }}
+                ></span>
+              </p>
+            </div>
+            <div className="border-b border-gray-200"></div>
+
+            <div className="flex justify-center items-center ">
+           <div className="w-[50%]">
+           <img
+            className="w-full h-full rounded-full object-cover"
+            src={image}
+            alt=""
+          />
+           </div>
+        </div>
+          </>
+        ) : (
+          <></>
+        )}
+        {/* under line */}
+        <div className="">
+        <p
+          className={`block lg:hidden`}
+            dangerouslySetInnerHTML={{
+              __html:
+                // remove text after 2k chars
+                detailed_answer.length > 500
+                  ? detailed_answer.slice(0, 500) + "..."
+                  : detailed_answer,
+            }}
+          ></p>
+
+          <p
+          className={`hidden lg:block`}
+            dangerouslySetInnerHTML={{
+              __html:
+                // remove text after 2k chars
+                detailed_answer.length > 2000
+                  ? detailed_answer.slice(0, 2000) + "..."
+                  : detailed_answer,
+            }}
+          ></p>
+          {/* read more brn */}
+
+         <div className="hidden lg:block">
+         {detailed_answer.length > 2000 && (
+            <div className="absolute bottom-[-5%] right-0">
+              <button
+                className="p-2 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600 text-white 
+              transition duration-300 ease-in-out 
+              hover:bg-indigo-700 hover:border-indigo-700 hover:shadow-lg hover:scale-105"
+                onClick={() => {
+                  setAnswersReadMore(true);
+                }}
+              >
+                Read More
+              </button>
+            </div>
+          )}
+         </div>
+
+         <div className="lg:hidden block">
+          showing ++ +
+         {detailed_answer.length > 500 && (
+            <div className="absolute bottom-[-5%] right-0">
+              <button
+                className="p-2 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600 text-white 
+              transition duration-300 ease-in-out 
+              hover:bg-indigo-700 hover:border-indigo-700 hover:shadow-lg hover:scale-105"
+                onClick={() => {
+                  setAnswersReadMore(true);
+                }}
+              >
+                Read More
+              </button>
+            </div>
+          )}
+         </div>
+         
+        </div>
+      </div>
+      <br />
+    </div>
+  );
+};
 const MisciWorkSpace = ({
   subscriptionData,
   question,
@@ -343,84 +457,6 @@ const MisciWorkSpace = ({
       });
   }
 
-  const DynamicAnswersData = ({
-    html,
-    short_answer,
-    detailed_answer,
-    image
-  }: {
-    html: string;
-    detailed_answer: string;
-    short_answer: string;
-    image:string,
-  }) => {
-    return (
-      <div className="">
-        {/* <div
-          id="answersEditor"
-          dangerouslySetInnerHTML={{ __html: mySafeHTML }}
-        ></div> */}
-        <div className="flex flex-col gap-4 relative">
-          {/* show image */}
-         
-          {short_answer.length > 0 ? (
-            <>
-              <div>
-                <p>
-                  Answer:{" "}
-                  <span
-                    dangerouslySetInnerHTML={{ __html: short_answer }}
-                  ></span>
-                </p>
-              </div>
-              <div className="border-b border-gray-200"></div>
-
-              <div className="flex justify-center items-center ">
-             <div className="w-[50%]">
-             <img
-              className="w-full h-full rounded-full object-cover"
-              src={image}
-              alt=""
-            />
-             </div>
-          </div>
-            </>
-          ) : (
-            <></>
-          )}
-          {/* under line */}
-          <div className="">
-            <p
-              dangerouslySetInnerHTML={{
-                __html:
-                  // remove text after 2k chars
-                  detailed_answer.length > 2000
-                    ? detailed_answer.slice(0, 2000) + "..."
-                    : detailed_answer,
-              }}
-            ></p>
-            {/* read more brn */}
-
-            {detailed_answer.length > 2000 && (
-              <div className="absolute bottom-[-5%] right-0">
-                <button
-                  className="p-2 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600 text-white 
-                transition duration-300 ease-in-out 
-                hover:bg-indigo-700 hover:border-indigo-700 hover:shadow-lg hover:scale-105"
-                  onClick={() => {
-                    setAnswersReadMore(true);
-                  }}
-                >
-                  Read More
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-        <br />
-      </div>
-    );
-  };
   const editTabs = [
     {
       name: "Used Ideas",
@@ -584,9 +620,10 @@ const MisciWorkSpace = ({
                         <div className="mt-4 text-lg w-[95%]">
                           <DynamicAnswersData
                           image={answerImage}
+                          setAnswersReadMore={setAnswersReadMore}
                             html={editorAnswersData ?? ""}
                             short_answer={shortAnswer}
-                            detailed_answer={detailedAnswer}
+                            detailed_answer={detailedAnswer+ detailedAnswer+detailedAnswer+detailedAnswer}
                           />
                         </div>
                       </div>
