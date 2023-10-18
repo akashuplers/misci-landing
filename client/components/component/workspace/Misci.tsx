@@ -462,7 +462,10 @@ const MisciWorkSpace = ({
           </span>
         </button>
         <div className="justify-start items-center gap-4 flex">
-        {windowWidth <=768 && <button
+        
+          {!errorPresent && (
+            <>
+            {windowWidth <=768 && <button
             className="cta text-red-500 workspace-open-button"
             onClick={() => {
               const container = document.querySelector(".misciDashboardInsightMobile");
@@ -483,18 +486,18 @@ const MisciWorkSpace = ({
           >
             Workspace
           </button>}
-          {!errorPresent && (
             <button
               className="p-2 bg-indigo-600 rounded-lg shadow justify-center items-center gap-2.5 flex"
               onClick={() => {
                 setShowPublishModal(true);
               }}
-            >
+              >
               <span className="-rotate-45">
                 <PaperAirplaneIcon className="h-5 w-5 text-white" />
               </span>
               <span className="text-white text-base font-medium">Publish</span>
             </button>
+              </>
           )}
         </div>
       </header>
@@ -553,7 +556,7 @@ const MisciWorkSpace = ({
               )}
             </Tab.List>
             <Tab.Panel className={`w-full h-full flex `}>
-              <div className="w-[70%] bg-neutral-100 rounded-2xl overflow-y-scroll flex relative h-full">
+              <div className="w-full md:w-[70%] bg-neutral-100 rounded-2xl overflow-y-scroll flex relative h-full">
                 <div className="flex-col  w-full justify-start overflow-y-scroll items-start gap-7 inline-flex">
                   <div className="bg-opacity-70 w-full overflow-y-scroll h-full justify-start items-center gap-5 flex flex-col">
                     <div className="w-full text-slate-800 text-xl font-bold leading-relaxed tracking-tight min-h-20 bg-[#FF8980] flex flex-col items-center sticky top-0 z-20 rounded-b-[3rem] ">
