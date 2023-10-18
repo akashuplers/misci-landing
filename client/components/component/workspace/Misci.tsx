@@ -448,9 +448,9 @@ const MisciWorkSpace = ({
     );
   }
   return (
-    <div className="w-screen h-screen overscroll-none overflow-hidden  p-2">
+    <div className="w-screen h-screen overscroll-none overflow-hidden">
       <style>{`.sidebar-position-left #button.sidebar{display: none;`}</style>
-      <header className="w-full h-[8%] justify-between items-center flex">
+      <header className="w-full h-[8%] justify-between items-center flex p-2">
         <button
           onClick={() => {
             router.back();
@@ -466,6 +466,17 @@ const MisciWorkSpace = ({
             className="cta text-red-500 workspace-open-button"
             onClick={() => {
               const container = document.querySelector(".misciDashboardInsightMobile");
+              // if(container?.classList.contains("open")){
+              //   container?.classList.remove("shadow")
+              //   setTimeout(() => {
+              //     container?.classList.remove("open")
+              //   }, 1000)
+              // }else{
+              //   container?.classList.add("open")
+              //   setTimeout(() => {
+              //     container?.classList.add("shadow")
+              //   }, 1000)
+              // }
               container?.classList.toggle("open")
             }}
             style={{userSelect: 'none'}}

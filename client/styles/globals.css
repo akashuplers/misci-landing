@@ -911,3 +911,6 @@ iframe::-webkit-scrollbar-thumb:hover {
   overflow-y: auto;
   background-color: rgba(0, 0, 0, 0.47);
 }
+.misciDashboardInsightMobile.shadow{
+  background-color: rgba(0, 0, 0, 0.47);
+}
