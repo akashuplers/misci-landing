@@ -10,6 +10,7 @@ import {
   DocumentTextIcon,
   PaperAirplaneIcon,
   QuestionMarkCircleIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import LottiePlayer from "lottie-react";
 import { useRouter } from "next/router";
@@ -89,6 +90,22 @@ const MisciWorkSpace = ({
   // const [initailListOfIdeas, setInitialListOfIdeas] = useState<any[]>([]);
   const { getInitialListOfIdeas, setInitialListOfIdeas } = useIdeaState();
   const [articleLoaderErrorText, setArticleLoaderErrorText] = useState("");
+
+  const [windowWidth, setWindowWidth] = useState(0);
+  const setWidthForDashboardInsight = () => {
+    console.log(window.innerWidth, 'halert')
+    setWindowWidth(window.innerWidth)
+  }
+  useEffect(() => {
+    setWindowWidth(window.innerWidth);
+  
+    window.addEventListener('resize', setWidthForDashboardInsight)
+
+    return () => {
+      window.removeEventListener("resize", setWidthForDashboardInsight)
+    }
+  }, []);
+
   function handleReset() {
     setCurrentTabIndex(0);
     setEditorAnswersData(null);
@@ -435,6 +452,16 @@ const MisciWorkSpace = ({
           </span>
         </button>
         <div className="justify-start items-center gap-4 flex">
+        {windowWidth <=768 && <button
+            className="cta text-red-500 workspace-open-button"
+            onClick={() => {
+              const container = document.querySelector(".dashboardInsightMobile");
+              container?.classList.toggle("open")
+            }}
+            style={{userSelect: 'none'}}
+          >
+            Workspace
+          </button>}
           {!errorPresent && (
             <button
               className="p-2 bg-indigo-600 rounded-lg shadow justify-center items-center gap-2.5 flex"
@@ -617,8 +644,8 @@ const MisciWorkSpace = ({
                 </div>
               </div>
             </Tab.Panel>{" "}
-            <Tab.Panel className={`w-full h-full flex `}>
-              <div className="w-[70%] flex  h-full ">
+            <Tab.Panel className={`w-full h-full flex ${windowWidth <= 768 ? 'dashboardInsightMobileContainer' : ''}`}>
+              <div className="w-full md:w-[70%] flex  h-full tiny_mce_width">
                 <>
                   {!isArticleTabReady ? (
                     <div className="flex items-start justify-center w-full h-full">
@@ -660,16 +687,28 @@ const MisciWorkSpace = ({
                   )}
                 </>
               </div>
-              <div
-                className="w-[30%] max-h-full p-2 flex-col flex relative border-l border-gray-200 gap-3"
+              <div className={`dashboardInsightWidth w-full md:w-[30%] max-h-full p-2 flex-col flex relative border-l border-gray-200 gap-3 ${windowWidth <= 768 ? 'dashboardInsightMobile' : ''}`}
                 id="leftContent"
               >
                 <>
                   <div className="text-xs mb-24 lg:mb-0" id="regenblog">
                     {/* h1 Insight only for mobile screens */}
-                    <h1 className="text-2xl  font-semibold text-gray-800 my-4 lg:hidden">
-                      Insights
-                    </h1>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      paddingBottom: '1em',
+                      paddingTop: '1em',
+                      fontSize: '1.5em'
+                    }}>
+                      <h1 className="text-2xl  font-semibold text-gray-800 my-4 lg:hidden">Insights</h1>
+                      <XMarkIcon 
+                        className="w-7 h-7 text-slate-800"
+                        onClick={() => {
+                          const container = document.querySelector(".dashboardInsightMobile");
+                          container?.classList.remove("open")
+                        }}
+                      />
+                    </div>
                     <div className="flex jusify-between items-center">
                       <p className="font-normal w-[100%] lg:w-[70%] text-base">
                         Create your next draft on the basis of your edits.
