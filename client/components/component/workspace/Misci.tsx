@@ -92,6 +92,14 @@ const MisciWorkSpace = ({
   const [articleLoaderErrorText, setArticleLoaderErrorText] = useState("");
 
   const [windowWidth, setWindowWidth] = useState(0);
+  const closeWorkspaceSheetForMobile = (e: any) => {
+    const workspaceDiv = document.querySelector(".misciDashboardInsightMobileInner");
+    const workspaceOpenButton = document.querySelector(".workspace-open-button")
+
+    if(!!workspaceDiv && !workspaceDiv.contains(e.target) && !workspaceOpenButton?.contains(e.target)  && workspaceDiv.classList.contains("open")){
+      workspaceDiv.classList.remove("open");
+    }
+  }
   const setWidthForDashboardInsight = () => {
     console.log(window.innerWidth, 'halert')
     setWindowWidth(window.innerWidth)
@@ -100,9 +108,11 @@ const MisciWorkSpace = ({
     setWindowWidth(window.innerWidth);
   
     window.addEventListener('resize', setWidthForDashboardInsight)
+    window.addEventListener("click", closeWorkspaceSheetForMobile)
 
     return () => {
       window.removeEventListener("resize", setWidthForDashboardInsight)
+      window.removeEventListener("click", closeWorkspaceSheetForMobile)
     }
   }, []);
 
@@ -438,7 +448,7 @@ const MisciWorkSpace = ({
     );
   }
   return (
-    <div className="w-screen h-screen overscroll-none overflow-hidden px-12 py-2">
+    <div className="w-screen h-screen overscroll-none overflow-hidden  p-2">
       <style>{`.sidebar-position-left #button.sidebar{display: none;`}</style>
       <header className="w-full h-[8%] justify-between items-center flex">
         <button
@@ -455,7 +465,7 @@ const MisciWorkSpace = ({
         {windowWidth <=768 && <button
             className="cta text-red-500 workspace-open-button"
             onClick={() => {
-              const container = document.querySelector(".dashboardInsightMobile");
+              const container = document.querySelector(".misciDashboardInsightMobile");
               container?.classList.toggle("open")
             }}
             style={{userSelect: 'none'}}
@@ -644,7 +654,7 @@ const MisciWorkSpace = ({
                 </div>
               </div>
             </Tab.Panel>{" "}
-            <Tab.Panel className={`w-full h-full flex ${windowWidth <= 768 ? 'dashboardInsightMobileContainer' : ''}`}>
+            <Tab.Panel className={`w-full h-full flex ${windowWidth <= 768 ? 'misciDashboardInsightMobileContainer' : ''}`}>
               <div className="w-full md:w-[70%] flex  h-full tiny_mce_width">
                 <>
                   {!isArticleTabReady ? (
@@ -687,10 +697,10 @@ const MisciWorkSpace = ({
                   )}
                 </>
               </div>
-              <div className={`dashboardInsightWidth w-full md:w-[30%] max-h-full p-2 flex-col flex relative border-l border-gray-200 gap-3 ${windowWidth <= 768 ? 'dashboardInsightMobile' : ''}`}
+              <div className={`dashboardInsightWidth ${windowWidth <= 768 ? 'misciDashboardInsightMobile' : ''}`}
                 id="leftContent"
               >
-                <>
+                <div className={`w-[95%] md:w-[30%] max-h-full p-2 flex-col flex relative border-l border-gray-200 gap-3  ${windowWidth <= 768 ? 'misciDashboardInsightMobileInner' : ''}`}>
                   <div className="text-xs mb-24 lg:mb-0" id="regenblog">
                     {/* h1 Insight only for mobile screens */}
                     <div style={{
@@ -704,7 +714,7 @@ const MisciWorkSpace = ({
                       <XMarkIcon 
                         className="w-7 h-7 text-slate-800"
                         onClick={() => {
-                          const container = document.querySelector(".dashboardInsightMobile");
+                          const container = document.querySelector(".misciDashboardInsightMobile");
                           container?.classList.remove("open")
                         }}
                       />
@@ -776,7 +786,7 @@ const MisciWorkSpace = ({
                       />
                     </>
                   )}
-                </>
+                </div>
               </div>
             </Tab.Panel>
           </Tab.Group>
