@@ -122,7 +122,7 @@ export default function Library() {
               })
             ) : (
               <div className="text-center text-2xl text-gray-400">
-                No Blogs Found
+                No results found for your search keywords, please try another search
               </div>
             )
           ) : (
