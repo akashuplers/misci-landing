@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import { RelativeTimeString } from "@/components/ui/RelativeTimeString";
 import { FloatingBalls } from "@/components/ui/Chip";
 import { useDebounce } from "@uidotdev/usehooks";
+import { ResulsNotFoundIcon } from "@/components/localicons/localicons";
 const GET_BLOGS = gql`
   query GetAllBlogs($options: BlogListInput) {
     getAllBlogs(options: $options) {
@@ -35,9 +36,13 @@ const GET_BLOGS = gql`
 `;
 
 const PAGE_COUNT = 12;
-export default function Library() {
-  const [pageSkip, setPageSkip] = useState(0);
-  const [pageLimit, setPageLimit] = useState(10);
+interface Props {
+  page: number;
+  limit: number;
+}
+export default function Library(props: Props) {
+  const [pageSkip, setPageSkip] = useState(props.page - 1);
+  const [pageLimit, setPageLimit] = useState(props.limit);
   const [search, setSearch] = useState<string>();
   const debouncedSearchTerm = useDebounce(search, 300);
 
@@ -107,7 +112,9 @@ export default function Library() {
             />
           </div>
         </section>
-        <section className="my mb-52-20 min-h-full  lg:px-10 grid  grid-cols-1 lg:grid-cols-2 gap-10 max-w-screen-2xl mx-auto overflow-hidden">
+        <section className={`
+        my mb-52-20 min-h-full relative lg:px-10 grid  grid-cols-1 lg:grid-cols-2 gap-10 max-w-screen-2xl mx-auto overflow-hidden
+        `}>
           {data ? (
             data?.getAllBlogs?.blogs.length > 0 ? (
               data?.getAllBlogs?.blogs.map((item: any, index: number) => {
@@ -116,13 +123,23 @@ export default function Library() {
                     key={index}
                     {...item}
                     id={index}
+                    page={pageSkip}
+                    limit={pageLimit}
                     setCurrentLibraryData={setCurrentLibraryData}
                   />
                 );
               })
             ) : (
-              <div className="text-center text-2xl text-gray-400">
-                No results found for your search keywords, please try another search
+              <div className="text-center text-2xl text-gray-400 w-full flex items-center justify-center absolute mx-auto ">
+                <div className="w-48 h-full relative flex flex-col items-center ">
+                  <div className="w-48  opacity-50 text-center text-gray-900 text-lg">
+                    Result Not Found
+                  </div>
+                  <div className="w-48 opacity-50 text-center text-gray-900 text-xs">
+                    Try another search
+                  </div>
+                <ResulsNotFoundIcon/>
+                </div>
               </div>
             )
           ) : (
@@ -131,6 +148,8 @@ export default function Library() {
             })
           )}
         </section>
+      </div>
+      <div className="flex items-center justify-center">
         {data?.getAllBlogs?.blogs.length > 0 && (
           <Pagination
             totalItems={data?.getAllBlogs?.count}
@@ -155,7 +174,24 @@ function LibModule(props: LibModuleProps) {
     <div
       onClick={() => {
         props.setCurrentLibraryData(props);
-        router.push(`/public/${props._id}?source=library`);
+        // router.push(`/public/${props._id}?source=library`);
+        const { _id, page, limit } = props;
+
+        // Build the query object
+        const query = {
+          source: "library",
+          page: props.page,
+          limit: props.limit,
+        };
+
+        // Navigate to the new URL
+        router.push({
+          pathname: "/public/[id]",
+          query: {
+            id: _id,
+            ...query,
+          },
+        });
       }}
     >
       <div
@@ -216,4 +252,16 @@ function LibModuleSkeleton() {
       <div className="w-20 lg:w-48 h-36 rounded-md bg-gray-400 animate-pulse"></div>
     </div>
   );
+}
+
+// get server side props
+export async function getServerSideProps(context: any) {
+  const page = context.query.page || 1;
+  const limit = context.query.limit || 10;
+  return {
+    props: {
+      page,
+      limit,
+    },
+  };
 }
