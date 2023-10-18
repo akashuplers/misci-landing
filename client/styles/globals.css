@@ -879,3 +879,38 @@ iframe::-webkit-scrollbar-thumb:hover {
 .filebarScrollable {
   margin-right: 3.5rem;
 }
+
+.misciDashboardInsightMobileContainer{
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+.misciDashboardInsightMobile{
+  /* display: none; */
+  position: fixed;
+  bottom: -110%;
+  left: 0;
+  z-index: 10;
+  transition: all 0.25s ease-in-out;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.misciDashboardInsightMobileInner{
+  /* display: none; */
+  height: 90%;
+  background-color: white;
+
+  border-radius:25px 25px 0 0
+}
+.misciDashboardInsightMobile.open{
+  bottom: 0;
+  left: 0;
+  overflow-y: auto;
+  background-color: rgba(0, 0, 0, 0.47);
+}
+.misciDashboardInsightMobile.shadow{
+  background-color: rgba(0, 0, 0, 0.47);
+}
