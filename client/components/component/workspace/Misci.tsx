@@ -10,6 +10,7 @@ import {
   DocumentTextIcon,
   PaperAirplaneIcon,
   QuestionMarkCircleIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import LottiePlayer from "lottie-react";
 import { useRouter } from "next/router";
@@ -89,6 +90,32 @@ const MisciWorkSpace = ({
   // const [initailListOfIdeas, setInitialListOfIdeas] = useState<any[]>([]);
   const { getInitialListOfIdeas, setInitialListOfIdeas } = useIdeaState();
   const [articleLoaderErrorText, setArticleLoaderErrorText] = useState("");
+
+  const [windowWidth, setWindowWidth] = useState(0);
+  const closeWorkspaceSheetForMobile = (e: any) => {
+    const workspaceDiv = document.querySelector(".misciDashboardInsightMobileInner");
+    const workspaceOpenButton = document.querySelector(".workspace-open-button")
+
+    if(!!workspaceDiv && !workspaceDiv.contains(e.target) && !workspaceOpenButton?.contains(e.target)  && workspaceDiv.classList.contains("open")){
+      workspaceDiv.classList.remove("open");
+    }
+  }
+  const setWidthForDashboardInsight = () => {
+    console.log(window.innerWidth, 'halert')
+    setWindowWidth(window.innerWidth)
+  }
+  useEffect(() => {
+    setWindowWidth(window.innerWidth);
+  
+    window.addEventListener('resize', setWidthForDashboardInsight)
+    window.addEventListener("click", closeWorkspaceSheetForMobile)
+
+    return () => {
+      window.removeEventListener("resize", setWidthForDashboardInsight)
+      window.removeEventListener("click", closeWorkspaceSheetForMobile)
+    }
+  }, []);
+
   function handleReset() {
     setCurrentTabIndex(0);
     setEditorAnswersData(null);
@@ -423,7 +450,7 @@ const MisciWorkSpace = ({
   return (
     <div className="w-screen h-screen overscroll-none overflow-hidden px-2 lg:px-12 py-2">
       <style>{`.sidebar-position-left #button.sidebar{display: none;`}</style>
-      <header className="w-full h-[8%] justify-between items-center flex">
+      <header className="w-full h-[8%] justify-between items-center flex p-2">
         <button
           onClick={() => {
             router.back();
@@ -435,6 +462,27 @@ const MisciWorkSpace = ({
           </span>
         </button>
         <div className="justify-start items-center gap-4 flex">
+        {windowWidth <=768 && <button
+            className="cta text-red-500 workspace-open-button"
+            onClick={() => {
+              const container = document.querySelector(".misciDashboardInsightMobile");
+              // if(container?.classList.contains("open")){
+              //   container?.classList.remove("shadow")
+              //   setTimeout(() => {
+              //     container?.classList.remove("open")
+              //   }, 1000)
+              // }else{
+              //   container?.classList.add("open")
+              //   setTimeout(() => {
+              //     container?.classList.add("shadow")
+              //   }, 1000)
+              // }
+              container?.classList.toggle("open")
+            }}
+            style={{userSelect: 'none'}}
+          >
+            Workspace
+          </button>}
           {!errorPresent && (
             <button
               className="p-2 bg-indigo-600 rounded-lg shadow justify-center items-center gap-2.5 flex"
@@ -617,8 +665,8 @@ const MisciWorkSpace = ({
                 </div>
               </div>
             </Tab.Panel>{" "}
-            <Tab.Panel className={`w-full h-full flex `}>
-              <div className="w-[70%] flex  h-full ">
+            <Tab.Panel className={`w-full h-full flex ${windowWidth <= 768 ? 'misciDashboardInsightMobileContainer' : ''}`}>
+              <div className="w-full md:w-[70%] flex  h-full tiny_mce_width">
                 <>
                   {!isArticleTabReady ? (
                     <div className="flex items-start justify-center w-full h-full">
@@ -660,16 +708,28 @@ const MisciWorkSpace = ({
                   )}
                 </>
               </div>
-              <div
-                className="lg:w-[30%] max-h-full p-2 flex-col hidden lg:flex relative border-l border-gray-200 gap-3"
+              <div className={`dashboardInsightWidth ${windowWidth <= 768 ? 'misciDashboardInsightMobile' : ''}`}
                 id="leftContent"
               >
-                <>
+                <div className={`w-[95%] md:w-[30%] max-h-full p-2 flex-col flex relative border-l border-gray-200 gap-3  ${windowWidth <= 768 ? 'misciDashboardInsightMobileInner' : ''}`}>
                   <div className="text-xs mb-24 lg:mb-0" id="regenblog">
                     {/* h1 Insight only for mobile screens */}
-                    <h1 className="text-2xl  font-semibold text-gray-800 my-4 lg:hidden">
-                      Insights
-                    </h1>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      paddingBottom: '1em',
+                      paddingTop: '1em',
+                      fontSize: '1.5em'
+                    }}>
+                      <h1 className="text-2xl  font-semibold text-gray-800 my-4 lg:hidden">Insights</h1>
+                      <XMarkIcon 
+                        className="w-7 h-7 text-slate-800"
+                        onClick={() => {
+                          const container = document.querySelector(".misciDashboardInsightMobile");
+                          container?.classList.remove("open")
+                        }}
+                      />
+                    </div>
                     <div className="flex jusify-between items-center">
                       <p className="font-normal w-[100%] lg:w-[70%] text-base">
                         Create your next draft on the basis of your edits.
@@ -737,7 +797,7 @@ const MisciWorkSpace = ({
                       />
                     </>
                   )}
-                </>
+                </div>
               </div>
             </Tab.Panel>
           </Tab.Group>
