@@ -193,7 +193,7 @@ export default function Post() {
       let newAuthorPath  = authorPath;
       if(router.query?.source){
         // setAuthorPath(newAuthorPath+ "?source="+ router.query.source)
-        newAuthorPath = newAuthorPath+ "?source="+ router.query.source;
+        newAuthorPath = newAuthorPath+ window.location.search;
       }else{
       }
       router.push("/public" + newAuthorPath);

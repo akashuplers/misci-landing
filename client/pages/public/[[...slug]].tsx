@@ -240,7 +240,7 @@ function Page({
       }
       const backButton = document.createElement("div");
       backButton.innerHTML = `
-      <a href="/library" class="hover:bg-orange-200 p-2 rounded-full flex items-center gap-2 transition duration-300" style="display: flex; justify-content: flex-start; align-items: center; gap: 8px; width: fit-content;">
+      <a href="/library${window.location.search}" class="hover:bg-orange-200 p-2 rounded-full flex items-center gap-2 transition duration-300" style="display: flex; justify-content: flex-start; align-items: center; gap: 8px; width: fit-content;">
       <div style="width: 1rem; height: 100%; position: relative">
         <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />

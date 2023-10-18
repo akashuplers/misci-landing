@@ -35,4 +35,6 @@ export interface LibModuleProps {
   linkedInUserName: string;
   twitterUserName: string
   userName: string;
+  page: string;
+  limit: string;
 }
