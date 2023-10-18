@@ -31,6 +31,7 @@ import { jsonToHtml } from "../../helpers/helper";
 import styles from "../../styles/publish.module.css";
 import {
   convertToURLFriendly,
+  convertUnixTimestampToFormattedDate,
   getBlogTitle,
   unixToLocalYear,
 } from "../../store/appHelpers";
@@ -89,7 +90,7 @@ function Page({
         (obj: any) => obj?.platform === "wordpress"
       );
       // console.log(dataForDate[0].creation_date);
-      const date = unixToLocalYear(Number(dataForDate[0].creation_date));
+      const date = convertUnixTimestampToFormattedDate(Number(dataForDate[0].creation_date));
       setPublishDate(date);
       // likeblog update
       // gqlData.fetchBlog.likes
@@ -245,7 +246,7 @@ function Page({
           <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
         </svg>
       </div>
-      <div class="text-orange-500 font-semibold text-capitalize break-words">Library</div>
+      <div class="text-gray-500 font-semibold text-capitalize break-words">Library</div>
     </a>
       `;      
     // add at the top of tempElement

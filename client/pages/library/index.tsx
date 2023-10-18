@@ -43,13 +43,12 @@ export default function Library() {
 
   // Define your query options
 
-
   const { loading, error, data, refetch } = useQuery(GET_BLOGS, {
     variables: {
       options: {
         status: ["published"],
         page_skip: pageSkip * PAGE_COUNT,
-        page_limit: (1+pageSkip) * PAGE_COUNT,
+        page_limit: (1 + pageSkip) * PAGE_COUNT,
         search: debouncedSearchTerm,
       },
     },
@@ -67,7 +66,7 @@ export default function Library() {
   const skecelton = [1, 2, 3, 4, 5, 6, 7];
   return (
     <Layout blogId={null}>
-      <div className="lib-container max-w-full mx-auto relative overflow-x-hidden">
+      <div className="lib-container max-w-full mx-auto relative overflow-x-hidden h-screen">
         <div
           style={{
             width: 1214.42,
@@ -95,7 +94,7 @@ export default function Library() {
         />
         <FloatingBalls className="absolute top-[10%] right-[2%]" />
         <FloatingBalls className="absolute top-[50%] right-[10%]" />
-        <section className="px-10 flex items-center justify-center sticky top-5 lg:top-10 z-20 bg-white bg-opacity-10 backdrop-blur-lg lg:gap-56 ">
+        <section className="px-10 flex items-center justify-center sticky top-0 lg:top-0 z-20 bg-white bg-opacity-10 backdrop-blur-lg lg:gap-56 ">
           {/* header */}
           <div className="w-[40%] h-16 bg-white bg-opacity-25 rounded-lg shadow border border-indigo-600 backdrop-blur-[18px] justify-start items-center gap-3 inline-flex my-4">
             <input
@@ -108,9 +107,10 @@ export default function Library() {
             />
           </div>
         </section>
-        <section className="mt-10 h-full  lg:px-10 grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-screen-2xl mx-auto overflow-hidden">
-          {data
-            ? data?.getAllBlogs?.blogs.map((item: any, index: number) => {
+        <section className="my mb-52-20 min-h-full  lg:px-10 grid  grid-cols-1 lg:grid-cols-2 gap-10 max-w-screen-2xl mx-auto overflow-hidden">
+          {data ? (
+            data?.getAllBlogs?.blogs.length > 0 ? (
+              data?.getAllBlogs?.blogs.map((item: any, index: number) => {
                 return (
                   <LibModule
                     key={index}
@@ -120,19 +120,24 @@ export default function Library() {
                   />
                 );
               })
-            : skecelton.map((item: any, index: number) => {
-                return <LibModuleSkeleton key={index} />;
-              })}
+            ) : (
+              <div className="text-center text-2xl text-gray-400">
+                No Blogs Found
+              </div>
+            )
+          ) : (
+            skecelton.map((item: any, index: number) => {
+              return <LibModuleSkeleton key={index} />;
+            })
+          )}
         </section>
-        {
-          data?.getAllBlogs?.blogs.length > 0 && (
-            <Pagination
+        {data?.getAllBlogs?.blogs.length > 0 && (
+          <Pagination
             totalItems={data?.getAllBlogs?.count}
             pageSkip={pageSkip}
             setPageSkip={setPageSkip}
           />
-          )
-        }
+        )}
       </div>
     </Layout>
   );
@@ -141,7 +146,11 @@ export default function Library() {
 function LibModule(props: LibModuleProps) {
   console.log(props);
   const router = useRouter();
-  const username = props.twitterUserName ?? props.linkedInUserName ?? props.userName ?? "lille";
+  const username =
+    props.twitterUserName ??
+    props.linkedInUserName ??
+    props.userName ??
+    "lille";
   return (
     <div
       onClick={() => {
@@ -159,7 +168,10 @@ function LibModule(props: LibModuleProps) {
             {/* img */}
             <img
               className="w-6 h-6 rounded-full"
-              src={props.profileImage ?? "https://secure.gravatar.com/avatar/42f7181c2013147d652d1c99ee035862?s=800&d=identicon"}
+              src={
+                props.profileImage ??
+                "https://secure.gravatar.com/avatar/42f7181c2013147d652d1c99ee035862?s=800&d=identicon"
+              }
             />
             <div className="text-stone-500 text-xs font-normal  capitalize leading-3">
               {username}
