@@ -12,6 +12,7 @@ import { RelativeTimeString } from "@/components/ui/RelativeTimeString";
 import { FloatingBalls } from "@/components/ui/Chip";
 import { useDebounce } from "@uidotdev/usehooks";
 import { ResulsNotFoundIcon } from "@/components/localicons/localicons";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 const GET_BLOGS = gql`
   query GetAllBlogs($options: BlogListInput) {
     getAllBlogs(options: $options) {
@@ -101,14 +102,15 @@ export default function Library(props: Props) {
         <FloatingBalls className="absolute top-[50%] right-[10%]" />
         <section className="px-10 flex items-center justify-center sticky top-0 lg:top-0 z-20 bg-white bg-opacity-10 backdrop-blur-lg lg:gap-56 ">
           {/* header */}
-          <div className="w-[40%] h-16 bg-white bg-opacity-25 rounded-lg shadow border border-indigo-600 backdrop-blur-[18px] justify-start items-center gap-3 inline-flex my-4">
+          <div className="w-[40%] h-16 bg-white bg-opacity-25 rounded-lg shadow border border-indigo-600 backdrop-blur-[18px] justify-start items-center gap-3 inline-flex my-4 px-2 focus-within:ring-2 focus-within:ring-indigo-600">
+            <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
             <input
               id="1"
               type="text"
               placeholder="Search Topics"
               value={search}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="peer h-full w-full rounded-lg  font-thin outline-none drop-shadow-sm transition-all duration-200 ease-in-out focus:bg-transparent focus:ring-2 focus:ring-transparent"
+              className="peer h-full w-full rounded-lg  font-thin outline-none drop-shadow-sm transition-all duration-200 ease-in-out focus:bg-transparent focus:ring-2 focus:ring-transparent border-none"
             />
           </div>
         </section>
