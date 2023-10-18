@@ -421,7 +421,7 @@ const MisciWorkSpace = ({
     );
   }
   return (
-    <div className="w-screen h-screen overscroll-none overflow-hidden px-12 py-2">
+    <div className="w-screen h-screen overscroll-none overflow-hidden px-2 lg:px-12 py-2">
       <style>{`.sidebar-position-left #button.sidebar{display: none;`}</style>
       <header className="w-full h-[8%] justify-between items-center flex">
         <button
@@ -510,7 +510,7 @@ const MisciWorkSpace = ({
                   <div className="bg-opacity-70 w-full overflow-y-scroll h-full justify-start items-center gap-5 flex flex-col">
                     <div className="w-full text-slate-800 text-xl font-bold leading-relaxed tracking-tight min-h-20 bg-[#FF8980] flex flex-col items-center sticky top-0 z-20 rounded-b-[3rem] ">
                       {/* {userquestion} */}
-                      <div className="flex w-full items-center  gap-4 p-4 px-8 justify-start">
+                      <div className="flex w-full items-center  gap-4 p-4 px-2 lg:px-8 justify-start">
                         <div
                           className="h-14 w-14 text-red-500 border-white "
                           style={{
@@ -564,7 +564,7 @@ const MisciWorkSpace = ({
                 <br />
               </div>
               <div
-                className="w-[30%] max-h-full p-2 flex-col flex relative border-l border-gray-200 gap-6"
+                className="hidden lg:w-[30%] max-h-full p-2 flex-col lg:flex relative border-l border-gray-200 gap-6"
                 id="leftContent"
               >
                 <div
@@ -661,7 +661,7 @@ const MisciWorkSpace = ({
                 </>
               </div>
               <div
-                className="w-[30%] max-h-full p-2 flex-col flex relative border-l border-gray-200 gap-3"
+                className="lg:w-[30%] max-h-full p-2 flex-col hidden lg:flex relative border-l border-gray-200 gap-3"
                 id="leftContent"
               >
                 <>
