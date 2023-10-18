@@ -759,10 +759,11 @@ const MisciWorkSpace = ({
                       paddingBottom: '1em',
                       paddingTop: '1em',
                       fontSize: '1.5em'
-                    }}>
+                    }}
+                    >
                       <h1 className="text-2xl  font-semibold text-gray-800 my-4 lg:hidden">Insights</h1>
                       <XMarkIcon 
-                        className="w-7 h-7 text-slate-800"
+                        className="w-7 h-7 text-slate-800 lg:hidden block"
                         onClick={() => {
                           const container = document.querySelector(".misciDashboardInsightMobile");
                           container?.classList.remove("open")
