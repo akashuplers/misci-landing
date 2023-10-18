@@ -714,7 +714,7 @@ const MisciWorkSpace = ({
               <div className={`dashboardInsightWidth ${windowWidth <= 768 ? 'misciDashboardInsightMobile' : ''}`}
                 id="leftContent"
               >
-                <div className={`w-[95%] md:w-[30%] max-h-full p-2 flex-col flex relative border-l border-gray-200 gap-3  ${windowWidth <= 768 ? 'misciDashboardInsightMobileInner' : ''}`}>
+                <div className={`w-[95%] max-h-full p-2 flex-col flex relative border-l border-gray-200 gap-3  ${windowWidth <= 768 ? 'misciDashboardInsightMobileInner' : ''}`}>
                   <div className="text-xs mb-24 lg:mb-0" id="regenblog">
                     {/* h1 Insight only for mobile screens */}
                     <div style={{
