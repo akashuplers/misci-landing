@@ -1129,7 +1129,7 @@ export default function DashboardInsights({
         id="regenblog"
       >
         <div style={isWindows ? { 
-          marginTop: "10px", 
+          marginTop: "2px", 
           minHeight: '340px',
           height: '40%' 
         } : { minHeight: '340px',
