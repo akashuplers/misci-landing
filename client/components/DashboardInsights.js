@@ -1441,7 +1441,7 @@ export default function DashboardInsights({
           </div>
         </div>
 
-        <div className="idea-container" style={{height: '50%'}}>
+        <div className="idea-container mt-8" style={{height: '50%'}}>
           <div className="flex py-2 relative gap-5">
             <button
               className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs flex items-center justify-around gap-1"
