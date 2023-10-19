@@ -645,7 +645,7 @@ export default function DashboardInsights({
     const initialIdeasMapWithIndex = {};
 
     console.log(ideas, initailIdeas);
-    initailIdeas.forEach((idea, index) => {
+    initailIdeas?.forEach((idea, index) => {
       initialIdeasMapWithIndex[index] = idea.used ? 1 : 0;
     });
     console.log(initialIdeasMapWithIndex);
@@ -1128,20 +1128,25 @@ export default function DashboardInsights({
         style={{ borderLeft: "2px solid #d2d2d2" }}
         id="regenblog"
       >
-        <div style={isWindows ? { marginTop: "10px", minHeight: '340px',
-          height: '50%' } : { minHeight: '340px',
-          height: '50%'}}>
+        <div 
+        // minHeight: '340px',
+          // height: '40%'
+          className={`min-h-[340px] h-[40%] lg:min-h-[50%]`}
+        style={isWindows ? { 
+          marginTop: "2px", 
+          minHeight: '340px',
+        } : { }}>
           {/* h1 Insight only for mobile screens */}
-          <div style={{
+          <div 
+          className={`py-[1rem] lg:py-0`}
+          style={{
             display: 'flex',
             justifyContent: 'space-between',
-            paddingBottom: '1em',
-            paddingTop: '1em',
             fontSize: '1.5em'
           }}>
-            <h1 className="pt-[0.65em] font-semibold">WORKSPACE</h1>
+            <h2 className="pt-[0.65em] font-semibold text-sm">WORKSPACE</h2>
             <XMarkIcon 
-              className="w-7 h-7 text-slate-800"
+              className="md:hidden w-7 h-7 text-slate-800"
               onClick={() => {
                 const container = document.querySelector(".dashboardInsightMobile");
                 container.classList.remove("open")
@@ -1436,7 +1441,7 @@ export default function DashboardInsights({
           </div>
         </div>
 
-        <div className="idea-container" style={{height: '45%'}}>
+        <div className="idea-container mt-8" style={{height: '50%'}}>
           <div className="flex py-2 relative gap-5">
             <button
               className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs flex items-center justify-around gap-1"
@@ -1445,7 +1450,7 @@ export default function DashboardInsights({
               }}
             >
               <div className={`bg-blue-500 w-1.5 h-1.5  rounded-full`} />
-              Idea
+              Idea {`(s)`}
               <span className="mx-auto bg-blue-200 text-[10px] w-[20px] h-[20px] flex items-center justify-center font-bold text-sky-800 rounded-full absolute left-[102%] top-[50%] translate-y-[-50%]">
                 {/* {ideas?.length} */}
                 {newFilteredIdeas?.length > 0

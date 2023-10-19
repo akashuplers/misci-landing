@@ -51,10 +51,8 @@ export default function TextModal({
               >
                 <Dialog.Panel
                 id='text-modal-panel'
-                  className="w-full  transform overflow-y-scroll rounded-2xl bg-white px-4 text-left align-middle shadow-xl transition-all relative"
-                  style={{
-                    maxHeight: "80vh",
-                    width: "60vw",
+                  className=" transform overflow-y-scroll rounded-2xl bg-white  px-1 lg:px-4 text-left align-middle shadow-xl transition-all relative w-[80vh] h-[90vh] lg:w-[60vh] lg:h-[80vh]"
+                  style={{ 
                     padding: "0px",
                     paddingBottom: "0px",
                     paddingTop: "0px",

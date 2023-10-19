@@ -64,7 +64,6 @@ export default function dashboard({ query }) {
 
   const [windowWidth, setWindowWidth] = useState(0)
 
-  console.log('MEE DATA GET IN ZUSLAND');
   // const { userTimeSave, loading: userDataLoading, error: userDataError } = useUserTimeSave();
   // const {}
   var getToken;
