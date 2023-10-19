@@ -47,6 +47,119 @@ interface MisciWorkSpaceProps {
   setAppLoaderStatus: any;
   resetTimeout: any;
 }
+
+const DynamicAnswersData = ({
+  html,
+  short_answer,
+  detailed_answer,
+  image,
+  setAnswersReadMore
+}: {
+  html: string;
+  detailed_answer: string;
+  short_answer: string;
+  image:string,
+  setAnswersReadMore : any
+}) => {
+  return (
+    <div className="">
+      {/* <div
+        id="answersEditor"
+        dangerouslySetInnerHTML={{ __html: mySafeHTML }}
+      ></div> */}
+      <div className="flex flex-col gap-4 relative">
+        {/* show image */}
+       
+        {short_answer.length > 0 ? (
+          <>
+            <div>
+              <p>
+                Answer:{" "}
+                <span
+                  dangerouslySetInnerHTML={{ __html: short_answer }}
+                ></span>
+              </p>
+            </div>
+            <div className="border-b border-gray-200"></div>
+
+            <div className="flex justify-center items-center ">
+           <div className="w-[50%]">
+           <img
+            className="w-full h-full rounded-full object-cover"
+            src={image}
+            alt=""
+          />
+           </div>
+        </div>
+          </>
+        ) : (
+          <></>
+        )}
+        {/* under line */}
+        <div className="">
+        <p
+          className={`block lg:hidden`}
+            dangerouslySetInnerHTML={{
+              __html:
+                // remove text after 2k chars
+                detailed_answer.length > 500
+                  ? detailed_answer.slice(0, 500) + "..."
+                  : detailed_answer,
+            }}
+          ></p>
+
+          <p
+          className={`hidden lg:block`}
+            dangerouslySetInnerHTML={{
+              __html:
+                // remove text after 2k chars
+                detailed_answer.length > 2000
+                  ? detailed_answer.slice(0, 2000) + "..."
+                  : detailed_answer,
+            }}
+          ></p>
+          {/* read more brn */}
+
+         <div className="hidden lg:block">
+         {detailed_answer.length > 2000 && (
+            <div className="absolute bottom-[-5%] right-0">
+              <button
+                className="p-2 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600 text-white 
+              transition duration-300 ease-in-out 
+              hover:bg-indigo-700 hover:border-indigo-700 hover:shadow-lg hover:scale-105"
+                onClick={() => {
+                  setAnswersReadMore(true);
+                }}
+              >
+                Read More
+              </button>
+            </div>
+          )}
+         </div>
+
+         <div className="lg:hidden block">
+         {detailed_answer.length > 500 && (
+            <div className="absolute bottom-[-5%] right-0">
+              <button
+                className="p-2 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600 text-white 
+              transition duration-300 ease-in-out 
+              hover:bg-indigo-700 hover:border-indigo-700 hover:shadow-lg hover:scale-105"
+                onClick={() => {
+                  setAnswersReadMore(true);
+                }}
+              >
+                Read More
+              </button>
+            </div>
+          )}
+         </div>
+         
+        </div>
+      </div>
+      <br />
+    </div>
+  );
+};
 const MisciWorkSpace = ({
   subscriptionData,
   question,
@@ -343,84 +456,6 @@ const MisciWorkSpace = ({
       });
   }
 
-  const DynamicAnswersData = ({
-    html,
-    short_answer,
-    detailed_answer,
-    image
-  }: {
-    html: string;
-    detailed_answer: string;
-    short_answer: string;
-    image:string,
-  }) => {
-    return (
-      <div className="">
-        {/* <div
-          id="answersEditor"
-          dangerouslySetInnerHTML={{ __html: mySafeHTML }}
-        ></div> */}
-        <div className="flex flex-col gap-4 relative">
-          {/* show image */}
-         
-          {short_answer.length > 0 ? (
-            <>
-              <div>
-                <p>
-                  Answer:{" "}
-                  <span
-                    dangerouslySetInnerHTML={{ __html: short_answer }}
-                  ></span>
-                </p>
-              </div>
-              <div className="border-b border-gray-200"></div>
-
-              <div className="flex justify-center items-center ">
-             <div className="w-[50%]">
-             <img
-              className="w-full h-full rounded-full object-cover"
-              src={image}
-              alt=""
-            />
-             </div>
-          </div>
-            </>
-          ) : (
-            <></>
-          )}
-          {/* under line */}
-          <div className="">
-            <p
-              dangerouslySetInnerHTML={{
-                __html:
-                  // remove text after 2k chars
-                  detailed_answer.length > 2000
-                    ? detailed_answer.slice(0, 2000) + "..."
-                    : detailed_answer,
-              }}
-            ></p>
-            {/* read more brn */}
-
-            {detailed_answer.length > 2000 && (
-              <div className="absolute bottom-[-5%] right-0">
-                <button
-                  className="p-2 rounded-lg shadow border border-indigo-600 justify-center items-center gap-1 flex bg-indigo-600 text-white 
-                transition duration-300 ease-in-out 
-                hover:bg-indigo-700 hover:border-indigo-700 hover:shadow-lg hover:scale-105"
-                  onClick={() => {
-                    setAnswersReadMore(true);
-                  }}
-                >
-                  Read More
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-        <br />
-      </div>
-    );
-  };
   const editTabs = [
     {
       name: "Used Ideas",
@@ -465,7 +500,7 @@ const MisciWorkSpace = ({
         
           {!errorPresent && (
             <>
-            {windowWidth <=768 && <button
+            {(windowWidth <=768 && currentTabIndex == 1) && <button
             className="cta text-red-500 workspace-open-button"
             onClick={() => {
               const container = document.querySelector(".misciDashboardInsightMobile");
@@ -584,6 +619,7 @@ const MisciWorkSpace = ({
                         <div className="mt-4 text-lg w-[95%]">
                           <DynamicAnswersData
                           image={answerImage}
+                          setAnswersReadMore={setAnswersReadMore}
                             html={editorAnswersData ?? ""}
                             short_answer={shortAnswer}
                             detailed_answer={detailedAnswer}
@@ -714,8 +750,8 @@ const MisciWorkSpace = ({
               <div className={`dashboardInsightWidth ${windowWidth <= 768 ? 'misciDashboardInsightMobile' : ''}`}
                 id="leftContent"
               >
-                <div className={`w-[95%] md:w-[30%] max-h-full p-2 flex-col flex relative border-l border-gray-200 gap-3  ${windowWidth <= 768 ? 'misciDashboardInsightMobileInner' : ''}`}>
-                  <div className="text-xs mb-24 lg:mb-0" id="regenblog">
+                <div className={`w-[95%] max-h-full p-2 flex-col flex relative border-l border-gray-200 gap-3  ${windowWidth <= 768 ? 'misciDashboardInsightMobileInner' : ''}`}>
+                  <div className="text-xs" id="regenblog">
                     {/* h1 Insight only for mobile screens */}
                     <div style={{
                       display: 'flex',
@@ -723,10 +759,11 @@ const MisciWorkSpace = ({
                       paddingBottom: '1em',
                       paddingTop: '1em',
                       fontSize: '1.5em'
-                    }}>
+                    }}
+                    >
                       <h1 className="text-2xl  font-semibold text-gray-800 my-4 lg:hidden">Insights</h1>
                       <XMarkIcon 
-                        className="w-7 h-7 text-slate-800"
+                        className="w-7 h-7 text-slate-800 lg:hidden block"
                         onClick={() => {
                           const container = document.querySelector(".misciDashboardInsightMobile");
                           container?.classList.remove("open")
