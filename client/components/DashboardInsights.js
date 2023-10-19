@@ -1131,7 +1131,7 @@ export default function DashboardInsights({
         <div 
         // minHeight: '340px',
           // height: '40%'
-          className={`min-h-[340px] h-[40%] lg:min-h-[50%] h-full`}
+          className={`min-h-[340px] h-[40%] lg:min-h-[50%]`}
         style={isWindows ? { 
           marginTop: "2px", 
           minHeight: '340px',
@@ -1144,7 +1144,7 @@ export default function DashboardInsights({
             justifyContent: 'space-between',
             fontSize: '1.5em'
           }}>
-            <h1 className="pt-[0.65em] font-semibold">WORKSPACE</h1>
+            <h2 className="pt-[0.65em] font-semibold text-sm">WORKSPACE</h2>
             <XMarkIcon 
               className="md:hidden w-7 h-7 text-slate-800"
               onClick={() => {
