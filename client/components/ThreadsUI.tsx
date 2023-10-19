@@ -166,7 +166,7 @@ const Threads = ({
         </div>
       )}
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="flex flex-col items-start justify-center max-h-fit py-2 overflow-auto">
+        <div className="flex flex-col items-start justify-center max-h-fit py-2 overflow-auto hide-scrollbar">
           <div className="flex flex-col w-full">
             <Droppable droppableId="threads">
               {(provided) => (
