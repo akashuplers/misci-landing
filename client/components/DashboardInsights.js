@@ -1128,9 +1128,12 @@ export default function DashboardInsights({
         style={{ borderLeft: "2px solid #d2d2d2" }}
         id="regenblog"
       >
-        <div style={isWindows ? { marginTop: "10px", minHeight: '340px',
-          height: '50%' } : { minHeight: '340px',
-          height: '50%'}}>
+        <div style={isWindows ? { 
+          marginTop: "10px", 
+          minHeight: '340px',
+          height: '40%' 
+        } : { minHeight: '340px',
+          height: '40%'}}>
           {/* h1 Insight only for mobile screens */}
           <div style={{
             display: 'flex',
@@ -1141,7 +1144,7 @@ export default function DashboardInsights({
           }}>
             <h1 className="pt-[0.65em] font-semibold">WORKSPACE</h1>
             <XMarkIcon 
-              className="w-7 h-7 text-slate-800"
+              className="md:hidden w-7 h-7 text-slate-800"
               onClick={() => {
                 const container = document.querySelector(".dashboardInsightMobile");
                 container.classList.remove("open")
@@ -1436,7 +1439,7 @@ export default function DashboardInsights({
           </div>
         </div>
 
-        <div className="idea-container" style={{height: '45%'}}>
+        <div className="idea-container" style={{height: '60%'}}>
           <div className="flex py-2 relative gap-5">
             <button
               className="idea-button cta used m-2 ml-0 active !px-[0.4em] !py-[0.25em] !text-xs flex items-center justify-around gap-1"
