@@ -500,7 +500,7 @@ const MisciWorkSpace = ({
         
           {!errorPresent && (
             <>
-            {windowWidth <=768 && <button
+            {(windowWidth <=768 && currentTabIndex == 1) && <button
             className="cta text-red-500 workspace-open-button"
             onClick={() => {
               const container = document.querySelector(".misciDashboardInsightMobile");
