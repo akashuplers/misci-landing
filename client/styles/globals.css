@@ -914,3 +914,21 @@ iframe::-webkit-scrollbar-thumb:hover {
 .misciDashboardInsightMobile.shadow{
   background-color: rgba(0, 0, 0, 0.47);
 }
+
+.hide-scrollbar {
+  /* Hide the scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+
+  /* Make the content scrollable */
+  overflow: auto;
+}
+
+/* Customize the scrollbar appearance (optional) */
+.hide-scrollbar::-webkit-scrollbar {
+  width: 0px; /* Adjust the width as needed */
+}
+
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background-color: transparent; /* Adjust the color as needed */
+}
