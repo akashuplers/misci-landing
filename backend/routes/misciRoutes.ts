@@ -906,8 +906,8 @@ router.post('/re-generate', async (req: any, res: any) => {
                     description,
                     article_id: articleIds,
                     tags: uniqueTags,
-                    imageUrl: imageUrl ? imageUrl : blog.imageUrl,
-                    imageSrc,
+                    imageUrl: blog.imageUrl ? blog.imageUrl : imageUrl,
+                    imageSrc: blog.imageSrc ? blog.imageSrc : imageSrc,
                     email: userDetails && userDetails.email,
                     updatedAt: getTimeStamp()
                 }
