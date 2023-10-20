@@ -100,15 +100,15 @@ export default function FAQPage() {
   <Layout>
       <div className="max-w-3xl mx-auto my-10 bg-white p-4 shadow-md rounded-md space-y-4">
         {faqs.map((faq, i) => (
-          <div key={i}>
+          <div key={i} className='border-gray-200 bg-gray-50 rounded-sm'>
             <div
-              className="flex cursor-pointer items-center justify-between gap-1.5 p-6 border-2 border-s-4 border-gray-500 bg-gray-50"
+              className="flex cursor-pointer items-center justify-between gap-1.5 p-6 border-2 border-s-4 border-gray-200 bg-gray-50"
               onClick={() => setActiveIndex(i === activeIndex ? null : i)}
             >
               <h2 className="text-lg font-medium text-gray-900 ">
                 {faq.question}
               </h2>
-              <span className={`shrink-0 rounded-full bg-white p-1.5 text-gray-900 transform transition-transform ${activeIndex === i ? 'rotate-45' : ''}`}>
+              <span className={`shrink-0 rounded-full bg-white p-1.5 text-gray-900 border-gray-200  transform transition-transform ${activeIndex === i ? 'rotate-45' : ''}`}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5"
@@ -124,7 +124,7 @@ export default function FAQPage() {
               </span>
             </div>
 
-            <div className={`mt-4 leading-relaxed text-black transition-all duration-300 ${activeIndex === i ? 'block' : 'hidden'}`}>
+            <div className={`mt-4 px-4 pb-4 leading-relaxed text-black border-gray-200 bg-gray-50 transition-all duration-300 ${activeIndex === i ? 'block' : 'hidden'}`}>
               {faq.answer}
             </div>
           </div>
