@@ -124,7 +124,7 @@ export default function Library(props: Props) {
         </section>
         <section
           className={`
-        my mb-52-20 min-h-full relative lg:px-10 grid  grid-cols-1 lg:grid-cols-2 gap-10 max-w-screen-2xl mx-auto overflow-hidden
+        my mb-52 min-h-full relative lg:px-10 grid  grid-cols-1 lg:grid-cols-2 gap-10 max-w-screen-2xl mx-auto overflow-hidden
         `}
         >
           {data ? (
