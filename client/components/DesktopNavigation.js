@@ -68,6 +68,11 @@ var desktopNavigationRoutes = [
     current: false,
   },
   {
+    name: "Library",
+    href: "/library",
+    current: false,
+  },
+  {
     name: "Value",
     href: "/aboutus",
     current: false,
