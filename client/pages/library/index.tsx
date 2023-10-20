@@ -161,7 +161,7 @@ export default function Library(props: Props) {
           )}
         </section>
       </div>
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center mt-20">
         {data?.getAllBlogs?.blogs.length > 0 && (
           <Pagination
             totalItems={data?.getAllBlogs?.count}
