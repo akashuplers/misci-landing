@@ -11,6 +11,8 @@ import { useRouter } from "next/router";
 import { RelativeTimeString } from "@/components/ui/RelativeTimeString";
 import { FloatingBalls } from "@/components/ui/Chip";
 import { useDebounce } from "@uidotdev/usehooks";
+import { ResulsNotFoundIcon } from "@/components/localicons/localicons";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 const GET_BLOGS = gql`
   query GetAllBlogs($options: BlogListInput) {
     getAllBlogs(options: $options) {
@@ -35,9 +37,13 @@ const GET_BLOGS = gql`
 `;
 
 const PAGE_COUNT = 12;
-export default function Library() {
-  const [pageSkip, setPageSkip] = useState(0);
-  const [pageLimit, setPageLimit] = useState(10);
+interface Props {
+  page: number;
+  limit: number;
+}
+export default function Library(props: Props) {
+  const [pageSkip, setPageSkip] = useState(props.page - 1);
+  const [pageLimit, setPageLimit] = useState(props.limit);
   const [search, setSearch] = useState<string>();
   const debouncedSearchTerm = useDebounce(search, 300);
 
@@ -96,18 +102,21 @@ export default function Library() {
         <FloatingBalls className="absolute top-[50%] right-[10%]" />
         <section className="px-10 flex items-center justify-center sticky top-0 lg:top-0 z-20 bg-white bg-opacity-10 backdrop-blur-lg lg:gap-56 ">
           {/* header */}
-          <div className="w-[40%] h-16 bg-white bg-opacity-25 rounded-lg shadow border border-indigo-600 backdrop-blur-[18px] justify-start items-center gap-3 inline-flex my-4">
+          <div className="w-[40%] h-16 bg-white bg-opacity-25 rounded-lg shadow border border-indigo-600 backdrop-blur-[18px] justify-start items-center gap-3 inline-flex my-4 px-2 focus-within:ring-2 focus-within:ring-indigo-600">
+            <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
             <input
               id="1"
               type="text"
               placeholder="Search Topics"
               value={search}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="peer h-full w-full rounded-lg  font-thin outline-none drop-shadow-sm transition-all duration-200 ease-in-out focus:bg-transparent focus:ring-2 focus:ring-transparent"
+              className="peer h-full w-full rounded-lg  font-thin outline-none drop-shadow-sm transition-all duration-200 ease-in-out focus:bg-transparent focus:ring-2 focus:ring-transparent border-none"
             />
           </div>
         </section>
-        <section className="my mb-52-20 min-h-full  lg:px-10 grid  grid-cols-1 lg:grid-cols-2 gap-10 max-w-screen-2xl mx-auto overflow-hidden">
+        <section className={`
+        my mb-52-20 min-h-full relative lg:px-10 grid  grid-cols-1 lg:grid-cols-2 gap-10 max-w-screen-2xl mx-auto overflow-hidden
+        `}>
           {data ? (
             data?.getAllBlogs?.blogs.length > 0 ? (
               data?.getAllBlogs?.blogs.map((item: any, index: number) => {
@@ -116,13 +125,23 @@ export default function Library() {
                     key={index}
                     {...item}
                     id={index}
+                    page={pageSkip}
+                    limit={pageLimit}
                     setCurrentLibraryData={setCurrentLibraryData}
                   />
                 );
               })
             ) : (
-              <div className="text-center text-2xl text-gray-400">
-                No results found for your search keywords, please try another search
+              <div className="text-center text-2xl text-gray-400 w-full flex items-center justify-center absolute mx-auto ">
+                <div className="w-48 h-full relative flex flex-col items-center ">
+                  <div className="w-48  opacity-50 text-center text-gray-900 text-lg">
+                    Result Not Found
+                  </div>
+                  <div className="w-48 opacity-50 text-center text-gray-900 text-xs">
+                    Try another search
+                  </div>
+                <ResulsNotFoundIcon/>
+                </div>
               </div>
             )
           ) : (
@@ -131,6 +150,8 @@ export default function Library() {
             })
           )}
         </section>
+      </div>
+      <div className="flex items-center justify-center">
         {data?.getAllBlogs?.blogs.length > 0 && (
           <Pagination
             totalItems={data?.getAllBlogs?.count}
@@ -155,7 +176,24 @@ function LibModule(props: LibModuleProps) {
     <div
       onClick={() => {
         props.setCurrentLibraryData(props);
-        router.push(`/public/${props._id}?source=library`);
+        // router.push(`/public/${props._id}?source=library`);
+        const { _id, page, limit } = props;
+
+        // Build the query object
+        const query = {
+          source: "library",
+          page: props.page,
+          limit: props.limit,
+        };
+
+        // Navigate to the new URL
+        router.push({
+          pathname: "/public/[id]",
+          query: {
+            id: _id,
+            ...query,
+          },
+        });
       }}
     >
       <div
@@ -216,4 +254,16 @@ function LibModuleSkeleton() {
       <div className="w-20 lg:w-48 h-36 rounded-md bg-gray-400 animate-pulse"></div>
     </div>
   );
+}
+
+// get server side props
+export async function getServerSideProps(context: any) {
+  const page = context.query.page || 1;
+  const limit = context.query.limit || 10;
+  return {
+    props: {
+      page,
+      limit,
+    },
+  };
 }
