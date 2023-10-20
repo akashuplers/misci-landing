@@ -37,4 +37,5 @@ export interface LibModuleProps {
   userName: string;
   page: string;
   limit: string;
+  totalComments:string  ;
 }
