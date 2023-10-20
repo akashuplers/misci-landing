@@ -1944,7 +1944,7 @@ export default function TinyMCEEditor({
         handleSave={handleSave}
         bid={blog_id}
       />
-      <div className="block mt-0 sm:mt-4" style={isWindows ? { marginTop: "10px", height: '100%' } : {height: '100%'}}>
+      <div className="block mt-0 sm:mt-4" style={isWindows ? { marginTop: "5px", height: '100%' } : {height: '100%'}}>
 
         <div
           style={{

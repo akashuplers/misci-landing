@@ -101,7 +101,7 @@ const PublishMisciModal = ({
           handleClose();
         }}
         ariaHideApp={false}
-        className="modalModalWidth flex items-center justify-center"
+        className="modalModalWidth flex items-center justify-center w-[90%] lg:max-w-[55%] lg:w-[40%] "
         style={{
           overlay: {
             backgroundColor: "rgba(0,0,0,0.5)",
@@ -119,8 +119,6 @@ const PublishMisciModal = ({
             // width: "100%",
             bottom: "",
             zIndex: "999",
-            maxWidth: "55%",
-            width: "40%",
             marginRight: "-50%",
             minHeight: "40%",
             maxHeight: '100vh',
@@ -152,7 +150,7 @@ const PublishMisciModal = ({
 
           {showRedirectionModal ? (
             <>
-              <div className="w-full h-full flex-col justify-around items-center inline-flex px-10 gap-8">
+              <div className="w-full h-full flex-col justify-around items-center inline-flex px-2 lg:px-10 gap-8">
                 <div className="self-stretch flex-col justify-start items-center flex">
                   <div className="self-stretch text-center text-black font-bold text-2xl leading-loose">
                     You will be navigated back to Homepage in {seconds} seconds
@@ -186,7 +184,7 @@ const PublishMisciModal = ({
             </>
           ) : (
             <>
-              <div className="w-full h-full relative  rounded-lg flex-col flex justify-center items-center px-10 ">
+              <div className="w-full h-full relative  rounded-lg flex-col flex justify-center items-center px-2 lg:px-10 ">
                 <div className="self-stretch text-center text-black text-2xl font-semibold leading-normal w-full">
                   This looks great! 👏
                 </div>
