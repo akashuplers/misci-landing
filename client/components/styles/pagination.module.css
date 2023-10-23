@@ -17,21 +17,24 @@
     gap: 1em;
     z-index: 999;
     list-style-type: none;
-    width: 100%;
+    /* width: 100%; */
     padding-left: 6rem;
     padding-right: 6rem;
 }
 
 .page{
-    border: 2px solid #d9d9d9;
+    /* border: 2px solid #d9d9d9; */
     border-radius: 8px;
     width: 35px;
     height: 35px;
-    font-size: 0.75em;
+    font-size: 0.85em;
+    font-weight: 400;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: white;
+
+    box-shadow: 4px 4px 16px 2px #0000001c;
 }
 
 .disabled{

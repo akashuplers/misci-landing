@@ -46,7 +46,7 @@ const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
                 <li>
                     <a
                         href="#"
-                        className={`prev ${currentPage === 1 ? styles.disabled : ''}`}
+                        className={`prev ${styles.page}  ${currentPage === 1 ? styles.disabled : ''}`}
                         onClick={() => handlePageClick(1)}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
@@ -58,7 +58,7 @@ const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
                 <li>
                     <a
                         href="#"
-                        className={`prev ${currentPage === 1 ? styles.disabled : ''}`}
+                        className={`prev ${styles.page}  ${currentPage === 1 ? styles.disabled : ''}`}
                         onClick={() => handlePageClick(currentPage - 1)}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="6" height="8" viewBox="0 0 6 8" fill="none">
@@ -80,7 +80,7 @@ const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
                 <li>
                     <a
                         href="#"
-                        className={`next ${currentPage === totalPages ? styles.disabled : ''}`}
+                        className={`next ${styles.page}  ${currentPage === totalPages ? styles.disabled : ''}`}
                         onClick={() => handlePageClick(currentPage + 1)}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="6" height="8" viewBox="0 0 6 8" fill="none">
@@ -91,7 +91,7 @@ const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
                 <li>
                     <a
                         href="#"
-                        className={`next ${currentPage === totalPages ? styles.disabled : ''}`}
+                        className={`next ${styles.page}  ${currentPage === totalPages ? styles.disabled : ''}`}
                         onClick={() => handlePageClick(totalPages)}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">

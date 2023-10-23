@@ -80,7 +80,7 @@ export default function Library(props: Props) {
   const skecelton = [1, 2, 3, 4, 5, 6, 7];
   return (
     <Layout blogId={null}>
-      <div className="lib-container max-w-full mx-auto relative overflow-x-hidden h-screen">
+      <div className="lib-container max-w-full mx-auto relative overflow-hidden min-h-screen">
         <div
           style={{
             width: 1214.42,
@@ -124,7 +124,7 @@ export default function Library(props: Props) {
         </section>
         <section
           className={`
-        my mb-52 min-h-full relative lg:px-10 grid  grid-cols-1 lg:grid-cols-2 gap-10 max-w-screen-2xl mx-auto overflow-hidden
+        my mb-52 relative lg:px-10 flex flex-wrap gap-10 max-w-screen-2xl mx-auto overflow-hidden
         `}
         >
           {data ? (
@@ -160,7 +160,6 @@ export default function Library(props: Props) {
             })
           )}
         </section>
-      </div>
       <div className="flex items-center justify-center mt-20">
         {data?.getAllBlogs?.blogs.length > 0 && (
           <Pagination
@@ -169,6 +168,7 @@ export default function Library(props: Props) {
             setPageSkip={setPageSkip}
           />
         )}
+      </div>
       </div>
     </Layout>
   );
@@ -184,6 +184,7 @@ function LibModule(props: LibModuleProps) {
     "lille";
   return (
     <div
+    className="flex-grow basis-[fit-content]"
       onClick={() => {
         props.setCurrentLibraryData(props);
         // router.push(`/public/${props._id}?source=library`);
@@ -208,10 +209,10 @@ function LibModule(props: LibModuleProps) {
     >
       <div
         className={`
-    w-full min-h-52 h-full px-10 py-7 bg-gray-200 bg-opacity-20 rounded-lg  border border-white backdrop-blur-2xl justify-between items-center inline-flex hover:bg-opacity-30 transition-all duration-300 cursor-pointer hover:border-lime-50 hover:border-opacity-50 shadow-lg
+    w-full min-h-52 h-full px-10 py-7 bg-gray-200 bg-opacity-20 rounded-lg  border border-white backdrop-blur-2xl justify-between items-center gap-4 inline-flex hover:bg-opacity-30 transition-all duration-300 cursor-pointer hover:border-lime-50 hover:border-opacity-50 shadow-lg
     `}
       >
-        <div className="w-[80%] flex-col justify-start items-start gap-2.5 inline-flex h-full">
+        <div className="flex-col justify-start items-start gap-2.5 inline-flex h-full">
           <div className="justify-start items-center gap-2 inline-flex">
             {/* img */}
             <img
@@ -256,7 +257,7 @@ function LibModule(props: LibModuleProps) {
           </div>
         </div>
         <img
-          className="lg:min-w-[20%] h-36 rounded"
+          className=" h-36 rounded"
           src={props.image ?? "https://via.placeholder.com/189x146"}
         />
       </div>
