@@ -124,7 +124,7 @@ export default function Library(props: Props) {
         </section>
         <section
           className={`
-        my mb-52 relative lg:px-10 flex flex-wrap justify-center gap-10 max-w-screen-2xl mx-auto
+        my mb-20 relative lg:px-10 flex flex-wrap justify-center gap-10 max-w-screen-2xl mx-auto
         `}
         >
           {data ? (
