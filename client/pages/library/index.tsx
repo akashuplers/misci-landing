@@ -124,7 +124,7 @@ export default function Library(props: Props) {
         </section>
         <section
           className={`
-        my mb-52 relative lg:px-10 flex flex-wrap justify-center gap-10 max-w-screen-2xl mx-auto overflow-hidden
+        my mb-52 relative lg:px-10 flex flex-wrap justify-center gap-10 max-w-screen-2xl mx-auto
         `}
         >
           {data ? (
@@ -142,12 +142,12 @@ export default function Library(props: Props) {
                 );
               })
             ) : (
-              <div className="text-center text-2xl text-gray-400 w-full flex items-center justify-center absolute mx-auto ">
+              <div className="text-center text-2xl text-black-400 w-full flex items-center justify-center absolute mx-auto z-20">
                 <div className="w-48 h-full relative flex flex-col items-center ">
-                  <div className="w-48  opacity-50 text-center text-gray-900 text-lg">
+                  <div className="w-48  text-center text-gray-900 text-lg">
                     Result Not Found
                   </div>
-                  <div className="w-48 opacity-50 text-center text-gray-900 text-xs">
+                  <div className="w-48 text-center text-gray-900 text-xs">
                     Try another search
                   </div>
                   <ResulsNotFoundIcon />
