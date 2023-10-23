@@ -12,6 +12,7 @@ import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import {
   ArrowRightOnRectangleIcon,
   Bars3Icon,
+  BuildingLibraryIcon,
   ChevronDownIcon,
   ClockIcon,
   FolderIcon,
@@ -88,6 +89,12 @@ export default function Sidebar() {
       href: "/saved",
       icon: FolderIcon,
       current: url === "/saved",
+    },
+    {
+      name: "Lille Library",
+      href: "/library",
+      icon: BuildingLibraryIcon,
+      current: url === "/library",
     },
 
     {
