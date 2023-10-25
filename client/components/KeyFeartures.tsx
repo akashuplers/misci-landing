@@ -71,8 +71,8 @@ const KeyFeatures: React.FC = () => {
         <h1 className='text-primary text-4xl font-bold'>Key Features</h1>
         <p className='text-xl font-light'>Navigating Crafting Content with Your Co-Pilot</p>
         <div className='w-full sm:w-2/3 flex flex-wrap gap-6 py-10 pb-20'>
-            {AllFeatures.map(feature => (
-                <div className='w-full sm:max-w-[500px] md:max-w-[390px] flex flex-col justify-start items-start gap-4 p-6 pr-14 bg-white rounded-lg shadow-lg'>
+            {AllFeatures.map((feature, key) => (
+                <div key={key} className='w-full sm:max-w-[500px] md:max-w-[390px] flex flex-col justify-start items-start gap-4 p-6 pr-14 bg-white rounded-lg shadow-lg'>
                   <div>{feature.icon}</div>
                   <h1 className='text-lg font-bold'>{feature.heading}</h1>
                   <h4 className='text-base font-light'>{feature.subHeading}</h4>
