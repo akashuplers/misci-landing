@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import styles from "./styles/pagination.module.css"
 
 const PAGE_COUNT = 12;
 
 const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
-    console.log(totalItems, pageSkip, setPageSkip);
     const totalPages = Math.ceil(totalItems / PAGE_COUNT)
     const [currentPage, setCurrentPage] = useState(pageSkip + 1);
     const [visiblePages, setVisiblePages] = useState(
         getVisiblePages(currentPage, totalPages)
     );
 
-    function onPageChange(page){
-        setCurrentPage(page);
-        setPageSkip(page - 1);
-    }
+    const router = useRouter()
+    useEffect(() => {
+        if (router.query.page && router.query.page >= 1 && router.query.page <= totalPages) {
+            const page = parseInt(router.query.page)
+            takeToNewPage(page)
+        }
+    }, [router]);
 
     function getVisiblePages(currentPage, totalPages) {
         let startPage = Math.max(1, currentPage - 3);
@@ -33,11 +36,19 @@ const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
         return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
     }
 
-    function handlePageClick(page) {
+    function setNewPageUrl(page){
+        router.push({
+            pathname: router.pathname,
+            query: { page: page },
+        });
+    }
+
+    function takeToNewPage(page){
         const newVisiblePages = getVisiblePages(page, totalPages);
         setVisiblePages(newVisiblePages);
-        onPageChange(page);
-    }    
+        setCurrentPage(page);
+        setPageSkip(page - 1);
+    }  
 
     if(totalPages <= 1) return null
     return (
@@ -45,9 +56,9 @@ const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
             <ul className={styles.pagination}>
                 <li>
                     <a
-                        href="#"
-                        className={`prev ${currentPage === 1 ? styles.disabled : ''}`}
-                        onClick={() => handlePageClick(1)}
+                        
+                        className={`prev ${styles.page}  ${currentPage === 1 ? styles.disabled : ''}`}
+                        onClick={() => setNewPageUrl(1)}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
                             <path d="M12.4877 12L13.4277 11.06L10.3744 8L13.4277 4.94L12.4877 4L8.48773 8L12.4877 12Z" fill="#333333"/>
@@ -57,9 +68,9 @@ const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
                 </li>
                 <li>
                     <a
-                        href="#"
-                        className={`prev ${currentPage === 1 ? styles.disabled : ''}`}
-                        onClick={() => handlePageClick(currentPage - 1)}
+                        
+                        className={`prev ${styles.page}  ${currentPage === 1 ? styles.disabled : ''}`}
+                        onClick={() => setNewPageUrl(currentPage - 1)}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="6" height="8" viewBox="0 0 6 8" fill="none">
                             <path d="M4.82123 8L5.76123 7.06L2.7079 4L5.76123 0.94L4.82123 8.21774e-08L0.82123 4L4.82123 8Z" fill="black"/>
@@ -69,9 +80,9 @@ const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
                 {visiblePages.map((page) => (
                     <li key={page}>
                         <a
-                            href="#"
+                            
                             className={`${styles.page} ${page === currentPage ? styles.active : ''}`}
-                            onClick={() => handlePageClick(page)}
+                            onClick={() => setNewPageUrl(page)}
                         >
                         {page}
                         </a>
@@ -79,9 +90,9 @@ const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
                 ))}
                 <li>
                     <a
-                        href="#"
-                        className={`next ${currentPage === totalPages ? styles.disabled : ''}`}
-                        onClick={() => handlePageClick(currentPage + 1)}
+                        
+                        className={`next ${styles.page}  ${currentPage === totalPages ? styles.disabled : ''}`}
+                        onClick={() => setNewPageUrl(currentPage + 1)}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="6" height="8" viewBox="0 0 6 8" fill="none">
                             <path d="M1.70123 0L0.76123 0.94L3.81456 4L0.76123 7.06L1.70123 8L5.70123 4L1.70123 0Z" fill="black"/>
@@ -90,9 +101,9 @@ const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
                 </li>
                 <li>
                     <a
-                        href="#"
-                        className={`next ${currentPage === totalPages ? styles.disabled : ''}`}
-                        onClick={() => handlePageClick(totalPages)}
+                        
+                        className={`next ${styles.page}  ${currentPage === totalPages ? styles.disabled : ''}`}
+                        onClick={() => setNewPageUrl(totalPages)}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
                             <path d="M5.03473 4L4.09473 4.94L7.14806 8L4.09473 11.06L5.03473 12L9.03473 8L5.03473 4Z" fill="black"/>

@@ -80,7 +80,7 @@ export default function Library(props: Props) {
   const skecelton = [1, 2, 3, 4, 5, 6, 7];
   return (
     <Layout blogId={null}>
-      <div className="lib-container max-w-full mx-auto relative overflow-x-hidden h-screen">
+      <div className="lib-container max-w-full mx-auto relative overflow-hidden min-h-screen">
         <div
           style={{
             width: 1214.42,
@@ -108,7 +108,7 @@ export default function Library(props: Props) {
         />
         <FloatingBalls className="absolute top-[10%] right-[2%]" />
         <FloatingBalls className="absolute top-[50%] right-[10%]" />
-        <section className="px-10 flex items-center justify-center sticky top-0 lg:top-0 z-20 bg-white bg-opacity-10 backdrop-blur-lg lg:gap-56 ">
+        <section className="px-10 flex items-center justify-center sticky top-0 lg:top-0 bg-white bg-opacity-10 backdrop-blur-lg lg:gap-56 ">
           {/* header */}
           <div className="w-full lg:w-[40%] h-16 bg-white bg-opacity-25 rounded-lg shadow border border-indigo-600 backdrop-blur-[18px] justify-start items-center gap-3 inline-flex my-4 px-2 focus-within:ring-2 focus-within:ring-indigo-600">
             <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
@@ -124,7 +124,7 @@ export default function Library(props: Props) {
         </section>
         <section
           className={`
-        my mb-52 min-h-full relative lg:px-10 grid  grid-cols-1 lg:grid-cols-2 gap-10 max-w-screen-2xl mx-auto overflow-hidden
+        my mb-20 relative lg:px-10 flex flex-wrap justify-center gap-10 max-w-screen-2xl mx-auto
         `}
         >
           {data ? (
@@ -142,12 +142,12 @@ export default function Library(props: Props) {
                 );
               })
             ) : (
-              <div className="text-center text-2xl text-gray-400 w-full flex items-center justify-center absolute mx-auto ">
+              <div className="text-center text-2xl text-black-400 w-full flex items-center justify-center absolute mx-auto z-20">
                 <div className="w-48 h-full relative flex flex-col items-center ">
-                  <div className="w-48  opacity-50 text-center text-gray-900 text-lg">
+                  <div className="w-48  text-center text-gray-900 text-lg">
                     Result Not Found
                   </div>
-                  <div className="w-48 opacity-50 text-center text-gray-900 text-xs">
+                  <div className="w-48 text-center text-gray-900 text-xs">
                     Try another search
                   </div>
                   <ResulsNotFoundIcon />
@@ -160,7 +160,6 @@ export default function Library(props: Props) {
             })
           )}
         </section>
-      </div>
       <div className="flex items-center justify-center mt-20">
         {data?.getAllBlogs?.blogs.length > 0 && (
           <Pagination
@@ -169,6 +168,7 @@ export default function Library(props: Props) {
             setPageSkip={setPageSkip}
           />
         )}
+      </div>
       </div>
     </Layout>
   );
@@ -184,6 +184,7 @@ function LibModule(props: LibModuleProps) {
     "lille";
   return (
     <div
+    className="flex-grow"
       onClick={() => {
         props.setCurrentLibraryData(props);
         // router.push(`/public/${props._id}?source=library`);
@@ -208,10 +209,10 @@ function LibModule(props: LibModuleProps) {
     >
       <div
         className={`
-    w-full min-h-52 h-full px-10 py-7 bg-gray-200 bg-opacity-20 rounded-lg  border border-white backdrop-blur-2xl justify-between items-center inline-flex hover:bg-opacity-30 transition-all duration-300 cursor-pointer hover:border-lime-50 hover:border-opacity-50 shadow-lg
+   w-full min-h-52 h-full px-10 py-7 bg-gray-200 bg-opacity-20 rounded-lg  border border-white backdrop-blur-2xl justify-between items-center gap-4 inline-flex hover:bg-opacity-30 transition-all duration-300 cursor-pointer hover:border-lime-50 hover:border-opacity-50 shadow-lg
     `}
       >
-        <div className="w-[80%] flex-col justify-start items-start gap-2.5 inline-flex h-full">
+        <div className=" flex-col justify-start items-start gap-4 inline-flex h-full">
           <div className="justify-start items-center gap-2 inline-flex">
             {/* img */}
             <img
@@ -226,10 +227,10 @@ function LibModule(props: LibModuleProps) {
             </div>
           </div>
           <div className="flex-col justify-around items-start gap-1 inline-flex h-full">
-            <div className="lg:w-80 text-zinc-800 text-lg font-bold  capitalize leading-tight">
+            <div className="lg:max-w-[17rem] w-full text-zinc-800 text-lg font-bold  capitalize leading-tight">
               {props.title ?? props.description.slice(0, 50) + "..."}
             </div>
-            <div className="lg:w-80 text-zinc-800 text-sm font-normal  capitalize leading-none">
+            <div className="lg:max-w-[17rem] w-full text-zinc-800 text-sm font-normal  capitalize leading-none">
               {props.title
                 ? props.description.slice(0, 100) + "..."
                 : props.description.slice(60, 120) + "..."}
@@ -256,7 +257,7 @@ function LibModule(props: LibModuleProps) {
           </div>
         </div>
         <img
-          className="lg:min-w-[20%] h-36 rounded"
+          className="object-contain w-1/2 max-w-[200px] rounded"
           src={props.image ?? "https://via.placeholder.com/189x146"}
         />
       </div>

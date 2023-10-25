@@ -1138,7 +1138,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
           <FloatingBalls className="hidden absolute top-[10%] w-8 rotate-90 left-[3%] md:block" />
 
           <div
-            className="w-full lg:w-[51%] h-full "
+            className="w-full lg:w-[50%] h-full "
             style={{
               display: isAuthenticated ? "none" : "block,",
               transform: "rotate(0deg)",
@@ -1152,7 +1152,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
             }}
           ></div>
           <div
-            className="w-full lg:w-[51%] h-full "
+            className="w-full lg:w-[50%] h-full "
             style={{
               transform: "rotate(180deg)",
               display: isAuthenticated ? "none" : "block,", //      transform: scaleX(-1);
