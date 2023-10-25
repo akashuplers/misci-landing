@@ -35,11 +35,6 @@ const mobileNavigation = [
     href: "/pricing",
     icon: TagIcon,
   },
-  {
-    name: "Features",
-    href: "/#features",
-    icon: TagIcon,
-  },
 ];
 
 const MobileNavigation = ({

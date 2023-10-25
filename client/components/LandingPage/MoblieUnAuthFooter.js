@@ -23,7 +23,7 @@ export const socialLinks = [
 const MoblieUnAuthFooter = () => {
   return (
     <footer
-      className="text-center text-black lg:text-left relative bg-transparent mt-[-10px]"
+      className="text-center text-black lg:text-left relative bg-transparent mt-[-20px]"
     >
       <div className="px-6 py-10 relative text-center md:text-left" style={{
         background: 'linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%,  #FFEBE9 100%)'

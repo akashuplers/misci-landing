@@ -82,10 +82,4 @@ var desktopNavigationRoutes = [
     href: "/pricing",
     current: false,
   },
-  {
-    name: "Features",
-    href: "/#features",
-    current: false,
-
-  },
 ];
