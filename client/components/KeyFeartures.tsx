@@ -67,19 +67,19 @@ const AllFeatures: KeyFeaturesType[] = [
 
 const KeyFeatures: React.FC = () => {
   return (
-    <div className='w-full max-w-7xl mx-auto px-6 relative' id='features'>
+    <div className='w-full max-w-[90rem] mx-auto px-6 relative' id='features'>
         <h1 className='text-primary text-4xl font-bold'>Key Features</h1>
         <p className='text-xl font-light'>Navigating Crafting Content with Your Co-Pilot</p>
-        <div className='w-full sm:w-2/3 flex flex-wrap gap-6 py-10 pb-20'>
+        <div className='w-full lg:w-4/5 max-w-[1000px] flex flex-wrap gap-6 py-10 pb-20'>
             {AllFeatures.map((feature, key) => (
-                <div key={key} className='w-full sm:max-w-[500px] md:max-w-[390px] flex flex-col justify-start items-start gap-4 p-6 pr-14 bg-white rounded-lg shadow-lg'>
+                <div key={key} className='w-full sm:max-w-[500px] md:max-w-[330px] flex flex-col justify-start items-start gap-4 p-6 pr-14 bg-white rounded-lg shadow-lg'>
                   <div>{feature.icon}</div>
                   <h1 className='text-lg font-bold'>{feature.heading}</h1>
                   <h4 className='text-base font-light'>{feature.subHeading}</h4>
                 </div>
             ))}
         </div>
-        <svg className='max-w-full sm:max-w-1/2 absolute right-0 top-1/2 transform translate-y-[-50%] z-[-1]' xmlns="http://www.w3.org/2000/svg" width="622" height="390" viewBox="0 0 622 390" fill="none">
+        <svg className='hidden md:block max-w-full sm:max-w-1/2 absolute right-[-3rem] top-1/2 transform translate-y-[-50%] z-[-1]' xmlns="http://www.w3.org/2000/svg" width="622" height="390" viewBox="0 0 622 390" fill="none">
             <g clip-path="url(#clip0_5079_30288)">
             <path d="M185.562 388.129C185.929 357.224 198.463 327.709 220.447 305.984C242.431 284.259 272.092 272.076 302.999 272.076C333.906 272.076 363.568 284.259 385.552 305.984C407.536 327.709 420.07 357.224 420.436 388.129H185.562Z" fill="#4A3AFE" fill-opacity="0.1"/>
             <path d="M211.637 182.458L210.811 189.691C210.794 189.859 210.732 190.019 210.629 190.154C210.524 190.287 210.388 190.392 210.233 190.459C210.08 190.525 209.912 190.551 209.746 190.533C209.578 190.515 209.418 190.453 209.283 190.352L208.846 190.013L209.052 187.256C209.23 184.912 208.768 182.564 207.715 180.462C206.662 178.361 205.058 176.585 203.074 175.324L186.883 165.036C186.296 164.676 185.662 164.398 185 164.211L188.658 160.157C188.93 159.863 189.262 159.632 189.632 159.479C190 159.324 190.397 159.248 190.796 159.256C191.197 159.273 191.591 159.372 191.952 159.546C192.309 159.726 192.624 159.979 192.877 160.289L211.637 182.458Z" stroke="#282828" stroke-width="1.28806" stroke-miterlimit="10"/>
