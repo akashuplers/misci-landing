@@ -40,6 +40,7 @@ import Head from "next/head";
 export default function Post() {
   const router = useRouter();
   const { bid } = router.query;
+  console.log(router);
   const [data, setData] = useState("");
   const [showShareModal, setShareModal] = useState(false);
   const [text, setText] = useState("");
@@ -189,7 +190,13 @@ export default function Post() {
   }, [router, gqlData]);
   useEffect(() => {
     if (authorPath != "") {
-      router.push("/public" + authorPath);
+      let newAuthorPath  = authorPath;
+      if(router.query?.source){
+        // setAuthorPath(newAuthorPath+ "?source="+ router.query.source)
+        newAuthorPath = newAuthorPath+ window.location.search;
+      }else{
+      }
+      router.push("/public" + newAuthorPath);
     }
   }, [authorPath]);
 

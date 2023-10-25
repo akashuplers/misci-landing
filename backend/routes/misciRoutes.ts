@@ -229,6 +229,7 @@ router.get('/weekly-report', async (req: any, res: any) => {
                   date: 1,
                   article_id: 1,
                   dbLocation: 1,
+                  ipAddress: 1,
                 },
             },
         ]).toArray()
@@ -243,10 +244,10 @@ router.get('/weekly-report', async (req: any, res: any) => {
             Promise.all(
                 misciData.map(async (data: any) => {
                     // console.log(data)
-                    if(!data.dbLocation) {
-                        console.log(data, "not")
+                    let dbLocation = null
+                    if(data.dbLocation) {
+                        dbLocation = data.dbLocation.find((dbLocationData: any) => dbLocationData.articleId === data.article_id[0])
                     }
-                    const dbLocation = data.dbLocation.find((dbLocationData: any) => dbLocationData.articleId === data.article_id[0])
                     let source = ""
                     let type = ""
                     if(dbLocation){
@@ -265,11 +266,12 @@ router.get('/weekly-report', async (req: any, res: any) => {
                         "timestamp": getDateString(data.timestamp, true),
                         "source": source,
                         "type": type,
+                        "ipAddress": data.ipAddress,
                     })
                 })
             )
         )
-        let Headers = ['blog id', 'question', 'short answer', 'detail answer', "date", "timestamp", "source"];
+        let Headers = ['blog id', 'question', 'short answer', 'detail answer', "date", "timestamp", "source", "type", "ipAddress"];
         console.log(preparedData, "Data")
         const wb = xlsx.utils.book_new(),
         ws = xlsx.utils.json_to_sheet(preparedData);
@@ -483,6 +485,13 @@ router.post('/generate', async (req: any, res: any) => {
             answers,
             ipAddress 
         }
+        const articleIds = [article.id]
+        let dbLocation: any[] = []
+        dbLocation.push({
+            articleId: article.id,
+            db:article.db_origin,
+            collection: userData.company
+        })
         const noteReferences = await db.db('lilleBlogs').collection('notesReferences').findOne({
             article_id: article.id
         })
@@ -497,7 +506,6 @@ router.post('/generate', async (req: any, res: any) => {
         setTimeout(() => {
             publish({userId, keyword: null, step: "ANSWER_FETCHING_COMPLETED", data})
         }, 3000)
-        const articleIds = [article.id]
         let pythonEnd = new Date()
         // let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
         let texts = ""
@@ -512,17 +520,11 @@ router.post('/generate', async (req: any, res: any) => {
         let ideasText = ""
         let articlesData: any[] = []
         let keyword = title
-        let dbLocation: any[] = []
         if(articleIds) {
             articlesData = await (
                 Promise.all(
                     articleIds?.map(async (id: string, index: number) => {
                         const articleData = await db.db(article.db_origin).collection(userData.company).findOne({_id: id})
-                        dbLocation.push({
-                            articleId: id,
-                            db:article.db_origin,
-                            collection: userData.company
-                        })
                         if(!((articleData.proImageLink).toLowerCase().includes('placeholder'))) {
                             imageUrl = articleData.proImageLink
                             imageSrc = articleData._source?.orig_url

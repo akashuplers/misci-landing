@@ -30,3 +30,14 @@ export const createBlogLink = (
     return blogLink;
   };
   
+
+  function getQueryParams() {
+    const queryParams:any = {};
+    const urlParams :any = new URLSearchParams(window.location.search);
+    
+    for (const [key, value] of urlParams.entries()) {
+      queryParams[key] = value;
+    }
+    
+    return queryParams;
+  }

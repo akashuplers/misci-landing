@@ -11,12 +11,12 @@ const http = axios.create({
 http.interceptors.request.use(
   (config) => {
     // Get the token from local storage
-    const token = "asldkfjasldfjalsdkjflasdjflsjdfaldsf"; // Assuming you've stored the token as 'userToken' in local storage
+    // const token = "asldkfjasldfjalsdkjflasdjflsjdfaldsf"; // Assuming you've stored the token as 'userToken' in local storage
 
-    // If a token exists, add it to the request header
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    // // If a token exists, add it to the request header
+    // if (token) {
+    //   config.headers.Authorization = `Bearer ${token}`;
+    // }
 
     return config;
   },

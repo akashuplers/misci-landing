@@ -245,6 +245,7 @@ export const blogResolvers = {
                                 linkedInUserName: user.linkedInUserName,
                                 twitterUserName: user.twitterUserName,
                                 userName: user.userName,
+                                image: blog.image ? blog.image : process.env.PLACEHOLDER_IMAGE
                             }
                         })
                     )

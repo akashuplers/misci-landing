@@ -1,7 +1,8 @@
 import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
 import { getBlogbyIdState } from "@/graphql/queries/getBlogbyId";
+import {GQL_GET_ALL_LIBRARIES_ITEMS} from '@/graphql/queries/lib/getBlogs';
 import http from "./AxoisInstance";
-
+import { print } from 'graphql';
 interface IApiMethodsHelpers {
   text: string;
   blogId: string;
@@ -408,3 +409,29 @@ export const saveMisciBlog = (payload: object) => {
       throw error; // Optionally rethrow the error for handling in your component
     });
 };
+
+interface Blog {
+  _id: string;
+  title: string;
+  description: string;
+  image: string;
+  tags: string[];
+  status: string;
+  date: string;
+}
+
+interface BlogListResponse {
+  count: number;
+  blogs: Blog[];
+}
+
+interface LibApiResponse<T> {
+  data?: T;
+  errors?: any[];
+}
+
+export const getLibrariesItems = async  (payload: {}) => {  
+  const response = await http.post(API_ROUTES.GQL_PATH, { query: print(GQL_GET_ALL_LIBRARIES_ITEMS), variables: payload });
+  return response.data;
+};
+  
