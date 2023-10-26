@@ -18,7 +18,7 @@ const multer = require("multer");
 const inMemoryStorage = multer.memoryStorage();
 const uploadStrategy = multer({ storage: inMemoryStorage }).single('file');
 
-router.get('/latest-questions', async (req: any, res: any) => {
+router.get('/top-questions', async (req: any, res: any) => {
     try {
         const db = req.app.get('dbLive')
         const misciAdminData = await db.db('lilleBlogs').collection('misciTopQuestions').find().toArray()
