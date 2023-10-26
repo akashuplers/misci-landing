@@ -30,6 +30,7 @@ export const API_ROUTES = {
   MISCI_GENERATE: "/misci/generate",
   MISCI_REGENERATE: "/misci/re-generate",
   MISCI_PUBLISH: '/misci/publish',
+  MISCI_TOP_ALL: '/misci/top-questions',
   DELETE_REF_SOURCES: '/auth/remove-sources',
   MISCI_SAVE: '/misci/blog/save',
 };
