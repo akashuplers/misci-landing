@@ -4,7 +4,7 @@ import { FloatingBalls } from "../ui/Chip";
 export const socialLinks = [
   {
     name: "Facebook",
-    link: "https://www.facebook.com/",
+    link: "https://www.facebook.com/Nowigence/",
     icon: <FacebookIcon className="h-5 w-5 mr-3 rounded-full" />
   },
   {
@@ -44,23 +44,23 @@ const MoblieUnAuthFooter = () => {
           </div>
           <div className="w-full flex flex-col items-start">
             <h6 className="mb-4 flex justify-start font-semibold  ">Company</h6>
-            <p className="mb-4">
-              {/* <Link href="/#whyChooseUs" className="text-white-600 hover:opacity-90">
+            {/* <p className="mb-4">
+              <Link href="/#whyChooseUs" className="text-white-600 hover:opacity-90">
                 Why Choose us
-              </Link> */}
-            </p>
+              </Link>
+            </p> */}
             {/* <p className="mb-4">
               <Link href="/#testimonial" className="text-white-600 hover:opacity-90 ">
                 Testimonial
               </Link>
             </p> */}
             <p className="mb-4">
-              <Link href="/pricing" className="text-white-600 hover:opacity-90 ">
+              <Link href="/pricing" target="_blank" className="text-white-600 hover:opacity-90 ">
                 Pricing
               </Link>
             </p>
             <p>
-              <Link href="/faq" className="text-white-600 hover:opacity-90 ">
+              <Link href="/faq" target="_blank" className="text-white-600 hover:opacity-90 ">
                 FAQs
               </Link>
             </p>
@@ -70,7 +70,7 @@ const MoblieUnAuthFooter = () => {
               Resources
             </h6>
             <p className="mb-4">
-              <Link
+              <Link target="_blank"
                 href="/Lille_Guide_Latest.pdf"
                 className="text-white-600 hover:opacity-90  justify-start ss"
               >
@@ -78,7 +78,7 @@ const MoblieUnAuthFooter = () => {
               </Link>
             </p>
             <p className="mb-4">
-              <Link
+              <Link target="_blank"
                 href="https://nowigence.com/privacy-policy"
                 className="text-white-600 hover:opacity-90  justify-start ss"
               >
@@ -86,12 +86,12 @@ const MoblieUnAuthFooter = () => {
               </Link>
             </p>
             <p className="mb-4">
-              <Link href="https://nowigence.com/privacy-policy/" className="text-white-600 hover:opacity-90 ">
+              <Link target="_blank" href="https://nowigence.com/privacy-policy/" className="text-white-600 hover:opacity-90 ">
                 Terms & Conditions
               </Link>
             </p>
             <p className="mb-4">
-              <a href="https://blogs.lille.ai" className="text-white-600 hover:opacity-90 ">
+              <a target="_blank" href="https://blogs.lille.ai" className="text-white-600 hover:opacity-90 ">
                 Blogs
               </a>
             </p>
@@ -117,6 +117,7 @@ const MoblieUnAuthFooter = () => {
             <div className="flex justify-center md:justify-start">
               {socialLinks.map((socialLink, index) => (
                 <Link
+                  target="_blank"
                   href={socialLink.link}
                   key={index}
                   className="text-white-600 hover:opacity-90 "
