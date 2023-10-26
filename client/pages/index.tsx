@@ -80,6 +80,7 @@ import GoogleDriveModal from "@/modals/GoogleDriveModal";
 import { StepCompleteData } from "@/store/types";
 import GenerateLoadingModal from "@/modals/GenerateLoadingModal";
 import GenerateErrorModal from "@/modals/GenerateErrorModal";
+import KeyFeatures from "@/components/KeyFeartures";
 
 const PAYMENT_PATH = "/?payment=true";
 const TONES = [
@@ -1402,7 +1403,9 @@ export default function Home({ payment, randomLiveUsersCount }) {
               </defs>
             </svg>
           </div>
-        </div>
+        <KeyFeatures/>
+      </div>
+
 
         {!isAuthenticated && <MoblieUnAuthFooter />}
       </Layout>
