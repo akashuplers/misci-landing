@@ -18,6 +18,23 @@ const multer = require("multer");
 const inMemoryStorage = multer.memoryStorage();
 const uploadStrategy = multer({ storage: inMemoryStorage }).single('file');
 
+router.get('/latest-questions', async (req: any, res: any) => {
+    try {
+        const db = req.app.get('dbLive')
+        const misciAdminData = await db.db('lilleBlogs').collection('misciTopQuestions').find().toArray()
+        console.log(misciAdminData, "misciAdminData")
+        return res.status(200).send({
+            error: false,
+            data: misciAdminData
+        })
+    }catch(e){
+        console.log(e, "e")
+        return res.status(400).send({
+            error: true,
+            message: e.message
+        })
+    }
+})
 
 router.get('/export-report',async (req: any, res: any) => {
     const db = req.app.get('dbLive')
