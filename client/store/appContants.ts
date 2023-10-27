@@ -10,6 +10,13 @@ export const UpgradeFeatures = [
   "🛠 Bespoke Adaptations: Align Lille.ai to fit your unique needs, with customization possibilities and dedicated support. ",
   "🔭 Perfect for: Visionaries in search of the ultimate content tool. ",
 ];
+export const UpgradeFeaturesNew = [
+  "At just $39/month ",
+  "💡 200 Monthly Credits for uninterrupted creativity. ",
+  "♾️ Limitless horizons: Save, edit, and publish content. From LinkedIn posts to insightful daily twitter threads. ",
+  "🛠 Bespoke Adaptations: Align Lille.ai to fit your unique needs, with customization possibilities and dedicated support. ",
+  "🔭 Perfect for: Visionaries in search of the ultimate content tool. ",
+];
 export const STRIPE_CONST_AMOUNT = 100;
 export const APP_REGEXP = {
   EMAIL_VALIDATION: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
