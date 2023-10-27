@@ -2,6 +2,9 @@ import KeyFeatures from '@/components/KeyFeartures';
 import Layout from '@/components/Layout';
 import { FloatingBalls } from '@/components/ui/Chip';
 import React from 'react';
+import MoblieUnAuthFooter, {
+  socialLinks,
+} from "@/components/LandingPage/MoblieUnAuthFooter";
 
 const AllFeatures = [
   {
@@ -250,6 +253,9 @@ const Features: React.FC = () => {
           </div>
 
         </div>
+
+        <MoblieUnAuthFooter/>
+        
     </Layout>
   );
 };
