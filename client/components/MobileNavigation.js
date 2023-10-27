@@ -7,6 +7,7 @@ import {
   QuestionMarkCircleIcon,
   TagIcon,
   XMarkIcon,
+  PresentationChartBarIcon
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { Fragment, useState } from "react";
@@ -34,6 +35,16 @@ const mobileNavigation = [
     name: "Pricing",
     href: "/pricing",
     icon: TagIcon,
+  },
+  {
+    name: "Features",
+    href: "/#features",
+    icon: TagIcon,
+  },
+  {
+    name: "Saleslille",
+    href: "http://saleslille.ai",
+    icon: PresentationChartBarIcon,
   },
 ];
 

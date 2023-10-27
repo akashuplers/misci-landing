@@ -14,6 +14,7 @@ import {
   MonthlyPlans,
   STRIPE_CONST_AMOUNT,
   UpgradeFeatures,
+  UpgradeFeaturesNew
 } from "@/store/appContants";
 import MoblieUnAuthFooter from "@/components/LandingPage/MoblieUnAuthFooter";
 
@@ -277,9 +278,15 @@ export default function Pricing() {
                   </div>
                   <div className="flex  flex-col items-start justify-start mt-4">
                     {" "}
-                    {UpgradeFeatures.map((item, i) => {
-                      return <FeaturesItem key={i} text={item} />;
-                    })}
+                    {
+                      currentPlan?.subscriptionType === "Monthly" ?
+                      UpgradeFeatures.map((item, i) => {
+                        return <FeaturesItem key={i} text={item} />;
+                      }) :
+                      UpgradeFeaturesNew.map((item, i) => {
+                        return <FeaturesItem key={i} text={item} />;
+                      })
+                    }
                   </div>
                   <div className="flex flex-col items-center">
                     <Link

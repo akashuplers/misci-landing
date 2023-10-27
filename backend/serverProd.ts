@@ -56,7 +56,7 @@ const startServer = async () => {
   app.use('/stripe', stripe)
   app.use('/quickupload', quickupload)
   app.use('/blog', commentBlogRoutes)
-  app.use('/misci', misciRoutes)
+  app.use('/misci-routes', misciRoutes)
   app.set('trust proxy', true)
   const httpServer = createServer(app);
   const database = await db({type: null})

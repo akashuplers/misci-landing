@@ -9,6 +9,7 @@ const { convert } = require('html-to-text');
 import { saveAs } from 'file-saver';
 import {Blob} from 'buffer';
 import { sendEmails } from "../utils/mailJetConfig";
+import { isJsonString } from "../utils/encode";
 const fs = require('fs')
 
 const express = require("express");
@@ -17,6 +18,23 @@ const multer = require("multer");
 const inMemoryStorage = multer.memoryStorage();
 const uploadStrategy = multer({ storage: inMemoryStorage }).single('file');
 
+router.get('/top-questions', async (req: any, res: any) => {
+    try {
+        const db = req.app.get('dbLive')
+        const misciAdminData = await db.db('lilleBlogs').collection('misciTopQuestions').find().toArray()
+        console.log(misciAdminData, "misciAdminData")
+        return res.status(200).send({
+            error: false,
+            data: misciAdminData
+        })
+    }catch(e){
+        console.log(e, "e")
+        return res.status(400).send({
+            error: true,
+            message: e.message
+        })
+    }
+})
 
 router.get('/export-report',async (req: any, res: any) => {
     const db = req.app.get('dbLive')
@@ -170,10 +188,6 @@ router.get('/weekly-report', async (req: any, res: any) => {
     const db = req.app.get('dbLive')
     try{
         const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)  
-        console.log(sevenDaysAgo)
-        console.log(new Date("10-10-2023"))
-        console.log(Date.now())
-        console.log(getTimeStamp(sevenDaysAgo))
         const misciAdminData = await db.db('lilleAdmin').collection('misciEmail').findOne()
         let cond: any = [
             {
@@ -230,6 +244,7 @@ router.get('/weekly-report', async (req: any, res: any) => {
                   article_id: 1,
                   dbLocation: 1,
                   ipAddress: 1,
+                  allSources: 1,
                 },
             },
         ]).toArray()
@@ -243,19 +258,30 @@ router.get('/weekly-report', async (req: any, res: any) => {
         await (
             Promise.all(
                 misciData.map(async (data: any) => {
-                    // console.log(data)
                     let dbLocation = null
                     if(data.dbLocation) {
                         dbLocation = data.dbLocation.find((dbLocationData: any) => dbLocationData.articleId === data.article_id[0])
                     }
                     let source = ""
                     let type = ""
-                    if(dbLocation){
-                        const article = await fetchArticleById({db, id: data.article_id[0], collectionName: userData.company, dbName: dbLocation.db})
-                        // console.log(article, "article")
-                        const name = article._source?.source?.name
-                        source = name && (name === "file" || name === "note") ? article._source.title : article._source?.orig_url
-                        type = name === "file" ? "file" : name === "note" ? "note" : "url"
+                    if(data.allSources && data.allSources.length) {
+                        for (let index = 0; index < data.allSources.length; index++) {
+                            const sourceData = data.allSources[index];
+                            const article = await fetchArticleById({db, id: sourceData.file_id, collectionName: userData.company, dbName: sourceData.db_name})
+                            // console.log(article, "article")
+                            const name = article._source?.source?.name
+                            console.log(name,article._id, index, "article")
+                            source += `${name && (name === "file" || name === "note") ? article._source.title + `${index < (data.allSources.length - 1) ? ", " : "" }` : article._source?.orig_url + `${index < (data.allSources.length - 1) ? ", " : "" }`}`
+                            type += `${name === "file" ? "file" + `${index < (data.allSources.length - 1) ? ", " : "" }` : name === "note" ? "note" + `${index < (data.allSources.length - 1) ? ", " : "" }` : "url" + `${index < (data.allSources.length - 1) ? ", " : "" }`}`
+                        }
+                    }else{
+                        if(dbLocation){
+                            const article = await fetchArticleById({db, id: data.article_id[0], collectionName: userData.company, dbName: dbLocation.db})
+                            // console.log(article, "article")
+                            const name = article._source?.source?.name
+                            source = name && (name === "file" || name === "note") ? article._source.title : article._source?.orig_url
+                            type = name === "file" ? "file" : name === "note" ? "note" : "url"
+                        }
                     }
                     preparedData.push({
                         "blog id": data._id.toString(),
@@ -264,22 +290,22 @@ router.get('/weekly-report', async (req: any, res: any) => {
                         "detail answer": data.detailed_answer,
                         "date": getDateString(data.timestamp),
                         "timestamp": getDateString(data.timestamp, true),
-                        "source": source,
+                        "sources (comma seperated)": source,
                         "type": type,
                         "ipAddress": data.ipAddress,
                     })
                 })
             )
         )
-        let Headers = ['blog id', 'question', 'short answer', 'detail answer', "date", "timestamp", "source", "type", "ipAddress"];
+        let Headers = ['blog id', 'question', 'short answer', 'detail answer', "date", "timestamp", "sources (comma seperated)", "types (comma separated)", "ipAddress"];
         console.log(preparedData, "Data")
         const wb = xlsx.utils.book_new(),
         ws = xlsx.utils.json_to_sheet(preparedData);
 
         xlsx.utils.book_append_sheet(wb, ws, "Sheet1");
         xlsx.utils.sheet_add_aoa(ws, [Headers]) 
-        // res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        // res.setHeader("Content-Disposition", "attachment; filename=" + "Test.xlsx");        
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader("Content-Disposition", "attachment; filename=" + "Test.xlsx");        
         const resp = await xlsx.writeFile(wb, "Report.xlsx");
         const path = require('path');
         const filePath = path.join(__dirname, '../../Report.xlsx');
@@ -435,12 +461,22 @@ router.post('/generate', async (req: any, res: any) => {
             .status(400)
             .send({ error: true, message: "No answers found!" });    
         }
+        console.log(askMeAnswers, "askMeAnswers")
         const article = askMeAnswers?.internal_results?.main_document
         console.log(article, "article")
         const answers = askMeAnswers?.internal_results?.main_document?.answer_sentence
         const shortAnswer = askMeAnswers?.internal_results?.main_document?.answer
         const title = askMeAnswers?.internal_results?.main_document?.title
         const answer_image = (askMeAnswers?.external_results?.main_document?.id && askMeAnswers?.external_results?.main_document?.id !== "Not Available" && askMeAnswers?.external_results?.main_document?.id )|| null
+        let allSources: any = []
+        if(askMeAnswers?.external_results?.main_document && askMeAnswers?.external_results?.main_document?.db_origin && askMeAnswers?.external_results?.main_document?.db_origin.length) {
+            var jsontemp = askMeAnswers?.external_results?.main_document?.db_origin.replace((/([\w]+)(:)/g), "\"$1\"$2");
+            var correctsourcesjson = jsontemp.replace((/'/g), "\"");
+            if(isJsonString(correctsourcesjson)) {
+                allSources =  JSON.parse(correctsourcesjson)
+            }
+        }
+        console.log(allSources)
         const answersObj = {
             published: false,
                 published_date: false,
@@ -455,7 +491,7 @@ router.post('/generate', async (req: any, res: any) => {
                             "children": [
                                 answers
                             ]
-                        },
+                        },  
                         {
                             "tag": "P",
                             "attributes": {},
@@ -483,7 +519,8 @@ router.post('/generate', async (req: any, res: any) => {
             updatedAt: getTimeStamp(),
             type: "misci",
             answers,
-            ipAddress 
+            ipAddress,
+            allSources 
         }
         const articleIds = [article.id]
         let dbLocation: any[] = []
