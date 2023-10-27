@@ -38,7 +38,7 @@ const mobileNavigation = [
   },
   {
     name: "Features",
-    href: "/#features",
+    href: "/features",
     icon: TagIcon,
   },
   {
