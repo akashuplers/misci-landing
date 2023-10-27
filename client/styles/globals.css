@@ -932,3 +932,42 @@ iframe::-webkit-scrollbar-thumb:hover {
 .hide-scrollbar::-webkit-scrollbar-thumb {
   background-color: transparent; /* Adjust the color as needed */
 }
+
+.swiper{
+    width: 90%;
+    max-width: 850px;
+    height: calc(100vh - 170px);
+    padding: 5vh 0 !important;
+    overflow: visible !important;
+}
+.swiper-wrapper{
+  align-items: center !important;
+}
+.swiper-slide{
+  transition: all 5s ease-in;
+/* height: 80vh; */
+}
+
+.swiper-slide:not(.swiper-slide-active){
+  scale: 0.85;
+}
+
+.swiper-button-prev,
+.swiper-button-next{
+  top: 0 !important;
+  position: fixed !important;
+  height: 100% !important;
+  width: 75px !important;
+}
+
+.swiper-button-prev::after,
+.swiper-button-next::after{
+  content: none !important;
+}
+
+.swiper-button-prev{
+  left: 0 !important;
+}
+.swiper-button-next{
+  right: 0 !important;
+}
