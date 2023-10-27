@@ -131,7 +131,7 @@ const MisciAll: NextPage = () => {
         modules={[Pagination, Autoplay, Navigation]}
         pagination={{ clickable: true }}
         autoplay={{
-          delay: 5000,
+          delay: 30000,
           disableOnInteraction: false,
         }}
         spaceBetween={50}

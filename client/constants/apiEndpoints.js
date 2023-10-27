@@ -55,5 +55,3 @@ export const LINKEDIN_CLIENT_ID = "868bordkbw6hm6";
 export const LINKEDIN_CLIENT_SECRET = "kOALvAhpSOkYx4MN";
 
 export const GQL_SUBSCRIPTION_ENDPOINT = "wss://lille.ai/graphql";
-
-
