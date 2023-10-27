@@ -27,12 +27,12 @@ export const API_ROUTES = {
   TOTAL_TIME: "/auth/total-saved-time",
   UPLOAD_GOOGLE_DRIVE_URL: "/upload/drive-link",
   NEW_GENERATE_API: "/auth/generate",
-  MISCI_GENERATE: "/misci/generate",
-  MISCI_REGENERATE: "/misci/re-generate",
-  MISCI_PUBLISH: '/misci/publish',
-  MISCI_TOP_ALL: '/misci/top-questions',
+  MISCI_GENERATE: "/misci-routes/generate",
+  MISCI_REGENERATE: "/misci-routes/re-generate",
+  MISCI_PUBLISH: '/misci-routes/publish',
+  MISCI_TOP_ALL: '/misci-routes/top-questions',
   DELETE_REF_SOURCES: '/auth/remove-sources',
-  MISCI_SAVE: '/misci/blog/save',
+  MISCI_SAVE: '/misci-routes/blog/save',
 };
 
 export const LI_API_ENDPOINTS = {
@@ -55,5 +55,3 @@ export const LINKEDIN_CLIENT_ID = "868bordkbw6hm6";
 export const LINKEDIN_CLIENT_SECRET = "kOALvAhpSOkYx4MN";
 
 export const GQL_SUBSCRIPTION_ENDPOINT = "wss://lille.ai/graphql";
-
-
