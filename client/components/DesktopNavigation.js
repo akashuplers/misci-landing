@@ -82,4 +82,9 @@ var desktopNavigationRoutes = [
     href: "/pricing",
     current: false,
   },
+  {
+    name: "Saleslille",
+    href: "http://saleslille.ai",
+    current: false,
+  },
 ];
