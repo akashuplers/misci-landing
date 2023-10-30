@@ -7,7 +7,8 @@ import {
   QuestionMarkCircleIcon,
   TagIcon,
   XMarkIcon,
-  PresentationChartBarIcon
+  PresentationChartBarIcon,
+  ChevronDownIcon
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { Fragment, useState } from "react";
@@ -25,26 +26,40 @@ const mobileNavigation = [
     name: "FAQ",
     href: "/faq",
     icon: QuestionMarkCircleIcon,
+    subNav: null
   },
   {
     name: "Value",
     href: "/aboutus",
     icon: InformationCircleIcon,
+    subNav: null
   },
   {
     name: "Pricing",
     href: "/pricing",
     icon: TagIcon,
+    subNav: null
   },
   {
     name: "Features",
     href: "/#features",
     icon: TagIcon,
+    subNav: null
   },
   {
-    name: "Saleslille",
+    name: "AI Saas Apps",
     href: "http://saleslille.ai",
     icon: PresentationChartBarIcon,
+    subNav:[
+      {
+        name: "SalesLille.ai",
+        href: "https://saleslille.ai",
+      },
+      {
+        name: "Lille.ai",
+        href: "http://lille.ai", 
+      }
+    ],
   },
 ];
 
@@ -123,31 +138,58 @@ const MobileNavigation = ({
               <Dialog.Panel className="relative mt-20 flex w-full h-[91vh] flex-1 flex-col bg-white rounded-l-lg ">
                 <div className="h-0  flex-1 overflow-y-auto pt-5 pb-4">
                   <nav className=" space-y-1 px-2">
-
                     {mobileNavigation &&
                       mobileNavigation.length > 0 &&
                       mobileNavigation.map((item, index) => (
+                        <>
                         <Link
                           key={item.name}
-                          href={item.href}
+                          href={item.subNav ? '#' : item.href}
                           className={classNames(
                             "text-[#415A77] hover:bg-gray-50 hover:text-gray-900",
                             "group flex items-center relative rounded-md px-4 py-2 text-base font-medium  "
                           )}
+                          onClick={(e) => {
+                            if(item.subNav){
+                              let subnav = e.target.nextElementSibling;
+                              let icon = e.target.querySelector("#menu-icon");
+                              subnav.classList.toggle('hidden')
+                              if(subnav.classList.contains('hidden'))
+                                icon.style.transform = `rotate(0deg)`
+                              else
+                                icon.style.transform = `rotate(180deg)`
+                            }
+                          }}
                         >
                           <item.icon
                             className={classNames(
                               item.current
-                                ? "text-[#415A77]"
-                                : "text-gray-400 group-hover:text-gray-500",
+                              ? "text-[#415A77]"
+                              : "text-gray-400 group-hover:text-gray-500",
                               "mr-4 h-6 w-6 flex-shrink-0"
-                            )}
-                            aria-hidden="true"
+                              )}
+                              aria-hidden="true"
                           />
                           {item.name}
-                          {/* absolute vertical line bottom marginx2 */}
+                          {item.subNav && <ChevronDownIcon id="menu-icon" className="text-gray-400 group-hover:text-gray-500 ml-auto h-4 w-4 flex-shrink-0"/>}
                           <div className="absolute bottom-0 left-0 w-[98%] h-[2px] bg-gray-200"></div>
                         </Link>
+                        {item.subNav && item.subNav.length > 0 && (
+                          <div className="hidden">
+                            {item.subNav.map((el, key) => (
+                              <Link
+                                href={el.href}
+                                className={classNames(
+                                  "text-[#415A77] hover:bg-gray-50 hover:text-gray-900",
+                                  "group flex items-center relative rounded-md px-4 py-2 text-base font-medium  "
+                                )}
+                              >
+                                {el.name}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                        </>
                       ))}
                   </nav>
                 </div>
