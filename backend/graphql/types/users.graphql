@@ -31,6 +31,7 @@ type User {
     remaining_twitter_quota: Int
     emailVerified: Boolean
     hours_left_for_quota_renew: Int
+    isAdmin: Boolean
 }
 type Query {
     me: User!

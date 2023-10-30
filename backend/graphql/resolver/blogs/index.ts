@@ -1,5 +1,5 @@
 import { withFilter } from 'graphql-subscriptions';
-import { BlogListArgs, FetchBlog, GenerateBlogMutationArg, IRNotifiyArgs, ReGenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
+import { BlogListArgs, DeleteBlogMutationArg, FetchBlog, GenerateBlogMutationArg, IRNotifiyArgs, ReGenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
 import { pubsub } from '../../../pubsub';
 import { ObjectID } from 'bson';
 import { blogGeneration, deleteBlog, fetchBlog, fetchBlogByUser, fetchBlogIdeas, fetchUser, publishBlog, updateUserCredit, deleteBlogIdeas, fetchUsedBlogIdeasByIdea, fetchArticleById, fetchArticleUrls, getSavedTime, generateAtrributesList, TMBlogGeneration } from './blogsRepo';
@@ -274,6 +274,26 @@ export const blogResolvers = {
             currentNumber++;
             pubsub.publish(SOMETHING_CHANGED_TOPIC, { newLink: currentNumber });
             return currentNumber
+        },
+        deleteBlogByAdmin: async (
+            parent: unknown, args:{options: DeleteBlogMutationArg}, {req, res, db, pubsub, user}: any
+        ) => {
+            if(!user || !Object.keys(user).length) {
+                throw "@Not authorized"
+            }
+            const userDetails = await fetchUser({id: user.id, db})
+            const adminUserEmail = await db.db('lilleAdmin').collection('config').findOne()
+            if(!adminUserEmail || (adminUserEmail.adminEmail && adminUserEmail.adminEmail !== userDetails.email)) {
+                throw "@Not allowed to delete"
+            }
+            const {blog_id} = args.options
+            const blog = await fetchBlogByUser({id: blog_id, db, userId: user.id})
+            if(!blog) {
+                throw "@no blog found"
+            }
+            await deleteBlog({id: blog_id, db})
+            await deleteBlogIdeas({id: blog_id, db})
+            return true
         },
         generateTMBlog: async (
             parent: unknown, args:{options: GenerateBlogMutationArg}, {req, res, db, pubsub, user}: any
