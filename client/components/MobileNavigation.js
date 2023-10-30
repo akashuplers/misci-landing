@@ -178,6 +178,7 @@ const MobileNavigation = ({
                           <div className="hidden">
                             {item.subNav.map((el, key) => (
                               <Link
+                                key={key}
                                 href={el.href}
                                 className={classNames(
                                   "text-[#415A77] hover:bg-gray-50 hover:text-gray-900",
