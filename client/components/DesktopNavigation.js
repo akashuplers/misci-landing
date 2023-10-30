@@ -96,7 +96,7 @@ var desktopNavigationRoutes = [
     subNav:[
     {
       name: "SalesLille.ai",
-      href: "https://saleslille.ai",
+      href: "http://saleslille.ai",
     },
     {
       name: "Lille.ai",
