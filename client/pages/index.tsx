@@ -1403,7 +1403,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
               </defs>
             </svg>
           </div>
-        <KeyFeatures/>
+        {!isAuthenticated && <KeyFeatures/>}
       </div>
 
 
