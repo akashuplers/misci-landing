@@ -5,6 +5,9 @@ export interface GenerateBlogMutationArg {
     keywords: string[];
     tones: string[];
 }
+export interface DeleteBlogMutationArg {
+    blog_id: string;
+}
 
 export interface GenerateTMBlogOptions {
     keyword: String;

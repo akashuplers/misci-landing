@@ -191,6 +191,10 @@ type PublishRes {
     savedTime: String
 }
 
+input AdminDeleteOptions {
+    blog_id: String
+}
+
 type Mutation {
     generate(options: GenerateBlogOptions!): Blog
     generateTMBlog(options: GenerateTMBlogOptions!): Blog
@@ -200,4 +204,5 @@ type Mutation {
     savePreferences(options: PreferencesOptions): Boolean
     publish(options: PublisOptions): PublishRes
     delete(options: PublisOptions): Boolean
+    deleteBlogByAdmin(options: AdminDeleteOptions): Boolean
 }

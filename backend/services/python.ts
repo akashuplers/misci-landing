@@ -132,7 +132,7 @@ export class Python {
             );
             const config: any = {
                 method: 'post',
-                url: `${process.env.PYTHON_REST_BASE_ENDPOINT}/backlinking_url`,
+                url: `${process.env.PYTHON_REST_BASE_ENDPOINT_BACKLINGING}/backlinking_url`,
                 headers: { 
                     'Content-Type': 'application/json'
                 },

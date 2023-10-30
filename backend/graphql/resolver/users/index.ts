@@ -46,6 +46,11 @@ export const usersResolver = {
                 const tweetsQuota = await db.db('lilleAdmin').collection('tweetsQuota').findOne({
                     userId: new ObjectID(userDetails._id)
                 })
+                const adminUserEmail = await db.db('lilleAdmin').collection('config').findOne()
+                let isAdmin = false
+                if(adminUserEmail && (adminUserEmail.adminEmail && adminUserEmail.adminEmail === userDetails.email)) {
+                    isAdmin = true
+                }
                 return {
                     ...userDetails,
                     subscribeStatus: subscriptionDetails && subscriptionDetails.length ? subscriptionDetails[0].subscriptionStatus : false,
@@ -68,7 +73,8 @@ export const usersResolver = {
                     publishCount: publishCount || 0,
                     total_twitter_quota: tweetsQuota?.totalQuota || null,
                     remaining_twitter_quota: tweetsQuota?.remainingQuota || null,
-                    hours_left_for_quota_renew: tweetsQuota?.date ? 24 - diff_hours(new Date(tweetsQuota?.date * 1000), new Date()) : null
+                    hours_left_for_quota_renew: tweetsQuota?.date ? 24 - diff_hours(new Date(tweetsQuota?.date * 1000), new Date()) : null,
+                    isAdmin
                 }
             }catch(e){
                 console.log(e,"me api")
