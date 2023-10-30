@@ -67,7 +67,7 @@ const AllFeatures: KeyFeaturesType[] = [
 
 const KeyFeatures: React.FC = () => {
   return (
-    <div className='w-full max-w-[90rem] mx-auto px-6 relative' id='features'>
+    <div className='w-full max-w-[90rem] mx-auto px-6 relative overflow-x-hidden' id='features'>
         <h1 className='text-primary text-4xl font-bold'>Key Features</h1>
         <p className='text-xl font-light'>Navigating Crafting Content with Your Co-Pilot</p>
         <div className='w-full lg:w-4/5 max-w-[1000px] flex flex-wrap gap-6 py-10 pb-20'>
