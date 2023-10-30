@@ -8,7 +8,8 @@ import {
   TagIcon,
   XMarkIcon,
   PresentationChartBarIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  SparklesIcon
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { Fragment, useState } from "react";
@@ -43,7 +44,7 @@ const mobileNavigation = [
   {
     name: "Features",
     href: "/#features",
-    icon: TagIcon,
+    icon: SparklesIcon,
     subNav: []
   },
   {
