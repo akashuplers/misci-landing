@@ -937,6 +937,7 @@ iframe::-webkit-scrollbar-thumb:hover {
     width: 90%;
     max-width: 850px;
     height: calc(100vh - 170px);
+    min-height: 500px;
     padding: 5vh 0 !important;
     overflow: visible !important;
 }
