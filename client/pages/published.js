@@ -10,8 +10,10 @@ import Layout from "../components/Layout";
 import LoaderScan from "../components/LoaderScan";
 import Pagination from "../components/Pagination";
 import { deleteBlog } from "../graphql/mutations/deleteBlog";
+import {deleteBlogByAdmin} from "../graphql/mutations/deleteAdminBlog";
 import { getAllBlogs } from "../graphql/queries/getAllBlogs";
 import styles from '../styles/saved.module.css';
+import { meeAPI } from "../graphql/querys/mee";
 
 const PAGE_COUNT = 12;
 
@@ -27,6 +29,7 @@ export default function Published() {
   const [blog_id, setblog_id] = useState("");
   const [openModal, setOpenModal] = useState(false);
 
+
   useEffect(() => {
     const handleBeforeUnload = (event) => {
       event.preventDefault();
@@ -39,6 +42,7 @@ export default function Published() {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
+
   const { data, error, loading } = useQuery(getAllBlogs, {
     context: {
       headers: {
@@ -53,24 +57,57 @@ export default function Published() {
       },
     },
   });
+
   const [
     DeleteBlog,
     { data: delteData, loading: delteLoading, error: delteError },
   ] = useMutation(deleteBlog);
 
-  const files = [
-    {
-      title: "IMG_4985.HEIC",
-      size: "3.9 MB",
-      source:
-        "https://images.unsplash.com/photo-1582053433976-25c00369fc93?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=512&q=80",
+    const [
+    DeleteBlogByAdmin,
+    { data: delteDataAdmin, loading: delteLoadingAdmin, error: delteErrorAdmin },
+  ] = useMutation(deleteBlogByAdmin);
+
+   const {
+    data: meeData,
+    loading: meeLoading,
+    error: meeError,
+  } = useQuery(meeAPI, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization:`Bearer ${localStorage.getItem("token")}`,
+      },
     },
-    // More files...
-  ];
+    onError: ({ graphQLErrors, networkError, operation, forward }) => {
+      if (graphQLErrors) {
+        for (let err of graphQLErrors) {
+          switch (err.extensions.code) {
+            case "UNAUTHENTICATED":
+              localStorage.clear();
+              window.location.href = "/";
+          }
+        }
+      }
+      if (networkError) {
+        console.log(`[Network error]: ${networkError}`);
+        if (
+          `${networkError}` ===
+          "ServerError: Response not successful: Received status code 401"
+        ) {
+          localStorage.clear();
+          window.location.href = "/";
+        }
+      }
+    },
+  });
 
   const handleDelete = () => {
     setOpenModal(false);
     console.log("blog_id", blog_id);
+
+    if(meeData?.me.isAdmin === false){
+    console.log("meeData?.me?. vdve", meeData?.me);
     DeleteBlog({
       variables: {
         options: {
@@ -101,9 +138,41 @@ export default function Published() {
         });
         client.cache.evict({ blog_id: blog_id });
       });
+    } else {
+
+    DeleteBlogByAdmin({
+      variables: {
+        options: {
+          blog_id: blog_id,
+        },
+      },
+      context: {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      },
+    })
+      .then(() => { })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        toast.success("Successfully Deleted as Admin!", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        client.cache.evict({ blog_id: blog_id });
+      });
+    }
   };
 
-  console.log(data);
   return (
     <>
       <ToastContainer />
@@ -207,20 +276,6 @@ export default function Published() {
                                 e.stopPropagation();
                               }}
                             >
-                              {/* <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 28 28"
-                          strokeWidth="1"
-                          stroke="currentColor"
-                          className="w-6 h-6"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                          />
-                        </svg> */}
                               DELETE
                             </button>
                           </button>
@@ -281,7 +336,6 @@ export default function Published() {
               right: "auto",
               border: "none",
               background: "white",
-              // boxShadow: "0px 4px 20px rgba(170, 169, 184, 0.1)",
               borderRadius: "8px",
               height: "280px",
               width: "90%",
