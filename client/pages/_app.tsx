@@ -121,7 +121,8 @@ export default function App({ Component, pageProps }: AppProps) {
     "/misci/article",
     "/misci/topqna",
     '/library',
-    '/library/[lid]'
+    '/library/[lid]',
+    '/features'
   ];
 
   useEffect(() => {
