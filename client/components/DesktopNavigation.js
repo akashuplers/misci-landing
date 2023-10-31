@@ -81,7 +81,7 @@ export default DesktopNavigation;
 var desktopNavigationRoutes = [
   {
     name: "Features",
-    href: "/#features",
+    href: "/features",
     current: false,
   },
   {
