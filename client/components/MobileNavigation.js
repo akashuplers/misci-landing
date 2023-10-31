@@ -43,7 +43,7 @@ const mobileNavigation = [
   },
   {
     name: "Features",
-    href: "/#features",
+    href: "/features",
     icon: SparklesIcon,
     subNav: []
   },
