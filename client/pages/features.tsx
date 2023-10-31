@@ -237,7 +237,7 @@ const Features: React.FC = () => {
             <div className='w-full max-w-[90rem] mx-auto px-6 md:px-20 pb-10 pt-[20vh] relative' id='features' >
               <h1 className='text-black text-2xl font-light mb-4'>AI Powered</h1>
               <p className='text-4xl font-semibold'><span className='bg-[#F9948C] text-white rounded-lg px-4 py-2'>Content</span> Generation</p>
-              <div className='w-full lg:w-4/5 max-w-[1000px] flex flex-wrap gap-6 py-10 pb-20'>
+              <div className='w-full lg:w-[65%] max-w-[1000px] flex flex-wrap gap-6 py-10 pb-20'>
                   {AllFeatures.map((feature, key) => (
                       <div key={key} className='w-full sm:max-w-[500px] md:max-w-[330px] flex flex-col justify-start items-start gap-2 bg-transparent rounded-lg'>
                         <div className='bg-white rounded-lg p-4 mb-2'>{feature.icon}</div>
@@ -246,7 +246,7 @@ const Features: React.FC = () => {
                       </div>
                   ))}
               </div>
-              <div className='hidden md:block max-w-full sm:max-w-1/2 absolute right-[-3rem] top-1/2 transform translate-y-[-50%] z-[-1]'>
+              <div className='hidden lg:block max-w-full sm:max-w-1/2 absolute right-[-3rem] top-1/2 transform translate-y-[-50%] z-[-1]'>
                 <img src='/iPad Mini.png'/>
               </div>
             </div>
