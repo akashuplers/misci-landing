@@ -21,19 +21,19 @@ export const meeGetState = `query Query {
     credits
     prefFilled
     profileImage
-    userName
     publishCount
+    prefData
+    totalCredits
+    emailVerified
+    userName
+    paymentsStarts
+    isAdmin
+    creditRenewDay
+    hours_left_for_quota_renew
+    __typename
     twitterUserName
     linkedInUserName
     googleUserName
-    prefData
-    totalCredits
-    paymentsStarts
-    creditRenewDay
-    hours_left_for_quota_renew
-    remaining_twitter_quota
-    total_twitter_quota
-    emailVerified
   }
 }`
 export const meeAPI = gql`${meeGetState}`;
