@@ -63,6 +63,11 @@ export default function Published() {
     { data: delteData, loading: delteLoading, error: delteError },
   ] = useMutation(deleteBlog);
 
+    const [
+    DeleteBlogByAdmin,
+    { data: delteDataAdmin, loading: delteLoadingAdmin, error: delteErrorAdmin },
+  ] = useMutation(deleteBlogByAdmin);
+
    const {
     data: meeData,
     loading: meeLoading,
@@ -122,6 +127,38 @@ export default function Published() {
       })
       .finally(() => {
         toast.success("Successfully Deleted!", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        client.cache.evict({ blog_id: blog_id });
+      });
+    } else {
+
+    DeleteBlogByAdmin({
+      variables: {
+        options: {
+          blog_id: blog_id,
+        },
+      },
+      context: {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      },
+    })
+      .then(() => { })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        toast.success("Successfully Deleted as Admin!", {
           position: "top-center",
           autoClose: 5000,
           hideProgressBar: false,
