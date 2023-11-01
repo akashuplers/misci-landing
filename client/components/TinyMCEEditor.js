@@ -2357,6 +2357,7 @@ export default function TinyMCEEditor({
         {showTwitterThreadUI === false ? (
           <>
             <Editor
+              id="tinymce-id"
               value={updatedText || editorText}
               apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
               init={{
