@@ -191,6 +191,7 @@ function LibModule(props: LibModuleProps) {
 
    const {
     data: meeData,
+    loading
   } = useQuery(meeAPI, {
     context: {
       headers: {
@@ -349,7 +350,7 @@ function LibModule(props: LibModuleProps) {
           src={props.image ?? "https://via.placeholder.com/189x146"}
         />
       </div>
-      {meeData.me.isAdmin && <div 
+      {!loading && meeData.me.isAdmin && <div 
         className="delete-button absolute w-[30px] right-2 top-2 flex items-center justify-center px-1 transition-all cursor-pointer hover:scale-[1.23]"
         onClick={(e) => {
           e.stopPropagation()
