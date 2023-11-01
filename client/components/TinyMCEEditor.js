@@ -1142,13 +1142,10 @@ export default function TinyMCEEditor({
         (x) => "\\" + x
       );
 
-      console.log({
-        textContent,
-        textContentOriginal,
-        innerText: tempDiv.innerText ,
-        updatedText,
-        real: document.querySelector(".tox-edit-area__iframe").contentWindow.document.getElementById('tinymce')?.innerText
-      },'vvimp')
+      const newData = document.getElementById("tinymce-id_ifr")?.contentWindow.document.getElementById('tinymce')?.innerText.replace(
+        /[\(*\)\[\]\{\}<>@|~_]/gm,
+        (x) => "\\" + x
+      );
 
       const parser = new DOMParser();
       const doc = parser.parseFromString(updatedText, "text/html");
@@ -1159,7 +1156,7 @@ export default function TinyMCEEditor({
       const data = {
         token: linkedInAccessToken,
         author: `urn:li:person:${authorId}`,
-        data: textContent,
+        data: newData,
         image: src,
         blogId: blog_id,
       };
