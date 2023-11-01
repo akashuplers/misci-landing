@@ -390,7 +390,7 @@ export default function TinyMCEEditor({
         (pd) => pd.platform === "linkedin"
       ).tiny_mce_data;
       const htmlDoc = jsonToHtml(aa);
-      //console.log("885", htmlDoc);
+            //console.log("885", htmlDoc);
       setEditorText(htmlDoc);
     } else if (option === "linkedin-comeback") {
       setOption("linkedin");
@@ -1135,11 +1135,20 @@ export default function TinyMCEEditor({
       //console.log(tempDiv);
       tempDiv.innerHTML = updatedText;
 
+      let textContentOriginal = tempDiv.textContent;
       let textContent = tempDiv.textContent;
       textContent = textContent.replace(
         /[\(*\)\[\]\{\}<>@|~_]/gm,
         (x) => "\\" + x
       );
+
+      console.log({
+        textContent,
+        textContentOriginal,
+        innerText: tempDiv.innerText ,
+        updatedText,
+      },'vvimp')
+
       const parser = new DOMParser();
       const doc = parser.parseFromString(updatedText, "text/html");
       const img = doc.querySelector("img");
@@ -1153,56 +1162,56 @@ export default function TinyMCEEditor({
         image: src,
         blogId: blog_id,
       };
-      try {
-        axios
-          .post(API_BASE_PATH + LI_API_ENDPOINTS.LI_POST, data, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          })
-          .then((response) => {
-            //console.log(response.data);
-            setTwitterThreadData(twitterThreadData);
-            setPublishLinkLoad(false);
-            runMeeRefetch();
-            setPublishLinkText("Published on Linkedin");
-            toast.success("Published on Linkedin", {
-              position: "top-center",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            });
-          })
-          .catch((error) => {
-            if (error.response) {
-              setPublishLinkLoad(false);
-              setPublishLinkText("Publish on Linkedin");
-              toast.error(error.response.data.message, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-              });
-              //console.log(error.response.data);
-              //console.log(error.response.status);
-            } else if (error.request) {
-              //console.log(error.request);
-            } else {
-              //console.log("Error", error.message);
-            }
-          });
-      } catch (error) {
-        //console.log("error", error.response.data.message);
-      }
+      // try {
+      //   axios
+      //     .post(API_BASE_PATH + LI_API_ENDPOINTS.LI_POST, data, {
+      //       headers: {
+      //         Authorization: `Bearer ${token}`,
+      //         "Content-Type": "application/json",
+      //       },
+      //     })
+      //     .then((response) => {
+      //       //console.log(response.data);
+      //       setTwitterThreadData(twitterThreadData);
+      //       setPublishLinkLoad(false);
+      //       runMeeRefetch();
+      //       setPublishLinkText("Published on Linkedin");
+      //       toast.success("Published on Linkedin", {
+      //         position: "top-center",
+      //         autoClose: 5000,
+      //         hideProgressBar: false,
+      //         closeOnClick: true,
+      //         pauseOnHover: true,
+      //         draggable: true,
+      //         progress: undefined,
+      //         theme: "light",
+      //       });
+      //     })
+      //     .catch((error) => {
+      //       if (error.response) {
+      //         setPublishLinkLoad(false);
+      //         setPublishLinkText("Publish on Linkedin");
+      //         toast.error(error.response.data.message, {
+      //           position: "top-center",
+      //           autoClose: 5000,
+      //           hideProgressBar: false,
+      //           closeOnClick: true,
+      //           pauseOnHover: true,
+      //           draggable: true,
+      //           progress: undefined,
+      //           theme: "light",
+      //         });
+      //         //console.log(error.response.data);
+      //         //console.log(error.response.status);
+      //       } else if (error.request) {
+      //         //console.log(error.request);
+      //       } else {
+      //         //console.log("Error", error.message);
+      //       }
+      //     });
+      // } catch (error) {
+      //   //console.log("error", error.response.data.message);
+      // }
     }
   };
 
