@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Pagination from "../../components/Pagination";
 import Layout from "@/components/Layout";
+import Modal from "react-modal";
 import Link from "next/link";
 import { getLibrariesItems } from "@/helpers/apiMethodsHelpers";
 import { gql, useApolloClient, useMutation, useQuery } from "@apollo/client";
@@ -15,6 +16,7 @@ import { ResulsNotFoundIcon } from "@/components/localicons/localicons";
 import {
   ChatBubbleOvalLeftIcon,
   MagnifyingGlassIcon,
+  TrashIcon
 } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 import { meeAPI } from "@/graphql/querys/mee";
@@ -180,6 +182,7 @@ export default function Library(props: Props) {
 }
 
 function LibModule(props: LibModuleProps) {
+  const [openModal, setOpenModal] = useState(false);
 
   const client = useApolloClient();
     const [
@@ -218,6 +221,47 @@ function LibModule(props: LibModuleProps) {
     },
   });
 
+  const handleBlogDelete = (e:any) => {
+    e.stopPropagation()
+    console.log({meeData,props}, 'halert')
+
+
+    DeleteBlogByAdmin({
+      variables: {
+        options: {
+          blog_id: props._id,
+        },
+      },
+      context: {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      },
+    })
+      .then((data) => { 
+        if(data.data.deleteBlogByAdmin === true){
+          toast.success("Successfully Deleted as Admin!", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          setOpenModal(false)
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        client.cache.evict({ blog_id: props._id });
+      });
+  }
+
   console.log(props);
   const router = useRouter();
   const username =
@@ -228,7 +272,7 @@ function LibModule(props: LibModuleProps) {
   return (
 <>
     <div
-    className="flex-grow"
+    className="flex-grow relative"
       onClick={() => {
         props.setCurrentLibraryData(props);
         // router.push(`/public/${props._id}?source=library`);
@@ -305,6 +349,94 @@ function LibModule(props: LibModuleProps) {
           src={props.image ?? "https://via.placeholder.com/189x146"}
         />
       </div>
+      {meeData.me.isAdmin && <div 
+        className="delete-button absolute w-[30px] right-2 top-2 flex items-center justify-center px-1 transition-all cursor-pointer hover:scale-[1.23]"
+        onClick={(e) => {
+          e.stopPropagation()
+          setOpenModal(true)
+        }}
+      >
+          <TrashIcon stroke="red" className="pointer-event-none"/>
+      </div>}
+      <Modal
+          isOpen={openModal}
+          onRequestClose={() => setOpenModal(false)}
+          ariaHideApp={false}
+          className="modalModalWidth sm:w-[38%] max-h-[95%]"
+          style={{
+            overlay: {
+              backgroundColor: "rgba(0,0,0,0.5)",
+              zIndex: "9999",
+            },
+            content: {
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              right: "auto",
+              border: "none",
+              background: "white",
+              borderRadius: "8px",
+              height: "280px",
+              width: "90%",
+              maxWidth: "380px",
+              bottom: "",
+              zIndex: "999",
+              marginRight: "-50%",
+              transform: "translate(-50%, -50%)",
+              padding: "30px",
+              paddingBottom: "0px",
+            },
+          }}
+        >
+          <button
+            className="absolute right-[35px]"
+            onClick={(e) => {
+              e.stopPropagation()
+              setOpenModal(false)
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+          <div className="mx-auto pb-4">
+            <img className="mx-auto h-12" src="/info.png" />
+          </div>
+          <div className="mx-auto font-bold text-2xl pl-[25%]">
+            Are you sure
+          </div>
+          <p className="text-gray-500 text-base font-medium mt-4 mx-auto">
+            Are you sure you want to delete this Blog?
+          </p>
+          <div className="flex my-9">
+            <button
+              className="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
+              onClick={(e) => {
+                e.stopPropagation()
+                setOpenModal(false);
+              }}
+            >
+              No
+            </button>
+            <button
+              className="w-[240px]  bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded"
+              onClick={handleBlogDelete}
+            >
+              YES, Delete
+            </button>
+          </div>
+        </Modal>
     </div>
     </>
   );
