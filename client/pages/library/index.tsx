@@ -3,7 +3,7 @@ import Pagination from "../../components/Pagination";
 import Layout from "@/components/Layout";
 import Link from "next/link";
 import { getLibrariesItems } from "@/helpers/apiMethodsHelpers";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useApolloClient, useMutation, useQuery } from "@apollo/client";
 import { GQL_GET_ALL_LIBRARIES_ITEMS } from "@/graphql/queries/lib/getBlogs";
 import { useLibState } from "@/store/appState";
 import { LibModuleProps } from "@/store/types";
@@ -16,6 +16,10 @@ import {
   ChatBubbleOvalLeftIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
+import { toast } from "react-toastify";
+import { meeAPI } from "@/graphql/querys/mee";
+import {deleteBlogByAdmin} from "@/graphql/mutations/deleteAdminBlog";
+
 const GET_BLOGS = gql`
   query GetAllBlogs($options: BlogListInput) {
     getAllBlogs(options: $options) {
@@ -53,7 +57,7 @@ export default function Library(props: Props) {
 
   // Define your query options
 
-  const { loading, error, data, refetch } = useQuery(GET_BLOGS, {
+  const { data, refetch } = useQuery(GET_BLOGS, {
     variables: {
       options: {
         status: ["published"],
@@ -74,7 +78,8 @@ export default function Library(props: Props) {
     refetch();
   }, [debouncedSearchTerm]);
 
-  const { clearCurrentLibraryData, setCurrentLibraryData, currentLibraryData } =
+
+  const { setCurrentLibraryData } =
     useLibState();
 
   const skecelton = [1, 2, 3, 4, 5, 6, 7];
@@ -134,7 +139,7 @@ export default function Library(props: Props) {
                   <LibModule
                     key={index}
                     {...item}
-                    id={index}
+                    id={item._id}
                     page={pageSkip}
                     limit={pageLimit}
                     setCurrentLibraryData={setCurrentLibraryData}
@@ -175,6 +180,44 @@ export default function Library(props: Props) {
 }
 
 function LibModule(props: LibModuleProps) {
+
+  const client = useApolloClient();
+    const [
+    DeleteBlogByAdmin,
+  ] = useMutation(deleteBlogByAdmin);
+
+   const {
+    data: meeData,
+  } = useQuery(meeAPI, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization:`Bearer ${localStorage.getItem("token")}`,
+      },
+    },
+    onError: ({ graphQLErrors, networkError }) => {
+      if (graphQLErrors) {
+        for (let err of graphQLErrors) {
+          switch (err.extensions.code) {
+            case "UNAUTHENTICATED":
+              localStorage.clear();
+              window.location.href = "/";
+          }
+        }
+      }
+      if (networkError) {
+        console.log(`[Network error]: ${networkError}`);
+        if (
+          `${networkError}` ===
+          "ServerError: Response not successful: Received status code 401"
+        ) {
+          localStorage.clear();
+          window.location.href = "/";
+        }
+      }
+    },
+  });
+
   console.log(props);
   const router = useRouter();
   const username =
@@ -183,12 +226,13 @@ function LibModule(props: LibModuleProps) {
     props.userName ??
     "lille";
   return (
+<>
     <div
     className="flex-grow"
       onClick={() => {
         props.setCurrentLibraryData(props);
         // router.push(`/public/${props._id}?source=library`);
-        const { _id, page, limit } = props;
+        const { _id } = props;
 
         // Build the query object
         const query = {
@@ -262,6 +306,7 @@ function LibModule(props: LibModuleProps) {
         />
       </div>
     </div>
+    </>
   );
 }
 
