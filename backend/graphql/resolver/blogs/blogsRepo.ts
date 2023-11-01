@@ -444,6 +444,9 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 }); 
                                 // description = (newsLetter[key]?.replace("\n", ""))?.trimStart()
                                 usedIdeasArr = description?.split('. ')
+                                let unqiueIdeasArray: any [] = []
+                                usedIdeasArr.forEach((text: string) => !unqiueIdeasArray.includes(text) ? unqiueIdeasArray.push(text) : false)
+                                usedIdeasArr = unqiueIdeasArray
                                 if(!misci && ideasArr && ideasArr.length && refUrls && refUrls?.length) {
                                     let articleIds: string[] = []
                                     let refBlogs = []
