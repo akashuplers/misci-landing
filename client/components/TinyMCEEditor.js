@@ -390,7 +390,7 @@ export default function TinyMCEEditor({
         (pd) => pd.platform === "linkedin"
       ).tiny_mce_data;
       const htmlDoc = jsonToHtml(aa);
-      //console.log("885", htmlDoc);
+            //console.log("885", htmlDoc);
       setEditorText(htmlDoc);
     } else if (option === "linkedin-comeback") {
       setOption("linkedin");
@@ -1135,11 +1135,21 @@ export default function TinyMCEEditor({
       //console.log(tempDiv);
       tempDiv.innerHTML = updatedText;
 
+      let textContentOriginal = tempDiv.textContent;
       let textContent = tempDiv.textContent;
       textContent = textContent.replace(
         /[\(*\)\[\]\{\}<>@|~_]/gm,
         (x) => "\\" + x
       );
+
+      console.log({
+        textContent,
+        textContentOriginal,
+        innerText: tempDiv.innerText ,
+        updatedText,
+        real: document.querySelector(".tox-edit-area__iframe").contentWindow.document.getElementById('tinymce')?.innerText
+      },'vvimp')
+
       const parser = new DOMParser();
       const doc = parser.parseFromString(updatedText, "text/html");
       const img = doc.querySelector("img");
