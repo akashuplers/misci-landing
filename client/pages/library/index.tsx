@@ -193,6 +193,7 @@ function LibModule(props: LibModuleProps) {
     data: meeData,
     loading
   } = useQuery(meeAPI, {
+    skip:!localStorage.getItem("token"),
     context: {
       headers: {
         "Content-Type": "application/json",
@@ -350,7 +351,7 @@ function LibModule(props: LibModuleProps) {
           src={props.image ?? "https://via.placeholder.com/189x146"}
         />
       </div>
-      {!loading && meeData.me.isAdmin && <div 
+      {(localStorage.getItem("token") && meeData.me.isAdmin) && <div 
         className="delete-button absolute w-[30px] right-2 top-2 flex items-center justify-center px-1 transition-all cursor-pointer hover:scale-[1.23]"
         onClick={(e) => {
           e.stopPropagation()
