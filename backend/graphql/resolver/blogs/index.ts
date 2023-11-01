@@ -287,7 +287,7 @@ export const blogResolvers = {
                 throw "@Not allowed to delete"
             }
             const {blog_id} = args.options
-            const blog = await fetchBlogByUser({id: blog_id, db, userId: user.id})
+            const blog = await fetchBlog({id: blog_id, db})
             if(!blog) {
                 throw "@no blog found"
             }
