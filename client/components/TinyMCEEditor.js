@@ -1147,6 +1147,7 @@ export default function TinyMCEEditor({
         textContentOriginal,
         innerText: tempDiv.innerText ,
         updatedText,
+        real: document.querySelector(".tox-edit-area__iframe").contentWindow.document.getElementById('tinymce')?.innerText
       },'vvimp')
 
       const parser = new DOMParser();
@@ -1162,56 +1163,56 @@ export default function TinyMCEEditor({
         image: src,
         blogId: blog_id,
       };
-      // try {
-      //   axios
-      //     .post(API_BASE_PATH + LI_API_ENDPOINTS.LI_POST, data, {
-      //       headers: {
-      //         Authorization: `Bearer ${token}`,
-      //         "Content-Type": "application/json",
-      //       },
-      //     })
-      //     .then((response) => {
-      //       //console.log(response.data);
-      //       setTwitterThreadData(twitterThreadData);
-      //       setPublishLinkLoad(false);
-      //       runMeeRefetch();
-      //       setPublishLinkText("Published on Linkedin");
-      //       toast.success("Published on Linkedin", {
-      //         position: "top-center",
-      //         autoClose: 5000,
-      //         hideProgressBar: false,
-      //         closeOnClick: true,
-      //         pauseOnHover: true,
-      //         draggable: true,
-      //         progress: undefined,
-      //         theme: "light",
-      //       });
-      //     })
-      //     .catch((error) => {
-      //       if (error.response) {
-      //         setPublishLinkLoad(false);
-      //         setPublishLinkText("Publish on Linkedin");
-      //         toast.error(error.response.data.message, {
-      //           position: "top-center",
-      //           autoClose: 5000,
-      //           hideProgressBar: false,
-      //           closeOnClick: true,
-      //           pauseOnHover: true,
-      //           draggable: true,
-      //           progress: undefined,
-      //           theme: "light",
-      //         });
-      //         //console.log(error.response.data);
-      //         //console.log(error.response.status);
-      //       } else if (error.request) {
-      //         //console.log(error.request);
-      //       } else {
-      //         //console.log("Error", error.message);
-      //       }
-      //     });
-      // } catch (error) {
-      //   //console.log("error", error.response.data.message);
-      // }
+      try {
+        axios
+          .post(API_BASE_PATH + LI_API_ENDPOINTS.LI_POST, data, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          })
+          .then((response) => {
+            //console.log(response.data);
+            setTwitterThreadData(twitterThreadData);
+            setPublishLinkLoad(false);
+            runMeeRefetch();
+            setPublishLinkText("Published on Linkedin");
+            toast.success("Published on Linkedin", {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+          })
+          .catch((error) => {
+            if (error.response) {
+              setPublishLinkLoad(false);
+              setPublishLinkText("Publish on Linkedin");
+              toast.error(error.response.data.message, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+              //console.log(error.response.data);
+              //console.log(error.response.status);
+            } else if (error.request) {
+              //console.log(error.request);
+            } else {
+              //console.log("Error", error.message);
+            }
+          });
+      } catch (error) {
+        //console.log("error", error.response.data.message);
+      }
     }
   };
 
