@@ -258,7 +258,7 @@ function LibModule(props: LibModuleProps) {
         console.log(err);
       })
       .finally(() => {
-        client.cache.evict({ blog_id: props._id });
+        client.cache.evict({ id: props._id });
       });
   }
 
