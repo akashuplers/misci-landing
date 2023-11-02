@@ -1359,7 +1359,7 @@ export default function DashboardInsights({
                       }}
                       placeholder="Add URL"
                     />
-                    <button
+                    {/* <button
                       className="w-6 h-6 relative  textSuperman-indigo-500 bg-slate-100 rounded-sm border"
                       onClick={(event) => {
                         if (newReference.source.trim().length > 0) {
@@ -1373,11 +1373,8 @@ export default function DashboardInsights({
                       }}
                     >
                       {<PlusIcon />}
-                    </button>
-                  </div>
-                </div>
-                <div>
-                  <button
+                    </button> */}
+                    <button
                     className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
                     onClick={(event) => {
                       postFormData(event, "URL");
@@ -1385,6 +1382,10 @@ export default function DashboardInsights({
                   >
                     {<CheckIcon />}
                   </button>
+                  </div>
+                </div>
+                <div>
+                  
                 </div>
               </div>
             )}
