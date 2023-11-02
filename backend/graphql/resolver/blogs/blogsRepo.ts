@@ -444,8 +444,19 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 }); 
                                 // description = (newsLetter[key]?.replace("\n", ""))?.trimStart()
                                 usedIdeasArr = description?.split('. ')
+                                console.log(usedIdeasArr, "usedIdeasArr")
                                 let unqiueIdeasArray: any [] = []
-                                usedIdeasArr.forEach((text: string) => !unqiueIdeasArray.includes(text) ? unqiueIdeasArray.push(text) : false)
+                                usedIdeasArr.forEach((text: string) => {
+                                    !unqiueIdeasArray.includes(text) ? unqiueIdeasArray.push(text) : false
+                                    text = text.replace(/^\s\s*/, '').replace(/\s\s*$/, '');;
+                                    const find = unqiueIdeasArray.find((idea) => {
+                                        return idea.indexOf(text) > -1
+                                    })
+                                    if(!find) {
+                                        return unqiueIdeasArray.push(text)
+                                    }
+                                    return false
+                                })
                                 usedIdeasArr = unqiueIdeasArray
                                 if(!misci && ideasArr && ideasArr.length && refUrls && refUrls?.length) {
                                     let articleIds: string[] = []
