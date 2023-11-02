@@ -518,8 +518,9 @@ export default function Sidebar() {
             <div className="py-2 pb-4 w-[85%] float-right">
               <div className="mx-auto max-w-7xl px-2 flex relative">
                 <div className="pt-4">
-                  {path !== "/" ? (
+                  {(path == '/' || router.asPath == "/library?page=1") || (
                     <button
+                      
                       onClick={() => {
                         handleEditorReset();
                         router.back();
@@ -538,8 +539,6 @@ export default function Sidebar() {
                         />
                       </svg>
                     </button>
-                  ) : (
-                    <></>
                   )}
                 </div>
                 <div className="flex">
