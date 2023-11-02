@@ -27,7 +27,7 @@ export default function Navbar({ blogId=null, isOpen }) {
           setType={setAuthneticationModalType}
           modalIsOpen={authenticationModalOpen}
           setModalIsOpen={setAuthenticationModalOpen}
-          handleSave={() => (window.location = "/")}
+          handleSave={() => (blogId ? window.location = "/dashboard/" + blog_id : window.location = "/")}
           bid={blogId ? blogId : Gbid}
         />
         <div className="lg:hidden sticky top-0 z-50 bg-white backdrop-filter backdrop-blur-lg bg-opacity-30">
