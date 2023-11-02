@@ -90,7 +90,7 @@ var desktopNavigationRoutes = [
     current: false,
   },
   {
-    name: "AI Saas Apps",
+    name: "AI SaaS Apps",
     href: "http://saleslille.ai",
     current: false,
     subNav:[

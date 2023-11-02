@@ -48,7 +48,7 @@ const mobileNavigation = [
     subNav: []
   },
   {
-    name: "AI Saas Apps",
+    name: "AI SaaS Apps",
     href: "#",
     icon: PresentationChartBarIcon,
     subNav:[
