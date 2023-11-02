@@ -13,11 +13,11 @@ const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
 
     const router = useRouter()
     useEffect(() => {
-        if (router.query.page && router.query.page >= 1 && (router.query.page <= totalPages || totalPages === 0)) {
+        if (router.query.page && router.query.page >= 1 && router.query.page <= totalPages) {
             const page = parseInt(router.query.page)
             takeToNewPage(page)
         }else{
-            setNewPageUrl(1)
+            takeToNewPage(1)
         }
     }, [router]);
 
