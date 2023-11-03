@@ -358,7 +358,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                     ${keywords.length ? `Keywords are "${keywords.join('","')}"`: `Topic of Blog is "${title}"`}, go through the Blog and write about this topic.
                     LinkedIn post should have maximum 300 words.
                     Suggest an attention-grabbing Title.
-                    Insert hashtags at the end of the post
+                    Insert hashtags at the start of the post
                     Trim unwanted new lines and spaces`
                 }
                 if((type.length && type.includes(key) && key === "twitter") || (!type.length && key === 'twitter')) {
@@ -450,7 +450,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     !unqiueIdeasArray.includes(text) ? unqiueIdeasArray.push(text) : false
                                     text = text.replace(/^\s\s*/, '').replace(/\s\s*$/, '');;
                                     const find = unqiueIdeasArray.find((idea) => {
-                                        return idea.indexOf(text) > -1
+                                        return (idea.indexOf(text) > -1 || text.indexOf(idea) > -1)
                                     })
                                     if(!find) {
                                         return unqiueIdeasArray.push(text)
