@@ -140,6 +140,7 @@ export default function Pricing() {
           setModalIsOpen={setIsOpen}
           handleSave={() => (window.location = "/")}
           bid={""}
+          className="pricingmodal"
         />
         <Navbar isOpen={isOpen} />
 

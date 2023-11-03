@@ -84,7 +84,9 @@ export default function DashboardInsights({
   refetchBlog,
   keyword,
   setInitailIdeas,
-  initailIdeas
+  initailIdeas,
+  saveAuthModal,
+  setSaveAuthModal
 }) {
   const [enabled, setEnabled] = useState(false);
   const [isOpen, setOpen] = useState(false);
@@ -941,7 +943,6 @@ export default function DashboardInsights({
   }, [formInput]);
 
   const [alReadyInFilter, setAlReadyInFilter] = useState([]);
-  const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const [authenticationModalType, setAuthneticationModalType] =
     useState("signup");
   var Gbid;
@@ -1063,14 +1064,6 @@ export default function DashboardInsights({
   if (loading || regenLoading) return <LoaderScan />;
   return (
     <>
-      <AuthenticationModal
-        type={authenticationModalType}
-        setType={setAuthneticationModalType}
-        modalIsOpen={authenticationModalOpen}
-        setModalIsOpen={setAuthenticationModalOpen}
-        handleSave={() => (window.location = "/dashboard/" + blog_id)}
-        bid={blog_id}
-      />
       <Modal
         isOpen={isOpen}
         ariaHideApp={false}
@@ -1169,7 +1162,7 @@ export default function DashboardInsights({
                   ? handleRegenerate
                   : () => {
                       updateisSave();
-                      setAuthenticationModalOpen(true);
+                      setSaveAuthModal(true);
                     }
               }
             >
@@ -1202,7 +1195,7 @@ export default function DashboardInsights({
                   if (isAuthenticated) {
                     handleIdeasTabClick(0);
                   } else {
-                    setAuthenticationModalOpen(true);
+                    setSaveAuthModal(true);
                   }
                 }}
               />
@@ -1213,7 +1206,7 @@ export default function DashboardInsights({
                   if (isAuthenticated) {
                     handleIdeasTabClick(1);
                   } else {
-                    setAuthenticationModalOpen(true);
+                    setSaveAuthModal(true);
                   }
                 }}
                 selected={ideasTab == 1}
@@ -1225,7 +1218,7 @@ export default function DashboardInsights({
                   if (isAuthenticated) {
                     handleIdeasTabClick(2);
                   } else {
-                    setAuthenticationModalOpen(true);
+                    setSaveAuthModal(true);
                   }
                 }}
                 selected={ideasTab == 2}
@@ -1243,7 +1236,7 @@ export default function DashboardInsights({
                   if (isAuthenticated) {
                     console.log('no changes');
                   } else {
-                    setAuthenticationModalOpen(true);
+                    setSaveAuthModal(true);
                   }
                 }}
                  className="flex flex-row gap-2 flex-wrap max-h-[80px] z-30 overflow-y-scroll overflow-x-hidden absolute w-full h-full border-red-500 bg-transparent">

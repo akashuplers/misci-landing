@@ -540,6 +540,9 @@ You can add your own image, click on the image and use image options icon.`}
               setOption={setOption}
               option={option}
               keyword={data?.fetchBlog?.keyword}
+
+              saveAuthModal={saveAuthModal}
+              setSaveAuthModal={setSaveAuthModal}
             />
           </div>
         </div>

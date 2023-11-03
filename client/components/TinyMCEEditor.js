@@ -1945,11 +1945,15 @@ export default function TinyMCEEditor({
         </div>
       </Modal>
       <AuthenticationModal
+      className="tinymcemodal"
         type={authenticationModalType}
         setType={setAuthneticationModalType}
         modalIsOpen={saveAuthModal}
         setModalIsOpen={setSaveAuthModal}
-        handleSave={handleSave}
+        handleSave={() => {
+          console.log('I AM SAVING CRITICAL')
+          handleSave()
+        }}
         bid={blog_id}
       />
       <div className="block mt-0 sm:mt-4" style={isWindows ? { marginTop: "5px", height: '100%' } : {height: '100%'}}>

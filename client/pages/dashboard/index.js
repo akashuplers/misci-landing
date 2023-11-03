@@ -609,6 +609,9 @@ You can add your own image, click on the image and use image options icon.`}
               option={option}
               keyword={""}
               refetchBlog={()=>{}}
+
+              saveAuthModal={saveAuthModal}
+              setSaveAuthModal={setSaveAuthModal}
             />
           </div>
         </div>
