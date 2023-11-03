@@ -1210,7 +1210,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
                   generateBlog([],[])
                 }}
               >
-                YES, Regenerate
+                YES!
               </button>
             </div>
         
