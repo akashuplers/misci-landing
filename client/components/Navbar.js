@@ -13,7 +13,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Navbar({ blogId=null, isOpen, saveAuthModal,setSaveAuthModal  }) {
+export default function Navbar({ blogId=null, isOpen, saveAuthModal = null,setSaveAuthModal = null  }) {
   const router = useRouter()
 
   const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
