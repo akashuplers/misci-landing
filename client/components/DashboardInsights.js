@@ -365,6 +365,11 @@ export default function DashboardInsights({
   }, [filteredArray]);
 
   useEffect(() => {
+    console.log({
+      meeData
+    },'critical')
+
+    if(meeData.me._id) localStorage.setItem("userId", meeData.me._id);
     // Detect the Windows platform using userAgent
     if (navigator.userAgent.indexOf("Windows") !== -1) {
       setIsWindows(true);
