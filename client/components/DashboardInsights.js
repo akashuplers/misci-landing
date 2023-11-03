@@ -84,7 +84,9 @@ export default function DashboardInsights({
   refetchBlog,
   keyword,
   setInitailIdeas,
-  initailIdeas
+  initailIdeas,
+  saveAuthModal,
+  setSaveAuthModal
 }) {
   const [enabled, setEnabled] = useState(false);
   const [isOpen, setOpen] = useState(false);
@@ -120,8 +122,7 @@ export default function DashboardInsights({
   const toggleClass = " transform translate-x-3";
   const creditLeft = useStore((state) => state.creditLeft);
   const [inputUrls, setinputUrls] = useState([]);
-  const [showRegenModalWarning, setShowRegenModalWarning] = useState(false)
-  const [missingValueType, setMissingValueType] = useState("")
+
   useEffect(() => {
     setFreshIdeas(oldFreshIdeas);
   }, [oldFreshIdeas]);
@@ -364,6 +365,10 @@ export default function DashboardInsights({
       });
     });
   }, [filteredArray]);
+
+  useEffect(() => {
+    if(meeData?.me?._id) localStorage.setItem("userId", meeData.me._id);
+  },[meeData])
 
   useEffect(() => {
     // Detect the Windows platform using userAgent
@@ -938,7 +943,6 @@ export default function DashboardInsights({
   }, [formInput]);
 
   const [alReadyInFilter, setAlReadyInFilter] = useState([]);
-  const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const [authenticationModalType, setAuthneticationModalType] =
     useState("signup");
   var Gbid;
@@ -1060,97 +1064,6 @@ export default function DashboardInsights({
   if (loading || regenLoading) return <LoaderScan />;
   return (
     <>
-      <AuthenticationModal
-        type={authenticationModalType}
-        setType={setAuthneticationModalType}
-        modalIsOpen={authenticationModalOpen}
-        setModalIsOpen={setAuthenticationModalOpen}
-        handleSave={() => (window.location = "/dashboard/" + blog_id)}
-        bid={blog_id}
-      />
-      <Modal
-        isOpen={showRegenModalWarning}
-        onRequestClose={() => {
-          setShowRegenModalWarning(false)
-        }}
-        ariaHideApp={false}
-        className="w-[100%] sm:w-[38%] max-h-[95%]"
-        style={{
-          overlay: {
-            backgroundColor: "rgba(0,0,0,0.5)",
-            zIndex: "9999",
-          },
-          content: {
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            right: "auto",
-            border: "none",
-            background: "white",
-            borderRadius: "8px",
-            width: "90%",
-            maxWidth: "380px",
-            bottom: "",
-            zIndex: "999",
-            marginRight: "-50%",
-            transform: "translate(-50%, -50%)",
-            padding: "30px",
-            paddingBottom: "0px",
-          },
-        }}
-      >
-        <button
-            className="absolute right-[35px]"
-            onClick={(e) => {
-              e.stopPropagation()
-              setShowRegenModalWarning(false)
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-          <div className="mx-auto pb-4">
-            <img className="mx-auto h-12" src="/info.png" />
-          </div>
-          <div className="mx-auto font-bold text-2xl w-full text-center mr-auto">
-            No {missingValueType} provided
-          </div>
-          <p className="text-gray-500 text-base font-medium mt-4 mx-auto">
-            You have not provided any {missingValueType}(s). Do you want to proceed
-          </p>
-          <div className="flex my-9">
-            <button
-              className="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
-              onClick={(e) => {
-                e.stopPropagation()
-                setShowRegenModalWarning(false);
-              }}
-            >
-              No
-            </button>
-            <button
-              className="w-[240px]  bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded"
-              onClick={() => {
-                
-              }}
-            >
-              YES, Regenerate
-            </button>
-          </div>
-       
-      </Modal>
       <Modal
         isOpen={isOpen}
         ariaHideApp={false}
@@ -1249,7 +1162,7 @@ export default function DashboardInsights({
                   ? handleRegenerate
                   : () => {
                       updateisSave();
-                      setAuthenticationModalOpen(true);
+                      setSaveAuthModal(true);
                     }
               }
             >
@@ -1282,7 +1195,7 @@ export default function DashboardInsights({
                   if (isAuthenticated) {
                     handleIdeasTabClick(0);
                   } else {
-                    setAuthenticationModalOpen(true);
+                    setSaveAuthModal(true);
                   }
                 }}
               />
@@ -1293,7 +1206,7 @@ export default function DashboardInsights({
                   if (isAuthenticated) {
                     handleIdeasTabClick(1);
                   } else {
-                    setAuthenticationModalOpen(true);
+                    setSaveAuthModal(true);
                   }
                 }}
                 selected={ideasTab == 1}
@@ -1305,7 +1218,7 @@ export default function DashboardInsights({
                   if (isAuthenticated) {
                     handleIdeasTabClick(2);
                   } else {
-                    setAuthenticationModalOpen(true);
+                    setSaveAuthModal(true);
                   }
                 }}
                 selected={ideasTab == 2}
@@ -1323,7 +1236,7 @@ export default function DashboardInsights({
                   if (isAuthenticated) {
                     console.log('no changes');
                   } else {
-                    setAuthenticationModalOpen(true);
+                    setSaveAuthModal(true);
                   }
                 }}
                  className="flex flex-row gap-2 flex-wrap max-h-[80px] z-30 overflow-y-scroll overflow-x-hidden absolute w-full h-full border-red-500 bg-transparent">
@@ -1461,15 +1374,7 @@ export default function DashboardInsights({
                     </button> */}
                     <button
                     className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
-                    onClick={(event) => {
-                      console.log(newReference,'CRITICAL')
-                      if(newReference.source?.replace(/\s/g, "") == "" || !newReference.source){
-                        setMissingValueType("URL")
-                        setShowRegenModalWarning(true)
-                      } else{
-                        postFormData(event, "URL");
-                      }
-                    }}
+                    onClick={(event) => {postFormData(event, "URL");}}
                   >
                     {<CheckIcon />}
                   </button>
@@ -1517,14 +1422,7 @@ export default function DashboardInsights({
                 </div>
                 <buttton
                   className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
-                  onClick={() => {
-                    if(inputFiles.length == 0){
-                      setMissingValueType("Document")
-                      setShowRegenModalWarning(true)
-                    } else{
-                      postFormData(event);
-                    }
-                  }}
+                  onClick={() => {postFormData(event);}}
                 >
                   <CheckIcon />
                 </buttton>

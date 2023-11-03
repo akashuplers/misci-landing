@@ -375,7 +375,7 @@ export async function newGenerateApi(
   urls: string[]
 ): Promise<void> {
   const myHeaders = new Headers();
-  console.log(files, urls, tones, keyword, userId);
+  console.log(files, urls, tones, keyword, userId,'critical');
   if (token !== null) {
     myHeaders.append("Authorization", `Bearer ${token}`);
   }

@@ -371,12 +371,17 @@ export default function Post({typeIsRepurpose}) {
       sendOpt();
     }
   }, [showOTPModal]);
+
+  const [saveAuthModal, setSaveAuthModal] = useState(false)
+
   return (
     <>
       {/* <Head><title>{blogData}</title><meta about="body">{blogData}</meta></Head> */}
-      <Layout blogId={
-        bid
-      }>
+      <Layout 
+        blogId={bid}
+        saveAuthModal={saveAuthModal}
+        setSaveAuthModal={setSaveAuthModal}
+      >
         {meeData?.me && showOTPModal === true ? (
           <OTPModal
             showOTPModal={showOTPModal}
@@ -506,6 +511,8 @@ You can add your own image, click on the image and use image options icon.`}
               option={option}
               setOption={setOption}
               refetchBlog={refetchBlog}
+              saveAuthModal={saveAuthModal}
+              setSaveAuthModal={setSaveAuthModal}
             />
           </div>
           <div
@@ -535,6 +542,9 @@ You can add your own image, click on the image and use image options icon.`}
               setOption={setOption}
               option={option}
               keyword={data?.fetchBlog?.keyword}
+
+              saveAuthModal={saveAuthModal}
+              setSaveAuthModal={setSaveAuthModal}
             />
           </div>
         </div>
