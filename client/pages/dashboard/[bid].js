@@ -377,9 +377,11 @@ export default function Post({typeIsRepurpose}) {
   return (
     <>
       {/* <Head><title>{blogData}</title><meta about="body">{blogData}</meta></Head> */}
-      <Layout blogId={
-        bid
-      }>
+      <Layout 
+        blogId={bid}
+        saveAuthModal={saveAuthModal}
+        setSaveAuthModal={setSaveAuthModal}
+      >
         {meeData?.me && showOTPModal === true ? (
           <OTPModal
             showOTPModal={showOTPModal}

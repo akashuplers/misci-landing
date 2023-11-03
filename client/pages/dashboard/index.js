@@ -472,7 +472,10 @@ export default function dashboard({ query }) {
   console.log(freshIdeasReferences);
   return (
     <>
-      <Layout>
+      <Layout
+        saveAuthModal={saveAuthModal}
+        setSaveAuthModal={setSaveAuthModal}
+      >
         {creditModal && (
           <TrialEndedModal setTrailModal={setCreditModal} topic={topic} />
         )}

@@ -1183,7 +1183,9 @@ export default function Home({ payment, randomLiveUsersCount }) {
               </svg>
             </button>
             <div className="mx-auto pb-4">
-              <img className="mx-auto h-12" src="/info.png" />
+              <img className="mx-auto h-12" src="/info.png" style={{
+                  filter: 'hue-rotate(120deg)' /* Rotate the hue to turn red into green */
+              }}/>
             </div>
             <div className="mx-auto font-bold text-2xl w-full text-center mr-auto">
               No {missingValueType} provided
@@ -1202,7 +1204,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
                 No
               </button>
               <button
-                className="w-[240px]  bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded"
+                className="w-[240px]  bg-transparent hover:bg-green-700 text-green-700 font-semibold hover:text-white py-2 px-4 border border-green-700 hover:border-transparent rounded"
                 onClick={() => {
                   console.log('critical generating web')
                   generateBlog([],[])
