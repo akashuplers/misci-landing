@@ -93,6 +93,8 @@ export default function TinyMCEEditor({
   setOption,
   refetchBlog,
   timeSaveForThisBlog,
+  saveAuthModal, 
+  setSaveAuthModal
 }) {
   const twitterButtonRef = useRef(null);
   const [isTinyMCEReady, setIsTinyMCEReady] = useState(false);
@@ -201,10 +203,10 @@ export default function TinyMCEEditor({
         .catch(error => {
           console.error('Error:', error);
         });
-      setAuthenticationModalOpen(false);
+      setSaveAuthModal(false);
     } else {
       setAuthneticationModalType("signup");
-      setAuthenticationModalOpen(true);
+      setSaveAuthModal(true);
     }
     setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
   }
@@ -282,10 +284,10 @@ export default function TinyMCEEditor({
           .catch(error => {
             console.error('Error:', error);
           });
-        setAuthenticationModalOpen(false);
+        setSaveAuthModal(false);
       } else {
         setAuthneticationModalType("signup");
-        setAuthenticationModalOpen(true);
+        setSaveAuthModal(true);
       }
     }
     setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
@@ -522,7 +524,6 @@ export default function TinyMCEEditor({
   }, [isSave]);
 
   const [authenticationModalType, setAuthneticationModalType] = useState("");
-  const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
 //  const {response, error, loading, sendSavedTime}: = useSendSavedTimeOfUser();
   const router = useRouter();
   let token,
@@ -649,15 +650,15 @@ export default function TinyMCEEditor({
             // timemout
             setTwitterThreadData(twitterThreadData);
           });
-        setAuthenticationModalOpen(false);
+        setSaveAuthModal(false);
       } else {
         setAuthneticationModalType("signup");
-        setAuthenticationModalOpen(true);
+        setSaveAuthModal(true);
       }
     } else {
       if (!getToken) {
         setAuthneticationModalType("signup");
-        setAuthenticationModalOpen(true);
+        setSaveAuthModal(true);
       } else {
         toast.error("Looks like you don't have credit left..", {
           position: "top-center",
@@ -750,15 +751,15 @@ export default function TinyMCEEditor({
             setSaveText("Saved!");
             setTwitterThreadData(twitterThreadData);
           });
-        setAuthenticationModalOpen(false);
+        setSaveAuthModal(false);
       } else {
         setAuthneticationModalType("signup");
-        setAuthenticationModalOpen(true);
+        setSaveAuthModal(true);
       }
     } else {
       if (!getToken) {
         setAuthneticationModalType("signup");
-        setAuthenticationModalOpen(true);
+        setSaveAuthModal(true);
       } else {
         toast.error("Looks like you don't have credit left..", {
           position: "top-center",
@@ -1142,13 +1143,10 @@ export default function TinyMCEEditor({
         (x) => "\\" + x
       );
 
-      console.log({
-        textContent,
-        textContentOriginal,
-        innerText: tempDiv.innerText ,
-        updatedText,
-        real: document.querySelector(".tox-edit-area__iframe").contentWindow.document.getElementById('tinymce')?.innerText
-      },'vvimp')
+      const newData = document.getElementById("tinymce-id_ifr")?.contentWindow.document.getElementById('tinymce')?.innerText.replace(
+        /[\(*\)\[\]\{\}<>@|~_]/gm,
+        (x) => "\\" + x
+      );
 
       const parser = new DOMParser();
       const doc = parser.parseFromString(updatedText, "text/html");
@@ -1159,7 +1157,7 @@ export default function TinyMCEEditor({
       const data = {
         token: linkedInAccessToken,
         author: `urn:li:person:${authorId}`,
-        data: textContent,
+        data: newData,
         image: src,
         blogId: blog_id,
       };
@@ -1947,11 +1945,15 @@ export default function TinyMCEEditor({
         </div>
       </Modal>
       <AuthenticationModal
+      className="tinymcemodal"
         type={authenticationModalType}
         setType={setAuthneticationModalType}
-        modalIsOpen={authenticationModalOpen}
-        setModalIsOpen={setAuthenticationModalOpen}
-        handleSave={handleSave}
+        modalIsOpen={saveAuthModal}
+        setModalIsOpen={setSaveAuthModal}
+        handleSave={() => {
+          console.log('I AM SAVING CRITICAL')
+          handleSave()
+        }}
         bid={blog_id}
       />
       <div className="block mt-0 sm:mt-4" style={isWindows ? { marginTop: "5px", height: '100%' } : {height: '100%'}}>
@@ -2357,6 +2359,7 @@ export default function TinyMCEEditor({
         {showTwitterThreadUI === false ? (
           <>
             <Editor
+              id="tinymce-id"
               value={updatedText || editorText}
               apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
               init={{

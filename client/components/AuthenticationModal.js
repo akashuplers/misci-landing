@@ -44,6 +44,7 @@ export default function AuthenticationModal({
   setModalIsOpen,
   handleSave,
   bid,
+  className = ""
 }) {
   const [submitting, setSubmitting] = useState(false);
 
@@ -439,7 +440,7 @@ export default function AuthenticationModal({
           closeModal();
         }}
         ariaHideApp={false}
-        className="w-full sm:w-[38%] modalModalWidth max-h-[95%] "
+        className={`w-full sm:w-[38%] modalModalWidth max-h-[95%] ${className}`}
         style={{
           overlay: {
             backgroundColor: "rgba(0,0,0,0.5)",

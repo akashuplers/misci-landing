@@ -8,7 +8,7 @@ import Navbar from "./Navbar";
 import Sidebar from "./SidebarNav";
 import { useRouter } from "next/router";
 
-export default function Layout({ blogId,  children }) {
+export default function Layout({ blogId,  children, saveAuthModal = null,setSaveAuthModal = null }) {
   
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const updateAuthentication = useStore((state) => state.updateAuthentication);
@@ -31,7 +31,12 @@ export default function Layout({ blogId,  children }) {
 
   return (
     <Fragment>
-      {isAuthenticated ? <Sidebar /> : <Navbar isOpen={false} blogId={blogId} />}
+      {isAuthenticated ? <Sidebar /> : <Navbar 
+        isOpen={false} 
+        blogId={blogId} 
+        saveAuthModal={saveAuthModal}
+        setSaveAuthModal={setSaveAuthModal}
+      />}
       <div className={isAuthenticated ? `authenticatedLayout` : ''}
       style={ pathName.includes('/dashboard')?styles: {}}
       >{children}</div>

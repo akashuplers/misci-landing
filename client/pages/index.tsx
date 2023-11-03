@@ -26,6 +26,7 @@ import LoaderPlane from "../components/LoaderPlane";
 import TrialEndedModal from "../components/TrialEndedModal";
 import { meeAPI } from "../graphql/querys/mee";
 import { STEP_COMPLETES_SUBSCRIPTION } from "../graphql/subscription/generate";
+import Modal from 'react-modal'
 import {
   extractKeywordsAndIds,
   getDateMonthYear,
@@ -451,6 +452,10 @@ export default function Home({ payment, randomLiveUsersCount }) {
     { lengthOFiles: 0, lengthOfUrls: 0 }
   );
 
+  function checkEmptyValueForUrlOrDocument(){
+
+  }
+
   function handleGenerateClick() {
     console.log(blogLinks);
     const countByType: KeysForStateOfGenerate = blogLinks.reduce(
@@ -469,7 +474,36 @@ export default function Home({ payment, randomLiveUsersCount }) {
     if (countByType.file == 0 && countByType.url == 0 && keyword == "") {
       return;
     }
+
+    console.log({
+      countByType,
+      typeKeys,
+      blogLinks,
+      activeTab
+    },'critical')
+
+    if(countByType.file == 0 && activeTab == 2){
+      setMissingValueType('Document')
+      setShowRegenModalWarning(true);
+      console.log('critical no file')
+      return; 
+    }else if(countByType.url == 0 && activeTab == 1){
+      setMissingValueType('Url')
+      setShowRegenModalWarning(true);
+      console.log('critical no url')
+      return; 
+    }
+    
     var typeKeys = Object.keys(countByType);
+
+    checkEmptyValueForUrlOrDocument(countByType)
+
+    console.log({
+      countByType,
+      typeKeys,
+      blogLinks,
+      activeTab
+    },'critical')
 
     const prevStateOfGenerate = { ...stateOfGenerate };
     typeKeys.forEach((type) => {
@@ -507,6 +541,16 @@ export default function Home({ payment, randomLiveUsersCount }) {
     // if (countByType.file > 0) {
     //   uploadFilesForKeywords();
     // }
+    
+    const files = selectedFiles.map((fileObject) => fileObject.file);
+    const urls = blogLinks.filter((link) => link.type === "url").map((link) => link.value);
+
+    console.log('critical generating with files or url or web',files, urls)
+    
+    generateBlog(files, urls)
+  }
+
+  const generateBlog = (files, urls) => {
     var token;
     var getUserId;
     var getTempId;
@@ -518,12 +562,10 @@ export default function Home({ payment, randomLiveUsersCount }) {
     const tones =
       repurposeTones.filter((tone) => tone.selected).map((tone) => tone.text) ||
       [];
+
     const keywordForPayload = keyword;
     const userId = userAbleUserIDForSubs;
-    const files = selectedFiles.map((fileObject) => fileObject.file);
-    console.log(blogLinks, 'bloglinks');
-    const urls = blogLinks.filter((link) => link.type === "url").map((link) => link.value);
-    console.log(urls);
+
     setShowingGenerateLoading(true);
     newGenerateApi(token, tones, keywordForPayload, userId, files, urls).then(
       (response) => {
@@ -573,7 +615,7 @@ export default function Home({ payment, randomLiveUsersCount }) {
         }, 2000);
          
       }
-    ) 
+    )
   }
 
   function uploadExtractKeywordsFromKeywords() {
@@ -1058,6 +1100,9 @@ export default function Home({ payment, randomLiveUsersCount }) {
     setWindowWidth(window.innerWidth);
   }, []);
 
+  const [showRegenModalWarning, setShowRegenModalWarning] = useState(false)
+  const [missingValueType, setMissingValueType] = useState("")
+
   return (
     <>
       <Head>
@@ -1084,6 +1129,92 @@ export default function Home({ payment, randomLiveUsersCount }) {
         <Confetti width={windowWidth} recycle={false} numberOfPieces={2000} />
       )}
       <Layout>
+        <Modal
+          isOpen={showRegenModalWarning}
+          onRequestClose={() => {
+            setShowRegenModalWarning(false)
+          }}
+          ariaHideApp={false}
+          className="w-[100%] sm:w-[38%] max-h-[95%]"
+          style={{
+            overlay: {
+              backgroundColor: "rgba(0,0,0,0.5)",
+              zIndex: "9999",
+            },
+            content: {
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              right: "auto",
+              border: "none",
+              background: "white",
+              borderRadius: "8px",
+              width: "90%",
+              maxWidth: "380px",
+              bottom: "",
+              zIndex: "999",
+              marginRight: "-50%",
+              transform: "translate(-50%, -50%)",
+              padding: "30px",
+              paddingBottom: "0px",
+            },
+          }}
+        >
+          <button
+              className="absolute right-[35px]"
+              onClick={(e) => {
+                e.stopPropagation()
+                setShowRegenModalWarning(false)
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+            <div className="mx-auto pb-4">
+              <img className="mx-auto h-12" src="/info.png" style={{
+                  filter: 'hue-rotate(120deg)' /* Rotate the hue to turn red into green */
+              }}/>
+            </div>
+            <div className="mx-auto font-bold text-2xl w-full text-center mr-auto">
+              No {missingValueType} provided
+            </div>
+            <p className="text-gray-500 text-base font-medium mt-4 mx-auto">
+              You have not provided any {missingValueType}(s). Do you want to proceed
+            </p>
+            <div className="flex my-9">
+              <button
+                className="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setShowRegenModalWarning(false);
+                }}
+              >
+                No
+              </button>
+              <button
+                className="w-[240px]  bg-transparent hover:bg-green-700 text-green-700 font-semibold hover:text-white py-2 px-4 border border-green-700 hover:border-transparent rounded"
+                onClick={() => {
+                  console.log('critical generating web')
+                  generateBlog([],[])
+                }}
+              >
+                YES, Regenerate
+              </button>
+            </div>
+        
+        </Modal>
         <ToastContainer />
         {pfmodal && (
           <PreferencesModal
@@ -1356,7 +1487,10 @@ export default function Home({ payment, randomLiveUsersCount }) {
                   <button
                     disabled={disableGenerateButton}
                     className="h-14 px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-lg shadow justify-center items-center gap-2.5 inline-flex hover:from-indigo-700 hover:to-violet-700 focus:shadow-outline-indigo disabled:opacity-50 disabled:cursor-not-allowed"
-                    onClick={handleGenerateClick}
+                    onClick={() => {
+
+                      handleGenerateClick()
+                    }}
                   >
                     <>
                       <div className="text-white text-base font-medium leading-7">

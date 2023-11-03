@@ -84,7 +84,9 @@ export default function DashboardInsights({
   refetchBlog,
   keyword,
   setInitailIdeas,
-  initailIdeas
+  initailIdeas,
+  saveAuthModal,
+  setSaveAuthModal
 }) {
   const [enabled, setEnabled] = useState(false);
   const [isOpen, setOpen] = useState(false);
@@ -120,6 +122,7 @@ export default function DashboardInsights({
   const toggleClass = " transform translate-x-3";
   const creditLeft = useStore((state) => state.creditLeft);
   const [inputUrls, setinputUrls] = useState([]);
+
   useEffect(() => {
     setFreshIdeas(oldFreshIdeas);
   }, [oldFreshIdeas]);
@@ -362,6 +365,10 @@ export default function DashboardInsights({
       });
     });
   }, [filteredArray]);
+
+  useEffect(() => {
+    if(meeData?.me?._id) localStorage.setItem("userId", meeData.me._id);
+  },[meeData])
 
   useEffect(() => {
     // Detect the Windows platform using userAgent
@@ -936,7 +943,6 @@ export default function DashboardInsights({
   }, [formInput]);
 
   const [alReadyInFilter, setAlReadyInFilter] = useState([]);
-  const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
   const [authenticationModalType, setAuthneticationModalType] =
     useState("signup");
   var Gbid;
@@ -1058,14 +1064,6 @@ export default function DashboardInsights({
   if (loading || regenLoading) return <LoaderScan />;
   return (
     <>
-      <AuthenticationModal
-        type={authenticationModalType}
-        setType={setAuthneticationModalType}
-        modalIsOpen={authenticationModalOpen}
-        setModalIsOpen={setAuthenticationModalOpen}
-        handleSave={() => (window.location = "/dashboard/" + blog_id)}
-        bid={blog_id}
-      />
       <Modal
         isOpen={isOpen}
         ariaHideApp={false}
@@ -1164,7 +1162,7 @@ export default function DashboardInsights({
                   ? handleRegenerate
                   : () => {
                       updateisSave();
-                      setAuthenticationModalOpen(true);
+                      setSaveAuthModal(true);
                     }
               }
             >
@@ -1197,7 +1195,7 @@ export default function DashboardInsights({
                   if (isAuthenticated) {
                     handleIdeasTabClick(0);
                   } else {
-                    setAuthenticationModalOpen(true);
+                    setSaveAuthModal(true);
                   }
                 }}
               />
@@ -1208,7 +1206,7 @@ export default function DashboardInsights({
                   if (isAuthenticated) {
                     handleIdeasTabClick(1);
                   } else {
-                    setAuthenticationModalOpen(true);
+                    setSaveAuthModal(true);
                   }
                 }}
                 selected={ideasTab == 1}
@@ -1220,7 +1218,7 @@ export default function DashboardInsights({
                   if (isAuthenticated) {
                     handleIdeasTabClick(2);
                   } else {
-                    setAuthenticationModalOpen(true);
+                    setSaveAuthModal(true);
                   }
                 }}
                 selected={ideasTab == 2}
@@ -1238,7 +1236,7 @@ export default function DashboardInsights({
                   if (isAuthenticated) {
                     console.log('no changes');
                   } else {
-                    setAuthenticationModalOpen(true);
+                    setSaveAuthModal(true);
                   }
                 }}
                  className="flex flex-row gap-2 flex-wrap max-h-[80px] z-30 overflow-y-scroll overflow-x-hidden absolute w-full h-full border-red-500 bg-transparent">
@@ -1376,9 +1374,7 @@ export default function DashboardInsights({
                     </button> */}
                     <button
                     className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
-                    onClick={(event) => {
-                      postFormData(event, "URL");
-                    }}
+                    onClick={(event) => {postFormData(event, "URL");}}
                   >
                     {<CheckIcon />}
                   </button>
@@ -1426,7 +1422,7 @@ export default function DashboardInsights({
                 </div>
                 <buttton
                   className="w-6 h-6 relative  text-indigo-500 bg-slate-100 rounded-sm border"
-                  onClick={postFormData}
+                  onClick={() => {postFormData(event);}}
                 >
                   <CheckIcon />
                 </buttton>
