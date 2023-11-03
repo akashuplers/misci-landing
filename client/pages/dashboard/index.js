@@ -467,7 +467,7 @@ export default function dashboard({ query }) {
     console.log("===restime===");
   }, [pyResTime, ndResTime]);
 
-
+  const [saveAuthModal, setSaveAuthModal] = useState(false)
 
   console.log(freshIdeasReferences);
   return (
@@ -580,6 +580,8 @@ You can add your own image, click on the image and use image options icon.`}
               blog_id={blog_id}
               option={option}
               setOption={setOption}
+              saveAuthModal={saveAuthModal}
+              setSaveAuthModal={setSaveAuthModal}
             />
           </div>
           <div

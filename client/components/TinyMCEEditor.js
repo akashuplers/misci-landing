@@ -93,6 +93,8 @@ export default function TinyMCEEditor({
   setOption,
   refetchBlog,
   timeSaveForThisBlog,
+  saveAuthModal, 
+  setSaveAuthModal
 }) {
   const twitterButtonRef = useRef(null);
   const [isTinyMCEReady, setIsTinyMCEReady] = useState(false);
@@ -201,10 +203,10 @@ export default function TinyMCEEditor({
         .catch(error => {
           console.error('Error:', error);
         });
-      setAuthenticationModalOpen(false);
+      setSaveAuthModal(false);
     } else {
       setAuthneticationModalType("signup");
-      setAuthenticationModalOpen(true);
+      setSaveAuthModal(true);
     }
     setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
   }
@@ -282,10 +284,10 @@ export default function TinyMCEEditor({
           .catch(error => {
             console.error('Error:', error);
           });
-        setAuthenticationModalOpen(false);
+        setSaveAuthModal(false);
       } else {
         setAuthneticationModalType("signup");
-        setAuthenticationModalOpen(true);
+        setSaveAuthModal(true);
       }
     }
     setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
@@ -522,7 +524,6 @@ export default function TinyMCEEditor({
   }, [isSave]);
 
   const [authenticationModalType, setAuthneticationModalType] = useState("");
-  const [authenticationModalOpen, setAuthenticationModalOpen] = useState(false);
 //  const {response, error, loading, sendSavedTime}: = useSendSavedTimeOfUser();
   const router = useRouter();
   let token,
@@ -649,15 +650,15 @@ export default function TinyMCEEditor({
             // timemout
             setTwitterThreadData(twitterThreadData);
           });
-        setAuthenticationModalOpen(false);
+        setSaveAuthModal(false);
       } else {
         setAuthneticationModalType("signup");
-        setAuthenticationModalOpen(true);
+        setSaveAuthModal(true);
       }
     } else {
       if (!getToken) {
         setAuthneticationModalType("signup");
-        setAuthenticationModalOpen(true);
+        setSaveAuthModal(true);
       } else {
         toast.error("Looks like you don't have credit left..", {
           position: "top-center",
@@ -750,15 +751,15 @@ export default function TinyMCEEditor({
             setSaveText("Saved!");
             setTwitterThreadData(twitterThreadData);
           });
-        setAuthenticationModalOpen(false);
+        setSaveAuthModal(false);
       } else {
         setAuthneticationModalType("signup");
-        setAuthenticationModalOpen(true);
+        setSaveAuthModal(true);
       }
     } else {
       if (!getToken) {
         setAuthneticationModalType("signup");
-        setAuthenticationModalOpen(true);
+        setSaveAuthModal(true);
       } else {
         toast.error("Looks like you don't have credit left..", {
           position: "top-center",
@@ -1949,8 +1950,8 @@ export default function TinyMCEEditor({
       <AuthenticationModal
         type={authenticationModalType}
         setType={setAuthneticationModalType}
-        modalIsOpen={authenticationModalOpen}
-        setModalIsOpen={setAuthenticationModalOpen}
+        modalIsOpen={saveAuthModal}
+        setModalIsOpen={setSaveAuthModal}
         handleSave={handleSave}
         bid={blog_id}
       />
