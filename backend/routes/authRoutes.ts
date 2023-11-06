@@ -1650,7 +1650,6 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
     })
   }
   const user = req.user
-  console.log(tones, files)
   let userDetails = null
   if(user && Object.keys(user).length) {
     userDetails = await fetchUser({id: user.id, db})
@@ -1679,7 +1678,6 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
   }[] = []
   let pythonStart = new Date()
   const cachedBlogData = await db.db('lilleBlogs').collection('cachedBlogs').find({keyword}).sort({date: -1}).toArray()
-  console.log(cachedBlogData, "cachedBlogData")
   if(cachedBlogData.length) {
       const cachedBlogIdeaData = await db.db('lilleBlogs').collection('cachedBlogIdeas').findOne({blog_id: new ObjectID(cachedBlogData[0]._id)})
       delete cachedBlogData[0]._id
@@ -1728,10 +1726,14 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
           ...updatedBlogIdeas,
           _id: insertBlogIdeas.insertedId
       }, references: refUrls}
-    }
+  }
+  let pythonKeywordStartTime = new Date()
   if(!combinedArticleIds?.length) {
       try {
         combinedArticleIds = await new Python({userId: userId}).uploadKeyword({keyword, timeout:60000})
+        let pythonKeywordEndTime = new Date()
+        let pythonKeywordRespTime = diff_minutes(pythonKeywordEndTime, pythonKeywordStartTime)
+        console.log(`========== Time taken by python for extracting from keyword ${pythonKeywordRespTime}`)
         // combinedArticleIds = [ 'e84cb604-52f9-11ee-ac29-0242ac130002' ]
         if(combinedArticleIds && combinedArticleIds.length) {
           combinedArticleIds = combinedArticleIds.filter((data) => data !== "None")
@@ -1754,9 +1756,13 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
   let fileArticleIds: string[] = []
   if(urls && urls.length) {
     for (let index = 0; index < urls.length; index++) {
+      let pythonURLStartTime = new Date()
       const url = urls[index];
       try {
         const urlUploadRes = await new Python({userId}).uploadUrl({url})
+        let pythonUrlEndTime = new Date()
+        let pythonUrlRespTime = diff_minutes(pythonUrlEndTime, pythonURLStartTime)
+        console.log(`========== Time taken by python for extracting from url ${pythonUrlRespTime}`)
         urlsArticleIds.push(urlUploadRes)
         sourcesArray.push({
           type: "url",
@@ -1769,9 +1775,13 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
     publish({userId, keyword, step: "URL_UPLOAD_COMPLETED"})
   } else if(files && files.length) {
     for (let index = 0; index < files.length; index++) {
+      let pythonFileStartTime = new Date()
       const file = files[index];
       try {
         const fileUploadRes = await new Python({userId}).uploadFile({file})
+        let pythonFileEndTime = new Date()
+        let pythonFileRespTime = diff_minutes(pythonFileEndTime, pythonFileStartTime)
+        console.log(`========== Time taken by python for extracting from file ${pythonFileRespTime}`)
         fileArticleIds.push(fileUploadRes)
         sourcesArray.push({
           type: "file",
@@ -1822,7 +1832,6 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
       )
     )
   }
-  console.log(sourcesArray, "sourcesArray")
   let pythonEnd = new Date()
   let pythonRespTime = diff_minutes(pythonEnd, pythonStart)
   let texts = ""
@@ -1876,7 +1885,6 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
           article_ids.push(data.id)
       })
   }
-  console.log(ideasArr, keywords, article_ids)
   try {
       let uniqueTags: String[] = [];
       tags.forEach((c) => {
@@ -1885,7 +1893,6 @@ router.post('/generate', [authMiddleware, mulitUploadStrategy.array('files')], a
           }
       });
       if(combinedArticleIds && combinedArticleIds.length) refUrls = await fetchArticleUrls({db, articleId: combinedArticleIds})
-      console.log(refUrls, "refUrls")
       const blogGeneratedData: any = await blogGeneration({
           db,
           text: !articlesData.length ? keyword : texts,
