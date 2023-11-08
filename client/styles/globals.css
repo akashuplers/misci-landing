@@ -975,4 +975,5 @@ iframe::-webkit-scrollbar-thumb:hover {
 
 .search {
   margin-left: 5%;
+  height: 3rem;
 }
