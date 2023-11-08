@@ -16,6 +16,7 @@ import {
   ChevronDownIcon,
   ClockIcon,
   FolderIcon,
+  NewspaperIcon,
   PaperAirplaneIcon,
   PlusCircleIcon,
   XMarkIcon,
@@ -89,6 +90,12 @@ export default function Sidebar() {
       href: "/saved",
       icon: FolderIcon,
       current: url === "/saved",
+    },
+    {
+      name: "Daily Feed",
+      href: "/dailyfeed",
+      icon: NewspaperIcon,
+      current: url === "/dailyfeed",
     },
     {
       name: "Lille Library",
@@ -171,6 +178,8 @@ export default function Sidebar() {
       setTitle("Published Content");
     } else if (window.location.pathname === "/saved") {
       setTitle("Saved Content(s)");
+    } else if (window.location.pathname === "/dailyfeed") {
+      setTitle("Daily Feed Content(s)");
     } else if (window.location.pathname === "/dashboard") {
       setTitle("Generated Content");
     } else if (window.location.pathname === "/settings") {

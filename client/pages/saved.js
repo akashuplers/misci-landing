@@ -11,6 +11,8 @@ import LoaderScan from "../components/LoaderScan";
 import Pagination from "../components/Pagination";
 import { deleteBlog } from "../graphql/mutations/deleteBlog";
 import { getAllBlogs } from "../graphql/queries/getAllBlogs";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { useDebounce } from "@uidotdev/usehooks";
 const PAGE_COUNT = 12;
 
 if (typeof window !== "undefined") {
@@ -24,6 +26,8 @@ export default function Saved() {
   const [openModal, setOpenModal] = useState(false);
   const [blog_id, setblog_id] = useState("");
   const [pageSkip, setPageSkip] = useState(0);
+  const [search, setSearch] = useState(null);
+  const debouncedSearchTerm = useDebounce(search, 300);
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -38,7 +42,7 @@ export default function Saved() {
     };
   }, []);
 
-  const { data, error, loading } = useQuery(getAllBlogs, {
+  const { data, error, loading, refetch } = useQuery(getAllBlogs, {
     context: {
       headers: {
         authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -46,12 +50,17 @@ export default function Saved() {
     },
     variables: {
       options: {
-        status: ["ir_generated", "draft", "saved"],
+        status: ["draft", "saved"],
         page_skip: pageSkip * PAGE_COUNT,
         page_limit: (1 + pageSkip) * PAGE_COUNT,
+        search: debouncedSearchTerm
       },
     },
   });
+  useEffect(() => {
+    setPageSkip(0)
+    refetch()
+  }, [debouncedSearchTerm])
   const [
     DeleteBlog,
     { data: delteData, loading: delteLoading, error: delteError },
@@ -96,6 +105,17 @@ export default function Saved() {
   return (
     <>
       <Layout>
+        <div className="w-full lg:w-[25%] h-16 bg-white bg-opacity-25 rounded-lg shadow border border-indigo-600 backdrop-blur-[18px] justify-start items-center gap-3 inline-flex my-4 px-2 focus-within:ring-2 focus-within:ring-indigo-600 search">
+            <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
+            <input
+              id="1"
+              type="text"
+              placeholder="Search Topics"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="peer h-full w-full rounded-lg  font-thin outline-none drop-shadow-sm transition-all duration-200 ease-in-out focus:bg-transparent focus:ring-2 focus:ring-transparent border-none"
+            />
+        </div>
         <ToastContainer />
         {loading ? (
           <LoaderScan />

@@ -10,7 +10,9 @@ import { saveAs } from 'file-saver';
 import {Blob} from 'buffer';
 import { sendEmails } from "../utils/mailJetConfig";
 import { isJsonString } from "../utils/encode";
+import axios from "axios";
 const fs = require('fs')
+const bcrypt = require('bcrypt');
 
 const express = require("express");
 const router = express.Router();
@@ -1061,6 +1063,67 @@ router.post('/re-generate', async (req: any, res: any) => {
             message: e.message
         })
     }
+})
+
+router.post('/test-user',uploadStrategy,  async (req: any, res: any) => {
+    const xlsx = require('xlsx')
+    const db = req.app.get('db')
+    console.log(req.file, "akash")
+    const file = xlsx.read(req.file.buffer)
+    const sheetToPick = req.body.sheet
+    console.log(file,req.file, "akash")
+    // Reading our test file
+    let data: any = []
+    
+    const sheets = file.SheetNames
+    console.log(sheets, "sheets")
+    console.log(sheetToPick, "sheetToPick")
+    for(let i = 0; i < sheets.length; i++)
+    {
+        if(sheetToPick) {
+            if(file.SheetNames[i] === sheetToPick) {
+                const temp = xlsx.utils.sheet_to_json(file.Sheets[sheetToPick])
+                temp.forEach((res: any) => {
+                    data.push(res)
+                })
+            }
+        }else{
+            const temp = xlsx.utils.sheet_to_json(file.Sheets[file.SheetNames[i]])
+            temp.forEach((res: any) => {
+                data.push(res)
+            })
+        }
+    }
+    // Printing data
+    console.log(data)
+    let array: any = []
+    data.forEach(async (d: any, index: number) => {
+        const keys = Object.keys(d)
+        console.log(d[keys[0]], "email")
+        console.log(d[keys[1]], "name")
+        console.log(d[keys[2]], "ownership")
+        try{
+            let salt = null
+            if (salt === null) {
+                salt = await bcrypt.genSalt(11);
+            }
+            const hashedPassword = await bcrypt.hash("Password@123", salt);
+            const res = await db.db('salesLille').collection('users').insertOne({
+                email: d[keys[0]],
+                name: d[keys[1]],
+                description: d[keys[2]],
+                password: hashedPassword,
+                salt,
+                role: "user",
+                createdAt: new Date(),
+                updatedAt: new Date()
+            })
+            console.log(res,d[keys[0]], "res")
+            // process.exit()
+        }catch(e){
+            console.log(e)
+        }
+    })
 })
 
 router.post('/test-upload',uploadStrategy, async (req: any, res: any) => {
