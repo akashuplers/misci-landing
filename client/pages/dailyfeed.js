@@ -143,6 +143,7 @@ export default function DailyFeed() {
                     setOpenModal={setOpenModal}
                     index={index}
                     type={"saved"}
+                    showType={false}
                   />
                 </>
               ))}

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import styles from '../styles/saved.module.css';
-const BlogListItem = ({ blog, index, setblog_id, setOpenModal, type }) => {
+const BlogListItem = ({ blog, index, setblog_id, setOpenModal, type, showType = true }) => {
   const [queryParams, setQueryParams] = useState({ blogId: blog._id });
   useEffect(() => {
     setQueryParams({ blogId: blog._id });
@@ -73,7 +73,7 @@ const BlogListItem = ({ blog, index, setblog_id, setOpenModal, type }) => {
               }}
             >
               {
-                type == 'saved' && (
+                showType && type == 'saved' && (
                   <>
                     <button
                       className={`${styles.statusDelButton} ${styles.statusButton}`}
