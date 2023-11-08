@@ -9,7 +9,7 @@ const BlogListItem = ({ blog, index, setblog_id, setOpenModal, type, showType = 
       setQueryParams({ blogId: blog._id, isPublished: true });
     }
   }, [blog, type]);
-  const pathName = type == 'saved' ? `/dashboard/${blog._id}` : `/dashboard/${blog._id}?isPublished=true`;
+  const pathName = type == 'saved' ? `/dashboard/${blog._id}` : type == 'ir_generated' ? `/dashboard/${blog._id}?isDailyFeed=true` : `/dashboard/${blog._id}?isPublished=true`;
   return (
     <li href={{ pathname: '/dashboard/' + blog._id, query: queryParams }} key={blog._id} className="relative">
       <Link href={pathName}><div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
@@ -54,7 +54,7 @@ const BlogListItem = ({ blog, index, setblog_id, setOpenModal, type, showType = 
             </Link>
           )
         }
-        <Link href={"/dashboard/" + blog._id}>
+        <Link href={type == 'saved' ? `/dashboard/${blog._id}` : type == 'ir_generated' ? `/dashboard/${blog._id}?isDailyFeed=true` : `/dashboard/${blog._id}?isPublished=true`}>
           <span>
             <button
               type="button"

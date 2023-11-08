@@ -142,7 +142,7 @@ export default function DailyFeed() {
                     setblog_id={setblog_id}
                     setOpenModal={setOpenModal}
                     index={index}
-                    type={"saved"}
+                    type={"ir_generated"}
                     showType={false}
                   />
                 </>

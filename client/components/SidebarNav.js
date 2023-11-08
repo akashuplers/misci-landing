@@ -176,6 +176,8 @@ export default function Sidebar() {
     const regex = /^\/dashboard\/[6|4][a-zA-Z0-9]*$/;
     if (window.location.search === "?isPublished=true") {
       setTitle("Published Content");
+    }else if (window.location.search === "?isDailyFeed=true") {
+      setTitle("Daily Feed Content");
     } else if (window.location.pathname === "/saved") {
       setTitle("Saved Content(s)");
     } else if (window.location.pathname === "/dailyfeed") {
