@@ -4,7 +4,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 First, run the development server:
 
-DEV is for testing then move to PROD
+Lille App
 
 ```bash
 npm run dev

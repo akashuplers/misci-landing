@@ -16,6 +16,7 @@ import {
   ChevronDownIcon,
   ClockIcon,
   FolderIcon,
+  NewspaperIcon,
   PaperAirplaneIcon,
   PlusCircleIcon,
   XMarkIcon,
@@ -89,6 +90,12 @@ export default function Sidebar() {
       href: "/saved",
       icon: FolderIcon,
       current: url === "/saved",
+    },
+    {
+      name: "Daily Feed",
+      href: "/dailyfeed",
+      icon: NewspaperIcon,
+      current: url === "/dailyfeed",
     },
     {
       name: "Lille Library",
@@ -169,8 +176,12 @@ export default function Sidebar() {
     const regex = /^\/dashboard\/[6|4][a-zA-Z0-9]*$/;
     if (window.location.search === "?isPublished=true") {
       setTitle("Published Content");
+    }else if (window.location.search === "?isDailyFeed=true") {
+      setTitle("Daily Feed Content");
     } else if (window.location.pathname === "/saved") {
       setTitle("Saved Content(s)");
+    } else if (window.location.pathname === "/dailyfeed") {
+      setTitle("Daily Feed Content(s)");
     } else if (window.location.pathname === "/dashboard") {
       setTitle("Generated Content");
     } else if (window.location.pathname === "/settings") {
@@ -518,8 +529,9 @@ export default function Sidebar() {
             <div className="py-2 pb-4 w-[85%] float-right">
               <div className="mx-auto max-w-7xl px-2 flex relative">
                 <div className="pt-4">
-                  {path !== "/" ? (
+                  {(path == '/' || router.asPath == "/library?page=1") || (
                     <button
+                      
                       onClick={() => {
                         handleEditorReset();
                         router.back();
@@ -538,8 +550,6 @@ export default function Sidebar() {
                         />
                       </svg>
                     </button>
-                  ) : (
-                    <></>
                   )}
                 </div>
                 <div className="flex">

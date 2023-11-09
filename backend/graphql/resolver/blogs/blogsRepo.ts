@@ -332,6 +332,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
         try {
             if((type.length && type.includes(key) && key === "wordpress") || (!type.length && key === "wordpress")) {
                 const gptPrompt = `Please forget old prompt and act as an new expert writer and using the below pasted ideas write a blog with inputs as follows:\n${title && title.length ? `Topic is "${title}"\n${tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"`}`: tones?.length ? `Tone is ${tones.join('","')}` : `Tone is "Authoritative, informative, Persuasive"` }\n${keywords.length ? `Use these keywords: "${keywords.join('","')}" \nMinimum limit is "1000 words"`: `Minimum limit is "1000 words"`}\n"Strictly Add no references in the bottom"\nHighlight the H1 & H2 html tags\nProvide the conclusion at the end with Conclusion as heading\nStrictly use all these points: ${text}`
+                let chatGPTStartTime = new Date()
                 const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text: `${regenerate ? gptPrompt : 
                     `Please act as an expert writer and using the below pasted ideas write a blog with inputs as follows:
                     ${title && title.length ? `'Topic is "${title}"'`: "" }
@@ -342,6 +343,9 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                     "Provide the conclusion at the end with Conclusion as heading"`}`, db}).textCompletion(chatgptApis.timeout)
                 console.log(chatGPTText, "blog")    
                 newsLetter = {...newsLetter, [key]: chatGPTText}
+                let chatGPTEndTime = new Date()
+                let chatGPTRespTime = diff_minutes(chatGPTEndTime, chatGPTStartTime)
+                console.log(`========== Time taken by chat gpt for blog generation ${chatGPTRespTime}`)
             } else {
                 let text = ""
                 if((type.length && type.includes(key) && key === "title") || (!type.length && key === 'title')) {
@@ -358,7 +362,7 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                     ${keywords.length ? `Keywords are "${keywords.join('","')}"`: `Topic of Blog is "${title}"`}, go through the Blog and write about this topic.
                     LinkedIn post should have maximum 300 words.
                     Suggest an attention-grabbing Title.
-                    Insert hashtags at the end of the post
+                    Insert hashtags at the start of the post
                     Trim unwanted new lines and spaces`
                 }
                 if((type.length && type.includes(key) && key === "twitter") || (!type.length && key === 'twitter')) {
@@ -391,8 +395,12 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                     console.log(text, "text")
                 }
                 if(text && text.length > 1) {
+                    let chatGPTStartTime = new Date()
                     const chatGPTText = await new ChatGPT({apiKey: availableApi.key, text, db}).textCompletion(chatgptApis.timeout)
                     newsLetter = {...newsLetter, [key]: chatGPTText}
+                    let chatGPTEndTime = new Date()
+                    let chatGPTRespTime = diff_minutes(chatGPTEndTime, chatGPTStartTime)
+                    console.log(`========== Time taken by chat gpt for ${key === 'twitter' ? "twitter thread" : key === 'linkedin' ? "linkedin post" : "title"} generation ${chatGPTRespTime}`)
                 }
             }
         } catch(e: any) {
@@ -444,8 +452,19 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                 }); 
                                 // description = (newsLetter[key]?.replace("\n", ""))?.trimStart()
                                 usedIdeasArr = description?.split('. ')
+                                console.log(usedIdeasArr, "usedIdeasArr")
                                 let unqiueIdeasArray: any [] = []
-                                usedIdeasArr.forEach((text: string) => !unqiueIdeasArray.includes(text) ? unqiueIdeasArray.push(text) : false)
+                                usedIdeasArr.forEach((text: string) => {
+                                    !unqiueIdeasArray.includes(text) ? unqiueIdeasArray.push(text) : false
+                                    text = text.replace(/^\s\s*/, '').replace(/\s\s*$/, '');;
+                                    const find = unqiueIdeasArray.find((idea) => {
+                                        return (idea.indexOf(text) > -1 || text.indexOf(idea) > -1)
+                                    })
+                                    if(!find) {
+                                        return unqiueIdeasArray.push(text)
+                                    }
+                                    return false
+                                })
                                 usedIdeasArr = unqiueIdeasArray
                                 if(!misci && ideasArr && ideasArr.length && refUrls && refUrls?.length) {
                                     let articleIds: string[] = []
@@ -453,10 +472,14 @@ export const blogGeneration = async ({db, text, regenerate = false, title, image
                                     refUrls?.map((refUrl) => articleIds.push(refUrl.id))
                                     try {
                                         console.log("============Started Backlinking===============")
+                                        let pythonBackLinkStartTime = new Date()
                                         refBlogs = await new Python({userId}).getReferences({
                                             text: updatedContent,
                                             article_ids: articleIds
-                                        })   
+                                        })
+                                        let pythonBackLinkEndTime = new Date()
+                                        let pythonBackLinkRespTime = diff_minutes(pythonBackLinkEndTime, pythonBackLinkStartTime)
+                                        console.log(`========== Time taken by python for backlining ${pythonBackLinkRespTime}`)   
                                         console.log("============Ended Backlinking===============")
                                         refBlogs.forEach((data: any) => {
                                             // console.log(data, "data")

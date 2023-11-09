@@ -972,3 +972,8 @@ iframe::-webkit-scrollbar-thumb:hover {
 .swiper-button-next{
   right: 0 !important;
 }
+
+.search {
+  margin-left: 5%;
+  height: 3rem;
+}

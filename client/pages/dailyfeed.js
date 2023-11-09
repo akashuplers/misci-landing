@@ -21,7 +21,7 @@ if (typeof window !== "undefined") {
   });
 }
 
-export default function Saved() {
+export default function DailyFeed() {
   const client = useApolloClient();
   const [openModal, setOpenModal] = useState(false);
   const [blog_id, setblog_id] = useState("");
@@ -50,7 +50,7 @@ export default function Saved() {
     },
     variables: {
       options: {
-        status: ["draft", "saved"],
+        status: ["ir_generated"],
         page_skip: pageSkip * PAGE_COUNT,
         page_limit: (1 + pageSkip) * PAGE_COUNT,
         search: debouncedSearchTerm
@@ -142,7 +142,8 @@ export default function Saved() {
                     setblog_id={setblog_id}
                     setOpenModal={setOpenModal}
                     index={index}
-                    type={"saved"}
+                    type={"ir_generated"}
+                    showType={false}
                   />
                 </>
               ))}

@@ -17,7 +17,7 @@ const Pagination = ({totalItems, pageSkip, setPageSkip}) => {
             const page = parseInt(router.query.page)
             takeToNewPage(page)
         }else{
-            setNewPageUrl(1)
+            takeToNewPage(1)
         }
     }, [router]);
 
