@@ -19,16 +19,11 @@ export default function GoogleDriveModal({ showModal, setShowModal, meeData} : P
 
   const [windowWidth, setWindowWidth] = useState(0);
 
-  useEffect(() => {
-    console.log(windowWidth, 'halert')
-  },[windowWidth])
-
     useEffect(() => { 
 
         setWindowWidth(window.innerWidth);
   
         const setWidthForDashboardInsight = () => {
-            console.log(window.innerWidth, 'halert')
             setWindowWidth(window.innerWidth)
         }
 

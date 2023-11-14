@@ -111,7 +111,6 @@ export default function Post({typeIsRepurpose}) {
 
 
   const setWidthForDashboardInsight = () => {
-    console.log(window.innerWidth, 'halert')
     setWindowWidth(window.innerWidth)
   }
 
