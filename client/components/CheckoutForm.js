@@ -16,6 +16,7 @@ const CheckoutForm = ({
   setClickOnSubscibe,
   setProcessing,
   processing,
+  plans
 }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -341,6 +342,11 @@ const CheckoutForm = ({
     } else {
       setClickOnSubscibe(false);
       if (!confirmPayment?.error?.message) {
+        import('react-facebook-pixel')
+        .then((x) => x.default)
+        .then((ReactPixel) => {
+          ReactPixel.track('Purchase', {value: plans[plans.findIndex(plan => plan.priceId === priceId)].price ?? 'NaN', currency: 'INR'})
+        })
         setconfirmed(true);
         createUser({
           firstName: firstName,

@@ -971,6 +971,7 @@ function UpgradeTab({ meeData }) {
             priceId={currentPlan?.priceId}
             setClickOnSubscibe={setClickOnSubscibe}
             interval={currentPlan?.subscriptionType}
+            plans={plans}
           />
         </Modal>
       </Elements>
