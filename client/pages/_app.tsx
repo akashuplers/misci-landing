@@ -126,6 +126,19 @@ export default function App({ Component, pageProps }: AppProps) {
   ];
 
   useEffect(() => {
+    import('react-facebook-pixel')
+      .then((x) => x.default)
+      .then((ReactPixel) => {
+        ReactPixel.init('3524555041095937')
+        ReactPixel.pageView()
+
+        router.events.on('routeChangeComplete', () => {
+          ReactPixel.pageView()
+        })
+      })
+  }, [router.events])
+
+  useEffect(() => {
     axios
       .get(API_BASE_PATH + API_ROUTES.TEMP_ID, {
         headers: {
