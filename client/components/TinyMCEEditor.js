@@ -1,7 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { meeAPI } from "@/graphql/querys/mee";
 import { useMutation, useQuery } from "@apollo/client";
-import { CheckCircleIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import {
+  CheckCircleIcon,
+  PaperAirplaneIcon,
+} from "@heroicons/react/24/outline";
 import { loadStripe } from "@stripe/stripe-js";
 import { Editor } from "@tinymce/tinymce-react";
 import axios from "axios";
@@ -30,8 +33,11 @@ import {
   LINKEDIN_CLIENT_ID,
   LI_API_ENDPOINTS,
 } from "../constants/apiEndpoints";
-import { rawMutationUpdateBlog, updateBlog } from "../graphql/mutations/updateBlog";
-import { PUBLISH_STATE} from '../graphql/mutations/publishBlog';
+import {
+  rawMutationUpdateBlog,
+  updateBlog,
+} from "../graphql/mutations/updateBlog";
+import { PUBLISH_STATE } from "../graphql/mutations/publishBlog";
 import {
   getCurrentDashboardURL,
   htmlToJson,
@@ -72,7 +78,7 @@ const SAVING_STATUS = {
   SAVING: "Saving...",
   ERROR: "Error!",
   BLANK: "",
-}
+};
 
 const resetTimeout = (id, newID) => {
   clearTimeout(id);
@@ -93,8 +99,8 @@ export default function TinyMCEEditor({
   setOption,
   refetchBlog,
   timeSaveForThisBlog,
-  saveAuthModal, 
-  setSaveAuthModal
+  saveAuthModal,
+  setSaveAuthModal,
 }) {
   const twitterButtonRef = useRef(null);
   const [isTinyMCEReady, setIsTinyMCEReady] = useState(false);
@@ -145,7 +151,9 @@ export default function TinyMCEEditor({
     setOptions: setTwitterThreadAlertOption,
   } = useTwitterThreadALertModal();
   const { showTwitterThreadUI, setShowTwitterThreadUI } = useThreadsUIStore();
-  const [autoSaveSavingStatus, setAutoSaveSavingStatus] = useState(SAVING_STATUS.SAVED);
+  const [autoSaveSavingStatus, setAutoSaveSavingStatus] = useState(
+    SAVING_STATUS.SAVED
+  );
   const [prevAutoSaveData, setPrevAutoSaveData] = useState(editorText);
   const [hasDataChanged, setHasDataChanged] = useState(false);
 
@@ -156,7 +164,7 @@ export default function TinyMCEEditor({
   const handleEditorInit = () => {
     setIsEditorReady(true);
   };
-  
+
   function handleRawTwitterMutation(newThreads) {
     var getToken, ispaid, credits;
     if (typeof window !== "undefined") {
@@ -182,26 +190,24 @@ export default function TinyMCEEditor({
         optionsForUpdate.tinymce_json = formatedJSON;
       }
       fetch(API_BASE_PATH + "/graphql", {
-        method: 'POST',
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + getToken,
         },
-        body: JSON.stringify(
-          {
-            variables: {
-              options: optionsForUpdate,
-            },
-            query: rawMutationUpdateBlog
-          }
-        )
+        body: JSON.stringify({
+          variables: {
+            options: optionsForUpdate,
+          },
+          query: rawMutationUpdateBlog,
+        }),
       })
-        .then(response => response.json())
-        .then(responseData => {
+        .then((response) => response.json())
+        .then((responseData) => {
           console.log(responseData);
         })
-        .catch(error => {
-          console.error('Error:', error);
+        .catch((error) => {
+          console.error("Error:", error);
         });
       setSaveAuthModal(false);
     } else {
@@ -215,11 +221,14 @@ export default function TinyMCEEditor({
   function handleTwitterAutoSave(data, threadData) {
     console.log(data);
     setAutoSaveSavingStatus(SAVING_STATUS.SAVING);
-    const newTimeout = resetTimeout(twitterTimeOut, setTimeout(() => {
-      // saveValu
-    // console.log('sending this...: '+ threadData);
-      handleRawTwitterMutation(threadData);
-    }, 400));
+    const newTimeout = resetTimeout(
+      twitterTimeOut,
+      setTimeout(() => {
+        // saveValu
+        // console.log('sending this...: '+ threadData);
+        handleRawTwitterMutation(threadData);
+      }, 400)
+    );
     setTwitterTimeOut(newTimeout);
   }
   const saveValue = (contentToSave) => {
@@ -263,26 +272,24 @@ export default function TinyMCEEditor({
           optionsForUpdate.tinymce_json = formatedJSON;
         }
         fetch(API_BASE_PATH + "/graphql", {
-          method: 'POST',
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: "Bearer " + getToken,
           },
-          body: JSON.stringify(
-            {
-              variables: {
-                options: optionsForUpdate,
-              },
-              query: rawMutationUpdateBlog
-            }
-          )
+          body: JSON.stringify({
+            variables: {
+              options: optionsForUpdate,
+            },
+            query: rawMutationUpdateBlog,
+          }),
         })
-          .then(response => response.json())
-          .then(responseData => {
+          .then((response) => response.json())
+          .then((responseData) => {
             console.log(responseData);
           })
-          .catch(error => {
-            console.error('Error:', error);
+          .catch((error) => {
+            console.error("Error:", error);
           });
         setSaveAuthModal(false);
       } else {
@@ -292,6 +299,10 @@ export default function TinyMCEEditor({
     }
     setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
   };
+  useEffect(() => {
+    setIsEditorReady(false);
+    setIsEditorTextUpdated(false);
+  }, [option]);
   useEffect(() => {
     return () => {
       clearTimeout(timeout);
@@ -322,20 +333,18 @@ export default function TinyMCEEditor({
           switch (err.extensions.code) {
             case "UNAUTHENTICATED":
               localStorage.clear();
-              // window.location.href = "/";
+            // window.location.href = "/";
           }
         }
       }
       if (networkError) {
         //console.log(`[Network error]: ${networkError}`);
-
         // if (
         //   `${networkError}` ===
         //   "ServerError: Response not successful: Received status code 401" &&
         //   isauth
         // ) {
         //   localStorage.clear();
-
         //   toast.error("Session Expired! Please Login Again..", {
         //     position: "top-center",
         //     autoClose: 5000,
@@ -392,7 +401,7 @@ export default function TinyMCEEditor({
         (pd) => pd.platform === "linkedin"
       ).tiny_mce_data;
       const htmlDoc = jsonToHtml(aa);
-            //console.log("885", htmlDoc);
+      //console.log("885", htmlDoc);
       setEditorText(htmlDoc);
     } else if (option === "linkedin-comeback") {
       setOption("linkedin");
@@ -514,7 +523,7 @@ export default function TinyMCEEditor({
   useEffect(() => {
     // Detect the Windows platform using userAgent
     if (navigator.userAgent.indexOf("Windows") !== -1) {
-      console.log("IS WINDOWS", "YES")
+      console.log("IS WINDOWS", "YES");
       setIsWindows(true);
     }
   }, []);
@@ -524,7 +533,7 @@ export default function TinyMCEEditor({
   }, [isSave]);
 
   const [authenticationModalType, setAuthneticationModalType] = useState("");
-//  const {response, error, loading, sendSavedTime}: = useSendSavedTimeOfUser();
+  //  const {response, error, loading, sendSavedTime}: = useSendSavedTimeOfUser();
   const router = useRouter();
   let token,
     linkedInAccessToken,
@@ -542,7 +551,7 @@ export default function TinyMCEEditor({
     UpdateBlog,
     { data: updateData, loading: updateLoading, error: updateError },
   ] = useMutation(updateBlog);
-  
+
   const handleSave = async (redirectUser = true, showToast = true) => {
     console.log("user-save");
 
@@ -625,16 +634,17 @@ export default function TinyMCEEditor({
           .then(() => {
             //console.log(">>", window.location);
             runMeeRefetch();
-            showToast == true && toast.success("Saved!!", {
-              position: "top-center",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            });
+            showToast == true &&
+              toast.success("Saved!!", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
             if (redirectUser == true) {
               if (window.location.pathname !== "/dashboard/" + blog_id) {
                 window.location.href = "/dashboard/" + blog_id;
@@ -677,7 +687,7 @@ export default function TinyMCEEditor({
       }
     }
   };
-  
+
   const handleSaveTwitter = async (redirectUser = true) => {
     var getToken, ispaid, credits;
 
@@ -831,14 +841,16 @@ export default function TinyMCEEditor({
     }
 
     setWindowWidth(window.innerWidth);
-  
+
     const setWidthForDashboardInsight = () => {
-      setWindowWidth(window.innerWidth)
-    }
+      console.log(window.innerWidth, "halert");
+      setWindowWidth(window.innerWidth);
+    };
 
-    window.addEventListener('resize', setWidthForDashboardInsight)
+    window.addEventListener("resize", setWidthForDashboardInsight);
 
-    return () => window.removeEventListener("resize", setWidthForDashboardInsight)
+    return () =>
+      window.removeEventListener("resize", setWidthForDashboardInsight);
   }, []);
   const handleconnectLinkedin = () => {
     localStorage.setItem("loginProcess", true);
@@ -974,7 +986,6 @@ export default function TinyMCEEditor({
     }
   }, [option]);
 
-
   const handleSavePublish = () => {
     if (creditLeft === 0) {
       setTrailModal(true);
@@ -1023,46 +1034,58 @@ export default function TinyMCEEditor({
             }
 
             var ll = Number(localStorage.getItem("meDataMePublishCount"));
-            setTimeout(() => { 
+            setTimeout(() => {
               console.clear();
-              const usersUsedCredits= calculateUsedCredits({
+              const usersUsedCredits = calculateUsedCredits({
                 totalCredits: meeData?.me?.totalCredits,
                 creditsLeft: meeData?.me?.credits,
-              })
-              var SHOW_CONTRIBUTION_MODAL  = false;
-              const isUserMadePayment = localStorage.getItem("payment") === undefined || localStorage.getItem("payment") === null;
-              const isUserPaid = localStorage.getItem("ispaid") === null || localStorage.getItem("ispaid") === undefined || localStorage.getItem("ispaid") === "false";
+              });
+              var SHOW_CONTRIBUTION_MODAL = false;
+              const isUserMadePayment =
+                localStorage.getItem("payment") === undefined ||
+                localStorage.getItem("payment") === null;
+              const isUserPaid =
+                localStorage.getItem("ispaid") === null ||
+                localStorage.getItem("ispaid") === undefined ||
+                localStorage.getItem("ispaid") === "false";
               const isUserCredits10 = usersUsedCredits === 10;
               const isUserCredits20 = usersUsedCredits === 20;
-              const isUserPublishCount0 = Number(meeData?.me?.publishCount) === 0;
-              if(isUserMadePayment || isUserPaid){
-                console.log("user id not paid")
-                if(isUserCredits10 || isUserCredits20 || isUserPublishCount0){
-                  console.log("user id not paid and credits 10 or 20 or publish count 0")
-                  if(!meeData?.me?.isSubscribed){
-                    console.log('is subcites false showing modal')
+              const isUserPublishCount0 =
+                Number(meeData?.me?.publishCount) === 0;
+              if (isUserMadePayment || isUserPaid) {
+                console.log("user id not paid");
+                if (isUserCredits10 || isUserCredits20 || isUserPublishCount0) {
+                  console.log(
+                    "user id not paid and credits 10 or 20 or publish count 0"
+                  );
+                  if (!meeData?.me?.isSubscribed) {
+                    console.log("is subcites false showing modal");
                     SHOW_CONTRIBUTION_MODAL = true;
-                  }else{
-                    console.log('is subcites true')
-                    console.log(meeData?.me?.isSubscribed)
+                  } else {
+                    console.log("is subcites true");
+                    console.log(meeData?.me?.isSubscribed);
                   }
-                } else{
-                  console.log('credits not satisfied', {
-                    calculated: {
-                      isUserCredits10, isUserCredits20,isUserPublishCount0
-                    }
-                  }, 
+                } else {
+                  console.log(
+                    "credits not satisfied",
                     {
-                      fromAPI:{
+                      calculated: {
+                        isUserCredits10,
+                        isUserCredits20,
+                        isUserPublishCount0,
+                      },
+                    },
+                    {
+                      fromAPI: {
                         total: meeData?.me?.totalCredits,
-                        remaing: meeData?.me?.credits, 
-                        meeData: meeData
-                      }
+                        remaing: meeData?.me?.credits,
+                        meeData: meeData,
+                      },
                     }
-                  )
+                  );
                 }
-              }else{
-                console.log("user id paid")
+              } else {
+                console.log("user id paid");
               }
               if (SHOW_CONTRIBUTION_MODAL) {
                 setShowContributionModal(true);
@@ -1083,8 +1106,8 @@ export default function TinyMCEEditor({
     //console.log(localStorage);
     setContributionModalLoader(true);
     const stripe = await stripePromise;
-    console.log('Change')
-    console.log(BASE_PRICE * multiplier * contributionAmout)
+    console.log("Change");
+    console.log(BASE_PRICE * multiplier * contributionAmout);
     const res = await fetch(API_BASE_PATH + "/stripe/api/payment", {
       method: "POST",
       headers: {
@@ -1142,10 +1165,10 @@ export default function TinyMCEEditor({
         (x) => "\\" + x
       );
 
-      const newData = document.getElementById("tinymce-id_ifr")?.contentWindow.document.getElementById('tinymce')?.innerText.replace(
-        /[\(*\)\[\]\{\}<>@|~_]/gm,
-        (x) => "\\" + x
-      );
+      const newData = document
+        .getElementById("tinymce-id_ifr")
+        ?.contentWindow.document.getElementById("tinymce")
+        ?.innerText.replace(/[\(*\)\[\]\{\}<>@|~_]/gm, (x) => "\\" + x);
 
       const parser = new DOMParser();
       const doc = parser.parseFromString(updatedText, "text/html");
@@ -1213,12 +1236,12 @@ export default function TinyMCEEditor({
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     refetchBlog && refetchBlog();
-    if(option === "twitter" || option ==='twitter-comeback'){
-        setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
-      }
-  },[option]);
+    if (option === "twitter" || option === "twitter-comeback") {
+      setAutoSaveSavingStatus(SAVING_STATUS.SAVED);
+    }
+  }, [option]);
 
   const handleTwitterAlertModal = (
     remaningQuota,
@@ -1458,7 +1481,9 @@ export default function TinyMCEEditor({
 
   useEffect(() => {
     // Log condition 1
-    console.log("Condition 1: meeData?.me?.remaining_twitter_quota == undefined");
+    console.log(
+      "Condition 1: meeData?.me?.remaining_twitter_quota == undefined"
+    );
     console.log(meeData?.me?.remaining_twitter_quota == undefined);
 
     // Log condition 2
@@ -1472,7 +1497,6 @@ export default function TinyMCEEditor({
     // Log condition 4
     console.log("Condition 4: pauseTwitterPublish");
     console.log(pauseTwitterPublish);
-
   }, [pauseTwitterPublish]);
   function runMeeRefetch() {
     meeRefetch().then((res) => {
@@ -1505,10 +1529,14 @@ export default function TinyMCEEditor({
       {trailModal && (
         <TrialEndedModal setTrailModal={setTrailModal} topic={null} />
       )}
-      {
-        typeIsRepurpose  && <TotalTImeSaved timeSaved={timeSaveForThisBlog} blogId={blog_id} 
-        modalIsOpen={showTimeSaveModal} setIsOpen={setShowTimeSaveModal}/>
-      }
+      {typeIsRepurpose && (
+        <TotalTImeSaved
+          timeSaved={timeSaveForThisBlog}
+          blogId={blog_id}
+          modalIsOpen={showTimeSaveModal}
+          setIsOpen={setShowTimeSaveModal}
+        />
+      )}
       {/* <Modal
         isOpen={editingMode}
         onRequestClose={() => {
@@ -1781,8 +1809,9 @@ export default function TinyMCEEditor({
               <div
                 key={item}
                 className={`flex items-center justify-center w-[40px] h-[40px] rounded-full bg-indigo-500 text-white text-sm font-bold 
-                ml-[10px] hover:bg-indigo-700 cursor-pointer ${multiplier === item && "bg-indigo-700 "
-                  }  
+                ml-[10px] hover:bg-indigo-700 cursor-pointer ${
+                  multiplier === item && "bg-indigo-700 "
+                }  
                 `}
                 onClick={() => setMultiplier(Number(item))}
               >
@@ -1944,19 +1973,23 @@ export default function TinyMCEEditor({
         </div>
       </Modal>
       <AuthenticationModal
-      className="tinymcemodal"
+        className="tinymcemodal"
         type={authenticationModalType}
         setType={setAuthneticationModalType}
         modalIsOpen={saveAuthModal}
         setModalIsOpen={setSaveAuthModal}
         handleSave={() => {
-          console.log('I AM SAVING CRITICAL')
-          handleSave()
+          console.log("I AM SAVING CRITICAL");
+          handleSave();
         }}
         bid={blog_id}
       />
-      <div className="block mt-0 sm:mt-4" style={isWindows ? { marginTop: "5px", height: '100%' } : {height: '100%'}}>
-
+      <div
+        className="block mt-0 sm:mt-4"
+        style={
+          isWindows ? { marginTop: "5px", height: "100%" } : { height: "100%" }
+        }
+      >
         <div
           style={{
             paddingBottom: "0.5em",
@@ -1974,8 +2007,9 @@ export default function TinyMCEEditor({
               }}
             >
               <div
-                className={`blog-toggle-button cta wordpress flex gap-1 items-center ${option == "blog" ? "active" : ""
-                  }`}
+                className={`blog-toggle-button cta wordpress flex gap-1 items-center ${
+                  option == "blog" ? "active" : ""
+                }`}
                 onClick={handleBlog}
               >
                 <svg
@@ -1991,8 +2025,9 @@ export default function TinyMCEEditor({
               </div>
               <div
                 // className="blog-toggle-button cta linkedin flex gap-1 items-center"
-                className={`blog-toggle-button cta linkedin flex gap-1 items-center ${option == "linkedin" ? "active" : ""
-                  }`}
+                className={`blog-toggle-button cta linkedin flex gap-1 items-center ${
+                  option == "linkedin" ? "active" : ""
+                }`}
                 onClick={handleLinkedinBlog}
               >
                 <svg
@@ -2015,8 +2050,9 @@ export default function TinyMCEEditor({
               </div>
               <div
                 // className="blog-toggle-button cta twitter flex gap-1 items-center"
-                className={`blog-toggle-button cta twitter flex gap-1 items-center ${option == "twitter" ? "active" : ""
-                  }`}
+                className={`blog-toggle-button cta twitter flex gap-1 items-center ${
+                  option == "twitter" ? "active" : ""
+                }`}
                 onClick={handleTwitterBlog}
               >
                 <svg
@@ -2033,95 +2069,109 @@ export default function TinyMCEEditor({
                 </svg>
                 Twitter
               </div>
-              {
-
-                option === "twitter" ? (autoSaveSavingStatus == SAVING_STATUS.SAVING ? <>
-                  <ReactLoading
-                    width={25}
-                    height={25}
-                    round={true}
-                    color={"#2563EB"}
-                  />
-                  <span className="text-[#2563EB] ml-2">
-                    Saving...
-                  </span>
-                </>
-                  :
-                  <CheckCircleIcon className="text-[#2563EB]" height={25} width={25} />) : (iRanNumberOfTimes > 3 && autoSaveSavingStatus == SAVING_STATUS.SAVING ? <>
+              {option === "twitter" ? (
+                autoSaveSavingStatus == SAVING_STATUS.SAVING ? (
+                  <>
                     <ReactLoading
                       width={25}
                       height={25}
                       round={true}
                       color={"#2563EB"}
                     />
-                    <span className="text-[#2563EB] ml-2">
-                      Saving...
-                    </span>
+                    <span className="text-[#2563EB] ml-2">Saving...</span>
                   </>
-                    :
-                    <CheckCircleIcon className="text-[#2563EB]" height={25} width={25} />)
-
-
-              }
-
-
-            </div>
-          ) : (
-            <div style={{ display: "none" }}></div>
-          )}
-          {!isPublished ? (
-            <div
-              className={`flex w-full lg:w-auto lg:mt-auto justify-end md:justify-start ${isAuthenticated ? "md:mt-5" : "md:mt-[70px]"} mt-0`}
-              style={{ gap: "0.25em", marginLeft: "auto" }}
-            >
-              {windowWidth <=768 && <div className="pt-2 mr-auto">
-                <button onClick={() => router.back()}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M11.03 3.97a.75.75 0 010 1.06l-6.22 6.22H21a.75.75 0 010 1.5H4.81l6.22 6.22a.75.75 0 11-1.06 1.06l-7.5-7.5a.75.75 0 010-1.06l7.5-7.5a.75.75 0 011.06 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-              </div>}
-              
-              {windowWidth > 768 && <button
-                className="cta text-red-500"
-                onClick={() => {
-                  if (showTwitterThreadUI == true) {
-                    handleSaveTwitter();
-                  } else {
-                    handleSave();
-                  }
-                }}
-              >
-                {saveLoad ? (
+                ) : (
+                  <CheckCircleIcon
+                    className="text-[#2563EB]"
+                    height={25}
+                    width={25}
+                  />
+                )
+              ) : iRanNumberOfTimes > 3 &&
+                autoSaveSavingStatus == SAVING_STATUS.SAVING ? (
+                <>
                   <ReactLoading
                     width={25}
                     height={25}
                     round={true}
                     color={"#2563EB"}
                   />
-                ) : (
-                  saveText
-                )}
-              </button>}
-              {windowWidth <=768 && <button
-                className="cta text-red-500 workspace-open-button"
-                onClick={() => {
-                  const container = document.querySelector(".dashboardInsightMobile");
-                  container.classList.toggle("open")
-                }}
-                style={{userSelect: 'none'}}
-              >
-                Workspace
-              </button>}
+                  <span className="text-[#2563EB] ml-2">Saving...</span>
+                </>
+              ) : (
+                <CheckCircleIcon
+                  className="text-[#2563EB]"
+                  height={25}
+                  width={25}
+                />
+              )}
+            </div>
+          ) : (
+            <div style={{ display: "none" }}></div>
+          )}
+          {!isPublished ? (
+            <div
+              className={`flex w-full lg:w-auto lg:mt-auto justify-end md:justify-start ${
+                isAuthenticated ? "md:mt-5" : "md:mt-[70px]"
+              } mt-0`}
+              style={{ gap: "0.25em", marginLeft: "auto" }}
+            >
+              {windowWidth <= 768 && (
+                <div className="pt-2 mr-auto">
+                  <button onClick={() => router.back()}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="w-6 h-6"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M11.03 3.97a.75.75 0 010 1.06l-6.22 6.22H21a.75.75 0 010 1.5H4.81l6.22 6.22a.75.75 0 11-1.06 1.06l-7.5-7.5a.75.75 0 010-1.06l7.5-7.5a.75.75 0 011.06 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              )}
+
+              {windowWidth > 768 && (
+                <button
+                  className="cta text-red-500"
+                  onClick={() => {
+                    if (showTwitterThreadUI == true) {
+                      handleSaveTwitter();
+                    } else {
+                      handleSave();
+                    }
+                  }}
+                >
+                  {saveLoad ? (
+                    <ReactLoading
+                      width={25}
+                      height={25}
+                      round={true}
+                      color={"#2563EB"}
+                    />
+                  ) : (
+                    saveText
+                  )}
+                </button>
+              )}
+              {windowWidth <= 768 && (
+                <button
+                  className="cta text-red-500 workspace-open-button"
+                  onClick={() => {
+                    const container = document.querySelector(
+                      ".dashboardInsightMobile"
+                    );
+                    container.classList.toggle("open");
+                  }}
+                  style={{ userSelect: "none" }}
+                >
+                  Workspace
+                </button>
+              )}
               {option === "linkedin" ? (
                 linkedInAccessToken ? (
                   <button
@@ -2357,111 +2407,277 @@ export default function TinyMCEEditor({
 
         {showTwitterThreadUI === false ? (
           <>
-            <Editor
-              id="tinymce-id"
-              value={updatedText || editorText}
-              apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
-              init={{
-                content_style:  contentStyle,
-                setup: (editor) => {
-                  if (editor.inline) {
-                    registerPageMouseUp(editor, throttledStore);
-                  }
-                  editor.on('init', handleEditorInit);
-                },
-                init_instance_callback: function (editor) {
-                  editor.on("ExecCommand", function (e) {
-                    //console.log("The " + e.command + " command was fired.");
-                    if (e.command === "mceImage") {
-                      setAlert(true);
-                      //console.log("777");
-                    }
-                    if (isEditing) {
-                      // setEditingMode(true);
-                      isEditing = false;
-                    }
-                  });
-                },
-                skin: "naked",
-                icons: "small",
-                toolbar_location: "bottom",
-                plugins: "lists code table codesample link",
-                menubar: false,
-                statusbar: false,
-                height: `${windowWidth > 768 ? '82vh' : '97%'}`, // if logged in then 86%
-                images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
-                images_upload_credentials: true,
-                plugins:
-                  "preview casechange importcss tinydrive searchreplace save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount  editimage help formatpainter permanentpen pageembed charmap emoticons advtable export mergetags",
-                menu: {
-                  tc: {
-                    title: "Comments",
-                    items: "addcomment showcomments deleteallconversations",
-                  },
-                },
-                toolbar:
-                  "undo redo image| bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment | footnotes | mergetags",
-                image_title: true,
-                automatic_uploads: true,
-                file_picker_types: "image",
-                file_picker_callback: function (cb, value, meta) {
-                  //console.log("852");
-                  var input = document.createElement("input");
-                  input.setAttribute("type", "file");
-                  input.setAttribute("accept", "image/*");
-                  var url = API_BASE_PATH + `/upload/image`;
-                  var xhr = new XMLHttpRequest();
-                  var fd = new FormData();
-                  xhr.open("POST", url, true);
-
-                  input.onchange = function () {
-                    var file = this.files[0];
-                    var reader = new FileReader();
-                    xhr.onload = function () {
-                      if (xhr.readyState === 4 && xhr.status === 200) {
-                        // File uploaded successfully
-                        var response = JSON.parse(xhr.responseText);
-
-                        // https://res.cloudinary.com/cloudName/image/upload/v1483481128/public_id.jpg
-                        var url = response.url;
-                        setImageURL(url);
-                        setAlert(true);
-                        //console.log("response.data", response.data);
-                        //console.log("imageURL", imageURL);
-                        //console.log("88", url);
-                        //console.log("999", load);
-                        setLoad(false);
-                        // Create a thumbnail of the uploaded image, with 150px width
-                        cb(url, { title: response.type });
+            {option == "linkedin" ? (
+              <>
+                <Editor
+                  id="tinymce-id"
+                  value={updatedText || editorText}
+                  apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
+                  init={{
+                    content_style: contentStyle,
+                    setup: (editor) => {
+                      if (editor.inline) {
+                        registerPageMouseUp(editor, throttledStore);
                       }
-                    };
+                      editor.on("init", handleEditorInit);
+                    },
+                    init_instance_callback: function (editor) {
+                      editor.on("ExecCommand", function (e) {
+                        //console.log("The " + e.command + " command was fired.");
+                        if (e.command === "mceImage") {
+                          setAlert(true);
+                        }
+                        if (isEditing) {
+                          isEditing = false;
+                        }
+                      });
+                    },
+                    skin: "naked",
+                    icons: "small",
+                    toolbar_location: "bottom",
+                    plugins: "lists code table codesample link",
+                    menubar: false,
+                    statusbar: false,
+                    height: `${windowWidth > 768 ? "82vh" : "97%"}`, // if logged in then 86%
+                    images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
+                    images_upload_credentials: true,
+                    plugins:
+                      "preview casechange importcss tinydrive searchreplace save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount  editimage help formatpainter permanentpen pageembed charmap emoticons advtable export mergetags",
+                    menu: {
+                      tc: {
+                        title: "Comments",
+                        items: "addcomment showcomments deleteallconversations",
+                      },
+                    },
+                    toolbar:
+                      "undo redo image| bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment | footnotes | mergetags",
+                    image_title: true,
+                    automatic_uploads: true,
+                    file_picker_types: "image",
+                    file_picker_callback: function (cb, value, meta) {
+                      //console.log("852");
+                      var input = document.createElement("input");
+                      input.setAttribute("type", "file");
+                      input.setAttribute("accept", "image/*");
+                      var url = API_BASE_PATH + `/upload/image`;
+                      var xhr = new XMLHttpRequest();
+                      var fd = new FormData();
+                      xhr.open("POST", url, true);
 
-                    reader.onload = function () {
-                      setLoad(true);
-                      var id = "blobid" + new Date().getTime();
-                      var blobCache =
-                        window.tinymce.activeEditor.editorUpload.blobCache;
-                      var base64 = reader.result.split(",")[1];
+                      input.onchange = function () {
+                        var file = this.files[0];
+                        var reader = new FileReader();
+                        xhr.onload = function () {
+                          if (xhr.readyState === 4 && xhr.status === 200) {
+                            // File uploaded successfully
+                            var response = JSON.parse(xhr.responseText);
 
-                      var blobInfo = blobCache.create(id, file, base64);
-                      blobCache.add(blobInfo);
+                            // https://res.cloudinary.com/cloudName/image/upload/v1483481128/public_id.jpg
+                            var url = response.url;
+                            setImageURL(url);
+                            setAlert(true);
+                            //console.log("response.data", response.data);
+                            //console.log("imageURL", imageURL);
+                            //console.log("88", url);
+                            //console.log("999", load);
+                            setLoad(false);
+                            // Create a thumbnail of the uploaded image, with 150px width
+                            cb(url, { title: response.type });
+                          }
+                        };
 
-                      // call the callback and populate the Title field with the file name
+                        reader.onload = function () {
+                          setLoad(true);
+                          var id = "blobid" + new Date().getTime();
+                          var blobCache =
+                            window.tinymce.activeEditor.editorUpload.blobCache;
+                          var base64 = reader.result.split(",")[1];
 
-                      // fd.append("upload_preset", unsignedUploadPreset);
-                      // fd.append("path", "browser_upload");
-                      fd.append("file", blobInfo.blob());
+                          var blobInfo = blobCache.create(id, file, base64);
+                          blobCache.add(blobInfo);
 
-                      xhr.send(fd);
-                    };
+                          // call the callback and populate the Title field with the file name
 
-                    reader.readAsDataURL(file);
-                  };
+                          // fd.append("upload_preset", unsignedUploadPreset);
+                          // fd.append("path", "browser_upload");
+                          fd.append("file", blobInfo.blob());
 
-                  input.click();
-                },
-                images_upload_handler: (blobInfo, success, failure) => {
-                  /*var formdata = new FormData();
+                          xhr.send(fd);
+                        };
+
+                        reader.readAsDataURL(file);
+                      };
+
+                      input.click();
+                    },
+                    images_upload_handler: (blobInfo, success, failure) => {
+                      /*var formdata = new FormData();
+                          formdata.append("file", blobInfo.blob());
+                
+                          var requestOptions = {
+                            method: "POST",
+                            body: formdata,
+                            redirect: "follow",
+                          };
+                
+                          fetch("https://maverick.lille.ai/upload/image", requestOptions)
+                            // .then((response) => response.text())
+                            // .then((result) => {
+                            //   const data = JSON.parse(result);
+                            //   success(data.url);
+                            // })
+                            .catch((error) =>   //console.log("error", error));*/
+
+                      //console.log("Harsh test this block");
+
+                      const formdata = new FormData();
+                      formdata.append("file", blobInfo.blob());
+
+                      const config = {
+                        method: "post",
+                        url: API_BASE_PATH + "/upload/image",
+                        data: formdata,
+                      };
+                      toast.success("Image Uploaded Successfully", {
+                        position: toast.POSITION.TOP_CENTER,
+                      });
+
+                      axios(config)
+                        .then((response) => {})
+                        .catch((error) => console.log("error", error));
+                    },
+                    save_onsavecallback: function () {
+                      console.log("Saved");
+                    },
+                  }}
+                  onEditorChange={(content, editor) => {
+                    debugger;
+                    setEditorText(content);
+                    console.log("EDITOR CHANAGE");
+                    setAutoSaveSavingStatus(SAVING_STATUS.SAVING);
+                    const newTimeout = resetTimeout(
+                      timeout,
+                      setTimeout(() => {
+                        isEditorReady &&
+                          isEditorTextUpdated &&
+                          saveValue(content);
+                      }, 400)
+                    );
+                    setTimeoutId(newTimeout);
+                    setSaveText("Save Now!");
+                    setIRanNumberOfTimes((prevCount) => prevCount + 1);
+                    setIsEditorTextUpdated(true);
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <>
+                  <Editor
+                    id="tinymce-id"
+                    value={updatedText || editorText}
+                    apiKey="tw9wjbcvjph5zfvy33f62k35l2qtv5h8s2zhxdh4pta8kdet"
+                    init={{
+                      content_style: contentStyle,
+                      setup: (editor) => {
+                        if (editor.inline) {
+                          registerPageMouseUp(editor, throttledStore);
+                        }
+                        editor.on("init", handleEditorInit);
+                      },
+                      init_instance_callback: function (editor) {
+                        editor.on("ExecCommand", function (e) {
+                          //console.log("The " + e.command + " command was fired.");
+                          if (e.command === "mceImage") {
+                            setAlert(true);
+                          }
+                          if (isEditing) {
+                            isEditing = false;
+                          }
+                        });
+                      },
+                      skin: "naked",
+                      icons: "small",
+                      toolbar_location: "bottom",
+                      plugins: "lists code table codesample link",
+                      menubar: false,
+                      statusbar: false,
+                      height: `${windowWidth > 768 ? "82vh" : "97%"}`, // if logged in then 86%
+                      images_upload_base_path: `https://pluarisazurestorage.blob.core.windows.net/nowigence-web-resources/blogs`,
+                      images_upload_credentials: true,
+                      plugins:
+                        "preview casechange importcss tinydrive searchreplace save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount  editimage help formatpainter permanentpen pageembed charmap emoticons advtable export mergetags",
+                      menu: {
+                        tc: {
+                          title: "Comments",
+                          items:
+                            "addcomment showcomments deleteallconversations",
+                        },
+                      },
+                      toolbar:
+                        "undo redo image| bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment | footnotes | mergetags",
+                      image_title: true,
+                      automatic_uploads: true,
+                      file_picker_types: "image",
+                      file_picker_callback: function (cb, value, meta) {
+                        //console.log("852");
+                        var input = document.createElement("input");
+                        input.setAttribute("type", "file");
+                        input.setAttribute("accept", "image/*");
+                        var url = API_BASE_PATH + `/upload/image`;
+                        var xhr = new XMLHttpRequest();
+                        var fd = new FormData();
+                        xhr.open("POST", url, true);
+
+                        input.onchange = function () {
+                          var file = this.files[0];
+                          var reader = new FileReader();
+                          xhr.onload = function () {
+                            if (xhr.readyState === 4 && xhr.status === 200) {
+                              // File uploaded successfully
+                              var response = JSON.parse(xhr.responseText);
+
+                              // https://res.cloudinary.com/cloudName/image/upload/v1483481128/public_id.jpg
+                              var url = response.url;
+                              setImageURL(url);
+                              setAlert(true);
+                              //console.log("response.data", response.data);
+                              //console.log("imageURL", imageURL);
+                              //console.log("88", url);
+                              //console.log("999", load);
+                              setLoad(false);
+                              // Create a thumbnail of the uploaded image, with 150px width
+                              cb(url, { title: response.type });
+                            }
+                          };
+
+                          reader.onload = function () {
+                            setLoad(true);
+                            var id = "blobid" + new Date().getTime();
+                            var blobCache =
+                              window.tinymce.activeEditor.editorUpload
+                                .blobCache;
+                            var base64 = reader.result.split(",")[1];
+
+                            var blobInfo = blobCache.create(id, file, base64);
+                            blobCache.add(blobInfo);
+
+                            // call the callback and populate the Title field with the file name
+
+                            // fd.append("upload_preset", unsignedUploadPreset);
+                            // fd.append("path", "browser_upload");
+                            fd.append("file", blobInfo.blob());
+
+                            xhr.send(fd);
+                          };
+
+                          reader.readAsDataURL(file);
+                        };
+
+                        input.click();
+                      },
+                      images_upload_handler: (blobInfo, success, failure) => {
+                        /*var formdata = new FormData();
                     formdata.append("file", blobInfo.blob());
           
                     var requestOptions = {
@@ -2478,39 +2694,50 @@ export default function TinyMCEEditor({
                       // })
                       .catch((error) =>   //console.log("error", error));*/
 
-                  //console.log("Harsh test this block");
+                        //console.log("Harsh test this block");
 
-                  const formdata = new FormData();
-                  formdata.append("file", blobInfo.blob());
+                        const formdata = new FormData();
+                        formdata.append("file", blobInfo.blob());
 
-                  const config = {
-                    method: "post",
-                    url: API_BASE_PATH + "/upload/image",
-                    data: formdata,
-                  };
-                  toast.success("Image Uploaded Successfully", {
-                    position: toast.POSITION.TOP_CENTER,
-                  });
+                        const config = {
+                          method: "post",
+                          url: API_BASE_PATH + "/upload/image",
+                          data: formdata,
+                        };
+                        toast.success("Image Uploaded Successfully", {
+                          position: toast.POSITION.TOP_CENTER,
+                        });
 
-                  axios(config)
-                    .then((response) => { })
-                    .catch((error) => console.log("error", error));
-                },
-                save_onsavecallback: function () { console.log('Saved'); }
-              }}
-              onEditorChange={(content, editor) => {
-                setEditorText(content);
-                console.log('EDITOR CHANAGE');
-                setAutoSaveSavingStatus(SAVING_STATUS.SAVING)
-                const newTimeout = resetTimeout(timeout, setTimeout(() => {
-                  isEditorReady && saveValue(content)
-                }, 400));
-                setTimeoutId(newTimeout);
-                setSaveText("Save Now!");
-                setIRanNumberOfTimes((prevCount) => prevCount + 1);
-                setIsEditorTextUpdated(true);
-              }}
-            />
+                        axios(config)
+                          .then((response) => {})
+                          .catch((error) => console.log("error", error));
+                      },
+                      save_onsavecallback: function () {
+                        console.log("Saved");
+                      },
+                    }}
+                    onEditorChange={(content, editor) => {
+                      debugger;
+                      setEditorText(content);
+                      console.log("EDITOR CHANAGE");
+                      setAutoSaveSavingStatus(SAVING_STATUS.SAVING);
+                      const newTimeout = resetTimeout(
+                        timeout,
+                        setTimeout(() => {
+                          isEditorReady &&
+                            isEditorTextUpdated &&
+                            saveValue(content);
+                        }, 400)
+                      );
+                      setTimeoutId(newTimeout);
+                      setSaveText("Save Now!");
+                      setIRanNumberOfTimes((prevCount) => prevCount + 1);
+                      setIsEditorTextUpdated(true);
+                    }}
+                  />
+                </>
+              </>
+            )}
           </>
         ) : (
           <div
