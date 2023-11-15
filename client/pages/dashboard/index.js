@@ -150,7 +150,6 @@ export default function dashboard({ query }) {
   }
 
   const setWidthForDashboardInsight = () => {
-    console.log(window.innerWidth, 'halert')
     setWindowWidth(window.innerWidth)
   }
 

@@ -225,8 +225,6 @@ function LibModule(props: LibModuleProps) {
 
   const handleBlogDelete = (e:any) => {
     e.stopPropagation()
-    console.log({meeData,props}, 'halert')
-
 
     DeleteBlogByAdmin({
       variables: {

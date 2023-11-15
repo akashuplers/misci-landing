@@ -194,6 +194,7 @@ export default function Subscription({ query }) {
                 setClickOnSubscibe={setClickOnSubscibe}
                 setProcessing={setProcessing}
                 processing={processing}
+                plans={plans}
               />
             </div>
           </div>

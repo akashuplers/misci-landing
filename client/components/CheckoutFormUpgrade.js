@@ -13,6 +13,7 @@ const CheckoutFormUpgrade = ({
   currentPlan,
   setClickOnSubscibe,
   interval,
+  plans
 }) => {
   const [firstName, setFirstName] = useState("");
   const [btnClicked, setBtnClicked] = useState(false);
@@ -133,10 +134,7 @@ const CheckoutFormUpgrade = ({
             headers: myHeaders,
           })
           .then((res) => {
-            console.log(res, "888");
             const data = res.data;
-            console.log(data.data);
-            console.log(data.data.status);
             if (data.data.status === "requires_action") {
               confirmPaymentFunction(
                 data.data.clientSecret,
@@ -205,6 +203,7 @@ const CheckoutFormUpgrade = ({
           setTimeout(() => {
             window.location.href = "/";
           }, 5000);
+          return 1;
         } else {
           toast.error(data, {
             position: "top-center",
@@ -216,7 +215,17 @@ const CheckoutFormUpgrade = ({
             progress: undefined,
             theme: "light",
           });
+          return 0;
         }
+      })
+      .then(res => {
+        if(res){
+          import('react-facebook-pixel')
+          .then((x) => x.default)
+          .then((ReactPixel) => {
+            ReactPixel.track('Purchase', {value: plans[plans.findIndex(plan => plan.priceId === priceId)].price ?? 'NaN', currency: 'INR'})
+          })
+        } 
       })
       .catch((error) => console.log("error", error));
   };

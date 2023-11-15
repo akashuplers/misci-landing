@@ -214,7 +214,6 @@ const MisciWorkSpace = ({
     }
   }
   const setWidthForDashboardInsight = () => {
-    console.log(window.innerWidth, 'halert')
     setWindowWidth(window.innerWidth)
   }
   useEffect(() => {

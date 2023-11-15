@@ -201,6 +201,7 @@ export default function Upgrade() {
                     priceId={currentPlan?.priceId}
                     setClickOnSubscibe={setClickOnSubscibe}
                     interval={currentPlan?.subscriptionType}
+                    plans={plans}
                   />
                 </div>
               </div>

@@ -288,6 +288,7 @@ export default function AuthenticationModal({
           if (errorMessage === `Could not find account: ${loginData.email}`) {
             setType("signup");
           }
+          return 0;
         } else {
           handleLoginSubmit(
             event,
@@ -305,7 +306,17 @@ export default function AuthenticationModal({
             progress: undefined,
             theme: "light",
           });
+          return 1;
         }
+      })
+      .then(res => {
+        if(res){
+          import('react-facebook-pixel')
+          .then((x) => x.default)
+          .then((ReactPixel) => {
+            ReactPixel.track('CompleteRegistration')
+          })
+        } 
       })
       .catch((error) => {
         const errorMessage =

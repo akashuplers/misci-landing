@@ -35,7 +35,7 @@ export default function Document() {
         <link rel="shortcut icon" href="/favicon.png" />
         <script src="//code.tidio.co/ivv7hzggfptpqb2cuiepqz3claz6mbqs.js" async></script>
 
-        <script
+        {/* <script
           dangerouslySetInnerHTML={{
             __html: `
               !function(f,b,e,v,n,t,s)
@@ -58,7 +58,7 @@ export default function Document() {
             style={{"display":"none"}}
             src="https://www.facebook.com/tr?id=3524555041095937&ev=PageView&noscript=1"
           />
-        </noscript>
+        </noscript> */}
       </Head>
 
       <body className="">

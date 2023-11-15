@@ -833,7 +833,6 @@ export default function TinyMCEEditor({
     setWindowWidth(window.innerWidth);
   
     const setWidthForDashboardInsight = () => {
-      console.log(window.innerWidth, 'halert')
       setWindowWidth(window.innerWidth)
     }
 
