@@ -17,7 +17,11 @@ import { API_BASE_PATH, API_ROUTES } from "../../constants/apiEndpoints";
 import { generateBlog } from "../../graphql/mutations/generateBlog";
 import { jsonToHtml } from "../../helpers/helper";
 import ReactLoading from "react-loading";
-import useStore, { useBlogDataStore, useByMeCoffeModal, useTabOptionStore } from "../../store/store";
+import useStore, {
+  useBlogDataStore,
+  useByMeCoffeModal,
+  useTabOptionStore,
+} from "../../store/store";
 import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
 import useUserTimeSave from "@/hooks/useUserTimeSave";
 import { TYPES_OF_GENERATE } from "@/store/appContants";
@@ -46,7 +50,7 @@ export default function dashboard({ query }) {
   const { blogData, setBlogData } = useBlogDataStore();
   const [pyResTime, setPyResTime] = useState(null);
   const [ndResTime, setNdResTime] = useState(null);
-  const { option, setOption } = useTabOptionStore()
+  const { option, setOption } = useTabOptionStore();
   const [reference, setReference] = useState([]);
   const [freshIdeasReferences, setFreshIdeasReferences] = useState([]);
   const [creditModal, setCreditModal] = useState(false);
@@ -56,13 +60,15 @@ export default function dashboard({ query }) {
   const keyword = useStore((state) => state.keyword);
   const updateCredit = useStore((state) => state.updateCredit);
   const showContributionModal = useByMeCoffeModal((state) => state.isOpen);
-  const setShowContributionModal = useByMeCoffeModal((state) => state.toggleModal);
+  const setShowContributionModal = useByMeCoffeModal(
+    (state) => state.toggleModal
+  );
   const creditLeft = useStore((state) => state.creditLeft);
   // const [showContributionModal, setShowContributionModal] = useState(false);
   const [isPublish, seIsPublish] = useState(false);
   const [showOTPModal, setShowOTPModal] = useState(false);
 
-  const [windowWidth, setWindowWidth] = useState(0)
+  const [windowWidth, setWindowWidth] = useState(0);
 
   // const { userTimeSave, loading: userDataLoading, error: userDataError } = useUserTimeSave();
   // const {}
@@ -96,7 +102,7 @@ export default function dashboard({ query }) {
 
         if (
           `${networkError}` ===
-          "ServerError: Response not successful: Received status code 401" &&
+            "ServerError: Response not successful: Received status code 401" &&
           isAuthenticated
         ) {
           localStorage.clear();
@@ -138,25 +144,30 @@ export default function dashboard({ query }) {
 
   const handleDisclaimerPopup = () => setDisclaimerCheck((prev) => !prev);
 
-  const {handleManualRefresh:refreshDataForUserTime} = useUserTimeSave();
+  const { handleManualRefresh: refreshDataForUserTime } = useUserTimeSave();
 
   const closeWorkspaceSheetForMobile = (e) => {
     const workspaceDiv = document.querySelector(".dashboardInsightMobile");
-    const workspaceOpenButton = document.querySelector(".workspace-open-button")
+    const workspaceOpenButton = document.querySelector(
+      ".workspace-open-button"
+    );
 
-    if(!!workspaceDiv && !workspaceDiv.contains(e.target) && !workspaceOpenButton.contains(e.target)  && workspaceDiv.classList.contains("open")){
+    if (
+      !!workspaceDiv &&
+      !workspaceDiv.contains(e.target) &&
+      !workspaceOpenButton.contains(e.target) &&
+      workspaceDiv.classList.contains("open")
+    ) {
       workspaceDiv.classList.remove("open");
     }
-  }
+  };
 
   const setWidthForDashboardInsight = () => {
-    setWindowWidth(window.innerWidth)
-  }
+    setWindowWidth(window.innerWidth);
+  };
 
   useEffect(() => {
-    
     if (type != undefined && type && type === TYPES_OF_GENERATE.REPURPOSE) {
-      
     } else {
       if (!topic && !bid && !loginProcess) {
         alert("Blog was not saved.\nPlease generate the blog again");
@@ -164,14 +175,14 @@ export default function dashboard({ query }) {
       }
     }
 
-    setWindowWidth(window,innerWidth);
+    setWindowWidth(window, innerWidth);
 
-    window.addEventListener("click", closeWorkspaceSheetForMobile)
+    window.addEventListener("click", closeWorkspaceSheetForMobile);
 
     return () => {
-      window.removeEventListener("resize", setWidthForDashboardInsight)
-      window.removeEventListener("click", closeWorkspaceSheetForMobile)
-    }
+      window.removeEventListener("resize", setWidthForDashboardInsight);
+      window.removeEventListener("click", closeWorkspaceSheetForMobile);
+    };
   }, []);
 
   const [GenerateBlog, { data, loading, error }] = useMutation(generateBlog, {
@@ -211,29 +222,34 @@ export default function dashboard({ query }) {
       localStorage.setItem("meDataMePublishCount", meeData?.me.publishCount);
       localStorage.setItem("meDataisSubscribed", meeData?.me?.isSubscribed);
       // meeData?.me?.email
-      localStorage.setItem('meDataMeEmail', meeData?.me?.email)
+      localStorage.setItem("meDataMeEmail", meeData?.me?.email);
     }
   }, [meeData]);
   useEffect(() => {
     if (loading == false) {
-      console.log('MEE DATA');
+      console.log("MEE DATA");
       console.log(meeData);
       const credits = meeData?.me?.credits;
       const isSubs = meeData?.me?.isSubscribed;
-      console.log('CREDITS : ' + credits);
+      console.log("CREDITS : " + credits);
       var userCredits = meeData?.me?.totalCredits - creditLeft - 1;
-      console.log('USER CREDITS: ' + userCredits);
+      console.log("USER CREDITS: " + userCredits);
       userCredits = userCredits + 2;
-      const SHOW_CONTRIBUTION_MODAL = (localStorage.getItem('payment') === undefined || localStorage.getItem('payment') === null) && (localStorage.getItem('ispaid') === null || localStorage.getItem('ispaid') === undefined || localStorage.getItem('ispaid') === 'false') && (userCredits === 20 || userCredits === 10) && !isSubs;
-      console.log('SHOW_CONTRIBUTION_MODAL: ', SHOW_CONTRIBUTION_MODAL);
+      const SHOW_CONTRIBUTION_MODAL =
+        (localStorage.getItem("payment") === undefined ||
+          localStorage.getItem("payment") === null) &&
+        (localStorage.getItem("ispaid") === null ||
+          localStorage.getItem("ispaid") === undefined ||
+          localStorage.getItem("ispaid") === "false") &&
+        (userCredits === 20 || userCredits === 10) &&
+        !isSubs;
+      console.log("SHOW_CONTRIBUTION_MODAL: ", SHOW_CONTRIBUTION_MODAL);
       if (SHOW_CONTRIBUTION_MODAL) {
         setShowContributionModal(true);
       }
-
     }
   }, [loading, meeData]);
   useEffect(() => {
-
     const getToken = localStorage.getItem("token");
     const Gbid = localStorage.getItem("Gbid");
     if (getToken && Gbid) {
@@ -341,24 +357,34 @@ export default function dashboard({ query }) {
             localStorage.removeItem("pass");
           }
         })
-        .then((data) => { })
+        .then((data) => {})
         .finally(() => {
           const for_TW = localStorage.getItem("for_TW");
-          if (!router.asPath.includes('denied') && !router.asPath.includes('error')) {
-            if (for_TW) {
-              toast.success("Twitter Integration Done!!");
+          if (
+            !router.asPath.includes("denied") &&
+            !router.asPath.includes("error")
+          ) {
+            if (for_TW === true) {
+              toast.success("Twitter Integration Done!!", {
+                toastId: "twitter-comeback",
+              });
               setOption("twitter-comeback");
             } else {
-              toast.success("Linkedin Integration Done!!");
+              toast.success("Linkedin Integration Done!!", {
+                toastId: "linkedin-comeback",
+              });
               setOption("linkedin-comeback");
             }
           } else {
             // check if denied is there and the for_TW is there then show the toast 'twitter integration failed'
             if (for_TW) {
-              toast.error("Twitter Integration Failed!!");
-            }
-            else {
-              toast.error("Linkedin Integration Failed!!");
+              toast.error("Twitter Integration Failed!!", {
+                toastId: "twitter-comeback-failed",
+              });
+            } else {
+              toast.error("Linkedin Integration Failed!!", {
+                toastId: "linkedin-comeback-failed",
+              });
             }
           }
         })
@@ -371,20 +397,22 @@ export default function dashboard({ query }) {
       var options = {
         user_id: getToken ? getUserId : getTempId,
         keyword: topic ? topic : keyword,
-      }
+      };
       if (TYPE && TYPE === TYPES_OF_GENERATE.REPURPOSE) {
         // const optionsForRepurpose = router.query.options;
-        var optionsObj = JSON.parse(localStorage.getItem('optionsForRepurpose'));
+        var optionsObj = JSON.parse(
+          localStorage.getItem("optionsForRepurpose")
+        );
         optionsObj = {
           ...optionsObj,
           user_id: getToken ? getUserId : getTempId,
-        }
+        };
         options = optionsObj;
       }
       GenerateBlog({
         variables: {
           options: {
-            ...options
+            ...options,
           },
         },
         onCompleted: (data) => {
@@ -422,7 +450,8 @@ export default function dashboard({ query }) {
           console.log("Sucessfully generated the article");
           if (typeof window !== "undefined") {
             const isDisclaimerShown = localStorage.getItem("isDisclaimerShown");
-            const disclaimerResponse = localStorage.getItem("disclaimerResponse");
+            const disclaimerResponse =
+              localStorage.getItem("disclaimerResponse");
 
             if (isDisclaimerShown === "true") {
               if (disclaimerResponse === "yes") {
@@ -466,15 +495,12 @@ export default function dashboard({ query }) {
     console.log("===restime===");
   }, [pyResTime, ndResTime]);
 
-  const [saveAuthModal, setSaveAuthModal] = useState(false)
+  const [saveAuthModal, setSaveAuthModal] = useState(false);
 
   console.log(freshIdeasReferences);
   return (
     <>
-      <Layout
-        saveAuthModal={saveAuthModal}
-        setSaveAuthModal={setSaveAuthModal}
-      >
+      <Layout saveAuthModal={saveAuthModal} setSaveAuthModal={setSaveAuthModal}>
         {creditModal && (
           <TrialEndedModal setTrailModal={setCreditModal} topic={topic} />
         )}
@@ -507,11 +533,14 @@ export default function dashboard({ query }) {
             },
           }}
         >
-          <button className="absolute right-[35px]" onClick={() => {
-            setShowDisclaimerModal(false);
-            localStorage.setItem("isDisclaimerShown", "true");
-            localStorage.setItem("disclaimerResponse", "no");
-          }}>
+          <button
+            className="absolute right-[35px]"
+            onClick={() => {
+              setShowDisclaimerModal(false);
+              localStorage.setItem("isDisclaimerShown", "true");
+              localStorage.setItem("disclaimerResponse", "no");
+            }}
+          >
             <CloseButtonIcon />
           </button>
           <div className="">
@@ -522,7 +551,7 @@ can edit the content, remove some of the used ideas that you don't want and/or g
 or use a combination of used and freah ideas to update the article content.
 You can add your own image, click on the image and use image options icon.`}
             </p>
-            <div className='flex flex-col lg:flex-row justify-between'>
+            <div className="flex flex-col lg:flex-row justify-between">
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
@@ -543,7 +572,11 @@ You can add your own image, click on the image and use image options icon.`}
           </div>
         </Modal>
 
-        <div className={`flex  flex-col md:flex-row  lg:mb-6 lg:h-[88vh] ${windowWidth <= 768 ? 'dashboardInsightMobileContainer' : ''}`}>
+        <div
+          className={`flex  flex-col md:flex-row  lg:mb-6 lg:h-[88vh] ${
+            windowWidth <= 768 ? "dashboardInsightMobileContainer" : ""
+          }`}
+        >
           {API_BASE_PATH === "https://maverick.lille.ai" && (
             <div
               style={{
@@ -570,8 +603,17 @@ You can add your own image, click on the image and use image options icon.`}
           )}
           <MoveToRegenPanel />
 
-          {isAuthenticated && loading != true && data && <TotalTImeSaved refreshDataForUserTime={refreshDataForUserTime} timeSaved={data?.generate?.respTime !=null ?data?.generate?.respTime * DEFAULT_TIME_MULTIPLE : DEFAULT_TIME_MULTIPLE} blogId={blog_id} />
-          }
+          {isAuthenticated && loading != true && data && (
+            <TotalTImeSaved
+              refreshDataForUserTime={refreshDataForUserTime}
+              timeSaved={
+                data?.generate?.respTime != null
+                  ? data?.generate?.respTime * DEFAULT_TIME_MULTIPLE
+                  : DEFAULT_TIME_MULTIPLE
+              }
+              blogId={blog_id}
+            />
+          )}
           <div className="relative tiny_mce_width">
             <TinyMCEEditor
               topic={topic}
@@ -587,7 +629,9 @@ You can add your own image, click on the image and use image options icon.`}
             />
           </div>
           <div
-            className={`relative dashboardInsightWidth ${windowWidth <= 768 ? 'dashboardInsightMobile' : 'desktop'}`}
+            className={`relative dashboardInsightWidth ${
+              windowWidth <= 768 ? "dashboardInsightMobile" : "desktop"
+            }`}
           >
             <DashboardInsights
               ideas={ideas}
@@ -610,8 +654,7 @@ You can add your own image, click on the image and use image options icon.`}
               setOption={setOption}
               option={option}
               keyword={""}
-              refetchBlog={()=>{}}
-
+              refetchBlog={() => {}}
               saveAuthModal={saveAuthModal}
               setSaveAuthModal={setSaveAuthModal}
             />
@@ -675,5 +718,4 @@ You can add your own image, click on the image and use image options icon.`}
       </Modal>
     </>
   );
-
 }

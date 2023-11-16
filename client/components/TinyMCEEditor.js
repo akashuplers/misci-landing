@@ -855,7 +855,7 @@ export default function TinyMCEEditor({
   const handleconnectLinkedin = () => {
     localStorage.setItem("loginProcess", true);
     localStorage.setItem("bid", blog_id);
-    localStorage.removeItem("for_TW");
+    localStorage.setItem("for_TW", false);
     const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`;
     window.location = redirectUrl;
   };
@@ -2551,7 +2551,6 @@ export default function TinyMCEEditor({
                     },
                   }}
                   onEditorChange={(content, editor) => {
-                    debugger;
                     setEditorText(content);
                     console.log("EDITOR CHANAGE");
                     setAutoSaveSavingStatus(SAVING_STATUS.SAVING);
@@ -2717,7 +2716,6 @@ export default function TinyMCEEditor({
                       },
                     }}
                     onEditorChange={(content, editor) => {
-                      debugger;
                       setEditorText(content);
                       console.log("EDITOR CHANAGE");
                       setAutoSaveSavingStatus(SAVING_STATUS.SAVING);
