@@ -2,7 +2,7 @@ import { withFilter } from 'graphql-subscriptions';
 import { BlogListArgs, DeleteBlogMutationArg, FetchBlog, GenerateBlogMutationArg, IRNotifiyArgs, ReGenerateBlogMutationArg, UpdateBlogMutationArg } from 'interfaces';
 import { pubsub } from '../../../pubsub';
 import { ObjectID } from 'bson';
-import { blogGeneration, deleteBlog, fetchBlog, fetchBlogByUser, fetchBlogIdeas, fetchUser, publishBlog, updateUserCredit, deleteBlogIdeas, fetchUsedBlogIdeasByIdea, fetchArticleById, fetchArticleUrls, getSavedTime, generateAtrributesList, TMBlogGeneration } from './blogsRepo';
+import { blogGeneration, deleteBlog, fetchBlog, fetchBlogByUser, fetchBlogIdeas, fetchUser, publishBlog, updateUserCredit, deleteBlogIdeas, fetchUsedBlogIdeasByIdea, fetchArticleById, fetchArticleUrls, getSavedTime, generateAtrributesList, TMBlogGeneration, updatePublishPrivacy } from './blogsRepo';
 import { Python } from '../../../services/python';
 import { diff_minutes, getTimeStamp } from '../../../utils/date';
 import { sendEmails } from '../../../utils/mailJetConfig';
@@ -75,9 +75,21 @@ export const blogResolvers = {
             const options = args.options
             let baseMatch: any = null
             try {
-                baseMatch = { type : {
-                    $exists: false, $eq: null
-                } }
+                baseMatch = { 
+                    type : {
+                        $exists: false, $eq: null
+                    },
+                    $or: [
+                        {
+                            publishPrivacy: {
+                                $exists: false
+                            }
+                        },
+                        {
+                            publishPrivacy: "public"
+                        }
+                    ]
+                }
                 if(user && Object.keys(user).length) {
                     baseMatch = {
                         userId: new ObjectID(user.id)
@@ -1414,6 +1426,30 @@ export const blogResolvers = {
             await publishBlog({id: blog_id, db, platform: "wordpress"})
             const savedTimeData = await getSavedTime(db, blog_id)
             return {savedTime: savedTimeData ? savedTimeData.time : null}
+        },
+        changePublishPrivacy: async (
+            parent: unknown, args: {options: {blog_id: string}}, {db, pubsub, user}: any
+        ) => {
+            if(!user || !Object.keys(user).length) {
+                throw "@Not authorized"
+            }
+            const {blog_id} = args.options
+            const userDetails = await fetchUser({id: user.id, db})
+            if(!userDetails) {
+                throw "@no user found"
+            }
+            if(!userDetails.paid && parseInt(userDetails.credits) <= 0) {
+                throw "@No free credits left!"
+            }
+            const blog = await fetchBlogByUser({id: blog_id, db, userId: user.id})
+            if(!blog) {
+                throw "@No blog found"
+            }
+            let publishPrivacy = null
+            if(!blog.publishPrivacy || (blog.publishPrivacy && blog.publishPrivacy === "public")) publishPrivacy = "private"
+            else publishPrivacy = "public"
+            await updatePublishPrivacy({id: blog_id, db, publishPrivacy})
+            return true
         },
         delete: async (
             parent: unknown, args: {options: {blog_id: string}}, {db, pubsub, user}: any
