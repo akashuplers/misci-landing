@@ -359,7 +359,7 @@ export default function dashboard({ query }) {
         })
         .then((data) => {})
         .finally(() => {
-          const socialURLParams = ['oauth_token', 'oauth_verifier', 'code', ];
+          const socialURLParams = ['oauth_token', 'oauth_verifier', 'code'];
           const shouldIIgnoreToast = socialURLParams.some(param => router.query[param]);
           const for_TW = localStorage.getItem("for_TW");
           if (!router.asPath.includes('denied') && !router.asPath.includes('error')) {
