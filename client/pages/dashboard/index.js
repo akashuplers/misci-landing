@@ -359,32 +359,39 @@ export default function dashboard({ query }) {
         })
         .then((data) => {})
         .finally(() => {
+          const socialURLParams = ['oauth_token', 'oauth_verifier', 'code', ];
+          const shouldIIgnoreToast = socialURLParams.some(param => router.query[param]);
           const for_TW = localStorage.getItem("for_TW");
-          if (
-            !router.asPath.includes("denied") &&
-            !router.asPath.includes("error")
-          ) {
-            if (for_TW === true) {
-              toast.success("Twitter Integration Done!!", {
-                toastId: "twitter-comeback",
-              });
+          if (!router.asPath.includes('denied') && !router.asPath.includes('error')) {
+            if (for_TW) {
+              if(shouldIIgnoreToast) {
+                toast.success("Twitter Integration Done!!", {
+                  toastId: "twitter-comeback",
+                });              }
               setOption("twitter-comeback");
             } else {
-              toast.success("Linkedin Integration Done!!", {
-                toastId: "linkedin-comeback",
-              });
+              if(shouldIIgnoreToast) {
+                toast.success("Linkedin Integration Done!!", {
+                  toastId: "linkedin-comeback",
+                });
+              }
               setOption("linkedin-comeback");
             }
-          } else {
-            // check if denied is there and the for_TW is there then show the toast 'twitter integration failed'
+          } else { 
             if (for_TW) {
-              toast.error("Twitter Integration Failed!!", {
-                toastId: "twitter-comeback-failed",
-              });
-            } else {
-              toast.error("Linkedin Integration Failed!!", {
-                toastId: "linkedin-comeback-failed",
-              });
+              if(shouldIIgnoreToast) {
+        
+                toast.error("Twitter Integration Failed!!", {
+                  toastId: "twitter-comeback-failed",
+                });
+              }
+            }
+            else {
+              if(shouldIIgnoreToast) {
+                toast.error("Linkedin Integration Failed!!", {
+                  toastId: "linkedin-comeback-failed",
+                });
+              }
             }
           }
         })
