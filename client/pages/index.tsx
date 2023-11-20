@@ -237,9 +237,6 @@ export default function Home({ payment, randomLiveUsersCount }) {
     isLoading,
   } = useTotalSavedTimeStore();
   // INITAIL DATA FETCH USEEFFECT:
-  useEffect(() => {
-    fetchTotalSavedTime();
-  }, []);
 
   function removeSelectedFileFromBothStores(id) {
     removeSelectedFile(id);
@@ -279,7 +276,18 @@ export default function Home({ payment, randomLiveUsersCount }) {
     });
   };
   useEffect(() => {
+    if(!meeData.me.name || !meeData.mee.lastName) meeRefetch();
+    fetchTotalSavedTime();
     updateAuthentication();
+    if (buttonHeightRef.current) {
+      setButtonHeight(buttonHeightRef.current.clientHeight);
+    }
+    setWindowWidth(window.innerWidth);
+    const intervalId = setInterval(
+      () => setIndex((index) => index + 1),
+      3000 // every 3 seconds
+    );
+    return () => clearTimeout(intervalId);
   }, []);
   const keywords = gql`
     query keywords {
@@ -814,14 +822,6 @@ export default function Home({ payment, randomLiveUsersCount }) {
   }, [router]);
 
   useEffect(() => {
-    const intervalId = setInterval(
-      () => setIndex((index) => index + 1),
-      3000 // every 3 seconds
-    );
-    return () => clearTimeout(intervalId);
-  }, []);
-
-  useEffect(() => {
     validateGenerateButtonStatus();
   }, [blogLinks, keyword])
   const {
@@ -1096,9 +1096,6 @@ export default function Home({ payment, randomLiveUsersCount }) {
     }
   }, [showOTPModal]);
   const [windowWidth, setWindowWidth] = useState(0);
-  useEffect(() => {
-    setWindowWidth(window.innerWidth);
-  }, []);
 
   const [showRegenModalWarning, setShowRegenModalWarning] = useState(false)
   const [missingValueType, setMissingValueType] = useState("")
@@ -1607,11 +1604,6 @@ const AIInputComponent = () => {
   };
 
   const isDisabled = keyword.trim().length === 0;
-  useEffect(() => {
-    if (buttonHeightRef.current) {
-      setButtonHeight(buttonHeightRef.current.clientHeight);
-    }
-  }, []);
 
   return (
     <div

@@ -364,7 +364,7 @@ export default function dashboard({ query }) {
             !router.asPath.includes("denied") &&
             !router.asPath.includes("error")
           ) {
-            if (for_TW === true) {
+            if (for_TW === 'true') {
               toast.success("Twitter Integration Done!!", {
                 toastId: "twitter-comeback",
               });
