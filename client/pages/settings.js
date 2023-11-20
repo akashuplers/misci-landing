@@ -128,6 +128,7 @@ export default function Settings() {
     data: meeData,
     loading: meeLoading,
     error: meeError,
+    refetch: meeRefetch,
   } = useQuery(meeAPI, {
     context: {
       headers: {
@@ -187,7 +188,6 @@ export default function Settings() {
     }
   }, [meeData]);
 
-  console.log("meeData", meeData);
 
   const handleCancel = () => {
     setProcessing(true);
@@ -816,6 +816,8 @@ export default function Settings() {
                                   </span>
                                   <ForgotPasswordModal
                                     forgotPass={forgotPass}
+                                    meeData={meeData}
+                                    meeRefetch={meeRefetch}
                                     setForgotPass={setForgotPass}
                                     email={meeData?.me?.email}
                                   />
