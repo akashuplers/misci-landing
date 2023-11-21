@@ -813,6 +813,7 @@ export default function DashboardInsights({
     let url = API_BASE_PATH;
     let raw = {};
 
+    debugger;
     if (type === "File") {
       // For file uploads
       url += API_ROUTES.FILE_UPLOAD;
@@ -826,7 +827,8 @@ export default function DashboardInsights({
       raw.append("blog_id", blog_id);
     } else if (type === "URL") {
       // For URL uploads
-      if (newReference.source !== "") {
+      let checknewReference = newReference.source
+      if (checknewReference.trim() !== "") {
         url += API_ROUTES.URL_UPLOAD;
         const urls = [newReference.source];
         setinputUrls((prev) => [...prev, newReference.source]);
@@ -838,6 +840,8 @@ export default function DashboardInsights({
         setNewReference((prev) => {
           return { ...prev, source: "" };
         });
+      }else{
+        toast.error("Please enter a valid URL");
       }
     } else {
       // For keyword uploads
