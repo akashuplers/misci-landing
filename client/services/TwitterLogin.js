@@ -211,9 +211,9 @@ const TwitterUserDetails = async (
             console.error("Error : ", error.response);
           });
       } else {
-        setTimeout(() => {
-          window.location.href = "/dashboard";
-        }, 2000);
+        // setTimeout(() => {
+        //   window.location.href = "/dashboard";
+        // }, 2000);
       }
     })
     .catch((err) => console.error(err));
