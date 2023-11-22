@@ -855,7 +855,7 @@ export default function TinyMCEEditor({
   const handleconnectLinkedin = () => {
     localStorage.setItem("loginProcess", true);
     localStorage.setItem("bid", blog_id);
-    localStorage.setItem("for_TW", false);
+    localStorage.removeItem("for_TW");
     const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${callBack}&scope=r_liteprofile%20r_emailaddress%20w_member_social`;
     window.location = redirectUrl;
   };
@@ -1970,7 +1970,15 @@ export default function TinyMCEEditor({
           hashtags={["lille", "nowg"]}
           className="m-5"
         >
-          <TwitterIcon size={62} round />
+          <svg 
+            style={{pointerEvents: 'none'}} 
+            xmlns="http://www.w3.org/2000/svg" 
+            viewBox="0 0 30 30"
+            width="62px"
+            height="62px"
+          >
+            <path d="M 6 4 C 4.895 4 4 4.895 4 6 L 4 24 C 4 25.105 4.895 26 6 26 L 24 26 C 25.105 26 26 25.105 26 24 L 26 6 C 26 4.895 25.105 4 24 4 L 6 4 z M 8.6484375 9 L 13.259766 9 L 15.951172 12.847656 L 19.28125 9 L 20.732422 9 L 16.603516 13.78125 L 21.654297 21 L 17.042969 21 L 14.056641 16.730469 L 10.369141 21 L 8.8945312 21 L 13.400391 15.794922 L 8.6484375 9 z M 10.878906 10.183594 L 17.632812 19.810547 L 19.421875 19.810547 L 12.666016 10.183594 L 10.878906 10.183594 z"/>
+          </svg>
           Twitter
         </TwitterShareButton>
         <EmailShareButton
@@ -2090,17 +2098,14 @@ export default function TinyMCEEditor({
                 }`}
                 onClick={handleTwitterBlog}
               >
-                <svg
-                  style={{ pointerEvents: "none" }}
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 50 50"
+                <svg 
+                  style={{pointerEvents: 'none'}} 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 30 30"
                   width="20px"
                   height="20px"
                 >
-                  <path
-                    fill="#03A9F4"
-                    d="M42,12.429c-1.323,0.586-2.746,0.977-4.247,1.162c1.526-0.906,2.7-2.351,3.251-4.058c-1.428,0.837-3.01,1.452-4.693,1.776C34.967,9.884,33.05,9,30.926,9c-4.08,0-7.387,3.278-7.387,7.32c0,0.572,0.067,1.129,0.193,1.67c-6.138-0.308-11.582-3.226-15.224-7.654c-0.64,1.082-1,2.349-1,3.686c0,2.541,1.301,4.778,3.285,6.096c-1.211-0.037-2.351-0.374-3.349-0.914c0,0.022,0,0.055,0,0.086c0,3.551,2.547,6.508,5.923,7.181c-0.617,0.169-1.269,0.263-1.941,0.263c-0.477,0-0.942-0.054-1.392-0.135c0.94,2.902,3.667,5.023,6.898,5.086c-2.528,1.96-5.712,3.134-9.174,3.134c-0.598,0-1.183-0.034-1.761-0.104C9.268,36.786,13.152,38,17.321,38c13.585,0,21.017-11.156,21.017-20.834c0-0.317-0.01-0.633-0.025-0.945C39.763,15.197,41.013,13.905,42,12.429"
-                  />
+                  <path d="M 6 4 C 4.895 4 4 4.895 4 6 L 4 24 C 4 25.105 4.895 26 6 26 L 24 26 C 25.105 26 26 25.105 26 24 L 26 6 C 26 4.895 25.105 4 24 4 L 6 4 z M 8.6484375 9 L 13.259766 9 L 15.951172 12.847656 L 19.28125 9 L 20.732422 9 L 16.603516 13.78125 L 21.654297 21 L 17.042969 21 L 14.056641 16.730469 L 10.369141 21 L 8.8945312 21 L 13.400391 15.794922 L 8.6484375 9 z M 10.878906 10.183594 L 17.632812 19.810547 L 19.421875 19.810547 L 12.666016 10.183594 L 10.878906 10.183594 z"/>
                 </svg>
                 Twitter
               </div>

@@ -78,7 +78,8 @@ const UsedFilteredIdeaItem = ({
           className="text-[13px]"
           style={{
             textDecoration: !idea?.initailUsed ? "line-through" : "none",
-            lineBreak: "anywhere",
+            wordWrap: 'break-word',
+            textWrap: 'pretty'
           }}
         >
           {idea?.idea}

@@ -129,6 +129,7 @@ export default function Sidebar() {
     data: meeData,
     loading: meeLoading,
     error: meeError,
+    refetch: meeRefetch
   } = useQuery(meeAPI, {
     context: {
       headers: {
@@ -203,6 +204,7 @@ export default function Sidebar() {
   const { blogData, setBlogData } = useBlogDataStore();
 
   useEffect(() => {
+    if(!meeData?.me?.name || !meeData?.mee?.lastName) meeRefetch();
     const MINIMUM_HEIGHT = 125;
     const elementHeight =
       sideBarHeightRef.current.offsetHeight > MINIMUM_HEIGHT
