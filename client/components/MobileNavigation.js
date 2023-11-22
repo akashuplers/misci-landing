@@ -9,10 +9,12 @@ import {
   XMarkIcon,
   PresentationChartBarIcon,
   ChevronDownIcon,
+  UserGroupIcon,
   SparklesIcon
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { Fragment, useState } from "react";
+import { FaPeopleArrows } from "react-icons/fa";
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -60,6 +62,21 @@ const mobileNavigation = [
         name: "Lille.ai",
         href: "http://lille.ai", 
       }
+    ],
+  },
+{
+    name: "Community",
+    href: "#",
+    icon: UserGroupIcon,
+    subNav:[
+      {
+      name: "Library",
+      href: "/library",
+    },
+    {
+      name: "Blog",
+      href: "https://blogs.lille.ai",
+    },
     ],
   },
 ];
