@@ -4,6 +4,8 @@ import { useMutation, useQuery } from "@apollo/client";
 import {
   CheckCircleIcon,
   PaperAirplaneIcon,
+  LockClosedIcon,
+  LockOpenIcon
 } from "@heroicons/react/24/outline";
 import { loadStripe } from "@stripe/stripe-js";
 import { Editor } from "@tinymce/tinymce-react";
@@ -14,6 +16,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import ReactLoading from "react-loading";
 import useUserTimeSave from "../hooks/useUserTimeSave";
 import Modal from "react-modal";
+import { PUBLISH_PRIVACY_STATE } from "../graphql/mutations/publishBlog";
 import {
   EmailIcon,
   EmailShareButton,
@@ -2362,7 +2365,9 @@ export default function TinyMCEEditor({
                       color={"#2563EB"}
                     />
                   ) : (
-                    blogData.publishPrivacy && blogData.publishPrivacy === "private" ? "Public" : "Private"
+                    blogData.publishPrivacy && blogData.publishPrivacy === "private" ? 
+                    <p className="flex gap-2"><LockOpenIcon width={20} height={20}/>Public</p> : 
+                    <p className="flex gap-2"><LockClosedIcon width={20} height={20}/>Private</p>
                   )}
                 </button>
               }
