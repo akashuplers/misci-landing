@@ -4,7 +4,10 @@ import { useMutation, useQuery } from "@apollo/client";
 import {
   CheckCircleIcon,
   PaperAirplaneIcon,
+  XMarkIcon,
+  ExclamationTriangleIcon
 } from "@heroicons/react/24/outline";
+import { BellAlertIcon } from "@heroicons/react/20/solid";
 import { loadStripe } from "@stripe/stripe-js";
 import { Editor } from "@tinymce/tinymce-react";
 import axios from "axios";
@@ -59,6 +62,7 @@ import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
 import { BASE_PRICE, contentStyle } from "@/store/appContants";
 import useSendSavedTimeOfUser from "@/hooks/useSendSavedTimeOfUser";
 import { calculateUsedCredits } from "@/store/appHelpers";
+import { AlertDialogDescription } from "@radix-ui/themes";
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 );
@@ -1855,9 +1859,19 @@ export default function TinyMCEEditor({
         </button>
       </Modal>
       {isalert && (
-        <div className="p-2 text-xs">
-          Lille is not responsible for any images uploaded by you that contain
-          copyright infringement.
+        <div 
+          className="flex justify-between items-center mx-4"
+          style={{
+            borderRadius: '10px',
+            background: '#F7F3D6',
+            color: '#87743b'
+          }}
+        >
+          <p className="p-2 text-xs font-semibold flex gap-2">
+            <ExclamationTriangleIcon width={20} height={20}/>
+            Lille is not responsible for any images uploaded by you that contain
+            copyright infringement.
+          </p>
           <button
             onClick={() => {
               setAlert(false);
@@ -1869,7 +1883,7 @@ export default function TinyMCEEditor({
               viewBox="0 0 24 24"
               strokeWidth="1.5"
               stroke="currentColor"
-              className="w-5 h-6 ml-2"
+              className="w-5 h-6 mx-2"
             >
               <path
                 strokeLinecap="round"
@@ -1911,7 +1925,10 @@ export default function TinyMCEEditor({
           },
         }}
       >
-        <div className="pl-4 text-xl font-bold">Share</div>
+        <div className="flex justify-between w-100">
+          <p className="pl-4 text-xl font-bold">Share</p>
+          <button onClick={() => setOpenModal(false)}><XMarkIcon color="black" width={20} height={20}/></button>
+        </div>
         <WhatsappShareButton
           url={text + blog_id}
           quote={""}
