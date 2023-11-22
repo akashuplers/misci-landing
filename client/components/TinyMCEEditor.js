@@ -931,6 +931,41 @@ export default function TinyMCEEditor({
     setIRanNumberOfTimes(1);
   };
 
+  const handleChangePrivacy = async () => {
+    axios({
+      method: "post",
+      url: API_BASE_PATH + API_ROUTES.GQL_PATH,
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      data: {
+        query: PUBLISH_PRIVACY_STATE,
+        variables: {
+          options: {
+            blog_id: blog_id,
+          },
+        },
+      },
+    })
+      .then(async (response) => {
+        refetchBlog()
+        toast.success("Privacy Updated Successfully!", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      })
+      .catch((error) => console.log("error", error))
+      .finally(() => {
+        setAskingForSavingBlog(false);
+      });
+  }
   const handleConfirmUserForPublish = async (type) => {
     setThisIsToBePublished(type);
     if (type === TYPESOFTABS.TWITTER) {
@@ -2310,6 +2345,27 @@ export default function TinyMCEEditor({
                   "Update"
                 )}
               </button>
+              {
+                blogData.status === "published" &&
+                <button
+                  className="cta"
+                  // onClick={saveText === "Save Now!" && handleSave}
+                  onClick={() => {
+                    handleChangePrivacy();
+                  }}
+                >
+                  {saveLoad ? (
+                    <ReactLoading
+                      width={25}
+                      height={25}
+                      round={true}
+                      color={"#2563EB"}
+                    />
+                  ) : (
+                    blogData.publishPrivacy && blogData.publishPrivacy === "private" ? "Public" : "Private"
+                  )}
+                </button>
+              }
               {option === "linkedin" ? (
                 linkedInAccessToken ? (
                   <button

@@ -835,6 +835,18 @@ export const publishBlog = async ({id, db, platform}: {
     }, { "arrayFilters": [{ "elem.platform": platform }], "multi": true })
 }
 
+export const updatePublishPrivacy = async ({id, db, publishPrivacy}: {
+    id: string;
+    db: any,
+    publishPrivacy: string
+}) => {
+    return await db.db('lilleBlogs').collection('blogs').updateOne({_id: new ObjectID(id)}, {
+        $set: {
+            "publishPrivacy": publishPrivacy
+        }
+    })
+}
+
 export const deleteBlog = async ({
     id,
     db

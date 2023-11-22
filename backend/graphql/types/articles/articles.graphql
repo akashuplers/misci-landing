@@ -48,6 +48,8 @@ type Blog {
     imageUrl: String
     savedTime: String
     keyword: String
+    status: String
+    publishPrivacy: String
     likes: Int
     userDetail: User
     comments: [Comments]
@@ -195,6 +197,10 @@ input AdminDeleteOptions {
     blog_id: String
 }
 
+input PublishPrivacy {
+    blog_id: String
+}
+
 type Mutation {
     generate(options: GenerateBlogOptions!): Blog
     generateTMBlog(options: GenerateTMBlogOptions!): Blog
@@ -205,4 +211,5 @@ type Mutation {
     publish(options: PublisOptions): PublishRes
     delete(options: PublisOptions): Boolean
     deleteBlogByAdmin(options: AdminDeleteOptions): Boolean
+    changePublishPrivacy(options: PublishPrivacy): Boolean
 }

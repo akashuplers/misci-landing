@@ -6,7 +6,9 @@ query FetchBlog($fetchBlogId: String!) {
   fetchBlog(id: $fetchBlogId) {
     _id
     article_id
+    publishPrivacy
     likes
+    status
     comments {
         _id
         userId
