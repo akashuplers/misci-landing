@@ -113,6 +113,10 @@ var desktopNavigationRoutes = [
       name: "Library",
       href: "/library",
     },
+    {
+      name: "Blogs",
+      href: "https://blogs.lille.ai",
+    },
      ],
   },
   {
