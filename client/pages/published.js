@@ -16,6 +16,13 @@ import styles from '../styles/saved.module.css';
 import { meeAPI } from "../graphql/querys/mee";
 import { useDebounce } from "@uidotdev/usehooks";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { getBlogbyId } from "../graphql/queries/getBlogbyId";
+import { useRouter } from "next/router";
+import { jsonToHtml } from "../helpers/helper";
+import {
+  convertToURLFriendly,
+  getBlogTitle,
+} from "@/store/appHelpers";
 
 const PAGE_COUNT = 12;
 
@@ -31,6 +38,95 @@ export default function Published() {
   const [blog_id, setblog_id] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [search, setSearch] = useState(null);
+
+  const [blogPublishedLink, setBlogPublishedLink] = useState('');
+  const [currentBlogId, setCurrentBlogId] = useState('');
+
+  const router = useRouter()
+
+  const {
+    data: gqlData,
+    loading: gqlLoading,
+    erro: gqlError,
+    refetch: blogRefetch,
+  } = useQuery(getBlogbyId, {
+    variables: {
+      fetchBlogId: currentBlogId,
+    }
+  });
+
+  useEffect(() => {
+    if(!!currentBlogId) blogRefetch()
+  },[currentBlogId])
+
+
+
+  useEffect(() => {
+    // const html = jsonToHtml(gqlData?.fetchBlog?.publish_data[2].tiny_mce_data);
+    // @ts-ignore
+    if (gqlData) {
+      const aa = gqlData?.fetchBlog?.publish_data.find(
+        (pd) => pd.platform === "wordpress"
+      ).tiny_mce_data;
+      const html = jsonToHtml(aa);
+      // console.log(aa?.children[0].children[0].children[0]);
+      var blogTitle = getBlogTitle(aa?.children[0]);
+      console.log({blogTitle},'halert')
+      blogTitle = convertToURLFriendly(blogTitle ? blogTitle : "");
+      const userDetails = gqlData?.fetchBlog?.userDetail;
+      var authorProfilePath = "";
+      const fakeDivContainer = document.createElement("div");
+      fakeDivContainer.innerHTML = html;
+      var h2Element = fakeDivContainer.querySelector("h2")?.innerText;
+      console.log({h2Element},'halert');
+      var h2text = convertToURLFriendly(h2Element ?? "blog");
+
+      if (userDetails?.googleUserName) {
+        authorProfilePath =
+          "/google/" +
+          userDetails?.googleUserName.replace(/\s/g, "") +
+          "/" +
+          blogTitle +
+          "/" +
+          h2text +
+          "/" +
+          currentBlogId;
+      } else if (userDetails?.twitterUserName) {
+        authorProfilePath =
+          "/twitter/" +
+          userDetails.twitterUserName.replace(/\s/g, "") +
+          "/" +
+          blogTitle +
+          "/" +
+          h2text +
+          "/" +
+          currentBlogId;
+      } else if (userDetails?.linkedInUserName) {
+        authorProfilePath =
+          "/linkedin/" +
+          userDetails?.linkedInUserName.replace(/\s/g, "") +
+          "/" +
+          blogTitle +
+          "/" +
+          h2text +
+          "/" +
+          currentBlogId;
+      } else if (userDetails?.userName) {
+        authorProfilePath =
+          "/user/" +
+          userDetails?.userName.replace(/\s/g, "") +
+          "/" +
+          blogTitle +
+          "/" +
+          h2text +
+          "/" +
+          currentBlogId;
+      }
+      if(authorProfilePath) setBlogPublishedLink(authorProfilePath)
+    }
+    console.log(gqlData, 'halert')
+  }, [gqlData]);
+
   const debouncedSearchTerm = useDebounce(search, 300);
 
 
@@ -218,7 +314,7 @@ export default function Published() {
 
               {data?.getAllBlogs.blogs.map((blog, index) => (
                 <>
-                  <li key={blog._id} className="relative">
+                  <li key={blog._id} className="relative" onMouseEnter={() => setCurrentBlogId(blog._id)}>
                     <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
                       <img
                         src={blog.image}
@@ -228,9 +324,8 @@ export default function Published() {
                       />
                       <Link
                         legacyBehavior
-                        as={"/public/" + blog._id}
                         href={{
-                          pathname: "/public/" + blog,
+                          pathname: "/public/" + blogPublishedLink,
                         }}
                         passHref
                       >

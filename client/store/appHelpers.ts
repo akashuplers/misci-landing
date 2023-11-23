@@ -352,11 +352,15 @@ export function addFilesToTheSearch(
 }
 
 export function convertToURLFriendly(str: string) {
-  console.log(str);
-  const urlFriendlyStr = str.replace(/\s+/g, "-");
-  const lowercaseStr = urlFriendlyStr.toLowerCase();
-  const cleanedStr = lowercaseStr.replace(/[^a-z0-9-]/g, "");
-  return cleanedStr;
+  console.log({str},'halert');
+  try{
+    const urlFriendlyStr = str.replace(/\s+/g, "-");
+    const lowercaseStr = urlFriendlyStr.toLowerCase();
+    const cleanedStr = lowercaseStr.replace(/[^a-z0-9-]/g, "");
+    return cleanedStr;
+  }catch(error){
+    return ""
+  }
 }
 
 function getFirstH2(htmlString: string) {
