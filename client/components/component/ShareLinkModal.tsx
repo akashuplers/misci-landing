@@ -13,6 +13,8 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+
 // @ts-ignore
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
@@ -61,7 +63,10 @@ const ShareLinkModal = ({
         },
       }}
     >
-      <div className="text-xl font-bold">Share</div>
+      <div className="flex justify-between w-100">
+        <p className="text-xl font-bold">Share</p>
+        <button onClick={() => setOpenModal(false)}><XMarkIcon color="black" width={20} height={20}/></button>
+      </div>
       <div className="flex flex-wrap items-center justify-start gap-3">
         <WhatsappShareButton
           url={text + blog_id}
@@ -84,7 +89,6 @@ const ShareLinkModal = ({
         <TwitterShareButton
           url={text + blog_id}
           hashtags={["lille", "nowg"]}
-          className="m-5"
         >
           <svg 
             style={{pointerEvents: 'none'}} 
