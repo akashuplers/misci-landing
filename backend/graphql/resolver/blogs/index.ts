@@ -744,7 +744,14 @@ export const blogResolvers = {
             let webIds: string[] = []
             if((updatedTopic && updatedTopic !== blog.keyword) || (!useOldWebSource)) {
                 try {
-                    webIds = await new Python({userId: user.id}).uploadKeyword({keyword: updatedTopic || blog.keyword, timeout:60000})
+                    // webIds = await new Python({userId: user.id}).uploadKeyword({keyword: updatedTopic || blog.keyword, timeout:60000})
+                    webIds = [
+                        '6ee45f9f-8ac8-11ee-8930-0242ac1c0002',
+                        '745d0189-8ac8-11ee-8930-0242ac1c0002',
+                        '78683ad2-8ac8-11ee-8930-0242ac1c0002',
+                        '7f86e411-8ac8-11ee-8930-0242ac1c0002',
+                        '83ac26f0-8ac8-11ee-8930-0242ac1c0002'
+                    ]
                     if(webIds && webIds.length) {
                         webIds = webIds.filter((data) => data !== "None")
                     }
@@ -807,6 +814,20 @@ export const blogResolvers = {
                         webIds.map(async (id: String, index: number) => {
                             if(id) {
                                 const article = await db.db('lilleArticles').collection('articles').findOne({_id: id})
+                                const name: string = article._source?.source?.name
+                                if(article && name && name !== "file" || name !== "note"){
+                                    if(sourcesArray && sourcesArray.length) {
+                                        const sourceExist = sourcesArray.find((source: any) => {
+                                            console.log(source.type, source.url, article?._source.orig_url)
+                                            return source.type === "web" && source.url === article?._source.orig_url
+                                        }) 
+                                        console.log(sourceExist, "sourceExist")
+                                        if(sourceExist) {
+                                            articleIds = articleIds.filter((id) => id !== article._id)
+                                            return
+                                        }
+                                    }
+                                }
                                 if(!((article.proImageLink).toLowerCase().includes('placeholder'))) {
                                     imageUrl = article.proImageLink
                                     imageSrc = article._source?.orig_url
@@ -816,7 +837,6 @@ export const blogResolvers = {
                                         imageSrc = null
                                     }
                                 }
-                                const name = article._source?.source?.name
                                 if(article._source.driver) {
                                     tags.push(...article._source.driver)
                                 } else {
@@ -844,6 +864,8 @@ export const blogResolvers = {
                         })
                     )
                 )
+                console.log(newWebData, "newWebData")
+                newWebData = newWebData.filter((data) => data)
                 newWebData.forEach((data: any) => {
                     data.used_summaries.forEach((summary: any) => {
                         ideasArr.push({idea: summary, article_id: data.id})
@@ -853,8 +875,9 @@ export const blogResolvers = {
                     })
                 })
             }
-            console.log(ideasArr, "ideasArr")
             console.log(newWebData, "newWebData")
+            console.log(articleIds, "articleIds")
+            // console.log(ideasArr, "ideasArr")
             // console.log(texts)
             try {
                 let refUrls: {
@@ -883,11 +906,11 @@ export const blogResolvers = {
                     }
                 })
                 articleNames = articleNames.map((data: any) => ({_id: data._id, name: (data?._source?.source.name === "file" || data?._source?.source.name === "note") ? data?._source.title : data?._source?.source.name}))
-                console.log(refUrls, "refUrls")
-                console.log(sourcesArray, "sourcesArray")
-                console.log(ideasArr, "ideasArr")
-                console.log(articleIds, "articleIds")
-                console.log(filteredReferencesForBlog, "filteredReferencesForBlog")
+                // console.log(refUrls, "refUrls")
+                // console.log(sourcesArray, "sourcesArray")
+                // console.log(ideasArr, "ideasArr")
+                // console.log(articleIds, "articleIds")
+                // console.log(filteredReferencesForBlog, "filteredReferencesForBlog")
                 let startChatGptRequest = new Date()
                 const blogGeneratedData: any = await blogGeneration({
                     db,
