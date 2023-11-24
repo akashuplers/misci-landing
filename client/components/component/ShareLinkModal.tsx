@@ -1,6 +1,6 @@
 //@ts-nocheck
 import Modal from "react-modal";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   EmailIcon,
   EmailShareButton,
@@ -22,15 +22,18 @@ const ShareLinkModal = ({
   openModal,
   setOpenModal,
   text,
-  blog_id,
   closeModal,
 }: {
   openModal: boolean;
   setOpenModal: any;
   text: string;
-  blog_id: string;
 }) => {
   const [copyText, setCopyText] = useState("Copy");
+  useEffect(() => {
+    console.log({
+      text,
+    },'halert')
+  },[])
   return (
     <Modal
       isOpen={openModal}
@@ -69,7 +72,7 @@ const ShareLinkModal = ({
       </div>
       <div className="flex flex-wrap items-center justify-start gap-3">
         <WhatsappShareButton
-          url={text + blog_id}
+          url={text }
           quote={""}
           hashtag={"#Lille"}
           description={"Lille"}
@@ -78,7 +81,7 @@ const ShareLinkModal = ({
           <WhatsappIcon size={62} round /> Whatsapp
         </WhatsappShareButton>
         <FacebookShareButton
-          url={text + blog_id}
+          url={text }
           quote={""}
           hashtag={"#Lille"}
           description={"Lille"}
@@ -87,7 +90,7 @@ const ShareLinkModal = ({
           <FacebookIcon size={62} round /> Facebook
         </FacebookShareButton>
         <TwitterShareButton
-          url={text + blog_id}
+          url={text }
           hashtags={["lille", "nowg"]}
         >
           <svg 
@@ -102,14 +105,14 @@ const ShareLinkModal = ({
           Twitter
         </TwitterShareButton>
         <EmailShareButton
-          url={text + blog_id}
+          url={text }
           subject="Link for my Blog"
           className="Demo__some-network__share-button "
         >
           <EmailIcon size={62} round /> Email
         </EmailShareButton>
         <TelegramShareButton
-          url={text + blog_id}
+          url={text }
           quote={""}
           hashtag={"#Lille"}
           description={"Lille"}
@@ -121,11 +124,11 @@ const ShareLinkModal = ({
       <div className="p-5 pl-2 flex flex-col gap-2 lg:flex-row">
         <input
           type="text"
-          value={text + blog_id}
+          value={text }
           className="w-full lg:w-[70%] h-[40px] mr-5"
         />
         <CopyToClipboard
-          text={text + blog_id}
+          text={text }
           onCopy={() => {
             setCopyText("Copied");
             setTimeout(() => {
