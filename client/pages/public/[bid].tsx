@@ -56,7 +56,7 @@ export default function Post() {
       setIsAuthenticated(localStorage.getItem("token") ? true : false);
     }
   }, []);
-  const [authorPath, setAuthorPath] = useState("");
+  const [blogPublishedLink, setBlogPublishedLink] = useState('');
   const {
     data: gqlData,
     loading,
@@ -101,9 +101,6 @@ export default function Post() {
   }, [fetchUserData]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      setText(window.location.origin + "/public/");
-    }
     if (typeof window !== "undefined") {
       let temp = `${window.location.origin}${router.pathname}`;
       if (temp.substring(temp.length - 1) == "/")
@@ -182,23 +179,29 @@ export default function Post() {
           "/" +
           bid;
       }
-      console.log("username" + authorProfilePath);
-      console.log("new path", authorProfilePath);
-      setAuthorPath(authorProfilePath);
+      setBlogPublishedLink(authorProfilePath)
       setData(html);
     }
   }, [router, gqlData]);
+
   useEffect(() => {
-    if (authorPath != "") {
-      let newAuthorPath  = authorPath;
-      if(router.query?.source){
-        // setAuthorPath(newAuthorPath+ "?source="+ router.query.source)
-        newAuthorPath = newAuthorPath+ window.location.search;
-      }else{
-      }
-      router.push("/public" + newAuthorPath);
+    console.log({blogPublishedLink}, 'halert')
+    if (typeof window !== "undefined") {
+      setText(window.location.origin + '/public' + blogPublishedLink);
     }
-  }, [authorPath]);
+  }, [blogPublishedLink])
+
+  // useEffect(() => {
+  //   if (authorPath != "") {
+  //     let newAuthorPath  = authorPath;
+  //     if(router.query?.source){
+  //       // setAuthorPath(newAuthorPath+ "?source="+ router.query.source)
+  //       newAuthorPath = newAuthorPath+ window.location.search;
+  //     }else{
+  //     }
+  //     router.push("/public" + newAuthorPath);
+  //   }
+  // }, [authorPath]);
 
   useEffect(() => {
     const publishContainer = document.getElementById("publishContainer");
@@ -285,7 +288,6 @@ export default function Post() {
         <ShareLinkModal
           openModal={showShareModal}
           setOpenModal={setShareModal}
-          blog_id={gqlData?.fetchBlog?._id}
           text={text}
         />
         <ReactModal

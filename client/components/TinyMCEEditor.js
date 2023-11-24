@@ -69,6 +69,11 @@ import { AlertDialogDescription } from "@radix-ui/themes";
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 );
+import { getBlogbyId } from "../graphql/queries/getBlogbyId";
+import {
+  convertToURLFriendly,
+  getBlogTitle,
+} from "@/store/appHelpers";
 
 const total_twitter_quota = 6;
 const remaining_twitter_quota = 2;
@@ -167,6 +172,91 @@ export default function TinyMCEEditor({
   const [isEditorReady, setIsEditorReady] = useState(false);
 
   const [windowWidth, setWindowWidth] = useState(0);
+
+  const [blogPublishedLink, setBlogPublishedLink] = useState('');
+
+  const {
+    data: gqlData,
+    loading: gqlLoading,
+    erro: gqlError,
+    refetch: blogRefetch,
+  } = useQuery(getBlogbyId, {
+    variables: {
+      fetchBlogId: blog_id,
+    }
+  });
+
+  useEffect(() => {
+    // const html = jsonToHtml(gqlData?.fetchBlog?.publish_data[2].tiny_mce_data);
+    // @ts-ignore
+    if (gqlData) {
+      const aa = gqlData?.fetchBlog?.publish_data.find(
+        (pd) => pd.platform === "wordpress"
+      ).tiny_mce_data;
+      const html = jsonToHtml(aa);
+      // console.log(aa?.children[0].children[0].children[0]);
+      var blogTitle = getBlogTitle(aa?.children[0]);
+      console.log({blogTitle},'halert')
+      blogTitle = convertToURLFriendly(blogTitle ? blogTitle : "");
+      const userDetails = gqlData?.fetchBlog?.userDetail;
+      var authorProfilePath = "";
+      const fakeDivContainer = document.createElement("div");
+      fakeDivContainer.innerHTML = html;
+      var h2Element = fakeDivContainer.querySelector("h2")?.innerText;
+      console.log({h2Element},'halert');
+      var h2text = convertToURLFriendly(h2Element ?? "blog");
+
+      if (userDetails?.googleUserName) {
+        authorProfilePath =
+          "/google/" +
+          userDetails?.googleUserName.replace(/\s/g, "") +
+          "/" +
+          blogTitle +
+          "/" +
+          h2text +
+          "/" +
+          blog_id;
+      } else if (userDetails?.twitterUserName) {
+        authorProfilePath =
+          "/twitter/" +
+          userDetails.twitterUserName.replace(/\s/g, "") +
+          "/" +
+          blogTitle +
+          "/" +
+          h2text +
+          "/" +
+          blog_id;
+      } else if (userDetails?.linkedInUserName) {
+        authorProfilePath =
+          "/linkedin/" +
+          userDetails?.linkedInUserName.replace(/\s/g, "") +
+          "/" +
+          blogTitle +
+          "/" +
+          h2text +
+          "/" +
+          blog_id;
+      } else if (userDetails?.userName) {
+        authorProfilePath =
+          "/user/" +
+          userDetails?.userName.replace(/\s/g, "") +
+          "/" +
+          blogTitle +
+          "/" +
+          h2text +
+          "/" +
+          blog_id;
+      }
+      if(authorProfilePath) setBlogPublishedLink(authorProfilePath)
+    }
+    console.log(gqlData, 'halert')
+  }, [gqlData]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setText(window.location.origin + '/public' + blogPublishedLink);
+    }
+  }, [blogPublishedLink])
 
   const handleEditorInit = () => {
     setIsEditorReady(true);
@@ -835,9 +925,6 @@ export default function TinyMCEEditor({
   };
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      setText(window.location.origin + "/public/");
-    }
     if (typeof window !== "undefined") {
       let temp = `${window.location.origin}${router.pathname}`;
       if (temp.substring(temp.length - 1) == "/")
@@ -1968,7 +2055,7 @@ export default function TinyMCEEditor({
           <button onClick={() => setOpenModal(false)}><XMarkIcon color="black" width={20} height={20}/></button>
         </div>
         <WhatsappShareButton
-          url={text + blog_id}
+          url={text}
           quote={""}
           hashtag={"#Lille"}
           description={"Lille"}
@@ -1977,7 +2064,7 @@ export default function TinyMCEEditor({
           <WhatsappIcon size={62} round /> Whatsapp
         </WhatsappShareButton>
         <FacebookShareButton
-          url={text + blog_id}
+          url={text}
           quote={""}
           hashtag={"#Lille"}
           description={"Lille"}
@@ -1986,7 +2073,7 @@ export default function TinyMCEEditor({
           <FacebookIcon size={62} round /> Facebook
         </FacebookShareButton>
         <TwitterShareButton
-          url={text + blog_id}
+          url={text}
           hashtags={["lille", "nowg"]}
           className="m-5"
         >
@@ -2002,14 +2089,14 @@ export default function TinyMCEEditor({
           Twitter
         </TwitterShareButton>
         <EmailShareButton
-          url={text + blog_id}
+          url={text}
           subject="Link for my Blog"
           className="Demo__some-network__share-button m-5"
         >
           <EmailIcon size={62} round /> Email
         </EmailShareButton>
         <TelegramShareButton
-          url={text + blog_id}
+          url={text}
           quote={""}
           hashtag={"#Lille"}
           description={"Lille"}
@@ -2020,10 +2107,10 @@ export default function TinyMCEEditor({
         <div className="p-5 pl-2 flex">
           <input
             type="text"
-            value={text + blog_id}
+            value={text}
             className="w-[70%] h-[40px] mr-5"
           />
-          <CopyToClipboard text={text + blog_id} onCopy={onCopyText}>
+          <CopyToClipboard text={text} onCopy={onCopyText}>
             <div className="copy-area">
               <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
                 Copy

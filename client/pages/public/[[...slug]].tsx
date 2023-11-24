@@ -120,9 +120,6 @@ function Page({
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setText(window.location.origin + "/public/");
-    }
-    if (typeof window !== "undefined") {
       let temp = `${window.location.origin}${router.pathname}`;
       if (temp.substring(temp.length - 1) == "/")
         // @ts-ignore
@@ -134,6 +131,8 @@ function Page({
     }
   }, [router.pathname]);
   const [copyStart, setCopyStart] = useState(false);
+
+  const [blogPublishedLink, setBlogPublishedLink] = useState('');
 
   useEffect(() => {
     // @ts-ignore
@@ -151,7 +150,65 @@ function Page({
     console.log(imgElement?.src ? imgElement?.src : "no image url found");
     setImageURL(imgElement?.src ?? "");
     setData(html);
+    blogTitle = convertToURLFriendly(blogTitle ? blogTitle : "");
+      const userDetails = gqlData?.fetchBlog?.userDetail;
+      var authorProfilePath = "";
+      const fakeDivContainer = document.createElement("div");
+      fakeDivContainer.innerHTML = html;
+      var h2Element = fakeDivContainer.querySelector("h2")?.innerText;
+      console.log({h2Element},'halert');
+      var h2text = convertToURLFriendly(h2Element ?? "blog");
+
+      if (userDetails?.googleUserName) {
+        authorProfilePath =
+          "/google/" +
+          userDetails?.googleUserName.replace(/\s/g, "") +
+          "/" +
+          blogTitle +
+          "/" +
+          h2text +
+          "/" +
+          authorBlogId;
+      } else if (userDetails?.twitterUserName) {
+        authorProfilePath =
+          "/twitter/" +
+          userDetails.twitterUserName.replace(/\s/g, "") +
+          "/" +
+          blogTitle +
+          "/" +
+          h2text +
+          "/" +
+          authorBlogId;
+      } else if (userDetails?.linkedInUserName) {
+        authorProfilePath =
+          "/linkedin/" +
+          userDetails?.linkedInUserName.replace(/\s/g, "") +
+          "/" +
+          blogTitle +
+          "/" +
+          h2text +
+          "/" +
+          authorBlogId;
+      } else if (userDetails?.userName) {
+        authorProfilePath =
+          "/user/" +
+          userDetails?.userName.replace(/\s/g, "") +
+          "/" +
+          blogTitle +
+          "/" +
+          h2text +
+          "/" +
+          authorBlogId;
+      }
+      if(authorProfilePath) setBlogPublishedLink(authorProfilePath)
   }, [gqlData]);
+
+  useEffect(() => {
+    console.log({blogPublishedLink}, 'halert')
+    if (typeof window !== "undefined") {
+      setText(window.location.origin + '/public' + blogPublishedLink);
+    }
+  }, [blogPublishedLink])
 
   useEffect(() => {
     const publishContainer = document.getElementById("publishContainer");
@@ -310,7 +367,6 @@ function Page({
         <ShareLinkModal
           openModal={showShareModal}
           setOpenModal={setShareModal}
-          blog_id={gqlData?.fetchBlog?._id}
           text={text}
         />
         <ReactModal
