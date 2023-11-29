@@ -352,7 +352,6 @@ export function addFilesToTheSearch(
 }
 
 export function convertToURLFriendly(str: string) {
-  console.log({str},'halert');
   try{
     const urlFriendlyStr = str.replace(/\s+/g, "-");
     const lowercaseStr = urlFriendlyStr.toLowerCase();

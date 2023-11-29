@@ -342,6 +342,14 @@ const CheckoutForm = ({
     } else {
       setClickOnSubscibe(false);
       if (!confirmPayment?.error?.message) {
+        const scriptElement = document.createElement('script');
+        scriptElement.innerHTML = `
+          gtag('event', 'conversion', {
+            'send_to': 'AW-972159675/gnc8CJqMyvgYELv1x88D',
+            'transaction_id': '',
+          });
+        `;
+        document.head.appendChild(scriptElement);
         import('react-facebook-pixel')
         .then((x) => x.default)
         .then((ReactPixel) => {

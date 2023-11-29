@@ -64,6 +64,7 @@ const Reset = () => {
         .then((response) => {
           console.log(response);
           toast.success(!response?.error && response?.message, toastOptions);
+          localStorage.clear();
           router.push("/");
           // do something after pass change success
         })

@@ -311,6 +311,14 @@ export default function AuthenticationModal({
       })
       .then(res => {
         if(res){
+          const scriptElement = document.createElement('script');
+          scriptElement.innerHTML = `
+            gtag('event', 'conversion', {
+              'send_to': 'AW-972159675/Sp7YCJKAyPgYELv1x88D',
+            });
+          `;
+          document.head.appendChild(scriptElement);
+          
           import('react-facebook-pixel')
           .then((x) => x.default)
           .then((ReactPixel) => {
