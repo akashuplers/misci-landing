@@ -184,12 +184,12 @@ export default function Post() {
     }
   }, [router, gqlData]);
 
-  useEffect(() => {
-    console.log({blogPublishedLink}, 'halert')
-    if (typeof window !== "undefined") {
-      setText(window.location.origin + '/public' + blogPublishedLink);
-    }
-  }, [blogPublishedLink])
+  // useEffect(() => {
+  //   console.log({blogPublishedLink}, 'halert')
+  //   if (typeof window !== "undefined") {
+  //     setText(window.location.origin + '/public' + blogPublishedLink);
+  //   }
+  // }, [blogPublishedLink])
 
   // useEffect(() => {
   //   if (authorPath != "") {

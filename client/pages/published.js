@@ -39,8 +39,9 @@ export default function Published() {
   const [openModal, setOpenModal] = useState(false);
   const [search, setSearch] = useState(null);
 
-  const [blogPublishedLink, setBlogPublishedLink] = useState('');
+  const [seoTag, setSeoTag] = useState(null);
   const [currentBlogId, setCurrentBlogId] = useState('');
+  const [socialUsernameLink, setSocialUsernameLink] = useState(null)
 
   const router = useRouter()
 
@@ -56,75 +57,50 @@ export default function Published() {
   });
 
   useEffect(() => {
-    if(!!currentBlogId) blogRefetch()
+    if(!!currentBlogId) {
+      blogRefetch()
+      setSeoTag(null)
+      setSocialUsernameLink(null)
+    }
   },[currentBlogId])
 
 
 
+// useEffect(() => {
+//   console.log(data.getAllBlogs.blogs[0], gqlData, 'vvimp')
+// },[gqlData])
+
+  
+
   useEffect(() => {
-    // const html = jsonToHtml(gqlData?.fetchBlog?.publish_data[2].tiny_mce_data);
-    // @ts-ignore
+
     if (gqlData) {
       const aa = gqlData?.fetchBlog?.publish_data.find(
         (pd) => pd.platform === "wordpress"
       ).tiny_mce_data;
       const html = jsonToHtml(aa);
-      // console.log(aa?.children[0].children[0].children[0]);
-      var blogTitle = getBlogTitle(aa?.children[0]);
-      console.log({blogTitle},'halert')
-      blogTitle = convertToURLFriendly(blogTitle ? blogTitle : "");
-      const userDetails = gqlData?.fetchBlog?.userDetail;
-      var authorProfilePath = "";
+      
       const fakeDivContainer = document.createElement("div");
       fakeDivContainer.innerHTML = html;
       var h2Element = fakeDivContainer.querySelector("h2")?.innerText;
-      console.log({h2Element},'halert');
       var h2text = convertToURLFriendly(h2Element ?? "blog");
+      let authorProfilePath = "/" + h2text + "/";
+      setSeoTag(authorProfilePath)
 
-      if (userDetails?.googleUserName) {
-        authorProfilePath =
-          "/google/" +
-          userDetails?.googleUserName.replace(/\s/g, "") +
-          "/" +
-          blogTitle +
-          "/" +
-          h2text +
-          "/" +
-          currentBlogId;
-      } else if (userDetails?.twitterUserName) {
-        authorProfilePath =
-          "/twitter/" +
-          userDetails.twitterUserName.replace(/\s/g, "") +
-          "/" +
-          blogTitle +
-          "/" +
-          h2text +
-          "/" +
-          currentBlogId;
-      } else if (userDetails?.linkedInUserName) {
-        authorProfilePath =
-          "/linkedin/" +
-          userDetails?.linkedInUserName.replace(/\s/g, "") +
-          "/" +
-          blogTitle +
-          "/" +
-          h2text +
-          "/" +
-          currentBlogId;
-      } else if (userDetails?.userName) {
-        authorProfilePath =
-          "/user/" +
-          userDetails?.userName.replace(/\s/g, "") +
-          "/" +
-          blogTitle +
-          "/" +
-          h2text +
-          "/" +
-          currentBlogId;
+      if(!socialUsernameLink){
+        const userDetails = gqlData?.fetchBlog?.userDetail;
+        console.log({userDetails},'vvimp')
+        if (userDetails?.googleUserName) {
+            setSocialUsernameLink("/public/google/" + userDetails?.googleUserName.replace(/\s/g, "") + "/")
+        } else if (userDetails?.twitterUsxerName) {
+            setSocialUsernameLink("/public/twitter/" + userDetails.twitterUserName.replace(/\s/g, "") + "/")
+        } else if (userDetails?.linkedInUserName) {
+            setSocialUsernameLink("/public/linkedin/" + userDetails?.linkedInUserName.replace(/\s/g, "") + "/")
+        } else if (userDetails?.userName) {
+            setSocialUsernameLink("/public/user/" + userDetails?.userName.replace(/\s/g, "") + "/")
+        }
       }
-      if(authorProfilePath) setBlogPublishedLink(authorProfilePath)
     }
-    console.log(gqlData, 'halert')
   }, [gqlData]);
 
   const debouncedSearchTerm = useDebounce(search, 300);
@@ -325,9 +301,11 @@ export default function Published() {
                       <Link
                         legacyBehavior
                         href={{
-                          pathname: "/public/" + blogPublishedLink,
+                          pathname: socialUsernameLink ? socialUsernameLink + blog.title + seoTag + blog._id : `/public/${blog._id}`
                         }}
                         passHref
+                        style={{
+                        }}
                       >
                         <a
                           target="_blank"
