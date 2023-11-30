@@ -34,6 +34,8 @@ export const meeGetState = `query Query {
     twitterUserName
     linkedInUserName
     googleUserName
+    total_twitter_quota
+    remaining_twitter_quota
   }
 }`
 export const meeAPI = gql`${meeGetState}`;
