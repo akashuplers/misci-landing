@@ -77,7 +77,7 @@ export function TotalTImeSaved({
         },
       }}
     >
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-[250px] relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg max-w-[500px] relative">
         <div className="relative flex items-center justify-end">
         <button
           onClick={() => {
