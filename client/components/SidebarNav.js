@@ -204,7 +204,8 @@ export default function Sidebar() {
   const { blogData, setBlogData } = useBlogDataStore();
 
   useEffect(() => {
-    if(!meeData?.me?.name || !meeData?.mee?.lastName) meeRefetch();
+    console.log({meeData},'vvimp')
+    if(!meeData?.me?.name || !meeData?.mee?.lastName || meeData == undefine) meeRefetch();
     const MINIMUM_HEIGHT = 125;
     const elementHeight =
       sideBarHeightRef.current.offsetHeight > MINIMUM_HEIGHT
@@ -230,7 +231,8 @@ export default function Sidebar() {
   }
   useEffect(() => {
     console.log("mee data");
-    console.log(meeData);
+    if(!meeData) meeRefetch()
+    console.log({meeData},'meeData');
   }, [meeData]);
   // const { userTimeSave, loading: userTimeSaveLoading, error} = useUserTimeSave();
   const {
@@ -244,6 +246,7 @@ export default function Sidebar() {
   }, []);
 
   const routerToHome  = () => {
+    console.log('router to home clicked')
     const domain  = window.location.hostname;
                   const protocol = window.location.protocol;
                   window.location.href = `${protocol}//${domain}`
@@ -627,9 +630,7 @@ export default function Sidebar() {
           <div className="flex-row flex">
             <div className="lg:hidden flex flex-row justify-center items-center py-2 pb-4">
                 <div onClick={()=> {
-                  const domain  = window.location.hostname;
-                  const protocol = window.location.protocol;
-                  window.location.href = `${protocol}//${domain}`
+                  routerToHome()
                 }}
                 >
                   <img
