@@ -39,86 +39,7 @@ export default function Published() {
   const [openModal, setOpenModal] = useState(false);
   const [search, setSearch] = useState(null);
 
-  const [seoTag, setSeoTag] = useState(null);
-  const [currentBlogId, setCurrentBlogId] = useState('');
-  const [socialUsernameLink, setSocialUsernameLink] = useState(null)
-
-  const router = useRouter()
-
-  const {
-    data: gqlData,
-    loading: gqlLoading,
-    erro: gqlError,
-    refetch: blogRefetch,
-  } = useQuery(getBlogbyId, {
-    variables: {
-      fetchBlogId: currentBlogId,
-    }
-  });
-
-  useEffect(() => {
-    if(!!currentBlogId) {
-      blogRefetch()
-      setSeoTag(null)
-      setSocialUsernameLink(null)
-    }
-  },[currentBlogId])
-
-
-
-// useEffect(() => {
-//   console.log(data.getAllBlogs.blogs[0], gqlData, 'vvimp')
-// },[gqlData])
-
-  
-
-  useEffect(() => {
-
-    if (gqlData) {
-      const aa = gqlData?.fetchBlog?.publish_data.find(
-        (pd) => pd.platform === "wordpress"
-      ).tiny_mce_data;
-      const html = jsonToHtml(aa);
-      
-      const fakeDivContainer = document.createElement("div");
-      fakeDivContainer.innerHTML = html;
-      var h2Element = fakeDivContainer.querySelector("h2")?.innerText;
-      var h2text = convertToURLFriendly(h2Element ?? "blog");
-      let authorProfilePath = "/" + h2text + "/";
-      setSeoTag(authorProfilePath)
-
-      if(!socialUsernameLink){
-        const userDetails = gqlData?.fetchBlog?.userDetail;
-        console.log({userDetails},'vvimp')
-        if (userDetails?.googleUserName) {
-            setSocialUsernameLink("/public/google/" + userDetails?.googleUserName.replace(/\s/g, "") + "/")
-        } else if (userDetails?.twitterUsxerName) {
-            setSocialUsernameLink("/public/twitter/" + userDetails.twitterUserName.replace(/\s/g, "") + "/")
-        } else if (userDetails?.linkedInUserName) {
-            setSocialUsernameLink("/public/linkedin/" + userDetails?.linkedInUserName.replace(/\s/g, "") + "/")
-        } else if (userDetails?.userName) {
-            setSocialUsernameLink("/public/user/" + userDetails?.userName.replace(/\s/g, "") + "/")
-        }
-      }
-    }
-  }, [gqlData]);
-
   const debouncedSearchTerm = useDebounce(search, 300);
-
-
-  useEffect(() => {
-    const handleBeforeUnload = (event) => {
-      event.preventDefault();
-      event.returnValue = null;
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, []);
-
   const { data, error, loading, refetch } = useQuery(getAllBlogs, {
     context: {
       headers: {
@@ -134,6 +55,91 @@ export default function Published() {
       },
     },
   });
+
+  const [dataWithUrls, setDataWithUrls] = useState([]);
+  const [urlCreationLoading, setUrlCreationLoading] = useState(true);
+
+  useEffect(() => {
+    const createEachUrl = async (socialUsernameLink) => {
+      try{
+        const promises = data.getAllBlogs.blogs.map(async el => {
+          const { data: newGqlData } = await blogRefetch({ fetchBlogId: el._id });
+  
+          const aa = newGqlData?.fetchBlog?.publish_data.find(
+            (pd) => pd.platform === "wordpress"
+          ).tiny_mce_data;
+          const html = jsonToHtml(aa);
+            
+          const fakeDivContainer = document.createElement("div");
+          fakeDivContainer.innerHTML = html;
+          var h2Element = fakeDivContainer.querySelector("h2")?.innerText;
+          var h2text = convertToURLFriendly(h2Element ?? "blog");
+          let seoTag = "/" + h2text + "/";
+  
+          return {
+            data: el,
+            url: socialUsernameLink ? `${socialUsernameLink}${el.title}${seoTag}${el._id}` : `/public/${el._id}`
+          }
+        })
+  
+        const resolvedPromises = await Promise.all(promises)
+        setDataWithUrls(resolvedPromises)
+      }catch(error){
+        console.error('Error in creating url for each blog', error);
+      }finally{
+        setUrlCreationLoading(false);
+      }
+    }
+
+    if(!loading && data.getAllBlogs.blogs){
+      const fetchSocialUsername = async() => {
+        let socialUsernameLink;
+        try{
+          const { data: newGqlData } = await blogRefetch({ fetchBlogId: data.getAllBlogs.blogs[0]._id });
+          const userDetails = newGqlData?.fetchBlog?.userDetail;
+          if (userDetails?.googleUserName) {
+              socialUsernameLink = "/public/google/" + userDetails?.googleUserName.replace(/\s/g, "") + "/"
+          } else if (userDetails?.twitterUsxerName) {
+              socialUsernameLink = "/public/twitter/" + userDetails.twitterUserName.replace(/\s/g, "") + "/"
+          } else if (userDetails?.linkedInUserName) {
+              socialUsernameLink = "/public/linkedin/" + userDetails?.linkedInUserName.replace(/\s/g, "") + "/"
+          } else if (userDetails?.userName) {
+              socialUsernameLink = "/public/user/" + userDetails?.userName.replace(/\s/g, "") + "/"
+          }
+        }catch(error){
+          console.error('Error in creating socialusernamelink', error);
+        }finally{
+          createEachUrl(socialUsernameLink)
+        }
+      }
+      fetchSocialUsername();
+    }
+  },[data])
+
+  const {
+    data: gqlData,
+    loading: gqlLoading,
+    error: gqlError,
+    refetch: blogRefetch,
+  } = useQuery(getBlogbyId, {
+    variables: {
+      fetchBlogId: "",
+    },
+    skip: true
+  });
+
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      event.preventDefault();
+      event.returnValue = null;
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
 
   useEffect(() => {
     setPageSkip(0)
@@ -269,11 +275,11 @@ export default function Published() {
               className="peer h-full w-full rounded-lg  font-thin outline-none drop-shadow-sm transition-all duration-200 ease-in-out focus:bg-transparent focus:ring-2 focus:ring-transparent border-none"
             />
         </div>
-        {loading ? (
+        {urlCreationLoading ? (
           <LoaderScan />
         ) : (
           <div style={{ padding: "1em 0 6em 0" }} className="relative">
-            {data?.getAllBlogs.blogs.length === 0 && (
+            {dataWithUrls.length === 0 && (
               <img
                 src="/noBlog/noPublished.png"
                 alt="No Blogs"
@@ -288,24 +294,25 @@ export default function Published() {
               }}
             >
 
-              {data?.getAllBlogs.blogs.map((blog, index) => (
+              {dataWithUrls?.map((blog, index) => (
                 <>
-                  <li key={blog._id} className="relative" onMouseEnter={() => setCurrentBlogId(blog._id)}>
+                  <li 
+                    key={blog.data?._id} 
+                    className="relative" 
+                  >
                     <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
                       <img
-                        src={blog.image}
-                        alt={blog.title}
+                        src={blog.data?.image}
+                        alt={blog.data?.title}
                         className="pointer-events-none object-cover h-[150px] w-[280px]"
                         style={{ scale: "1.25" }}
                       />
                       <Link
                         legacyBehavior
                         href={{
-                          pathname: socialUsernameLink ? socialUsernameLink + blog.title + seoTag + blog._id : `/public/${blog._id}`
+                          pathname: blog.url
                         }}
                         passHref
-                        style={{
-                        }}
                       >
                         <a
                           target="_blank"
@@ -316,6 +323,8 @@ export default function Published() {
                             zIndex: "1",
                             background: "white",
                             borderRadius: "0 0 0 5px",
+                            cursor: `${gqlLoading ? 'progress' : 'pointer'}`,
+                            pointerEvents: `${gqlLoading ? 'none' : 'all'}`
                           }}
                         >
                           <svg
@@ -332,7 +341,7 @@ export default function Published() {
                       <Link
                         legacyBehavior
                         href={{
-                          pathname: "/dashboard/" + blog._id,
+                          pathname: "/dashboard/" + blog.data?._id,
                           query: { isPublished: true },
                         }}
                       >
@@ -354,7 +363,7 @@ export default function Published() {
                             }}
                           >
                             <span className="sr-only">
-                              View details for {blog.title}
+                              View details for {blog.data?.title}
                             </span>
                             <button
                               id={`savedBlog${index}DelButton`}
@@ -362,7 +371,7 @@ export default function Published() {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                setblog_id(blog._id);
+                                setblog_id(blog.data?._id);
                                 setOpenModal(true);
                               }}
                               onMouseEnter={(e) => {
@@ -376,7 +385,7 @@ export default function Published() {
                       </Link>
                     </div>
                     <button className={`${styles.dateTag} mt-2`}>
-                      {new Date(blog?.date * 1000).toLocaleString("en-US", {
+                      {new Date(blog.data?.date * 1000).toLocaleString("en-US", {
                         timeZone: "Asia/Kolkata",
                         month: "short",
                         day: "numeric",
@@ -386,12 +395,12 @@ export default function Published() {
                       })}
                     </button>
                     <p className="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">
-                      {blog?.title}
+                      {blog.data?.title}
                     </p>
                     <p className="pointer-events-none block text-sm font-medium text-gray-500">
-                      {blog?.description?.length > 115
-                        ? blog?.description?.substring(0, 115) + "..."
-                        : blog.description}
+                      {blog.data?.description?.length > 115
+                        ? blog.data?.description?.substring(0, 115) + "..."
+                        : blog.data?.description}
                     </p>
                   </li>
                 </>
