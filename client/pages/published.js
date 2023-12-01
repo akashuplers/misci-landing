@@ -43,7 +43,28 @@ export default function Published() {
   const [currentBlogId, setCurrentBlogId] = useState('');
   const [socialUsernameLink, setSocialUsernameLink] = useState(null)
 
-  const router = useRouter()
+  const debouncedSearchTerm = useDebounce(search, 300);
+  const { data, error, loading, refetch } = useQuery(getAllBlogs, {
+    context: {
+      headers: {
+        authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    },
+    variables: {
+      options: {
+        status: ["published"],
+        page_skip: pageSkip * PAGE_COUNT,
+        page_limit: (1 + pageSkip) * PAGE_COUNT,
+        search: debouncedSearchTerm
+      },
+    },
+  });
+
+  useEffect(() => {
+    if(!loading && !socialUsernameLink){
+      setCurrentBlogId(data.getAllBlogs.blogs._id)
+    }
+  },[data])
 
   const {
     data: gqlData,
@@ -60,21 +81,24 @@ export default function Published() {
     if(!!currentBlogId) {
       blogRefetch()
       setSeoTag(null)
-      setSocialUsernameLink(null)
     }
   },[currentBlogId])
 
-
-
-// useEffect(() => {
-//   console.log(data.getAllBlogs.blogs[0], gqlData, 'vvimp')
-// },[gqlData])
-
-  
-
   useEffect(() => {
+    if (!gqlLoading) {
+      if(!socialUsernameLink){
+        const userDetails = gqlData?.fetchBlog?.userDetail;
+        if (userDetails?.googleUserName) {
+            setSocialUsernameLink("/public/google/" + userDetails?.googleUserName.replace(/\s/g, "") + "/")
+        } else if (userDetails?.twitterUsxerName) {
+            setSocialUsernameLink("/public/twitter/" + userDetails.twitterUserName.replace(/\s/g, "") + "/")
+        } else if (userDetails?.linkedInUserName) {
+            setSocialUsernameLink("/public/linkedin/" + userDetails?.linkedInUserName.replace(/\s/g, "") + "/")
+        } else if (userDetails?.userName) {
+            setSocialUsernameLink("/public/user/" + userDetails?.userName.replace(/\s/g, "") + "/")
+        }
+      }
 
-    if (gqlData) {
       const aa = gqlData?.fetchBlog?.publish_data.find(
         (pd) => pd.platform === "wordpress"
       ).tiny_mce_data;
@@ -86,25 +110,8 @@ export default function Published() {
       var h2text = convertToURLFriendly(h2Element ?? "blog");
       let authorProfilePath = "/" + h2text + "/";
       setSeoTag(authorProfilePath)
-
-      if(!socialUsernameLink){
-        const userDetails = gqlData?.fetchBlog?.userDetail;
-        console.log({userDetails},'vvimp')
-        if (userDetails?.googleUserName) {
-            setSocialUsernameLink("/public/google/" + userDetails?.googleUserName.replace(/\s/g, "") + "/")
-        } else if (userDetails?.twitterUsxerName) {
-            setSocialUsernameLink("/public/twitter/" + userDetails.twitterUserName.replace(/\s/g, "") + "/")
-        } else if (userDetails?.linkedInUserName) {
-            setSocialUsernameLink("/public/linkedin/" + userDetails?.linkedInUserName.replace(/\s/g, "") + "/")
-        } else if (userDetails?.userName) {
-            setSocialUsernameLink("/public/user/" + userDetails?.userName.replace(/\s/g, "") + "/")
-        }
-      }
     }
   }, [gqlData]);
-
-  const debouncedSearchTerm = useDebounce(search, 300);
-
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -118,22 +125,6 @@ export default function Published() {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
-
-  const { data, error, loading, refetch } = useQuery(getAllBlogs, {
-    context: {
-      headers: {
-        authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    },
-    variables: {
-      options: {
-        status: ["published"],
-        page_skip: pageSkip * PAGE_COUNT,
-        page_limit: (1 + pageSkip) * PAGE_COUNT,
-        search: debouncedSearchTerm
-      },
-    },
-  });
 
   useEffect(() => {
     setPageSkip(0)
@@ -305,6 +296,7 @@ export default function Published() {
                         }}
                         passHref
                         style={{
+                          
                         }}
                       >
                         <a
@@ -316,6 +308,8 @@ export default function Published() {
                             zIndex: "1",
                             background: "white",
                             borderRadius: "0 0 0 5px",
+                            cursor: `${gqlLoading ? 'progress' : 'pointer'}`,
+                            pointerEvents: `${gqlLoading ? 'none' : 'all'}`
                           }}
                         >
                           <svg
