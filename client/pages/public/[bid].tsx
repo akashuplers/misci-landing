@@ -291,7 +291,7 @@ export default function Post() {
         <ShareLinkModal
           openModal={showShareModal}
           setOpenModal={setShareModal}
-          text={text}
+          text={window.location.origin + router.asPath}
         />
         <ReactModal
           isOpen={showModalComment}
