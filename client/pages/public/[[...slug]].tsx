@@ -64,6 +64,7 @@ function Page({
 }: PageProps) {
   // console.log(query);
   const router = useRouter();
+  console.log(router)
   console.log(authorBlogId, authorUserName, authorSocialMedia);
   const [data, setData] = useState("");
   const [showShareModal, setShareModal] = useState(false);
@@ -370,7 +371,7 @@ function Page({
         <ShareLinkModal
           openModal={showShareModal}
           setOpenModal={setShareModal}
-          text={text}
+          text={window.location.origin + router.asPath}
         />
         <ReactModal
           isOpen={showModalComment}
