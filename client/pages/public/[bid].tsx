@@ -57,6 +57,7 @@ export default function Post() {
     }
   }, []);
   const [blogPublishedLink, setBlogPublishedLink] = useState('');
+  const [keywords, setKeywords] = useState("")
   const {
     data: gqlData,
     loading,
@@ -67,6 +68,7 @@ export default function Post() {
       fetchBlogId: bid,
     },
     onCompleted(data) {
+      setKeywords(data.fetchBlog.tags.join(", "))
       setBlogComments(data?.fetchBlog.comments);
       const dataForDate = data?.fetchBlog?.publish_data?.filter(
         (obj: any) => obj?.platform === "wordpress"
@@ -280,6 +282,7 @@ export default function Post() {
   return (
     <div className="bg-[#00000014] min-h-screen">
       <Head>
+        <meta name="keywords" content={keywords}/>
         <title>{blogTitle}</title>
       </Head>
       <Navbar isOpen={false} blogId={null} />
@@ -575,6 +578,10 @@ const CommentSection = ({
     }
   }
   return (
+    <>
+    <Head>
+      <meta name="keywords" content=""></meta>
+    </Head>
     <div className="w-full border h-full p-5 rounded-lg bg-white ">
       <div>
         <div className="text-slate-800 relative text-lg font-bold grid grid-cols-2 ">
@@ -755,6 +762,7 @@ const CommentSection = ({
         </div>
       </div>
     </div>
+    </>
   );
 };
 const UserComment = ({

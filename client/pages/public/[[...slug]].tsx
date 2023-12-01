@@ -75,6 +75,7 @@ function Page({
   const [publishDate, setPublishDate] = useState<any>(null);
   const [imageURL, setImageURL] = useState("");
   const [blogLikes, setBlogLikes] = useState(0);
+  const [keywords, setKeywords] = useState("")
   const {
     data: gqlData,
     loading,
@@ -85,6 +86,7 @@ function Page({
       fetchBlogId: authorBlogId,
     },
     onCompleted(data) {
+      setKeywords(data.fetchBlog.tags.join(", "))
       setBlogComments(data.fetchBlog.comments);
       const dataForDate = data?.fetchBlog?.publish_data?.filter(
         (obj: any) => obj?.platform === "wordpress"
@@ -203,12 +205,12 @@ function Page({
       if(authorProfilePath) setBlogPublishedLink(authorProfilePath)
   }, [gqlData]);
 
-  useEffect(() => {
-    console.log({blogPublishedLink}, 'halert')
-    if (typeof window !== "undefined") {
-      setText(window.location.origin + '/public' + blogPublishedLink);
-    }
-  }, [blogPublishedLink])
+  // useEffect(() => {
+  //   console.log({blogPublishedLink}, 'halert')
+  //   if (typeof window !== "undefined") {
+  //     setText(window.location.origin + '/public' + blogPublishedLink);
+  //   }
+  // }, [blogPublishedLink])
 
   useEffect(() => {
     const publishContainer = document.getElementById("publishContainer");
@@ -352,6 +354,7 @@ function Page({
         <meta property="twitter:title" content={blogTitle + "- Lille"} />
         <meta property="twitter:image" content={blogData.image} />
         <meta property="twitter:description" content={blogData.description} />
+        <meta name="keywords" content={keywords}/>
         <title>{blogTitle} - Lille</title>
       </Head>
       <Navbar blogId={null} isOpen={false} />
