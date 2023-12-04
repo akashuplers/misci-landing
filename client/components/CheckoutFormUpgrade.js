@@ -223,8 +223,11 @@ const CheckoutFormUpgrade = ({
           const scriptElement = document.createElement('script');
           scriptElement.innerHTML = `
             gtag('event', 'conversion', {
-              'send_to': 'AW-972159675/gnc8CJqMyvgYELv1x88D',
-              'transaction_id': '',
+              'send_to': 'AW-926417550/za6mCPOcuvsYEI6F4LkD',
+              'transaction_id': {
+                mail: ${meeData?.me?.email},
+                time: ${Date.now()}
+              },
             });
           `;
           document.head.appendChild(scriptElement);

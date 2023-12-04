@@ -314,7 +314,7 @@ export default function AuthenticationModal({
           const scriptElement = document.createElement('script');
           scriptElement.innerHTML = `
             gtag('event', 'conversion', {
-              'send_to': 'AW-972159675/Sp7YCJKAyPgYELv1x88D',
+              'send_to': 'AW-926417550/qbmECNW8uvsYEI6F4LkD',
             });
           `;
           document.head.appendChild(scriptElement);
