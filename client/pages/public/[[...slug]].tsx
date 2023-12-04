@@ -206,12 +206,15 @@ function Page({
       if(authorProfilePath) setBlogPublishedLink(authorProfilePath)
   }, [gqlData]);
 
-  // useEffect(() => {
-  //   console.log({blogPublishedLink}, 'halert')
-  //   if (typeof window !== "undefined") {
-  //     setText(window.location.origin + '/public' + blogPublishedLink);
-  //   }
-  // }, [blogPublishedLink])
+  useEffect(() => {
+    console.log({blogPublishedLink}, 'halert')
+    if (typeof window !== "undefined") {
+      const wOrigin = window.location.href;
+      console.log({wOrigin}, 'halert')
+      // setText(wOrigin + '/public' + blogPublishedLink);
+      setText(wOrigin)
+    }
+  }, [blogPublishedLink])
 
   useEffect(() => {
     const publishContainer = document.getElementById("publishContainer");
@@ -432,7 +435,7 @@ function Page({
               onClick={() => setShowModalComment(true)}
             />
             <CopyToClipboard
-              text={text + gqlData?.fetchBlog?._id}
+              text={text}
               onCopy={() => {
                 setCopyStart(true);
                 setTimeout(() => {
