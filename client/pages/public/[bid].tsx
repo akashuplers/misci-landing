@@ -186,12 +186,14 @@ export default function Post() {
     }
   }, [router, gqlData]);
 
-  // useEffect(() => {
-  //   console.log({blogPublishedLink}, 'halert')
-  //   if (typeof window !== "undefined") {
-  //     setText(window.location.origin + '/public' + blogPublishedLink);
-  //   }
-  // }, [blogPublishedLink])
+  useEffect(() => {
+    console.log({blogPublishedLink}, 'halert')
+    if (typeof window !== "undefined") {
+      const link = window.location.href;
+      setText(link);
+      // setText(window.location.origin + '/public/');
+    }
+  }, [blogPublishedLink])
 
   // useEffect(() => {
   //   if (authorPath != "") {
@@ -349,7 +351,7 @@ export default function Post() {
           </div>
           <div className="justify-end items-center flex md:w-[25%]">
             <CopyToClipboard
-              text={text + gqlData?.fetchBlog._id}
+              text={text}
               onCopy={() => {
                 setCopyStart(true);
                 setTimeout(() => {
