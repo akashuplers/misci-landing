@@ -21,6 +21,9 @@ import {
 import { toast } from "react-toastify";
 import { meeAPI } from "@/graphql/querys/mee";
 import {deleteBlogByAdmin} from "@/graphql/mutations/deleteAdminBlog";
+import { getBlogbyId } from "@/graphql/queries/getBlogbyId";
+import { jsonToHtml } from "@/helpers/helper";
+import { convertToURLFriendly } from "@/store/appHelpers";
 
 const GET_BLOGS = gql`
   query GetAllBlogs($options: BlogListInput) {
@@ -223,6 +226,59 @@ function LibModule(props: LibModuleProps) {
     },
   });
 
+  const {
+    data: gqlData,
+    loading: gqlLoading,
+    error: gqlError,
+    refetch: blogRefetch,
+  } = useQuery(getBlogbyId, {
+    variables: {
+      fetchBlogId: props._id,
+    },
+    onCompleted: (data) => {
+
+    }
+  });
+
+  const [publishedUrl, setPublishedUrl] = useState('');
+
+  useEffect(() => {
+    if(!gqlLoading &&  gqlData.fetchBlog){
+      const fetchSocialUsername = () => {
+        let socialUsernameLink;
+        try{
+          const userDetails = gqlData?.fetchBlog?.userDetail;
+          if (userDetails?.googleUserName) {
+              socialUsernameLink = "/public/google/" + userDetails?.googleUserName.replace(/\s/g, "") + "/"
+          } else if (userDetails?.twitterUsxerName) {
+              socialUsernameLink = "/public/twitter/" + userDetails.twitterUserName.replace(/\s/g, "") + "/"
+          } else if (userDetails?.linkedInUserName) {
+              socialUsernameLink = "/public/linkedin/" + userDetails?.linkedInUserName.replace(/\s/g, "") + "/"
+          } else if (userDetails?.userName) {
+              socialUsernameLink = "/public/user/" + userDetails?.userName.replace(/\s/g, "") + "/"
+          }
+        }catch(error){
+          console.error('Error in creating socialusernamelink', error);
+        }finally{
+          const aa = gqlData?.fetchBlog?.publish_data.find(
+            (pd: { platform: string; }) => pd.platform === "wordpress"
+          ).tiny_mce_data;
+          const html = jsonToHtml(aa);
+            
+          const fakeDivContainer = document.createElement("div");
+          fakeDivContainer.innerHTML = html;
+          var h2Element = fakeDivContainer.querySelector("h2")?.innerText;
+          var h2text = convertToURLFriendly(h2Element ?? "blog");
+          let seoTag = "/" + h2text + "/";
+
+          return socialUsernameLink ? `${socialUsernameLink}${props.title}${seoTag}${props._id}` : `/public/${props.id}`
+        }
+      }
+      console.log(fetchSocialUsername(),'vvimp');
+      setPublishedUrl(fetchSocialUsername())
+    }
+  },[gqlData])
+
   const handleBlogDelete = (e:any) => {
     e.stopPropagation()
 
@@ -287,7 +343,7 @@ function LibModule(props: LibModuleProps) {
 
         // Navigate to the new URL
         router.push({
-          pathname: "/public/[id]",
+          pathname: publishedUrl,
           query: {
             id: _id,
             ...query,
