@@ -2402,7 +2402,7 @@ router.post('/fetch-finance', async (req: any, res: any) => {
           type: "SUCCESS",
           data: {
             symbol: data?.symbol,
-            marketPrice:data?.regularMarketPrice.fmt,
+            marketPrice:data?.regularMarketPrice.raw,
             currency: data?.currency,
             marketChange: data?.regularMarketChange?.fmt,
             marketChangePercentage: data?.regularMarketChangePercent?.fmt
