@@ -2319,4 +2319,29 @@ router.post('/prompt-test', async (req: any, res: any) => {
   }
 })
 
+router.post('/fetch-finance', async (req: any, res: any) => {
+  const db = req.app.get('db')
+  try {
+    const options: any = {
+      method: 'GET',
+      url: 'https://yahoo-finance127.p.rapidapi.com/multi-quote/nowg',
+      headers: {
+          'X-RapidAPI-Key': process.env.RAPID_API_SUBSCRIPTION,
+          'X-RapidAPI-Host': 'yahoo-finance127.p.rapidapi.com'
+      }
+      };
+      const response = await axios.request(options);
+      return res.status(200).send({
+        type: "SUCCESS",
+        data: response
+      })
+  }catch(e){
+    console.log(e, "error from rapid api")
+    return res.status(500).send({
+      type: "ERROR",
+      message: e.message
+    })
+  }
+})
+
 module.exports = router;
