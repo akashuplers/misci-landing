@@ -2337,7 +2337,13 @@ router.post('/fetch-finance', async (req: any, res: any) => {
         const data = response?.data?.['0']
         return res.status(200).send({
           type: "SUCCESS",
-          data: `<p>OTCQB: <strong>${data?.symbol}</strong></p><p><span class="quote-section"><strong>$${data?.regularMarketPrice.fmt}</strong> <span class="delayed-section">Delayed quote: ${data?.currency}<br><strong>${data?.regularMarketChange?.fmt} (${data?.regularMarketChangePercent?.fmt})</strong><br></span></span></p><p><a class="link" href="https://nowigence.com/casestudies/">View Chart and Data</a></p>`
+          data: {
+            symbol: data?.symbol,
+            marketPrice:data?.regularMarketPrice.fmt,
+            currency: data?.currency,
+            marketChange: data?.regularMarketChange?.fmt,
+            marketChangePercentage: data?.regularMarketChangePercent?.fmt
+          }
         })
       }
   }catch(e){
