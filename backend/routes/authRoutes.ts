@@ -2333,7 +2333,7 @@ router.post('/fetch-finance', async (req: any, res: any) => {
       const response = await axios.request(options);
       return res.status(200).send({
         type: "SUCCESS",
-        data: response
+        data: response.data
       })
   }catch(e){
     console.log(e, "error from rapid api")
