@@ -2331,10 +2331,15 @@ router.post('/fetch-finance', async (req: any, res: any) => {
       }
       };
       const response = await axios.request(options);
-      return res.status(200).send({
-        type: "SUCCESS",
-        data: `<p>OTCQB: <strong>NOWG</strong></p><p><span class="quote-section"><strong>$0.31</strong> <span class="delayed-section">Delayed quote: USD<br><strong>0.01 (2.01%)</strong><br></span></span></p><p><a class="link" href="https://nowigence.com/casestudies/">View Chart and Data</a></p>`
-      })
+      console.log(response.data)
+      console.log(response.data.length)
+      if(response.data) {
+        const data = response?.data?.['0']
+        return res.status(200).send({
+          type: "SUCCESS",
+          data: `<p>OTCQB: <strong>${data?.symbol}</strong></p><p><span class="quote-section"><strong>$${data?.regularMarketPrice.fmt}</strong> <span class="delayed-section">Delayed quote: ${data?.currency}<br><strong>${data?.regularMarketChange?.fmt} (${data?.regularMarketChangePercent?.fmt})</strong><br></span></span></p><p><a class="link" href="https://nowigence.com/casestudies/">View Chart and Data</a></p>`
+        })
+      }
   }catch(e){
     console.log(e, "error from rapid api")
     return res.status(500).send({
