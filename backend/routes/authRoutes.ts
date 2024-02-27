@@ -2323,16 +2323,79 @@ router.post('/fetch-finance', async (req: any, res: any) => {
   const db = req.app.get('db')
   try {
     const options: any = {
-      method: 'GET',
-      url: 'https://yahoo-finance127.p.rapidapi.com/multi-quote/nowg',
-      headers: {
-          'X-RapidAPI-Key': process.env.RAPID_API_SUBSCRIPTION,
-          'X-RapidAPI-Host': 'yahoo-finance127.p.rapidapi.com'
-      }
+        method: 'GET',
+        url: 'https://yahoo-finance127.p.rapidapi.com/multi-quote/nowg',
+        headers: {
+            'X-RapidAPI-Key': process.env.RAPID_API_SUBSCRIPTION,
+            'X-RapidAPI-Host': 'yahoo-finance127.p.rapidapi.com'
+        }
       };
-      const response = await axios.request(options);
+      // const response = await axios.request(options);
+      const response = {
+        data: {
+          '0': {
+            symbol: 'NOWG',
+            twoHundredDayAverageChangePercent: { raw: -0.1087745, fmt: '-10.88%' },
+            fiftyTwoWeekLowChangePercent: { raw: 1.8901733, fmt: '189.02%' },
+            language: 'en-US',
+            regularMarketDayRange: { raw: '0.35 - 0.35', fmt: '0.35 - 0.35' },
+            regularMarketDayHigh: { raw: 0.35, fmt: '0.3500' },
+            twoHundredDayAverageChange: { raw: -0.042717665, fmt: '-0.04' },
+            twoHundredDayAverage: { raw: 0.39271766, fmt: '0.39' },
+            fiftyTwoWeekHighChange: { raw: -0.21000001, fmt: '-0.21' },
+            marketCap: { raw: 24289930, fmt: '24.29M', longFmt: '24,289,930' },
+            fiftyTwoWeekRange: { raw: '0.1211 - 0.56', fmt: '0.12 - 0.56' },
+            fiftyDayAverageChange: { raw: 0.045459986, fmt: '0.05' },
+            averageDailyVolume3Month: { raw: 2620, fmt: '2,620', longFmt: '2,620' },
+            exchangeDataDelayedBy: 0,
+            firstTradeDateMilliseconds: 1655213400000,
+            trailingAnnualDividendRate: { raw: 0, fmt: '0.00' },
+            fiftyTwoWeekChangePercent: { raw: 20.689655, fmt: '20.69%' },
+            hasPrePostMarketData: false,
+            fiftyTwoWeekLow: { raw: 0.1211, fmt: '0.1211' },
+            regularMarketVolume: { raw: 2000, fmt: '2,000', longFmt: '2,000' },
+            market: 'us_market',
+            quoteSourceName: 'Delayed Quote',
+            messageBoardId: 'finmb_558345056',
+            priceHint: 4,
+            sourceInterval: 15,
+            regularMarketDayLow: { raw: 0.35, fmt: '0.3500' },
+            exchange: 'PNK',
+            region: 'US',
+            shortName: 'NOWIGENCE INC',
+            fiftyDayAverageChangePercent: { raw: 0.14927426, fmt: '14.93%' },
+            fullExchangeName: 'Other OTC',
+            displayName: 'Nowigence',
+            gmtOffSetMilliseconds: -18000000,
+            regularMarketOpen: { raw: 0.35, fmt: '0.3500' },
+            regularMarketTime: { raw: 1708617291, fmt: '10:54AM EST' },
+            regularMarketChangePercent: { raw: 0, fmt: '0.00%' },
+            quoteType: 'EQUITY',
+            trailingAnnualDividendYield: { raw: 0, fmt: '0.00%' },
+            fiftyTwoWeekLowChange: { raw: 0.22889999, fmt: '0.23' },
+            averageDailyVolume10Day: { raw: 1133, fmt: '1,133', longFmt: '1,133' },
+            fiftyTwoWeekHighChangePercent: { raw: -0.375, fmt: '-37.50%' },
+            typeDisp: 'Equity',
+            tradeable: false,
+            currency: 'USD',
+            sharesOutstanding: { raw: 31472500, fmt: '31.473M', longFmt: '31,472,500' },
+            fiftyTwoWeekHigh: { raw: 0.56, fmt: '0.5600' },
+            regularMarketPreviousClose: { raw: 0.35, fmt: '0.3500' },
+            exchangeTimezoneName: 'America/New_York',
+            regularMarketChange: { raw: 0, fmt: '0.0000' },
+            cryptoTradeable: false,
+            fiftyDayAverage: { raw: 0.30454, fmt: '0.30' },
+            exchangeTimezoneShortName: 'EST',
+            customPriceAlertConfidence: 'LOW',
+            regularMarketPrice: { raw: 0.35, fmt: '0.3500' },
+            marketState: 'PREPRE',
+            epsTrailingTwelveMonths: { raw: -0.02, fmt: '-0.0200' },
+            triggerable: false,
+            longName: 'Nowigence, Inc.'
+          }
+        }
+      };
       console.log(response.data)
-      console.log(response.data.length)
       if(response.data) {
         const data = response?.data?.['0']
         return res.status(200).send({
