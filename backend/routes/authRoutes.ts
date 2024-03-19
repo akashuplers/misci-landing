@@ -2320,7 +2320,7 @@ router.post('/prompt-test', async (req: any, res: any) => {
 })
 
 router.post('/fetch-finance', async (req: any, res: any) => {
-  const db = req.app.get('db')
+  const db = req.app.get('dbLive')
   try {
     const options: any = {
         method: 'GET',
@@ -2330,71 +2330,43 @@ router.post('/fetch-finance', async (req: any, res: any) => {
             'X-RapidAPI-Host': 'yahoo-finance127.p.rapidapi.com'
         }
       };
-      // const response = await axios.request(options);
-      const response = {
-        data: {
-          '0': {
-            symbol: 'NOWG',
-            twoHundredDayAverageChangePercent: { raw: 0.027960114, fmt: '2.80%' },
-            fiftyTwoWeekLowChangePercent: { raw: 2.3030553, fmt: '230.31%' },
-            language: 'en-US',
-            regularMarketDayRange: { raw: '0.39 - 0.4', fmt: '0.39 - 0.40' },
-            regularMarketDayHigh: { raw: 0.4, fmt: '0.4000' },
-            twoHundredDayAverageChange: { raw: 0.010879844, fmt: '0.01' },
-            twoHundredDayAverage: { raw: 0.38912016, fmt: '0.39' },
-            marketCap: { raw: 27759920, fmt: '27.76M', longFmt: '27,759,920' },
-            fiftyTwoWeekHighChange: { raw: -0.16, fmt: '-0.16' },
-            fiftyTwoWeekRange: { raw: '0.1211 - 0.56', fmt: '0.12 - 0.56' },
-            fiftyDayAverageChange: { raw: 0.094060004, fmt: '0.09' },
-            exchangeDataDelayedBy: 0,
-            firstTradeDateMilliseconds: 1655213400000,
-            averageDailyVolume3Month: { raw: 3198, fmt: '3,198', longFmt: '3,198' },
-            fiftyTwoWeekChangePercent: { raw: -11.111111, fmt: '-11.11%' },
-            trailingAnnualDividendRate: { raw: 0, fmt: '0.00' },
-            hasPrePostMarketData: false,
-            fiftyTwoWeekLow: { raw: 0.1211, fmt: '0.1211' },
-            market: 'us_market',
-            regularMarketVolume: { raw: 16750, fmt: '16,750', longFmt: '16,750' },
-            quoteSourceName: 'Delayed Quote',
-            messageBoardId: 'finmb_558345056',
-            priceHint: 4,
-            exchange: 'PNK',
-            sourceInterval: 15,
-            regularMarketDayLow: { raw: 0.39, fmt: '0.3900' },
-            region: 'US',
-            shortName: 'NOWIGENCE INC',
-            fiftyDayAverageChangePercent: { raw: 0.3074459, fmt: '30.74%' },
-            fullExchangeName: 'Other OTC',
-            displayName: 'Nowigence',
-            gmtOffSetMilliseconds: -14400000,
-            regularMarketOpen: { raw: 0.4, fmt: '0.4000' },
-            regularMarketTime: { raw: 1710523523, fmt: '1:25PM EDT' },
-            regularMarketChangePercent: { raw: 14.285718, fmt: '14.29%' },
-            quoteType: 'EQUITY',
-            trailingAnnualDividendYield: { raw: 0, fmt: '0.00%' },
-            fiftyTwoWeekLowChange: { raw: 0.2789, fmt: '0.28' },
-            averageDailyVolume10Day: { raw: 2175, fmt: '2,175', longFmt: '2,175' },
-            fiftyTwoWeekHighChangePercent: { raw: -0.28571427, fmt: '-28.57%' },
-            typeDisp: 'Equity',
-            tradeable: false,
-            currency: 'USD',
-            sharesOutstanding: { raw: 31472500, fmt: '31.473M', longFmt: '31,472,500' },
-            regularMarketPreviousClose: { raw: 0.35, fmt: '0.3500' },
-            fiftyTwoWeekHigh: { raw: 0.56, fmt: '0.5600' },
-            exchangeTimezoneName: 'America/New_York',
-            regularMarketChange: { raw: 0.050000012, fmt: '0.0500' },
-            cryptoTradeable: false,
-            fiftyDayAverage: { raw: 0.30594, fmt: '0.31' },
-            exchangeTimezoneShortName: 'EDT',
-            customPriceAlertConfidence: 'LOW',
-            regularMarketPrice: { raw: 0.4, fmt: '0.4000' },
-            marketState: 'PRE',
-            epsTrailingTwelveMonths: { raw: -0.02, fmt: '-0.0200' },
-            triggerable: false,
-            longName: 'Nowigence, Inc.'
-          }
+      const financeData = await db.db('admin').collection('yahooFinance').findOne()
+      let response = null
+      if(financeData) {
+        console.log(financeData)
+        const financeAddedTimeStamp = getTimeStamp(new Date(financeData.createdAt))
+        console.log(financeAddedTimeStamp)
+        const currentDateTimeStamp = getTimeStamp(new Date(getDateString(new Date())))
+        if(financeAddedTimeStamp >= currentDateTimeStamp) {
+          response = financeData
+          return res.status(200).send({
+            type: "SUCCESS",
+            data: {
+              symbol: response?.symbol,
+              marketPrice:response?.regularMarketPrice.raw,
+              currency: response?.currency,
+              marketChange: response?.regularMarketChange?.fmt,
+              marketChangePercentage: response?.regularMarketChangePercent?.fmt
+            }
+          })
         }
-      };
+      }   
+      response = await axios.request(options);
+      if(financeData) {
+        const addDailyValue = await db.db('admin').collection('yahooFinance').updateOne({
+          _id: new ObjectID(financeData._id)
+        },{
+          $set: {
+            ...response?.data?.['0'],
+            createdAt: getDateString(new Date())
+          }
+        }) 
+      }else{
+        const addDailyValue = await db.db('admin').collection('yahooFinance').insertOne({
+          ...response?.data?.['0'],
+          createdAt: getDateString(new Date())
+        })
+      }
       console.log(response.data)
       if(response.data) {
         const data = response?.data?.['0']
