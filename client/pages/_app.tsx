@@ -122,7 +122,8 @@ export default function App({ Component, pageProps }: AppProps) {
     "/misci/topqna",
     '/library',
     '/library/[lid]',
-    '/features'
+    '/features',
+    '/misci/home',
   ];
 
   useEffect(() => {
