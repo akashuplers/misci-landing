@@ -2,12 +2,15 @@
 
 import Lottie from "lottie-react";
 import infinityLoop from "../lottie/infinity-loop.json";
+import { useRouter } from "next/router";
 
 function Home() {
+  const router = useRouter();
+
   return (
     <div className='relative'>
         <div
-            className="bg-cover bg-center h-screen flex flex-col text-white absolute inset-0 bg-gradient-to-b from-black via-black to-transparent opacity-80"
+            className="bg-cover bg-center h-screen flex flex-col text-white absolute opacity-80"
             style={{
                 backgroundImage: "url(../ukrainian_cuisine.jpg)",
             }}
@@ -38,7 +41,7 @@ function Home() {
             </div>
 
             {/* other text */}
-            <div style={{marginTop: "4rem", position: "relative", zIndex: 5 }} className='flex flex-col items-center relative'>
+            <div style={{marginTop: "1rem" }} className='flex flex-col items-center relative'>
                 <h1 className="text-6xl font-bold mb-4">Ground to Gourmet</h1>
                 <h2 className="text-2xl font-bold text-center mt-4 mb-2">TRACING THE ORIGINS OF THE {<br />} FOOD WE LOVE</h2>
                 <p className="text-2xl font-bold text-center mt-4 px-10">
@@ -46,7 +49,10 @@ function Home() {
                 </p>
 
                 {/* trigger button for types of food page */}
-                <div className='text-center mt-20 mb-4 cursor-pointer'>
+                <div
+                    className='text-center mt-20 mb-4 cursor-pointer'
+                    onClick={() => router.push('/misci/food-list')}
+                >
                     <p className="text-4xl font-bold font-mono">Explore {<br />} food!</p>
                 </div>
             </div>

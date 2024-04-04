@@ -124,6 +124,7 @@ export default function App({ Component, pageProps }: AppProps) {
     '/library/[lid]',
     '/features',
     '/misci/home',
+    '/misci/food-list',
   ];
 
   useEffect(() => {
