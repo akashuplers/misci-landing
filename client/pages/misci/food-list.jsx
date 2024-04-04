@@ -1,7 +1,7 @@
 import Lottie from "lottie-react";
 import infinityLoop from "../../lottie/infinity-loop.json";
-import { foodTypes } from "./data";
 import { useState } from "react";
+import { foodTypes } from "../../public/data/misci-data";
 
 const defaultFoodItemsList = [ "Almond", "Cashew", "Chestnut", "Hazelnut", "Kernels", "Peanut", "Pine Nuts", "Pistachio", "Walnut" ];
 const defaultImageUrl = "https://images.immediate.co.uk/production/volatile/sites/30/2021/02/almonds-9e25ce7.jpg?quality=90&webp=true&resize=600,545";

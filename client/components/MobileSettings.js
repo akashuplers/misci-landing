@@ -7,7 +7,7 @@ import {
   handleconnectLinkedin,
   handleconnectTwitter,
 } from "@/helpers/helper";
-import { PricingCard } from "@/pages/pricing";
+import PricingCard from "@/pages/pricing";
 import { useMutation } from "@apollo/client";
 import { Switch, Tab } from "@headlessui/react";
 import {
@@ -28,7 +28,7 @@ import { toast } from "react-toastify";
 import CheckoutFormUpgrade from "../components/CheckoutFormUpgrade";
 import PreferenceMobileTab from "../components/PreferenceMobileTab";
 import fillerProfileImage from "../public/profile-filler.jpg";
-import { UpgradeFeatures } from "./FeatureItem";
+import UpgradeFeatures from "./FeatureItem";
 import ForgotPasswordModal from "./ForgotPasswordModal";
 import LoaderScan from "./LoaderScan";
 import { TwitterVerifiedIcon } from "./localicons/localicons";

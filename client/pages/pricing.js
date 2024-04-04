@@ -4,7 +4,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import AuthenticationModal from "../components/AuthenticationModal";
-import { FeaturesItem } from "../components/FeatureItem";
+import FeaturesItem from "../components/FeatureItem";
 import Navbar from "../components/Navbar";
 import { API_BASE_PATH } from "../constants/apiEndpoints";
 import styles from "../styles/price.module.css";

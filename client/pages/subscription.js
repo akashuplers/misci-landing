@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import CheckoutForm from "../components/CheckoutForm";
 import Navbar from "../components/Navbar";
 import { API_BASE_PATH } from "../constants/apiEndpoints";
-import { FeaturesItem } from "../components/FeatureItem";
+import FeaturesItem from "../components/FeatureItem";
 import { MonthlyPlans, STRIPE_CONST_AMOUNT , UpgradeFeatures} from "@/store/appContants";
 
 
