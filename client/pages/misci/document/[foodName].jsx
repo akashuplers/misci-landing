@@ -75,8 +75,8 @@ function DocumentPage() {
           <div className='col-start-2 col-end-6'>
             <p className='text-xl font-bold mb-2'>Different Types</p>
             <ul>
-              {notesObj?.differentTypes.map((item) => (
-                <li>
+              {notesObj?.differentTypes.map((item, index) => (
+                <li key={index}>
                   <p>{item}</p>
                 </li>
               ))}
@@ -84,8 +84,8 @@ function DocumentPage() {
 
             <p className='text-xl font-bold mb-2 mt-2'>Are Acorns Edible?</p>
             <ul>
-              {notesObj?.areAcornsEdible.map((item) => (
-                <li>
+              {notesObj?.areAcornsEdible.map((item, index) => (
+                <li key={index}>
                   <p>{item}</p>
                 </li>
               ))}
@@ -93,8 +93,8 @@ function DocumentPage() {
 
             <p className='text-xl font-bold mb-2 mt-2'>Acorn for Skincare</p>
             <ul>
-              {notesObj?.acornForSkincare.map((item) => (
-                <li>
+              {notesObj?.acornForSkincare.map((item, index) => (
+                <li key={index}>
                   <p>{item}</p>
                 </li>
               ))}
@@ -102,8 +102,8 @@ function DocumentPage() {
 
             <p className='text-xl font-bold mb-2 mt-2'>Acorn and Climate Change</p>
             <ul>
-              {notesObj?.acornForSkincare.map((item) => (
-                <li>
+              {notesObj?.acornForSkincare.map((item, index) => (
+                <li key={index}>
                   <p>{item}</p>
                 </li>
               ))}
@@ -111,8 +111,8 @@ function DocumentPage() {
 
             <p className='text-xl font-bold mb-2 mt-2'>References</p>
             <ul className='list-decimal'>
-              {notesObj?.references.map((item) => (
-                <li>
+              {notesObj?.references.map((item, index) => (
+                <li key={index}>
                   <a href={item} target='_blank' className='underline pointer-cursor text-blue-500'>{item}</a>
                 </li>
               ))}
