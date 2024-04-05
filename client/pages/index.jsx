@@ -53,7 +53,7 @@ function Home() {
                     className='text-center mt-20 mb-4 cursor-pointer'
                     onClick={() => router.push('/misci/food-list')}
                 >
-                    <p className="text-4xl font-bold font-mono">Explore {<br />} food!</p>
+                    <p style={{border: "3px solid #eee"}} className="text-4xl font-bold rounded-lg p-2 bg-green-600 font-mono">Explore food!</p>
                 </div>
             </div>
 
@@ -62,6 +62,7 @@ function Home() {
                 className='h-12 absolute bottom-10 right-7 cursor-pointer'
                 src="/chat.png"
                 style={{objectFit: 'cover'}}
+                onClick={() => router.push('/misci')}
             />
         </div>
     </div>

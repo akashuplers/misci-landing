@@ -1,12 +1,14 @@
 import Lottie from "lottie-react";
 import infinityLoop from "../../lottie/infinity-loop.json";
 import { useState } from "react";
-import { foodTypes } from "../../public/data/misci-data";
+import { foodItemsJson, foodTypes } from "../../public/data/misci-data";
+import { useRouter } from 'next/navigation';
 
 const defaultFoodItemsList = [ "Almond", "Cashew", "Chestnut", "Hazelnut", "Kernels", "Peanut", "Pine Nuts", "Pistachio", "Walnut" ];
 const defaultImageUrl = "https://images.immediate.co.uk/production/volatile/sites/30/2021/02/almonds-9e25ce7.jpg?quality=90&webp=true&resize=600,545";
 
 function FoodList() {
+  const router = useRouter();
   const [foodCategory, setFoodCategory] = useState("Nuts and Seeds");
   const [foodItems, setFoodItems] = useState(defaultFoodItemsList);
   const [foodImageUrl, setFoodImageUrl] = useState(defaultImageUrl);
@@ -15,6 +17,18 @@ function FoodList() {
     setFoodItems(foodCategoryItem?.foodItems);
     setFoodCategory(foodCategoryItem?.name);
     setFoodImageUrl(foodCategoryItem?.foodTypeUrl);
+  }
+
+  const getImageUrlFromFoodItemsList = (foodName) => {
+    const foodItem = foodItemsJson.find(item => item.title === foodName);
+    return foodItem ? foodItem.imageUrl : null;
+  }
+
+  const handleClickOnFoodItem = async (foodName) => {
+    const foodImageUrl = getImageUrlFromFoodItemsList(foodName);
+    setFoodImageUrl(foodImageUrl);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    router.replace(`/misci/document/${foodName}`);
   }
 
   return (
@@ -81,7 +95,7 @@ function FoodList() {
                     <ul className="list-none">
                         {foodItems?.map((foodItem, index) => (
                             <li key={index}>
-                                <p style={{ fontSize: "1.35rem", lineHeight: "1.85rem" }} className="cursor-pointer md:font-bold italic mb-1 md:mb-0">{foodItem}</p>
+                                <p onClick={() => handleClickOnFoodItem(foodItem)} style={{ fontSize: "1.35rem", lineHeight: "1.85rem" }} className="cursor-pointer md:font-bold italic mb-1 md:mb-0">{foodItem}</p>
                             </li>
                         ))}
                     </ul>
@@ -104,6 +118,7 @@ function FoodList() {
             className='h-12 absolute bottom-10 right-7 cursor-pointer bg-gray-500 rounded-sm p-1.5'
             src="/chat.png"
             style={{objectFit: 'cover'}}
+            onClick={() => router.replace('/misci')}
         />
         
     </div>
