@@ -52,7 +52,7 @@ export const MiSciGenerateLoadingModal = ({
         <div className="w-96 h-96 flex-col justify-start items-center gap-4 inline-flex">
           <img className="w-60 h-60" src="/scanner.gif" />
           <div className="text-center text-green-600 text-[20px] font-medium leading-tight">
-            Hey! This looks great...
+            Loading...
           </div>
           <div className="w-96 opacity-70 text-center text-gray-800 text-xs font-medium leading-none"></div>
           <div className="transition-all duration-500 text-[16px] ease-in-out w-full rounded-full blur-none z-10 opacity-70 text-center text-gray-800 font-medium leading-none">

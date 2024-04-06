@@ -37,14 +37,14 @@ function FoodList() {
         <div className="flex flex-col flex-col-reverse lg:flex-row items-center">
             {/* heading text */}
             <div className="w-screen text-center lg:pl-44">
-                <h1 className="text-6xl text-green-700 font-bold mb-4">
+                <h1 className="text-2xl sm:text-4xl md:text-6xl text-green-700 font-bold md:mb-4">
                     Ground to Gourmet
                 </h1>
             </div>
             
             {/* infinity UI */}
-            <div className="mb-6 flex items-center justify-end me-3 mt-2 md:flex-row">
-                <span className="w-[8rem] min-w-[8rem] relative flex items-center justify-center">
+            <div className="mb-6 flex pl-5 md:pl-0 items-center justify-center md:justify-end me-3 mt-2 md:flex-row">
+                <span className="w-[6rem] md:w-[8rem] md:min-w-[8rem] relative flex items-center justify-center">
                 <img
                     className="w-full h-[11vh] bg-gray-100"
                     style={{
@@ -55,7 +55,7 @@ function FoodList() {
                 />
                 </span>
                 <Lottie animationData={infinityLoop} className="w-[5rem] min-w-[5rem]" />
-                <span className="w-[9rem] min-w-[9rem]" >
+                <span className="w-[6.5rem] md:w-[9rem] md:min-w-[9rem]" >
                 <img 
                     className="h-[70px] w-full bg-gray-100"
                     style={{
@@ -69,10 +69,10 @@ function FoodList() {
         </div>
 
         {/* food types, food items and food image */}
-        <div className="grid grid-cols-3 mt-7 gap-3 px-2 md:px-5">
+        <div className="grid grid-cols-3 mt-7 gap-5 px-2 md:px-5">
             {/* food types */}
             <div className="lg:pl-16">
-                <h3 className="text-orange-500 text-4xl font-bold italic">Food Types</h3>
+                <h3 className="text-orange-500 text-xl sm:text-2xl md:text-4xl font-bold italic">Food Types</h3>
                 <div className="mt-5 max-h-[40vh] overflow-y-auto max-w-[27vw] overflow-x-auto">
                     <ul className="list-none mt-4">
                         {foodTypes.map((foodType) => (
@@ -81,7 +81,7 @@ function FoodList() {
                                 className="cursor-pointer"
                                 onClick={() => handleClickOnFoodType(foodType)}
                             >
-                                <p className="text-2xl italic mb-2 md:font-bold md:mb-0">{foodType.name}</p>
+                                <p className="md:text-2xl italic mb-2 md:font-bold md:mb-1">{foodType.name}</p>
                             </li>
                         ))}
                     </ul>
@@ -90,12 +90,12 @@ function FoodList() {
 
             {/* food items */}
             <div>
-                <h3 className="text-orange-500 font-bold italic text-3xl">{foodCategory}</h3>
+                <h3 className="text-orange-500 font-bold italic text-xl md:text-3xl">{foodCategory}</h3>
                 <div className="mt-5 max-h-[40vh] overflow-y-auto max-w-[27vw] md:max-w-[15vw] overflow-x-auto">
                     <ul className="list-none">
                         {foodItems?.map((foodItem, index) => (
                             <li key={index}>
-                                <p onClick={() => handleClickOnFoodItem(foodItem)} style={{ fontSize: "1.35rem", lineHeight: "1.85rem" }} className="cursor-pointer md:font-bold italic mb-1 md:mb-0">{foodItem}</p>
+                                <p onClick={() => handleClickOnFoodItem(foodItem)} className="cursor-pointer md:text-xl md:font-bold italic mb-1 md:mb-0">{foodItem}</p>
                             </li>
                         ))}
                     </ul>
@@ -107,7 +107,7 @@ function FoodList() {
                 <img
                     src={foodImageUrl}
                     alt="food-image"
-                    className="h-[12rem] lg:h-[30rem] md:h-[22rem] w-[30rem]"
+                    className="h-[8rem] lg:h-[30rem] md:h-[22rem] w-[30rem]"
                 />
             </div>
 
@@ -115,7 +115,7 @@ function FoodList() {
 
         {/* chat */}
         <img
-            className='h-12 absolute bottom-10 right-7 cursor-pointer bg-gray-500 rounded-sm p-1.5'
+            className='h-10 md:h-12 absolute bottom-10 right-7 cursor-pointer bg-gray-400 rounded-md p-1.5'
             src="/chat.png"
             style={{objectFit: 'cover'}}
             onClick={() => router.replace('/misci')}

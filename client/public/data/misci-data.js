@@ -246,9 +246,9 @@ export const foodItemsJson = [
                 "https://leafyplace.com/types-of-acorns/",
                 "https://www.medievalists.net/2020/10/acorns-middle-ages/",
                 "https://www.healthline.com/nutrition/can-you-eat-acorns",
-                "https://www.theguardian.com/science/2015/oct/21/plantwatch-simons-oaks-acorns-spring-flowering-pollination-climate-change",
+                // "https://www.theguardian.com/science/2015/oct/21/plantwatch-simons-oaks-acorns-spring-flowering-pollination-climate-change",
                 "https://www.wildflower.org/expert/show.php?id=2947",
-                "https://www.gcimagazine.com/ingredients/article/22861343/6-emerging-beauty-ingredients-to-watch",
+                // "https://www.gcimagazine.com/ingredients/article/22861343/6-emerging-beauty-ingredients-to-watch",
             ]
         }
     },

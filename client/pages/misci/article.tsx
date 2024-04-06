@@ -308,6 +308,14 @@ const MiSciArticle = ({ question }: MiSciProps) => {
         resetTimeout={tinyMceChangeCheckFunction}
       />
       </div>
+
+      {/* faq */}
+      <img
+          className='h-[9vh] w-[5vw] absolute bottom-7 right-10 cursor-pointer border border-gray-300 rounded-lg p-1.5'
+          src="/faq.png"
+          style={{objectFit: 'cover'}}
+          onClick={() => router.replace('/misci/faq')}
+        />
     </>
   );
 };

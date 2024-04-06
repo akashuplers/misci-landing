@@ -125,7 +125,7 @@ export default function App({ Component, pageProps }: AppProps) {
     '/features',
     '/misci/home',
     '/misci/food-list',
-    '/misci/document',
+    '/misci/faq',
     '/misci/document/[foodName]',
   ];
 
