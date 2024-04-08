@@ -15,11 +15,11 @@ export const TextTransitionEffect = ({ text } : Props) => {
     }, []);
   
     return <span  style={{ color: "white"  , backgroundColor: "var(--primary-orange)" , padding: "0.5rem" , borderRadius: "0.5rem"
-    }} className="flex items-center justify-center lg:w-[265px]">
+    }} className="flex items-center justify-center lg:w-[295px]">
     <TextTransition springConfig={presets.gentle}>
       <span className="">
-        {text[index % text.length] =='Writing' ?
-        <>&nbsp;&nbsp;Writing&nbsp;&nbsp;</>: 
+        {text[index % text.length] =='Researches' ?
+        <>&nbsp;&nbsp;Researches&nbsp;&nbsp;</>: 
         <>{text[index % text.length]}</> 
         }  
       </span>

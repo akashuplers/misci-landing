@@ -1088,3 +1088,72 @@ export const foodItemsJson = [
         imageSource: "https://www.picturethisai.com/wiki/Zizania.html"
     }
 ];
+
+export const faqsList = [
+    {
+      id: 1,
+      title: "Potato",
+      question: "What are some economic and social implications of potato cultivation for developing countries?",
+      articles: [
+        {
+          id: "1.1",
+          title: "Potato Nutrients: ",
+          description: "Potatoes have 0.2 mg of vitamin B6 per serving, which is 10% of the daily value and considered to be a good source. Vitamin B6 plays important roles in carbohydrate and protein metabolism.",
+        },
+        {
+          id: "1.2",
+          title: "Potato Varieties: ",
+          description: "Potatoes sown in Peru for commercial consumption, 40 percent are the Canchan variety developed by CIP. These four varieties included: White Potatoes, Red Potatoes, Russet Potatoes, Sweet Potatoes.",
+        },
+        {
+          id: "1.3",
+          title: "Potato Economics: ",
+          description: "China is currently the biggest potato growing region in the world, and almost a third of all potatoes is harvested in China and India. Until the early 1990s, most potatoes were grown and consumed in Europe and North America.",
+        },
+      ],
+    },
+    {
+      id: 2,
+      title: "Acorn",
+      question: "What all vitamins are in Acorn?",
+      articles: [
+        {
+          id: "2.1",
+          title: "Acorn and Climate Change: ",
+          description: "A study of acorns has revealed that the warmer the weather the smaller the crop of acorns. Another sign of the climate change impact on acorn is that its autumn.",
+        },
+        {
+          id: "2.2",
+          title: "Different Types of Acorns: ",
+          description: "There are 38 different type of acorns. To tell the type of acorn, look at the hat-like woody cup. Native North American acorns have cups with overlapping scales.",
+        },
+        {
+          id: "2.3",
+          title: "Different Types of Acorns: ",
+          description: "Acorns are edible nuts that can be roasted, ground into flour, or used for a caffeine-free coffee-like drink. However, raw acorns contain bitter tasting tannin that may be toxic to humans.",
+        },
+      ],
+    },
+    {
+      id: 3,
+      title: "Tomato",
+      question: "From what does a tomato grow?",
+      articles: [
+        {
+          id: "3.1",
+          title: "History of Tomato: ",
+          description: "Tomatoes contain seeds and grow from flowers, making them a fruit botanically. But in their culinary uses, tomatoes are considered vegetables.",
+        },
+        {
+          id: "3.2",
+          title: "Health Benefits: ",
+          description: "Tomatoes have anti-cancer properties because consumption of tomatoes and tomato-based products has been linked to improved skin health and a lower risk of cancer.",
+        },
+        {
+          id: "3.3",
+          title: "Tomato Nutritional Facts: ",
+          description: "Tomatoes contain Vitamin C which boosts immune system as this vitamin is an essential nutrient and antioxidant. One medium-sized tomato can provide about 28% of the Reference Daily Intake (RDI).",
+        },
+      ],
+    },
+];

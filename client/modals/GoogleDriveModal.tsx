@@ -133,7 +133,7 @@ function handleUploadGoogleDrive(e:any){
         {
             screen == SCREENS_FOR_GD.MAIN ? 
             <div className='flex flex-col lg:flex-row items-center justify-center h-full py-10'>
-                        <img className="w-[90%] lg:max-w-[50%]" src="./gdrive.gif"/>
+                        <img className="w-[90%] lg:max-w-[50%]" src="/gdrive.gif"/>
                         <form className="w-full h-full p-6 bg-white rounded-lg flex-col justify-center items-start gap-8 inline-flex"
                                 onSubmit={handleUploadGoogleDrive}
                         >

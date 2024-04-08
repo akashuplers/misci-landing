@@ -1,34 +1,21 @@
 import Lottie from "lottie-react";
 import infinityLoop from "../../lottie/infinity-loop.json";
 import { useRouter } from "next/router";
-
-const faqsList = [
-    "What are some economic and social implications of potato cultivation for developing countries?",
-    "What all vitamins are in Acorn?",
-    "From what does a tomato grow?",
-];
-
-const articles = [
-  {
-    id: 1,
-    title: "Acorn and Climate Change: ",
-    description: "A study of acorns has revealed that the warmer the weather the smaller the crop of acorns. Another sign of the climate change impact on acorn is that its autumn.",
-  },
-  {
-    id: 2,
-    title: "Different Types of Acorns: ",
-    description: "There are 38 different type of acorns. To tell the type of acorn, look at the hat-like woody cup. Native North American acorns have cups with overlapping scales.",
-  },
-  {
-    id: 3,
-    title: "Different Types of Acorns: ",
-    description: "Acorns are edible nuts that can be roasted, ground into flour, or used for a caffeine-free coffee-like drink. However, raw acorns contain bitter tasting tannin that may be toxic to humans.",
-  },
-];
+import { useState } from "react";
+import { faqsList } from "../../public/data/misci-data";
 
 function Faq() {
   const router = useRouter();
-  let foodName = 'Acorn';
+  const [foodName, setFoodName] = useState('');
+  const [recommenedArticles, setRecommendedArticles] = useState([]);
+  const [isVisible, setIsVisible] = useState(false);
+
+  const onSingleClickFaq = (faqItem) => {
+    const { title, articles } = faqItem;
+    setRecommendedArticles(articles);
+    setFoodName(title);
+    setIsVisible(true);
+  }
 
   return (
     <div className="h-screen overflow-y-auto bg-yellow-50">
@@ -73,41 +60,40 @@ function Faq() {
         {/* faq */}
         <p className="text-2xl md:text-4xl font-bold text-orange-500">FAQ</p>
         <ul className="list-decimal mt-4 lg:pl-5">
-            {faqsList.map((item, index) => (
-                <li key={index}>
-                    <p
-                      className="text-justify md:text-xl cursor-pointer"
-                      onClick={() => router.push('/misci')}
-                    >
-                      {item}
-                    </p>
-                </li>
-            ))}
+          {faqsList.map((item) => (
+            <li key={item?.id}>
+              <p
+                className="text-justify md:text-xl cursor-pointer mb-1"
+                onClick={() => onSingleClickFaq(item)}
+                onDoubleClick={() => router.push('/misci')}
+              >
+                {item?.question}
+              </p>
+            </li>
+          ))}
         </ul>
 
         {/* recommended articles */}
-        <p className="text-xl sm:text-2xl md:text-4xl font-bold text-orange-500 mt-4 md:mt-8">Recommended Articles</p>
-        <div
-          className="mt-3 md:mt-5 mb-4 md:mb-0 flex flex-col items-center md:flex-row cursor-pointer"
-          onClick={() => router.push(`/misci/document/${foodName}`)}
-        >
-          {articles.map((item, index) => (
-            <div key={item.id} className="md:mr-8 mb-4 md:mb-0">
-              <div className="w-[220px] h-[300px] md:h-[300px] md:w-[220px] p-4 bg-cover bg-center bg-[url('/file.png')]">
-                <strong>{item.title}</strong>
-                {item.description}
-              </div>
-              <p className="font-bold text-center md:text-xl">Article-{index+1}</p>
+        {isVisible &&
+          <>
+            <p className="text-xl sm:text-2xl md:text-4xl font-bold text-orange-500 mt-4 md:mt-8">Recommended Articles</p>
+            <div
+              className="mt-3 md:mt-5 mb-4 md:mb-0 flex flex-col items-center md:flex-row cursor-pointer"
+              onClick={() => router.push(`/misci/document/${foodName}`)}
+            >
+              {recommenedArticles.map((item, index) => (
+                <div key={item?.id} className="md:mr-8 mb-4 md:mb-0">
+                  <div className="w-[220px] h-[300px] md:h-[300px] md:w-[220px] p-4 bg-cover bg-center bg-[url('/file.png')]">
+                    <strong>{item.title}</strong>
+                    {item.description}
+                  </div>
+                  <p className="font-bold text-center md:text-xl">Article-{index+1}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        
-
+          </>
+        }
       </div>
-
-      
-
-      
     </div>
   );
 }

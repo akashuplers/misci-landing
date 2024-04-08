@@ -4,7 +4,15 @@ import Lottie from "lottie-react";
 import infinityLoop from "../../../lottie/infinity-loop.json";
 import { foodItemsJson } from '../../../public/data/misci-data';
 
-function DocumentPage() {
+const relatedQuestions = [
+  'Who first domesticated tomatoes?',
+  'When did tomatoes gain popularity in Italy and become known as "pomodoro" ?',
+  'Why were tomatoes initially viewed with suspicion in Europe and the United States?',
+];
+
+const extractedEntities = '"What": ["tomatoes", "fiber", "vitamins A, C, and K, potassium, niacin, folate, and vitamin B6", "Vitamin C", "Potassium", "Vitamin K1", "Folate (vitamin B9)", "vegetarian or vegan diet", "carbs", "sugars", "fiber", "fat","protein", "potassium", "vitamin C", "lutein", "zeaxanthin", "lycopene"], "Why": ["blood pressure control", "heart disease prevention",  "normal tissue growth", "cell function", "pregnant women"]' ;
+
+function ArticleGenerated() {
   const router = useRouter();
   const { foodName } = router.query;
   const [foodImageUrl, setFoodImageUrl] = useState(foodName);
@@ -14,7 +22,7 @@ function DocumentPage() {
   const [foodItemName, setFoodItemName] = useState('');
 
   const getImageUrlFromFoodItemsList = (foodName) => {
-    const foodItem = foodItemsJson.find(item => item.title === foodName);
+    const foodItem = foodItemsJson.find(item => item.title?.toLowerCase() === foodName?.toLowerCase());
     return foodItem ? foodItem.imageUrl : null;
   }
 
@@ -76,6 +84,9 @@ function DocumentPage() {
 
           {/* food notes */}
           <div className='md:col-start-2 md:col-end-6 text-justify'>
+            <p className='text-xl font-bold mb-2'>Extracted Entities:</p>
+            <p className='mb-2'>{extractedEntities}</p>
+
             <p className='text-xl font-bold mb-2'>Different Types</p>
             <ul>
               {notesObj?.differentTypes.map((item, index) => (
@@ -112,16 +123,14 @@ function DocumentPage() {
               ))}
             </ul>
 
-            <div className=''>
-              <p className='text-xl font-bold mb-2 mt-2'>References</p>
-              <ul className='list-decimal'>
-                {notesObj?.references.map((item, index) => (
-                  <li key={index}>
-                    <a href={item} target='_blank' className='underline pointer-cursor text-blue-500'>{item}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <p className='text-xl font-bold mb-2 mt-2'>Related Questions</p>
+            <ul className='list-decimal'>
+              {relatedQuestions.map((item, index) => (
+                <li key={index}>
+                  <p>{item}</p>
+                </li>
+              ))}
+            </ul>
 
           </div>
 
@@ -138,4 +147,4 @@ function DocumentPage() {
   )
 }
 
-export default DocumentPage;
+export default ArticleGenerated;

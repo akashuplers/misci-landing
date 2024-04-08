@@ -15,6 +15,7 @@ import {
   validateIfTextIncludesSpecialCharsExcludingQuestionMark,
 } from "@/store/appHelpers";
 import ErrorBase from "@/store/errors";
+import Image from "next/image";
 
 const MiSci = () => {
   
@@ -206,6 +207,28 @@ const MiSci = () => {
             </button>
           </div>
         </div>
+
+      </div>
+
+      {/* misci download button */}
+      <div className="h-[45px] w-[53px] md:h-[55px] md:w-[75px] absolute top-6 md:top-6 right-4 md:right-8 cursor-pointer rounded-lg">
+        <Image
+          src="/misci-download-btn.png"
+          alt="misci-download-btn"
+          height={150}
+          width={150}
+        />
+      </div>
+
+      {/* faq button */}
+      <div className="h-[45px] w-[53px] md:h-[55px] md:w-[90px] md:[h-90px] absolute bottom-6 md:bottom-20 right-2 md:right-5 cursor-pointer border rounded-lg">
+        <Image
+          src="/faq.png"
+          alt="faq-image"
+          height={150}
+          width={150}
+          onClick={() => router.push('/misci/faq')}
+        />
       </div>
     </div>
   );

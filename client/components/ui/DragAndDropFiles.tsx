@@ -121,7 +121,7 @@ console.log(isUserAuthenticated() , "token loged")
     <div {...getRootProps()} className="p-4 border-none rounded-md relative ">
           <div   className={`w-full h-28 cursor-pointer flex items-center justify-center scale-105 transition-transform transform-cpu ease-in-out ${isDragActive ? 'bg-blue-100' : 'bg-gray-100'} rounded-[10px] border border-dotted border-gray-300`}>
               <div className={`self-stretch justify-start items-center gap-3 inline-flex `}>
-                  <img className="w-[33.14px] h-[33.14px]" src={'icons/foldericon.png'} />
+                  <img className="w-[33.14px] h-[33.14px]" src={'/icons/foldericon.png'} />
                   <div className="justify-start items-center gap-3 flex">
                       <span className={`hidden lg:flex text-center text-slate-600 text-base font-normal`}>Drag and Drop files or </span>
                      <Tooltip content={`Select file formats like PDF, DOCX, TXT (size <${REPURPOSE_MAX_SIZE_MB}MB)`} direction="top">
