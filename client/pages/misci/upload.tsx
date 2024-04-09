@@ -474,38 +474,40 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
 
   function handleExtractInfo(e) {
     e.preventDefault();
-    console.log("selectedFiles: ", selectedFiles[0].file);
-    try {
-      const axios = require("axios");
-      const FormData = require("form-data");
-      // const fs = require("fs");
-      let data = new FormData();
-      data.append(
-        "file",
-        selectedFiles[0].file
-      );
-
-      let config = {
-        method: "post",
-        maxBodyLength: Infinity,
-        url: "https://maverick.lille.ai/misci-routes/uploads",
-        headers: {
-          "Content-Type": "multipart/form-data"
-          // ...data.getHeaders(),
-        },
-        data: data,
-      };
-
-      axios
-        .request(config)
-        .then((response) => {
-          console.log(JSON.stringify(response.data));
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } catch (e) {
-      console.log("error: ", e);
+    console.log("selectedFiles:akash ", selectedFiles[0]);
+    if(selectedFiles[0]) {
+      try {
+        const axios = require("axios");
+        const FormData = require("form-data");
+        // const fs = require("fs");
+        let data = new FormData();
+        data.append(
+          "file",
+          selectedFiles[0].file
+        );
+  
+        let config = {
+          method: "post",
+          maxBodyLength: Infinity,
+          url: "https://maverick.lille.ai/misci-routes/uploads",
+          headers: {
+            "content-type": "multipart/form-data"
+            // ...data.getHeaders(),
+          },
+          data: data,
+        };
+  
+        axios
+          .request(config)
+          .then((response) => {
+            console.log(JSON.stringify(response.data));
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } catch (e) {
+        console.log("error: ", e);
+      }
     }
   }
 
