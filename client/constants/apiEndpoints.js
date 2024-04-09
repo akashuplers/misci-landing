@@ -33,6 +33,7 @@ export const API_ROUTES = {
   MISCI_TOP_ALL: '/misci-routes/top-questions',
   DELETE_REF_SOURCES: '/auth/remove-sources',
   MISCI_SAVE: '/misci-routes/blog/save',
+  MISCI_UPLOAD: '/misci-routes/uploads',
 };
 
 export const LI_API_ENDPOINTS = {

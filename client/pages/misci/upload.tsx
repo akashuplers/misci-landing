@@ -26,7 +26,7 @@ import LoaderPlane from "../../components/LoaderPlane";
 import TrialEndedModal from "../../components/TrialEndedModal";
 import { meeAPI } from "../../graphql/querys/mee";
 import { STEP_COMPLETES_SUBSCRIPTION } from "../../graphql/subscription/generate";
-import Modal from 'react-modal'
+import Modal from "react-modal";
 import {
   extractKeywordsAndIds,
   getDateMonthYear,
@@ -37,7 +37,10 @@ import {
 } from "../../helpers/helper";
 import OTPModal from "../../modals/OTPModal";
 import PreferencesModal from "../../modals/PreferencesModal";
-import useStore, { useClientUserStore, useFunctionStore } from "../../store/store";
+import useStore, {
+  useClientUserStore,
+  useFunctionStore,
+} from "../../store/store";
 import { Tab } from "@headlessui/react";
 import ReactLoading from "react-loading";
 import TextTransition, { presets } from "react-text-transition";
@@ -67,9 +70,15 @@ import {
 // import { FacebookIcon, LinkedinIcon, TwitterIcon } from "react-share";
 import { FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 import { TextTransitionEffect } from "@/components/ui/TextTransitionEffect";
-import { Chip, FileChipIcon, FileUploadCard, FloatingBalls } from "@/components/ui/Chip";
+import {
+  Chip,
+  FileChipIcon,
+  FileUploadCard,
+  FloatingBalls,
+} from "@/components/ui/Chip";
 import { InputData } from "@/types/type";
 import {
+  misciFileUpload,
   newGenerateApi,
   processKeywords,
   randomNumberBetween20And50,
@@ -108,7 +117,11 @@ const TEXTS = [
 ];
 
 const TEXTS2 = ["Researches", "Students", "Educators", "Analysts"];
-const tabsPlaceholders = ['Give me a topic', 'Give me a topic and paste your URL below', 'Give me a topic and upload file']
+const tabsPlaceholders = [
+  "Give me a topic",
+  "Give me a topic and paste your URL below",
+  "Give me a topic and upload file",
+];
 const STATESOFKEYWORDS = {
   LOADING: "loading",
   LOADED: "loaded",
@@ -133,12 +146,12 @@ interface KeysForStateOfGenerate {
 }
 
 export default function UploadDocument({ payment, randomLiveUsersCount }) {
-  const [getUserIdForSubs, setGetUserIdForSubs] = useState('');
-  const [getTempIdForSubs, setGetTempIdForSubs] = useState('');
-  const [getTokenForSubs, setGetTokenForSubs] = useState('');
-  const [userAbleUserIDForSubs, setUserAbleUserIDForSubs] = useState('');
-  const {addMessages}= useGenerateErrorState();
-  const [getToken, setGetToken] = useState('');
+  const [getUserIdForSubs, setGetUserIdForSubs] = useState("");
+  const [getTempIdForSubs, setGetTempIdForSubs] = useState("");
+  const [getTokenForSubs, setGetTokenForSubs] = useState("");
+  const [userAbleUserIDForSubs, setUserAbleUserIDForSubs] = useState("");
+  const { addMessages } = useGenerateErrorState();
+  const [getToken, setGetToken] = useState("");
   const {
     data: subsData,
     loading: subsLoading,
@@ -148,7 +161,6 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
     onComplete(data) {
       console.log(data);
     },
-
   });
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -159,9 +171,17 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
       setGetToken(tokenFromLocalStorage);
       setGetUserIdForSubs(userIdFromLocalStorage);
       setGetTempIdForSubs(tempIdFromLocalStorage);
-      const userAbleUserID = tokenFromLocalStorage ? userIdFromLocalStorage : tempIdFromLocalStorage;
+      const userAbleUserID = tokenFromLocalStorage
+        ? userIdFromLocalStorage
+        : tempIdFromLocalStorage;
       setUserAbleUserIDForSubs(userAbleUserID);
-      console.log(getUserIdForSubs, getTempIdForSubs, getTokenForSubs, userAbleUserIDForSubs, 'FROM USER');
+      console.log(
+        getUserIdForSubs,
+        getTempIdForSubs,
+        getTokenForSubs,
+        userAbleUserIDForSubs,
+        "FROM USER"
+      );
     }
   }, [subsError]);
 
@@ -409,7 +429,7 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
       if (keywordsMap[item.text] > 1) {
         item.source = item.realSource
           ? item.realSource.toLowerCase().charAt(0).toUpperCase() +
-          item.realSource.toLowerCase().slice(1)
+            item.realSource.toLowerCase().slice(1)
           : "";
       }
     });
@@ -450,8 +470,43 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
     { lengthOFiles: 0, lengthOfUrls: 0 }
   );
 
-  function checkEmptyValueForUrlOrDocument(){
+  function checkEmptyValueForUrlOrDocument() {}
 
+  function handleExtractInfo(e) {
+    e.preventDefault();
+    console.log("selectedFiles: ", selectedFiles[0].file);
+    try {
+      const axios = require("axios");
+      const FormData = require("form-data");
+      // const fs = require("fs");
+      let data = new FormData();
+      data.append(
+        "file",
+        selectedFiles[0].file
+      );
+
+      let config = {
+        method: "post",
+        maxBodyLength: Infinity,
+        url: "https://maverick.lille.ai/misci-routes/uploads",
+        headers: {
+          "Content-Type": "multipart/form-data"
+          // ...data.getHeaders(),
+        },
+        data: data,
+      };
+
+      axios
+        .request(config)
+        .then((response) => {
+          console.log(JSON.stringify(response.data));
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } catch (e) {
+      console.log("error: ", e);
+    }
   }
 
   function handleGenerateClick() {
@@ -473,35 +528,41 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
       return;
     }
 
-    console.log({
-      countByType,
-      typeKeys,
-      blogLinks,
-      activeTab
-    },'critical')
+    console.log(
+      {
+        countByType,
+        typeKeys,
+        blogLinks,
+        activeTab,
+      },
+      "critical"
+    );
 
-    if(countByType.file == 0 && activeTab == 1){
-      setMissingValueType('Document')
+    if (countByType.file == 0 && activeTab == 1) {
+      setMissingValueType("Document");
       setShowRegenModalWarning(true);
-      console.log('critical no file')
-      return; 
-    }else if(countByType.url == 0 && activeTab == 2){
-      setMissingValueType('Url')
+      console.log("critical no file");
+      return;
+    } else if (countByType.url == 0 && activeTab == 2) {
+      setMissingValueType("Url");
       setShowRegenModalWarning(true);
-      console.log('critical no url')
-      return; 
+      console.log("critical no url");
+      return;
     }
-    
+
     var typeKeys = Object.keys(countByType);
 
-    checkEmptyValueForUrlOrDocument(countByType)
+    checkEmptyValueForUrlOrDocument(countByType);
 
-    console.log({
-      countByType,
-      typeKeys,
-      blogLinks,
-      activeTab
-    },'critical')
+    console.log(
+      {
+        countByType,
+        typeKeys,
+        blogLinks,
+        activeTab,
+      },
+      "critical"
+    );
 
     const prevStateOfGenerate = { ...stateOfGenerate };
     typeKeys.forEach((type) => {
@@ -539,13 +600,17 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
     // if (countByType.file > 0) {
     //   uploadFilesForKeywords();
     // }
-    
-    const files = selectedFiles.map((fileObject) => fileObject.file);
-    const urls = blogLinks.filter((link) => link.type === "url").map((link) => link.value);
 
-    console.log('critical generating with files or url or web',files, urls)
-    
-    generateBlog(files, urls)
+    const files = selectedFiles.map((fileObject) => fileObject.file);
+    const urls = blogLinks
+      .filter((link) => link.type === "url")
+      .map((link) => link.value);
+
+    console.log("critical generating with files or url or web", files, urls);
+
+    misciFileUpload(files, urls);
+
+    // generateBlog(files, urls)
   }
 
   const generateBlog = (files, urls) => {
@@ -567,7 +632,7 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
     setShowingGenerateLoading(true);
     newGenerateApi(token, tones, keywordForPayload, userId, files, urls).then(
       (response) => {
-        if (response.type == 'ERROR') {
+        if (response.type == "ERROR") {
           toast.error(response.message);
           setShowErrorModal(true);
           setShowingGenerateLoading(false);
@@ -586,12 +651,16 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
         const errorMessages = [];
 
         if (unprocessedUrlsFR?.length > 0) {
-          const msgForUrl = 'Host has denied the extraction from these URLs. You can try again or use different URLs: ' + unprocessedUrlsFR.join(', ');
+          const msgForUrl =
+            "Host has denied the extraction from these URLs. You can try again or use different URLs: " +
+            unprocessedUrlsFR.join(", ");
           errorMessages.push(msgForUrl);
         }
 
         if (unprocessedFiles?.length > 0) {
-          const fileErrors = unprocessedFiles.map(file => file + ' - File unable to process');
+          const fileErrors = unprocessedFiles.map(
+            (file) => file + " - File unable to process"
+          );
           errorMessages.push(...fileErrors);
         }
 
@@ -603,19 +672,20 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
 
         console.log(response);
         setTimeout(() => {
-          router.push({
-            pathname: `/misci/article-generated/${keyword}`,
-            // pathname: `/dashboard/${_id}`,
-            // query: { type: TYPES_OF_GENERATE.REPURPOSE },
-          }).then(() => {
-            setShowingGenerateLoading(false);
-            handleGenerateReset()
-          });
+          router
+            .push({
+              pathname: `/misci/article-generated/${keyword}`,
+              // pathname: `/dashboard/${_id}`,
+              // query: { type: TYPES_OF_GENERATE.REPURPOSE },
+            })
+            .then(() => {
+              setShowingGenerateLoading(false);
+              handleGenerateReset();
+            });
         }, 2000);
-         
       }
-    )
-  }
+    );
+  };
 
   function uploadExtractKeywordsFromKeywords() {
     setShowUserLoadingModal({ show: true });
@@ -697,8 +767,8 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
         };
         s;
         fetch(SAVE_USER_SUPPORT_URL, requestOptions)
-          .then((response) => { })
-          .catch((error) => { });
+          .then((response) => {})
+          .catch((error) => {});
       }
       setIsPayment(true);
       toast.success("Payment Successful!", {
@@ -737,7 +807,7 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
 
   useEffect(() => {
     validateGenerateButtonStatus();
-  }, [blogLinks, keyword])
+  }, [blogLinks, keyword]);
   const {
     data: meeData,
     loading: meeLoading,
@@ -765,7 +835,7 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
         console.log(`[Network error]: ${networkError}`);
         if (
           `${networkError}` ===
-          "ServerError: Response not successful: Received status code 401" &&
+            "ServerError: Response not successful: Received status code 401" &&
           isauth
         ) {
           localStorage.clear();
@@ -821,9 +891,9 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
   const [showTabsInfo, setShowTabsInfo] = useState({
     web: false,
     urls: true,
-    documents: true
+    documents: true,
   });
-  console.log(blogLinks);
+  // console.log(blogLinks);
   const filesNames = blogLinks
     .filter((link) => link.type === "file")
     .map((link) => {
@@ -845,51 +915,81 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
       label: "Document",
       upperContent: (
         <>
-          {
-            showTabsInfo.documents && (<div className="w-fit h-7 px-2.5 py-1.5 my-2 bg-orange-100 rounded backdrop-blur-2xl justify-center items-center gap-2.5 inline-flex">
-            <div className="text-yellow-600 text-xs font-medium leading-none">
-              We take a little longer to generate draft for Documents. Please be patient.
+          {showTabsInfo.documents && (
+            <div className="w-fit h-7 px-2.5 py-1.5 my-2 bg-orange-100 rounded backdrop-blur-2xl justify-center items-center gap-2.5 inline-flex">
+              <div className="text-yellow-600 text-xs font-medium leading-none">
+                We take a little longer to generate draft for Documents. Please
+                be patient.
+              </div>
+              <XCircleIcon
+                className="w-4 h-4 text-gray-600 cursor-pointer"
+                onClick={() =>
+                  setShowTabsInfo((prev) => ({ ...prev, documents: false }))
+                }
+              />
             </div>
-            <XCircleIcon className="w-4 h-4 text-gray-600 cursor-pointer" onClick={() => setShowTabsInfo(prev => ({ ...prev, documents: false }))} />
-          </div>
-            )
-          }
+          )}
         </>
       ),
       content: (
         <>
           <div className="flex items-center mt-2  scrollbar-thumb-indigo-600 scrollbar-corner-inherit rounded-full scroll-m-1 py-2 scrollbar-thin scrollbar-track-gray-100 overflow-x-scroll gap-2">
             {/* <FileChipIcon fileName="index.tsx" fileSize="5mb" /> */}
-    {console.log(filesNames)}
-      {!isAuthenticated && filesNames.length > 1? (<FileChipIcon fileName={filesNames[0].name} fileSize="" onCrossClick={
-                  () => { removeSelectedFileFromBothStores(filesNames[0].id) }
-                } /> ) :  (<> {filesNames.map((fileName, index) => {
-              return (
-                <FileChipIcon key={index} fileName={fileName.name} fileSize="" onCrossClick={
-                  () => { removeSelectedFileFromBothStores(fileName.id) }
-                } />
-              );
-            })}</>)}
-          </div>
-           <div>{!isAuthenticated && filesNames.length > 1 && <div className="text-sm text-red-500 mt-2 relative text-left">You can only upload 1 file as a guest user</div>}</div>
-          <DragAndDropFiles blogLinks={blogLinks} setBlogLinks={setBlogLinks} onClickHereButtonClick={() => setShowGDriveModal(true)}/>
-           {/* <div>{!isAuthenticated && filesNames.length > 1 && <div className="text-sm text-red-500 mt-2 relative -top-[45px] text-left">You can only upload 1 file as a guest user</div>}</div> */}
-          {
-            showFileStatus && (
-              <div className="flex items-center justify-center  my-2 gap-2 max-w-full min-w-full flex-wrap">
-                {uploadedFilesData.map((file, index) => {
-                  console.log(file);
+            {console.log(filesNames)}
+            {!isAuthenticated && filesNames.length > 1 ? (
+              <FileChipIcon
+                fileName={filesNames[0].name}
+                fileSize=""
+                onCrossClick={() => {
+                  removeSelectedFileFromBothStores(filesNames[0].id);
+                }}
+              />
+            ) : (
+              <>
+                {" "}
+                {filesNames.map((fileName, index) => {
                   return (
-                    <FileUploadCard
+                    <FileChipIcon
                       key={index}
-                      fileName={file.name}
-                      fileSize={file.size}
-                      progress={file.percentage}
+                      fileName={fileName.name}
+                      fileSize=""
+                      onCrossClick={() => {
+                        removeSelectedFileFromBothStores(fileName.id);
+                      }}
                     />
                   );
                 })}
+              </>
+            )}
+          </div>
+          <div>
+            {!isAuthenticated && filesNames.length > 1 && (
+              <div className="text-sm text-red-500 mt-2 relative text-left">
+                You can only upload 1 file as a guest user
               </div>
             )}
+          </div>
+          <DragAndDropFiles
+            blogLinks={blogLinks}
+            setBlogLinks={setBlogLinks}
+            onClickHereButtonClick={() => setShowGDriveModal(true)}
+          />
+          {/* <div>{!isAuthenticated && filesNames.length > 1 && <div className="text-sm text-red-500 mt-2 relative -top-[45px] text-left">You can only upload 1 file as a guest user</div>}</div> */}
+          {showFileStatus && (
+            <div className="flex items-center justify-center  my-2 gap-2 max-w-full min-w-full flex-wrap">
+              {uploadedFilesData.map((file, index) => {
+                console.log(file);
+                return (
+                  <FileUploadCard
+                    key={index}
+                    fileName={file.name}
+                    fileSize={file.size}
+                    progress={file.percentage}
+                  />
+                );
+              })}
+            </div>
+          )}
         </>
       ),
     },
@@ -967,7 +1067,7 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
       };
 
       fetch(SEND_OTP_URL, requestOptions)
-        .then((response) => { })
+        .then((response) => {})
         .catch((error) => {
           console("ERROR FROM SEND OTP");
         });
@@ -981,8 +1081,8 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
     setWindowWidth(window.innerWidth);
   }, []);
 
-  const [showRegenModalWarning, setShowRegenModalWarning] = useState(false)
-  const [missingValueType, setMissingValueType] = useState("")
+  const [showRegenModalWarning, setShowRegenModalWarning] = useState(false);
+  const [missingValueType, setMissingValueType] = useState("");
 
   return (
     <>
@@ -1013,7 +1113,7 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
         <Modal
           isOpen={showRegenModalWarning}
           onRequestClose={() => {
-            setShowRegenModalWarning(false)
+            setShowRegenModalWarning(false);
           }}
           ariaHideApp={false}
           className="w-[100%] sm:w-[38%] max-h-[95%]"
@@ -1042,59 +1142,64 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
           }}
         >
           <button
-              className="absolute right-[35px]"
+            className="absolute right-[35px]"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowRegenModalWarning(false);
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+          <div className="mx-auto pb-4">
+            <img
+              className="mx-auto h-12"
+              src="/info.png"
+              style={{
+                filter:
+                  "hue-rotate(120deg)" /* Rotate the hue to turn red into green */,
+              }}
+            />
+          </div>
+          <div className="mx-auto font-bold text-2xl w-full text-center mr-auto">
+            No {missingValueType} provided
+          </div>
+          <p className="text-gray-500 text-base font-medium mt-4 mx-auto">
+            You have not provided any {missingValueType}(s). Do you want to
+            proceed
+          </p>
+          <div className="flex my-9">
+            <button
+              className="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
               onClick={(e) => {
-                e.stopPropagation()
-                setShowRegenModalWarning(false)
+                e.stopPropagation();
+                setShowRegenModalWarning(false);
               }}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              No
             </button>
-            <div className="mx-auto pb-4">
-              <img className="mx-auto h-12" src="/info.png" style={{
-                  filter: 'hue-rotate(120deg)' /* Rotate the hue to turn red into green */
-              }}/>
-            </div>
-            <div className="mx-auto font-bold text-2xl w-full text-center mr-auto">
-              No {missingValueType} provided
-            </div>
-            <p className="text-gray-500 text-base font-medium mt-4 mx-auto">
-              You have not provided any {missingValueType}(s). Do you want to proceed
-            </p>
-            <div className="flex my-9">
-              <button
-                className="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setShowRegenModalWarning(false);
-                }}
-              >
-                No
-              </button>
-              <button
-                className="w-[240px]  bg-transparent hover:bg-green-700 text-green-700 font-semibold hover:text-white py-2 px-4 border border-green-700 hover:border-transparent rounded"
-                onClick={() => {
-                  console.log('critical generating web')
-                  generateBlog([],[])
-                }}
-              >
-                YES!
-              </button>
-            </div>
-        
+            <button
+              className="w-[240px]  bg-transparent hover:bg-green-700 text-green-700 font-semibold hover:text-white py-2 px-4 border border-green-700 hover:border-transparent rounded"
+              onClick={() => {
+                console.log("critical generating web");
+                generateBlog([], []);
+              }}
+            >
+              YES!
+            </button>
+          </div>
         </Modal>
         <ToastContainer />
         {pfmodal && (
@@ -1114,36 +1219,44 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
           <></>
         )}
 
-
         {/* <TotalTImeSaved   /> */}
 
         {!meeData?.me?.isSubscribed && meeData?.me?.credits === 0 && (
-          <TrialEndedModal setTrailModal={() => { }} topic={null} />
+          <TrialEndedModal setTrailModal={() => {}} topic={null} />
         )}
         <GoogleDriveModal
           showModal={showGDriveModal}
           setShowModal={setShowGDriveModal}
           meeData={meeData}
         />
-        {
-          showErrorModal && <GenerateErrorModal 
-          modalOpen={showErrorModal}
-          setModalOpen={setShowErrorModal}
+        {showErrorModal && (
+          <GenerateErrorModal
+            modalOpen={showErrorModal}
+            setModalOpen={setShowErrorModal}
           />
-        }
+        )}
         {showingGenerateLoading && (
           <GenerateLoadingModal
             resetForm={handleGenerateReset}
             showGenerateLoadingModal={showingGenerateLoading}
             setShowGenerateLoadingModal={setShowingGenerateLoading}
             stepStatus={subsData?.stepCompletes.step}
-            type={countByType.lengthOFiles > 0 || countByType.lengthOfUrls > 0 ? countByType.lengthOfUrls > 0 ? 'URL' : "FILE" : "WEB"}
-            showBackButton={countByType.lengthOFiles > 0 || countByType.lengthOfUrls > 0}
+            type={
+              countByType.lengthOFiles > 0 || countByType.lengthOfUrls > 0
+                ? countByType.lengthOfUrls > 0
+                  ? "URL"
+                  : "FILE"
+                : "WEB"
+            }
+            showBackButton={
+              countByType.lengthOFiles > 0 || countByType.lengthOfUrls > 0
+            }
           />
         )}
         <div
-          className={`maincontainer relative md:px-6 pt-5 lg:px-8 ${!isAuthenticated && "min-h-screen"
-            }`}
+          className={`maincontainer relative md:px-6 pt-5 lg:px-8 ${
+            !isAuthenticated && "min-h-screen"
+          }`}
         >
           <FloatingBalls className="hidden absolute top-[4%] rotate-45 md:block" />
           <FloatingBalls className="hidden absolute top-[2%] w-10 right-[2%] md:block" />
@@ -1282,104 +1395,124 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
           )}
           <div className=" relative mx-auto max-w-screen-xl flex flex-col">
             <div
-              className={`mx-auto max-w-5xl text-center h-screen  ${isAuthenticated ? "" : "min-h-screen"
-                } flex items-center justify-center `}
+              className={`mx-auto max-w-5xl text-center h-screen  ${
+                isAuthenticated ? "" : "min-h-screen"
+              } flex items-center justify-center `}
               style={{
                 height: "100%",
               }}
             >
               <div
-                className={`mt-[10%] ${isAuthenticated
-                  ? keywordsOFBlogs.length == 0 && "lg:mt-[10%]"
-                  : keywordsOFBlogs.length == 0 && "lg:mt-[-10%]"
-                  }`}
+                className={`mt-[10%] ${
+                  isAuthenticated
+                    ? keywordsOFBlogs.length == 0 && "lg:mt-[10%]"
+                    : keywordsOFBlogs.length == 0 && "lg:mt-[-10%]"
+                }`}
               >
-                <RotatingText/> 
-                <div
-                  className="w-full lg:min-w-[850px] animate-fadeIn lg:max-w-[850px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-4"
-
-                  style={{
-                    background: "rgba(255, 255, 255, 0.5)",
-                    outline: 'none !important' 
-                  }}
-                >
-                  <h1
-                    className="text-center text-slate-800 text-xl font-bold leading-relaxed">Select a Source</h1>
-                  <div className="w-full relative">
-                    <Tab.Group
-                      defaultIndex={activeTab}
-                      onChange={(index) => {
-                        setActiveTab(index);
-                      }}
-                    >
-                      <Tab.List className="justify-start items-center gap-3 inline-flex">
-                        {tabs.map((tab) => (
-
-                         <Tab
-                            key={tab.id}
-                            className={`${tab.label === "Web"  ? "lg:w-24" : "lg:w-32"} h-8  px-0.5 lg:px-2.5 py-1 border-b border-indigo-600 ring-0  focus:ring-0  justify-center items-center gap-2.5 inline-flex text-base font-medium text-gray-800 ${activeTab === tab.id ? "border-b-2 border-indigo-600 text-gray-800" : "text-gray-600 border-none"}`}>
-                            {tab.label}
-                          </Tab>
-                        ))}
-                      </Tab.List>
-                      <Tab.Panels>
-                        {tabs.map((tab) => (
-                          <Tab.Panel
-                            key={tab.id}
-                             className={`
-                            p-4 transition-all duration-300 ease-in-out animate-fadeIn 
-                            ${activeTab === tab.id ? "opacity-100 visible animate-fadeIn" : "opacity-0 invisible"}
-                          `}
-                          >
-                            {tab.upperContent ? tab.upperContent : null}
-                            <div className="w-full h-full justify-center items-center gap-2.5 inline-flex">
-                              <div className={`relative w-full min-h-[60px] bg-white rounded-[10px]  border py-2.5 ${keyword.length > 100 ? 'border-red-600' : 'border-indigo-600'} `}>
-                                <div className={`flex items-center flex-col md:flex-row  gap-2.5 relative outline-none active:outline-none rounded-lg`}>
-                                  <KeywordInput
-                                    keyword={keyword}
-                                    setKeyword={setkeyword}
-                                    placeholder={tabsPlaceholders[tab.id]}
-                                    maxLength={100}
-                                    onKeyDown={
-                                       (e) => {
+                <RotatingText />
+                <form onSubmit={handleExtractInfo}>
+                  <div
+                    className="w-full lg:min-w-[850px] animate-fadeIn lg:max-w-[850px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-4"
+                    style={{
+                      background: "rgba(255, 255, 255, 0.5)",
+                      outline: "none !important",
+                    }}
+                  >
+                    <h1 className="text-center text-slate-800 text-xl font-bold leading-relaxed">
+                      Select a Source
+                    </h1>
+                    <div className="w-full relative">
+                      <Tab.Group
+                        defaultIndex={activeTab}
+                        onChange={(index) => {
+                          setActiveTab(index);
+                        }}
+                      >
+                        <Tab.List className="justify-start items-center gap-3 inline-flex">
+                          {tabs.map((tab) => (
+                            <Tab
+                              key={tab.id}
+                              className={`${
+                                tab.label === "Web" ? "lg:w-24" : "lg:w-32"
+                              } h-8  px-0.5 lg:px-2.5 py-1 border-b border-indigo-600 ring-0  focus:ring-0  justify-center items-center gap-2.5 inline-flex text-base font-medium text-gray-800 ${
+                                activeTab === tab.id
+                                  ? "border-b-2 border-indigo-600 text-gray-800"
+                                  : "text-gray-600 border-none"
+                              }`}
+                            >
+                              {tab.label}
+                            </Tab>
+                          ))}
+                        </Tab.List>
+                        <Tab.Panels>
+                          {tabs.map((tab) => (
+                            <Tab.Panel
+                              key={tab.id}
+                              className={`
+                              p-4 transition-all duration-300 ease-in-out animate-fadeIn 
+                              ${
+                                activeTab === tab.id
+                                  ? "opacity-100 visible animate-fadeIn"
+                                  : "opacity-0 invisible"
+                              }
+                            `}
+                            >
+                              {tab.upperContent ? tab.upperContent : null}
+                              <div className="w-full h-full justify-center items-center gap-2.5 inline-flex">
+                                <div
+                                  className={`relative w-full min-h-[60px] bg-white rounded-[10px]  border py-2.5 ${
+                                    keyword.length > 100
+                                      ? "border-red-600"
+                                      : "border-indigo-600"
+                                  } `}
+                                >
+                                  <div
+                                    className={`flex items-center flex-col md:flex-row  gap-2.5 relative outline-none active:outline-none rounded-lg`}
+                                  >
+                                    <KeywordInput
+                                      keyword={keyword}
+                                      setKeyword={setkeyword}
+                                      placeholder={tabsPlaceholders[tab.id]}
+                                      maxLength={100}
+                                      onKeyDown={(e) => {
                                         if (e.key === "Enter") {
-                                          disableGenerateButton ? null : handleGenerateClick();
+                                          disableGenerateButton
+                                            ? null
+                                            : handleGenerateClick();
                                         }
-                                      }
-                                    }
-                                  />
+                                      }}
+                                    />
+                                  </div>
                                 </div>
-                              </div>
-                              {
-                                keyword.length > 100 && (
+                                {keyword.length > 100 && (
                                   <div className="absolute bottom-0 left-4 text-red-600 text-xs font-medium leading-none">
                                     {keyword.length}/100
                                   </div>
-                                )
-                              }
-                            </div>
-                            {tab.content}
-                          </Tab.Panel>
-                        ))}
-                      </Tab.Panels>
-                    </Tab.Group>
+                                )}
+                              </div>
+                              {tab.content}
+                            </Tab.Panel>
+                          ))}
+                        </Tab.Panels>
+                      </Tab.Group>
+                    </div>
+
+                    <button
+                      disabled={disableGenerateButton}
+                      className="h-14 px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-lg shadow justify-center items-center gap-2.5 inline-flex hover:from-indigo-700 hover:to-violet-700 focus:shadow-outline-indigo disabled:opacity-50 disabled:cursor-not-allowed"
+                      type="submit"
+                      // onClick={() => {
+                      //   handleGenerateClick()
+                      // }}
+                    >
+                      <>
+                        <div className="text-white text-base font-medium leading-7">
+                          Extract Information{" "}
+                        </div>
+                      </>
+                    </button>
                   </div>
-
-                  <button
-                    disabled={disableGenerateButton}
-                    className="h-14 px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-lg shadow justify-center items-center gap-2.5 inline-flex hover:from-indigo-700 hover:to-violet-700 focus:shadow-outline-indigo disabled:opacity-50 disabled:cursor-not-allowed"
-                    onClick={() => {
-
-                      handleGenerateClick()
-                    }}
-                  >
-                    <>
-                      <div className="text-white text-base font-medium leading-7">
-                        Extract Information{" "}
-                      </div>
-                    </>
-                  </button>
-                </div>
+                </form>
 
                 <div
                   className="w-[80%] absolute top-[500px] lg:top-[350px] h-[200px] inset-x-0 -z-10"
@@ -1418,19 +1551,18 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
               </defs>
             </svg>
           </div> */}
-        {/* {!isAuthenticated && <KeyFeatures/>} */}
-      </div>
-
+          {/* {!isAuthenticated && <KeyFeatures/>} */}
+        </div>
 
         {/* {!isAuthenticated && <MoblieUnAuthFooter />} */}
       </Layout>
 
       {/* chat */}
       <img
-        className='h-12 absolute bottom-1 right-1 md:bottom-10 md:right-7 cursor-pointer bg-gray-400 rounded-md p-1.5'
+        className="h-12 absolute bottom-1 right-1 md:bottom-10 md:right-7 cursor-pointer bg-gray-400 rounded-md p-1.5"
         src="/chat.png"
-        style={{objectFit: 'cover'}}
-        onClick={() => router.replace('/misci')}
+        style={{ objectFit: "cover" }}
+        onClick={() => router.replace("/misci")}
       />
       <style>
         {`
@@ -1532,8 +1664,9 @@ const AIInputComponent = () => {
       </div>
       <button
         ref={buttonHeightRef}
-        className={`cta-invert rounded-[10px] mt-2 lg:mt-0 w-full lg:w-[35%]  items-center  flex flex-row bg-indigo-600 ${isDisabled ? "disabled:opacity-50" : ""
-          }`}
+        className={`cta-invert rounded-[10px] mt-2 lg:mt-0 w-full lg:w-[35%]  items-center  flex flex-row bg-indigo-600 ${
+          isDisabled ? "disabled:opacity-50" : ""
+        }`}
         onClick={handleButtonClick}
         disabled={isDisabled}
         style={{}}
@@ -1563,7 +1696,13 @@ type KeywordInputProps = {
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
-const KeywordInput = ({ maxLength, placeholder, keyword, setKeyword , onKeyDown}: KeywordInputProps) => {
+const KeywordInput = ({
+  maxLength,
+  placeholder,
+  keyword,
+  setKeyword,
+  onKeyDown,
+}: KeywordInputProps) => {
   return (
     <input
       type="text"
@@ -1579,15 +1718,14 @@ const KeywordInput = ({ maxLength, placeholder, keyword, setKeyword , onKeyDown}
       onKeyDown={(e) => {
         if (e.key === "Enter") {
           e.preventDefault();
-          onKeyDown ? onKeyDown(e) : null; 
+          onKeyDown ? onKeyDown(e) : null;
         }
       }}
     />
   );
 };
 
-
-const RotatingText = React.memo(()=> {
+const RotatingText = React.memo(() => {
   return (
     <div className="relative flex lg:mb-[20px] text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing lg:min-w-[900px]">
       Lille for <TextTransitionEffect text={TEXTS2} />
@@ -1619,11 +1757,7 @@ const RotatingText = React.memo(()=> {
               gradientUnits="userSpaceOnUse"
             >
               <stop stop-color="#F7938B" />
-              <stop
-                offset="1"
-                stop-color="white"
-                stop-opacity="0"
-              />
+              <stop offset="1" stop-color="white" stop-opacity="0" />
             </linearGradient>
             <linearGradient
               id="paint1_linear_2158_42358"
@@ -1634,17 +1768,13 @@ const RotatingText = React.memo(()=> {
               gradientUnits="userSpaceOnUse"
             >
               <stop stop-color="#F9948C" />
-              <stop
-                offset="1"
-                stop-color="white"
-                stop-opacity="0"
-              />
+              <stop offset="1" stop-color="white" stop-opacity="0" />
             </linearGradient>
           </defs>
         </svg>
       </div>
     </div>
-  )
-}) 
+  );
+});
 
-RotatingText.displayName = 'RotatingText';
+RotatingText.displayName = "RotatingText";
