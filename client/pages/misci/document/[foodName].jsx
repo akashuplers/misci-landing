@@ -6,24 +6,28 @@ import { foodItemsJson } from '../../../public/data/misci-data';
 
 function DocumentPage() {
   const router = useRouter();
-  const { foodName } = router.query;
-  const [foodImageUrl, setFoodImageUrl] = useState(foodName);
-
-  const notesObj = foodItemsJson[0].notes;
-
+  const [foodImageUrl, setFoodImageUrl] = useState('');
+  const [notes, setNotes] = useState([]);
+  const [references, setReferences] = useState([]);
   const [foodItemName, setFoodItemName] = useState('');
 
-  const getImageUrlFromFoodItemsList = (foodName) => {
-    const foodItem = foodItemsJson.find(item => item.title === foodName);
-    return foodItem ? foodItem.imageUrl : null;
+  const getFoodItemObj = (foodName) => {
+    const foodItem = foodItemsJson.find(item => item?.title?.toLowerCase() === foodName?.toLowerCase());
+    return foodItem ? foodItem : null;
   }
 
   useEffect(() => {
     const { foodName } = router.query;
     setFoodItemName(foodName);
-    const imageUrl = getImageUrlFromFoodItemsList(foodName);
-    setFoodImageUrl(imageUrl);
-  }, []);
+    const foodItemObj = getFoodItemObj(foodName);
+
+    if(foodItemObj) {
+      setFoodItemName(foodItemObj?.title);
+      setFoodImageUrl(foodItemObj?.imageUrl);
+      setNotes(foodItemObj?.notes);
+      setReferences(foodItemObj?.references);
+    }
+  }, [router.query]);
 
 
   return (
@@ -33,7 +37,7 @@ function DocumentPage() {
             {/* heading text */}
             <div className="w-screen text-center lg:pl-44">
                 <h1 className="text-3xl md:text-5xl italic uppercase font-bold mb-4">
-                    {foodName}
+                    {foodItemName}
                 </h1>
             </div>
             
@@ -76,55 +80,31 @@ function DocumentPage() {
 
           {/* food notes */}
           <div className='md:col-start-2 md:col-end-6 text-justify'>
-            <p className='text-xl font-bold mb-2'>Different Types</p>
-            <ul>
-              {notesObj?.differentTypes.map((item, index) => (
-                <li key={index}>
-                  <p>{item}</p>
-                </li>
-              ))}
-            </ul>
+            {notes?.map((item, index) => (
+              <div key={index}>
+                <p className='text-xl font-bold mb-2'>{item?.title + ' :'}</p>
+                <ul className='mb-3'>
+                  {item?.bulletPoints?.map((ele, index) => (
+                    <li key={index}>
+                      <p>{ele}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
 
-            <p className='text-xl font-bold mb-2 mt-2'>Are Acorns Edible?</p>
-            <ul>
-              {notesObj?.areAcornsEdible.map((item, index) => (
-                <li key={index}>
-                  <p>{item}</p>
-                </li>
-              ))}
-            </ul>
-
-            <p className='text-xl font-bold mb-2 mt-2'>Acorn for Skincare</p>
-            <ul>
-              {notesObj?.acornForSkincare.map((item, index) => (
-                <li key={index}>
-                  <p>{item}</p>
-                </li>
-              ))}
-            </ul>
-
-            <p className='text-xl font-bold mb-2 mt-2'>Acorn and Climate Change</p>
-            <ul>
-              {notesObj?.acornForSkincare.map((item, index) => (
-                <li key={index}>
-                  <p>{item}</p>
-                </li>
-              ))}
-            </ul>
-
-            <div className=''>
+            {/* references */}
+            <div>
               <p className='text-xl font-bold mb-2 mt-2'>References</p>
               <ul className='list-decimal'>
-                {notesObj?.references.map((item, index) => (
+                {references?.map((item, index) => (
                   <li key={index}>
                     <a href={item} target='_blank' className='underline pointer-cursor text-blue-500'>{item}</a>
                   </li>
                 ))}
               </ul>
             </div>
-
           </div>
-
         </div>
 
         {/* chat */}

@@ -4,12 +4,12 @@ import { useState } from "react";
 import { foodItemsJson, foodTypes } from "../../public/data/misci-data";
 import { useRouter } from 'next/navigation';
 
-const defaultFoodItemsList = [ "Almond", "Cashew", "Chestnut", "Hazelnut", "Kernels", "Peanut", "Pine Nuts", "Pistachio", "Walnut" ];
-const defaultImageUrl = "https://images.immediate.co.uk/production/volatile/sites/30/2021/02/almonds-9e25ce7.jpg?quality=90&webp=true&resize=600,545";
+const defaultFoodItemsList = foodTypes[0].foodItems;
+const defaultImageUrl = foodTypes[0].foodTypeUrl;
 
 function FoodList() {
   const router = useRouter();
-  const [foodCategory, setFoodCategory] = useState("Nuts and Seeds");
+  const [foodCategory, setFoodCategory] = useState(foodTypes[0].name);
   const [foodItems, setFoodItems] = useState(defaultFoodItemsList);
   const [foodImageUrl, setFoodImageUrl] = useState(defaultImageUrl);
 
@@ -20,15 +20,15 @@ function FoodList() {
   }
 
   const getImageUrlFromFoodItemsList = (foodName) => {
-    const foodItem = foodItemsJson.find(item => item.title === foodName);
+    const foodItem = foodItemsJson.find(item => item?.title?.toLowerCase() === foodName?.toLowerCase());
     return foodItem ? foodItem.imageUrl : null;
   }
 
   const handleClickOnFoodItem = async (foodName) => {
     const foodImageUrl = getImageUrlFromFoodItemsList(foodName);
     setFoodImageUrl(foodImageUrl);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    router.replace(`/misci/document/${foodName}`);
+    // await new Promise((resolve) => setTimeout(resolve, 1000));
+    // router.replace(`/misci/document/${foodName}`);
   }
 
   return (
@@ -95,7 +95,13 @@ function FoodList() {
                     <ul className="list-none">
                         {foodItems?.map((foodItem, index) => (
                             <li key={index}>
-                                <p onClick={() => handleClickOnFoodItem(foodItem)} className="cursor-pointer md:text-xl md:font-bold italic mb-1 md:mb-0">{foodItem}</p>
+                                <p
+                                    className="cursor-pointer md:text-xl md:font-bold italic mb-1 md:mb-0"
+                                    onClick={() => handleClickOnFoodItem(foodItem)}
+                                    onDoubleClick={() => router.replace(`/misci/document/${foodItem}`)}
+                                >
+                                    {foodItem}
+                                </p>
                             </li>
                         ))}
                     </ul>
