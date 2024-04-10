@@ -26,21 +26,15 @@ import LoaderPlane from "../../components/LoaderPlane";
 import TrialEndedModal from "../../components/TrialEndedModal";
 import { meeAPI } from "../../graphql/querys/mee";
 import { STEP_COMPLETES_SUBSCRIPTION } from "../../graphql/subscription/generate";
-import Modal from 'react-modal'
-import {
-  extractKeywordsAndIds,
-  getDateMonthYear,
-  getIdFromUniqueName,
-  isMonthAfterJune,
-  keywordsUniqueName,
-  uploadAndExtractKeywords,
-} from "../../helpers/helper";
+import Modal from "react-modal";
+
 import OTPModal from "../../modals/OTPModal";
 import PreferencesModal from "../../modals/PreferencesModal";
-import useStore, { useClientUserStore, useFunctionStore } from "../../store/store";
+import useStore, {
+  useClientUserStore,
+  useFunctionStore,
+} from "../../store/store";
 import { Tab } from "@headlessui/react";
-import ReactLoading from "react-loading";
-import TextTransition, { presets } from "react-text-transition";
 import {
   ArrowLongRightIcon,
   ArrowLongUpIcon,
@@ -67,9 +61,15 @@ import {
 // import { FacebookIcon, LinkedinIcon, TwitterIcon } from "react-share";
 import { FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 import { TextTransitionEffect } from "@/components/ui/TextTransitionEffect";
-import { Chip, FileChipIcon, FileUploadCard, FloatingBalls } from "@/components/ui/Chip";
+import {
+  Chip,
+  FileChipIcon,
+  FileUploadCard,
+  FloatingBalls,
+} from "@/components/ui/Chip";
 import { InputData } from "@/types/type";
 import {
+  misciFileUpload,
   newGenerateApi,
   processKeywords,
   randomNumberBetween20And50,
@@ -82,6 +82,7 @@ import { StepCompleteData } from "@/store/types";
 import GenerateLoadingModal from "@/modals/GenerateLoadingModal";
 import GenerateErrorModal from "@/modals/GenerateErrorModal";
 import KeyFeatures from "@/components/KeyFeartures";
+import MisciUploadLoader from "@/modals/MisciUploadLoader";
 
 const PAYMENT_PATH = "/?payment=true";
 const TONES = [
@@ -108,7 +109,11 @@ const TEXTS = [
 ];
 
 const TEXTS2 = ["Researches", "Students", "Educators", "Analysts"];
-const tabsPlaceholders = ['Give me a topic', 'Give me a topic and paste your URL below', 'Give me a topic and upload file']
+const tabsPlaceholders = [
+  "Give me a topic",
+  "Give me a topic and paste your URL below",
+  "Give me a topic and upload file",
+];
 const STATESOFKEYWORDS = {
   LOADING: "loading",
   LOADED: "loaded",
@@ -132,13 +137,10 @@ interface KeysForStateOfGenerate {
   keyword: number | null;
 }
 
-export default function UploadDocument({ payment, randomLiveUsersCount }) {
-  const [getUserIdForSubs, setGetUserIdForSubs] = useState('');
-  const [getTempIdForSubs, setGetTempIdForSubs] = useState('');
-  const [getTokenForSubs, setGetTokenForSubs] = useState('');
-  const [userAbleUserIDForSubs, setUserAbleUserIDForSubs] = useState('');
-  const {addMessages}= useGenerateErrorState();
-  const [getToken, setGetToken] = useState('');
+export default function UploadDocument() {
+  const [userAbleUserIDForSubs, setUserAbleUserIDForSubs] = useState("");
+  const { addMessages } = useGenerateErrorState();
+  const [getToken, setGetToken] = useState("");
   const {
     data: subsData,
     loading: subsLoading,
@@ -148,22 +150,7 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
     onComplete(data) {
       console.log(data);
     },
-
   });
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const tokenFromLocalStorage = localStorage.getItem("token");
-      const userIdFromLocalStorage = localStorage.getItem("userId");
-      const tempIdFromLocalStorage = localStorage.getItem("tempId");
-      setGetTokenForSubs(tokenFromLocalStorage);
-      setGetToken(tokenFromLocalStorage);
-      setGetUserIdForSubs(userIdFromLocalStorage);
-      setGetTempIdForSubs(tempIdFromLocalStorage);
-      const userAbleUserID = tokenFromLocalStorage ? userIdFromLocalStorage : tempIdFromLocalStorage;
-      setUserAbleUserIDForSubs(userAbleUserID);
-      console.log(getUserIdForSubs, getTempIdForSubs, getTokenForSubs, userAbleUserIDForSubs, 'FROM USER');
-    }
-  }, [subsError]);
 
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const updateAuthentication = useStore((state) => state.updateAuthentication);
@@ -245,39 +232,7 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
     removeSelectedFile(id);
     removeBlogLink(id);
   }
-  const handleChipClick = (index) => {
-    const idOfKeyword = getIdFromUniqueName(keywordsOFBlogs[index].id);
 
-    setkeywordsOfBlogs((prevKeywords) => {
-      const updatedKeywords = [...prevKeywords];
-      updatedKeywords[index].selected = !updatedKeywords[index].selected;
-      const isSelected = updatedKeywords[index].selected;
-      if (isSelected === true) {
-        setArticleIds((prevArticleIds) => {
-          const updatedArticleIds = [...prevArticleIds];
-          updatedArticleIds.push(idOfKeyword);
-          return updatedArticleIds;
-        });
-      } else {
-        setArticleIds((prevArticleIds) => {
-          const updatedArticleIds = [...prevArticleIds];
-          const index = updatedArticleIds.indexOf(idOfKeyword);
-          if (index > -1) {
-            updatedArticleIds.splice(index, 1);
-          }
-          return updatedArticleIds;
-        });
-      }
-      return updatedKeywords;
-    });
-  };
-  const handleToneClick = (index) => {
-    setRepurposeTones((prevTones) => {
-      const updatedTones = [...prevTones];
-      updatedTones[index].selected = !updatedTones[index].selected;
-      return updatedTones;
-    });
-  };
   useEffect(() => {
     updateAuthentication();
   }, []);
@@ -290,8 +245,6 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
   const [isauth, setIsauth] = useState(false);
   const [loadingForKeywords, setLoadingForKeywords] = useState(false);
   const [showRepourposeError, setShowRepourposeError] = useState(false);
-  const [showHoveUpgradeNow, setShowHoveUpgradeNow] = useState(false);
-  const [loadingForFilesKeywords, setLoadingForFilesKeywords] = useState(false);
   const handleGenerate = (options = {}) => {
     console.log("options");
     console.log(options);
@@ -312,92 +265,10 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
     });
   };
 
-  function handleRepourpose() {
-    setLoadingForKeywords(true);
-    // key all keywords which are selected
-    const keywords = keywordsOFBlogs
-      .filter((keyword) => keyword.selected)
-      .map((keyword) => keyword.text);
-    if (keywords.length === 0) {
-      toast.error("Please select atleast some keywords");
-      return;
-    }
-    setShowRepourposeError(false);
-    const options = {
-      tones:
-        repurposeTones
-          .filter((tone) => tone.selected)
-          .map((tone) => tone.text) || [],
-      keywords: keywords || [],
-      article_ids: [...new Set(articleIds)],
-    };
-    handleGenerate(options);
-    setLoadingForKeywords(false);
-  }
   useEffect(() => {
     // alert('STATUS: ', loadingForKeywords)
   }, [loadingForKeywords]);
-  function uploadFilesForKeywords() {
-    setShowUserLoadingModal({ show: true });
-    console.log(selectedFiles);
-    if (selectedFiles.length > 0) {
-      const selectedFilesForPayload = selectedFiles.map(
-        (fileObject) => fileObject.file
-      );
-      console.log("selectedFilesForPayload", selectedFilesForPayload);
-      uploadAndExtractKeywords(selectedFilesForPayload)
-        .then((response) => {
-          console.log("Response:", response);
-          // Handle the response here
-          if (
-            response?.response?.data &&
-            response?.response?.data?.type === "ERROR"
-          ) {
-            toast.error(response.response.data.message);
-            setLoadingForKeywords(false); // Set loading state back to false on error
-            return;
-          }
-          const { data } = response.data;
-          const keywordsForBlog = processKeywords(data);
-          // Update the state with processed keywords
-          setkeywordsOfBlogs((prev) => {
-            const prevKeywords = [...prev];
-            const updatedKeywords = [...prevKeywords, ...keywordsForBlog];
-            const processedKeywords = processDataForKeywords(updatedKeywords);
-            return processedKeywords;
-          });
-          setStateOfGenerate((prev) => {
-            return {
-              ...prev,
-              file: STATESOFKEYWORDS.LOADED,
-            };
-          });
-          setShowUserLoadingModal({ show: false });
-          setLoadingForKeywords(false); // Set loading state back to false on successful response
-        })
-        .catch((error) => {
-          console.log("ERROR");
-          console.log(error);
-          // Handle errors here
-          setStateOfGenerate((prev) => {
-            return {
-              ...prev,
-              file: STATESOFKEYWORDS.LOADED,
-            };
-          });
-          setShowUserLoadingModal({ show: false });
-          setLoadingForKeywords(false); // Set loading state back to false on error
-        })
-        .finally(() => {
-          setStateOfGenerate((prev) => {
-            return { ...prev, file: STATESOFKEYWORDS.LOADED };
-          });
-        });
-    } else {
-      toast.error("Please select a file");
-      setLoadingForKeywords(false); // Set loading state back to false if no file is selected
-    }
-  }
+
   function processDataForKeywords(data) {
     const keywordsMap = {};
     data.forEach((item) => {
@@ -409,7 +280,7 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
       if (keywordsMap[item.text] > 1) {
         item.source = item.realSource
           ? item.realSource.toLowerCase().charAt(0).toUpperCase() +
-          item.realSource.toLowerCase().slice(1)
+            item.realSource.toLowerCase().slice(1)
           : "";
       }
     });
@@ -430,122 +301,93 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
       },
       { file: 0, url: 0 }
     );
-    if (keyword == "") {
+    if (keyword == "" && selectedFiles?.length == 0 ) {
       setDisableGenerateButton(true);
     } else {
       setDisableGenerateButton(false);
     }
   }
-  const countByType = blogLinks.reduce(
-    (acc, link) => {
-      if (link.type === "file") {
-        acc.lengthOFiles++;
-      } else if (link.type === "url") {
-        acc.lengthOfUrls++;
-      } else if (link.type === "keyword") {
-        acc.keyword++;
-      }
-      return acc;
-    },
-    { lengthOFiles: 0, lengthOfUrls: 0 }
-  );
 
-  function checkEmptyValueForUrlOrDocument(){
+  function checkEmptyValueForUrlOrDocument() {}
 
-  }
-
-  function handleGenerateClick() {
-    console.log(blogLinks);
-    const countByType: KeysForStateOfGenerate = blogLinks.reduce(
-      (acc, link) => {
-        if (link.type === "file") {
-          acc.file++;
-        } else if (link.type === "url") {
-          acc.url++;
-        } else if (link.type === "keyword") {
-          acc.keyword++;
+  const [isMisciScannerLoading, setIsMisciScannerLoading] = useState(false);
+  
+  async function handleExtractInfo(e) {
+    e.preventDefault();
+    if(keyword) {
+      setIsMisciScannerLoading(true);
+      try {
+        const axios = require("axios");
+        const FormData = require("form-data");
+        let payload = new FormData();
+        payload.append(
+          "url",
+          keyword
+        );
+  
+        let config = {
+          method: "post",
+          maxBodyLength: Infinity,
+          url: "https://maverick.lille.ai/misci-routes/uploads",
+          headers: {
+            "content-type": "multipart/form-data"
+          },
+          data: payload,
+        };
+  
+        const response = await axios.request(config); // Wait for api response
+        const { data } = response?.data; // Destructure response data
+        
+        if(data && data.title && data.subtopics && data.entities) {
+          localStorage.setItem('apiResponseData', JSON.stringify(data)); // Store data in localStorage
+          router.push('/misci/article-generated'); // Pass data in state
+          setIsMisciScannerLoading(false);
+        } else {
+          setIsMisciScannerLoading(false);
+          toast.error('Something Went Wrong! Please Try Any Other Document!');
         }
-        return acc;
-      },
-      { file: 0, url: 0 }
-    );
-    if (countByType.file == 0 && countByType.url == 0 && keyword == "") {
-      return;
+      } catch (error) {
+        console.log("error: ", error);
+      }
     }
+    else if(selectedFiles[0]) {
+      setIsMisciScannerLoading(true);
+      try {
+        const axios = require("axios");
+        const FormData = require("form-data");
+        let payload = new FormData();
+        payload.append(
+          "file",
+          selectedFiles[0].file
+        );
+  
+        let config = {
+          method: "post",
+          maxBodyLength: Infinity,
+          url: "https://maverick.lille.ai/misci-routes/uploads",
+          headers: {
+            "content-type": "multipart/form-data"
+          },
+          data: payload,
+        };
+  
+        const response = await axios.request(config); // Wait for api response
+        const { data } = response?.data; // Destructure response data
+        
+        if(data && data.title && data.subtopics && data.entities) {
+          localStorage.setItem('apiResponseData', JSON.stringify(data)); // Store data in localStorage
+          router.push('/misci/article-generated'); // Pass data in state
+          setIsMisciScannerLoading(false);
+        } else {
+          setIsMisciScannerLoading(false);
+          toast.error('Something Went Wrong! Please Try Any Other Document!');
+        }
 
-    console.log({
-      countByType,
-      typeKeys,
-      blogLinks,
-      activeTab
-    },'critical')
-
-    if(countByType.file == 0 && activeTab == 1){
-      setMissingValueType('Document')
-      setShowRegenModalWarning(true);
-      console.log('critical no file')
-      return; 
-    }else if(countByType.url == 0 && activeTab == 2){
-      setMissingValueType('Url')
-      setShowRegenModalWarning(true);
-      console.log('critical no url')
-      return; 
+      } catch (error) {
+        toast.error('Something Went Wrong! Please Try Again!')
+        setIsMisciScannerLoading(false);
+      }
     }
-    
-    var typeKeys = Object.keys(countByType);
-
-    checkEmptyValueForUrlOrDocument(countByType)
-
-    console.log({
-      countByType,
-      typeKeys,
-      blogLinks,
-      activeTab
-    },'critical')
-
-    const prevStateOfGenerate = { ...stateOfGenerate };
-    typeKeys.forEach((type) => {
-      prevStateOfGenerate[type] =
-        countByType[type] === 0 ? null : STATESOFKEYWORDS.LOADING;
-    });
-    console.log("prevStateOfGenerate");
-    console.log(prevStateOfGenerate);
-    setStateOfGenerate(prevStateOfGenerate);
-    console.log("countByType");
-    console.log(countByType);
-    // if (countByType.files > 0 && countByType.urls > 0) {
-
-    //   // Call both methods when both keywords and files are greater than zero
-    //   uploadExtractKeywords();
-    //   uploadFilesForKeywords();
-    // } else if (countByType.urls > 0) {
-    //   // Call only the keywords method when there are keywords but no files
-    //   uploadExtractKeywords();
-    // } else if (countByType.files > 0) {
-    //   // Call only the files method when there are files but no keywords
-    //   uploadFilesForKeywords();
-    // } else {
-    //   // Call the default method when both keywords and files are zero
-    //   uploadExtractKeywords();
-    // }
-    // // extractKeywordsFromKeywords();
-
-    // if (countByType.url > 0) {
-    //   uploadExtractKeywords();
-    // }
-    // if (countByType.keyword > 0) {
-    //   uploadExtractKeywordsFromKeywords();
-    // }
-    // if (countByType.file > 0) {
-    //   uploadFilesForKeywords();
-    // }
-    
-    const files = selectedFiles.map((fileObject) => fileObject.file);
-    const urls = blogLinks.filter((link) => link.type === "url").map((link) => link.value);
-
-    console.log('critical generating with files or url or web',files, urls)
-    
-    generateBlog(files, urls)
   }
 
   const generateBlog = (files, urls) => {
@@ -567,7 +409,7 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
     setShowingGenerateLoading(true);
     newGenerateApi(token, tones, keywordForPayload, userId, files, urls).then(
       (response) => {
-        if (response.type == 'ERROR') {
+        if (response.type == "ERROR") {
           toast.error(response.message);
           setShowErrorModal(true);
           setShowingGenerateLoading(false);
@@ -586,12 +428,16 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
         const errorMessages = [];
 
         if (unprocessedUrlsFR?.length > 0) {
-          const msgForUrl = 'Host has denied the extraction from these URLs. You can try again or use different URLs: ' + unprocessedUrlsFR.join(', ');
+          const msgForUrl =
+            "Host has denied the extraction from these URLs. You can try again or use different URLs: " +
+            unprocessedUrlsFR.join(", ");
           errorMessages.push(msgForUrl);
         }
 
         if (unprocessedFiles?.length > 0) {
-          const fileErrors = unprocessedFiles.map(file => file + ' - File unable to process');
+          const fileErrors = unprocessedFiles.map(
+            (file) => file + " - File unable to process"
+          );
           errorMessages.push(...fileErrors);
         }
 
@@ -603,74 +449,20 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
 
         console.log(response);
         setTimeout(() => {
-          router.push({
-            pathname: `/misci/article-generated/${keyword}`,
-            // pathname: `/dashboard/${_id}`,
-            // query: { type: TYPES_OF_GENERATE.REPURPOSE },
-          }).then(() => {
-            setShowingGenerateLoading(false);
-            handleGenerateReset()
-          });
+          router
+            .push({
+              pathname: `/misci/article-generated/${keyword}`,
+              // pathname: `/dashboard/${_id}`,
+              // query: { type: TYPES_OF_GENERATE.REPURPOSE },
+            })
+            .then(() => {
+              setShowingGenerateLoading(false);
+              handleGenerateReset();
+            });
         }, 2000);
-         
       }
-    )
-  }
-
-  function uploadExtractKeywordsFromKeywords() {
-    setShowUserLoadingModal({ show: true });
-    const keywords = blogLinks
-      .filter((link) => link.type === "keyword")
-      .map((link) => link.value);
-    console.log(keywords);
-    // const data =await extractKeywordsFromKeywords(keywords[keywords.length - 1]);
-    // console.log(data);
-    extractKeywordsFromKeywords(keywords[keywords.length - 1])
-      .then((data) => {
-        if (data.type === "ERROR") {
-          toast.error(data.message);
-          setShowUserLoadingModal({ show: false });
-          return;
-        }
-        const keywordsData = data.data;
-        const keywordsForBlog = processKeywords(keywordsData);
-        setkeywordsOfBlogs((prev) => {
-          const prevKeywords = [...prev];
-          const updatedKeywords = [...prevKeywords, ...keywordsForBlog];
-          const processedKeywords = processDataForKeywords(updatedKeywords);
-          return processedKeywords;
-        });
-        setStateOfGenerate((prev) => {
-          return {
-            ...prev,
-            keyword: STATESOFKEYWORDS.LOADED,
-          };
-        });
-        setShowUserLoadingModal({ show: false });
-        setLoadingForKeywords(false);
-      })
-      .catch((err) => {
-        console.log(err);
-
-        toast.error(err.message);
-        setShowUserLoadingModal({ show: false });
-        setLoadingForKeywords(false);
-        setStateOfGenerate((prev) => {
-          return {
-            ...prev,
-            keyword: STATESOFKEYWORDS.LOADED,
-          };
-        });
-      })
-      .finally(() => {
-        setStateOfGenerate((prev) => {
-          return {
-            ...prev,
-            keyword: STATESOFKEYWORDS.LOADED,
-          };
-        });
-      });
-  }
+    );
+  };
 
   const [keyword, setkeyword] = useState("");
   const [disableGenerateButton, setDisableGenerateButton] = useState(false);
@@ -680,64 +472,10 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
   const [showUserLoadingModal, setShowUserLoadingModal] = useState({
     show: false,
   });
-  useEffect(() => {
-    if (router.asPath === PAYMENT_PATH) {
-      if (localStorage.getItem("userContribution") !== null) {
-        var userContribution = JSON.parse(
-          localStorage.getItem("userContribution") || "{}"
-        );
-        const SAVE_USER_SUPPORT_URL = API_BASE_PATH + "/auth/save-user-support";
-        const requestOptions = {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + localStorage.getItem("token"),
-          },
-          body: JSON.stringify(userContribution),
-        };
-        s;
-        fetch(SAVE_USER_SUPPORT_URL, requestOptions)
-          .then((response) => { })
-          .catch((error) => { });
-      }
-      setIsPayment(true);
-      toast.success("Payment Successful!", {
-        toastId: "payment-success",
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-
-      localStorage.setItem("payment", "true");
-      const timeout = setTimeout(() => {
-        setIsPayment(false);
-        router.push("/", undefined, { shallow: true });
-      }, 5000);
-
-      return () => {
-        clearTimeout(timeout);
-      };
-    } else {
-      localStorage.removeItem("userContribution");
-    }
-  }, [router]);
-
-  useEffect(() => {
-    const intervalId = setInterval(
-      () => setIndex((index) => index + 1),
-      3000 // every 3 seconds
-    );
-    return () => clearTimeout(intervalId);
-  }, []);
 
   useEffect(() => {
     validateGenerateButtonStatus();
-  }, [blogLinks, keyword])
+  }, [blogLinks, keyword]);
   const {
     data: meeData,
     loading: meeLoading,
@@ -765,7 +503,7 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
         console.log(`[Network error]: ${networkError}`);
         if (
           `${networkError}` ===
-          "ServerError: Response not successful: Received status code 401" &&
+            "ServerError: Response not successful: Received status code 401" &&
           isauth
         ) {
           localStorage.clear();
@@ -788,31 +526,6 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
     },
   });
 
-  const updatedArr = data?.trendingTopics?.map((topic: any, i: any) => (
-    <Link
-      key={i}
-      legacyBehavior
-      as={"/dashboard"}
-      href={{
-        pathname: "/dashboard",
-        query: { topic: topic },
-      }}
-    >
-      <div className="w-full cursor-pointer flex items-center  justify-between gap-x-2 px-4 py-2 rounded-md bg-gray-100 shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-        <button className="cursor-pointer text-sm font-medium text-gray-900">
-          {topic.length > 31 ? (
-            <Marquee pauseOnHover={true} autoFill={false}>
-              <div className="mx-4">{topic}</div>
-            </Marquee>
-          ) : (
-            topic
-          )}
-        </button>
-        <ArrowRightCircleIcon className="w-5 h-5 text-gray-400" />
-      </div>
-    </Link>
-  ));
-
   const [pfmodal, setPFModal] = useState(false);
   const [isOTPVerified, setIsOTPVerified] = useState(true);
   const [showOTPModal, setShowOTPModal] = useState(false);
@@ -821,9 +534,8 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
   const [showTabsInfo, setShowTabsInfo] = useState({
     web: false,
     urls: true,
-    documents: true
+    documents: true,
   });
-  console.log(blogLinks);
   const filesNames = blogLinks
     .filter((link) => link.type === "file")
     .map((link) => {
@@ -833,126 +545,130 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
         size: link.size,
       };
     });
-  console.log(filesNames);
+  // console.log(filesNames);
   const tabs = [
     {
       id: 0,
       label: "Web Source",
-      content: <></>,
+      content: (
+        <div className="w-full h-full justify-center items-center gap-2.5 inline-flex">
+          <div
+            className={`relative w-full min-h-[60px] bg-white rounded-[10px] border py-2.5 ${
+              keyword.length > 100
+                ? "border-red-600"
+                : "border-indigo-600"
+            } `}
+          >
+            <div
+              className={`flex items-center flex-col md:flex-row gap-2.5 relative outline-none active:outline-none rounded-lg`}
+            >
+              <KeywordInput
+                keyword={keyword}
+                setKeyword={setkeyword}
+                placeholder={'Paste your URL'}
+                // maxLength={100}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    disableGenerateButton
+                      ? null
+                      : handleExtractInfo(e);
+                  }
+                }}
+              />
+            </div>
+          </div>
+          {/* {keyword.length > 100 && (
+            <div className="absolute bottom-0 left-4 text-red-600 text-xs font-medium leading-none">
+              {keyword.length}/100
+            </div>
+          )} */}
+        </div>
+      ),
     },
     {
       id: 1,
       label: "Document",
       upperContent: (
         <>
-          {
-            showTabsInfo.documents && (<div className="w-fit h-7 px-2.5 py-1.5 my-2 bg-orange-100 rounded backdrop-blur-2xl justify-center items-center gap-2.5 inline-flex">
-            <div className="text-yellow-600 text-xs font-medium leading-none">
-              We take a little longer to generate draft for Documents. Please be patient.
+          {showTabsInfo.documents && (
+            <div className="w-fit h-7 px-2.5 py-1.5 my-2 bg-orange-100 rounded backdrop-blur-2xl justify-center items-center gap-2.5 inline-flex">
+              <div className="text-yellow-600 text-xs font-medium leading-none">
+                We take a little longer to generate draft for Documents. Please
+                be patient.
+              </div>
+              <XCircleIcon
+                className="w-4 h-4 text-gray-600 cursor-pointer"
+                onClick={() =>
+                  setShowTabsInfo((prev) => ({ ...prev, documents: false }))
+                }
+              />
             </div>
-            <XCircleIcon className="w-4 h-4 text-gray-600 cursor-pointer" onClick={() => setShowTabsInfo(prev => ({ ...prev, documents: false }))} />
-          </div>
-            )
-          }
+          )}
         </>
       ),
       content: (
         <>
           <div className="flex items-center mt-2  scrollbar-thumb-indigo-600 scrollbar-corner-inherit rounded-full scroll-m-1 py-2 scrollbar-thin scrollbar-track-gray-100 overflow-x-scroll gap-2">
             {/* <FileChipIcon fileName="index.tsx" fileSize="5mb" /> */}
-    {console.log(filesNames)}
-      {!isAuthenticated && filesNames.length > 1? (<FileChipIcon fileName={filesNames[0].name} fileSize="" onCrossClick={
-                  () => { removeSelectedFileFromBothStores(filesNames[0].id) }
-                } /> ) :  (<> {filesNames.map((fileName, index) => {
-              return (
-                <FileChipIcon key={index} fileName={fileName.name} fileSize="" onCrossClick={
-                  () => { removeSelectedFileFromBothStores(fileName.id) }
-                } />
-              );
-            })}</>)}
-          </div>
-           <div>{!isAuthenticated && filesNames.length > 1 && <div className="text-sm text-red-500 mt-2 relative text-left">You can only upload 1 file as a guest user</div>}</div>
-          <DragAndDropFiles blogLinks={blogLinks} setBlogLinks={setBlogLinks} onClickHereButtonClick={() => setShowGDriveModal(true)}/>
-           {/* <div>{!isAuthenticated && filesNames.length > 1 && <div className="text-sm text-red-500 mt-2 relative -top-[45px] text-left">You can only upload 1 file as a guest user</div>}</div> */}
-          {
-            showFileStatus && (
-              <div className="flex items-center justify-center  my-2 gap-2 max-w-full min-w-full flex-wrap">
-                {uploadedFilesData.map((file, index) => {
-                  console.log(file);
+            {/* {console.log(filesNames)} */}
+            {!isAuthenticated && filesNames.length > 1 ? (
+              <FileChipIcon
+                fileName={filesNames[0].name}
+                fileSize=""
+                onCrossClick={() => {
+                  removeSelectedFileFromBothStores(filesNames[0].id);
+                }}
+              />
+            ) : (
+              <>
+                {" "}
+                {filesNames.map((fileName, index) => {
                   return (
-                    <FileUploadCard
+                    <FileChipIcon
                       key={index}
-                      fileName={file.name}
-                      fileSize={file.size}
-                      progress={file.percentage}
+                      fileName={fileName.name}
+                      fileSize=""
+                      onCrossClick={() => {
+                        removeSelectedFileFromBothStores(fileName.id);
+                      }}
                     />
                   );
                 })}
+              </>
+            )}
+          </div>
+          <div>
+            {!isAuthenticated && filesNames.length > 1 && (
+              <div className="text-sm text-red-500 mt-2 relative text-left">
+                You can only upload 1 file as a guest user
               </div>
             )}
+          </div>
+          <DragAndDropFiles
+            blogLinks={blogLinks}
+            setBlogLinks={setBlogLinks}
+            onClickHereButtonClick={() => setShowGDriveModal(true)}
+          />
+          {/* <div>{!isAuthenticated && filesNames.length > 1 && <div className="text-sm text-red-500 mt-2 relative -top-[45px] text-left">You can only upload 1 file as a guest user</div>}</div> */}
+          {showFileStatus && (
+            <div className="flex items-center justify-center  my-2 gap-2 max-w-full min-w-full flex-wrap">
+              {uploadedFilesData.map((file, index) => {
+                console.log(file);
+                return (
+                  <FileUploadCard
+                    key={index}
+                    fileName={file.name}
+                    fileSize={file.size}
+                    progress={file.percentage}
+                  />
+                );
+              })}
+            </div>
+          )}
         </>
       ),
     },
   ];
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const isOTPVerified = localStorage.getItem("isOTPVerified");
-      // check if verified or not
-      if (isOTPVerified == "false" || !isOTPVerified) {
-        setPFModal(false);
-      } else {
-        if (meeData?.me.prefFilled === false) {
-          setPFModal(true);
-        }
-      }
-    }
-    if (meeData?.me) {
-      localStorage.setItem(
-        "userId",
-        JSON.stringify(meeData.me._id).replace(/['"]+/g, "")
-      );
-      if (typeof window !== "undefined") {
-        const isOTPVerified = meeData?.me?.emailVerified;
-        if (
-          isOTPVerified == "false" ||
-          !isOTPVerified ||
-          isOTPVerified == null
-        ) {
-          setPFModal(false);
-        } else {
-          if (meeData?.me.prefFilled === false) {
-            setPFModal(true);
-          }
-        }
-
-        if (
-          isOTPVerified === "false" ||
-          !isOTPVerified ||
-          isOTPVerified === null ||
-          isOTPVerified === undefined
-        ) {
-          setIsOTPVerified(false);
-          const { day, month } = getDateMonthYear(meeData?.me.date);
-          if (!isMonthAfterJune(month)) {
-            if (month == "June") {
-              if (day <= 18) {
-                setShowOTPModal(false);
-              } else {
-                setShowOTPModal(true);
-              }
-            } else {
-              setShowOTPModal(false);
-            }
-          } else {
-            setShowOTPModal(true);
-          }
-        } else {
-          setIsOTPVerified(true);
-          setShowOTPModal(false);
-        }
-      }
-    }
-  }, [meeData]);
 
   useEffect(() => {
     function sendOpt() {
@@ -967,7 +683,7 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
       };
 
       fetch(SEND_OTP_URL, requestOptions)
-        .then((response) => { })
+        .then((response) => {})
         .catch((error) => {
           console("ERROR FROM SEND OTP");
         });
@@ -981,8 +697,8 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
     setWindowWidth(window.innerWidth);
   }, []);
 
-  const [showRegenModalWarning, setShowRegenModalWarning] = useState(false)
-  const [missingValueType, setMissingValueType] = useState("")
+  const [showRegenModalWarning, setShowRegenModalWarning] = useState(false);
+  const [missingValueType, setMissingValueType] = useState("");
 
   return (
     <>
@@ -1013,7 +729,7 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
         <Modal
           isOpen={showRegenModalWarning}
           onRequestClose={() => {
-            setShowRegenModalWarning(false)
+            setShowRegenModalWarning(false);
           }}
           ariaHideApp={false}
           className="w-[100%] sm:w-[38%] max-h-[95%]"
@@ -1042,59 +758,64 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
           }}
         >
           <button
-              className="absolute right-[35px]"
+            className="absolute right-[35px]"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowRegenModalWarning(false);
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+          <div className="mx-auto pb-4">
+            <img
+              className="mx-auto h-12"
+              src="/info.png"
+              style={{
+                filter:
+                  "hue-rotate(120deg)" /* Rotate the hue to turn red into green */,
+              }}
+            />
+          </div>
+          <div className="mx-auto font-bold text-2xl w-full text-center mr-auto">
+            No {missingValueType} provided
+          </div>
+          <p className="text-gray-500 text-base font-medium mt-4 mx-auto">
+            You have not provided any {missingValueType}(s). Do you want to
+            proceed
+          </p>
+          <div className="flex my-9">
+            <button
+              className="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
               onClick={(e) => {
-                e.stopPropagation()
-                setShowRegenModalWarning(false)
+                e.stopPropagation();
+                setShowRegenModalWarning(false);
               }}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              No
             </button>
-            <div className="mx-auto pb-4">
-              <img className="mx-auto h-12" src="/info.png" style={{
-                  filter: 'hue-rotate(120deg)' /* Rotate the hue to turn red into green */
-              }}/>
-            </div>
-            <div className="mx-auto font-bold text-2xl w-full text-center mr-auto">
-              No {missingValueType} provided
-            </div>
-            <p className="text-gray-500 text-base font-medium mt-4 mx-auto">
-              You have not provided any {missingValueType}(s). Do you want to proceed
-            </p>
-            <div className="flex my-9">
-              <button
-                className="mr-4 w-[200px] p-4 bg-transparent hover:bg-green-500 text-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setShowRegenModalWarning(false);
-                }}
-              >
-                No
-              </button>
-              <button
-                className="w-[240px]  bg-transparent hover:bg-green-700 text-green-700 font-semibold hover:text-white py-2 px-4 border border-green-700 hover:border-transparent rounded"
-                onClick={() => {
-                  console.log('critical generating web')
-                  generateBlog([],[])
-                }}
-              >
-                YES!
-              </button>
-            </div>
-        
+            <button
+              className="w-[240px]  bg-transparent hover:bg-green-700 text-green-700 font-semibold hover:text-white py-2 px-4 border border-green-700 hover:border-transparent rounded"
+              onClick={() => {
+                console.log("critical generating web");
+                generateBlog([], []);
+              }}
+            >
+              YES!
+            </button>
+          </div>
         </Modal>
         <ToastContainer />
         {pfmodal && (
@@ -1114,36 +835,48 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
           <></>
         )}
 
-
         {/* <TotalTImeSaved   /> */}
 
         {!meeData?.me?.isSubscribed && meeData?.me?.credits === 0 && (
-          <TrialEndedModal setTrailModal={() => { }} topic={null} />
+          <TrialEndedModal setTrailModal={() => {}} topic={null} />
         )}
         <GoogleDriveModal
           showModal={showGDriveModal}
           setShowModal={setShowGDriveModal}
           meeData={meeData}
         />
-        {
-          showErrorModal && <GenerateErrorModal 
-          modalOpen={showErrorModal}
-          setModalOpen={setShowErrorModal}
-          />
-        }
-        {showingGenerateLoading && (
-          <GenerateLoadingModal
-            resetForm={handleGenerateReset}
-            showGenerateLoadingModal={showingGenerateLoading}
-            setShowGenerateLoadingModal={setShowingGenerateLoading}
-            stepStatus={subsData?.stepCompletes.step}
-            type={countByType.lengthOFiles > 0 || countByType.lengthOfUrls > 0 ? countByType.lengthOfUrls > 0 ? 'URL' : "FILE" : "WEB"}
-            showBackButton={countByType.lengthOFiles > 0 || countByType.lengthOfUrls > 0}
+        {showErrorModal && (
+          <GenerateErrorModal
+            modalOpen={showErrorModal}
+            setModalOpen={setShowErrorModal}
           />
         )}
+        {isMisciScannerLoading && (
+          <MisciUploadLoader
+            showGenerateLoadingModal={isMisciScannerLoading}
+            setShowGenerateLoadingModal={setIsMisciScannerLoading}
+          />
+          // <GenerateLoadingModal
+          //   resetForm={handleGenerateReset}
+          //   showGenerateLoadingModal={showingGenerateLoading}
+          //   setShowGenerateLoadingModal={setShowingGenerateLoading}
+          //   stepStatus={subsData?.stepCompletes.step}
+          //   type={
+          //     countByType.lengthOFiles > 0 || countByType.lengthOfUrls > 0
+          //       ? countByType.lengthOfUrls > 0
+          //         ? "URL"
+          //         : "FILE"
+          //       : "WEB"
+          //   }
+          //   showBackButton={
+          //     countByType.lengthOFiles > 0 || countByType.lengthOfUrls > 0
+          //   }
+          // />
+        )}
         <div
-          className={`maincontainer relative md:px-6 pt-5 lg:px-8 ${!isAuthenticated && "min-h-screen"
-            }`}
+          className={`maincontainer relative md:px-6 pt-5 lg:px-8 ${
+            !isAuthenticated && "min-h-screen"
+          }`}
         >
           <FloatingBalls className="hidden absolute top-[4%] rotate-45 md:block" />
           <FloatingBalls className="hidden absolute top-[2%] w-10 right-[2%] md:block" />
@@ -1168,7 +901,7 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
             className="w-full lg:w-[50%] h-full "
             style={{
               transform: "rotate(180deg)",
-              display: isAuthenticated ? "none" : "block,", //      transform: scaleX(-1);
+              display: isAuthenticated ? "none" : "block,",
               transform: "scaleX(-1)",
               background:
                 "linear-gradient(255deg, #FFEBE9 0%, #F3F6FB 60%, rgba(251, 247.32, 243, 0) 100%)",
@@ -1282,104 +1015,124 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
           )}
           <div className=" relative mx-auto max-w-screen-xl flex flex-col">
             <div
-              className={`mx-auto max-w-5xl text-center h-screen  ${isAuthenticated ? "" : "min-h-screen"
-                } flex items-center justify-center `}
+              className={`mx-auto max-w-5xl text-center h-screen  ${
+                isAuthenticated ? "" : "min-h-screen"
+              } flex items-center justify-center `}
               style={{
                 height: "100%",
               }}
             >
               <div
-                className={`mt-[10%] ${isAuthenticated
-                  ? keywordsOFBlogs.length == 0 && "lg:mt-[10%]"
-                  : keywordsOFBlogs.length == 0 && "lg:mt-[-10%]"
-                  }`}
+                className={`mt-[10%] ${
+                  isAuthenticated
+                    ? keywordsOFBlogs.length == 0 && "lg:mt-[10%]"
+                    : keywordsOFBlogs.length == 0 && "lg:mt-[-10%]"
+                }`}
               >
-                <RotatingText/> 
-                <div
-                  className="w-full lg:min-w-[850px] animate-fadeIn lg:max-w-[850px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-4"
-
-                  style={{
-                    background: "rgba(255, 255, 255, 0.5)",
-                    outline: 'none !important' 
-                  }}
-                >
-                  <h1
-                    className="text-center text-slate-800 text-xl font-bold leading-relaxed">Select a Source</h1>
-                  <div className="w-full relative">
-                    <Tab.Group
-                      defaultIndex={activeTab}
-                      onChange={(index) => {
-                        setActiveTab(index);
-                      }}
-                    >
-                      <Tab.List className="justify-start items-center gap-3 inline-flex">
-                        {tabs.map((tab) => (
-
-                         <Tab
-                            key={tab.id}
-                            className={`${tab.label === "Web"  ? "lg:w-24" : "lg:w-32"} h-8  px-0.5 lg:px-2.5 py-1 border-b border-indigo-600 ring-0  focus:ring-0  justify-center items-center gap-2.5 inline-flex text-base font-medium text-gray-800 ${activeTab === tab.id ? "border-b-2 border-indigo-600 text-gray-800" : "text-gray-600 border-none"}`}>
-                            {tab.label}
-                          </Tab>
-                        ))}
-                      </Tab.List>
-                      <Tab.Panels>
-                        {tabs.map((tab) => (
-                          <Tab.Panel
-                            key={tab.id}
-                             className={`
-                            p-4 transition-all duration-300 ease-in-out animate-fadeIn 
-                            ${activeTab === tab.id ? "opacity-100 visible animate-fadeIn" : "opacity-0 invisible"}
-                          `}
-                          >
-                            {tab.upperContent ? tab.upperContent : null}
-                            <div className="w-full h-full justify-center items-center gap-2.5 inline-flex">
-                              <div className={`relative w-full min-h-[60px] bg-white rounded-[10px]  border py-2.5 ${keyword.length > 100 ? 'border-red-600' : 'border-indigo-600'} `}>
-                                <div className={`flex items-center flex-col md:flex-row  gap-2.5 relative outline-none active:outline-none rounded-lg`}>
-                                  <KeywordInput
-                                    keyword={keyword}
-                                    setKeyword={setkeyword}
-                                    placeholder={tabsPlaceholders[tab.id]}
-                                    maxLength={100}
-                                    onKeyDown={
-                                       (e) => {
+                <RotatingText />
+                <form onSubmit={handleExtractInfo}>
+                  <div
+                    className="w-full lg:min-w-[850px] animate-fadeIn lg:max-w-[850px] h-full opacity-90 transition-all ease-out shadow border border-white backdrop-blur-[20px] flex-col justify-center mt-10 items-center gap-[18px] inline-flex rounded-[10px] p-4"
+                    style={{
+                      background: "rgba(255, 255, 255, 0.5)",
+                      outline: "none !important",
+                    }}
+                  >
+                    <h1 className="text-center text-slate-800 text-xl font-bold leading-relaxed">
+                      Select a Source
+                    </h1>
+                    <div className="w-full relative">
+                      <Tab.Group
+                        defaultIndex={activeTab}
+                        onChange={(index) => {
+                          setActiveTab(index);
+                        }}
+                      >
+                        <Tab.List className="justify-start items-center gap-3 inline-flex">
+                          {tabs.map((tab) => (
+                            <Tab
+                              key={tab.id}
+                              className={`${
+                                tab.label === "Web" ? "lg:w-24" : "lg:w-32"
+                              } h-8  px-0.5 lg:px-2.5 py-1 border-b border-indigo-600 ring-0  focus:ring-0  justify-center items-center gap-2.5 inline-flex text-base font-medium text-gray-800 ${
+                                activeTab === tab.id
+                                  ? "border-b-2 border-indigo-600 text-gray-800"
+                                  : "text-gray-600 border-none"
+                              }`}
+                            >
+                              {tab.label}
+                            </Tab>
+                          ))}
+                        </Tab.List>
+                        <Tab.Panels>
+                          {tabs.map((tab) => (
+                            <Tab.Panel
+                              key={tab.id}
+                              className={`
+                              p-4 transition-all duration-300 ease-in-out animate-fadeIn 
+                              ${
+                                activeTab === tab.id
+                                  ? "opacity-100 visible animate-fadeIn"
+                                  : "opacity-0 invisible"
+                              }
+                            `}
+                            >
+                              {tab.upperContent ? tab.upperContent : null}
+                              {/* <div className="w-full h-full justify-center items-center gap-2.5 inline-flex">
+                                <div
+                                  className={`relative w-full min-h-[60px] bg-white rounded-[10px]  border py-2.5 ${
+                                    keyword.length > 100
+                                      ? "border-red-600"
+                                      : "border-indigo-600"
+                                  } `}
+                                >
+                                  <div
+                                    className={`flex items-center flex-col md:flex-row  gap-2.5 relative outline-none active:outline-none rounded-lg`}
+                                  >
+                                    <KeywordInput
+                                      keyword={keyword}
+                                      setKeyword={setkeyword}
+                                      placeholder={tabsPlaceholders[tab.id]}
+                                      maxLength={100}
+                                      onKeyDown={(e) => {
                                         if (e.key === "Enter") {
-                                          disableGenerateButton ? null : handleGenerateClick();
+                                          disableGenerateButton
+                                            ? null
+                                            : handleGenerateClick();
                                         }
-                                      }
-                                    }
-                                  />
+                                      }}
+                                    />
+                                  </div>
                                 </div>
-                              </div>
-                              {
-                                keyword.length > 100 && (
+                                {keyword.length > 100 && (
                                   <div className="absolute bottom-0 left-4 text-red-600 text-xs font-medium leading-none">
                                     {keyword.length}/100
                                   </div>
-                                )
-                              }
-                            </div>
-                            {tab.content}
-                          </Tab.Panel>
-                        ))}
-                      </Tab.Panels>
-                    </Tab.Group>
+                                )}
+                              </div> */}
+                              {tab.content}
+                            </Tab.Panel>
+                          ))}
+                        </Tab.Panels>
+                      </Tab.Group>
+                    </div>
+
+                    <button
+                      disabled={disableGenerateButton}
+                      className="h-14 px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-lg shadow justify-center items-center gap-2.5 inline-flex hover:from-indigo-700 hover:to-violet-700 focus:shadow-outline-indigo disabled:opacity-50 disabled:cursor-not-allowed"
+                      type="submit"
+                      // onClick={() => {
+                      //   handleGenerateClick()
+                      // }}
+                    >
+                      <>
+                        <div className="text-white text-base font-medium leading-7">
+                          Extract Information{" "}
+                        </div>
+                      </>
+                    </button>
                   </div>
-
-                  <button
-                    disabled={disableGenerateButton}
-                    className="h-14 px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-lg shadow justify-center items-center gap-2.5 inline-flex hover:from-indigo-700 hover:to-violet-700 focus:shadow-outline-indigo disabled:opacity-50 disabled:cursor-not-allowed"
-                    onClick={() => {
-
-                      handleGenerateClick()
-                    }}
-                  >
-                    <>
-                      <div className="text-white text-base font-medium leading-7">
-                        Extract Information{" "}
-                      </div>
-                    </>
-                  </button>
-                </div>
+                </form>
 
                 <div
                   className="w-[80%] absolute top-[500px] lg:top-[350px] h-[200px] inset-x-0 -z-10"
@@ -1418,19 +1171,18 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
               </defs>
             </svg>
           </div> */}
-        {/* {!isAuthenticated && <KeyFeatures/>} */}
-      </div>
-
+          {/* {!isAuthenticated && <KeyFeatures/>} */}
+        </div>
 
         {/* {!isAuthenticated && <MoblieUnAuthFooter />} */}
       </Layout>
 
       {/* chat */}
       <img
-        className='h-12 absolute bottom-1 right-1 md:bottom-10 md:right-7 cursor-pointer bg-gray-400 rounded-md p-1.5'
+        className="h-12 absolute bottom-1 right-1 md:bottom-10 md:right-7 cursor-pointer bg-gray-400 rounded-md p-1.5"
         src="/chat.png"
-        style={{objectFit: 'cover'}}
-        onClick={() => router.replace('/misci')}
+        style={{ objectFit: "cover" }}
+        onClick={() => router.replace("/misci")}
       />
       <style>
         {`
@@ -1474,100 +1226,25 @@ export default function UploadDocument({ payment, randomLiveUsersCount }) {
   );
 }
 
-const AIInputComponent = () => {
-  const [keyword, setkeyword] = useState("");
-  const router = useRouter();
-  const setKeywordInStore = useStore((state) => state.setKeyword);
-  const buttonHeightRef = useRef(null);
-  const [buttonHeight, setButtonHeight] = useState(0);
-  const handleEnterKeyPress = (e: { key: string }) => {
-    if (e.key === "Enter") {
-      setKeywordInStore(keyword);
-      router.push({
-        pathname: "/dashboard",
-        query: { topic: keyword },
-      });
-    }
-  };
-  const handleButtonClick = () => {
-    const pathname = keyword.trim().length > 0 ? "/dashboard" : "/";
-    const query = { topic: keyword };
-    router.push({ pathname, query });
-  };
-
-  const isDisabled = keyword.trim().length === 0;
-  useEffect(() => {
-    if (buttonHeightRef.current) {
-      setButtonHeight(buttonHeightRef.current.clientHeight);
-    }
-  }, []);
-
-  return (
-    <div
-      className="mt-10 flex flex-col lg:flex-row  items-center h-full justify-center gap-x-6 w-[100%] rounded-lg  min-h-[60px] py-2.5"
-      style={{
-        height: "100%",
-      }}
-    >
-      <div
-        className={`flex-grow w-full lg:w-[65%]  flex-shrink-0 flex flex-row items-center justify-center gap-2.5 transition-all duration-500 ease-in-out rounded-[10px]`}
-        style={{
-          height: buttonHeightRef.current
-            ? buttonHeightRef.current.clientHeight + "px"
-            : `100%`,
-        }}
-      >
-        <input
-          id="search"
-          name="search"
-          className="flex-grow h-full border-0 bg-white py-2.5 px-3 text-gray-900 ring-1   ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 disabled:opacity-50 rounded-[10px] min-h-[60px]"
-          placeholder="Enter a topic name, keywords or  a sentence"
-          type="search"
-          onChange={(e) => {
-            setkeyword(e.target.value);
-            setKeywordInStore(e.target.value); // Update the keyword in the store
-          }}
-          onKeyPress={handleEnterKeyPress}
-        />
-      </div>
-      <button
-        ref={buttonHeightRef}
-        className={`cta-invert rounded-[10px] mt-2 lg:mt-0 w-full lg:w-[35%]  items-center  flex flex-row bg-indigo-600 ${isDisabled ? "disabled:opacity-50" : ""
-          }`}
-        onClick={handleButtonClick}
-        disabled={isDisabled}
-        style={{}}
-      >
-        {/* <span> <span className='flex flex-row w-full items-center justify-center gap-1'>Generate 1st Drafts for Articles <FaFacebook className="h-5 w-5 " /> <FaTwitter className="h-5 w-5" /> <FaLinkedin className="h-5 w-5" /> 
-        <ArrowLongRightIcon className="h-5 w-5" />
-        </span></span> */}
-        <span className="w-full">
-          Generate 1<sup>st</sup> Drafts for Articles{" "}
-          <span className="flex flex-row w-full items-center justify-center">
-            <FaFacebook className="h-5 w-5 mr-1 lg:mr-3" />{" "}
-            <FaTwitter className="h-5 w-5 mr-1 lg:mr-3" />{" "}
-            <FaLinkedin className="h-5 w-5 mr-1 lg:mr-3" />
-            <ArrowLongRightIcon className="h-5 w-5" />
-          </span>
-        </span>
-      </button>
-    </div>
-  );
-};
-
 type KeywordInputProps = {
-  maxLength: number;
+  maxLength?: number;
   placeholder: string;
   keyword: string;
   setKeyword: React.Dispatch<React.SetStateAction<string>>;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
-const KeywordInput = ({ maxLength, placeholder, keyword, setKeyword , onKeyDown}: KeywordInputProps) => {
+const KeywordInput = ({
+  maxLength,
+  placeholder,
+  keyword,
+  setKeyword,
+  onKeyDown,
+}: KeywordInputProps) => {
   return (
     <input
       type="text"
-      maxLength={maxLength}
+      // maxLength={maxLength}
       placeholder={placeholder}
       className="w-full h-full outline-transparent bg-transparent border-transparent focus:border-transparent focus:ring-0"
       value={keyword}
@@ -1579,15 +1256,14 @@ const KeywordInput = ({ maxLength, placeholder, keyword, setKeyword , onKeyDown}
       onKeyDown={(e) => {
         if (e.key === "Enter") {
           e.preventDefault();
-          onKeyDown ? onKeyDown(e) : null; 
+          onKeyDown ? onKeyDown(e) : null;
         }
       }}
     />
   );
 };
 
-
-const RotatingText = React.memo(()=> {
+const RotatingText = React.memo(() => {
   return (
     <div className="relative flex lg:mb-[20px] text-3xl items-center justify-center font-bold tracking-tight text-gray-900 sm:text-5xl flex-wrap custom-spacing lg:min-w-[900px]">
       Lille for <TextTransitionEffect text={TEXTS2} />
@@ -1619,11 +1295,7 @@ const RotatingText = React.memo(()=> {
               gradientUnits="userSpaceOnUse"
             >
               <stop stop-color="#F7938B" />
-              <stop
-                offset="1"
-                stop-color="white"
-                stop-opacity="0"
-              />
+              <stop offset="1" stop-color="white" stop-opacity="0" />
             </linearGradient>
             <linearGradient
               id="paint1_linear_2158_42358"
@@ -1634,17 +1306,13 @@ const RotatingText = React.memo(()=> {
               gradientUnits="userSpaceOnUse"
             >
               <stop stop-color="#F9948C" />
-              <stop
-                offset="1"
-                stop-color="white"
-                stop-opacity="0"
-              />
+              <stop offset="1" stop-color="white" stop-opacity="0" />
             </linearGradient>
           </defs>
         </svg>
       </div>
     </div>
-  )
-}) 
+  );
+});
 
-RotatingText.displayName = 'RotatingText';
+RotatingText.displayName = "RotatingText";

@@ -32,7 +32,7 @@ const DragAndDropFiles = ({onClickHereButtonClick}:{
   const addBlogLink = useBlogLinkStore((state) => state.addBlogLink);
   const removeBlogLink = useBlogLinkStore((state) => state.removeBlogLink);
   const { setShowFileStatus, setFileConfig}= useFileUploadStore()
-console.log(isUserAuthenticated() , "token loged")
+  // console.log(isUserAuthenticated() , "token loged")
 
   const onDrop = async (acceptedFiles: File[]) => {
 
@@ -108,8 +108,8 @@ console.log(isUserAuthenticated() , "token loged")
     onDrop,
     accept: {
       'application/pdf': [],
-      '.docx': [],
-      '.txt': [],
+      // '.docx': [],
+      // '.txt': [],
       'text/plain': [],
       'text/rtf': [],
     },

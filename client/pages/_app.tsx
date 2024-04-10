@@ -128,7 +128,7 @@ export default function App({ Component, pageProps }: AppProps) {
     '/misci/faq',
     '/misci/document/[foodName]',
     '/misci/upload',
-    '/misci/article-generated/[foodName]',
+    '/misci/article-generated',
   ];
 
   useEffect(() => {
