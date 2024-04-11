@@ -120,7 +120,7 @@ function ArticleGenerated() {
             {/* head */}
             <div className="items-center mt-5">
                 {/* heading text */}
-                <div className="w-screen text-center lg:pl-44">
+                <div className="w-screen text-center">
                     <h1 className="text-2xl md:text-4xl italic uppercase font-bold mb-4">
                         {articleObj?.title}
                     </h1>
@@ -129,6 +129,7 @@ function ArticleGenerated() {
             
             {/* body */}
             {articleObj?.img_url ?
+                // body with image
                 <div className='md:grid md:grid-cols-5 flex flex-col md:gap-8 lg:gap-12 gap-6 px-7 mb-[6rem] md:mb-[3rem]'>
                     {/* food image */}
                     <div className='md:col-start-1 md:col-end-2 pl-[3rem] pr-[3rem] md:pl-0 md:pr-0'>
@@ -143,7 +144,7 @@ function ArticleGenerated() {
                     <div className='md:col-start-2 md:col-end-6 text-justify'>
 
                         {/* extracted entities */}
-                        <p className='text-xl font-bold mb-2'>Extracted Entities:</p>
+                        <p className='text-xl font-bold mb-2'>Extracted Entities :</p>
                         <p className='mb-2'>{JSON.stringify(articleObj?.entities)}</p>
 
                         {/* rest of the notes */}
@@ -176,12 +177,13 @@ function ArticleGenerated() {
                     </div>
                 </div>
             :
+                // body without image
                 <div className='px-10 mb-[6rem] md:mb-[3rem]'>
                     {/* food notes */}
                     <div className='md:col-start-2 md:col-end-6 text-justify'>
 
                         {/* extracted entities */}
-                        <p className='text-xl font-bold mb-2'>Extracted Entities:</p>
+                        <p className='text-xl font-bold mb-2'>Extracted Entities :</p>
                         <p className='mb-2'>{JSON.stringify(articleObj?.entities)}</p>
 
                         {/* rest of the notes */}
