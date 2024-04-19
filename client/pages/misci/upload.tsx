@@ -1,28 +1,14 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable @next/next/no-html-link-for-pages */
 // @ts-nocheck
-import { getStaticProps } from "next";
-import MoblieUnAuthFooter, {
-  socialLinks,
-} from "@/components/LandingPage/MoblieUnAuthFooter";
-import RePurpose from "@/components/LandingPage/RePurpose";
-import { API_BASE_PATH, API_ROUTES } from "@/constants/apiEndpoints";
+import { API_BASE_PATH } from "@/constants/apiEndpoints";
 import { gql, useQuery, useSubscription } from "@apollo/client";
-import Tooltip from "@/components/ui/Tooltip";
-import {
-  ArrowRightCircleIcon,
-  InformationCircleIcon,
-} from "@heroicons/react/20/solid";
 import Head from "next/head";
-import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Confetti from "react-confetti";
-import Marquee from "react-fast-marquee";
 import { ToastContainer, toast } from "react-toastify";
-import LandingPage from "../../components/LandingPage/LandingPage";
 import Layout from "../../components/Layout";
-import LoaderPlane from "../../components/LoaderPlane";
 import TrialEndedModal from "../../components/TrialEndedModal";
 import { meeAPI } from "../../graphql/querys/mee";
 import { STEP_COMPLETES_SUBSCRIPTION } from "../../graphql/subscription/generate";
@@ -31,24 +17,14 @@ import Modal from "react-modal";
 import OTPModal from "../../modals/OTPModal";
 import PreferencesModal from "../../modals/PreferencesModal";
 import useStore, {
-  useClientUserStore,
   useFunctionStore,
 } from "../../store/store";
 import { Tab } from "@headlessui/react";
 import {
-  ArrowLongRightIcon,
-  ArrowLongUpIcon,
-  CheckCircleIcon,
-  CloudArrowUpIcon,
-  DocumentIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
-import { checkFileFormatAndSize } from "@/components/DashboardInsights";
-import { TotalTImeSaved } from "@/modals/TotalTImeSaved";
 import DragAndDropFiles, {
-  REPURPOSE_MAX_SIZE_MB,
 } from "@/components/ui/DragAndDropFiles";
-import { maxFileSize } from "@/helpers/utils";
 import {
   useBlogLinkStore,
   useFileUploadStore,
@@ -59,29 +35,21 @@ import {
   useTotalSavedTimeStore,
 } from "@/store/appState";
 // import { FacebookIcon, LinkedinIcon, TwitterIcon } from "react-share";
-import { FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 import { TextTransitionEffect } from "@/components/ui/TextTransitionEffect";
 import {
-  Chip,
   FileChipIcon,
   FileUploadCard,
   FloatingBalls,
 } from "@/components/ui/Chip";
 import { InputData } from "@/types/type";
 import {
-  misciFileUpload,
   newGenerateApi,
-  processKeywords,
   randomNumberBetween20And50,
-  uppercaseFirstChar,
 } from "@/store/appHelpers";
-import { extractKeywordsFromKeywords } from "@/helpers/apiMethodsHelpers";
 import { TYPES_OF_GENERATE } from "@/store/appContants";
 import GoogleDriveModal from "@/modals/GoogleDriveModal";
 import { StepCompleteData } from "@/store/types";
-import GenerateLoadingModal from "@/modals/GenerateLoadingModal";
 import GenerateErrorModal from "@/modals/GenerateErrorModal";
-import KeyFeatures from "@/components/KeyFeartures";
 import MisciUploadLoader from "@/modals/MisciUploadLoader";
 
 const PAYMENT_PATH = "/?payment=true";
@@ -158,12 +126,9 @@ export default function UploadDocument() {
   const [isPayment, setIsPayment] = useState(false);
   const blogLinks = useBlogLinkStore((state) => state.blogLinks);
   const [keywordsOFBlogs, setkeywordsOfBlogs] = useState([]);
-  const [articleIds, setArticleIds] = useState([]);
   const setBlogLinks = useBlogLinkStore((state) => state.setBlogLinks);
-  const [currentTabIndex, setCurrentTabIndex] = useState(0);
   const { removeBlogLink } = useBlogLinkStore();
   const [repurposeTones, setRepurposeTones] = useState(newTones);
-  const [showFileUploadUI, setShowFileUploadUI] = useState(false);
   const addToFunctionStack = useFunctionStore((state) => state.addToStack);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [stateOfGenerate, setStateOfGenerate] = useState({
@@ -172,8 +137,6 @@ export default function UploadDocument() {
     keyword: null,
   });
   const { updateTime } = useGenerateState();
-  const [inputData, setInputData] = useState<InputData>({});
-  const [showLoadingInfo, setShowLoadingInfo] = useState(false);
   const selectedFiles = useRepurposeFileStore((state) => state.selectedFiles);
   const removeSelectedFile = useRepurposeFileStore(
     (state) => state.removeSelectedFile
@@ -181,7 +144,6 @@ export default function UploadDocument() {
   const setSelectedFiles = useRepurposeFileStore(
     (state) => state.setSelectedFiles
   );
-  const [inputMouseIn, setInputMouseIn] = useState(false);
   const executeLastFunction = useFunctionStore(
     (state) => state.executeLastFunction
   );
@@ -344,7 +306,7 @@ export default function UploadDocument() {
           setIsMisciScannerLoading(false);
         } else {
           setIsMisciScannerLoading(false);
-          toast.error('Something Went Wrong! Please Try Any Other Document!');
+          toast.error('Could Not Fetch Info! Please Try Any Other Url !');
         }
       } catch (error) {
         console.log("error: ", error);
@@ -380,7 +342,7 @@ export default function UploadDocument() {
           setIsMisciScannerLoading(false);
         } else {
           setIsMisciScannerLoading(false);
-          toast.error('Something Went Wrong! Please Try Any Other Document!');
+          toast.error('Could Not Fetch Info! Please Try Any Other Document !');
         }
 
       } catch (error) {
