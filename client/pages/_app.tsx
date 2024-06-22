@@ -24,6 +24,7 @@ import { API_BASE_PATH, API_ROUTES } from "../constants/apiEndpoints";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { SubscriptionClient } from "subscriptions-transport-ws";
 import { useClientUserStore } from "@/store/store";
+import 'react-toastify/dist/ReactToastify.css';
 
 axios.interceptors.request.use(
   (config) => {

@@ -977,3 +977,59 @@ iframe::-webkit-scrollbar-thumb:hover {
   margin-left: 5%;
   height: 3rem;
 }
+
+.entities-dropdown {
+  color: white;
+}
+
+.entities-relationship-div {
+  display: flex;
+  justify-content: space-between;
+}
+.entities-relationship-div > label {
+  width: 25%;
+}
+.entities-relationship-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.table-container {
+  padding: 40px;
+}
+
+.table-container > table > tr > td,th {
+  padding: 10px;
+}
+
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+.entities-input {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+}
+
+.button {
+  background-color: #04AA6D; /* Green */
+  border: none;
+  color: white;
+  padding: 9px 22px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  float: left;
+}
+
+.button:hover {
+  background-color: #3e8e41;
+}
+.save-button-container {
+  width: 10px;
+}
