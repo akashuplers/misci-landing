@@ -4,7 +4,8 @@ import React, { useEffect, useLayoutEffect, useState } from 'react';
 import Select from 'react-select'
 import CreatableSelect from 'react-select/creatable';
 import { toast } from "react-toastify";
-import { RESEARCH_API } from "../../constants/apiEndpoints";
+import { RESEARCH_API } from "../../constants";
+import { FaTrash } from "react-icons/fa/index";
 
 const defaultArticleObj = {
     error: false,
@@ -115,6 +116,7 @@ function ArticleGenerated() {
 
    useLayoutEffect(() => {
     const fetchRelationships = async () => {
+        console.log(RESEARCH_API, "RESEARCH_API")
         try {
             const response = await axios.get(`${RESEARCH_API}relations/list`); // Wait for api response
             const { data } = response?.data; // Destructure response data
@@ -190,6 +192,7 @@ function ArticleGenerated() {
         try {
             let finalPayload = []
             let missingEntities = []
+            let wrongDomains = []
             selectedEntities.forEach((entity) => {
                 const entitiesPayload = Object.assign({}, entity);
                 const purpose = entitiesPayload.purpose
@@ -197,6 +200,10 @@ function ArticleGenerated() {
                 const relationship = entitiesPayload.relationship
                 if(Object.keys(entity)?.length < 2) {
                     missingEntities.push(entity)
+                }
+                const regex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/
+                if(!entity.domain  ||  (entity.domain && !regex.test(entity.domain))) {
+                    wrongDomains.push("Wrong Domain Provided!")
                 }
                 const filteredObj = Object.keys(entity).filter((key) => !['purpose', 'domain', 'relationship'].includes(key))
                 let filteredEntities = {}
@@ -217,6 +224,8 @@ function ArticleGenerated() {
             })
             if(missingEntities && missingEntities.length) {
                 return toast.error('Please select atleast 2 entities!')
+            }else if(wrongDomains?.length) {
+                return toast.error('Please provide correct domain!')
             }else{
                 const response = await axios.post(`${RESEARCH_API}relations/entities-relations`, {
                     entities: finalPayload
@@ -265,6 +274,22 @@ function ArticleGenerated() {
 
         }
     }
+
+    const handleDelete = (index) => {
+        const arr = selectedEntities.filter((d,i) => i !== index)
+        setSelectedEntities(arr)
+    }
+
+    const handleCreateWs = (e, type) => {
+        const optionsArr = options
+        optionsArr[type].push({
+            value: e,
+            label: e
+        })
+        setOptions(optionsArr)
+    }
+    console.log(selectedEntities, "selectedEntities akash")
+    console.log(relationships, "relationships akash")
   return (
     <div className='h-screen overflow-y-auto bg-yellow-50'>
         {isLoading ?
@@ -306,7 +331,8 @@ function ArticleGenerated() {
                             <div className='entities-relationship-div'>
                                 <label>
                                     How
-                                    <Select options={options.How} className='entities-dropdown' 
+                                    <CreatableSelect options={options.How} className='entities-dropdown' 
+                                    onCreateOption={e => handleCreateWs(e, "How")}
                                     autosize={true} 
                                     styles={customStyles}
                                     isMulti={true}
@@ -316,7 +342,9 @@ function ArticleGenerated() {
                                 </label>
                                 <label>
                                     What
-                                    <Select options={options.What} className='entities-dropdown' autosize={true} 
+                                    <CreatableSelect 
+                                    onCreateOption={e => handleCreateWs(e, "What")}
+                                    options={options.What} className='entities-dropdown' autosize={true} 
                                     styles={customStyles}
                                     isMulti={true}
                                     isClearable={true}
@@ -325,21 +353,29 @@ function ArticleGenerated() {
                                 </label>
                                 <label>
                                     Where
-                                    <Select options={options.Where} isClearable={true} isMulti={true} className='entities-dropdown' autosize={true} styles={customStyles} onChange={(e) => handleSelect(e, "Where")} />
+                                    <CreatableSelect 
+                                    onCreateOption={e => handleCreateWs(e, "Where")}
+                                    options={options.Where} isClearable={true} isMulti={true} className='entities-dropdown' autosize={true} styles={customStyles} onChange={(e) => handleSelect(e, "Where")} />
                                 </label>
                             </div>
                             <div className='entities-relationship-div'>
                                 <label>
                                     Who
-                                    <Select options={options.Who} isMulti={true} className='entities-dropdown' autosize={true} styles={customStyles} onChange={(e) => handleSelect(e, "Who")} />
+                                    <CreatableSelect 
+                                    onCreateOption={e => handleCreateWs(e, "Who")}
+                                    options={options.Who} isMulti={true} className='entities-dropdown' autosize={true} styles={customStyles} onChange={(e) => handleSelect(e, "Who")} />
                                 </label>
                                 <label>
                                     Whom
-                                    <Select options={options.Whom} isMulti={true} className='entities-dropdown' autosize={true} styles={customStyles} onChange={(e) => handleSelect(e, "Whom")} />
+                                    <CreatableSelect 
+                                    onCreateOption={e => handleCreateWs(e)}
+                                    options={options.Whom} isMulti={true} className='entities-dropdown' autosize={true} styles={customStyles} onChange={(e) => handleSelect(e, "Whom")} />
                                 </label>
                                 <label>
                                     Why
-                                    <Select options={options.Why} isMulti={true} className='entities-dropdown' autosize={true} styles={customStyles} onChange={(e) => handleSelect(e, "Why")} />
+                                    <CreatableSelect 
+                                    onCreateOption={e => handleCreateWs(e, "Why")}
+                                    options={options.Why} isMulti={true} className='entities-dropdown' autosize={true} styles={customStyles} onChange={(e) => handleSelect(e, "Why")} />
                                 </label>
                             </div>
                         </div>
@@ -411,6 +447,11 @@ function ArticleGenerated() {
                                                             }
                                                         })
                                                     }
+                                                    <td>
+                                                        <a href='#' onClick={() => handleDelete(index)}> 
+                                                            <FaTrash />
+                                                        </a>
+                                                    </td>
                                                 </tr>
                                             )
                                         })
