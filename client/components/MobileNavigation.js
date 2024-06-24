@@ -14,7 +14,6 @@ import {
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { Fragment, useState } from "react";
-import { FaPeopleArrows } from "react-icons/fa";
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }

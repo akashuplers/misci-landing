@@ -405,13 +405,13 @@ function ArticleGenerated() {
                                     {
                                         selectedEntities?.length && selectedEntities.map((elem, index) => {
                                             return (
-                                                <tr>
+                                                <tr key={index}>
                                                     {
-                                                        Object.keys(options)?.map((optionKey) => {
+                                                        Object.keys(options)?.map((optionKey, i) => {
                                                             if(['purpose', 'domain', 'relationship'].includes(optionKey)) {
                                                                 if(optionKey === 'relationship') {
                                                                     return (
-                                                                        <td style={{width: "40%"}}>
+                                                                        <td style={{width: "40%"}} key={i}>
                                                                             <CreatableSelect 
                                                                                 // options={colourOptions} 
                                                                                 options={relationships}
@@ -423,13 +423,13 @@ function ArticleGenerated() {
                                                                     )
                                                                 }else if(optionKey === 'domain'){
                                                                     return (
-                                                                        <td style={{width: "40%"}}>
+                                                                        <td style={{width: "40%"}} key={i}>
                                                                             <input type="text" value={selectedEntities[index][optionKey]} onChange={(e) => handleInputs(e.target.value, index, "domain")}/>
                                                                         </td>
                                                                     )
                                                                 }else{
                                                                     return (
-                                                                        <td style={{width: "40%"}}>
+                                                                        <td style={{width: "40%"}} key={i}>
                                                                             <input type="text" value={selectedEntities[index][optionKey]} onChange={(e) => handleInputs(e.target.value, index, "purpose")}/>
                                                                         </td>
                                                                     )
@@ -440,7 +440,7 @@ function ArticleGenerated() {
                                                                 return (
                                                                     <td style={{
                                                                         width: "40%"
-                                                                    }}>
+                                                                    }} key={i}>
                                                                         {values.join(", ")}
                                                                     </td>
                                                                 )
