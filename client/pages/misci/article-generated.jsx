@@ -156,7 +156,7 @@ function ArticleGenerated() {
             const selected = selectedOptions
             const filtered = Object.keys(selected).findIndex((key) => key === type)
         }else{
-            if(entitiesSelectedCount?.length >= 2 && Object.keys(data)?.length) {
+            if(entitiesSelectedCount?.length >= 2 && Object.keys(data)?.length && !Object.keys(selectedOptions).includes(type)) {
                 return toast.error('Only Two entiites can be selected')
             }
             setSelectedOptions((prevOptions) => ({
@@ -289,7 +289,6 @@ function ArticleGenerated() {
         setOptions(optionsArr)
     }
     console.log(selectedEntities, "selectedEntities akash")
-    console.log(relationships, "relationships akash")
   return (
     <div className='h-screen overflow-y-auto bg-yellow-50'>
         {isLoading ?
