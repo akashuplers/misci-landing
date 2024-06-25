@@ -201,10 +201,10 @@ function ArticleGenerated() {
                 if(Object.keys(entity)?.length < 2) {
                     missingEntities.push(entity)
                 }
-                const regex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/
-                if(!entity.domain  ||  (entity.domain && !regex.test(entity.domain))) {
-                    wrongDomains.push("Wrong Domain Provided!")
-                }
+                // const regex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/
+                // if(!entity.domain  ||  (entity.domain && !regex.test(entity.domain))) {
+                //     wrongDomains.push("Wrong Domain Provided!")
+                // }
                 const filteredObj = Object.keys(entity).filter((key) => !['purpose', 'domain', 'relationship'].includes(key))
                 let filteredEntities = {}
                 filteredObj.forEach((key) => {
