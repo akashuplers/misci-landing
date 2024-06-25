@@ -504,6 +504,145 @@ function ArticleGenerated() {
                         <p className='text-xl font-bold mb-2'>Extracted Entities :</p>
                         <p className='mb-2'>{JSON.stringify(articleObj?.entities)}</p>
 
+                        <div className='entities-relationship-container'>
+                            <div className='entities-relationship-div'>
+                                <label>
+                                    How
+                                    <CreatableSelect options={options.How} className='entities-dropdown' 
+                                    onCreateOption={e => handleCreateWs(e, "How")}
+                                    autosize={true} 
+                                    styles={customStyles}
+                                    isMulti={true}
+                                    isClearable={true}
+                                    onChange={(e) => handleSelect(e, "How")}
+                                    />
+                                </label>
+                                <label>
+                                    What
+                                    <CreatableSelect 
+                                    onCreateOption={e => handleCreateWs(e, "What")}
+                                    options={options.What} className='entities-dropdown' autosize={true} 
+                                    styles={customStyles}
+                                    isMulti={true}
+                                    isClearable={true}
+                                    onChange={(e) => handleSelect(e, "What")}
+                                    />
+                                </label>
+                                <label>
+                                    Where
+                                    <CreatableSelect 
+                                    onCreateOption={e => handleCreateWs(e, "Where")}
+                                    options={options.Where} isClearable={true} isMulti={true} className='entities-dropdown' autosize={true} styles={customStyles} onChange={(e) => handleSelect(e, "Where")} />
+                                </label>
+                            </div>
+                            <div className='entities-relationship-div'>
+                                <label>
+                                    Who
+                                    <CreatableSelect 
+                                    onCreateOption={e => handleCreateWs(e, "Who")}
+                                    options={options.Who} isMulti={true} className='entities-dropdown' autosize={true} styles={customStyles} onChange={(e) => handleSelect(e, "Who")} />
+                                </label>
+                                <label>
+                                    Whom
+                                    <CreatableSelect 
+                                    onCreateOption={e => handleCreateWs(e)}
+                                    options={options.Whom} isMulti={true} className='entities-dropdown' autosize={true} styles={customStyles} onChange={(e) => handleSelect(e, "Whom")} />
+                                </label>
+                                <label>
+                                    Why
+                                    <CreatableSelect 
+                                    onCreateOption={e => handleCreateWs(e, "Why")}
+                                    options={options.Why} isMulti={true} className='entities-dropdown' autosize={true} styles={customStyles} onChange={(e) => handleSelect(e, "Why")} />
+                                </label>
+                            </div>
+                        </div>
+
+                        <div className='entities-relationship-div'>
+                            <a href='#' className="button" onClick={() => handleSelectionEntities()}>
+                                Select Entities
+                            </a>
+                        </div>
+
+                        {
+                            Object.keys(selectedEntities)?.length ? 
+                            <div className='entities-relationship-container table-container'>
+                                <table>
+                                    <tr>
+                                        <th>How</th>
+                                        <th>What</th>
+                                        <th>When</th>
+                                        <th>Where</th>
+                                        <th>Who</th>
+                                        <th>Whom</th>
+                                        <th>Why</th>
+                                        <th>Purpose</th>
+                                        <th>Domain</th>
+                                        <th>Relationship</th>
+                                    </tr>
+                                    {
+                                        selectedEntities?.length && selectedEntities.map((elem, index) => {
+                                            return (
+                                                <tr key={index}>
+                                                    {
+                                                        Object.keys(options)?.map((optionKey, i) => {
+                                                            if(['purpose', 'domain', 'relationship'].includes(optionKey)) {
+                                                                if(optionKey === 'relationship') {
+                                                                    return (
+                                                                        <td style={{width: "40%"}} key={i}>
+                                                                            <CreatableSelect 
+                                                                                // options={colourOptions} 
+                                                                                options={relationships}
+                                                                                styles={customStyles}
+                                                                                onCreateOption={e => handleCreateOption(e)}
+                                                                                onChange={e => handleInputs(e.value, index, 'relationship')}
+                                                                            />
+                                                                        </td>
+                                                                    )
+                                                                }else if(optionKey === 'domain'){
+                                                                    return (
+                                                                        <td style={{width: "40%"}} key={i}>
+                                                                            <input type="text" value={selectedEntities[index][optionKey]} onChange={(e) => handleInputs(e.target.value, index, "domain")}/>
+                                                                        </td>
+                                                                    )
+                                                                }else{
+                                                                    return (
+                                                                        <td style={{width: "40%"}} key={i}>
+                                                                            <input type="text" value={selectedEntities[index][optionKey]} onChange={(e) => handleInputs(e.target.value, index, "purpose")}/>
+                                                                        </td>
+                                                                    )
+                                                                }
+                                                            }else{
+                                                                let values = []
+                                                                selectedEntities[index][optionKey]?.length && selectedEntities[index][optionKey]?.map((d) => values.push(d.value))
+                                                                return (
+                                                                    <td style={{
+                                                                        width: "40%"
+                                                                    }} key={i}>
+                                                                        {values.join(", ")}
+                                                                    </td>
+                                                                )
+                                                            }
+                                                        })
+                                                    }
+                                                    <td>
+                                                        <a href='#' onClick={() => handleDelete(index)}> 
+                                                            <FaTrash />
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
+                                    }
+                                </table>
+                                <br/>
+                                <div className='save-button-container'>
+                                    <a href='#' className="button" onClick={() => handleSave()}> Save </a>
+                                </div>
+                            </div>
+                        :
+                        <></>
+                        }
+
                         {/* rest of the notes */}
                         <div className='md:col-start-2 md:col-end-6 text-justify'>
                             {articleObj?.subtopics?.map((item, index) => (
