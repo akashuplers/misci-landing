@@ -76,7 +76,7 @@ function ArticleGenerated() {
    const [selectedOptions, setSelectedOptions] = useState({});
    const [selectedEntities, setSelectedEntities] = useState([]);
    const [isLoading, setIsLoading] = useState(false);
-   const [relationships, setrelationships] = useState(null);
+   const [relationships, setrelationships] = useState([]);
    const [options, setOptions] = useState({
     "How": [],
     "What": [],
@@ -228,7 +228,8 @@ function ArticleGenerated() {
                 return toast.error('Please provide correct domain!')
             }else{
                 const response = await axios.post(`${RESEARCH_API}relations/entities-relations`, {
-                    entities: finalPayload
+                    entities: finalPayload,
+                    extractedData: articleObj
                 }); // Wait for api response
                 const data = response?.data; // Destructure response data
                 if(data) {
@@ -289,6 +290,7 @@ function ArticleGenerated() {
         setOptions(optionsArr)
     }
     console.log(selectedEntities, "selectedEntities akash")
+    console.log(articleObj, "articleObj akash")
   return (
     <div className='h-screen overflow-y-auto bg-yellow-50'>
         {isLoading ?
